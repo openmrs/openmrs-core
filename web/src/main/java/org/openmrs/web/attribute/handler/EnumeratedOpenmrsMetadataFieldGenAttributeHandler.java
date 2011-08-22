@@ -16,7 +16,7 @@ public class EnumeratedOpenmrsMetadataFieldGenAttributeHandler extends Enumerate
 	
 	@Override
 	public String getWidgetName() {
-		return "java.util.List";
+		return "enumeratedOpenmrsMetadata";
 	}
 	
 	@Override
