@@ -115,7 +115,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	private Map<Locale, List<ConceptName>> compatibleCache;
 	
-	
 	/** default constructor */
 	public Concept() {
 		names = new HashSet<ConceptName>();
@@ -161,8 +160,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		conceptSets = cn.getConceptSets();
 		conceptMappings = cn.getConceptMappings();
 	}
-	
-	
 	
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -528,14 +525,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return taggedName;
 	}
-
+	
 	@Override
 	public String getDisplayName() {
 		return getName().getName();
 	}
-	
-	
-	
 	
 	/**
 	 * Returns a name in the given locale. If a name isn't found with an exact match, a compatible
@@ -551,7 +545,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public ConceptName getName(Locale locale) {
 		return getName(locale, false);
 	}
-
 	
 	/**
 	 * Returns concept name, the look up for the appropriate name is done in the following order;

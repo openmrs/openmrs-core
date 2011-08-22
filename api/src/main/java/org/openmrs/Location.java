@@ -31,7 +31,6 @@ import org.openmrs.attribute.handler.EnumeratedOpenmrsMetadata;
  */
 public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location>, Address, EnumeratedOpenmrsMetadata {
 	
-	
 	@Override
 	public String getDisplayName() {
 		return getName();
@@ -114,7 +113,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	public boolean equals(Object obj) {
 		if (obj instanceof Location) {
 			Location loc = (Location) obj;
-			if (this.getLocationId() != null && loc.getLocationId() != null){
+			if (this.getLocationId() != null && loc.getLocationId() != null) {
 				return (this.getLocationId().equals(loc.getLocationId()));
 			}
 		}

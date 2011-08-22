@@ -12,8 +12,8 @@ import org.openmrs.attribute.InvalidAttributeValueException;
 public class EnumeratedOpenmrsMetadataAttributeHandler implements AttributeHandler<EnumeratedOpenmrsMetadata> {
 	
 	protected String hierarchy;
+	
 	protected String allowedValues;
-
 	
 	@Override
 	public String getDatatypeHandled() {
@@ -22,20 +22,20 @@ public class EnumeratedOpenmrsMetadataAttributeHandler implements AttributeHandl
 	
 	@Override
 	public void setConfiguration(String handlerConfig) {
-		if(handlerConfig==null){
+		if (handlerConfig == null) {
 			throw new InvalidAttributeValueException("Configuration string is mandatory");
 		}
 		String[] args = handlerConfig.split(":");
-		String[] ids=args[1].split(",");
-		StringBuilder sb=new StringBuilder();
-		for(String itr: ids){
-			sb.append(","+itr+",");
+		String[] ids = args[1].split(",");
+		StringBuilder sb = new StringBuilder();
+		for (String itr : ids) {
+			sb.append("," + itr + ",");
 		}
-		allowedValues=sb.toString();
-		if(handlerConfig.startsWith("LocationId:")){
-			hierarchy="Location";
-		}else if(handlerConfig.startsWith("ConceptId:")){
-			hierarchy="Concept";
+		allowedValues = sb.toString();
+		if (handlerConfig.startsWith("LocationId:")) {
+			hierarchy = "Location";
+		} else if (handlerConfig.startsWith("ConceptId:")) {
+			hierarchy = "Concept";
 		}
 	}
 	
@@ -52,17 +52,14 @@ public class EnumeratedOpenmrsMetadataAttributeHandler implements AttributeHandl
 		return asEnumeratedMetadata.getUuid();
 	}
 	
-	
-	
-	
 	@Override
 	public EnumeratedOpenmrsMetadata deserialize(String stringValue) throws InvalidAttributeValueException {
-		if("Location".equals(hierarchy)){
+		if ("Location".equals(hierarchy)) {
 			return Context.getLocationService().getLocation(Integer.valueOf(stringValue));
-		}else if("Concept".equals(hierarchy)){
+		} else if ("Concept".equals(hierarchy)) {
 			return Context.getConceptService().getConcept(Integer.valueOf(stringValue));
 		}
-		throw new RuntimeException(hierarchy);		
+		throw new RuntimeException(hierarchy);
 	}
 	
 }
