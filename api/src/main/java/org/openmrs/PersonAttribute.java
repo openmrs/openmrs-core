@@ -296,7 +296,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 			
 			// No need to warn if the input was blank
 			if (StringUtils.isBlank(getValue())) {
-			    return null;
+				return null;
 			}
 			
 			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
