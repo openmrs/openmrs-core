@@ -14,12 +14,8 @@
 package org.openmrs.web.controller.visit;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,8 +31,6 @@ import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.attribute.Attribute;
-import org.openmrs.attribute.AttributeUtil;
-import org.openmrs.attribute.Customizable;
 import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.validator.VisitValidator;
 import org.openmrs.web.WebConstants;
@@ -102,61 +96,9 @@ public class VisitFormController {
 	        SessionStatus status, ModelMap model) {
 		
 		// manually handle the attribute parameters
-		// TODO move this to a utility class
-		List<Attribute> toVoid = new ArrayList<Attribute>(); // a bit of a hack to avoid voiding things if the save doesn't go through
-		for (VisitAttributeType vat : (List<VisitAttributeType>) model.get("visitAttributeTypes")) {
-			AttributeHandler<?> handler = Context.getAttributeService().getHandler(vat);
-			// Look for parameters starting with "attribute.${ vat.id }". They may be either of: 
-			// * attribute.${ vat.id }.new[${ meaningless int }]
-			// * attribute.${ vat.id }.existing[${ existingAttribute.id }]
-			for (@SuppressWarnings("unchecked")
-			Enumeration<String> iter = request.getParameterNames(); iter.hasMoreElements();) {
-				String paramName = iter.nextElement();
-				if (paramName.startsWith("attribute." + vat.getId())) {
-					String afterPrefix = paramName.substring(("attribute." + vat.getId()).length());
-					//String paramValue = request.getParameter(paramName);
-					Object valueAsObject;
-					try {
-						valueAsObject = WebAttributeUtil.getValue(request, handler, paramName);
-					}
-					catch (Exception ex) {
-						result.rejectValue("activeAttributes", "attribute.error.invalid", new Object[] { vat.getName() },
-						    "Illegal value for " + vat.getName());
-						continue;
-					}
-					if (afterPrefix.startsWith(".new[")) {
-						// if not empty, we create a new one
-						if (valueAsObject != null && !"".equals(valueAsObject)) {
-							VisitAttribute va = new VisitAttribute();
-							va.setAttributeType(vat);
-							va.setObjectValue(valueAsObject);
-							visit.addAttribute(va);
-						}
-						
-					} else if (afterPrefix.startsWith(".existing[")) {
-						// if it has changed, we edit the existing one
-						Integer existingAttributeId = getFromSquareBrackets(afterPrefix);
-						VisitAttribute existing = findAttributeById(visit, existingAttributeId);
-						if (existing == null)
-							throw new RuntimeException("Visit was modified between page load and submit. Try again.");
-						if (valueAsObject == null) {
-							// they changed an existing value to "", so we void that attribute
-							toVoid.add(existing);
-						} else if (!existing.getObjectValue().equals(valueAsObject)) {
-							// they changed an existing value to a new value
-							toVoid.add(existing);
-							VisitAttribute newVal = new VisitAttribute();
-							newVal.setAttributeType(vat);
-							newVal.setObjectValue(valueAsObject);
-							visit.addAttribute(newVal);
-						}
-					}
-				}
-			}
-		}
-		
-		for (Attribute<?> attr : toVoid)
-			voidAttribute(attr);
+		@SuppressWarnings("unchecked")
+		List<VisitAttributeType> attributeTypes = (List<VisitAttributeType>) model.get("attributeTypes");
+		WebAttributeUtil.handleSubmittedAttributesForType(visit, result, VisitAttribute.class, request, attributeTypes);
 		
 		new VisitValidator().validate(visit, result);
 		if (!result.hasErrors()) {
@@ -174,45 +116,6 @@ public class VisitFormController {
 		}
 		
 		return VISIT_FORM;
-	}
-	
-	/**
-	 * Finds an existing attribute in a Customizable parent with the given id
-	 * 
-	 * @param visit
-	 * @param existingAttributeId
-	 * @return
-	 */
-	private <T extends Attribute<?>> T findAttributeById(Customizable<T> owner, Integer existingAttributeId) {
-		for (T candidate : owner.getActiveAttributes())
-			if (candidate.getId().equals(existingAttributeId))
-				return candidate;
-		return null;
-	}
-	
-	/**
-	 * Helper method to void an attribute
-	 * 
-	 * @param existing
-	 */
-	private void voidAttribute(Attribute<?> existing) {
-		existing.setVoided(true);
-		existing.setVoidedBy(Context.getAuthenticatedUser());
-		existing.setDateVoided(new Date());
-	}
-	
-	/**
-	 * something[3] -> 3
-	 * 
-	 * @param input
-	 * @return
-	 */
-	private Integer getFromSquareBrackets(String input) {
-		// when we pull this to a util method, reuse this:
-		Pattern betweenSquareBrackets = Pattern.compile("\\[(\\d*)\\]");
-		Matcher matcher = betweenSquareBrackets.matcher(input);
-		matcher.find();
-		return Integer.valueOf(matcher.group(1));
 	}
 	
 	/**
@@ -314,7 +217,7 @@ public class VisitFormController {
 		return Context.getVisitService().getAllVisitTypes();
 	}
 	
-	@ModelAttribute("visitAttributeTypes")
+	@ModelAttribute("attributeTypes")
 	public List<VisitAttributeType> getVisitAttributeTypes() throws Exception {
 		return Context.getVisitService().getAllVisitAttributeTypes();
 	}

@@ -314,7 +314,7 @@ $j(document).ready( function() {
 					</spring:bind>
 				</td>
 			</tr>
-            <c:if test="${ not empty visitAttributeTypes }">
+            <c:if test="${ not empty attributeTypes }">
     			<tr valign="top">
     			    <th class="visitLabel"><spring:message code="Visit.attributes" /></th>
 	               	<td>
@@ -328,8 +328,8 @@ $j(document).ready( function() {
 							</c:if>
 						</spring:bind>
 			            <table>
-			                <c:forEach var="attrType" items="${ visitAttributeTypes }">
-			                   <openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ visit }" formFieldNamePrefix="attribute.${ attrType.visitAttributeTypeId }"/>
+			                <c:forEach var="attrType" items="${ attributeTypes }">
+			                   <openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ visit }" formFieldNamePrefix="attribute.${ attrType.id }"/>
 			                </c:forEach>
 			            </table>
 			        </td>

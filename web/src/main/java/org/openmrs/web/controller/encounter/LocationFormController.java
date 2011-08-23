@@ -26,14 +26,18 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
+import org.openmrs.LocationAttribute;
 import org.openmrs.LocationTag;
 import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.attribute.Attribute;
+import org.openmrs.attribute.Customizable;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.LocationTagEditor;
 import org.openmrs.util.MetadataComparator;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.attribute.WebAttributeUtil;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -70,6 +74,7 @@ public class LocationFormController extends SimpleFormController {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags();
 		Collections.sort(tags, new MetadataComparator(Context.getLocale()));
 		ret.put("locationTags", tags);
+		ret.put("attributeTypes", Context.getLocationService().getAllLocationAttributeTypes());
 		return ret;
 	}
 	
@@ -92,6 +97,12 @@ public class LocationFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			try {
 				Location location = (Location) obj;
+				WebAttributeUtil.handleSubmittedAttributesForType(location, errors, LocationAttribute.class, request,
+				    Context.getLocationService().getAllLocationAttributeTypes());
+				
+				if (errors.hasErrors())
+					return showForm(request, response, errors);
+				
 				LocationService locationService = Context.getLocationService();
 				
 				//if the user was editing the location

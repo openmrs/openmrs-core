@@ -13,11 +13,24 @@
  */
 package org.openmrs.web.attribute;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
 import org.openmrs.attribute.Attribute;
+import org.openmrs.attribute.AttributeType;
+import org.openmrs.attribute.BaseAttribute;
+import org.openmrs.attribute.Customizable;
 import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.web.attribute.handler.FieldGenAttributeHandler;
+import org.springframework.validation.BindingResult;
 
 /**
  * Web-layer utility methods related to customizable {@link Attribute}s
@@ -37,8 +50,134 @@ public class WebAttributeUtil {
 			return ((FieldGenAttributeHandler<T>) handler).getValue(request, paramName);
 		} else {
 			String submittedValue = request.getParameter(paramName);
-			return handler.deserialize(submittedValue);
+			if (StringUtils.isNotEmpty(submittedValue)) // check empty instead of blank, because " " is meaningful
+				return handler.deserialize(submittedValue);
+			else
+				return null;
 		}
+	}
+	
+	/**
+	 * Reusable regex pattern for {@link #getFromSquareBrackets(String)}
+	 */
+	private static Pattern betweenSquareBrackets = Pattern.compile("\\[(\\d*)\\]");
+	
+	/**
+	 * something[3] -> 3
+	 * 
+	 * @param input
+	 * @return
+	 */
+	private static Integer getFromSquareBrackets(String input) {
+		Matcher matcher = betweenSquareBrackets.matcher(input);
+		matcher.find();
+		return Integer.valueOf(matcher.group(1));
+	}
+	
+	/**
+	 * Finds an existing attribute in a Customizable parent with the given id
+	 * 
+	 * @param owner
+	 * @param existingAttributeId
+	 * @return
+	 */
+	private static <T extends Attribute<?>> T findAttributeById(Customizable<T> owner, Integer existingAttributeId) {
+		for (T candidate : owner.getActiveAttributes())
+			if (candidate.getId().equals(existingAttributeId))
+				return candidate;
+		return null;
+	}
+	
+	/**
+	 * Helper method to void an attribute
+	 * 
+	 * @param existing
+	 */
+	private static void voidAttribute(Attribute<?> existing) {
+		existing.setVoided(true);
+		existing.setVoidedBy(Context.getAuthenticatedUser());
+		existing.setDateVoided(new Date());
+	}
+	
+	/**
+	 * Handles attributes submitted on a form that uses the "attributesForType" tag
+	 * 
+	 * @param owner the object that the attributes will be applied to
+	 * @param errors Spring binding object for owner
+	 * @param attributeClass the actual class of the attribute we need to instantiate, e.g. LocationAttribute
+	 * @param request the user's submission
+	 * @param attributeTypes all available attribute types for owner's class
+	 */
+	public static <AttributeClass extends BaseAttribute, CustomizableClass extends Customizable<AttributeClass>, AttributeTypeClass extends AttributeType<CustomizableClass>> void handleSubmittedAttributesForType(
+	        CustomizableClass owner, BindingResult errors, Class<AttributeClass> attributeClass, HttpServletRequest request,
+	        List<AttributeTypeClass> attributeTypes) {
+		// TODO figure out if this toVoid thing is still relevant
+		List<AttributeClass> toVoid = new ArrayList<AttributeClass>(); // a bit of a hack to avoid voiding things if there are errors
+		for (AttributeType<?> attrType : attributeTypes) {
+			AttributeHandler<?> handler = Context.getAttributeService().getHandler(attrType);
+			// Look for parameters starting with "attribute.${ attrType.id }". They may be either of: 
+			// * attribute.${ attrType.id }.new[${ meaningless int }]
+			// * attribute.${ attrType.id }.existing[${ existingAttribute.id }]
+			for (@SuppressWarnings("unchecked")
+			Enumeration<String> iter = request.getParameterNames(); iter.hasMoreElements();) {
+				String paramName = iter.nextElement();
+				if (paramName.startsWith("attribute." + attrType.getId())) {
+					String afterPrefix = paramName.substring(("attribute." + attrType.getId()).length());
+					//String paramValue = request.getParameter(paramName);
+					Object valueAsObject;
+					try {
+						valueAsObject = getValue(request, handler, paramName);
+					}
+					catch (Exception ex) {
+						errors.rejectValue("activeAttributes", "attribute.error.invalid",
+						    new Object[] { attrType.getName() }, "Illegal value for " + attrType.getName());
+						continue;
+					}
+					if (afterPrefix.startsWith(".new[")) {
+						// if not empty, we create a new one
+						if (valueAsObject != null && !"".equals(valueAsObject)) {
+							AttributeClass attr;
+							try {
+								attr = attributeClass.newInstance();
+							}
+							catch (Exception ex) {
+								throw new RuntimeException(ex);
+							}
+							attr.setAttributeType(attrType);
+							attr.setObjectValue(valueAsObject);
+							owner.addAttribute(attr);
+						}
+						
+					} else if (afterPrefix.startsWith(".existing[")) {
+						// if it has changed, we edit the existing one
+						Integer existingAttributeId = getFromSquareBrackets(afterPrefix);
+						AttributeClass existing = findAttributeById(owner, existingAttributeId);
+						if (existing == null)
+							throw new RuntimeException("Visit was modified between page load and submit. Try again.");
+						if (valueAsObject == null) {
+							// they changed an existing value to "", so we void that attribute
+							toVoid.add(existing);
+						} else if (!existing.getObjectValue().equals(valueAsObject)) {
+							// they changed an existing value to a new value
+							toVoid.add(existing);
+							AttributeClass newVal;
+							try {
+								newVal = attributeClass.newInstance();
+							}
+							catch (Exception ex) {
+								throw new RuntimeException(ex);
+							}
+							newVal.setAttributeType(attrType);
+							newVal.setObjectValue(valueAsObject);
+							owner.addAttribute(newVal);
+						}
+					}
+				}
+			}
+		}
+		
+		for (Attribute<?> attr : toVoid)
+			voidAttribute(attr);
 	}
 	
 }

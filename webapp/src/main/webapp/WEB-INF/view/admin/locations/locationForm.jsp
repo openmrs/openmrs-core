@@ -67,6 +67,25 @@
 			</td>
 		</tr>
 		<tr>
+			<td valign="top"><spring:message code="Location.attributes"/></td>
+			<td colspan="5">
+				<spring:bind path="location.activeAttributes">
+					<c:if test="${status.error}">
+						<span class="error">
+							<c:forEach var="err" items="${status.errorMessages}">
+								${ err }<br/>
+							</c:forEach>
+						</span>
+					</c:if>
+				</spring:bind>
+	            <table>
+	                <c:forEach var="attrType" items="${ attributeTypes }">
+	                   <openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ location }" formFieldNamePrefix="attribute.${ attrType.id }"/>
+	                </c:forEach>
+	            </table>
+			</td>
+		</tr>
+		<tr>
 			<td valign="top"><spring:message code="Location.tags"/></td>
 			<td colspan="5">
 				<spring:bind path="location.tags">
