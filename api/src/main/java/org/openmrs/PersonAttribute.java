@@ -294,13 +294,10 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 		}
 		catch (Throwable t) {
 			
-			//we do not warn about empty strings which throw number format exceptions.
-			if (t.getCause() instanceof NumberFormatException && StringUtils.isBlank(getValue()))
-				return null;
-			
-			//we do not warn for character format which throws this exception when newInstance() is called.
-			if (t instanceof NoSuchMethodException)
-				return null;
+			// No need to warn if the input was blank
+			if (StringUtils.isBlank(getValue())) {
+			    return null;
+			}
 			
 			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
 		}
