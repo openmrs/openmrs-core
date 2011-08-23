@@ -154,6 +154,9 @@
 	</style>
 	
     <div class="content">
+	    #if($isInstallationStarted == true)
+			Installation is currently in progress...<br/>
+		#end
        	<table cellpadding="0" cellspacing="0" align="center">
        		<tr valign="middle">
        			<th class="tasksToExecuteHeader" colspan="4">Tasks to execute</th>
