@@ -393,6 +393,59 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to view/add/remove the concept stop words")
 	public static final String MANAGE_CONCEPT_STOP_WORDS = "Manage Concept Stop Words";
 	
+	@AddOnStartup(description = "Able to add an HL7 Source")
+	public static final String PRIV_ADD_HL7_SOURCE = "Add HL7 Source";
+	
+	@AddOnStartup(description = "Able to view an HL7 Source")
+	public static final String PRIV_VIEW_HL7_SOURCE = "View HL7 Source";
+	
+	@AddOnStartup(description = "Able to update an HL7 Source")
+	public static final String PRIV_UPDATE_HL7_SOURCE = "Update HL7 Source";
+	
+	public static final String PRIV_PURGE_HL7_SOURCE = "Purge HL7 Source";
+	
+	@AddOnStartup(description = "Able to add an HL7 Queue item")
+	public static final String PRIV_ADD_HL7_IN_QUEUE = "Add HL7 Inbound Queue";
+	
+	@AddOnStartup(description = "Able to view an HL7 Queue item")
+	public static final String PRIV_VIEW_HL7_IN_QUEUE = "View HL7 Inbound Queue";
+	
+	@AddOnStartup(description = "Able to update an HL7 Queue item")
+	public static final String PRIV_UPDATE_HL7_IN_QUEUE = "Update HL7 Inbound Queue";
+	
+	@AddOnStartup(description = "Able to delete an HL7 Queue item")
+	public static final String PRIV_DELETE_HL7_IN_QUEUE = "Delete HL7 Inbound Queue";
+	
+	public static final String PRIV_PURGE_HL7_IN_QUEUE = "Purge HL7 Inbound Queue";
+	
+	@AddOnStartup(description = "Able to add an HL7 archive item")
+	public static final String PRIV_ADD_HL7_IN_ARCHIVE = "Add HL7 Inbound Archive";
+	
+	@AddOnStartup(description = "Able to view an HL7 archive item")
+	public static final String PRIV_VIEW_HL7_IN_ARCHIVE = "View HL7 Inbound Archive";
+	
+	@AddOnStartup(description = "Able to update an HL7 archive item")
+	public static final String PRIV_UPDATE_HL7_IN_ARCHIVE = "Update HL7 Inbound Archive";
+	
+	@AddOnStartup(description = "Able to delete/retire an HL7 archive item")
+	public static final String PRIV_DELETE_HL7_IN_ARCHIVE = "Delete HL7 Inbound Archive";
+	
+	public static final String PRIV_PURGE_HL7_IN_ARCHIVE = "Purge HL7 Inbound Archive";
+	
+	@AddOnStartup(description = "Able to add an HL7 error item")
+	public static final String PRIV_ADD_HL7_IN_EXCEPTION = "Add HL7 Inbound Exception";
+	
+	@AddOnStartup(description = "Able to view an HL7 archive item")
+	public static final String PRIV_VIEW_HL7_IN_EXCEPTION = "View HL7 Inbound Exception";
+	
+	@AddOnStartup(description = "Able to update an HL7 archive item")
+	public static final String PRIV_UPDATE_HL7_IN_EXCEPTION = "Update HL7 Inbound Exception";
+	
+	@AddOnStartup(description = "Able to delete an HL7 archive item")
+	public static final String PRIV_DELETE_HL7_IN_EXCEPTION = "Delete HL7 Inbound Exception";
+	
+	public static final String PRIV_PURGE_HL7_IN_EXCEPTION = "Purge HL7 Inbound Exception";
+	
 	@AddOnStartup(description = "Able to view visit types")
 	public static final String VIEW_VISIT_TYPES = "View Visit Types";
 	
