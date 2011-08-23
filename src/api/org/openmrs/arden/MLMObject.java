@@ -315,7 +315,7 @@ public class MLMObject {
 			
 			/** ******************************************************************************************** */
 			
-			w.append("\n\n\t\t\tif(evaluate_logic(parameters)){\n");
+			w.append("\n\n\t\t\tif(evaluate_logic(parameters, context)){\n");
 			w.append("\t\t\t\tResult ruleResult = new Result();\n");
 			
 			/*******************
@@ -407,7 +407,7 @@ public class MLMObject {
 			}
 			/** *************************************************************************************************************************** */
 			
-			w.append("\tprivate boolean evaluate_logic(Map<String, Object> parameters) throws LogicException {\n\n");
+			w.append("\tprivate boolean evaluate_logic(Map<String, Object> parameters, LogicContext context) throws LogicException {\n\n");
 			evalListBySection = evaluateList.get("logic");
 			if (evalListBySection == null) {
 				evalListBySection = new LinkedList<MLMEvaluateElement>();

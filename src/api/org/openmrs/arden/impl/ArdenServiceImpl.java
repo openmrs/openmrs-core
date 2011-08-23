@@ -162,7 +162,6 @@ public class ArdenServiceImpl implements ArdenService {
              w.write("import org.openmrs.logic.LogicContext;\n");
              w.write("import org.openmrs.logic.impl.LogicCriteriaImpl;\n");
              w.write("import org.openmrs.logic.LogicException;\n");
-             w.write("import org.openmrs.logic.LogicService;\n");
              w.write("import org.openmrs.logic.Rule;\n");
              w.write("import org.openmrs.logic.result.Result;\n");
              w.write("import org.openmrs.logic.result.Result.Datatype;\n");
@@ -182,8 +181,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     w.write("\tprivate HashMap<String, String> userVarMap;\n\n");
 		     w.write("\tprivate HashMap <String, Result> resultLookup;\n\n");
 		     
-		     w.write("\tprivate Log log = LogFactory.getLog(this.getClass());\n");
-		     w.write("\tprivate LogicService logicService = Context.getLogicService();\n\n");
+			w.write("\tprivate Log log = LogFactory.getLog(this.getClass());\n\n");
 		     
 		     w.flush();
 		     
