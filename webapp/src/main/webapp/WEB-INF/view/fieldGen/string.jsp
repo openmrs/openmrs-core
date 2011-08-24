@@ -16,6 +16,9 @@
 			</c:forTokens>
 		</select>
 	</c:when>
+	<c:when test="${model.inputType == 'textarea'}">
+		<textarea name="${model.formFieldName}" id="${model.formFieldName}" rows="${model.rows}" cols="${model.cols}"><c:out escapeXml="true" value="${model.initialValue}"/></textarea>
+	</c:when>
 	<c:otherwise>
 		<input type="text" name="${model.formFieldName}" id="${model.formFieldName}" value="${model.initialValue}" size="${model.fieldLength}">
 	</c:otherwise>

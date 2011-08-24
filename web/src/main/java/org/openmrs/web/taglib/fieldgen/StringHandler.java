@@ -19,6 +19,10 @@ public class StringHandler extends AbstractFieldGenHandler implements FieldGenHa
 	
 	private String defaultUrl = "string.field";
 	
+	public static final String DEFAULT_TEXTAREA_ROWS = "1";
+	
+	public static final String DEFAULT_TEXTAREA_COLS = "40";
+	
 	public void run() {
 		setUrl(defaultUrl);
 		checkEmptyVal((String) null);
@@ -35,6 +39,24 @@ public class StringHandler extends AbstractFieldGenHandler implements FieldGenHa
 			String answerSet = this.fieldGenTag.getParameterMap() != null ? (String) this.fieldGenTag.getParameterMap().get(
 			    "answerSet") : null;
 			setParameter("answerSet", answerSet);
+			
+			String inputType = this.fieldGenTag.getParameterMap() != null ? (String) this.fieldGenTag.getParameterMap().get(
+			    "inputType") : null;
+			inputType = (inputType == null) ? "text" : inputType;
+			
+			setParameter("inputType", inputType);
+			
+			String rows = this.fieldGenTag.getParameterMap() != null ? (String) this.fieldGenTag.getParameterMap().get(
+			    "rows") : null;
+			rows = (rows == null) ? DEFAULT_TEXTAREA_ROWS : rows;
+			
+			setParameter("rows", rows);
+			
+			String cols = this.fieldGenTag.getParameterMap() != null ? (String) this.fieldGenTag.getParameterMap().get(
+			    "cols") : null;
+			cols = (cols == null) ? DEFAULT_TEXTAREA_COLS : cols;
+			
+			setParameter("cols", cols);
 		}
 	}
 }
