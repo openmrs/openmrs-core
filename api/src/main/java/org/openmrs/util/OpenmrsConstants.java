@@ -747,6 +747,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN = "patient.identifierSearchPattern";
 	
+	public static final String GLOBAL_PROPERTY_PATIENT_NAME_REGEX = "patient.nameValidationRegex";
+	
 	public static final String GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS = "person.searchMaxResults";
 	
 	public static final int GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE = 1000;
@@ -1096,6 +1098,12 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN,
 		                "",
 		                "If this is empty, the regex or suffix/prefix search is used.  Comma separated list of identifiers to check.  Allows for faster searching of multiple options rather than the slow regex. e.g. @SEARCH@,0@SEARCH@,@SEARCH-1@-@CHECKDIGIT@,0@SEARCH-1@-@CHECKDIGIT@ would turn a request for \"4127\" into a search for \"in ('4127','04127','412-7','0412-7')\""));
+		
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PATIENT_NAME_REGEX,
+		                "^[a-zA-Z \\-]+$",
+		                "Names of the patients must pass this regex. Eg : ^[a-zA-Z \\-]+$ contains only english alphabet letters, spaces, and hyphens. A value of .* means no validation is done."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS, String
 		        .valueOf(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE),
