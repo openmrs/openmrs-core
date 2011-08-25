@@ -15,11 +15,12 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.openmrs.util.OpenmrsUtil;
 
@@ -206,6 +207,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	 * @param voidBy - The user who is voiding the {@link PatientState}
 	 * @param voidDate - The date to void the {@link PatientState}
 	 * @param voidReason - The reason for voiding the {@link PatientState}
+	 * @should void state with endDate null if startDates equal
 	 */
 	public void voidLastState(ProgramWorkflow workflow, User voidBy, Date voidDate, String voidReason) {
 		List<PatientState> states = statesInWorkflow(workflow, false);
@@ -244,13 +246,16 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	 */
 	public PatientState getCurrentState(ProgramWorkflow programWorkflow) {
 		Date now = new Date();
-		for (PatientState state : getStates()) {
+		PatientState currentState = null;
+		
+		for (PatientState state : getSortedStates()) {
+			//states are sorted with the most current state at the last position
 			if ((programWorkflow == null || state.getState().getProgramWorkflow().equals(programWorkflow))
 			        && state.getActive(now)) {
-				return state;
+				currentState = state;
 			}
 		}
-		return null;
+		return currentState;
 	}
 	
 	/**
@@ -289,17 +294,11 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	 */
 	public List<PatientState> statesInWorkflow(ProgramWorkflow programWorkflow, boolean includeVoided) {
 		List<PatientState> ret = new ArrayList<PatientState>();
-		for (PatientState st : getStates()) {
+		for (PatientState st : getSortedStates()) {
 			if (st.getState().getProgramWorkflow().equals(programWorkflow) && (includeVoided || !st.getVoided())) {
 				ret.add(st);
 			}
 		}
-		Collections.sort(ret, new Comparator<PatientState>() {
-			
-			public int compare(PatientState left, PatientState right) {
-				return OpenmrsUtil.compareWithNullAsEarliest(left.getStartDate(), right.getStartDate());
-			}
-		});
 		return ret;
 	}
 	
@@ -410,5 +409,12 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	 */
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+	
+	/**
+	 * @return states sorted by {@link PatientState#compareTo(PatientState)}
+	 */
+	private SortedSet<PatientState> getSortedStates() {
+		return Collections.unmodifiableSortedSet(new TreeSet<PatientState>(getStates()));
 	}
 }
