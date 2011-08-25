@@ -1,0 +1,249 @@
+package org.openmrs;
+
+import java.util.Date;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+public class PatientStateTest {
+	
+	private Date leftRange;
+	
+	private Date inRange;
+	
+	private Date rightRange;
+	
+	private Date rightOutOfRange;
+	
+	private Date leftOutOfRange;
+	
+	@Before
+	public void before() {
+		inRange = new Date();
+		leftRange = new Date(inRange.getTime() - 10000);
+		rightRange = new Date(inRange.getTime() + 10000);
+		rightOutOfRange = new Date(rightRange.getTime() + 10000);
+		leftOutOfRange = new Date(leftRange.getTime() - 10000);
+	}
+	
+	/**
+	 * @see PatientState#getActive(Date)
+	 * @verifies return false if voided and date in range
+	 */
+	@Test
+	public void getActive_shouldReturnFalseIfVoidedAndDateInRange() throws Exception {
+		//given
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(leftRange);
+		patientState.setEndDate(rightRange);
+		patientState.setVoided(true);
+		
+		//when
+		boolean active = patientState.getActive(inRange);
+		
+		//then
+		Assert.assertFalse(active);
+	}
+	
+	/**
+	 * @see PatientState#getActive(Date)
+	 * @verifies return false if voided and date not in range
+	 */
+	@Test
+	public void getActive_shouldReturnFalseIfVoidedAndDateNotInRange() throws Exception {
+		//given
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(leftRange);
+		patientState.setEndDate(rightRange);
+		patientState.setVoided(true);
+		
+		//when
+		boolean active = patientState.getActive(rightOutOfRange);
+		
+		//then
+		Assert.assertFalse(active);
+	}
+	
+	/**
+	 * @see PatientState#getActive(Date)
+	 * @verifies return true if not voided and date in range
+	 */
+	@Test
+	public void getActive_shouldReturnTrueIfNotVoidedAndDateInRange() throws Exception {
+		//given
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(leftRange);
+		patientState.setEndDate(rightRange);
+		patientState.setVoided(false);
+		
+		//when
+		boolean active = patientState.getActive(inRange);
+		
+		//then
+		Assert.assertTrue(active);
+	}
+	
+	/**
+	 * @see PatientState#getActive(Date)
+	 * @verifies return true if not voided and date in range with null startDate
+	 */
+	@Test
+	public void getActive_shouldReturnTrueIfNotVoidedAndDateInRangeWithNullStartDate() throws Exception {
+		//given
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(null);
+		patientState.setEndDate(rightRange);
+		patientState.setVoided(false);
+		
+		//when
+		boolean active = patientState.getActive(inRange);
+		
+		//then
+		Assert.assertTrue(active);
+	}
+	
+	/**
+	 * @see PatientState#getActive(Date)
+	 * @verifies return true if not voided and date in range with null endDate
+	 */
+	@Test
+	public void getActive_shouldReturnTrueIfNotVoidedAndDateInRangeWithNullEndDate() throws Exception {
+		//given
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(leftRange);
+		patientState.setEndDate(null);
+		patientState.setVoided(false);
+		
+		//when
+		boolean active = patientState.getActive(inRange);
+		
+		//then
+		Assert.assertTrue(active);
+	}
+	
+	/**
+	 * @see PatientState#getActive(Date)
+	 * @verifies return true if not voided and both startDate and endDate nulled
+	 */
+	@Test
+	public void getActive_shouldReturnTrueIfNotVoidedAndBothStartDateAndEndDateNulled() throws Exception {
+		//given
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(null);
+		patientState.setEndDate(null);
+		patientState.setVoided(false);
+		
+		//when
+		boolean active = patientState.getActive(inRange);
+		
+		//then
+		Assert.assertTrue(active);
+	}
+	
+	/**
+	 * @see PatientState#getActive(Date)
+	 * @verifies compare with current date if date null
+	 */
+	@Test
+	public void getActive_shouldCompareWithCurrentDateIfDateNull() throws Exception {
+		//given
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(leftRange);
+		patientState.setEndDate(leftRange);
+		patientState.setVoided(false);
+		
+		//when
+		boolean active = patientState.getActive(null);
+		
+		//then
+		Assert.assertFalse(active);
+	}
+	
+	/**
+	 * @see PatientState#getActive(Date)
+	 * @verifies return false if not voided and date earlier than startDate
+	 */
+	@Test
+	public void getActive_shouldReturnFalseIfNotVoidedAndDateEarlierThanStartDate() throws Exception {
+		//given
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(leftRange);
+		patientState.setEndDate(rightRange);
+		patientState.setVoided(false);
+		
+		//when
+		boolean active = patientState.getActive(leftOutOfRange);
+		
+		//then
+		Assert.assertFalse(active);
+	}
+	
+	/**
+	 * @see PatientState#getActive(Date)
+	 * @verifies return false if not voided and date later than endDate
+	 */
+	@Test
+	public void getActive_shouldReturnFalseIfNotVoidedAndDateLaterThanEndDate() throws Exception {
+		//given
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(leftRange);
+		patientState.setEndDate(rightRange);
+		patientState.setVoided(false);
+		
+		//when
+		boolean active = patientState.getActive(rightOutOfRange);
+		
+		//then
+		Assert.assertFalse(active);
+	}
+	
+	/**
+	 * @see PatientState#compareTo(PatientState)
+	 * @verifies return positive if startDates equal and this endDate null
+	 */
+	@Test
+	public void compareTo_shouldReturnPositiveIfStartDatesEqualAndThisEndDateNull() throws Exception {
+		//given
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(leftRange);
+		patientState.setEndDate(null);
+		patientState.setVoided(false);
+		
+		PatientState patientState2 = new PatientState();
+		patientState2.setStartDate(leftRange);
+		patientState2.setEndDate(rightRange);
+		patientState2.setVoided(false);
+		
+		//when
+		int result = patientState.compareTo(patientState2);
+		
+		//then
+		Assert.assertEquals(1, result);
+	}
+	
+	/**
+	 * @see PatientState#compareTo(PatientState)
+	 * @verifies return negative if this startDate null
+	 */
+	@Test
+	public void compareTo_shouldReturnNegativeIfThisStartDateNull() throws Exception {
+		//given
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(null);
+		patientState.setEndDate(rightRange);
+		patientState.setVoided(false);
+		
+		PatientState patientState2 = new PatientState();
+		patientState2.setStartDate(leftRange);
+		patientState2.setEndDate(rightRange);
+		patientState2.setVoided(false);
+		
+		//when
+		int result = patientState.compareTo(patientState2);
+		
+		//then
+		Assert.assertEquals(-1, result);
+	}
+	
+}
