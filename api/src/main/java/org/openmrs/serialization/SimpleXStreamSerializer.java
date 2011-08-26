@@ -17,6 +17,7 @@ import org.openmrs.ImplementationId;
 import org.openmrs.Patient;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
@@ -115,6 +116,11 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 		if (clazz != null) {
 			aliasClassName(clazz);
 		}
-		return (T) xstream.fromXML(serializedObject);
+		try {
+			return (T) xstream.fromXML(serializedObject);
+		}
+		catch (XStreamException e) {
+			throw new SerializationException("Unable to deserialize class: " + clazz.getSimpleName(), e);
+		}
 	}
 }

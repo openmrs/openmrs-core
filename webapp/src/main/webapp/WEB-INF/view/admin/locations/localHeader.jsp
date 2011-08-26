@@ -4,7 +4,7 @@
 	</li>
 	
 	<openmrs:hasPrivilege privilege="Manage Locations">
-		<li <c:if test='<%= request.getRequestURI().contains("location") && !request.getRequestURI().contains("Tag") && !request.getRequestURI().contains("hierarchy") && !request.getRequestURI().contains("Attribute") %>'>class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("location") && !request.getRequestURI().contains("Tag") && !request.getRequestURI().contains("hierarchy") && !request.getRequestURI().contains("Attribute") && !request.getRequestURI().contains("addressTemplate") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/locations/location.list">
 				<spring:message code="Location.manage"/>
 			</a>
@@ -28,6 +28,13 @@
 		<li <c:if test='<%= request.getRequestURI().contains("locationAttributeTypes") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/locations/locationAttributeTypes.list">
 				<spring:message code="LocationAttributeType.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+    <openmrs:hasPrivilege privilege="Manage Address Templates">
+		<li <c:if test='<%= request.getRequestURI().contains("addressTemplate") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/locations/addressTemplate.form">
+				<spring:message code="AddressTemplate.Manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>

@@ -98,6 +98,9 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to add/edit/delete location tags")
 	public static final String MANAGE_LOCATION_TAGS = "Manage Location Tags";
 	
+	@AddOnStartup(description = "Able to add/edit/delete address templates")
+	public static final String MANAGE_ADDRESS_TEMPLATES = "Manage Address Templates";
+	
 	public static final String PURGE_LOCATION_TAGS = "Purge Location Tags";
 	
 	@AddOnStartup(description = "Able to view patient observations")
