@@ -22,7 +22,9 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.HandlerUtil;
+import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 
@@ -99,6 +101,31 @@ public class ValidateUtil {
 			String exceptionMessage = "'" + obj + "' failed to validate with reason: ";
 			exceptionMessage += StringUtils.join(uniqueErrorMessages, ", ");
 			throw new APIException(exceptionMessage, errors.getCause());
+		}
+	}
+	
+	/**
+	 * Test the field lengths are valid
+	 *
+	 * @param errors
+	 * @param aClass the class of the object being tested
+	 * @param fields a var args that contains all of the fields from the model
+	 *
+	 * @should pass validation if regEx field length is not too long
+	 * @should fail validation if regEx field length is too long
+	 * @should fail validation if name field length is too long
+	 */
+	
+	public static void validateFieldLengths(Errors errors, Class aClass, String... fields) {
+		Assert.notNull(errors, "Errors object must not be null");
+		for (String field : fields) {
+			Object value = errors.getFieldValue(field);
+			if (value == null || !(value instanceof String))
+				return;
+			int length = Context.getAdministrationService().getMaximumPropertyLength(aClass, field);
+			if (((String) value).length() > length) {
+				errors.rejectValue(field, "error.exceededMaxLengthOfField", new Object[] { length }, null);
+			}
 		}
 	}
 }

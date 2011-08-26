@@ -30,6 +30,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -708,4 +709,12 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 1.7
 	 */
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue) throws APIException;
+	
+	/**
+	 *
+	 * @param aClass class of object getting length for
+	 * @param fieldName name of the field to get the length for
+	 * @return the max field length of a property
+	 */
+	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
 }
