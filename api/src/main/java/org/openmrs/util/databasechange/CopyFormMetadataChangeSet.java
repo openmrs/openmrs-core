@@ -13,6 +13,10 @@
  */
 package org.openmrs.util.databasechange;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -58,19 +62,35 @@ public class CopyFormMetadataChangeSet implements CustomTaskChange {
 		try {
 			insertStatement = connection.prepareStatement(insertFormMetadataSql.toString());
 			
-			// iterate over deleted HL7s
+			// iterate over existing forms
 			ResultSet forms = connection.createStatement().executeQuery(getFormMetadataSql);
 			while (forms.next()) {
 				
-				// define the xslt object
-				byte[] xslt = forms.getString(2) == null ? null : forms.getString(2).getBytes();
+				int formId = forms.getInt(1);
 				
-				// define the template object
-				byte[] template = forms.getString(3) == null ? null : forms.getString(3).getBytes();
+				// get the xslt and template byte arrays
+				byte[] xslt = null;
+				byte[] template = null;
+				
+				try {
+					xslt = forms.getString(2) == null ? null : convertToObjectStreamOutputByteArray(forms.getString(2));
+				}
+				catch (CustomChangeException e) {
+					throw new CustomChangeException("error converting Form #" + formId
+					        + " XSLT to ObjectStreamOutputByteArray", e);
+				}
+				
+				try {
+					template = forms.getString(3) == null ? null : convertToObjectStreamOutputByteArray(forms.getString(3));
+				}
+				catch (CustomChangeException e) {
+					throw new CustomChangeException("error converting Form #" + formId
+					        + " Template to ObjectStreamOutputByteArray", e);
+				}
 				
 				// add xslt
 				if (xslt != null) {
-					insertStatement.setInt(1, forms.getInt(1));
+					insertStatement.setInt(1, formId);
 					insertStatement.setString(2, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER);
 					insertStatement.setString(3, FormConstants.FORM_RESOURCE_FORMENTRY_XSLT);
 					insertStatement.setBytes(4, xslt);
@@ -90,8 +110,9 @@ public class CopyFormMetadataChangeSet implements CustomTaskChange {
 			}
 			
 			// cleanup
-			if (insertStatement != null)
+			if (insertStatement != null) {
 				insertStatement.close();
+			}
 			
 		}
 		catch (DatabaseException e) {
@@ -100,6 +121,27 @@ public class CopyFormMetadataChangeSet implements CustomTaskChange {
 		catch (SQLException e) {
 			throw new CustomChangeException("Unable to copy form metadata to form attributes table", e);
 		}
+	}
+	
+	/**
+	 * convert a String object to an ObjectOutputStream byte array
+	 * 
+	 * @param obj the string to be converted
+	 * @return the converted byte array
+	 * @throws CustomChangeException 
+	 */
+	private byte[] convertToObjectStreamOutputByteArray(String obj) throws CustomChangeException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutput out;
+		try {
+			out = new ObjectOutputStream(bos);
+			out.writeObject(obj);
+			out.close();
+		}
+		catch (IOException e) {
+			throw new CustomChangeException("could not serialize a form resource", e);
+		}
+		return bos.toByteArray();
 	}
 	
 	/**

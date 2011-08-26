@@ -849,8 +849,10 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			throw new APIException("could not convert form resource", e);
 		}
 		catch (IOException e) {
-			throw new APIException("could not deserialize form resource", e);
+			log.warn("could not deserialize form resource [Form: " + form.getFormId() + ", owner: " + owner + ", name: "
+			        + name + "], returning raw byte array.");
 		}
+		return data;
 	}
 	
 	/**

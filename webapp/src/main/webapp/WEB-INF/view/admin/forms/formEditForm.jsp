@@ -90,16 +90,6 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Form.xslt"/></td>
-		<td>
-			<spring:bind path="form.xslt">
-				<c:if test="${form.xslt != ''}"><a target="_new" href="formViewXslt.form?formId=${form.formId}"><spring:message code="Form.xslt.view"/></a><br/></c:if>
-				<spring:message code="Form.xslt.upload"/> <input type="file" name="xslt_file" size="25" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
 		<td><spring:message code="general.retired"/></td>
 		<td>
 			<spring:bind path="form.retired">
