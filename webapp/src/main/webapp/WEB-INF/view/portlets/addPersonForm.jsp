@@ -75,15 +75,18 @@
 				var male = document.getElementById("gender-M");
 				var female = document.getElementById("gender-F");
 				var year = new Date().getFullYear();
-				var nameValidatorRegex = /<openmrs:globalProperty key="patient.nameValidationRegex" defaultValue=".*"/>/;
+				var nameValidatorRegexGP = "<openmrs:globalProperty key='patient.nameValidationRegex' defaultValue='.*'/>";
+				if (nameValidatorRegexGP == "")
+					nameValidatorRegexGP = ".*";
+				var nameValidatorRegex = new RegExp(nameValidatorRegexGP);
 				
 				var result = true;
 				if (name.value == "") {
 					document.getElementById("nameError").style.display = ""; 
 					result = false;
 				}
-				else{
-					if(!(name.value.match(nameValidatorRegex))){
+				else {
+					if (!(name.value.match(nameValidatorRegex))) {
 						document.getElementById("invalidNameError").style.display = "";
 						result = false;	
 					}
