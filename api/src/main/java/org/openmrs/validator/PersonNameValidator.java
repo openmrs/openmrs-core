@@ -35,7 +35,6 @@ public class PersonNameValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
 		return PersonName.class.isAssignableFrom(c);
 	}
@@ -119,25 +118,25 @@ public class PersonNameValidator implements Validator {
 		
 		// Make sure the length does not exceed database column size
 		if (StringUtils.length(personName.getPrefix()) > 50)
-			rejectPersonName(errors, "prefix", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "prefix", arrayInd, testInd);
 		if (StringUtils.length(personName.getGivenName()) > 50)
-			rejectPersonName(errors, "givenName", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "givenName", arrayInd, testInd);
 		if (StringUtils.length(personName.getMiddleName()) > 50)
-			rejectPersonName(errors, "middleName", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "middleName", arrayInd, testInd);
 		if (StringUtils.length(personName.getFamilyNamePrefix()) > 50)
-			rejectPersonName(errors, "familyNamePrefix", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "familyNamePrefix", arrayInd, testInd);
 		if (StringUtils.length(personName.getFamilyName()) > 50)
-			rejectPersonName(errors, "familyName", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "familyName", arrayInd, testInd);
 		if (StringUtils.length(personName.getFamilyName2()) > 50)
-			rejectPersonName(errors, "familyName2", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "familyName2", arrayInd, testInd);
 		if (StringUtils.length(personName.getFamilyNameSuffix()) > 50)
-			rejectPersonName(errors, "familyNameSuffix", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "familyNameSuffix", arrayInd, testInd);
 		if (StringUtils.length(personName.getDegree()) > 50)
-			rejectPersonName(errors, "degree", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "degree", arrayInd, testInd);
 		
 	}
 	
-	private void rejectPersonName(Errors errors, String fieldKey, boolean arrayInd, boolean testInd) {
+	private void rejectPersonNameOnLength(Errors errors, String fieldKey, boolean arrayInd, boolean testInd) {
 		errors.rejectValue(getFieldKey(fieldKey, arrayInd, testInd), "error.name.max.length", new Object[] {
 		        getInternationizedFieldName("PersonName." + fieldKey), 50 }, "error.name");
 	}

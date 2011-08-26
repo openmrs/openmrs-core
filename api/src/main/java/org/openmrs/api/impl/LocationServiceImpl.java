@@ -409,4 +409,22 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public LocationAttribute getLocationAttributeByUuid(String uuid) {
 		return dao.getLocationAttributeByUuid(uuid);
 	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getAddressTemplate()
+	 */
+	@Override
+	public String getAddressTemplate() throws APIException {
+		return Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE);
+		
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#saveAddressTemplate(String)
+	 */
+	@Override
+	public void saveAddressTemplate(String xml) throws APIException {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE, xml);
+		
+	}
 }

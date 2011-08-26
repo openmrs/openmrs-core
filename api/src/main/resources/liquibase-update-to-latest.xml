@@ -4677,5 +4677,408 @@
             referencedColumnNames="user_id" />
     </changeSet>
     
+	<changeSet id="201103112152" author="suho">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<or>
+					<sqlCheck expectedResult="spain">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="rw">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="rwanda">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="us">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="usa">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="ka">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="kenya">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="ls">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="lesotho">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="mw">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="malawi">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="tz">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="tanzania">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+				</or>
+			</not>
+		</preConditions>
+		<comment>Converting general address format (if applicable)</comment>
+		<update tableName="global_property">
+			<column name="property_value" value="&lt;addressTemplate&gt;&#10;
+			&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
+			  &lt;property name=&quot;postalCode&quot; value=&quot;Location.postalCode&quot;/&gt;&#10;
+			  &lt;property name=&quot;longitude&quot; value=&quot;Location.longitude&quot;/&gt;&#10;
+			  &lt;property name=&quot;address2&quot; value=&quot;Location.address2&quot;/&gt;&#10;
+			  &lt;property name=&quot;address1&quot; value=&quot;Location.address1&quot;/&gt;&#10;
+			  &lt;property name=&quot;startDate&quot; value=&quot;PersonAddress.startDate&quot;/&gt;&#10;
+			  &lt;property name=&quot;country&quot; value=&quot;Location.country&quot;/&gt;&#10;
+			  &lt;property name=&quot;endDate&quot; value=&quot;personAddress.endDate&quot;/&gt;&#10;
+			  &lt;property name=&quot;stateProvince&quot; value=&quot;Location.stateProvince&quot;/&gt;&#10;
+			  &lt;property name=&quot;latitude&quot; value=&quot;Location.latitude&quot;/&gt;&#10;
+			  &lt;property name=&quot;cityVillage&quot; value=&quot;Location.cityVillage&quot;/&gt;&#10;
+			&lt;/nameMappings&gt;&#10;
+			&lt;sizeMappings class=&quot;properties&quot;&gt;&#10;
+			  &lt;property name=&quot;postalCode&quot; value=&quot;10&quot;/&gt;&#10;
+			  &lt;property name=&quot;longitude&quot; value=&quot;10&quot;/&gt;&#10;
+			  &lt;property name=&quot;address2&quot; value=&quot;40&quot;/&gt;&#10;
+			  &lt;property name=&quot;address1&quot; value=&quot;40&quot;/&gt;&#10;
+			  &lt;property name=&quot;startDate&quot; value=&quot;10&quot;/&gt;&#10;
+			  &lt;property name=&quot;country&quot; value=&quot;10&quot;/&gt;&#10;
+			  &lt;property name=&quot;endDate&quot; value=&quot;10&quot;/&gt;&#10;
+			  &lt;property name=&quot;stateProvince&quot; value=&quot;10&quot;/&gt;&#10;
+			  &lt;property name=&quot;latitude&quot; value=&quot;10&quot;/&gt;&#10;
+			  &lt;property name=&quot;cityVillage&quot; value=&quot;10&quot;/&gt;&#10;
+			&lt;/sizeMappings&gt;&#10;
+			&lt;lineByLineFormat&gt;&#10;
+			  &lt;string&gt;address1&lt;/string&gt;&#10;
+			  &lt;string&gt;address2&lt;/string&gt;&#10;
+			  &lt;string&gt;cityVillage stateProvince country postalCode&lt;/string&gt;&#10;
+			  &lt;string&gt;latitude longitude&lt;/string&gt;&#10;
+			  &lt;string&gt;startDate endDate&lt;/string&gt;&#10;
+			&lt;/lineByLineFormat&gt;&#10;
+		  &lt;/addressTemplate&gt;"/>
+			<column name="description" value="XML description of address formats"/>
+			<where>property = 'layout.address.format'</where>
+		</update>
+	</changeSet>
+
+	<changeSet id="201103112153" author="suho">
+		<preConditions onFail="MARK_RAN">
+				<or>
+					<sqlCheck expectedResult="spain">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+				</or>
+		</preConditions>
+		<comment>Converting Spain address format (if applicable)</comment>
+		<update tableName="global_property">
+			<column name="property_value" value="&lt;addressTemplate&gt;&#10;
+					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;address2&quot; value=&quot;Location.address2&quot;/&gt;&#10;
+					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.stateProvince&quot;/&gt;&#10;
+					 &lt;property name=&quot;address1&quot; value=&quot;Location.address1&quot;/&gt;&#10;
+					 &lt;property name=&quot;longitude&quot; value=&quot;Location.longitude&quot;/&gt;&#10;
+					 &lt;property name=&quot;postalCode&quot; value=&quot;Location.postalCode&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;Location.cityVillage&quot;/&gt;&#10;
+					 &lt;property name=&quot;country&quot; value=&quot;Location.country&quot;/&gt;&#10;
+					 &lt;property name=&quot;latitude&quot; value=&quot;Location.latitude&quot;/&gt;&#10;
+					&lt;/nameMappings&gt;&#10;
+					&lt;sizeMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;address2&quot; value=&quot;40&quot;/&gt;&#10;
+					 &lt;property name=&quot;stateProvince&quot; value=&quot;10&quot;/&gt;&#10;
+					 &lt;property name=&quot;address1&quot; value=&quot;40&quot;/&gt;&#10;
+					 &lt;property name=&quot;longitude&quot; value=&quot;10&quot;/&gt;&#10;
+					 &lt;property name=&quot;postalCode&quot; value=&quot;10&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;10&quot;/&gt;&#10;
+					 &lt;property name=&quot;country&quot; value=&quot;10&quot;/&gt;&#10;
+					 &lt;property name=&quot;latitude&quot; value=&quot;10&quot;/&gt;&#10;
+					&lt;/sizeMappings&gt;&#10;
+					&lt;lineByLineFormat&gt;&#10;
+					 &lt;string&gt;address1&lt;/string&gt;&#10;
+					 &lt;string&gt;address2&lt;/string&gt;&#10;
+					 &lt;string&gt;cityVillage stateProvince country postalCode&lt;/string&gt;&#10;
+					 &lt;string&gt;latitude longitude&lt;/string&gt;&#10;
+					&lt;/lineByLineFormat&gt;&#10;
+				 &lt;/addressTemplate&gt;"/>
+			<column name="description" value="XML description of address formats"/>
+			<where>property = 'layout.address.format'</where>
+		</update>
+	</changeSet>
+
+	<changeSet id="201103112154" author="suho">
+		<preConditions onFail="MARK_RAN">
+				<or>
+					<sqlCheck expectedResult="rw">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="rwanda">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+				</or>
+		</preConditions>
+		<comment>Converting Rwanda address format (if applicable)</comment>
+		<update tableName="global_property">
+			<column name="property_value" value="&lt;addressTemplate&gt;&#10;
+					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;address3&quot; value=&quot;Location.cell&quot;/&gt;&#10;
+					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.province&quot;/&gt;&#10;
+					 &lt;property name=&quot;address1&quot; value=&quot;Location.rwandanNeighborhood&quot;/&gt;&#10;
+					 &lt;property name=&quot;countyDistrict&quot; value=&quot;Location.district&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;Location.sector&quot;/&gt;&#10;
+					&lt;/nameMappings&gt;&#10;
+					&lt;sizeMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;address3&quot; value=&quot;40&quot;/&gt;&#10;
+					 &lt;property name=&quot;stateProvince&quot; value=&quot;40&quot;/&gt;&#10;
+					 &lt;property name=&quot;address1&quot; value=&quot;40&quot;/&gt;&#10;
+					 &lt;property name=&quot;countyDistrict&quot; value=&quot;40&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;40&quot;/&gt;&#10;
+					&lt;/sizeMappings&gt;&#10;
+					&lt;elementDefaults class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;country&quot; value=&quot;Rwanda&quot;/&gt;&#10;
+					&lt;/elementDefaults&gt;&#10;
+					&lt;lineByLineFormat&gt;&#10;
+					 &lt;string&gt;stateProvince&lt;/string&gt;&#10;
+					 &lt;string&gt;countyDistrict&lt;/string&gt;&#10;
+					 &lt;string&gt;cityVillage&lt;/string&gt;&#10;
+					 &lt;string&gt;address3&lt;/string&gt;&#10;
+					 &lt;string&gt;address1&lt;/string&gt;&#10;
+					&lt;/lineByLineFormat&gt;&#10;
+				 &lt;/addressTemplate&gt;"/>
+			<column name="description" value="XML description of address formats"/>
+			<where>property = 'layout.address.format'</where>
+		</update>
+	</changeSet>
+
+	<changeSet id="201103112155" author="suho">
+		<preConditions onFail="MARK_RAN">
+				<or>
+					<sqlCheck expectedResult="us">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="usa">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+				</or>
+		</preConditions>
+		<comment>Converting USA address format (if applicable)</comment>
+		<update tableName="global_property">
+			<column name="property_value" value="&lt;addressTemplate&gt;&#10;
+					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;address2&quot; value=&quot;Location.address2&quot;/&gt;&#10;
+					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.state&quot;/&gt;&#10;
+					 &lt;property name=&quot;address1&quot; value=&quot;Location.address1&quot;/&gt;&#10;
+					 &lt;property name=&quot;postalCode&quot; value=&quot;Location.zipCode&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;Location.city&quot;/&gt;&#10;
+					&lt;/nameMappings&gt;&#10;
+					&lt;sizeMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;address2&quot; value=&quot;50&quot;/&gt;&#10;
+					 &lt;property name=&quot;stateProvince&quot; value=&quot;2&quot;/&gt;&#10;
+					 &lt;property name=&quot;address1&quot; value=&quot;50&quot;/&gt;&#10;
+					 &lt;property name=&quot;postalCode&quot; value=&quot;10&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;20&quot;/&gt;&#10;
+					&lt;/sizeMappings&gt;&#10;
+					&lt;elementDefaults class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;country&quot; value=&quot;USA&quot;/&gt;&#10;
+					&lt;/elementDefaults&gt;&#10;
+					&lt;lineByLineFormat&gt;&#10;
+					 &lt;string&gt;address1&lt;/string&gt;&#10;
+					 &lt;string&gt;address2&lt;/string&gt;&#10;
+					 &lt;string&gt;cityVillage stateProvince postalCode&lt;/string&gt;&#10;
+					&lt;/lineByLineFormat&gt;&#10;
+					&lt;/addressTemplate&gt;"/>
+			<column name="description" value="XML description of address formats"/>
+			<where>property = 'layout.address.format'</where>
+		</update>
+	</changeSet>
+
+	<changeSet id="201103112156" author="suho">
+		<preConditions onFail="MARK_RAN">
+				<or>
+					<sqlCheck expectedResult="ka">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="kenya">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+				</or>
+		</preConditions>
+		<comment>Converting Kenya address format (if applicable)</comment>
+		<update tableName="global_property">
+			<column name="property_value" value="&lt;addressTemplate&gt;&#10;
+					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;postalCode&quot; value=&quot;Location.postalCode&quot;/&gt;&#10;
+					 &lt;property name=&quot;longitude&quot; value=&quot;Location.longitude&quot;/&gt;&#10;
+					 &lt;property name=&quot;address3&quot; value=&quot;Location.estateNearestCentre&quot;/&gt;&#10;
+					 &lt;property name=&quot;address2&quot; value=&quot;Location.sectionHomestead&quot;/&gt;&#10;
+					 &lt;property name=&quot;address1&quot; value=&quot;Location.address1&quot;/&gt;&#10;
+					 &lt;property name=&quot;country&quot; value=&quot;Location.country&quot;/&gt;&#10;
+					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.province&quot;/&gt;&#10;
+					 &lt;property name=&quot;latitude&quot; value=&quot;Location.latitude&quot;/&gt;&#10;
+					 &lt;property name=&quot;address6&quot; value=&quot;Location.location&quot;/&gt;&#10;
+					 &lt;property name=&quot;address5&quot; value=&quot;Location.sublocation&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;Location.townVillage&quot;/&gt;&#10;
+					 &lt;property name=&quot;countyDistrict&quot; value=&quot;Location.district&quot;/&gt;&#10;
+					 &lt;property name=&quot;address4&quot; value=&quot;Location.division&quot;/&gt;&#10;
+					&lt;/nameMappings&gt;&#10;
+					&lt;sizeMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;postalCode&quot; value=&quot;6&quot;/&gt;&#10;
+					 &lt;property name=&quot;longitude&quot; value=&quot;10&quot;/&gt;&#10;
+					 &lt;property name=&quot;address3&quot; value=&quot;24&quot;/&gt;&#10;
+					 &lt;property name=&quot;address2&quot; value=&quot;55&quot;/&gt;&#10;
+					 &lt;property name=&quot;address1&quot; value=&quot;55&quot;/&gt;&#10;
+					 &lt;property name=&quot;country&quot; value=&quot;10&quot;/&gt;&#10;
+					 &lt;property name=&quot;townshipDivision&quot; value=&quot;24&quot;/&gt;&#10;
+					 &lt;property name=&quot;stateProvince&quot; value=&quot;24&quot;/&gt;&#10;
+					 &lt;property name=&quot;subregion&quot; value=&quot;24&quot;/&gt;&#10;
+					 &lt;property name=&quot;latitude&quot; value=&quot;10&quot;/&gt;&#10;
+					 &lt;property name=&quot;region&quot; value=&quot;24&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;24&quot;/&gt;&#10;
+					 &lt;property name=&quot;countyDistrict&quot; value=&quot;24&quot;/&gt;&#10;
+					&lt;/sizeMappings&gt;&#10;
+					&lt;elementDefaults class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;country&quot; value=&quot;Kenya&quot;/&gt;&#10;
+					&lt;/elementDefaults&gt;&#10;
+					&lt;elementRegex class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;longitude&quot; value=&quot;^(\\d{1,3}\\s)\\d\\d.(\\d{2,3})\\s*$&quot;/&gt;&#10;
+					 &lt;property name=&quot;latitude&quot; value=&quot;^(\\d{1,3}\\s)\\d\\d.(\\d{2,3})\\s*$&quot;/&gt;&#10;
+					&lt;/elementRegex&gt;&#10;
+					&lt;elementRegexFormats class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;longitude&quot; value=&quot;123 45.000&quot;/&gt;&#10;
+					 &lt;property name=&quot;latitude&quot; value=&quot;123 45.000&quot;/&gt;&#10;
+					&lt;/elementRegexFormats&gt;&#10;
+					&lt;lineByLineFormat&gt;&#10;
+					 &lt;string&gt;address1&lt;/string&gt;&#10;
+					 &lt;string&gt;address2&lt;/string&gt;&#10;
+					 &lt;string&gt;address3 cityVillage&lt;/string&gt;&#10;
+					 &lt;string&gt;address5 address6&lt;/string&gt;&#10;
+					 &lt;string&gt;address4 countyDistrict&lt;/string&gt;&#10;
+					 &lt;string&gt;stateProvince postalCode&lt;/string&gt;&#10;
+					 &lt;string&gt;latitude longitude&lt;/string&gt;&#10;
+					 &lt;string&gt;country&lt;/string&gt;&#10;
+					&lt;/lineByLineFormat&gt;&#10;
+			  &lt;/addressTemplate&gt;"/>
+			<column name="description" value="XML description of address formats"/>
+			<where>property = 'layout.address.format'</where>
+		</update>
+	</changeSet>
+
+	<changeSet id="201103112157" author="suho">
+		<preConditions onFail="MARK_RAN">
+				<or>
+					<sqlCheck expectedResult="ls">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="lesotho">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+				</or>
+		</preConditions>
+		<comment>Converting Lesotho address format (if applicable)</comment>
+		<update tableName="global_property">
+			<column name="property_value" value="&lt;addressTemplate&gt;&#10;
+					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;countyDistrict&quot; value=&quot;Location.district&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;Location.village&quot;/&gt;&#10;
+					&lt;/nameMappings&gt;&#10;
+					&lt;sizeMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;countyDistrict&quot; value=&quot;40&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;40&quot;/&gt;&#10;
+					&lt;/sizeMappings&gt;&#10;
+					&lt;elementDefaults class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;country&quot; value=&quot;Lesotho&quot;/&gt;&#10;
+					&lt;/elementDefaults&gt;&#10;
+					&lt;lineByLineFormat&gt;&#10;
+					 &lt;string&gt;&#10;countyDistrict&lt;/string&gt;&#10;
+					 &lt;string&gt;&#10;cityVillage&lt;/string&gt;&#10;
+					&lt;/lineByLineFormat&gt;&#10;
+				&lt;/addressTemplate&gt;"/>
+			<column name="description" value="XML description of address formats"/>
+			<where>property = 'layout.address.format'</where>
+		</update>
+	</changeSet>
+
+	<changeSet id="201103112158" author="suho">
+		<preConditions onFail="MARK_RAN">
+				<or>
+					<sqlCheck expectedResult="mw">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="malawi">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+				</or>
+		</preConditions>
+		<comment>Converting Malawi address format (if applicable)</comment>
+		<update tableName="global_property">
+			<column name="property_value" value="&lt;addressTemplate&gt;&#10;
+					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;address3&quot; value=&quot;Location.neighborhood&quot;/&gt;&#10;
+					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.district&quot;/&gt;&#10;
+					 &lt;property name=&quot;address1&quot; value=&quot;Location.address1&quot;/&gt;&#10;
+					 &lt;property name=&quot;countyDistrict&quot; value=&quot;Location.traditionalAuthority&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;Location.village&quot;/&gt;&#10;
+					&lt;/nameMappings&gt;&#10;
+					&lt;sizeMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;address3&quot; value=&quot;20&quot;/&gt;&#10;
+					 &lt;property name=&quot;stateProvince&quot; value=&quot;20&quot;/&gt;&#10;
+					 &lt;property name=&quot;address1&quot; value=&quot;40&quot;/&gt;&#10;
+					 &lt;property name=&quot;countyDistrict&quot; value=&quot;20&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;20&quot;/&gt;&#10;
+					&lt;/sizeMappings&gt;&#10;
+					&lt;elementDefaults class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;country&quot; value=&quot;Malawi&quot;/&gt;&#10;
+					&lt;/elementDefaults&gt;&#10;
+					&lt;lineByLineFormat&gt;&#10;
+					 &lt;string&gt;address1&lt;/string&gt;&#10;
+					 &lt;string&gt;address3&lt;/string&gt;&#10;
+					 &lt;string&gt;cityVillage&lt;/string&gt;&#10;
+					 &lt;string&gt;countyDistrict&lt;/string&gt;&#10;
+					 &lt;string&gt;stateProvince&lt;/string&gt;&#10;
+					&lt;/lineByLineFormat&gt;&#10;
+				 &lt;/addressTemplate&gt;"/>
+			<column name="description" value="XML description of address formats"/>
+			<where>property = 'layout.address.format'</where>
+		</update>
+	</changeSet>
+
+	<changeSet id="201103112159" author="suho">
+		<preConditions onFail="MARK_RAN">
+				<or>
+					<sqlCheck expectedResult="tz">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+					<sqlCheck expectedResult="tanzania">SELECT LOWER(property_value)  FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
+				</or>
+		</preConditions>
+		<comment>Converting Tanzania address format (if applicable)</comment>
+		<update tableName="global_property">
+			<column name="property_value" value="&lt;addressTemplate&gt;&#10;
+					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;address6&quot; value=&quot;Location.region&quot;/&gt;&#10;
+					 &lt;property name=&quot;address5&quot; value=&quot;Location.ward&quot;/&gt;&#10;
+					 &lt;property name=&quot;countyDistrict&quot; value=&quot;Location.district&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;Location.villageStreet&quot;/&gt;&#10;
+					&lt;/nameMappings&gt;&#10;
+					&lt;sizeMappings class=&quot;properties&quot;&gt;&#10;
+					 &lt;property name=&quot;address6&quot; value=&quot;14&quot;/&gt;&#10;
+					 &lt;property name=&quot;address5&quot; value=&quot;22&quot;/&gt;&#10;
+					 &lt;property name=&quot;countyDistrict&quot; value=&quot;17&quot;/&gt;&#10;
+					 &lt;property name=&quot;cityVillage&quot; value=&quot;50&quot;/&gt;&#10;
+					&lt;/sizeMappings&gt;&#10;
+					&lt;lineByLineFormat&gt;&#10;
+					 &lt;string&gt;cityVillage&lt;/string&gt;&#10;
+					 &lt;string&gt;address5&lt;/string&gt;&#10;
+					 &lt;string&gt;countyDistrict&lt;/string&gt;&#10;
+					 &lt;string&gt;address6&lt;/string&gt;&#10;
+					&lt;/lineByLineFormat&gt;&#10;
+				 &lt;/addressTemplate&gt;"/>
+			<column name="description" value="XML description of address formats"/>
+			<where>property = 'layout.address.format'</where>
+		</update>
+	</changeSet>
+	
 </databaseChangeLog>
 

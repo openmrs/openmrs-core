@@ -13,10 +13,18 @@
  */
 package org.openmrs.layout.web.address;
 
+import java.io.Serializable;
+
 import org.openmrs.layout.web.LayoutSupport;
 import org.openmrs.layout.web.LayoutTemplate;
 
-public class AddressTemplate extends LayoutTemplate {
+public class AddressTemplate extends LayoutTemplate implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
+	public AddressTemplate(String string) {
+		super(string);
+	}
 	
 	public String getLayoutToken() {
 		return "IS_ADDR_TOKEN";
@@ -31,4 +39,12 @@ public class AddressTemplate extends LayoutTemplate {
 		return AddressSupport.getInstance();
 	}
 	
+	public String getCodeName() {
+		if (this.codeName == null) {
+			this.codeName = "default";
+			return this.codeName;
+		} else {
+			return this.codeName;
+		}
+	}
 }
