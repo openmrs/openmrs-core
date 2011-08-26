@@ -45,6 +45,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -1204,4 +1205,11 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 	}
 	
+	/**
+	 * @see AdministrationService#getMaximumPropertyLength(Class, String)
+	 */
+	@Override
+	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
+		return dao.getMaximumPropertyLength(aClass, fieldName);
+	}
 }

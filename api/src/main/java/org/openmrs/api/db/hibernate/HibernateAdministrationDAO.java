@@ -28,10 +28,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.mapping.Column;
+import org.hibernate.mapping.PersistentClass;
 import org.openmrs.GlobalProperty;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
@@ -44,7 +48,7 @@ import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Hibernate specific database methods for the AdministrationService
- * 
+ *
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.db.AdministrationDAO
  * @see org.openmrs.api.AdministrationService
@@ -58,12 +62,14 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 */
 	private SessionFactory sessionFactory;
 	
+	private Configuration configuration;
+	
 	public HibernateAdministrationDAO() {
 	}
 	
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -315,4 +321,13 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		return DatabaseUtil.executeSQL(sessionFactory.getCurrentSession().connection(), sql, selectOnly);
 	}
 	
+	@Override
+	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
+		if (configuration == null) {
+			configuration = new Configuration().configure();
+		}
+		
+		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName());
+		return persistentClass.getTable().getColumn(new Column(fieldName)).getLength();
+	}
 }
