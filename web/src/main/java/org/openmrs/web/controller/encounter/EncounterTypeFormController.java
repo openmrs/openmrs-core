@@ -90,6 +90,14 @@ public class EncounterTypeFormController extends SimpleFormController {
 				
 				view = getSuccessView();
 			}
+			
+			// if the user is unretiring the EncounterType
+			else if (request.getParameter("unretire") != null) {
+				es.unretireEncounterType(encounterType);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.unretiredSuccessfully");
+				
+				view = getSuccessView();
+			}
 
 			// if the user is purging the encounterType
 			else if (request.getParameter("purge") != null) {
