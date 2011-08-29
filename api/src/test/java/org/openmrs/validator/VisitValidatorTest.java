@@ -20,6 +20,7 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Encounter;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
 import org.openmrs.api.APIException;
@@ -154,4 +155,49 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(true, errors.hasFieldErrors("stopDatetime"));
 	}
 	
+	/**
+	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if the startDatetime is after any encounter", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfTheStartDatetimeIsAfterAnyEncounter() throws Exception {
+		Visit visit = Context.getVisitService().getVisit(1);
+		
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		visit.setPatient(encounter.getPatient());
+		encounter.setVisit(visit);
+		encounter.setEncounterDatetime(visit.getStartDatetime());
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		//Set visit start date to after the encounter date.
+		Date date = new Date(encounter.getEncounterDatetime().getTime() + 1);
+		visit.setStartDatetime(date);
+		
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("startDatetime"));
+	}
+
+	/**
+	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if the stopDatetime is before any encounter", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfTheStopDatetimeIsBeforeAnyEncounter() throws Exception {
+		Visit visit = Context.getVisitService().getVisit(1);
+		
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		visit.setPatient(encounter.getPatient());
+		encounter.setVisit(visit);
+		encounter.setEncounterDatetime(visit.getStartDatetime());
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		//Set visit stop date to before the encounter date.
+		Date date = new Date(encounter.getEncounterDatetime().getTime() - 1);
+		visit.setStopDatetime(date);
+		
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("stopDatetime"));
+	}
 }
