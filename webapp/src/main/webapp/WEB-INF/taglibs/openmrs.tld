@@ -77,6 +77,30 @@
 
 <tag>
 	<description>
+		Determines if a global property has a given value
+	</description>
+	<name>hasGlobalPropertyValue</name>
+	<tag-class>org.openmrs.web.taglib.HasGlobalPropertyValueTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>name</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>value</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>defaultValue</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
 		Loops over all the records specified of the type 
 		specified by the name attribute
 	</description>
