@@ -82,25 +82,6 @@
 		<div id="patientSubheaderExited" class="boxRed">
 	</c:if>
 	
-	<c:if test="${ not empty model.activeVisits }">
-	    <div class="box highlighted"> 
-		<c:forEach var="v" items="${ model.activeVisits }">
-	        <spring:message code="Visit.active.label"/>:
-	        <a href="admin/visits/visit.form?visitId=${ v.visitId }">
-	            <openmrs:format visitType="${ v.visitType }"/>
-	        </a>
-	        <c:if test="${ not empty v.location }">
-	            <spring:message code="general.atLocation"/>
-	            <openmrs:format location="${ v.location }"/>
-	        </c:if>
-	        <spring:message code="Visit.startedOnDatetime"/>
-	        <openmrs:formatDate date="${ v.startDatetime }"/>
-	        <br/>
-	    </c:forEach>
-	    </div>
-	</c:if>
-	
-	
 		<openmrs:globalProperty var="programIdsToShow" key="dashboard.header.programs_to_show" listSeparator=","/>
 		<%--
 			Clever(?) hack: because there's no JSTL function for array membership I'm going to add a comma before
@@ -169,18 +150,46 @@
 				</td>
 			</tr>
 		</table>
-		<table class="patientLastEncounterTable"><tr class="patientLastEncounterRow">
-			<td class="patientLastEncounterData"><spring:message code="Patient.lastEncounter"/>:</td>
-			<th>
-				<c:forEach items='${openmrs:sort(model.patientEncounters, "encounterDatetime", true)}' var="lastEncounter" varStatus="lastEncounterStatus" end="0">
-					${lastEncounter.encounterType.name} @ ${lastEncounter.location.name}, <openmrs:formatDate date="${lastEncounter.encounterDatetime}" type="medium" />
-				</c:forEach>
-				<c:if test="${fn:length(model.patientEncounters) == 0}">
-					<spring:message code="Encounter.no.previous"/>
-				</c:if>	
-			</th>
-		</tr></table>
-		<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.afterLastEncounter" type="html" parameters="patientId=${model.patient.patientId}" />
+		<div class="column">
+	 		<div class="box noBorder">
+				<table class="patientLastEncounterTable"><tr class="patientLastEncounterRow">
+					<td class="patientLastEncounterData"><spring:message code="Patient.lastEncounter"/>:</td>
+					<th>
+						<c:forEach items='${openmrs:sort(model.patientEncounters, "encounterDatetime", true)}' var="lastEncounter" varStatus="lastEncounterStatus" end="0">
+							${lastEncounter.encounterType.name} @ ${lastEncounter.location.name}, <openmrs:formatDate date="${lastEncounter.encounterDatetime}" type="medium" />
+						</c:forEach>
+						<c:if test="${fn:length(model.patientEncounters) == 0}">
+							<spring:message code="Encounter.no.previous"/>
+						</c:if>	
+					</th>
+				</tr></table>
+			</div>
+		</div>
+		<div class="column">
+			<div class="box noBorder">
+				<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.afterLastEncounter" type="html" parameters="patientId=${model.patient.patientId}" />
+			</div>
+		</div>
+		<c:if test="${ not empty model.activeVisits }">
+		<div class="column">
+		    <div class="box highlighted"> 
+			<c:forEach var="v" items="${ model.activeVisits }">
+		        <spring:message code="Visit.active.label"/>:
+		        <a href="admin/visits/visit.form?visitId=${ v.visitId }">
+		            <openmrs:format visitType="${ v.visitType }"/>
+		        </a>
+		        <c:if test="${ not empty v.location }">
+		            <spring:message code="general.atLocation"/>
+		            <openmrs:format location="${ v.location }"/>
+		        </c:if>
+		        <spring:message code="Visit.startedOnDatetime"/>
+		        <openmrs:formatDate date="${ v.startDatetime }"/>
+		        <br/>
+		    </c:forEach>
+		    </div>
+	    </div>
+		</c:if>
+		<div class="columnEnd"></div>
 	</div>
 	
 	<script type="text/javascript">
