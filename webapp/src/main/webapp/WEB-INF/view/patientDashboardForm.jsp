@@ -121,12 +121,19 @@
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Regimen Section">
 			<li><a id="patientRegimenTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.regimens"/></a></li>
 		</openmrs:hasPrivilege>
-		<openmrs:hasPrivilege privilege="Patient Dashboard - View Visits Section">
-			<li><a id="patientVisitsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.visits"/></a></li>
-		</openmrs:hasPrivilege>
-		<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
-			<li><a id="patientEncountersTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.encounters"/></a></li>
-		</openmrs:hasPrivilege>
+		
+		<openmrs:hasGlobalPropertyValue name="dashboard.enableVisits" value="true" defaultValue="true">
+			<openmrs:hasPrivilege privilege="Patient Dashboard - View Visits Section">
+				<li><a id="patientVisitsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.visits"/></a></li>
+			</openmrs:hasPrivilege>
+		</openmrs:hasGlobalPropertyValue>
+		
+		<openmrs:hasGlobalPropertyValue name="dashboard.enableVisits" value="false" defaultValue="true">
+			<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
+				<li><a id="patientEncountersTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.encounters"/></a></li>
+			</openmrs:hasPrivilege>
+		</openmrs:hasGlobalPropertyValue>
+		
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Demographics Section">
 			<li><a id="patientDemographicsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.demographics"/></a></li>
 		</openmrs:hasPrivilege>

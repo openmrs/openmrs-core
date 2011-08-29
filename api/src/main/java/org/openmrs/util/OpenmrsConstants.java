@@ -766,6 +766,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_SHOW_PATIENT_NAME = "dashboard.showPatientName";
 	
+	public static final String GLOBAL_PROPERTY_ENABLE_VISITS = "dashboard.enableVisits";
+	
 	public static final String GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR = "patient.defaultPatientIdentifierValidator";
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES = "patient_identifier.importantTypes";
@@ -1259,6 +1261,12 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		                "START",
 		                "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
+		
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_ENABLE_VISITS,
+		                "true",
+		                "Set to true to show the Visits instead of Encounters tab, on the patient dashboard. Setting it to false will display the Encounters instead of Visits tab."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
