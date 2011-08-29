@@ -13,6 +13,10 @@
  */
 package org.openmrs.validator;
 
+import java.util.Date;
+import java.util.List;
+
+import org.openmrs.Encounter;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
@@ -48,6 +52,8 @@ public class VisitValidator implements Validator {
 	 * @should fail if visit type is not set
 	 * @should fail if startDatetime is not set
 	 * @should fail if the endDatetime is before the startDatetime
+	 * @should fail if the startDatetime is after any encounter
+	 * @should fail if the stopDatetime is before any encounter
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -82,6 +88,25 @@ public class VisitValidator implements Validator {
 						errors.rejectValue("activeAttributes", "attribute.error.maxOccurs", new Object[] { vat.getName(),
 						        vat.getMaxOccurs() }, null);
 					}
+				}
+			}
+		}
+		
+		//If this is not a new visit, validate based on its existing encounters.
+		if (visit.getId() != null){
+			Date startDateTime = visit.getStartDatetime();
+			Date stopDateTime = visit.getStopDatetime();
+			
+			List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(visit);
+			for (Encounter encounter : encounters) {
+				if (encounter.getEncounterDatetime().before(startDateTime)) {
+					errors.rejectValue("startDatetime", "Visit.encountersCannotBeBeforeStartDate",
+					    "This visit has encounters whose dates cannot be before the start date of the visit.");
+					break;
+				} else if (stopDateTime != null && encounter.getEncounterDatetime().after(stopDateTime)) {
+					errors.rejectValue("stopDatetime", "Visit.encountersCannotBeAfterStopDate",
+					    "This visit has encounters whose dates cannot be after the stop date of the visit.");
+					break;
 				}
 			}
 		}

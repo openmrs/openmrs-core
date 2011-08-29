@@ -13,9 +13,12 @@
  */
 package org.openmrs.validator;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.Visit;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
@@ -55,6 +58,8 @@ public class EncounterValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail if the patients for the visit and the encounter dont match
 	 * @should fail if patient is not set
+	 * @should fail if encounter dateTime is before visit startDateTime
+	 * @should fail if encounter dateTime is after visit stopDateTime
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled())
@@ -70,6 +75,16 @@ public class EncounterValidator implements Validator {
 			if (encounter.getVisit() != null && !encounter.getVisit().getPatient().equals(encounter.getPatient())) {
 				errors.rejectValue("visit", "Encounter.visit.patients.dontMatch",
 				    "The patient for the encounter and visit should be the same");
+			}
+			
+			Visit visit = encounter.getVisit();
+			if (visit != null) {
+				Date encounterDateTime = encounter.getEncounterDatetime();
+				if (encounterDateTime.before(visit.getStartDatetime())
+				        || (visit.getStopDatetime() != null && encounterDateTime.after(visit.getStopDatetime()))) {
+					errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeInVisitDatesRange",
+					    "The encounter datetime should be within the visit start and stop dates.");
+				}
 			}
 		}
 	}
