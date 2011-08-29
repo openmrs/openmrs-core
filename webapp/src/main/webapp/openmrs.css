@@ -508,11 +508,23 @@ table.patientTreatmentPrograms td {
 }
 .box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited {
 	border: 1px solid #1aac9b;
-	width: 99%;
+	width: 100%;
 	padding: 5px 2px 5px 2px;
 	text-align: left;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.box .noBorder {
+	border: 0px;
+}
+
+.column {
+	float: left;
+}
+
+.columnEnd {
+	clear: both;
 }
 
 .box>*, .boxRed>*, .boxExited>* {
@@ -1089,12 +1101,12 @@ th.smallHeader {
 }
 
 .highlighted, .highlight {
-	background-color: yellow;
+	background-color: #FFFF6E;
 }
 
 .dashedAndHighlighted {
 	border: 1px black dashed;
-	background-color: yellow;
+	background-color: #FFFF6E;
 }
 
 .datePatternHint {
