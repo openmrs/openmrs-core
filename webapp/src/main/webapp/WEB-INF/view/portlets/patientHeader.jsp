@@ -150,6 +150,25 @@
 				</td>
 			</tr>
 		</table>
+		<c:if test="${ not empty model.activeVisits }">
+		<div class="column">
+		    <div class="box highlighted"> 
+			<c:forEach var="v" items="${ model.activeVisits }">
+		        <spring:message code="Visit.active.label"/>:
+		        <a href="admin/visits/visit.form?visitId=${ v.visitId }">
+		            <openmrs:format visitType="${ v.visitType }"/>
+		        </a>
+		        <c:if test="${ not empty v.location }">
+		            <spring:message code="general.atLocation"/>
+		            <openmrs:format location="${ v.location }"/>
+		        </c:if>
+		        <spring:message code="Visit.startedOnDatetime"/>
+		        <openmrs:formatDate date="${ v.startDatetime }"/>
+		        <br/>
+		    </c:forEach>
+		    </div>
+	    </div>
+		</c:if>
 		<div class="column">
 	 		<div class="box noBorder">
 				<table class="patientLastEncounterTable"><tr class="patientLastEncounterRow">
@@ -170,25 +189,6 @@
 				<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.afterLastEncounter" type="html" parameters="patientId=${model.patient.patientId}" />
 			</div>
 		</div>
-		<c:if test="${ not empty model.activeVisits }">
-		<div class="column">
-		    <div class="box highlighted"> 
-			<c:forEach var="v" items="${ model.activeVisits }">
-		        <spring:message code="Visit.active.label"/>:
-		        <a href="admin/visits/visit.form?visitId=${ v.visitId }">
-		            <openmrs:format visitType="${ v.visitType }"/>
-		        </a>
-		        <c:if test="${ not empty v.location }">
-		            <spring:message code="general.atLocation"/>
-		            <openmrs:format location="${ v.location }"/>
-		        </c:if>
-		        <spring:message code="Visit.startedOnDatetime"/>
-		        <openmrs:formatDate date="${ v.startDatetime }"/>
-		        <br/>
-		    </c:forEach>
-		    </div>
-	    </div>
-		</c:if>
 		<div class="columnEnd"></div>
 	</div>
 	
