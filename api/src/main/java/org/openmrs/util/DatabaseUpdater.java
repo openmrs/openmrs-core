@@ -46,11 +46,11 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.LockException;
 import liquibase.lockservice.LockService;
-
 import liquibase.parser.core.xml.XMLChangeLogSAXParser;
 import liquibase.resource.CompositeResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.annotation.Authorized;
@@ -562,6 +562,14 @@ public class DatabaseUpdater {
 				//pass
 			}
 		}
+	}
+	
+	/**
+	 * @see DatabaseUpdater#getUnrunDatabaseChanges(String...)
+	 */
+	@Authorized(PrivilegeConstants.VIEW_DATABASE_CHANGES)
+	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges() throws Exception {
+		return getUnrunDatabaseChanges(CHANGE_LOG_FILE);
 	}
 	
 	/**
