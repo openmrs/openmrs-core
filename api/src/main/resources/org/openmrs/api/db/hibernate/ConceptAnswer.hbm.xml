@@ -8,7 +8,9 @@
 	<class name="ConceptAnswer" table="concept_answer" batch-size="25">
 
 		<id name="conceptAnswerId" type="java.lang.Integer" column="concept_answer_id">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">concept_answer_concept_answer_id_seq</param>
+			</generator>
 		</id>
 		
 		<many-to-one

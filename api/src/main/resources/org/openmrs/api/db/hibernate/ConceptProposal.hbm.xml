@@ -8,7 +8,9 @@
 	<class name="ConceptProposal" table="concept_proposal">
 
 		<id name="conceptProposalId" type="java.lang.Integer" column="concept_proposal_id">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">concept_proposal_concept_proposal_id_seq</param>
+			</generator>
 		</id>
 		
 		<discriminator column="concept_proposal_id" insert="false" />

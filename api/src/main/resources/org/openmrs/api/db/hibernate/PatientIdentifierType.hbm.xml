@@ -7,13 +7,11 @@
 
 <class name="PatientIdentifierType" table="patient_identifier_type">
 
-    <id
-        name="patientIdentifierTypeId"
-        type="java.lang.Integer"
-        column="patient_identifier_type_id"
-        unsaved-value="0"
-    >
-        <generator class="native" />
+	<id name="patientIdentifierTypeId" type="java.lang.Integer" column="patient_identifier_type_id"
+        unsaved-value="0">
+		<generator class="native">
+			<param name="sequence">patient_identifier_type_patient_identifier_type_id_seq</param>
+		</generator>
     </id>
 
     <discriminator column="patient_identifier_type_id" insert="false" />

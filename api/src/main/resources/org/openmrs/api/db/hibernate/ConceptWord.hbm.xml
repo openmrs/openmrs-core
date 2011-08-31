@@ -8,7 +8,9 @@
 	<class name="ConceptWord" table="concept_word">
 
 		<id name="conceptWordId" type="java.lang.Integer" column="concept_word_id">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">concept_word_concept_word_id_seq</param>
+			</generator>
 		</id>
 		
 		<property name="word" type="java.lang.String" length="255" />

@@ -5,17 +5,12 @@
     
 <hibernate-mapping package="org.openmrs.reporting">
 
-<class 
-    name="ReportObjectWrapper" 
-    table="report_object"
->
-    <id
-        name="reportObjectId"
-        type="java.lang.Integer"
-        column="report_object_id"
-    >
-        <generator class="native" />
-    </id>
+<class name="ReportObjectWrapper" table="report_object">
+	<id name="reportObjectId" type="java.lang.Integer" column="report_object_id">
+		<generator class="native">
+			<param name="sequence">report_object_report_object_id_seq</param>
+		</generator>
+	</id>
 
     <discriminator column="report_object_id" insert="false" />
 	

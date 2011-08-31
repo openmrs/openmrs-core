@@ -6,7 +6,9 @@
 <hibernate-mapping package="org.openmrs.notification">
 	<class name="Template" table="notification_template"> 
 		<id name="id" type="java.lang.Integer" column="template_id" unsaved-value="0">
-			<generator class="identity"/>
+			<generator class="native">
+				<param name="sequence">notification_template_template_id_seq</param>
+			</generator>
 		</id>
 		<discriminator column="template_id" insert="false" />
 		

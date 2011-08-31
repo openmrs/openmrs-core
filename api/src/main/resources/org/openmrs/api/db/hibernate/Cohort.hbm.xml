@@ -7,7 +7,9 @@
 
 	<class name="Cohort" table="cohort">
 		<id name="cohortId" type="int" column="cohort_id">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">cohort_cohort_id_seq</param>
+			</generator>
 		</id>
 		
 		<discriminator column="cohort_id" insert="false" />

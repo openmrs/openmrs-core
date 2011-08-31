@@ -7,7 +7,9 @@
 	<class name="VisitType" table="visit_type">
 
 		<id name="visitTypeId" type="java.lang.Integer"	column="visit_type_id" unsaved-value="0">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">visit_type_visit_type_id_seq</param>
+			</generator>
 		</id>
 		
 		<discriminator column="visit_type_id" insert="false" />
