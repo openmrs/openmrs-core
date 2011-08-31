@@ -12,7 +12,9 @@
 	<class name="ReportSchemaXml" table="report_schema_xml">
 		<id name="reportSchemaId" type="java.lang.Integer"
 			column="report_schema_id">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">report_schema_xml_report_schema_id_seq</param>
+			</generator>
 		</id>
 		<discriminator column="report_schema_id" insert="false" />
 

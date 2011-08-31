@@ -8,7 +8,9 @@
 	<class name="ConceptStateConversion" table="concept_state_conversion">
 
 		<id name="conceptStateConversionId" type="java.lang.Integer" column="concept_state_conversion_id">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">concept_state_conversion_concept_state_conversion_id_seq</param>
+			</generator>
 		</id>
 		
 		<discriminator column="concept_state_conversion_id" insert="false" />

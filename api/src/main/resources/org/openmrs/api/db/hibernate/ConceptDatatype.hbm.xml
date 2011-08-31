@@ -7,9 +7,10 @@
 
 	<class name="ConceptDatatype" table="concept_datatype">
 
-		<id name="conceptDatatypeId" type="java.lang.Integer"
-			column="concept_datatype_id" unsaved-value="0">
-			<generator class="native" />
+		<id name="conceptDatatypeId" type="java.lang.Integer" column="concept_datatype_id" unsaved-value="0">
+			<generator class="native">
+				<param name="sequence">concept_datatype_concept_datatype_id_seq</param>
+			</generator>
 		</id>
 		
 		<discriminator column="concept_datatype_id" insert="false" />

@@ -7,7 +7,9 @@
 
 	<class name="Schedule" table="scheduler_schedule">
 		<id name="id" type="int" column="schedule_id" unsaved-value="0">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">scheduler_schedule_schedule_id_seq</param>
+			</generator>
 		</id>
 		<discriminator column="schedule_id" insert="false" />
 		

@@ -8,7 +8,9 @@
 	<class name="PatientState" table="patient_state">
 
 		<id name="patientStateId" type="java.lang.Integer" column="patient_state_id">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">patient_state_patient_state_id_seq</param>
+			</generator>
 		</id>
 
 		<discriminator column="patient_state_id" insert="false" />		

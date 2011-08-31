@@ -7,9 +7,10 @@
 
 	<class name="org.openmrs.ConceptClass" table="concept_class">
 
-		<id name="conceptClassId" type="java.lang.Integer"
-			column="concept_class_id" unsaved-value="0">
-			<generator class="native" />
+		<id name="conceptClassId" type="java.lang.Integer" column="concept_class_id" unsaved-value="0">
+			<generator class="native">
+				<param name="sequence">concept_class_concept_class_id_seq</param>
+			</generator>
 		</id>
 
 		<discriminator column="concept_class_id" insert="false" />
