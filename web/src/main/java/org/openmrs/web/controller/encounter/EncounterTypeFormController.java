@@ -90,7 +90,7 @@ public class EncounterTypeFormController extends SimpleFormController {
 				
 				view = getSuccessView();
 			}
-			
+
 			// if the user is unretiring the EncounterType
 			else if (request.getParameter("unretire") != null) {
 				es.unretireEncounterType(encounterType);

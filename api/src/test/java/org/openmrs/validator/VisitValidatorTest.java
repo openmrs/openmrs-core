@@ -177,7 +177,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		new VisitValidator().validate(visit, errors);
 		Assert.assertEquals(true, errors.hasFieldErrors("startDatetime"));
 	}
-
+	
 	/**
 	 * @see {@link VisitValidator#validate(Object,Errors)}
 	 */

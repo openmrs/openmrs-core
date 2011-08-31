@@ -93,7 +93,7 @@ public class VisitValidator implements Validator {
 		}
 		
 		//If this is not a new visit, validate based on its existing encounters.
-		if (visit.getId() != null){
+		if (visit.getId() != null) {
 			Date startDateTime = visit.getStartDatetime();
 			Date stopDateTime = visit.getStopDatetime();
 			
