@@ -51,6 +51,8 @@ public class RegexValidatedStringFieldGenAttributeHandler extends RegexValidated
 	@Override
 	public String getValue(HttpServletRequest request, String formFieldName) {
 		String val = request.getParameter(formFieldName);
+		if (val.isEmpty())
+			return null;
 		validate(val);
 		return val;
 	}
