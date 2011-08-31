@@ -4,7 +4,6 @@ var omsgs = new Array();
 var gp = new Array();//array to hold only global properties
 omsgs.minSearchCharactersGP="<openmrs:globalProperty key="minSearchCharacters" defaultValue="3"/>";
 omsgs.datePattern="<openmrs:datePattern />";
-omsgs.nameExp="<openmrs:globalProperty key="patient.nameValidationRegex"/>";
 
 omsgs.addNewPatient="<spring:message javaScriptEscape="true" code="Patient.addNew"/>";
 omsgs.addNewPersonMsg="<spring:message code='Person.addNew.msg' />";
