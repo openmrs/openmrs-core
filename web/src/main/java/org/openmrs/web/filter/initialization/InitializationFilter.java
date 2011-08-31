@@ -164,6 +164,12 @@ public class InitializationFilter extends StartupFilter {
 	
 	private InitializationCompletion initJob;
 	
+	/**
+	 * Variable set to true as soon as the installation begins and set to false when the process
+	 * ends This thread should only be accesses through the synchronized method.
+	 */
+	private static boolean isInstallationStarted = false;
+	
 	// the actual driver loaded by the DatabaseUpdater class
 	private String loadedDriverString;
 	
@@ -231,7 +237,12 @@ public class InitializationFilter extends StartupFilter {
 			
 			// do step one of the wizard
 			httpResponse.setContentType("text/html");
-			renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
+			// if any body has already started installation
+			if (isInstallationStarted()) {
+				renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
+			} else {
+				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
+			}
 		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
 			httpResponse.setContentType("text/json");
 			httpResponse.setHeader("Cache-Control", "no-cache");
@@ -282,6 +293,12 @@ public class InitializationFilter extends StartupFilter {
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
 		
+		// if any body has already started installation
+		if (isInstallationStarted()) {
+			httpResponse.setContentType("text/html");
+			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
+			return;
+		}
 		// TODO make these page names variables.
 		//                   /                SIMPLE_SETUP                    \
 		// 0.INSTALL_METHOD <                                                  > WIZARD_COMPLETE
@@ -537,7 +554,6 @@ public class InitializationFilter extends StartupFilter {
 				return;
 			}
 			
-			initJob = new InitializationCompletion();
 			//get the tasks the user selected and show them in the page while the initialization wizard runs
 			wizardModel.tasksToExecute = new ArrayList<WizardTask>();
 			if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
@@ -569,7 +585,14 @@ public class InitializationFilter extends StartupFilter {
 			
 			referenceMap.put("tasksToExecute", wizardModel.tasksToExecute);
 			
-			initJob.start();
+			//if no one has run any installation
+			if (!isInstallationStarted()) {
+				initJob = new InitializationCompletion();
+				setInstallationStarted(true);
+				initJob.start();
+			}
+			referenceMap.put("isInstallationStarted", isInstallationStarted());
+			
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (TESTING_SETUP.equals(page)) {
 			if ("Back".equals(httpRequest.getParameter("back"))) {
@@ -717,6 +740,20 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	public static boolean initializationRequired() {
 		return !isInitializationComplete();
+	}
+	
+	/**
+	 * @param isInstallationStarted the value to set
+	 */
+	protected static synchronized void setInstallationStarted(boolean isInstallationStarted) {
+		InitializationFilter.isInstallationStarted = isInstallationStarted;
+	}
+	
+	/**
+	 * @return true if installation has been started
+	 */
+	protected static boolean isInstallationStarted() {
+		return isInstallationStarted;
 	}
 	
 	/**
@@ -1314,6 +1351,7 @@ public class InitializationFilter extends StartupFilter {
 							// set this so that the wizard isn't run again on next page load
 							setInitializationComplete(true);
 						}
+						setInstallationStarted(false);
 					}
 				}
 			};
