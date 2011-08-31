@@ -26,8 +26,9 @@
 					<tr>
 						<td><spring:message code="Person.name"/></td>
 						<td>
-							<input type="text" name="addName" id="personName" size="40" onKeyUp="clearError('name')" />
+							<input type="text" name="addName" id="personName" size="40" onKeyUp="clearError('name'); clearError('invalidName');" />
 							<span class="error" id="nameError"><spring:message code="Person.name.required"/></span>
+							<span class="error" id="invalidNameError"><spring:message code="Person.name.invalid"/></span>
 						</td>
 					</tr>
 					<tr>
@@ -62,6 +63,7 @@
 		
 		<script type="text/javascript"><!--
 			clearError("name");
+			clearError("invalidName");
 			clearError("birthdate");
 			clearError("gender");
 			
@@ -73,11 +75,18 @@
 				var male = document.getElementById("gender-M");
 				var female = document.getElementById("gender-F");
 				var year = new Date().getFullYear();
+				var nameValidatorRegex = /<openmrs:globalProperty key="patient.nameValidationRegex" defaultValue=".*"/>/;
 				
 				var result = true;
 				if (name.value == "") {
-					document.getElementById("nameError").style.display = "";
+					document.getElementById("nameError").style.display = ""; 
 					result = false;
+				}
+				else{
+					if(!(name.value.match(nameValidatorRegex))){
+						document.getElementById("invalidNameError").style.display = "";
+						result = false;	
+					}
 				}
 				
 				if (birthdate.value == "" && age.value == "") {

@@ -20,7 +20,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * PatientState
  */
-public class PatientState extends BaseOpenmrsData implements java.io.Serializable {
+public class PatientState extends BaseOpenmrsData implements java.io.Serializable, Comparable<PatientState> {
 	
 	public static final long serialVersionUID = 0L;
 	
@@ -92,13 +92,22 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 	 * 
 	 * @param onDate - {@link Date} to check for {@link PatientState} enrollment
 	 * @return boolean - true if this {@link PatientState} is active as of the passed {@link Date}
+	 * @should return false if voided and date in range
+	 * @should return false if voided and date not in range
+	 * @should return true if not voided and date in range
+	 * @should return false if not voided and date earlier than startDate
+	 * @should return false if not voided and date later than endDate
+	 * @should return true if not voided and date in range with null startDate
+	 * @should return true if not voided and date in range with null endDate
+	 * @should return true if not voided and both startDate and endDate nulled
+	 * @should compare with current date if date null
 	 */
 	public boolean getActive(Date onDate) {
 		if (onDate == null) {
 			onDate = new Date();
 		}
-		return !getVoided() && (startDate == null || OpenmrsUtil.compare(startDate, onDate) <= 0)
-		        && (endDate == null || OpenmrsUtil.compare(endDate, onDate) > 0);
+		return !getVoided() && (OpenmrsUtil.compareWithNullAsEarliest(startDate, onDate) <= 0)
+		        && (OpenmrsUtil.compareWithNullAsLatest(endDate, onDate) > 0);
 	}
 	
 	/**
@@ -186,5 +195,21 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 	 */
 	public void setId(Integer id) {
 		setPatientStateId(id);
+	}
+	
+	/**
+	 * Compares by startDate with null as earliest and endDate with null as latest.
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * @should return positive if startDates equal and this endDate null
+	 * @should return negative if this startDate null
+	 */
+	@Override
+	public int compareTo(PatientState o) {
+		int result = OpenmrsUtil.compareWithNullAsEarliest(getStartDate(), o.getStartDate());
+		if (result == 0) {
+			result = OpenmrsUtil.compareWithNullAsLatest(getEndDate(), o.getEndDate());
+		}
+		return result;
 	}
 }
