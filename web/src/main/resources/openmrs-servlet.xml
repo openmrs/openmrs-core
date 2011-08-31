@@ -194,7 +194,6 @@
 
 				<prop key="admin/forms/formSchemaDesign.form">formSchemaDesignForm</prop>
 				<prop key="admin/forms/formEdit.form">formEditForm</prop>
-				<prop key="admin/forms/formViewXslt.form">formViewXsltForm</prop>
 				<prop key="admin/forms/form.list">formList</prop>
 				<prop key="admin/forms/field.form">fieldForm</prop>
 				<prop key="admin/forms/field.list">fieldList</prop>
@@ -762,12 +761,6 @@
 		<property name="validator">
 			<ref bean="formEditValidator" />
 		</property>
-		<property name="successView"><value>form.list</value></property>
-	</bean>
-
-	<bean id="formViewXsltForm" class="org.openmrs.web.controller.form.FormFormController">
-		<property name="commandName"><value>form</value></property>
-		<property name="formView"><value>/admin/forms/formViewXsltForm</value></property>
 		<property name="successView"><value>form.list</value></property>
 	</bean>
 	<!-- ** /Form ** -->
