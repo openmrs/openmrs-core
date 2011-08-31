@@ -46,6 +46,8 @@ import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.handler.EncounterToVisitAssignmentHandler;
+import org.openmrs.api.handler.NoVisitAssignmentHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -1495,5 +1497,24 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
 		List<Encounter> encs = Context.getEncounterService().getEncounters("qwerty", 0, 3, false);
 		Assert.assertEquals(3, encs.size());
+	}
+
+	/**
+	 * @see EncounterService#getVisitAssignmentHandlers()
+	 * @verifies return the no assignment handler
+	 */
+	@Test
+	public void getVisitAssignmentHandlers_shouldReturnTheNoAssignmentHandler()
+			throws Exception {
+		
+		List<EncounterToVisitAssignmentHandler> handlers = Context.getEncounterService().getVisitAssignmentHandlers();
+		
+		boolean found = false;
+		for (EncounterToVisitAssignmentHandler handler : handlers) {
+			if (handler instanceof NoVisitAssignmentHandler)
+				found = true;
+		}
+		
+		Assert.assertTrue("The basic 'no assignment' handler was not found", found);
 	}
 }
