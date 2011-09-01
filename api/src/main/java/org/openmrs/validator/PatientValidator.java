@@ -13,37 +13,24 @@
  */
 package org.openmrs.validator;
 
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
-import org.openmrs.PersonAddress;
-import org.openmrs.PersonName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
 /**
  * This class validates a Patient object.
  */
-public class PatientValidator implements Validator {
+public class PatientValidator extends PersonValidator {
 	
 	private static Log log = LogFactory.getLog(PersonNameValidator.class);
 	
 	@Autowired
-	PersonNameValidator personNameValidator;
-	
-	@Autowired
-	PatientIdentifierValidator patientIdentifierValidator;
-	
-	@Autowired
-	PersonAddressValidator personAddressValidator;
+	private PatientIdentifierValidator patientIdentifierValidator;
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
@@ -78,26 +65,13 @@ public class PatientValidator implements Validator {
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");
 		
-		Patient patient = (Patient) obj;
-		
-		if (patient != null) {
-			for (PersonName personName : patient.getNames()) {
-				personNameValidator.validate(personName, errors);
-			}
-			
-			//validate the personAddress
-			int index = 0;
-			for (PersonAddress address : patient.getAddresses()) {
-				try {
-					errors.pushNestedPath("addresses[" + index + "]");
-					ValidationUtils.invokeValidator(personAddressValidator, address, errors);
-				}
-				finally {
-					errors.popNestedPath();
-					index++;
-				}
-			}
+		if (obj == null) {
+			return;
 		}
+		
+		super.validate(obj, errors);
+		
+		Patient patient = (Patient) obj;
 		
 		// Make sure they chose a preferred ID
 		Boolean preferredIdentifierChosen = false;
@@ -113,30 +87,6 @@ public class PatientValidator implements Validator {
 		if (!preferredIdentifierChosen) {
 			errors.reject("error.preferredIdentifier");
 		}
-		
-		// Make sure they choose a gender
-		if (StringUtils.isBlank(patient.getGender()))
-			errors.rejectValue("gender", "Person.gender.required");
-		
-		// check patients birthdate against future dates and really old dates
-		if (patient.getBirthdate() != null) {
-			if (patient.getBirthdate().after(new Date()))
-				errors.rejectValue("birthdate", "error.date.future");
-			else {
-				Calendar c = Calendar.getInstance();
-				c.setTime(new Date());
-				c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
-				if (patient.getBirthdate().before(c.getTime())) {
-					errors.rejectValue("birthdate", "error.date.nonsensical");
-				}
-			}
-		}
-		
-		//	 Patient Info 
-		if (patient.isVoided())
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
-		if (patient.isDead() && (patient.getCauseOfDeath() == null))
-			errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");
 		
 		if (!errors.hasErrors()) {
 			// Validate PatientIdentifers

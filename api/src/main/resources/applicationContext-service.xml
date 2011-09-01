@@ -701,6 +701,7 @@
 	<!--  **************************  VALIDATOR CONFIGURATION  *************************  -->
 	<!--  Configuration for all openmrs validators                                        -->
 	
+	<bean id="personValidator" class="org.openmrs.validator.PersonValidator" />
 	<bean id="patientValidator" class="org.openmrs.validator.PatientValidator" />
 	<bean id="locationValidator" class="org.openmrs.validator.LocationValidator"/>
 	<bean id="personNameValidator" class="org.openmrs.validator.PersonNameValidator" />

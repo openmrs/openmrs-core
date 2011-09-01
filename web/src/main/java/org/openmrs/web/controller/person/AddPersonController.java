@@ -49,6 +49,8 @@ public class AddPersonController extends SimpleFormController {
 	
 	private final String USER_EDIT_URL = "/admin/users/user.form";
 	
+	private final String PERSON_EDIT_URL = "/admin/person/person.form";
+	
 	private final String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
 	
 	/** Parameters passed in view request object **/
@@ -240,6 +242,10 @@ public class AddPersonController extends SimpleFormController {
 				return request.getContextPath() + PATIENT_VIEW_URL + getParametersForURL(personId, personType);
 		} else if ("user".equals(personType)) {
 			return request.getContextPath() + USER_EDIT_URL + getParametersForURL(personId, personType);
+		} else {
+			if ("edit".equals(viewType)) {
+				return request.getContextPath() + PERSON_EDIT_URL + getParametersForURL(personId, personType);
+			}
 		}
 		throw new ServletException("Undefined personType/viewType combo: " + personType + "/" + viewType);
 	}
@@ -261,8 +267,9 @@ public class AddPersonController extends SimpleFormController {
 				return "?patientId=" + personId;
 			else if ("user".equals(personType))
 				return "?userId=" + personId;
+			else
+				return "?personId=" + personId;
 		}
-		return "";
 	}
 	
 	/**

@@ -144,7 +144,8 @@
 								
 				<prop key="admin/patients/patientIdentifierType.list">patientIdentifierTypeList</prop>
 				<prop key="admin/patients/patientIdentifierType.form">patientIdentifierTypeForm</prop>
-
+				
+				<prop key="admin/person/person.form">personForm</prop>
 				<prop key="admin/person/relationshipType.list">relationshipTypeList</prop>
 				<prop key="admin/person/relationshipType.form">relationshipTypeForm</prop>
 				<prop key="admin/person/relationshipTypeViews.form">relationshipTypeViewForm</prop>
@@ -437,6 +438,15 @@
 	<!-- ============================= -->
 	<!-- ======  Person Sector  ====== -->
 	<!-- ============================= -->
+	<!-- ** Person ** -->
+	<bean id="personForm" class="org.openmrs.web.controller.person.PersonFormController">
+		<property name="commandName"><value>person</value></property>
+		<property name="formView"><value>/admin/person/personForm</value></property>
+		<property name="successView"><value>person.form</value></property>
+		<property name="validator"><ref bean="personValidator" /></property>
+	</bean>
+	<!-- ** /Person ** -->
+	
 	<!-- **  Relationship Type   ** -->
 	<bean id="relationshipTypeList"
 		class="org.openmrs.web.controller.person.RelationshipTypeListController">

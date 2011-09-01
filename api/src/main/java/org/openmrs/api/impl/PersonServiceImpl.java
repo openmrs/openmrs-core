@@ -449,33 +449,10 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#unvoidPerson(org.openmrs.Person)
 	 */
 	public Person unvoidPerson(Person person) throws APIException {
-		String voidReason = person.getPersonVoidReason();
-		if (voidReason == null)
-			voidReason = "";
+		if (person == null)
+			return null;
 		
-		for (PersonName pn : person.getNames()) {
-			if (voidReason.equals(pn.getVoidReason())) {
-				pn.setVoided(false);
-				pn.setVoidReason(null);
-			}
-		}
-		for (PersonAddress pa : person.getAddresses()) {
-			if (voidReason.equals(pa.getVoidReason())) {
-				pa.setVoided(false);
-				pa.setVoidReason(null);
-			}
-		}
-		
-		person.setPersonVoided(false);
-		person.setPersonVoidedBy(null);
-		person.setPersonDateVoided(null);
-		person.setPersonVoidReason(null);
-		savePerson(person);
-		
-		Context.getPatientService().unvoidPatient(Context.getPatientService().getPatient(person.getPersonId()));
-		Context.getUserService().unvoidUser(Context.getUserService().getUser(person.getPersonId()));
-		
-		return person;
+		return dao.savePerson(person);
 	}
 	
 	/**
