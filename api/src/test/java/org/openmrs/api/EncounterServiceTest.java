@@ -46,7 +46,7 @@ import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.handler.EncounterToVisitAssignmentHandler;
+import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.NoVisitAssignmentHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -1507,10 +1507,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getVisitAssignmentHandlers_shouldReturnTheNoAssignmentHandler()
 			throws Exception {
 		
-		List<EncounterToVisitAssignmentHandler> handlers = Context.getEncounterService().getVisitAssignmentHandlers();
+		List<EncounterVisitHandler> handlers = Context.getEncounterService().getEncounterVisitHandlers();
 		
 		boolean found = false;
-		for (EncounterToVisitAssignmentHandler handler : handlers) {
+		for (EncounterVisitHandler handler : handlers) {
 			if (handler instanceof NoVisitAssignmentHandler)
 				found = true;
 		}

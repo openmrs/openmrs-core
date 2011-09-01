@@ -29,7 +29,7 @@ import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.EncounterDAO;
-import org.openmrs.api.handler.EncounterToVisitAssignmentHandler;
+import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -681,10 +681,10 @@ public interface EncounterService extends OpenmrsService {
 	 * @return list of handlers for determining if an encounter should go into a
 	 *         visit. If none are found, an empty list.
 	 *         
-	 * @see EncounterToVisitAssignmentHandler
+	 * @see EncounterVisitHandler
 	 * @since 1.9
 	 * @should return the no assignment handler
 	 */
 	@Transactional(readOnly = true)
-	public List<EncounterToVisitAssignmentHandler> getVisitAssignmentHandlers();
+	public List<EncounterVisitHandler> getEncounterVisitHandlers();
 }

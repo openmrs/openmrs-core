@@ -37,7 +37,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
-import org.openmrs.api.handler.EncounterToVisitAssignmentHandler;
+import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -620,8 +620,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 
 	@Override
-	public List<EncounterToVisitAssignmentHandler> getVisitAssignmentHandlers() {
-		List<EncounterToVisitAssignmentHandler> handlers = HandlerUtil.getHandlersForType(EncounterToVisitAssignmentHandler.class, null);
+	public List<EncounterVisitHandler> getEncounterVisitHandlers() {
+		List<EncounterVisitHandler> handlers = HandlerUtil.getHandlersForType(EncounterVisitHandler.class, null);
 		
 		return handlers;
 	}
