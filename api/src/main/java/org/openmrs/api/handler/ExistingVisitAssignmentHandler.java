@@ -31,12 +31,21 @@ import org.openmrs.api.context.Context;
 @Handler
 public class ExistingVisitAssignmentHandler implements EncounterVisitHandler {
 	
+	/**
+	 * @see org.openmrs.api.handler.EncounterVisitHandler#getDisplayName(java.util.Locale)
+	 */
 	@Override
 	public String getDisplayName(Locale locale) {
 		return Context.getMessageSourceService().getMessage("visit.assignmentHandler.assignToExistingVisitOnly", null,
 		    locale);
 	}
 	
+	/**
+	 * @see org.openmrs.api.handler.EncounterVisitHandler#beforeCreateEncounter(org.openmrs.Encounter)
+	 * 
+	 * @should assign existing visit if match found
+	 * @should not assign visit if no match found
+	 */
 	@Override
 	public void beforeCreateEncounter(Encounter encounter) {
 		
