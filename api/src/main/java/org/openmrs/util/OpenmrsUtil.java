@@ -906,6 +906,29 @@ public class OpenmrsUtil {
 		return c.getTime();
 	}
 	
+	/**
+	 * Return a date that is the same day as the passed in date, but the hours and seconds are the
+	 * earliest possible for that day.
+	 * 
+	 * @param date date to adjust
+	 * @return a date that is the first possible time in the day
+	 * 
+	 * @since 1.9
+	 */
+	public static Date firstSecondOfDay(Date date) {
+		if (date == null)
+			return null;
+		
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		
+		return c.getTime();
+	}
+	
 	public static Date safeDate(Date d1) {
 		return new Date(d1.getTime());
 	}
