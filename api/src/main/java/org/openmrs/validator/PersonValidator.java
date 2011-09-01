@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.validator;
 
 import java.util.Calendar;
@@ -30,6 +43,14 @@ public class PersonValidator implements Validator {
 		return Person.class.isAssignableFrom(clazz);
 	}
 	
+	/**
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @should fail validation if gender is blank
+	 * @should fail validation if birthdate makes patient older that 120 years old
+	 * @should fail validation if birthdate is a future date
+	 * @should fail validation if voidReason is blank when patient is voided
+	 * @should fail validation if causeOfDeath is blank when patient is dead
+	 */
 	@Override
 	public void validate(Object target, Errors errors) {
 		if (log.isDebugEnabled())
