@@ -13,22 +13,19 @@
  */
 package org.openmrs.api.handler;
 
-import java.util.List;
 import java.util.Locale;
 
 import org.openmrs.Encounter;
-import org.openmrs.Visit;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 
 /**
- * This handler doesn't ever assign an encounter to a visit. 
+ * This handler doesn't ever assign an encounter to a visit.
  * 
- * @see EncounterToVisitAssignmentHandler
+ * @see EncounterVisitHandler
  */
 @Handler
-public class NoVisitAssignmentHandler implements
-		EncounterToVisitAssignmentHandler {
+public class NoVisitAssignmentHandler implements EncounterVisitHandler {
 
 	@Override
 	public String getDisplayName(Locale locale) {
@@ -37,11 +34,8 @@ public class NoVisitAssignmentHandler implements
 	}
 
 	@Override
-	public Visit getVisitForEncounter(List<Visit> activeVisits,
-			Encounter encounter) {
-
-		// a null return value means "don't associate this to anything"
-		return null;
+	public void beforeCreateEncounter(Encounter encounter) {
+		// not doing anything here. This is the simplest handler you can get
 	}
 
 }

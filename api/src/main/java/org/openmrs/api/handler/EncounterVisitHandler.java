@@ -13,7 +13,6 @@
  */
 package org.openmrs.api.handler;
 
-import java.util.List;
 import java.util.Locale;
 
 import org.openmrs.Encounter;
@@ -29,7 +28,7 @@ import org.openmrs.api.context.Context;
  * @see EncounterService#getVisitAssignmentHandlers()
  * @since 1.9
  */
-public interface EncounterToVisitAssignmentHandler {
+public interface EncounterVisitHandler {
 
 	/**
 	 * @param locale
@@ -46,22 +45,14 @@ public interface EncounterToVisitAssignmentHandler {
 	 * a {@link Visit} that is already open or if it should be part of a new
 	 * visit. <br/>
 	 * <br/>
-	 * If a null value is returned, the encounter will not be associated with
-	 * any Visit.<br/>
-	 * If the handler wants a new Visit opened, it should instantiate a new
-	 * Visit and set the desired properties on it<br/>
-	 * If the handler wants to use a current visit, a Visit in the
-	 * <code>activeVisits</code> list should be returned (without being
-	 * modified)
+	 * The decision of what to do is up to the handler, but it should call
+	 * {@link Encounter#setVisit(Visit)} with the outcome. The visit assigned to
+	 * the encounter will be persisted to the database after this method is
+	 * returned, so the handler is not required to save it.
 	 * 
-	 * @param activeVisits
-	 *            the patient's currently open visits
-	 * @param enc
-	 *            the new encounter in question of whether to assign to a visit
-	 * @return the {@link Visit} that <code>encounter</code> will be assigned to
-	 *         or null if none
+	 * @param encounter
+	 *            the new unsaved encounter in question of whether to assign to a visit
 	 */
-	public Visit getVisitForEncounter(List<Visit> activeVisits,
-			Encounter encounter);
+	public void beforeCreateEncounter(Encounter encounter);
 
 }
