@@ -687,4 +687,15 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<EncounterVisitHandler> getEncounterVisitHandlers();
+	
+	/**
+	 * Gets the active handler for assigning visits to encounters.
+	 * 
+	 * @see EncounterVisitHandler
+	 * @since 1.9
+	 * @return the active handler class.
+	 * @throws APIException thrown if something goes wrong during the retrieval of the handler.
+	 */
+	@Transactional(readOnly = true)
+	public EncounterVisitHandler getActiveEncounterVisitHandler() throws APIException;
 }

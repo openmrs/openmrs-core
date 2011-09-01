@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -39,6 +40,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.util.HandlerUtil;
+import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.EncounterValidator;
@@ -83,6 +86,15 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#saveEncounter(org.openmrs.Encounter)
 	 */
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
+		
+		//If new encounter, try to assign a visit using the registered visit assignment handler.
+		if (encounter.getEncounterId() == null) {
+			EncounterVisitHandler encounterVisitHandler = getActiveEncounterVisitHandler();
+			if (encounterVisitHandler != null) {
+				encounterVisitHandler.beforeCreateEncounter(encounter);
+			}
+		}
+		
 		Errors errors = new BindException(encounter, "encounter");
 		new EncounterValidator().validate(encounter, errors);
 		if (errors.hasErrors()) {
@@ -624,5 +636,35 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		List<EncounterVisitHandler> handlers = HandlerUtil.getHandlersForType(EncounterVisitHandler.class, null);
 		
 		return handlers;
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getActiveEncounterVisitHandler()
+	 */
+	@Override
+	public EncounterVisitHandler getActiveEncounterVisitHandler() throws APIException {
+		String value = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER,
+		    null);
+		
+		if (StringUtils.isBlank(value))
+			return null;
+		
+		try {
+			Object handler = OpenmrsClassLoader.getInstance().loadClass(value).newInstance();
+			if (!(handler instanceof EncounterVisitHandler))
+				throw new APIException(
+				        "The registered visit assignment handler should implement the EncounterVisitHandler interface");
+			
+			return (EncounterVisitHandler) handler;
+		}
+		catch (ClassNotFoundException ex) {
+			throw new APIException("Failed to load visit assignment handler class: " + value, ex);
+		}
+		catch (IllegalAccessException ex) {
+			throw new APIException("Failed to access assignment handler object for class: " + value, ex);
+		}
+		catch (InstantiationException ex) {
+			throw new APIException("Failed to instantiate assignment handler object for class class: " + value, ex);
+		}
 	}
 }
