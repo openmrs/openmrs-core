@@ -618,7 +618,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public List<Encounter> getEncountersByVisit(Visit visit) {
 		return dao.getEncountersByVisit(visit);
 	}
-
+	
 	@Override
 	public List<EncounterVisitHandler> getEncounterVisitHandlers() {
 		List<EncounterVisitHandler> handlers = HandlerUtil.getHandlersForType(EncounterVisitHandler.class, null);

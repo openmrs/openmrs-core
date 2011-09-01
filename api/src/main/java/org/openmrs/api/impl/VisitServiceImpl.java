@@ -193,13 +193,13 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#getVisits(java.util.Collection, java.util.Collection,
 	 *      java.util.Collection, java.util.Collection, java.util.Date, java.util.Date,
-	 *      java.util.Date, java.util.Date, boolean)
+	 *      java.util.Date, java.util.Date, boolean, boolean)
 	 */
 	@Override
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues, boolean includeVoided)
-	        throws APIException {
+	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues,
+	        boolean includeInactive, boolean includeVoided) throws APIException {
 		
 		Map<VisitAttributeType, String> serializedAttributeValues = null;
 		if (attributeValues != null) {
@@ -212,7 +212,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		}
 		
 		return dao.getVisits(visitTypes, patients, locations, indications, minStartDatetime, maxStartDatetime,
-		    minEndDatetime, maxEndDatetime, serializedAttributeValues, true, includeVoided);
+		    minEndDatetime, maxEndDatetime, serializedAttributeValues, includeInactive, includeVoided);
 	}
 	
 	/**
@@ -225,7 +225,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		if (patient == null || patient.getId() == null)
 			return Collections.EMPTY_LIST;
 		
-		return getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, null, false);
+		return getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, null, true, false);
 	}
 	
 	/**

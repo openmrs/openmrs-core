@@ -1498,14 +1498,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<Encounter> encs = Context.getEncounterService().getEncounters("qwerty", 0, 3, false);
 		Assert.assertEquals(3, encs.size());
 	}
-
+	
 	/**
 	 * @see EncounterService#getVisitAssignmentHandlers()
 	 * @verifies return the no assignment handler
 	 */
 	@Test
-	public void getVisitAssignmentHandlers_shouldReturnTheNoAssignmentHandler()
-			throws Exception {
+	public void getVisitAssignmentHandlers_shouldReturnTheNoAssignmentHandler() throws Exception {
 		
 		List<EncounterVisitHandler> handlers = Context.getEncounterService().getEncounterVisitHandlers();
 		
