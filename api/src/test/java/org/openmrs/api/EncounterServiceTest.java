@@ -47,6 +47,7 @@ import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
+import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.api.handler.NoVisitAssignmentHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -1536,5 +1537,25 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		Assert.assertTrue("The 'existing visit only assignment' handler was not found", found);
+	}
+	
+	/**
+	 * @see EncounterService#getVisitAssignmentHandlers()
+	 * @verifies return the existing or new visit assignment handler
+	 */
+	@Test
+	public void getVisitAssignmentHandlers_shouldReturnTheExistingOrNewVisitAssignmentHandler() throws Exception {
+		
+		List<EncounterVisitHandler> handlers = Context.getEncounterService().getEncounterVisitHandlers();
+		
+		boolean found = false;
+		for (EncounterVisitHandler handler : handlers) {
+			if (handler instanceof ExistingOrNewVisitAssignmentHandler) {
+				found = true;
+				break;
+			}
+		}
+		
+		Assert.assertTrue("The 'existing or new visit only assignment' handler was not found", found);
 	}
 }
