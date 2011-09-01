@@ -29,7 +29,7 @@ import org.openmrs.api.context.Context;
  * @since 1.9
  */
 public interface EncounterVisitHandler {
-
+	
 	/**
 	 * @param locale
 	 *            optional locale to specify. If none is passed,
@@ -38,7 +38,7 @@ public interface EncounterVisitHandler {
 	 *         assignment handlers
 	 */
 	public String getDisplayName(Locale locale);
-
+	
 	/**
 	 * Implementations of this method should look at the given
 	 * <code>encounter</code> and choose whether or not it should be assigned to
@@ -54,5 +54,5 @@ public interface EncounterVisitHandler {
 	 *            the new unsaved encounter in question of whether to assign to a visit
 	 */
 	public void beforeCreateEncounter(Encounter encounter);
-
+	
 }

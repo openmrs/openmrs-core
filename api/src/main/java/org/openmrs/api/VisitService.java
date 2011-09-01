@@ -209,14 +209,25 @@ public interface VisitService extends OpenmrsService {
 	/**
 	 * Gets the visits matching the specified arguments
 	 * 
-	 * @param visitTypes a list of visit types to match against
-	 * @param locations a list of locations to match against
-	 * @param indications a list of indication concepts to match against
-	 * @param minStartDatetime the minimum visit start date to match against
-	 * @param maxStartDatetime the maximum visit start date to match against
-	 * @param minEndDatetime the minimum visit end date to match against
-	 * @param maxEndDatetime the maximum visit end date to match against
-	 * @param includeVoided specifies if voided visits should also be returned
+	 * @param visitTypes
+	 *            a list of visit types to match against
+	 * @param locations
+	 *            a list of locations to match against
+	 * @param indications
+	 *            a list of indication concepts to match against
+	 * @param minStartDatetime
+	 *            the minimum visit start date to match against
+	 * @param maxStartDatetime
+	 *            the maximum visit start date to match against
+	 * @param minEndDatetime
+	 *            the minimum visit end date to match against
+	 * @param maxEndDatetime
+	 *            the maximum visit end date to match against
+	 * @param includeInactive
+	 *            if false, the min/maxEndDatetime parameters are ignored and
+	 *            only open visits are returned
+	 * @param includeVoided
+	 *            specifies if voided visits should also be returned
 	 * @return a list of visits
 	 * @see #getActiveVisitsByPatient(Patient)
 	 * @throws APIException
@@ -234,8 +245,8 @@ public interface VisitService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues, boolean includeVoided)
-	        throws APIException;
+	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues,
+	        boolean includeInactive, boolean includeVoided) throws APIException;
 	
 	/**
 	 * Gets all unvoided visits for the specified patient
