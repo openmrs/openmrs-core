@@ -880,6 +880,11 @@ public final class OpenmrsConstants {
 	public static final String GP_SEARCH_WIDGET_DELAY_INTERVAL = "searchWidget.searchDelayInterval";
 	
 	/**
+	 * Global property name for the handler that assigns visits to encounters
+	 */
+	public static final String GP_VISIT_ASSIGNMENT_HANDLER = "visit.assignmentHandler";
+	
+	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
 	 */
 	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/CBC/PKCS5Padding";
@@ -1267,6 +1272,13 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_ENABLE_VISITS,
 		                "true",
 		                "Set to true to show the Visits instead of Encounters tab, on the patient dashboard. Setting it to false will display the Encounters instead of Visits tab."));
+		
+		props
+		        .add(new GlobalProperty(
+		                GP_VISIT_ASSIGNMENT_HANDLER,
+		                "",
+		                "Set to the name of the class responsible for assigning visits to encounters."));
+
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
