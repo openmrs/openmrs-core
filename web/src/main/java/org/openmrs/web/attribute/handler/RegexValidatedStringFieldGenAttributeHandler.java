@@ -17,6 +17,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.attribute.handler.RegexValidatedStringAttributeHandler;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -51,7 +52,7 @@ public class RegexValidatedStringFieldGenAttributeHandler extends RegexValidated
 	@Override
 	public String getValue(HttpServletRequest request, String formFieldName) {
 		String val = request.getParameter(formFieldName);
-		if (val.isEmpty())
+		if (StringUtils.isEmpty(val))
 			return null;
 		validate(val);
 		return val;
