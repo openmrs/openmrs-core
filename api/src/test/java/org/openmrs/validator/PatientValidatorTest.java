@@ -13,6 +13,8 @@
  */
 package org.openmrs.validator;
 
+import javax.annotation.Resource;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Patient;
@@ -21,11 +23,18 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
 /**
  * Tests methods on the {@link PatientValidator} class.
  */
 public class PatientValidatorTest extends PersonValidatorTest {
+	
+	@Resource(name = "patientValidator")
+	@Override
+	public void setValidator(Validator validator) {
+		super.setValidator(validator);
+	}
 	
 	/**
 	 * @see {@link PatientValidator#validate(Object,Errors)}

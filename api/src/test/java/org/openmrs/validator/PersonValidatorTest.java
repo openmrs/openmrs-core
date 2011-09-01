@@ -16,21 +16,30 @@ package org.openmrs.validator;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.annotation.Resource;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
 public class PersonValidatorTest extends BaseContextSensitiveTest {
 	
-	@Autowired
-	protected PatientValidator validator;
+	protected Validator validator;
 	
+    /**
+     * @param validator the validator to set
+     */
+	@Resource(name = "personValidator")
+    public void setValidator(Validator validator) {
+    	this.validator = validator;
+    }
+
 	/**
 	 * @see PersonValidator#validate(Object,Errors)
 	 * @verifies fail validation if birthdate is a future date
