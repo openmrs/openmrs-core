@@ -37,4 +37,9 @@ public class NoVisitAssignmentHandler implements EncounterVisitHandler {
 		// not doing anything here. This is the simplest handler you can get
 	}
 	
+	@Override
+	public String getDisplayName() {
+		return getDisplayName(Context.getLocale());
+	}
+	
 }

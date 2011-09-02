@@ -46,7 +46,6 @@ public class ExistingVisitAssignmentHandler implements EncounterVisitHandler {
 	
 	/**
 	 * @see org.openmrs.api.handler.EncounterVisitHandler#beforeCreateEncounter(org.openmrs.Encounter)
-	 * 
 	 * @should assign existing visit if match found
 	 * @should not assign visit if no match found
 	 */
@@ -83,13 +82,18 @@ public class ExistingVisitAssignmentHandler implements EncounterVisitHandler {
 		}
 	}
 	
+	@Override
+	public String getDisplayName() {
+		return getDisplayName(Context.getLocale());
+	}
+	
 	/**
 	 * Gets the date having the last minute of a give day.
 	 * 
 	 * @param day the day.
 	 * @return the date with the last minute of the day.
 	 */
-	public Date getLastMinuteOfDay(Date day){
+	public Date getLastMinuteOfDay(Date day) {
 		Calendar calender = Calendar.getInstance();
 		calender.setTime(day);
 		calender.set(Calendar.HOUR_OF_DAY, 23);
