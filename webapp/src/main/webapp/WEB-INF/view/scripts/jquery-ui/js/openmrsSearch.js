@@ -101,7 +101,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     if(opts.searchPlaceholder){
         //The value should not contain line feeds or carriage returns.
         var textShown=opts.searchPlaceholder.toString().replace(/(\r\n|\n|\r)/gm,"");
-        $j('#inputNode').attr('placeholder', textShown);
+        $j('#inputNode').attr('placeHolder', textShown);
     }
 }
 
