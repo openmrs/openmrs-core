@@ -27,6 +27,8 @@ import org.springframework.validation.Validator;
 
 /**
  * This class validates a Person object.
+ * 
+ * @since 1.9
  */
 public class PersonValidator implements Validator {
 	
@@ -44,7 +46,8 @@ public class PersonValidator implements Validator {
 	}
 	
 	/**
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 * @should fail validation if gender is blank
 	 * @should fail validation if birthdate makes patient older that 120 years old
 	 * @should fail validation if birthdate is a future date
