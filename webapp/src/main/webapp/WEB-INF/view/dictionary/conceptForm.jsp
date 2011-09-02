@@ -18,6 +18,8 @@
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
 
 <openmrs:htmlInclude file="/dictionary/conceptForm.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
+
 
 <script type="text/javascript">
 	function addName(anchor) {
@@ -61,7 +63,7 @@
 		jumpForm.submit();
 		return false;
 	}
-	
+
 </script>
 
 <style>
@@ -84,7 +86,7 @@
 		padding-left: 3px;
 		padding-right: 3px;
 	}
-	.hidden, #newConceptSynonym, #newConceptMapping {
+	.hidden, #newConceptSynonym {
 		display: none;
 	}
 	.checkbox_void{
@@ -104,6 +106,18 @@
 		margin-bottom: 0px;
 		valign: center;
 		height: 42px;
+	}
+	tr.mappingsHeaderRow{
+		background-color: #CCCCCC; padding: 3px;;
+	}
+	.removeButtonCol{
+		background-color: #FFFFFF;
+	}
+	#conceptMapTable th{
+		text-align: center;
+	}
+	.newTermSuccessMsg{
+		display: none; background-color: lightyellow; border: 1px dashed lightgrey;
 	}
 	
 </style>
@@ -592,43 +606,130 @@
 			<spring:message code="Concept.mappings"/> <img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.mappings.help"/>"/>
 		</th>
 		<td>
-			<c:forEach var="mapping" items="${command.mappings}" varStatus="mapStatus">
-				<spring:nestedPath path="command.mappings[${mapStatus.index}]">
-					<span id="mapping-${mapStatus.index}">
-						<spring:bind path="sourceCode">
-							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth">
+			<table id="conceptMapTable" cellpadding="3" cellspacing="3">
+				<tr class="mappingsHeaderRow">
+					<th class="alignCenter" align="center"><spring:message code="Concept.mappings.relationship"/></th>
+					<th><spring:message code="ConceptReferenceTerm.source"/></th>
+					<th><spring:message code="ConceptReferenceTerm.code"/></th>
+					<th><spring:message code="general.name"/></th>
+					<th class="removeButtonCol">&nbsp;</th>
+				</tr>
+				<c:forEach var="mapping" items="${command.conceptMappings}" varStatus="mapStatus">
+				<spring:nestedPath path="command.conceptMappings[${mapStatus.index}]">
+				<tr id="mapping-${mapStatus.index}">
+					<c:choose>
+					<c:when test="${mapping.conceptMapId != null}">
+					<td>
+						<spring:bind path="conceptMapType">
+						<select name="${status.expression}">
+							<openmrs:forEachRecord name="conceptMapType">
+							<option value="${record.conceptMapTypeId}" <c:if test="${record.conceptMapTypeId == status.value}">selected="selected"</c:if> >
+								${record.name}
+							</option>
+						</openmrs:forEachRecord>
+						</select>
+						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
+					</td>
+					<td <c:if test="${mapStatus.index % 2 == 0}">class='evenRow'</c:if>>${mapping.conceptReferenceTerm.conceptSource.name}</td>
+					<td <c:if test="${mapStatus.index % 2 == 0}">class='evenRow'</c:if>>${mapping.conceptReferenceTerm.code}
+					<spring:bind path="conceptReferenceTerm">
+						<input type="hidden" name="${status.expression}" value="${status.value}" />
+					</spring:bind>
+					</td>
+					<td <c:if test="${mapStatus.index % 2 == 0}">class='evenRow'</c:if>>${mapping.conceptReferenceTerm.name}</td>
+					</c:when>
+					<c:otherwise>
+					<td>
+						<spring:bind path="conceptMapType">
+						<select name="${status.expression}">
+							<openmrs:forEachRecord name="conceptMapType">
+							<option value="${record.conceptMapTypeId}" <c:if test="${record.conceptMapTypeId == status.value}">selected="selected"</c:if> >
+								${record.name}
+							</option>
+						</openmrs:forEachRecord>
+						</select>
+						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
+					</td>
+					<td>
+						<select id="term[${mapStatus.index}].source">
+							<option value=""><spring:message code="ConceptReferenceTerm.searchAllSources" /></option>
+							<openmrs:forEachRecord name="conceptSource">
+							<option value="${record.conceptSourceId}" <c:if test="${record.conceptSourceId == mapping.conceptReferenceTerm.conceptSource.conceptSourceId}">selected="selected"</c:if>>
+								${record.name}
+							</option>
+							</openmrs:forEachRecord>
+						</select>
+					</td>
+					<td>
+						<spring:bind path="conceptReferenceTerm">
+						<input type="text" id="term[${mapStatus.index}].code" name="term.code" value="${mapping.conceptReferenceTerm.code}" size="25" />
+						<input type="hidden" id="${status.expression}" name="${status.expression}" value="${status.value}" />
+						<script type="text/javascript">
+							addAutoComplete('term[${mapStatus.index}].code', 'term[${mapStatus.index}].source', 'conceptMappings[${mapStatus.index}].conceptReferenceTerm', 'term[${mapStatus.index}].name')
+						</script>
+						</spring:bind>
+					</td>
+					<td <c:if test="${mapStatus.index % 2 == 0}">class='evenRow'</c:if>>
+						<input type="text" id="term[${mapStatus.index}].name" size="25" value="${mapping.conceptReferenceTerm.name}" readonly="readonly" />
+					</td>
+					</c:otherwise>
+					</c:choose>
+					<td>
+						<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this.parentNode)" />
+						<spring:bind path="command.conceptMappings[${mapStatus.index}]" ignoreNestedPath="true">
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
-						<spring:bind path="source">
-							<select name="${status.expression}">
-								<openmrs:forEachRecord name="conceptSource">
-									<option value="${record.conceptSourceId}" <c:if test="${record.conceptSourceId == status.value}">selected</c:if> >
-											${record.name} (${record.hl7Code})
-									</option>
-								</openmrs:forEachRecord>
-							</select>
-							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-						</spring:bind>
-						<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
-						<br/>
-					</span>
-					<input type="hidden" name="_mappings[${mapStatus.index}].sourceCode" value="" />
+					</td>
+				</tr>
 				</spring:nestedPath>
-			</c:forEach>
-			<span id="newConceptMapping">
-				<input type="text" name="[x].sourceCode" value="${status.value}" class="smallWidth">
-				<select name="[x].source">
-					<openmrs:forEachRecord name="conceptSource">
-						<option value="${record.conceptSourceId}">
-								${record.name} (${record.hl7Code})
-						</option>
-					</openmrs:forEachRecord>
-				</select>
-				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
-				<br/>
-			</span>
-			<input type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" onClick="cloneElement('newConceptMapping', ${fn:length(command.mappings)}, 'mappings')" />
-			<br/>
+				</c:forEach>
+				<tr id="newConceptMapping">
+					<td valign="top">
+						<select id="map.type" name="type.name">
+							<openmrs:forEachRecord  name="conceptMapType">
+								<option value="${record.conceptMapTypeId}">
+									${record.name}
+								</option>
+							</openmrs:forEachRecord>
+						</select>
+					</td>
+					<td valign="top">
+						<select id="map.source" name="term.source" >
+							<option value=""><spring:message code="ConceptReferenceTerm.searchAllSources" /></option>
+							<openmrs:forEachRecord  name="conceptSource">
+							<option value="${record.conceptSourceId}">
+								${record.name}
+							</option>
+							</openmrs:forEachRecord>
+						</select>
+					</td>
+					<td valign="top">
+						<input type="text" id="term.code" name="term.code" size="25" />
+						<input type="hidden" id="termId" name="termId" />
+						<script type="text/javascript">addAutoComplete('term.code', 'map.source', 'termId')</script>
+					</td>
+					<td>
+						<input type="text" id="termName" name="term.name" size="25" style="display: none" readonly="readonly" />
+					</td>
+					<td>
+						<input id="removeMapButton" style="display: none;" type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this.parentNode)" />
+						<input id="addMapButton" type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" onClick="addConceptMapping(${fn:length(command.conceptMappings)})" />
+					</td>
+				</tr>
+				
+				<tr>
+					<td colspan="3">&nbsp;</td>
+					<td valign="top" align="right">
+						<input id="term.createNew" class="smallButton" type="button" 
+						       value="<spring:message code="ConceptReferenceTerm.createNewTerm" />" 
+						       onclick="javascript:$j('#create-new-term-dialog').dialog('open')" />
+					</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+			</table>
 		</td>
 	</tr>
 	<tr>
@@ -722,6 +823,11 @@
 	
 </table>
 
+<%-- These will be used when the from is submitted to determine existing mappings that have been removed by the user --%>
+<c:forEach items="${command.conceptMappings}" varStatus="vStatus">
+<input type="hidden" name="_conceptMappings[${vStatus.index}].conceptReferenceTerm" value="" />
+</c:forEach>
+
 <div id="saveDeleteButtons" style="margin-top: 15px">
 <c:if test="${conceptsLocked != 'true'}">	
 	<input type="submit" name="action" value="<spring:message code="Concept.save"/>" onMouseUp="removeHiddenRows()"/>
@@ -745,7 +851,6 @@
 	<form action="" method="post">
 		<fieldset>
 			<h4><spring:message code="general.retire"/> <spring:message code="Concept"/></h4>
-			
 			<b><spring:message code="general.reason"/></b>
 			<input type="text" value="" size="40" name="retiredReason" />
 		
@@ -756,6 +861,89 @@
 	</c:if>
 </openmrs:hasPrivilege>
 
+<openmrs:hasPrivilege privilege="Manage Concept Reference Terms">
+<div id="create-new-term-dialog" title="<spring:message code="ConceptReferenceTerm.newTermForm"/>">
+	<div id="newTermErrorMsg" class="error" style="display: none" align="center"></div>
+	<div id="successMsg" class="newTermSuccessMsg" align="center">
+		<spring:message code="ConceptReferenceTerm.saved"/>
+	</div><br />
+	<fieldset>
+	<legend><spring:message code="ConceptReferenceTerm.details"/></legend>
+	<table cellpadding="3" cellspacing="3" align="center">
+		<tr>
+            <th class="alignRight" valign="top"><spring:message code="ConceptReferenceTerm.code"/><span class="required">*</span></th>
+            <td valign="top">
+                <input type="text" id="newTermCode" value=""/>
+            </td>
+        </tr>
+        <tr>
+        <tr>
+            <th class="alignRight" valign="top"><spring:message code="ConceptReferenceTerm.source"/><span class="required">*</span></th>
+            <td valign="top">
+				<select id="newTermSource">
+					<openmrs:forEachRecord name="conceptSource">
+					<option value="${record.conceptSourceId}">
+						${record.name} (${record.hl7Code})
+					</option>
+					</openmrs:forEachRecord>
+				</select>
+			</td>
+        </tr>
+     </table>
+     </fieldset>
+     <br />
+     <div align="center">
+     	<input type="button" value="<spring:message code="general.save"/>" onclick="createNewTerm()"/> &nbsp;
+        <input id="cancelOrDone" type="button" value="<spring:message code="general.cancel"/>" 
+        			onclick="javascript:$j('#create-new-term-dialog').dialog('close')"/>
+     </div>
+</div>
+<script type="text/javascript">
+$j(document).ready( function() {
+	$j("#create-new-term-dialog").dialog({
+		autoOpen: false,
+		resizable: false,
+		width:'auto',
+		height:'auto',
+		modal: true,
+		beforeClose: function(event, ui){
+			//clear all field and hide the error message just in case it is visible 
+			//due to a previous unsuccessful attempt to make a hidden app visible
+			resetNewTermForm();
+			$j("#cancelOrDone").val('<spring:message code="general.cancel"/>');
+		}
+	});
+});
+
+function createNewTerm(){
+	DWRConceptService.createConceptReferenceTerm( $j('#newTermCode').val(), $j('#newTermSource').val(), function(errors) {
+		if(errors){
+			var errorMessages = "";
+			for (var i in errors) {
+				errorMessages+=errors[i]+"<br />";
+			}
+			
+			$j('#newTermErrorMsg').html(errorMessages);
+			$j('#successMsg').hide();//just incase it is visible
+			$j('#newTermErrorMsg').show();
+		}else{
+			$j('#newTermErrorMsg').hide();//just incase it is visible
+			$j('#successMsg').show();
+			window.setTimeout("resetNewTermForm()", 1500);
+			$j("#cancelOrDone").val('<spring:message code="general.done"/>');
+		}
+	});
+}
+
+function resetNewTermForm(){
+	$j('#newTermCode').val('');
+	$j('select#newTermSource').val(0);
+	$j('#newTermErrorMsg').html('');
+	$j('#newTermErrorMsg').hide();
+	$j('#successMsg').hide();
+}
+</script>
+</openmrs:hasPrivilege>
 
 <openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormFooter" type="html" />
 

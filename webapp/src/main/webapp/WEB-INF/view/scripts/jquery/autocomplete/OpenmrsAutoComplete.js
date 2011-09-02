@@ -122,6 +122,21 @@ function CreateCallback(options) {
 		DWREncounterService.findEncounters(q, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayEncounter));
 	}}
 	
+	/**
+	 * Use this method if searching for concept reference terms
+	 * @param sourceElement (optional) the element whose value is the conceptSourceId for the source to search for terms
+	 */
+	this.conceptReferenceTermCallback = function(sourceElement) { var thisObject = this; return function(q, response) {
+		if (jQuery.trim(q).length == 0)
+			return response(false);
+		var sourceId = null;
+		if(sourceElement)
+			sourceId = sourceElement.value;
+		
+		thisObject.searchCounter += 1;
+		DWRConceptService.findBatchOfConceptReferenceTerms(q, sourceId, null, maxresults, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayConceptReferenceTerm));
+	}}
+	
 	/*
 	 * a 'private' method
 	 * the method that dwr calls back with results 
@@ -283,4 +298,22 @@ function CreateCallback(options) {
 		
 		return textShown;
 	}
+	
+	// a 'private' method
+	// This is what maps each ConceptListItem or LocationListItem returned object to a name in the dropdown
+	this.displayConceptReferenceTerm = function(origQuery) { return function(item) {
+		// dwr sometimes puts strings into the results, just display those
+		if (typeof item == 'string')
+			return { label: item, value: "" };
+		
+		var textShown = " " + item.code+" ("+omsgs.conceptSource+" &rArr; "+item.conceptSourceName+")";
+		
+		// highlight each search term in the results
+		textShown = highlightWords(textShown, origQuery);
+		
+		var value = item.code;
+		textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
+		
+		return { label: textShown, value: value, object: item};
+	}; };
 }

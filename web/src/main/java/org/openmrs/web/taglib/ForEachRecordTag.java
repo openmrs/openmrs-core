@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptSource;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -107,6 +108,9 @@ public class ForEachRecordTag extends BodyTagSupport {
 		} else if (name.equals("role")) {
 			List<Role> roles = Context.getUserService().getAllRoles();
 			records = roles.iterator();
+		} else if (name.equals("conceptMapType")) {
+			List<ConceptMapType> mapTypes = Context.getConceptService().getAllConceptMapTypes();
+			records = mapTypes.iterator();
 		} else if (name.equals("civilStatus")) {
 			ConceptService cs = Context.getConceptService();
 			Concept civilStatus = cs.getConcept(OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID);
@@ -219,7 +223,6 @@ public class ForEachRecordTag extends BodyTagSupport {
 	}
 	
 	/**
-	 *
 	 * @param locationAndDepths
 	 * @param locations
 	 * @param i counter

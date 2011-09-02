@@ -19,16 +19,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.LocaleUtility;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -46,7 +47,7 @@ public class ConceptValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public boolean supports(Class c) {
 		return c.equals(Concept.class);
 	}
@@ -72,7 +73,12 @@ public class ConceptValidator implements Validator {
 	 * @should not allow an index term to be a locale preferred name
 	 * @should fail if there is no name explicitly marked as fully specified
 	 * @should pass if the duplicate ConceptName is neither preferred nor fully Specified
+	 * @should fail if the concept reference term property for a concept mapping is null
+	 * @should fail if the concept map type property for a concept mapping is null
 	 * @should pass if the concept has a synonym that is also a short name
+	 * @should fail if a concept map type created on the fly is used for a mapping
+	 * @should fail if a term created on the fly is used for a mapping
+	 * @should fail if a term is mapped multiple times to the same concept
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -198,6 +204,48 @@ public class ConceptValidator implements Validator {
 		if (!hasFullySpecifiedName) {
 			log.debug("Concept has no fully specified name");
 			errors.reject("Concept.error.no.FullySpecifiedName");
+		}
+		
+		if (CollectionUtils.isNotEmpty(conceptToValidate.getConceptMappings())) {
+			//validate all the concept maps
+			int index = 0;
+			Set<Integer> mappedTermIds = null;
+			for (ConceptMap map : conceptToValidate.getConceptMappings()) {
+				if (map.getConceptReferenceTerm() == null) {
+					errors.rejectValue("conceptMappings[" + index + "].conceptReferenceTerm", "Concept.map.termRequired",
+					    "The concept reference term property is required for a concept map");
+					return;
+				} else if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {
+					//Should pick from existing terms
+					errors.rejectValue("conceptMappings[" + index + "].conceptReferenceTerm",
+					    "ConceptReferenceTerm.term.notInDatabase", "Only existing concept reference terms can be mapped");
+					return;
+				} else if (map.getConceptMapType() == null) {
+					errors.rejectValue("conceptMappings[" + index + "].conceptMapType", "Concept.map.typeRequired",
+					    "The concept map type is required for a concept map");
+					return;
+				} else if (map.getConceptMapType().getConceptMapTypeId() == null) {
+					//Should pick from existing map types
+					errors.rejectValue("conceptMappings[" + index + "].conceptMapType",
+					    "ConceptReferenceTerm.mapType.notInDatabase", "Only existing concept map types can be used");
+					return;
+				}
+				
+				//don't proceed to the next maps since the current one already has errors
+				if (errors.hasErrors())
+					return;
+				
+				if (mappedTermIds == null)
+					mappedTermIds = new HashSet<Integer>();
+				
+				//if we already have a mapping to this term, reject it this map
+				if (!mappedTermIds.add(map.getConceptReferenceTerm().getId())) {
+					errors.rejectValue("conceptMappings[" + index + "]", "ConceptReferenceTerm.term.alreadyMapped",
+					    "Cannot map a reference term multiple times to the same concept");
+				}
+				
+				index++;
+			}
 		}
 	}
 }

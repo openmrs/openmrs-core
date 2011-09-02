@@ -259,6 +259,27 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to view concept sources")
 	public static final String VIEW_CONCEPT_SOURCES = "View Concept Sources";
 	
+	@AddOnStartup(description = "Able to view concept map types")
+	public static final String VIEW_CONCEPT_MAP_TYPES = "View Concept Map Types";
+	
+	@AddOnStartup(description = "Able to add/edit/retire concept map types")
+	public static final String MANAGE_CONCEPT_MAP_TYPES = "Manage Concept Map Types";
+	
+	@AddOnStartup(description = "Able to purge concept map types")
+	public static final String PURGE_CONCEPT_MAP_TYPES = "Purge Concept Map Types";
+	
+	@AddOnStartup(description = "Able to view concept reference terms")
+	public static final String VIEW_CONCEPT_REFERENCE_TERMS = "View Concept Reference Terms";
+	
+	@AddOnStartup(description = "Able to add/edit/retire reference terms")
+	public static final String MANAGE_CONCEPT_REFERENCE_TERMS = "Manage Concept Reference Terms";
+	
+	@AddOnStartup(description = "Able to create new concept reference terms while editing concepts")
+	public static final String CREATE_REFERENCE_TERMS_WHILE_EDITING_CONCEPTS = "Create Reference Terms While Editing Concepts";
+	
+	@AddOnStartup(description = "Able to purge concept reference terms")
+	public static final String PURGE_CONCEPT_REFERENCE_TERMS = "Purge Concept Reference Terms";
+	
 	public static final String PURGE_CONCEPT_SOURCES = "Purge Concept Sources";
 	
 	@AddOnStartup(description = "Able to view the navigation menu (Home, View Patients, Dictionary, Administration, My Profile")

@@ -13,8 +13,6 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -24,7 +22,7 @@ import org.simpleframework.xml.Root;
  * N mappings to any and all concept sources in the database.
  */
 @Root
-public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
+public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 754677L;
 	
@@ -34,15 +32,7 @@ public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	private Concept concept;
 	
-	private ConceptSource source;
-	
-	private String sourceCode;
-	
-	private String comment;
-	
-	private User creator;
-	
-	private Date dateCreated;
+	private ConceptReferenceTerm conceptReferenceTerm;
 	
 	// Constructors
 	
@@ -53,6 +43,17 @@ public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.
 	/** constructor with concept map id */
 	public ConceptMap(Integer conceptMapId) {
 		this.conceptMapId = conceptMapId;
+	}
+	
+	/**
+	 * Convenience constructor that takes the term to be mapped to and the type of the map
+	 * 
+	 * @param conceptReferenceTerm the concept reference term to map to
+	 * @param conceptMapType the concept map type for this concept reference term map
+	 */
+	public ConceptMap(ConceptReferenceTerm conceptReferenceTerm, ConceptMapType conceptMapType) {
+		this.conceptReferenceTerm = conceptReferenceTerm;
+		setConceptMapType(conceptMapType);
 	}
 	
 	/**
@@ -68,6 +69,16 @@ public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.
 			return (this.conceptMapId.equals(c.getConceptMapId()));
 		}
 		return false;
+	}
+	
+	/**
+	 * @see org.openmrs.BaseOpenmrsObject#toString()
+	 */
+	@Override
+	public String toString() {
+		if (conceptMapId == null)
+			return "";
+		return conceptMapId.toString();
 	}
 	
 	/**
@@ -96,19 +107,30 @@ public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.
 	}
 	
 	/**
+	 * Comments on concept maps are no longer supported since version 1.9, therefore a call to this
+	 * methods is useless
+	 * 
 	 * @return Returns the comment.
+	 * @deprecated
 	 */
-	@Element(data = true, required = false)
+	@Deprecated
 	public String getComment() {
-		return comment;
+		if (getConceptReferenceTerm() == null)
+			return null;
+		return getConceptReferenceTerm().getDescription();
 	}
 	
 	/**
+	 * Comments on concept maps are no longer supported since version 1.9, therefore a call to this
+	 * methods is useless
+	 * 
 	 * @param comment The comment to set.
+	 * @deprecated
 	 */
-	@Element(data = true, required = false)
+	@Deprecated
 	public void setComment(String comment) {
-		this.comment = comment;
+		//do nothing, we don't want the description of the associated term to be set/edited from here,
+		//it should done from the concept reference term form
 	}
 	
 	/**
@@ -128,67 +150,74 @@ public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.
 	}
 	
 	/**
-	 * @return Returns the creator.
-	 */
-	@Element
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	@Element
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	@Element
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	@Element
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
+	 * The conceptSource should be accessed from the associated ConceptReferenceTerm since version
+	 * 1.9
+	 * 
 	 * @return Returns the source.
+	 * @deprecated
+	 * @see ConceptReferenceTerm#getConceptSource()
 	 */
-	@Element
+	@Deprecated
 	public ConceptSource getSource() {
-		return source;
+		if (getConceptReferenceTerm() == null)
+			return null;
+		return getConceptReferenceTerm().getConceptSource();
 	}
 	
 	/**
+	 * The conceptSource should be set on the associated ConceptReferenceTerm since version 1.9
+	 * 
 	 * @param source The source to set.
+	 * @deprecated
+	 * @see ConceptReferenceTerm#setConceptSource(ConceptSource)
 	 */
-	@Element
+	@Deprecated
 	public void setSource(ConceptSource source) {
-		this.source = source;
+		if (getConceptReferenceTerm() != null)
+			getConceptReferenceTerm().setConceptSource(source);
 	}
 	
 	/**
+	 * The sourceCode should be accessed from the associated ConceptReferenceTerm since version 1.9
+	 * 
 	 * @return Returns the sourceCode.
+	 * @deprecated
+	 * @see ConceptReferenceTerm#getCode()
 	 */
-	@Element
+	@Deprecated
 	public String getSourceCode() {
-		return sourceCode;
+		if (getConceptReferenceTerm() == null)
+			return null;
+		return getConceptReferenceTerm().getCode();
 	}
 	
 	/**
+	 * The sourceCode should be set on the associated ConceptReferenceTerm since version 1.9
+	 * 
 	 * @param sourceCode The sourceCode to set.
+	 * @deprecated
+	 * @see ConceptReferenceTerm#setCode(String)
 	 */
-	@Element
+	@Deprecated
 	public void setSourceCode(String sourceCode) {
-		this.sourceCode = sourceCode;
+		if (getConceptReferenceTerm() != null)
+			getConceptReferenceTerm().setCode(sourceCode);
+	}
+	
+	/**
+	 * @return the conceptReferenceTerm
+	 * @since 1.9
+	 */
+	public ConceptReferenceTerm getConceptReferenceTerm() {
+		return conceptReferenceTerm;
+	}
+	
+	/**
+	 * @param conceptReferenceTerm the conceptReferenceTerm to set
+	 * @since 1.9
+	 */
+	public void setConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) {
+		this.conceptReferenceTerm = conceptReferenceTerm;
 	}
 	
 	/**
@@ -205,40 +234,6 @@ public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.
 	 */
 	public void setId(Integer id) {
 		setConceptMapId(id);
-	}
-	
-	/**
-	 * Not currently used. Always returns null.
-	 * 
-	 * @see org.openmrs.Auditable#getChangedBy()
-	 */
-	public User getChangedBy() {
-		return null;
-	}
-	
-	/**
-	 * Not currently used. Always returns null.
-	 * 
-	 * @see org.openmrs.Auditable#getDateChanged()
-	 */
-	public Date getDateChanged() {
-		return null;
-	}
-	
-	/**
-	 * Not currently used.
-	 * 
-	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
-	 */
-	public void setChangedBy(User changedBy) {
-	}
-	
-	/**
-	 * Not currently used.
-	 * 
-	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
-	 */
-	public void setDateChanged(Date dateChanged) {
 	}
 	
 }

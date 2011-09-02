@@ -6,8 +6,12 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptMap;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.api.ConceptNameType;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -213,6 +217,34 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
 	@Test
+	@Verifies(value = "should fail if the concept map type property for a concept mapping is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfTheConceptMapTypePropertyForAConceptMappingIsNull() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("my name", Context.getLocale()));
+		concept.addConceptMapping(new ConceptMap(Context.getConceptService().getConceptReferenceTerm(1), null));
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptMapType"));
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if the concept reference term property for a concept mapping is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfTheConceptReferenceTermPropertyForAConceptMappingIsNull() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("my name", Context.getLocale()));
+		concept.addConceptMapping(new ConceptMap(null, Context.getConceptService().getConceptMapType(1)));
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptReferenceTerm"));
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
 	@Verifies(value = "should pass if the concept has a synonym that is also a short name", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() throws Exception {
 		Concept concept = new Concept();
@@ -225,5 +257,65 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * This test should pass if the map type id is set
+	 * 
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if a concept map type created on the fly is used for a mapping", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAConceptMapTypeCreatedOnTheFlyIsUsedForAMapping() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("my name", Context.getLocale()));
+		ConceptMapType cmt = new ConceptMapType();
+		cmt.setName("name");
+		concept.addConceptMapping(new ConceptMap(Context.getConceptService().getConceptReferenceTerm(1), cmt));
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptMapType"));
+	}
+	
+	/**
+	 * This test should pass if the term id is set
+	 * 
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if a term created on the fly is used for a mapping", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfATermCreatedOnTheFlyIsUsedForAMapping() throws Exception {
+		Concept concept = new Concept();
+		ConceptService cs = Context.getConceptService();
+		concept.addName(new ConceptName("my name", Context.getLocale()));
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term.setCode("unique code");
+		term.setConceptSource(cs.getConceptSource(1));
+		
+		concept.addConceptMapping(new ConceptMap(term, cs.getConceptMapType(1)));
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptReferenceTerm"));
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if a term is mapped multiple times to the same concept", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfATermIsMappedMultipleTimesToTheSameConcept() throws Exception {
+		Concept concept = new Concept();
+		ConceptService cs = Context.getConceptService();
+		concept.addName(new ConceptName("my name", Context.getLocale()));
+		ConceptMap map1 = new ConceptMap(cs.getConceptReferenceTerm(1), cs.getConceptMapType(1));
+		concept.addConceptMapping(map1);
+		ConceptMap map2 = new ConceptMap(cs.getConceptReferenceTerm(1), cs.getConceptMapType(1));
+		concept.addConceptMapping(map2);
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		
+		//the second mapping should be rejected
+		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[1]"));
 	}
 }
