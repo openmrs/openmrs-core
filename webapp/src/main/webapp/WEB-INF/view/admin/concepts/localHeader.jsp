@@ -63,6 +63,23 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:globalProperty key="concept_map_type_management.enable" defaultValue="false" var="allowConceptMapTypeManagement"/>
+	<c:if test='${allowConceptMapTypeManagement}'>
+	<openmrs:hasPrivilege privilege="Manage Concept Map Types">
+		<li <c:if test='<%= request.getRequestURI().contains("conceptMapType") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/concepts/conceptMapTypeList.list">
+				<spring:message code="ConceptMapType.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	</c:if>
+	<openmrs:hasPrivilege privilege="Manage Concept Reference Terms">
+		<li <c:if test='<%= request.getRequestURI().contains("conceptReferenceTerm") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/concepts/conceptReferenceTerms.htm">
+				<spring:message code="ConceptReferenceTerm.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >

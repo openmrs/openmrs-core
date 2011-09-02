@@ -1,0 +1,174 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
+package org.openmrs.validator;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptReferenceTermMap;
+import org.openmrs.annotation.Handler;
+import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+
+/**
+ * Validates {@link ConceptReferenceTerm} objects.
+ * 
+ * @since 1.9
+ */
+@Handler(supports = { ConceptReferenceTerm.class }, order = 50)
+public class ConceptReferenceTermValidator implements Validator {
+	
+	// Log for this class
+	private static final Log log = LogFactory.getLog(ConceptReferenceTermValidator.class);
+	
+	/**
+	 * Determines if the command object being submitted is a valid type
+	 * 
+	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
+	 */
+	@SuppressWarnings("rawtypes")
+	public boolean supports(Class c) {
+		return ConceptReferenceTerm.class.isAssignableFrom(c);
+	}
+	
+	/**
+	 * Checks that a given concept reference term object is valid.
+	 * 
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
+	 * @should fail if the concept reference term object is null
+	 * @should fail if the name is a white space character
+	 * @should fail if the concept reference term name is a duplicate in its concept source
+	 * @should fail if the code is null
+	 * @should fail if the code is an empty string
+	 * @should fail if the code is a white space character
+	 * @should fail if the concept reference term code is a duplicate in its concept source
+	 * @should fail if the concept source is null
+	 * @should pass if all the required fields are set and valid
+	 * @should pass if the duplicate name is for a term from another concept source
+	 * @should pass if the duplicate code is for a term from another concept source
+	 * @should fail if a concept reference term map has no concept map type
+	 * @should fail if a mapped concept reference term does not exist in the database
+	 * @should fail if a mapped concept map type does not exist in the database
+	 * @should fail if termB of a concept reference term map is not set
+	 * @should fail if a term is mapped to itself
+	 * @should fail if a term is mapped multiple times to the same term
+	 */
+	public void validate(Object obj, Errors errors) throws APIException {
+		
+		if (obj == null || !(obj instanceof ConceptReferenceTerm))
+			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"
+			        + ConceptReferenceTerm.class);
+		
+		ConceptReferenceTerm conceptReferenceTerm = (ConceptReferenceTerm) obj;
+		String name = conceptReferenceTerm.getName();
+		//For now accept empty name fields concept reference terms
+		/*if (!StringUtils.hasText(name)) {
+			errors.rejectValue("name", "ConceptReferenceTerm.error.nameRequired",
+			    "The name property is required for a concept reference term");
+			log.warn("The name property is required for a concept reference term");
+			return;
+		}*/
+		String code = conceptReferenceTerm.getCode();
+		if (!StringUtils.hasText(code)) {
+			errors.rejectValue("code", "ConceptReferenceTerm.error.codeRequired",
+			    "The code property is required for a concept reference term");
+			return;
+		}
+		if (conceptReferenceTerm.getConceptSource() == null) {
+			errors.rejectValue("conceptSource", "ConceptReferenceTerm.error.sourceRequired",
+			    "The conceptSource property is required for a concept reference term");
+			return;
+		} else if (conceptReferenceTerm.getConceptSource().getId() == null) {
+			errors.rejectValue("conceptSource", "ConceptReferenceTerm.source.notInDatabase",
+			    "Only existing concept reference sources can be used");
+			return;
+		}
+		
+		if (StringUtils.hasText(name)) {
+			name = name.trim();
+			//Ensure that there are no terms with the same name in the same source
+			ConceptReferenceTerm termWithDuplicateName = Context.getConceptService().getConceptReferenceTermByName(name,
+			    conceptReferenceTerm.getConceptSource());
+			if (termWithDuplicateName != null) {
+				if (!OpenmrsUtil.nullSafeEquals(termWithDuplicateName.getId(), conceptReferenceTerm.getId())) {
+					errors.rejectValue("name", "ConceptReferenceTerm.duplicate.name",
+					    "Duplicate concept reference term name: " + name);
+				}
+			}
+		}
+		
+		code = code.trim();
+		//Ensure that there are no terms with the same code in the same source
+		ConceptReferenceTerm termWithDuplicateCode = Context.getConceptService().getConceptReferenceTermByCode(code,
+		    conceptReferenceTerm.getConceptSource());
+		if (termWithDuplicateCode != null) {
+			if (!OpenmrsUtil.nullSafeEquals(termWithDuplicateCode.getId(), conceptReferenceTerm.getId())) {
+				errors.rejectValue("code", "ConceptReferenceTerm.duplicate.code",
+				    "Duplicate concept reference term code in its concept source: " + code);
+			}
+		}
+		
+		//validate the concept reference term maps
+		if (CollectionUtils.isNotEmpty(conceptReferenceTerm.getConceptReferenceTermMaps())) {
+			int index = 0;
+			Set<Integer> mappedTermIds = null;
+			for (ConceptReferenceTermMap map : conceptReferenceTerm.getConceptReferenceTermMaps()) {
+				if (map == null)
+					throw new APIException("Cannot add a null concept reference term map");
+				
+				if (map.getConceptMapType() == null) {
+					errors.rejectValue("conceptReferenceTermMaps[" + index + "].conceptMapType",
+					    "ConceptReferenceTerm.error.mapTypeRequired", "Concept Map Type is required");
+				} else if (map.getConceptMapType().getId() == null) {
+					errors.rejectValue("conceptReferenceTermMaps[" + index + "].conceptMapType",
+					    "ConceptReferenceTerm.mapType.notInDatabase", "Only existing concept map types can be used");
+				} else if (map.getTermB() == null) {
+					errors.rejectValue("conceptReferenceTermMaps[" + index + "].termB",
+					    "ConceptReferenceTerm.error.termBRequired", "Mapped Term is required");
+				} else if (map.getTermB().getId() == null) {
+					errors.rejectValue("conceptReferenceTermMaps[" + index + "].termB",
+					    "ConceptReferenceTerm.term.notInDatabase", "Only existing concept reference terms can be mapped");
+				} else if (map.getTermB().equals(conceptReferenceTerm)) {
+					errors.rejectValue("conceptReferenceTermMaps[" + index + "].termB", "ConceptReferenceTerm.map.sameTerm",
+					    "Cannot map a concept reference term to itself");
+				}
+				
+				//don't proceed to the next map
+				if (errors.hasErrors())
+					return;
+				
+				if (mappedTermIds == null)
+					mappedTermIds = new HashSet<Integer>();
+				
+				//if we already have a mapping to this term, reject it this map
+				if (!mappedTermIds.add(map.getTermB().getId())) {
+					errors.rejectValue("conceptReferenceTermMaps[" + index + "].termB",
+					    "ConceptReferenceTerm.termToTerm.alreadyMapped",
+					    "Cannot map a reference term multiple times to the same concept reference term");
+				}
+				
+				index++;
+			}
+		}
+	}
+}

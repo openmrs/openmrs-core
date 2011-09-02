@@ -5,7 +5,7 @@
 
 <hibernate-mapping>
 
-	<class name="org.openmrs.ConceptSource" table="concept_source">
+	<class name="org.openmrs.ConceptSource" table="concept_reference_source">
 
 		<id name="conceptSourceId" type="java.lang.Integer" column="concept_source_id" unsaved-value="0">
 			<generator class="native">

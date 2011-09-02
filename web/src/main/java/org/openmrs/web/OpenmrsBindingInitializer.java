@@ -20,8 +20,10 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
@@ -50,8 +52,10 @@ import org.openmrs.propertyeditor.ConceptAnswerEditor;
 import org.openmrs.propertyeditor.ConceptClassEditor;
 import org.openmrs.propertyeditor.ConceptDatatypeEditor;
 import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.ConceptMapTypeEditor;
 import org.openmrs.propertyeditor.ConceptNameEditor;
 import org.openmrs.propertyeditor.ConceptNumericEditor;
+import org.openmrs.propertyeditor.ConceptReferenceTermEditor;
 import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.propertyeditor.DataExportReportObjectEditor;
 import org.openmrs.propertyeditor.DrugEditor;
@@ -131,6 +135,10 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, NumberFormat
 		        .getInstance(Context.getLocale()), true));
 		wdb.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
+		wdb.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
+		wdb.registerCustomEditor(ConceptMapType.class, new ConceptMapTypeEditor());
+		wdb.registerCustomEditor(ConceptSource.class, new ConceptSourceEditor());
+		wdb.registerCustomEditor(ConceptReferenceTerm.class, new ConceptReferenceTermEditor());
 		wdb.registerCustomEditor(VisitType.class, new VisitTypeEditor());
 		wdb.registerCustomEditor(Visit.class, new VisitEditor());
 		

@@ -42,10 +42,12 @@ import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
@@ -1367,7 +1369,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link ConceptService#getConcepts(String, java.util.List, boolean, java.util.List, java.util.List, java.util.List, java.util.List, org.openmrs.Concept, Integer, Integer)}
-	 * 
 	 */
 	@Test
 	@Ignore
@@ -1674,4 +1675,361 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		}
 	}
 	
+	/**
+	 * @see {@link ConceptService#getConceptReferenceTermByName(String,ConceptSource)}
+	 */
+	@Test
+	@Verifies(value = "should return a concept reference term that matches the given name from the given source", method = "getConceptReferenceTermByName(String,ConceptSource)")
+	public void getConceptReferenceTermByName_shouldReturnAConceptReferenceTermThatMatchesTheGivenNameFromTheGivenSource()
+	        throws Exception {
+		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTermByName("weight term",
+		    new ConceptSource(1));
+		Assert.assertNotNull(term);
+		Assert.assertEquals("weight term", term.getName());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptReferenceTermByCode(String,ConceptSource)}
+	 */
+	@Test
+	@Verifies(value = "should return a concept reference term that matches the given code from the given source", method = "getConceptReferenceTermByCode(String,ConceptSource)")
+	public void getConceptReferenceTermByCode_shouldReturnAConceptReferenceTermThatMatchesTheGivenCodeFromTheGivenSource()
+	        throws Exception {
+		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTermByCode("2332523",
+		    new ConceptSource(2));
+		Assert.assertNotNull(term);
+		Assert.assertEquals("2332523", term.getCode());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptMapTypes(null,null)}
+	 */
+	@Test
+	@Verifies(value = "should not include hidden concept map types if includeHidden is set to false", method = "getConceptMapTypes(null,null)")
+	public void getConceptMapTypes_shouldNotIncludeHiddenConceptMapTypesIfIncludeHiddenIsSetToFalse() throws Exception {
+		Assert.assertEquals(6, Context.getConceptService().getConceptMapTypes(true, false).size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptMapTypes(null,null)}
+	 */
+	@Test
+	@Verifies(value = "should return all the concept map types if includeRetired and hidden are set to true", method = "getConceptMapTypes(null,null)")
+	public void getConceptMapTypes_shouldReturnAllTheConceptMapTypesIfIncludeRetiredAndHiddenAreSetToTrue() throws Exception {
+		Assert.assertEquals(7, Context.getConceptService().getConceptMapTypes(true, true).size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptMapTypes(null,null)}
+	 */
+	@Test
+	@Verifies(value = "should return only un retired concept map types if includeRetired is set to false", method = "getConceptMapTypes(null,null)")
+	public void getConceptMapTypes_shouldReturnOnlyUnRetiredConceptMapTypesIfIncludeRetiredIsSetToFalse() throws Exception {
+		Assert.assertEquals(6, Context.getConceptService().getConceptMapTypes(false, true).size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getAllConceptMapTypes()}
+	 */
+	@Test
+	@Verifies(value = "should return all the concept map types excluding retired and hidden ones", method = "getAllConceptMapTypes()")
+	public void getAllConceptMapTypes_shouldReturnAllTheConceptMapTypesExcludingRetiredAndHiddenOnes() throws Exception {
+		Assert.assertEquals(5, Context.getConceptService().getAllConceptMapTypes().size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptMapTypeByName(String)}
+	 */
+	@Test
+	@Verifies(value = "should return a conceptMapType matching the specified name", method = "getConceptMapTypeByName(String)")
+	public void getConceptMapTypeByName_shouldReturnAConceptMapTypeMatchingTheSpecifiedName() throws Exception {
+		Assert.assertEquals("same-as", Context.getConceptService().getConceptMapTypeByName("same-as").getName());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptMapTypeByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should return a conceptMapType matching the specified uuid", method = "getConceptMapTypeByUuid(String)")
+	public void getConceptMapTypeByUuid_shouldReturnAConceptMapTypeMatchingTheSpecifiedUuid() throws Exception {
+		Assert.assertEquals("is-parent-to", Context.getConceptService().getConceptMapTypeByUuid(
+		    "0e7a8536-49d6-11e0-8fed-18a905e044dc").getName());
+	}
+	
+	/**
+	 * @see {@link ConceptService#purgeConceptMapType(ConceptMapType)}
+	 */
+	@Test
+	@Verifies(value = "should delete the specified conceptMapType from the database", method = "purgeConceptMapType(ConceptMapType)")
+	public void purgeConceptMapType_shouldDeleteTheSpecifiedConceptMapTypeFromTheDatabase() throws Exception {
+		//sanity check
+		ConceptMapType mapType = Context.getConceptService().getConceptMapType(1);
+		Assert.assertNotNull(mapType);
+		Context.getConceptService().purgeConceptMapType(mapType);
+		Assert.assertNull(Context.getConceptService().getConceptMapType(1));
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptMapType(ConceptMapType)}
+	 */
+	@Test
+	@Verifies(value = "should add the specified concept map type to the database and assign to it an id", method = "saveConceptMapType(ConceptMapType)")
+	public void saveConceptMapType_shouldAddTheSpecifiedConceptMapTypeToTheDatabaseAndAssignToItAnId() throws Exception {
+		ConceptMapType mapType = new ConceptMapType();
+		mapType.setName("test type");
+		mapType = Context.getConceptService().saveConceptMapType(mapType);
+		Assert.assertNotNull(mapType.getId());
+		Assert.assertNotNull(Context.getConceptService().getConceptMapTypeByName("test type"));
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptMapType(ConceptMapType)}
+	 */
+	@Test
+	@Verifies(value = "should update an existing concept map type", method = "saveConceptMapType(ConceptMapType)")
+	public void saveConceptMapType_shouldUpdateAnExistingConceptMapType() throws Exception {
+		ConceptMapType mapType = Context.getConceptService().getConceptMapType(1);
+		//sanity checks
+		Assert.assertNull(mapType.getDateChanged());
+		Assert.assertNull(mapType.getChangedBy());
+		mapType.setName("random name");
+		mapType.setDescription("random description");
+		ConceptMapType editedMapType = Context.getConceptService().saveConceptMapType(mapType);
+		Assert.assertEquals("random name", editedMapType.getName());
+		Assert.assertEquals("random description", editedMapType.getDescription());
+		//date changed and changed by should have been updated
+		Assert.assertNotNull(editedMapType.getDateChanged());
+		Assert.assertNotNull(editedMapType.getChangedBy());
+	}
+	
+	/**
+	 * @see {@link ConceptService#retireConceptMapType(ConceptMapType,String)}
+	 */
+	@Test
+	@Verifies(value = "should retire the specified conceptMapType with the given retire reason", method = "retireConceptMapType(ConceptMapType,String)")
+	public void retireConceptMapType_shouldRetireTheSpecifiedConceptMapTypeWithTheGivenRetireReason() throws Exception {
+		ConceptMapType mapType = Context.getConceptService().getConceptMapType(1);
+		Assert.assertFalse(mapType.isRetired());
+		Assert.assertNull(mapType.getRetiredBy());
+		Assert.assertNull(mapType.getDateRetired());
+		Assert.assertNull(mapType.getRetireReason());
+		ConceptMapType retiredMapType = Context.getConceptService().retireConceptMapType(mapType, "test retire reason");
+		Assert.assertTrue(retiredMapType.isRetired());
+		Assert.assertEquals(retiredMapType.getRetireReason(), "test retire reason");
+		Assert.assertNotNull(retiredMapType.getRetiredBy());
+		Assert.assertNotNull(retiredMapType.getDateRetired());
+	}
+	
+	/**
+	 * @see {@link ConceptService#retireConceptMapType(ConceptMapType,String)}
+	 */
+	@Test
+	@Verifies(value = "should should set the default retire reason if none is given", method = "retireConceptMapType(ConceptMapType,String)")
+	public void retireConceptMapType_shouldShouldSetTheDefaultRetireReasonIfNoneIsGiven() throws Exception {
+		//sanity check
+		ConceptMapType mapType = Context.getConceptService().getConceptMapType(1);
+		Assert.assertNull(mapType.getRetireReason());
+		ConceptMapType retiredMapType = Context.getConceptService().retireConceptMapType(mapType, null);
+		Assert.assertNotNull(retiredMapType.getRetireReason());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getAllConceptReferenceTerms(null)}
+	 */
+	@Test
+	@Verifies(value = "should return all the concept reference terms if includeRetired is set to true", method = "getAllConceptReferenceTerms(null)")
+	public void getAllConceptReferenceTerms_shouldReturnAllTheConceptReferenceTermsIfIncludeRetiredIsSetToTrue()
+	        throws Exception {
+		Assert.assertEquals(11, Context.getConceptService().getAllConceptReferenceTerms(true).size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getAllConceptReferenceTerms(null)}
+	 */
+	@Test
+	@Verifies(value = "should return only un retired concept reference terms if includeRetired is set to false", method = "getAllConceptReferenceTerms(null)")
+	public void getAllConceptReferenceTerms_shouldReturnOnlyUnRetiredConceptReferenceTermsIfIncludeRetiredIsSetToFalse()
+	        throws Exception {
+		Assert.assertEquals(10, Context.getConceptService().getAllConceptReferenceTerms(false).size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptReferenceTermByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should return the concept reference term that matches the given uuid", method = "getConceptReferenceTermByUuid(String)")
+	public void getConceptReferenceTermByUuid_shouldReturnTheConceptReferenceTermThatMatchesTheGivenUuid() throws Exception {
+		Assert.assertEquals("weight term2", Context.getConceptService().getConceptReferenceTermByUuid("SNOMED CT-2332523")
+		        .getName());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptReferenceTermsBySource(ConceptSource)}
+	 */
+	@Test
+	@Verifies(value = "should return only the concept reference terms from the given concept source", method = "getConceptReferenceTermsBySource(ConceptSource)")
+	public void getConceptReferenceTermsBySource_shouldReturnOnlyTheConceptReferenceTermsFromTheGivenConceptSource()
+	        throws Exception {
+		Assert.assertEquals(9, Context.getConceptService().getConceptReferenceTermsBySource(new ConceptSource(1)).size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#retireConceptReferenceTerm(ConceptReferenceTerm,String)}
+	 */
+	@Test
+	@Verifies(value = "should retire the specified concept reference term with the given retire reason", method = "retireConceptReferenceTerm(ConceptReferenceTerm,String)")
+	public void retireConceptReferenceTerm_shouldRetireTheSpecifiedConceptReferenceTermWithTheGivenRetireReason()
+	        throws Exception {
+		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTerm(1);
+		Assert.assertFalse(term.isRetired());
+		Assert.assertNull(term.getRetireReason());
+		Assert.assertNull(term.getRetiredBy());
+		Assert.assertNull(term.getDateRetired());
+		ConceptReferenceTerm retiredTerm = Context.getConceptService()
+		        .retireConceptReferenceTerm(term, "test retire reason");
+		Assert.assertTrue(retiredTerm.isRetired());
+		Assert.assertEquals("test retire reason", retiredTerm.getRetireReason());
+		Assert.assertNotNull(retiredTerm.getRetiredBy());
+		Assert.assertNotNull(retiredTerm.getDateRetired());
+	}
+	
+	/**
+	 * @see {@link ConceptService#retireConceptReferenceTerm(ConceptReferenceTerm,String)}
+	 */
+	@Test
+	@Verifies(value = "should should set the default retire reason if none is given", method = "retireConceptReferenceTerm(ConceptReferenceTerm,String)")
+	public void retireConceptReferenceTerm_shouldShouldSetTheDefaultRetireReasonIfNoneIsGiven() throws Exception {
+		ConceptReferenceTerm term = Context.getConceptService()
+		        .retireConceptReferenceTerm(new ConceptReferenceTerm(1), null);
+		Assert.assertNotNull(term.getRetireReason());
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptReferenceTerm(ConceptReferenceTerm)}
+	 */
+	@Test
+	@Verifies(value = "should add a concept reference term to the database and assign an id to it", method = "saveConceptReferenceTerm(ConceptReferenceTerm)")
+	public void saveConceptReferenceTerm_shouldAddAConceptReferenceTermToTheDatabaseAndAssignAnIdToIt() throws Exception {
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term.setName("test term");
+		term.setCode("test code");
+		ConceptSource source = Context.getConceptService().getConceptSource(1);
+		term.setConceptSource(source);
+		ConceptReferenceTerm savedTerm = Context.getConceptService().saveConceptReferenceTerm(term);
+		Assert.assertNotNull(savedTerm.getId());
+		Assert.assertNotNull(Context.getConceptService().getConceptReferenceTermByName("test term", source));
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptReferenceTerm(ConceptReferenceTerm)}
+	 */
+	@Test
+	@Verifies(value = "should update changes to the concept reference term in the database", method = "saveConceptReferenceTerm(ConceptReferenceTerm)")
+	public void saveConceptReferenceTerm_shouldUpdateChangesToTheConceptReferenceTermInTheDatabase() throws Exception {
+		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTerm(1);
+		//sanity checks
+		Assert.assertEquals(Context.getConceptService().getConceptSource(1), term.getConceptSource());
+		Assert.assertNull(term.getChangedBy());
+		Assert.assertNull(term.getDateChanged());
+		term.setName("new name");
+		term.setCode("new code");
+		term.setDescription("new descr");
+		term.setConceptSource(Context.getConceptService().getConceptSource(2));
+		ConceptReferenceTerm editedTerm = Context.getConceptService().saveConceptReferenceTerm(term);
+		Assert.assertEquals("new name", editedTerm.getName());
+		Assert.assertEquals("new code", editedTerm.getCode());
+		Assert.assertEquals("new descr", editedTerm.getDescription());
+		Assert.assertEquals(new ConceptSource(2), editedTerm.getConceptSource());
+		//The auditable fields should have been set
+		Assert.assertNotNull(term.getChangedBy());
+		Assert.assertNotNull(term.getDateChanged());
+	}
+	
+	/**
+	 * @see {@link ConceptService#unretireConceptMapType(ConceptMapType)}
+	 */
+	@Test
+	@Verifies(value = "should unretire the specified concept map type and drop all retire related fields", method = "unretireConceptMapType(ConceptMapType)")
+	public void unretireConceptMapType_shouldUnretireTheSpecifiedConceptMapTypeAndDropAllRetireRelatedFields()
+	        throws Exception {
+		ConceptMapType mapType = Context.getConceptService().getConceptMapType(6);
+		Assert.assertTrue(mapType.isRetired());
+		Assert.assertNotNull(mapType.getRetiredBy());
+		Assert.assertNotNull(mapType.getDateRetired());
+		Assert.assertNotNull(mapType.getRetireReason());
+		ConceptMapType unRetiredMapType = Context.getConceptService().unretireConceptMapType(mapType);
+		Assert.assertFalse(unRetiredMapType.isRetired());
+		Assert.assertNull(unRetiredMapType.getRetireReason());
+		Assert.assertNull(unRetiredMapType.getRetiredBy());
+		Assert.assertNull(unRetiredMapType.getDateRetired());
+	}
+	
+	/**
+	 * @see {@link ConceptService#unretireConceptReferenceTerm(ConceptReferenceTerm)}
+	 */
+	@Test
+	@Verifies(value = "should unretire the specified concept reference term and drop all retire related fields", method = "unretireConceptReferenceTerm(ConceptReferenceTerm)")
+	public void unretireConceptReferenceTerm_shouldUnretireTheSpecifiedConceptReferenceTermAndDropAllRetireRelatedFields()
+	        throws Exception {
+		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTerm(11);
+		Assert.assertTrue(term.isRetired());
+		Assert.assertNotNull(term.getRetireReason());
+		Assert.assertNotNull(term.getRetiredBy());
+		Assert.assertNotNull(term.getDateRetired());
+		ConceptReferenceTerm retiredTerm = Context.getConceptService().unretireConceptReferenceTerm(term);
+		Assert.assertFalse(retiredTerm.isRetired());
+		Assert.assertNull(retiredTerm.getRetireReason());
+		Assert.assertNull(retiredTerm.getRetiredBy());
+		Assert.assertNull(retiredTerm.getDateRetired());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should return terms that match the code", method = "getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)")
+	public void getConceptReferenceTerms_shouldReturnTermsThatMatchTheCode() throws Exception {
+		Assert.assertEquals(1, Context.getConceptService().getConceptReferenceTerms("retired code",
+		    Context.getConceptService().getConceptSource(1), null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should return terms that match the name", method = "getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)")
+	public void getConceptReferenceTerms_shouldReturnTermsThatMatchTheName() throws Exception {
+		Assert.assertEquals(1, Context.getConceptService().getConceptReferenceTerms("retired name",
+		    Context.getConceptService().getConceptSource(1), null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getAllConceptReferenceTerms()}
+	 */
+	@Test
+	@Verifies(value = "should return all un retired concept reference terms in the database", method = "getAllConceptReferenceTerms()")
+	public void getAllConceptReferenceTerms_shouldReturnAllUnRetiredConceptReferenceTermsInTheDatabase() throws Exception {
+		Assert.assertEquals(10, Context.getConceptService().getAllConceptReferenceTerms().size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptMapsBySource(ConceptSource)}
+	 */
+	@Test
+	@Verifies(value = "should return a List of ConceptMaps from the given source", method = "getConceptMapsBySource(ConceptSource)")
+	public void getConceptMapsBySource_shouldReturnAListOfConceptMapsFromTheGivenSource() throws Exception {
+		Assert.assertEquals(8, Context.getConceptService().getConceptMapsBySource(
+		    Context.getConceptService().getConceptSource(1)).size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptMappingsTo(ConceptReferenceTerm)}
+	 */
+	@Test
+	@Verifies(value = "should return all concept reference term maps where the specified term is the termB", method = "getConceptMappingsTo(ConceptReferenceTerm)")
+	public void getConceptMappingsTo_shouldReturnAllConceptReferenceTermMapsWhereTheSpecifiedTermIsTheTermB()
+	        throws Exception {
+		Assert.assertEquals(2, Context.getConceptService().getConceptMappingsTo(
+		    Context.getConceptService().getConceptReferenceTerm(4)).size());
+	}
 }

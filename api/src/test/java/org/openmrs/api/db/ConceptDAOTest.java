@@ -19,9 +19,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptWord;
 import org.openmrs.api.ConceptNameType;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -327,6 +330,61 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		//Sanity check for the test to be concrete, i.e. the word should be part of the concept name
 		Assert.assertTrue(cn.getName().toUpperCase().indexOf(word.getWord()) > -1);
 		dao.weighConceptWord(word);
+	}
+	
+	/**
+	 * @see {@link ConceptDAO#isConceptMapTypeInUse(ConceptMapType)}
+	 */
+	@Test
+	@Verifies(value = "should return true if a mapType has a conceptMap or more using it", method = "isConceptMapTypeInUse(ConceptMapType)")
+	public void isConceptMapTypeInUse_shouldReturnTrueIfAMapTypeHasAConceptMapOrMoreUsingIt() throws Exception {
+		Assert.assertTrue(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(6)));
+	}
+	
+	/**
+	 * @see {@link ConceptDAO#isConceptMapTypeInUse(ConceptMapType)}
+	 */
+	@Test
+	@Verifies(value = "should return true if a mapType has a conceptReferenceTermMap or more using it", method = "isConceptMapTypeInUse(ConceptMapType)")
+	public void isConceptMapTypeInUse_shouldReturnTrueIfAMapTypeHasAConceptReferenceTermMapOrMoreUsingIt() throws Exception {
+		Assert.assertTrue(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(4)));
+	}
+	
+	/**
+	 * @see {@link ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)}
+	 */
+	@Test
+	@Verifies(value = "should return true if a term has a conceptMap or more using it", method = "isConceptReferenceTermInUse(ConceptReferenceTerm)")
+	public void isConceptReferenceTermInUse_shouldReturnTrueIfATermHasAConceptMapOrMoreUsingIt() throws Exception {
+		Assert.assertTrue(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(10)));
+	}
+	
+	/**
+	 * @see {@link ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)}
+	 */
+	@Test
+	@Verifies(value = "should return true if a term has a conceptReferenceTermMap or more using it", method = "isConceptReferenceTermInUse(ConceptReferenceTerm)")
+	public void isConceptReferenceTermInUse_shouldReturnTrueIfATermHasAConceptReferenceTermMapOrMoreUsingIt()
+	        throws Exception {
+		Assert.assertTrue(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(2)));
+	}
+	
+	/**
+	 * @see {@link ConceptDAO#isConceptMapTypeInUse(ConceptMapType)}
+	 */
+	@Test
+	@Verifies(value = "should return false if a mapType has no maps using it", method = "isConceptMapTypeInUse(ConceptMapType)")
+	public void isConceptMapTypeInUse_shouldReturnFalseIfAMapTypeHasNoMapsUsingIt() throws Exception {
+		Assert.assertFalse(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(3)));
+	}
+	
+	/**
+	 * @see {@link ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)}
+	 */
+	@Test
+	@Verifies(value = "should return false if a term has no maps using it", method = "isConceptReferenceTermInUse(ConceptReferenceTerm)")
+	public void isConceptReferenceTermInUse_shouldReturnFalseIfATermHasNoMapsUsingIt() throws Exception {
+		Assert.assertFalse(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(11)));
 	}
 	
 }

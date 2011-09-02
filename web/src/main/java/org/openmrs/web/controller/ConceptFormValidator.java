@@ -40,7 +40,7 @@ public class ConceptFormValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public boolean supports(Class c) {
 		return c.equals(ConceptFormBackingObject.class);
 	}
@@ -57,14 +57,20 @@ public class ConceptFormValidator implements Validator {
 		if (backingObject.getConcept() == null) {
 			errors.rejectValue("concept", "error.general");
 		} else {
-			// TODO add more validation here
-			
-			// validate that each mapping's concept source text is not empty
-			for (int x = 0; x < backingObject.getMappings().size(); x++) {
-				ConceptMap map = backingObject.getMappings().get(x);
-				// skip over null ones...those are deleted mappings
-				if (map.getSourceCode() != null && map.getSourceCode().length() == 0) {
-					errors.rejectValue("mappings[" + x + "].sourceCode", "Concept.mappings.sourceCodeRequired");
+			// validate the concept term mappings
+			for (int x = 0; x < backingObject.getConceptMappings().size(); x++) {
+				ConceptMap map = backingObject.getConceptMappings().get(x);
+				//this mapping has been removed or ignore it
+				if (map.getConceptReferenceTerm() == null)
+					continue;
+				//if this is a term getting created on the fly
+				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {
+					if (!StringUtils.hasText(map.getConceptReferenceTerm().getCode()))
+						errors.rejectValue("conceptMappings[" + x + "]", "ConceptReferenceTerm.error.codeRequired");
+					else if (map.getConceptMapType() == null)
+						errors.rejectValue("conceptMappings[" + x + "]", "ConceptReferenceTerm.error.mapTypeRequired");
+					else if (map.getConceptReferenceTerm().getConceptSource() == null)
+						errors.rejectValue("conceptMappings[" + x + "]", "ConceptReferenceTerm.error.sourceRequired");
 				}
 			}
 			

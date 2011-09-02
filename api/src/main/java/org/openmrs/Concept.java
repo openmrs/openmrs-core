@@ -793,7 +793,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 *@deprecated use {@link #setShortName(ConceptName)}
+	 * @deprecated use {@link #setShortName(ConceptName)}
 	 */
 	@Deprecated
 	public void setShortName(Locale locale, ConceptName shortName) {
@@ -1410,6 +1410,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@ElementList(required = false)
 	public Collection<ConceptMap> getConceptMappings() {
+		if (conceptMappings == null)
+			conceptMappings = new HashSet<ConceptMap>();
 		return conceptMappings;
 	}
 	

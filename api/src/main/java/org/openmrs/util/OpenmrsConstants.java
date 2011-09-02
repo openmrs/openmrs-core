@@ -80,11 +80,10 @@ public final class OpenmrsConstants {
 	        .getSpecificationVersion() : getVersion();
 	
 	/**
-	 * Somewhat hacky method to fetch the version from the maven pom.properties file.
-	 * <br/>
-	 * This method should not be used unless in a dev environment.  The preferred way to get the 
-	 * version is from the manifest in the api jar file.  More detail is included in the 
-	 * properties there. 
+	 * Somewhat hacky method to fetch the version from the maven pom.properties file. <br/>
+	 * This method should not be used unless in a dev environment. The preferred way to get the
+	 * version is from the manifest in the api jar file. More detail is included in the properties
+	 * there.
 	 * 
 	 * @return version number defined in maven pom.xml file(s)
 	 * @see #OPENMRS_VERSION_SHORT
@@ -880,6 +879,11 @@ public final class OpenmrsConstants {
 	public static final String GP_SEARCH_WIDGET_DELAY_INTERVAL = "searchWidget.searchDelayInterval";
 	
 	/**
+	 * Global property name for enabling/disabling concept map type management
+	 */
+	public static final String GP_ENABLE_CONCEPT_MAP_TYPE_MANAGEMENT = "concept_map_type_management.enable";
+	
+	/**
 	 * Global property name for the handler that assigns visits to encounters
 	 */
 	public static final String GP_VISIT_ASSIGNMENT_HANDLER = "visit.assignmentHandler";
@@ -1266,6 +1270,9 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		                "START",
 		                "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
+		
+		props.add(new GlobalProperty(GP_ENABLE_CONCEPT_MAP_TYPE_MANAGEMENT, "false",
+		        "Enable or disables management of concept map types"));
 		
 		props
 		        .add(new GlobalProperty(
