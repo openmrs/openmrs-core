@@ -1636,6 +1636,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		//We should have a visit.
 		assertNotNull(encounter.getVisit());
+		assertNotNull(encounter.getVisit().getVisitId());
 	}
 	
 	/**
