@@ -32,14 +32,14 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	
 	protected Validator validator;
 	
-    /**
-     * @param validator the validator to set
-     */
+	/**
+	 * @param validator the validator to set
+	 */
 	@Resource(name = "personValidator")
-    public void setValidator(Validator validator) {
-    	this.validator = validator;
-    }
-
+	public void setValidator(Validator validator) {
+		this.validator = validator;
+	}
+	
 	/**
 	 * @see PersonValidator#validate(Object,Errors)
 	 * @verifies fail validation if birthdate is a future date

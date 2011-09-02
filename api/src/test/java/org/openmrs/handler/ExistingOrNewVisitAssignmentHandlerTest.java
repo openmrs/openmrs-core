@@ -29,7 +29,7 @@ import org.openmrs.test.Verifies;
  * Tests methods in the {@link ExistingOrNewVisitAssignmentHandler}
  */
 public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiveTest {
-
+	
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-initialData.xml";
 	
 	/**
