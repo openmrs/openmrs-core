@@ -19,12 +19,14 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
  * Tests for the {@link PersonVoidHandler} class.
  */
-public class PersonVoidHandlerTest {
+public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonVoidHandler#handle(Person,User,Date,String)}
@@ -118,6 +120,26 @@ public class PersonVoidHandlerTest {
 		
 		handler.handle(person, null, null, "THE REASON");
 		Assert.assertNull(person.getPersonVoidReason());
+	}
+	
+	/**
+	 * @see PersonVoidHandler#handle(Person,User,Date,String)
+	 * @verifies retire users
+	 */
+	@Test
+	public void handle_shouldRetireUsers() throws Exception {
+		//given
+		VoidHandler<Person> handler = new PersonVoidHandler();
+		Person person = Context.getPersonService().getPerson(2);
+		User user = new User(person);
+		Context.getUserService().saveUser(user, "Admin123");
+		Assert.assertFalse(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+		
+		//when
+		handler.handle(person, null, null, "reason");
+		
+		//then
+		Assert.assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
 	}
 	
 }

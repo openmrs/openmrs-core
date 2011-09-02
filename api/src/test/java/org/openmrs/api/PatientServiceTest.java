@@ -2400,4 +2400,76 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = patientService.getPatientOrPromotePerson(-1);
 		Assert.assertNull(patient);
 	}
+	
+	/**
+	 * @see PatientService#voidPatient(Patient,String)
+	 * @verifies void person
+	 */
+	@Test
+	public void voidPatient_shouldVoidPerson() throws Exception {
+		//given
+		Patient patient = patientService.getPatient(2);
+		
+		//when
+		patientService.voidPatient(patient, "reason");
+		
+		//then
+		Assert.assertTrue(patient.isPersonVoided());
+	}
+	
+	/**
+	 * @see PatientService#voidPatient(Patient,String)
+	 * @verifies retire users
+	 */
+	@Test
+	public void voidPatient_shouldRetireUsers() throws Exception {
+		//given
+		Patient patient = patientService.getPatient(2);
+		User user = new User(patient);
+		Context.getUserService().saveUser(user, "Admin123");
+		Assert.assertFalse(Context.getUserService().getUsersByPerson(patient, false).isEmpty());
+		
+		//when
+		patientService.voidPatient(patient, "reason");
+		
+		//then
+		Assert.assertTrue(Context.getUserService().getUsersByPerson(patient, false).isEmpty());
+	}
+	
+	/**
+	 * @see PatientService#unvoidPatient(Patient)
+	 * @verifies unvoid person
+	 */
+	@Test
+	public void unvoidPatient_shouldUnvoidPerson() throws Exception {
+		//given
+		Patient patient = patientService.getPatient(2);
+		patientService.voidPatient(patient, "reason");
+		Assert.assertTrue(patient.isPersonVoided());
+		
+		//when
+		patientService.unvoidPatient(patient);
+		
+		//then
+		Assert.assertFalse(patient.isPersonVoided());
+	}
+	
+	/**
+	 * @see PatientService#unvoidPatient(Patient)
+	 * @verifies not unretire users
+	 */
+	@Test
+	public void unvoidPatient_shouldNotUnretireUsers() throws Exception {
+		//given
+		Patient patient = patientService.getPatient(2);
+		User user = new User(patient);
+		Context.getUserService().saveUser(user, "Admin123");
+		patientService.voidPatient(patient, "reason");
+		
+		//when
+		patientService.unvoidPatient(patient);
+		
+		//then
+		Assert.assertTrue(Context.getUserService().getUsersByPerson(patient, false).isEmpty());
+	}
 }

@@ -38,7 +38,6 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PersonService;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PersonDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -419,30 +418,10 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#voidPerson(org.openmrs.Person, java.lang.String)
 	 */
 	public Person voidPerson(Person person, String reason) throws APIException {
-		for (PersonName pn : person.getNames()) {
-			if (!pn.isVoided()) {
-				pn.setVoided(true);
-				pn.setVoidReason(reason);
-			}
-		}
-		for (PersonAddress pa : person.getAddresses()) {
-			if (!pa.isVoided()) {
-				pa.setVoided(true);
-				pa.setVoidReason(reason);
-			}
-		}
+		if (person == null)
+			return null;
 		
-		person.setPersonVoided(true);
-		person.setPersonVoidedBy(Context.getAuthenticatedUser());
-		person.setPersonDateVoided(new Date());
-		person.setPersonVoidReason(reason);
-		savePerson(person);
-		Context.getPatientService().voidPatient(Context.getPatientService().getPatient(person.getPersonId()), reason);
-		UserService us = Context.getUserService();
-		for (User user : us.getUsersByPerson(person, false))
-			us.retireUser(user, reason);
-		
-		return person;
+		return dao.savePerson(person);
 	}
 	
 	/**

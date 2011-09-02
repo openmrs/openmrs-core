@@ -355,11 +355,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#voidPatient(org.openmrs.Patient, java.lang.String)
 	 */
 	public Patient voidPatient(Patient patient, String reason) throws APIException {
-		
-		// TODO should we move voided attributes from the patient up to the person?
-		// voiding a patient portion of a person and keeping the user portion doesn't
-		// seem like a necessary goal
-		
 		if (patient == null)
 			return null;
 		

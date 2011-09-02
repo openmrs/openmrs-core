@@ -19,6 +19,8 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
+import org.openmrs.api.UserService;
+import org.openmrs.api.context.Context;
 
 /**
  * This class sets the personVoid* attributes on the given {@link Person} object when a void* method
@@ -44,11 +46,18 @@ public class PersonVoidHandler implements VoidHandler<Person> {
 	 * @should set personDateVoided
 	 * @should not set personDateVoided if non null
 	 * @should not set the personVoidReason if already personVoided
+	 * @should retire users
 	 */
 	public void handle(Person person, User voidingUser, Date voidedDate, String voidReason) {
 		
 		// skip over all work if the object is already voided
 		if (!person.isPersonVoided()) {
+			if (person.getPersonId() != null) {
+				// Skip if person is not persisted
+				UserService us = Context.getUserService();
+				for (User user : us.getUsersByPerson(person, false))
+					us.retireUser(user, voidReason);
+			}
 			
 			person.setPersonVoided(true);
 			person.setPersonVoidReason(voidReason);
