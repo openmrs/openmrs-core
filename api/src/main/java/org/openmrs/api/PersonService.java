@@ -37,6 +37,10 @@ import org.springframework.transaction.annotation.Transactional;
  * Contains methods pertaining to Persons in the system Use:<br/>
  * 
  * <pre>
+ * 
+ * 
+ * 
+ * 
  * List&lt;Person&gt; personObjects = Context.getPersonService().getAllPersons();
  * </pre>
  * 
@@ -227,23 +231,26 @@ public interface PersonService extends OpenmrsService {
 	public void unretirePersonAttributeType(PersonAttributeType type) throws APIException;
 	
 	/**
-	 * Effectively removes this person from the system. UserService.voidUser(person) and
-	 * PatientService.voidPatient(person) are also called
+	 * Effectively removes this person from the system. Voids Patient and retires Users as well.
 	 * 
 	 * @param person person to be voided
 	 * @param reason reason for voiding person
 	 * @return the person that was voided
 	 * @should return voided person with given reason
+	 * @should void patient
+	 * @should retire users
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public Person voidPerson(Person person, String reason) throws APIException;
 	
 	/**
-	 * Effectively resurrects this person in the db. Unvoids the associated Patient and User as well
+	 * Effectively resurrects this person in the db. Unvoids Patient as well.
 	 * 
 	 * @param person person to be revived
 	 * @return the person that was unvoided
 	 * @should unvoid the given person
+	 * @should unvoid patient
+	 * @should not unretire users
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public Person unvoidPerson(Person person) throws APIException;
@@ -446,11 +453,10 @@ public interface PersonService extends OpenmrsService {
 	public List<Relationship> getRelationshipsByPerson(Person p) throws APIException;
 	
 	/**
-	 * Get list of relationships that include Person in person_id or relative_id.
-	 * Does not include voided relationships. 
-	 * Accepts an effectiveDate parameter which, if supplied, will limit the returned
-	 * relationships to those that were active on the given date.  Such active relationships
-	 * include those that have a startDate that is null or less than or equal to the effectiveDate, 
+	 * Get list of relationships that include Person in person_id or relative_id. Does not include
+	 * voided relationships. Accepts an effectiveDate parameter which, if supplied, will limit the
+	 * returned relationships to those that were active on the given date. Such active relationships
+	 * include those that have a startDate that is null or less than or equal to the effectiveDate,
 	 * and that have an endDate that is null or greater than or equal to the effectiveDate.
 	 * 
 	 * @param p person object listed on either side of the relationship
@@ -534,8 +540,10 @@ public interface PersonService extends OpenmrsService {
 	 * @param fromPerson (optional) Person to in the person_id column
 	 * @param toPerson (optional) Person in the relative_id column
 	 * @param relType (optional) The RelationshipType to match
-	 * @param startEffectiveDate (optional) The date during which the relationship was effective (lower bound)
-	 * @param endEffectiveDate (optional) The date during which the relationship was effective (upper bound)
+	 * @param startEffectiveDate (optional) The date during which the relationship was effective
+	 *            (lower bound)
+	 * @param endEffectiveDate (optional) The date during which the relationship was effective
+	 *            (upper bound)
 	 * @return relationships matching the given parameters
 	 * @throws APIException
 	 * @should fetch relationships matching the given from person
@@ -799,7 +807,7 @@ public interface PersonService extends OpenmrsService {
 	
 	/**
 	 * Get PersonName by its personNameId
-	 *
+	 * 
 	 * @param personNameId
 	 * @return
 	 * @should find PersonName given valid personNameId
@@ -933,7 +941,7 @@ public interface PersonService extends OpenmrsService {
 	
 	/**
 	 * Voids the given PersonName, effectively deleting the name, from the end-user's point of view.
-	 *
+	 * 
 	 * @param personName PersonName to void
 	 * @param voidReason String reason the personName is being voided.
 	 * @return the newly saved personName
@@ -945,7 +953,7 @@ public interface PersonService extends OpenmrsService {
 	
 	/**
 	 * Unvoid PersonName in the database, effectively marking this as a valid personName again
-	 *
+	 * 
 	 * @param personName PersonName to unvoid
 	 * @return the newly unvoided personName
 	 * @throws APIException
@@ -956,7 +964,7 @@ public interface PersonService extends OpenmrsService {
 	
 	/**
 	 * Inserts or updates the given personName object in the database
-	 *
+	 * 
 	 * @param personName to be created or updated
 	 * @return personName that was created or updated
 	 * @throws APIException
@@ -999,8 +1007,9 @@ public interface PersonService extends OpenmrsService {
 	public Map<Person, List<Person>> getRelationships(RelationshipType relationshipType) throws APIException;
 	
 	/**
-	 * Voids the given PersonAddress, effectively deleting the personAddress, from the end-user's point of view.
-	 *
+	 * Voids the given PersonAddress, effectively deleting the personAddress, from the end-user's
+	 * point of view.
+	 * 
 	 * @param personAddress PersonAddress to void
 	 * @param voidReason String reason the personAddress is being voided.
 	 * @return the newly saved personAddress
@@ -1012,7 +1021,7 @@ public interface PersonService extends OpenmrsService {
 	
 	/**
 	 * Unvoid PersonAddress in the database, effectively marking this as a valid PersonAddress again
-	 *
+	 * 
 	 * @param personAddress PersonAddress to unvoid
 	 * @return the newly unvoided personAddress
 	 * @throws APIException
@@ -1023,7 +1032,7 @@ public interface PersonService extends OpenmrsService {
 	
 	/**
 	 * Inserts or updates the given personAddress object in the database
-	 *
+	 * 
 	 * @param personAddress PersonAddress to be created or updated
 	 * @return personAddress that was created or updated
 	 */

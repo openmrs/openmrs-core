@@ -1769,4 +1769,75 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * @see PersonService#unvoidPerson(Person)
+	 * @verifies not unretire users
+	 */
+	@Test
+	public void unvoidPerson_shouldNotUnretireUsers() throws Exception {
+		//given
+		Person person = personService.getPerson(2);
+		User user = new User(person);
+		Context.getUserService().saveUser(user, "Admin123");
+		personService.voidPerson(person, "reason");
+		
+		//when
+		personService.unvoidPerson(person);
+		
+		//then
+		Assert.assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+	}
+	
+	/**
+	 * @see PersonService#unvoidPerson(Person)
+	 * @verifies unvoid patient
+	 */
+	@Test
+	public void unvoidPerson_shouldUnvoidPatient() throws Exception {
+		//given
+		Person person = personService.getPerson(2);
+		personService.voidPerson(person, "reason");
+		
+		//when
+		personService.unvoidPerson(person);
+		
+		//then
+		Assert.assertFalse(person.isVoided());
+	}
+	
+	/**
+	 * @see PersonService#voidPerson(Person,String)
+	 * @verifies retire users
+	 */
+	@Test
+	public void voidPerson_shouldRetireUsers() throws Exception {
+		//given
+		Person person = personService.getPerson(2);
+		User user = new User(person);
+		Context.getUserService().saveUser(user, "Admin123");
+		Assert.assertFalse(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+		
+		//when
+		personService.voidPerson(person, "reason");
+		
+		//then
+		Assert.assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+	}
+	
+	/**
+	 * @see PersonService#voidPerson(Person,String)
+	 * @verifies void patient
+	 */
+	@Test
+	public void voidPerson_shouldVoidPatient() throws Exception {
+		//given
+		Person person = personService.getPerson(2);
+		
+		//when
+		personService.voidPerson(person, "reason");
+		
+		//then
+		Assert.assertTrue(person.isVoided());
+	}
+	
 }
