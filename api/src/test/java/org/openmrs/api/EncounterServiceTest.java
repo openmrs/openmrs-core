@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
@@ -52,6 +54,7 @@ import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.api.handler.NoVisitAssignmentHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -1557,5 +1560,116 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		Assert.assertTrue("The 'existing or new visit only assignment' handler was not found", found);
+	}
+	
+	/**
+	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 */
+	@Test
+	@Verifies(value = "should not assign encounter to visit if no handler is registered", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldNotAssignEncounterToVisitIfNoHandlerIsRegistered() throws Exception {
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(2));
+		encounter.setCreator(new User(4));
+		
+		//We should have no visit
+		assertNull(encounter.getVisit());
+		
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		//We should have no visit
+		assertNull(encounter.getVisit());
+	}
+	
+	/**
+	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 */
+	@Test
+	@Verifies(value = "should not assign encounter to visit if the no assign handler is registered", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldNotAssignEncounterToVisitIfTheNoAssignHandlerIsRegistered() throws Exception {
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(2));
+		encounter.setCreator(new User(4));
+		
+		//We should have no visit
+		assertNull(encounter.getVisit());
+		
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
+		    OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER);
+		gp.setPropertyValue("org.openmrs.api.handler.NoVisitAssignmentHandler");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		//We should have no visit.
+		assertNull(encounter.getVisit());
+	}
+	
+	/**
+	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 */
+	@Test
+	@Verifies(value = "should assign encounter to visit if the assign to existing handler is registered", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldAssignEncounterToVisitIfTheAssignToExistingHandlerIsRegistered() throws Exception {
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(2));
+		encounter.setCreator(new User(4));
+		
+		//We should have no visit
+		assertNull(encounter.getVisit());
+		
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
+		    OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER);
+		gp.setPropertyValue("org.openmrs.api.handler.ExistingVisitAssignmentHandler");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		//We should have a visit.
+		assertNotNull(encounter.getVisit());
+	}
+	
+	/**
+	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 */
+	@Test
+	@Verifies(value = "should assign encounter to visit if the assign to existing or new handler is registered", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldAssignEncounterToVisitIfTheAssignToExistingOrNewHandlerIsRegistered() throws Exception {
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(2));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(2));
+		encounter.setCreator(new User(4));
+		
+		//We should have no visit
+		assertNull(encounter.getVisit());
+		
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
+		    OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER);
+		gp.setPropertyValue("org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(encounter.getEncounterDatetime());
+		calendar.set(Calendar.YEAR, 1900);
+		encounter.setEncounterDatetime(calendar.getTime());
+		
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		//We should have a visit.
+		assertNotNull(encounter.getVisit());
+		
+		//The visit should be persisted.
+		assertNotNull(encounter.getVisit().getVisitId());
 	}
 }

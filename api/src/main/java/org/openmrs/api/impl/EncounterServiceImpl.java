@@ -89,9 +89,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
 		if (encounter.getEncounterId() == null) {
-			EncounterVisitHandler encounterVisitHandler = getActiveEncounterVisitHandler();
+			
+			//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
+			//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
+			EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
 			if (encounterVisitHandler != null) {
 				encounterVisitHandler.beforeCreateEncounter(encounter);
+				
+				//If we have been assigned a new visit, persist it.
+				if (encounter.getVisit() != null && encounter.getVisit().getVisitId() == null) {
+					Context.getVisitService().saveVisit(encounter.getVisit());
+				}
 			}
 		}
 		
@@ -657,13 +665,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			
 			return (EncounterVisitHandler) handler;
 		}
-		catch (ClassNotFoundException ex) {
-			throw new APIException("Failed to load visit assignment handler class: " + value, ex);
-		}
-		catch (IllegalAccessException ex) {
-			throw new APIException("Failed to access assignment handler object for class: " + value, ex);
-		}
-		catch (InstantiationException ex) {
+		catch (Exception ex) {
 			throw new APIException("Failed to instantiate assignment handler object for class class: " + value, ex);
 		}
 	}
