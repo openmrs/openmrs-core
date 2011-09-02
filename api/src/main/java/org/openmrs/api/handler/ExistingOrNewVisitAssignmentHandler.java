@@ -45,7 +45,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		visit.setDateCreated(encounter.getDateCreated());
 		visit.setLocation(encounter.getLocation());
 		visit.setPatient(encounter.getPatient());
-
+		
 		//TODO Is is correct?
 		visit.setVisitType(Context.getVisitService().getAllVisitTypes().get(0));
 		
@@ -55,7 +55,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		calender.set(Calendar.HOUR_OF_DAY, 23);
 		calender.set(Calendar.MINUTE, 59);
 		calender.set(Calendar.SECOND, 59);
-
+		
 		visit.setStopDatetime(calender.getTime());
 		
 		encounter.setVisit(visit);

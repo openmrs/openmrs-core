@@ -1273,12 +1273,8 @@ public final class OpenmrsConstants {
 		                "true",
 		                "Set to true to show the Visits instead of Encounters tab, on the patient dashboard. Setting it to false will display the Encounters instead of Visits tab."));
 		
-		props
-		        .add(new GlobalProperty(
-		                GP_VISIT_ASSIGNMENT_HANDLER,
-		                "",
-		                "Set to the name of the class responsible for assigning visits to encounters."));
-
+		props.add(new GlobalProperty(GP_VISIT_ASSIGNMENT_HANDLER, "",
+		        "Set to the name of the class responsible for assigning visits to encounters."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
