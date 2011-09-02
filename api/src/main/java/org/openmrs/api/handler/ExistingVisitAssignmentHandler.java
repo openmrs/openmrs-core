@@ -13,11 +13,15 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.List;
+import java.util.Locale;
 
 import org.openmrs.Encounter;
+import org.openmrs.Location;
+import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
@@ -53,6 +57,8 @@ public class ExistingVisitAssignmentHandler implements EncounterVisitHandler {
 		if (encounter.getVisit() != null)
 			return;
 		
+		List<Patient> patients = new ArrayList<Patient>();
+		patients.add(encounter.getPatient());
 		List<Visit> visits = Context.getVisitService().getVisitsByPatient(encounter.getPatient(), true, false);
 		if (visits == null)
 			return;
@@ -70,10 +76,26 @@ public class ExistingVisitAssignmentHandler implements EncounterVisitHandler {
 				continue;
 			}
 			
-			if (visit.getLocation() == null || visit.getLocation().equals(encounter.getLocation())) {
+			if (visit.getLocation() == null || Location.isInHierarchy(encounter.getLocation(), visit.getLocation())) {
 				encounter.setVisit(visit);
 				return;
 			}
 		}
+	}
+	
+	/**
+	 * Gets the date having the last minute of a give day.
+	 * 
+	 * @param day the day.
+	 * @return the date with the last minute of the day.
+	 */
+	public Date getLastMinuteOfDay(Date day){
+		Calendar calender = Calendar.getInstance();
+		calender.setTime(day);
+		calender.set(Calendar.HOUR_OF_DAY, 23);
+		calender.set(Calendar.MINUTE, 59);
+		calender.set(Calendar.SECOND, 59);
+		
+		return calender.getTime();
 	}
 }

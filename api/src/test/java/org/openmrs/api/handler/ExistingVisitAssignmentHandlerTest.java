@@ -56,6 +56,7 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 		new ExistingVisitAssignmentHandler().beforeCreateEncounter(encounter);
 		
 		Assert.assertNotNull(encounter.getVisit());
+		Assert.assertNotNull(encounter.getVisit().getVisitId());
 	}
 	
 	/**
