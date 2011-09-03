@@ -18,8 +18,10 @@ import java.util.Collection;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.form.encounter.EncounterVisitHandlerForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -57,8 +59,9 @@ public class EncounterVisitHandlerFormController {
 	
 	@RequestMapping(value = MANAGE_ENCOUNTER_VISIT_HANDLERS_PATH, method = RequestMethod.GET)
 	public void manageEncounterVisitHandlers(Model model) {
-		String encounterVisitHandler = administrationService
-		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_VISIT_HANDLER);
+		Context.requirePrivilege(PrivilegeConstants.MANAGE_ENCOUNTER_VISITS);
+		
+		String encounterVisitHandler = administrationService.getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER);
 		String enableVisits = administrationService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENABLE_VISITS,
 		    Boolean.FALSE.toString());
 		
@@ -76,22 +79,23 @@ public class EncounterVisitHandlerFormController {
 	
 	@RequestMapping(value = MANAGE_ENCOUNTER_VISIT_HANDLERS_PATH, method = RequestMethod.POST)
 	public void manageEncounterVisitHandlers(@ModelAttribute(ENCOUNTER_VISIT_HANDLER_FORM) EncounterVisitHandlerForm form,
-	                                         Errors errors) {
+	        Errors errors) {
+		Context.requirePrivilege(PrivilegeConstants.MANAGE_ENCOUNTER_VISITS);
+		
 		if (errors.hasErrors()) {
 			return;
 		}
 		
-		GlobalProperty gpEnableVisits = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENABLE_VISITS,
-		        Boolean.toString(form.isEnableVisits()));
+		GlobalProperty gpEnableVisits = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENABLE_VISITS, Boolean
+		        .toString(form.isEnableVisits()));
 		administrationService.saveGlobalProperty(gpEnableVisits);
 		if (form.isEnableVisits()) {
 			String type = form.getEncounterVisitHandler();
-			GlobalProperty gpEncounterVisitHandler = new GlobalProperty(
-			        OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_VISIT_HANDLER, type);
+			GlobalProperty gpEncounterVisitHandler = new GlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER, type);
 			administrationService.saveGlobalProperty(gpEncounterVisitHandler);
 		} else {
 			form.setEncounterVisitHandler(administrationService
-			        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_VISIT_HANDLER));
+			        .getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER));
 		}
 	}
 }

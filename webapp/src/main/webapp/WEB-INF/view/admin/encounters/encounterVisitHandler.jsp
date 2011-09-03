@@ -1,7 +1,8 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View Encounters" otherwise="/login.htm"
-	redirect="/admin/encounters/encounter.form" />
+<openmrs:require privilege="Manage Encounter Visits"
+	otherwise="/login.htm"
+	redirect="/admin/encounters/encounterVisitHandler.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>
@@ -37,25 +38,22 @@
 		code="Encounter.visits.configure" /> </b>
 <div class="box">
 	<form:form method="post" commandName="encounterVisitHandlerForm">
-		<table cellpadding="3" cellspacing="0">
-			<tr>
-				<th><spring:message code="Encounter.visits.enable" />
-				</th>
-				<td><form:checkbox path="enableVisits" id="enableVisits" /> <form:errors
-						path="enableVisits" cssClass="error" />
-				</td>
-			</tr>
-			<tr>
-				<th><spring:message code="Encounter.visits.handler.choose" />
-				</th>
-				<td><form:select path="encounterVisitHandler"
-						id="encounterVisitHandler">
-						<form:options items="${encounterVisitHandlers}"
-							itemLabel="displayName" itemValue="class.name" />
-					</form:select> <form:errors path="encounterVisitHandler" cssClass="error" />
-				</td>
-			</tr>
-		</table>
+		<p>
+			<b><spring:message code="Encounter.visits.enable" />
+			</b>
+			<form:checkbox path="enableVisits" id="enableVisits" />
+			<form:errors path="enableVisits" cssClass="error" />
+		</p>
+
+		<p>
+			<b><spring:message code="Encounter.visits.handler.choose" />
+			</b> <br />
+			<form:select path="encounterVisitHandler" id="encounterVisitHandler">
+				<form:options items="${encounterVisitHandlers}"
+					itemLabel="displayName" itemValue="class.name" />
+			</form:select>
+			<form:errors path="encounterVisitHandler" cssClass="error" />
+		</p>
 		<input type="submit" value='<spring:message code="general.save"/>'>
 	</form:form>
 </div>

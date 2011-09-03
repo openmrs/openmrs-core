@@ -31,8 +31,7 @@ import org.openmrs.api.context.Context;
 public interface EncounterVisitHandler {
 	
 	/**
-	 * @return a displayable string for {@link Context#getLocale()} so that users can pick between
-	 *         different assignment handlers
+	 * @return a displayable string so that users can pick between different assignment handlers
 	 */
 	public String getDisplayName();
 	
