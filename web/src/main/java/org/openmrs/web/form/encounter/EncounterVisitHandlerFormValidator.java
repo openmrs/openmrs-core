@@ -21,19 +21,20 @@ import org.springframework.validation.Validator;
  * Validates {@link EncounterVisitHandlerForm}
  */
 public class EncounterVisitHandlerFormValidator implements Validator {
-
+	
 	@Override
-    public boolean supports(Class<?> clazz) {
-	    return EncounterVisitHandlerForm.class.isAssignableFrom(clazz);
-    }
-
+	public boolean supports(Class<?> clazz) {
+		return EncounterVisitHandlerForm.class.isAssignableFrom(clazz);
+	}
+	
 	@Override
-    public void validate(Object target, Errors errors) {
-	    EncounterVisitHandlerForm form = (EncounterVisitHandlerForm) target;
-	    
-	    if (form.isEnableVisits()) {
-	    	ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterVisitHandler", "Encounter.error.visits.handler.empty");
-	    }
-    }
-
+	public void validate(Object target, Errors errors) {
+		EncounterVisitHandlerForm form = (EncounterVisitHandlerForm) target;
+		
+		if (form.isEnableVisits()) {
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterVisitHandler",
+			    "Encounter.error.visits.handler.empty");
+		}
+	}
+	
 }

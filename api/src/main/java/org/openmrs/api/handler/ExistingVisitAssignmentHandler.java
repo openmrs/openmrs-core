@@ -33,7 +33,7 @@ import org.openmrs.api.context.Context;
  * @see EncounterVisitHandler
  */
 @Handler
-public class ExistingVisitAssignmentHandler implements EncounterVisitHandler {
+public class ExistingVisitAssignmentHandler extends BaseEncounterVisitHandler {
 	
 	/**
 	 * @see org.openmrs.api.handler.EncounterVisitHandler#getDisplayName(java.util.Locale)
@@ -80,11 +80,6 @@ public class ExistingVisitAssignmentHandler implements EncounterVisitHandler {
 				return;
 			}
 		}
-	}
-	
-	@Override
-	public String getDisplayName() {
-		return getDisplayName(Context.getLocale());
 	}
 	
 	/**

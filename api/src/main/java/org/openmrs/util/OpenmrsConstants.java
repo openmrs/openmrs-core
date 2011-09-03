@@ -773,8 +773,6 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER = "encounterForm.obsSortOrder";
 	
-	public static final String GLOBAL_PROPERTY_ENCOUNTER_VISIT_HANDLER = "encounter.visitHandler";
-	
 	public static final String GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST = "locale.allowed.list";
 	
 	public static final String GLOBAL_PROPERTY_IMPLEMENTATION_ID = "implementation_id";
