@@ -688,6 +688,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @see EncounterVisitHandler
 	 * @since 1.9
 	 * @should return the no assignment handler
+	 * @should return the existing visit only assignment handler
+	 * @should return the existing or new visit assignment handler
 	 */
 	@Transactional(readOnly = true)
 	public List<EncounterVisitHandler> getEncounterVisitHandlers();
