@@ -81,20 +81,4 @@ public class ExistingVisitAssignmentHandler extends BaseEncounterVisitHandler {
 			}
 		}
 	}
-	
-	/**
-	 * Gets the date having the last minute of a give day.
-	 * 
-	 * @param day the day.
-	 * @return the date with the last minute of the day.
-	 */
-	public Date getLastMinuteOfDay(Date day) {
-		Calendar calender = Calendar.getInstance();
-		calender.setTime(day);
-		calender.set(Calendar.HOUR_OF_DAY, 23);
-		calender.set(Calendar.MINUTE, 59);
-		calender.set(Calendar.SECOND, 59);
-		
-		return calender.getTime();
-	}
 }

@@ -907,6 +907,24 @@ public class OpenmrsUtil {
 	}
 	
 	/**
+	 * Gets the date having the last millisecond of a given day. Meaning that the hours, seconds, 
+	 * and milliseconds are the latest possible for that day.
+	 * 
+	 * @param day the day.
+	 * @return the date with the last millisecond of the day.
+	 */
+	public static Date getLastMillisecondOfDay(Date day){
+		Calendar calender = Calendar.getInstance();
+		calender.setTime(day);
+		calender.set(Calendar.HOUR_OF_DAY, 23);
+		calender.set(Calendar.MINUTE, 59);
+		calender.set(Calendar.SECOND, 59);
+		calender.set(Calendar.MILLISECOND, 999);
+		
+		return calender.getTime();
+	}
+	
+	/**
 	 * Return a date that is the same day as the passed in date, but the hours and seconds are the
 	 * earliest possible for that day.
 	 * 
