@@ -765,7 +765,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_SHOW_PATIENT_NAME = "dashboard.showPatientName";
 	
-	public static final String GLOBAL_PROPERTY_ENABLE_VISITS = "dashboard.enableVisits";
+	public static final String GLOBAL_PROPERTY_ENABLE_VISITS = "visits.enabled";
 	
 	public static final String GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR = "patient.defaultPatientIdentifierValidator";
 	
@@ -1275,10 +1275,8 @@ public final class OpenmrsConstants {
 		        "Enable or disables management of concept map types"));
 		
 		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_ENABLE_VISITS,
-		                "true",
-		                "Set to true to show the Visits instead of Encounters tab, on the patient dashboard. Setting it to false will display the Encounters instead of Visits tab."));
+		        .add(new GlobalProperty(GLOBAL_PROPERTY_ENABLE_VISITS, "true",
+		                "Set to true to enable the Visits feature. This will replace the 'Encounters' tab with a 'Visits' tab on the dashboard."));
 		
 		props.add(new GlobalProperty(GP_VISIT_ASSIGNMENT_HANDLER, "",
 		        "Set to the name of the class responsible for assigning visits to encounters."));
