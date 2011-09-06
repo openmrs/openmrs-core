@@ -14,7 +14,6 @@
 package org.openmrs.web.controller.visit;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +29,6 @@ import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.attribute.Attribute;
-import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.validator.VisitValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
@@ -209,7 +206,7 @@ public class VisitFormController {
 			    "Visit.purge.error"), WebRequest.SCOPE_SESSION);
 		}
 		//there was an exception thrown
-		return VISIT_FORM_URL+".form?visitId="+visit.getVisitId();
+		return VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
 	}
 	
 	@ModelAttribute("visitTypes")
