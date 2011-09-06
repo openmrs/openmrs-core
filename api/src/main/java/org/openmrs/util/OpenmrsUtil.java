@@ -913,7 +913,7 @@ public class OpenmrsUtil {
 	 * @param day the day.
 	 * @return the date with the last millisecond of the day.
 	 */
-	public static Date getLastMillisecondOfDay(Date day){
+	public static Date getLastMillisecondOfDay(Date day) {
 		Calendar calender = Calendar.getInstance();
 		calender.setTime(day);
 		calender.set(Calendar.HOUR_OF_DAY, 23);
