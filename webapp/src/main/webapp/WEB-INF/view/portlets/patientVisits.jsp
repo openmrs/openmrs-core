@@ -4,7 +4,53 @@
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
 
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRVisitService.js"/>
 <link href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css" type="text/css" rel="stylesheet" />
+
+<script type="text/javascript">
+var selectedVisitRow;
+function updateEncounters(visitId){
+	//user has selected the same visit as the one before
+	if(selectedVisitRow && $j(selectedVisitRow).attr('id') == visitId)
+		return;
+	
+	//clear the table
+	$j("#visitEncountersTable").find("tr:gt(0)").remove();
+	if(selectedVisitRow){
+		$j(selectedVisitRow).css("color", "");
+	}
+	selectedVisitRow = $j("#"+visitId);
+	$j(selectedVisitRow).css("color", "navy");
+	
+	DWRVisitService.findEncountersByVisit(visitId, false, false, function(encounters) {
+		if(encounters){
+			if(encounters.length > 0){
+				for(var i in encounters){
+					var e = encounters[i];
+					$j('#visitEncountersTable tbody:last').append('<tr>'+
+						'<td>'+e.encounterDateString+'</td>'+
+						'<td>'+e.encounterType+'</td>'+
+						'<td>'+e.providerName+'</td>'+
+						'<td>'+((e.formName) ? e.formName:"")+'</td>'+
+						'<td>'+e.location+'</td>'+
+					'</tr>');
+				}
+			}
+		}else{
+			alert('<spring:message code="Visit.find.encounters.error"/>');
+		}
+	});
+}
+</script>
+
+<style type="text/css">
+.visitRow{
+	cursor: pointer;
+}
+.visitRow:hover{
+	background: #F0E68C;
+}
+</style>
 
 <div id="portlet${model.portletUUID}">
 <div id="visitPortlet">
@@ -33,7 +79,8 @@
 						</thead>
 						<tbody>
 							<openmrs:forEachVisit visits="${model.patientVisits}" sortBy="startDatetime" descending="true" var="visit" num="${model.num}">
-								<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
+								<tr id="${visit.visitId}" class='visitRow ${status.index % 2 == 0 ? "evenRow" : "oddRow"}'
+									onclick="updateEncounters(${visit.visitId})">
 									<td class="visitEdit" align="center">
 										<openmrs:hasPrivilege privilege="Edit Visits">
 											<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=${visit.visitId}">
@@ -56,6 +103,22 @@
 					</table>
 				</div>
 			</div>
+		</div>
+		<br />
+		<div class="boxHeader"><spring:message code="Visit.encounters.selectedVisit"/></div>
+		<div class="box">
+			<table cellspacing="0" cellpadding="2" id="visitEncountersTable">
+				<thead>
+				 <tr>
+					<th> <spring:message code="Encounter.datetime"/></th>
+					<th> <spring:message code="Encounter.type"/></th>
+					<th> <spring:message code="Encounter.provider"/></th>
+					<th> <spring:message code="Encounter.form"/></th>
+					<th> <spring:message code="Encounter.location"/></th>
+				 </tr>
+				<thead>
+				<tbody></tbody>
+			</table>
 		</div>
 		
 		<c:if test="${model.showPagination != 'true'}">
