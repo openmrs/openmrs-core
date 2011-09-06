@@ -56,7 +56,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		visit.setStartDatetime(encounter.getEncounterDatetime());
 		visit.setLocation(encounter.getLocation());
 		visit.setPatient(encounter.getPatient());
-
+		
 		//TODO Is is correct?
 		visit.setVisitType(Context.getVisitService().getAllVisitTypes().get(0));
 		
