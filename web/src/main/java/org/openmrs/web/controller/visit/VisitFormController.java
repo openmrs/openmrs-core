@@ -206,7 +206,7 @@ public class VisitFormController {
 			    "Visit.purge.error"), WebRequest.SCOPE_SESSION);
 		}
 		//there was an exception thrown
-		return VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
+		return "redirect:"+VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
 	}
 	
 	@ModelAttribute("visitTypes")
