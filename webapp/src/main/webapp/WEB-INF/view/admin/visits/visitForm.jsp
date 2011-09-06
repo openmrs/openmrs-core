@@ -20,8 +20,6 @@
 <c:if test="${visit.visitId != null}">
 var visitEncountersCount = ${fn:length(visitEncounters)};
 var encountersToAddCount = ${fn:length(encountersToAdd)};
-var removeConfirmationMsg = '<spring:message code="Visit.confirm.removeMessage"/>';
-var addConfirmationMsg = '<spring:message code="Visit.confirm.addMessage"/>';
 
 function addEncounterRow(encounterObj) {
 	var row = document.getElementById('newEncounterRow');
@@ -120,50 +118,26 @@ function confirmAction(isAddition, encounterId){
 	if(isAddition && document.getElementById("encounterSelect").selectedIndex == 0)
 		return;
 	
-	var dialogElement = document.getElementById(isAddition ? "add-enc-confirmation" : "remove-enc-confirmation");
-	$j(dialogElement).html("<br/>"+(isAddition ? addConfirmationMsg: removeConfirmationMsg));
-	$j(dialogElement).addClass("visit-dialog-content");
-	
-	$j(dialogElement).dialog({
-		autoOpen: true,
-		resizable: false,
-		width:400,
-		height:200,
-		modal: true,
-		buttons: {
-				"<spring:message code="general.yes"/>": function() {
-							if(isAddition)
-								addEncounter(encounterId);
-							else
-								removeEncounter(encounterId);
-							
-							$j(this).dialog('close');
-						},
-				"<spring:message code="general.cancel"/>": function() {
-						if(isAddition)
-							document.getElementById("encounterSelect").selectedIndex = 0;
-					
-						$j(this).dialog('close');
-					}
-				}
-	});
-	$j('.ui-dialog-buttonpane').css('text-align', 'center');
+	if(isAddition)
+		addEncounter(encounterId);
+	else
+		removeEncounter(encounterId);
 }
 
 $j(document).ready( function() {
 	$j("#delete-dialog").dialog({
 		autoOpen: false,
 		resizable: false,
-		width:450,
-		height:200,
+		width:'auto',
+		height:'auto',
 		modal: true
 	});
 	
 	$j("#purge-dialog").dialog({
 		autoOpen: false,
 		resizable: false,
-		width:400,
-		height:200,
+		width:'auto',
+		height:'auto',
 		modal: true
 	});
 	
@@ -375,6 +349,7 @@ $j(document).ready( function() {
     <c:if test="${visit.visitId != null}">
     <fieldset>
 		<legend><spring:message code="Visit.encounters" /></legend>
+		<small><i><spring:message code="Visit.addRemoveWarning"/></i></small>
 		<table id="encountersTable" cellpadding="3" cellspacing="3">
 			<tr class="unremovable">
 				<th><spring:message code="Encounter.datetime"/></th>
@@ -505,8 +480,5 @@ $j(document).ready( function() {
 	</tr>
 </table>
 </c:if>
-
-<div id="add-enc-confirmation" title="<spring:message code="Visit.confirm.addEncounter"/>"></div>
-<div id="remove-enc-confirmation" title="<spring:message code="Visit.confirm.removeEncounter"/>"></div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
