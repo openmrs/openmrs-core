@@ -394,7 +394,7 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty program.outcome}">
-                                    ${program.outcome.name}
+                                    <openmrs:format concept="${program.outcome}"/>
                                 </c:when>
                                 <c:otherwise>
                                     <i>(<spring:message code="general.none" />)</i>

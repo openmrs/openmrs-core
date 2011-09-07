@@ -317,6 +317,9 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		return savePatientProgram(patientProgram); // The savePatientProgram method handles all of the unvoiding defaults
 	}
 	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getPossibleOutcomes(Integer)
+	 */
 	@Override
 	public List<Concept> getPossibleOutcomes(Integer programId) {
 		List<Concept> possibleOutcomes = new ArrayList<Concept>();
