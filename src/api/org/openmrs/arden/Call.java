@@ -17,7 +17,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 
 /**
- * This class translates the CALL function of an MLM into a logicService.eval() of a rule
+ * This class translates the CALL function of an MLM into a context.eval() of a rule
  */
 public class Call {
 	
@@ -97,7 +97,7 @@ public class Call {
 			if (getCallVar() != null && getCallVar().length() > 0) {
 				w.append("Result " + getCallVar() + " = ");
 			}
-			w.append("logicService.eval(patient, \"" + getCallMethod() + "\",parameters);\n");
+			w.append("context.eval(patient.getPatientId(), \"" + getCallMethod() + "\",parameters);\n");
 			w.append("\t\t\t\t");
 			if (getCallVar() != null && getCallVar().length() > 0) {
 				w.append("resultLookup.put(\"" + getCallVar() + "\"," + getCallVar() + ");\n");
