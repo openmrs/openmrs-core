@@ -864,6 +864,16 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#getDrugs(String)}
+	 */
+	@Test
+	@Verifies(value = "should return drugs that are retired", method = "getDrugs(String)")
+	public void getDrugs_shouldReturnDrugsThatAreRetired() throws Exception {
+		List<Drug> drugs = Context.getConceptService().getDrugs("NYQUIL" /* is retired */);
+		Assert.assertTrue(drugs.get(0).isRetired());
+	}
+	
+	/**
 	 * This tests for being able to find concepts with names in en_GB locale when the user is in the
 	 * en locale.
 	 * 

@@ -374,8 +374,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 			
 			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 			
-			searchCriteria.add(Expression.eq("drug.retired", false));
-			
 			Iterator<String> word = words.iterator();
 			searchCriteria.add(Expression.like("name", word.next(), MatchMode.ANYWHERE));
 			while (word.hasNext()) {
