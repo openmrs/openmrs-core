@@ -556,6 +556,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param phrase Search phrase
 	 * @throws APIException
 	 * @return A List<Drug> object containing all Drug matches
+	 * @should return drugs that are retired
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
