@@ -350,12 +350,13 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public PatientProgram unvoidPatientProgram(PatientProgram patientProgram) throws APIException;
 	
 	/**
-	 * Get all possible outcome concepts for a program
+	 * Get all possible outcome concepts for a program.  Will return all concept answers {@link org.openmrs.Concept#getAnswers()}
+	 * if they exist, then all concept set members {@link org.openmrs.Concept#getSetMembers()} if they exist, then empty List.
 	 *
 	 * @param programId
-	 * @return outcome concepts
+	 * @return outcome concepts or empty List if none exist
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<Concept> getPossibleOutcomes(Integer programId);
 	

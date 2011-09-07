@@ -36,6 +36,9 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	private Concept concept;
 	
+	/**
+	 * Represents the possible outcomes for this program.  The concept should have answers or a memberSet.
+	 */
 	private Concept outcomesConcept;
 	
 	private Set<ProgramWorkflow> allWorkflows = new HashSet<ProgramWorkflow>();

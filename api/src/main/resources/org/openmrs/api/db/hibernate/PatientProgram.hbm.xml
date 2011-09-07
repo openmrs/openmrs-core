@@ -30,7 +30,7 @@
     <!-- Associations -->
 
     <!-- property describing outcome -->
-    <many-to-one name="outcome" class="Concept" not-null="false" lazy="no-proxy">
+    <many-to-one name="outcome" class="Concept" not-null="false">
         <column name="outcome_concept_id" />
     </many-to-one>
 

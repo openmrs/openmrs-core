@@ -40,7 +40,7 @@
 		</many-to-one>
 
         <!-- property describing possible outcomes -->
-        <many-to-one name="outcomesConcept" class="Concept" not-null="false" lazy="no-proxy">
+        <many-to-one name="outcomesConcept" class="Concept" not-null="false">
             <column name="outcomes_concept_id" />
         </many-to-one>
 
