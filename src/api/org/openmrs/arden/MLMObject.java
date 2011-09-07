@@ -271,8 +271,9 @@ public class MLMObject {
 			w.append("\t\tPatientService patientService = Context.getPatientService();\n");
 			w.append("\t\tPatient patient = patientService.getPatient(patientId);\n");
 			w.append("\t\tresultLookup = new HashMap <String, Result>();\n");
-			w.append("\t\tBoolean ageOK = null;\n\n\t\ttry {\n");
+			w.append("\t\tBoolean ageOK = null;\n\t\ttry {\n");
 			
+			w.append("\t\t\tRuleProvider ruleProvider = (RuleProvider)parameters.get(\"ruleProvider\");\n");
 			w.append("\t\t\tthis.patient=patient;\n");
 			w.append("\t\t\tuserVarMap = new HashMap <String, String>();\n");
 			w.append("\t\t\tfirstname = patient.getPersonName().getGivenName();\n");
@@ -315,7 +316,7 @@ public class MLMObject {
 			
 			/** ******************************************************************************************** */
 			
-			w.append("\n\n\t\t\tif(evaluate_logic(parameters, context)){\n");
+			w.append("\n\n\t\t\tif(evaluate_logic(parameters, context, ruleProvider)){\n");
 			w.append("\t\t\t\tResult ruleResult = new Result();\n");
 			
 			/*******************
@@ -407,7 +408,7 @@ public class MLMObject {
 			}
 			/** *************************************************************************************************************************** */
 			
-			w.append("\tprivate boolean evaluate_logic(Map<String, Object> parameters, LogicContext context) throws LogicException {\n\n");
+			w.append("\tprivate boolean evaluate_logic(Map<String, Object> parameters, LogicContext context, RuleProvider ruleProvider) throws LogicException {\n\n");
 			evalListBySection = evaluateList.get("logic");
 			if (evalListBySection == null) {
 				evalListBySection = new LinkedList<MLMEvaluateElement>();
@@ -434,10 +435,11 @@ public class MLMObject {
 			
 			if (callBySection != null) {
 				callIterator = callBySection.iterator();
-				w.append("\t\t\t\tObject value = null;\n");
-				w.append("\t\t\t\tString variable = null;\n");
-				w.append("\t\t\t\tint varLen = 0;\n");
+				w.append("\t\tObject value = null;\n");
+				w.append("\t\tString variable = null;\n");
+				w.append("\t\tint varLen = 0;\n");
 			}
+			
 			Iterator<Conclude> concludeIterator = this.concludes.iterator();
 			comparisonIteratorLogic = compListBySection.entrySet().iterator();
 			

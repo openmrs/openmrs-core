@@ -101,9 +101,16 @@ public class Call {
 			}
 			
 			w.append("\t\t\t\t");
+			w.append("if (ruleProvider != null) {\n");
+			w.append("\t\t\t\t\t");
+			w.append("ruleProvider.getRule(\"" + getCallMethod() + "\");\n");
+			w.append("\t\t\t\t");
+			w.append("}\n");
+			w.append("\t\t\t\t");
 			if (getCallVar() != null && getCallVar().length() > 0) {
 				w.append("Result " + getCallVar() + " = ");
 			}
+
 			w.append("context.eval(patient.getPatientId(), \"" + getCallMethod() + "\",parameters);\n");
 			w.append("\t\t\t\t");
 			if (getCallVar() != null && getCallVar().length() > 0) {

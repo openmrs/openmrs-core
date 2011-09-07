@@ -166,6 +166,7 @@ public class ArdenServiceImpl implements ArdenService {
              w.write("import org.openmrs.logic.result.Result;\n");
              w.write("import org.openmrs.logic.result.Result.Datatype;\n");
              w.write("import org.openmrs.logic.rule.RuleParameterInfo;\n");
+			w.write("import org.openmrs.logic.rule.provider.RuleProvider;\n");
              w.write("import org.openmrs.module.dss.DssRule;\n");
              w.write("import org.openmrs.logic.Duration;\n");
              w.write("import java.util.StringTokenizer;\n\n");
