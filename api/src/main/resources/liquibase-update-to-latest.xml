@@ -4679,49 +4679,54 @@
     
 	<changeSet id="201103112152" author="suho">
 		<preConditions onFail="MARK_RAN">
-			<not>
-				<or>
-					<sqlCheck expectedResult="spain">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="rw">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="rwanda">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="us">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="usa">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="ka">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="kenya">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="ls">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="lesotho">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="mw">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="malawi">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="tz">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-					<sqlCheck expectedResult="tanzania">SELECT LOWER(property_value)  FROM global_property WHERE property =
-						'layout.address.format'
-					</sqlCheck>
-				</or>
-			</not>
+			<and>
+				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
+					'layout.address.format'
+				</sqlCheck>
+				<not>
+					<or>
+						<sqlCheck expectedResult="spain">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="rw">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="rwanda">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="us">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="usa">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="ka">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="kenya">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="ls">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="lesotho">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="mw">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="malawi">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="tz">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+						<sqlCheck expectedResult="tanzania">SELECT LOWER(property_value)  FROM global_property WHERE property =
+							'layout.address.format'
+						</sqlCheck>
+					</or>
+				</not>
+			</and>
 		</preConditions>
 		<comment>Converting general address format (if applicable)</comment>
 		<update tableName="global_property">
@@ -4765,11 +4770,14 @@
 
 	<changeSet id="201103112153" author="suho">
 		<preConditions onFail="MARK_RAN">
-				<or>
+				<and>
+					<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
+						'layout.address.format'
+					</sqlCheck>
 					<sqlCheck expectedResult="spain">SELECT LOWER(property_value)  FROM global_property WHERE property =
 						'layout.address.format'
 					</sqlCheck>
-				</or>
+				</and>
 		</preConditions>
 		<comment>Converting Spain address format (if applicable)</comment>
 		<update tableName="global_property">
@@ -4808,6 +4816,10 @@
 
 	<changeSet id="201103112154" author="suho">
 		<preConditions onFail="MARK_RAN">
+			<and>
+				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
+						'layout.address.format'
+				</sqlCheck>
 				<or>
 					<sqlCheck expectedResult="rw">SELECT LOWER(property_value)  FROM global_property WHERE property =
 						'layout.address.format'
@@ -4816,6 +4828,7 @@
 						'layout.address.format'
 					</sqlCheck>
 				</or>
+			</and>
 		</preConditions>
 		<comment>Converting Rwanda address format (if applicable)</comment>
 		<update tableName="global_property">
@@ -4852,6 +4865,10 @@
 
 	<changeSet id="201103112155" author="suho">
 		<preConditions onFail="MARK_RAN">
+			<and>
+				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
+						'layout.address.format'
+				</sqlCheck>
 				<or>
 					<sqlCheck expectedResult="us">SELECT LOWER(property_value)  FROM global_property WHERE property =
 						'layout.address.format'
@@ -4860,6 +4877,7 @@
 						'layout.address.format'
 					</sqlCheck>
 				</or>
+			</and>
 		</preConditions>
 		<comment>Converting USA address format (if applicable)</comment>
 		<update tableName="global_property">
@@ -4894,6 +4912,10 @@
 
 	<changeSet id="201103112156" author="suho">
 		<preConditions onFail="MARK_RAN">
+			<and>
+				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
+						'layout.address.format'
+				</sqlCheck>
 				<or>
 					<sqlCheck expectedResult="ka">SELECT LOWER(property_value)  FROM global_property WHERE property =
 						'layout.address.format'
@@ -4902,6 +4924,7 @@
 						'layout.address.format'
 					</sqlCheck>
 				</or>
+			</and>
 		</preConditions>
 		<comment>Converting Kenya address format (if applicable)</comment>
 		<update tableName="global_property">
@@ -4965,6 +4988,10 @@
 
 	<changeSet id="201103112157" author="suho">
 		<preConditions onFail="MARK_RAN">
+			<and>
+				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
+						'layout.address.format'
+				</sqlCheck>
 				<or>
 					<sqlCheck expectedResult="ls">SELECT LOWER(property_value)  FROM global_property WHERE property =
 						'layout.address.format'
@@ -4973,6 +5000,7 @@
 						'layout.address.format'
 					</sqlCheck>
 				</or>
+			</and>
 		</preConditions>
 		<comment>Converting Lesotho address format (if applicable)</comment>
 		<update tableName="global_property">
@@ -5000,6 +5028,10 @@
 
 	<changeSet id="201103112158" author="suho">
 		<preConditions onFail="MARK_RAN">
+			<and>
+				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
+						'layout.address.format'
+				</sqlCheck>
 				<or>
 					<sqlCheck expectedResult="mw">SELECT LOWER(property_value)  FROM global_property WHERE property =
 						'layout.address.format'
@@ -5008,6 +5040,7 @@
 						'layout.address.format'
 					</sqlCheck>
 				</or>
+			</and>
 		</preConditions>
 		<comment>Converting Malawi address format (if applicable)</comment>
 		<update tableName="global_property">
@@ -5044,6 +5077,10 @@
 
 	<changeSet id="201103112159" author="suho">
 		<preConditions onFail="MARK_RAN">
+			<and>
+				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
+						'layout.address.format'
+				</sqlCheck>
 				<or>
 					<sqlCheck expectedResult="tz">SELECT LOWER(property_value)  FROM global_property WHERE property =
 						'layout.address.format'
@@ -5052,6 +5089,7 @@
 						'layout.address.format'
 					</sqlCheck>
 				</or>
+			</and>
 		</preConditions>
 		<comment>Converting Tanzania address format (if applicable)</comment>
 		<update tableName="global_property">
