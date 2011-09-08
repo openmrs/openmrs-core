@@ -349,7 +349,6 @@ $j(document).ready( function() {
     <c:if test="${visit.visitId != null}">
     <fieldset>
 		<legend><spring:message code="Visit.encounters" /></legend>
-		<small><i><spring:message code="Visit.addRemoveWarning"/></i></small>
 		<table id="encountersTable" cellpadding="3" cellspacing="3">
 			<tr class="unremovable">
 				<th><spring:message code="Encounter.datetime"/></th>
