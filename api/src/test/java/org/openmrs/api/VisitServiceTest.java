@@ -657,7 +657,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		e.setVisit(visit);
 		Context.getEncounterService().saveEncounter(e);
 		//sanity check
-		Assert.assertTrue(Context.getEncounterService().getEncountersByVisit(visit).size() > 0);
+		Assert.assertTrue(Context.getEncounterService().getEncountersByVisit(visit, false).size() > 0);
 		Context.getVisitService().purgeVisit(visit);
 	}
 	

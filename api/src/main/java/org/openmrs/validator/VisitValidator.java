@@ -97,7 +97,7 @@ public class VisitValidator implements Validator {
 			Date startDateTime = visit.getStartDatetime();
 			Date stopDateTime = visit.getStopDatetime();
 			
-			List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(visit);
+			List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(visit, false);
 			for (Encounter encounter : encounters) {
 				if (encounter.getEncounterDatetime().before(startDateTime)) {
 					errors.rejectValue("startDatetime", "Visit.encountersCannotBeBeforeStartDate",

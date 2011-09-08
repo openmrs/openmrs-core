@@ -673,13 +673,15 @@ public interface EncounterService extends OpenmrsService {
 	 * Gets all encounters grouped within a given visit.
 	 * 
 	 * @param visit the visit.
+	 * @param includeVoided whether voided encounters should be returned
 	 * @return list of encounters in the given visit.
-	 * @should get encounters by visit
+	 * @should get active encounters by visit
+	 * @should include voided encounters when includeVoided is true
 	 * @since 1.9
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
-	public List<Encounter> getEncountersByVisit(Visit visit);
+	List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided);
 	
 	/**
 	 * @return list of handlers for determining if an encounter should go into a
