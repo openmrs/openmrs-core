@@ -189,7 +189,7 @@ public interface EncounterDAO {
 	public Integer getCountOfEncounters(String query, boolean includeVoided);
 	
 	/**
-	 * @see EncounterService#getEncountersByVisit(Visit)
+	 * @see EncounterService#getEncountersByVisit(Visit, boolean)
 	 */
-	public List<Encounter> getEncountersByVisit(Visit visit);
+	public List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided);
 }

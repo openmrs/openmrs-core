@@ -632,11 +632,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see EncounterService#getEncountersByVisit(Visit)
+	 * @see EncounterService#getEncountersByVisit(Visit, boolean)
 	 */
 	@Override
-	public List<Encounter> getEncountersByVisit(Visit visit) {
-		return dao.getEncountersByVisit(visit);
+	public List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided) {
+		return dao.getEncountersByVisit(visit, includeVoided);
 	}
 	
 	@Override

@@ -757,7 +757,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersByLocation() throws Exception {
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, new Location(1), null, null, null,
 		    null, null, true);
-		assertEquals(5, encounters.size());
+		assertEquals(6, encounters.size());
 	}
 	
 	/**
@@ -816,7 +816,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		forms.add(new Form(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, forms, null, null,
 		    true);
-		assertEquals(6, encounters.size());
+		assertEquals(7, encounters.size());
 	}
 	
 	/**
@@ -829,7 +829,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		providers.add(new User(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null,
 		    providers, true);
-		assertEquals(3, encounters.size());
+		assertEquals(4, encounters.size());
 	}
 	
 	/**
@@ -842,7 +842,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		types.add(new EncounterType(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, types, null,
 		    true);
-		assertEquals(5, encounters.size());
+		assertEquals(6, encounters.size());
 	}
 	
 	/**
@@ -860,7 +860,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should include voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldIncludeVoidedEncounters() throws Exception {
-		assertEquals(6, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, true).size());
+		assertEquals(7, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, true).size());
 	}
 	
 	/**
@@ -1402,7 +1402,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatient("12345", true);
-		assertEquals(3, encounters.size());
+		assertEquals(4, encounters.size());
 	}
 	
 	/**
@@ -1439,7 +1439,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		visits.add(new Visit(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null, null,
 		    null, visits, true);
-		assertEquals(1, encounters.size());
+		assertEquals(2, encounters.size());
 	}
 	
 	/**
@@ -1452,17 +1452,27 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		visitTypes.add(new VisitType(2));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null, null,
 		    visitTypes, null, true);
+		assertEquals(2, encounters.size());
+	}
+	
+	/**
+	 * @see EncounterService#getEncountersByVisit(Visit, boolean)
+	 * @verifies get active encounters by visit
+	 */
+	@Test
+	public void getEncountersByVisit_shouldGetActiveEncountersByVisit() throws Exception {
+		List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(new Visit(1), false);
 		assertEquals(1, encounters.size());
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersByVisit(Visit)}
+	 * @see EncounterService#getEncountersByVisit(Visit, boolean)
+	 * @verifies include voided encounters when includeVoided is true
 	 */
 	@Test
-	@Verifies(value = "should get encounters by visit", method = "getEncountersByVisit(Visit)")
-	public void getEncountersByVisit_shouldGetEncountersByVisit() throws Exception {
-		List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(new Visit(1));
-		assertEquals(1, encounters.size());
+	public void getEncountersByVisit_shouldIncludeVoidedEncountersWhenIncludeVoidedIsTrue() throws Exception {
+		List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(new Visit(1), true);
+		assertEquals(2, encounters.size());
 	}
 	
 	/**

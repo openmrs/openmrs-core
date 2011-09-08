@@ -104,7 +104,7 @@ public class DWRVisitService {
 			if (visitId != null) {
 				Visit v = Context.getVisitService().getVisit(visitId);
 				if (v != null)
-					encounters = Context.getEncounterService().getEncountersByVisit(v);
+					encounters = Context.getEncounterService().getEncountersByVisit(v, false);
 			} else {
 				throw new APIException(Context.getMessageSourceService().getMessage("VisitId.cannotBeNull"));
 			}

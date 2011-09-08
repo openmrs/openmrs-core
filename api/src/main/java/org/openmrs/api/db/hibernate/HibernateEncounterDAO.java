@@ -354,10 +354,13 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Encounter> getEncountersByVisit(Visit visit) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createAlias("visit", "visit")
-		        .add(Expression.eq("visit", visit)).add(Expression.eq("voided", false)).addOrder(
-		            Order.asc("encounterDatetime"));
+	public List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class)
+		        .add(Expression.eq("visit", visit));
+		if (!includeVoided) {
+			crit.add(Expression.eq("voided", false));
+		}
+		crit.addOrder(Order.asc("encounterDatetime"));
 		
 		return crit.list();
 	}

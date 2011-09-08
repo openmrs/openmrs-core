@@ -223,7 +223,7 @@ public class VisitFormController {
 	public List<Encounter> setEncounterDetails(@ModelAttribute("visit") Visit visit) {
 		List<Encounter> visitEncounters = new ArrayList<Encounter>();
 		if (visit.getVisitId() != null)
-			visitEncounters = Context.getEncounterService().getEncountersByVisit(visit);
+			visitEncounters = Context.getEncounterService().getEncountersByVisit(visit, false);
 		
 		return visitEncounters;
 	}
