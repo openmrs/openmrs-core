@@ -87,6 +87,14 @@
          <artifactId>mysql-connector-java</artifactId>
       </dependency>
       <dependency>
+         <groupId>postgresql</groupId>
+         <artifactId>postgresql</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>net.sourceforge.jtds</groupId>
+         <artifactId>jtds</artifactId>
+      </dependency>
+      <dependency>
          <groupId>taglibs</groupId>
          <artifactId>request</artifactId>
       </dependency>
