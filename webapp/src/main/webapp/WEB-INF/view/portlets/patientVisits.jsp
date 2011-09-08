@@ -22,7 +22,7 @@ function updateEncounters(visitId){
 	selectedVisitRow = $j("#"+visitId);
 	$j(selectedVisitRow).addClass('selected-visit');
 	
-	DWRVisitService.findEncountersByVisit(visitId, false, false, function(encounters) {
+	DWRVisitService.findEncountersByVisit(visitId, function(encounters) {
 		if(encounters){
 			if(encounters.length > 0){
 				for(var i in encounters){
