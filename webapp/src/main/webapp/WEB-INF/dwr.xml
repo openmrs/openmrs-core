@@ -304,7 +304,7 @@
 			DWRProgramWorkflowService.updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd, Integer locationId, Integer outcomeId);
 			DWRVisitService.findVisitsByPatient(Integer patientId, boolean includeEnded, boolean includeVoided);
 			DWRVisitService.getVisit(Integer visitId);
-			DWRVisitService.findEncountersByVisit(Integer visitId, boolean includeInactive, boolean includeVoided)
+			DWRVisitService.findEncountersByVisit(Integer visitId)
 		]]>
 	</signatures>
   	
