@@ -91,13 +91,10 @@ public class DWRVisitService {
 	 * Fetches all encounters belonging to the visit that matches the specified visitId
 	 * 
 	 * @param visitId
-	 * @param includeInactive
-	 * @param includeVoided
 	 * @return
 	 * @throws APIException
 	 */
-	public Vector<Object> findEncountersByVisit(Integer visitId, boolean includeInactive, boolean includeVoided)
-	        throws APIException {
+	public Vector<Object> findEncountersByVisit(Integer visitId) throws APIException {
 		// List to return
 		Vector<Object> objectList = new Vector<Object>();
 		

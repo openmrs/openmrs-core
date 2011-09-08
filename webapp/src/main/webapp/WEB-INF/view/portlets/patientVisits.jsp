@@ -15,12 +15,12 @@ function updateEncounters(visitId){
 		return;
 	
 	//clear the table
-	$j("#visitEncountersTable").find("tr:gt(0)").remove();
+	$j("#visitEncountersTable > tbody > tr").remove();
 	if(selectedVisitRow){
-		$j(selectedVisitRow).css("color", "");
+		$j(selectedVisitRow).removeClass('selected-visit');
 	}
 	selectedVisitRow = $j("#"+visitId);
-	$j(selectedVisitRow).css("color", "navy");
+	$j(selectedVisitRow).addClass('selected-visit');
 	
 	DWRVisitService.findEncountersByVisit(visitId, false, false, function(encounters) {
 		if(encounters){
@@ -49,6 +49,9 @@ function updateEncounters(visitId){
 }
 .visitRow:hover{
 	background: #F0E68C;
+}
+.selected-visit{
+	background-color: #A8D0F7; color: white; font-weight: bold;
 }
 </style>
 
