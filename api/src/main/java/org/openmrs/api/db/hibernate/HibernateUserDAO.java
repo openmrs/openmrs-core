@@ -97,7 +97,7 @@ public class HibernateUserDAO implements UserDAO {
 	@SuppressWarnings("unchecked")
 	public User getUserByUsername(String username) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "from User u where u.retired = 0 and (u.username = ? or u.systemId = ?)");
+		    "from User u where u.retired = '0' and (u.username = ? or u.systemId = ?)");
 		query.setString(0, username);
 		query.setString(1, username);
 		List<User> users = query.list();
