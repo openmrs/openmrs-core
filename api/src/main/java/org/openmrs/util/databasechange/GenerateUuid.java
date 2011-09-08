@@ -128,7 +128,7 @@ public class GenerateUuid implements CustomTaskChange {
 					
 					ResultSet ids = idStatement.executeQuery(idSql);
 					while (ids.next()) {
-						updateStatement.setInt(2, ids.getInt(1)); // set the primary key number
+						updateStatement.setObject(2, ids.getObject(1)); // set the primary key number
 						updateStatement.setString(1, UUID.randomUUID().toString()); // set the uuid for this row
 						updateStatement.executeUpdate();
 					}
