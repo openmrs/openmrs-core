@@ -459,7 +459,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public Cohort getAllPatients() {
 		
-		Query query = sessionFactory.getCurrentSession().createQuery("select patientId from Patient p where p.voided = 0");
+		Query query = sessionFactory.getCurrentSession().createQuery("select patientId from Patient p where p.voided = '0'");
 		
 		Set<Integer> ids = new HashSet<Integer>();
 		ids.addAll(query.list());
@@ -806,7 +806,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		StringBuffer sb = new StringBuffer();
 		sb.append("select o.person_id from obs o " + "where concept_id = :concept_id ");
 		sb.append(" and o.value_datetime between :startValue and :endValue");
-		sb.append(" and o.voided = 0");
+		sb.append(" and o.voided = '0'");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
 		query.setCacheMode(CacheMode.IGNORE);
@@ -2200,14 +2200,14 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	@Override
 	public Integer getCountOfPatients() {
-		Query query = sessionFactory.getCurrentSession().createQuery("select count(*) from Patient where voided = 0");
+		Query query = sessionFactory.getCurrentSession().createQuery("select count(*) from Patient where voided = '0'");
 		return new Integer(query.uniqueResult().toString());
 	}
 	
 	@Override
 	public Cohort getPatients(Integer start, Integer size) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "select distinct patientId from Patient p where p.voided = 0");
+		    "select distinct patientId from Patient p where p.voided = '0'");
 		
 		if (start != null)
 			query.setFirstResult(start);
