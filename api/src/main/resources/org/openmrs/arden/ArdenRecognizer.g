@@ -911,8 +911,6 @@ action_slot:
 	;
   
 action_statement:
-	(IF^) action_if_then_else2
-	|
 	(WRITE^) 
 	(
 	   	(LPAREN!)? ( (ACTION_OP expr_factor)* | expr ) (RPAREN!)? 
@@ -1433,7 +1431,7 @@ logic [MLMObject obj] returns [String s=""]
 : //#(COLON {System.err.println("\n"); System.err.println("-------Starting LOGIC--------");} 
 	
 	 (
-	   {System.err.println("-----------Starting IF -------");} a=ifAST[obj]
+	   {System.err.println("-----------Starting IF -------");} a=ifAST[obj, "logic"]
 			   (	{System.err.println("-----------Starting Logic Assignment -------");} logicAssignmentAST[obj, a]  { System.err.println("\n");System.err.println("-----------End logic assignment -------");} 
 		
 			   )?
@@ -1494,11 +1492,11 @@ callSectionAST [MLMObject obj, String key,String section] returns [String s=""]
 
 
 
-ifAST [MLMObject obj] returns [String s=""]
+ifAST [MLMObject obj, String section] returns [String s=""]
 {String a,b;}
 : (
-    #(IF {obj.InitEvaluateList("logic","IF"); obj.AddToEvaluateList("logic","IF");} s=exprAST["logic",obj] 
-     THEN {obj.AddToEvaluateList("logic","THEN");}) 
+    #(IF {obj.InitEvaluateList(section,"IF"); obj.AddToEvaluateList(section,"IF");} s=exprAST[section,obj] 
+     THEN {obj.AddToEvaluateList(section,"THEN");}) 
    )
    ;
 
@@ -1784,6 +1782,7 @@ simple_comp_opAST [String section,MLMObject obj, String key] returns [String s="
    				 obj.addCompOperator(section,LTE, key);
    			}
    	 )
+   	 |
    	 #(NE {
    				System.err.println("Found <> ");
    				 obj.addCompOperator(section,NE, key);
@@ -1892,8 +1891,13 @@ action [MLMObject obj] returns [String s=""]
 {String a,b;}
 : //#(COLON {System.err.println("\n"); System.err.println("-------Starting Action--------");} 
 	 (
+		 {System.err.println("-----------Starting Action IF -------");} a=ifAST[obj, "action"]
+		 {System.err.println("-----------Starting CALL -------"); obj.InitEvaluateList("action",null); a = "" ;} callSectionAST[obj, a,"action"]  {System.err.println("\n");System.err.println("-----------End CALL -------");} 
+		|	
 	   {System.err.println("-----------Starting Write -------");} s = writeAST[obj] { System.err.println("\n");System.err.println("-----------End Write -------");}
 	    | {System.err.println("-----------Starting CALL -------"); obj.InitEvaluateList("action",null); a = "" ;} callSectionAST[obj, a,"action"]  {System.err.println("\n");System.err.println("-----------End CALL -------");}
+	    | #(ENDIF {System.err.println("ENDIF FOUND");a = "ENDIF"; obj.AddToEvaluateList("action",a);} )
+	    
 	 )* 
   (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Action -------");}
   //)
