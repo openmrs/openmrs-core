@@ -2,6 +2,17 @@
 
 package org.openmrs.arden;
 
+import java.io.*;
+import antlr.CommonAST;
+import antlr.collections.AST;
+import antlr.*;
+import org.openmrs.arden.MLMObject;
+import org.openmrs.arden.MLMObjectElement;
+import java.lang.Integer;
+import org.openmrs.logic.*;
+import org.openmrs.logic.op.*;
+import java.util.GregorianCalendar;
+
 public interface ArdenBaseTreeParserTokenTypes {
 	
 	int EOF = 1;

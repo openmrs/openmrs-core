@@ -151,7 +151,6 @@ public class ArdenServiceImpl implements ArdenService {
 			
 			if (log.isDebugEnabled())
 				log.debug(t.toStringTree()); // prints library
-				
 			String library = treeParser.library(t, ardObj);
 			w.write(library);
 			w.write("\n********************************************************************/\n");
@@ -165,19 +164,23 @@ public class ArdenServiceImpl implements ArdenService {
 			w.write("import org.apache.commons.logging.Log;\n");
 			w.write("import org.apache.commons.logging.LogFactory;\n");
 			w.write("import org.openmrs.Patient;\n");
+			w.write("import org.openmrs.api.PatientService;\n");
 			w.write("import org.openmrs.api.context.Context;\n");
 			w.write("import org.openmrs.arden.MlmRule;\n");
 			w.write("import org.openmrs.logic.LogicContext;\n");
-			w.write("import org.openmrs.logic.LogicCriteriaImpl;\n");
+			w.write("import org.openmrs.logic.impl.LogicCriteriaImpl;\n");
 			w.write("import org.openmrs.logic.LogicException;\n");
-			w.write("import org.openmrs.logic.LogicService;\n");
+			w.write("import org.openmrs.logic.Rule;\n");
 			w.write("import org.openmrs.logic.result.Result;\n");
 			w.write("import org.openmrs.logic.result.Result.Datatype;\n");
 			w.write("import org.openmrs.logic.rule.RuleParameterInfo;\n");
+			w.write("import org.openmrs.logic.rule.provider.RuleProvider;\n");
 			w.write("import org.openmrs.logic.Duration;\n");
 			w.write("import java.util.StringTokenizer;\n\n");
 			w.write("import org.openmrs.api.ConceptService;\n");
 			w.write("import java.text.SimpleDateFormat;\n");
+			w.write("import org.openmrs.Concept;\n");
+			w.write("import org.openmrs.ConceptName;\n");
 			
 			String classname = ardObj.getClassName();
 			w.write("public class " + classname + " implements MlmRule{\n\n"); // Start of class
@@ -187,7 +190,6 @@ public class ArdenServiceImpl implements ArdenService {
 			w.write("\tprivate HashMap <String, Result> resultLookup;\n\n");
 			
 			w.write("\tprivate Log log = LogFactory.getLog(this.getClass());\n");
-			w.write("\tprivate LogicService logicService = Context.getLogicService();\n\n");
 			
 			w.flush();
 			
@@ -329,7 +331,7 @@ public class ArdenServiceImpl implements ArdenService {
 			@SuppressWarnings("unused")
 			String knowledge_text = treeParser.knowledge_text(t, ardObj);
 			
-			/************************************************** Write Knowledge dependent section **********************************************/
+			/**************************************************Write Knowledge dependent section**********************************************/
 			Integer p = ardObj.getPriority();
 			w.write("\t/*** @see org.openmrs.arden.MlmRule#getPriority()*/\n" + "\tpublic Integer getPriority(){\n"
 			        + "\t\treturn " + p + ";\n" + "\t}\n\n");
@@ -393,10 +395,19 @@ public class ArdenServiceImpl implements ArdenService {
 			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
 			
 			w.write("\tprivate static boolean containsIgnoreCase(Result key,List<Result> lst){\n");
+			w.write("\t\tif(key == null){\n");
+			w.write("\t\t\treturn false;\n");
+			w.write("\t\t}\n");
+			w.write("\t\tString keyString = key.toString();\n");
 			w.write("\t\tfor(Result element:lst){\n");
-			w.write("\t\t\tif(key != null&&key.toString().equalsIgnoreCase(element.toString())){\n");
-			w.write("\t\t\t\treturn true;\n");
+			w.write("\t\t\tConcept concept = element.toConcept();\n");
+			w.write("\t\t\tif(concept == null){\n");
+			w.write("\t\t\t\tcontinue;\n");
 			w.write("\t\t\t}\n");
+			w.write("\t\tString elementString = ((ConceptName) concept.getNames().toArray()[0]).getName();\n");
+			w.write("\t\tif(keyString.equalsIgnoreCase(elementString)){\n");
+			w.write("\t\t\treturn true;\n");
+			w.write("\t\t}\n");
 			w.write("\t\t}\n");
 			w.write("\t\treturn false;\n");
 			w.write("\t}\n");
