@@ -119,6 +119,9 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		os.voidOrder(testOrder, "random reason");
 		Assert.assertTrue(testOrder.isVoided());
 		
+		//wait a bit so that the patient isn't voided on the same millisecond
+		Thread.sleep(20);
+		
 		//now void the patient for testing purposes
 		patient = Context.getPatientService().voidPatient(patient, "Void Reason");
 		Assert.assertTrue(patient.isVoided());
