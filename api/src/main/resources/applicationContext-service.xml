@@ -220,6 +220,14 @@
                     <key><value>TextHandler</value></key>
                     <bean class="org.openmrs.obs.handler.TextHandler"/>
                 </entry>
+                 <entry>
+                    <key><value>BinaryDataHandler</value></key>
+                    <bean class="org.openmrs.obs.handler.BinaryDataHandler"/>
+                </entry>
+                 <entry>
+                    <key><value>BinaryStreamHandler</value></key>
+                    <bean class="org.openmrs.obs.handler.BinaryStreamHandler"/>
+                </entry>
             </map>
         </property>
 	</bean>
