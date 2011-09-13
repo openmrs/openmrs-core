@@ -364,7 +364,9 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column name="voided" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
@@ -637,7 +639,9 @@
             <column name="parent_form_field" type="int"/>
             <column name="min_occurs" type="int"/>
             <column name="max_occurs" type="int"/>
-            <column name="required" type="BOOLEAN"/>
+            <column name="required" defaultValueBoolean="false" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
             <column defaultValueNumeric="0" name="creator" type="int">
@@ -1113,7 +1117,9 @@
             </column>
             <column defaultValue="" name="gender" type="varchar(50)"/>
             <column name="birthdate" type="DATE"/>
-            <column name="birthdate_estimated" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="birthdate_estimated" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
             <column defaultValueBoolean="false" name="dead" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
@@ -1529,19 +1535,6 @@
             <column name="task_config_id" type="int"/>
         </createTable>
     </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-69">
-        <createTable tableName="tribe">
-            <column autoIncrement="true" name="tribe_id" type="int">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column defaultValueBoolean="false" name="retired" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-            <column defaultValue="" name="name" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-70">
         <createTable tableName="user_property">
             <column defaultValueNumeric="0" name="user_id" type="int">
@@ -1617,7 +1610,7 @@
             <column name="date_created" type="datetime" >
                 <constraints nullable="false"/>
             </column>
-            <column name="retired" type="boolean" defaultValueBoolean="false">
+            <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="int" />
@@ -2159,9 +2152,6 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-232">
         <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient" constraintName="person_id_for_patient" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person"/>
-    </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-233">
-        <addForeignKeyConstraint baseColumnNames="tribe" baseTableName="patient" constraintName="belongs_to_tribe" deferrable="false" initiallyDeferred="false" referencedColumnNames="tribe_id" referencedTableName="tribe"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-234">
         <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="patient" constraintName="user_who_voided_patient" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
