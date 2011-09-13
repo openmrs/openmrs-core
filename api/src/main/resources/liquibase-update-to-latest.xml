@@ -157,7 +157,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200901101524" author="Knoll_Frank">
+	<changeSet id="200901101524" author="Knoll_Frank" dbms="mysql">
 		<comment>
 			Changing datatype of drug.retire_reason from DATETIME to varchar(255)
 		</comment>
@@ -166,50 +166,43 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200901130950" author="bwolfe">
+	<changeSet id="200901130950" author="bwolfe" dbms="mysql">
 		<comment>
 			Remove Manage Tribes and View Tribes privileges from all roles
 		</comment>
-		
 		<delete tableName="role_privilege">
 			<where>privilege='Manage Tribes' and not exists (select * from privilege where privilege = 'Manage Tribes')</where>
 		</delete>
-		
 		<delete tableName="role_privilege">
 			<where>privilege='View Tribes' and not exists (select * from privilege where privilege = 'View Tribes')</where>
 		</delete>
 	</changeSet>
 	
-	<changeSet id="200901130951" author="bwolfe">
+	<changeSet id="200901130951" author="bwolfe" dbms="mysql">
 		<comment>
 			Remove Manage Mime Types, View Mime Types, and Purge Mime Types privilege
 		</comment>
-		
 		<delete tableName="role_privilege">
 			<where>privilege in ('Manage Mime Types', 'View Mime Types', 'Purge Mime Types')</where>
 		</delete>
-		
 		<delete tableName="privilege">
 			<where>privilege in ('Manage Mime Types', 'View Mime Types', 'Purge Mime Types')</where>
 		</delete>
 	</changeSet>
 	
-	<changeSet id="200901161126" author="bwolfe">
+	<changeSet id="200901161126" author="bwolfe" dbms="mysql">
 		<comment>
 			Removed the database_version global property
 		</comment>
-		
 		<delete tableName="global_property">
 			<where>property = 'database_version'</where>
 		</delete>
-		
 	</changeSet>
 	
-	<changeSet id="20090121-0949" author="bwolfe">
+	<changeSet id="20090121-0949" author="bwolfe" dbms="mysql">
 		<comment>
 			Switched the default xslt to use PV1-19 instead of PV1-1
 		</comment>
-		
 		<!-- using the <sql> tag instead of the <update> tag here so that xml syntax highlighting doesn't bog down editors -->
 		<sql splitStatements="false">
 			<![CDATA[
@@ -218,39 +211,35 @@
 				WHERE xslt LIKE '%\r\n@version 1.9.6\r\n%';
 			]]>
 		</sql>
-	
 	</changeSet>
 	
-	<changeSet id="20090122-0853" author="bwolfe">
+	<changeSet id="20090122-0853" author="bwolfe" dbms="mysql">
 		<preConditions onFail="CONTINUE">
 			<not><dbms type="hsql" /></not> <!-- skip over this changeset in unit tests -->
 		</preConditions>
 		<comment>
 			Remove duplicate concept name tags
 		</comment>
-		
 		<sql>
 			UPDATE 
 				concept_name_tag_map map 
 			SET 
 				concept_name_tag_id = (SELECT 
 										 min(concept_name_tag_id)
-									   FROM concept_name_tag
+										FROM concept_name_tag
 									   WHERE 
 									     tag = (select tag from concept_name_tag where concept_name_tag_id = map.concept_name_tag_id)
 									  );
 		</sql>
-		
 		<!-- Copy the concept_name_map_ids to a new table -->
 		<addLookupTable
 			existingTableName="concept_name_tag" existingColumnName="concept_name_tag_id"
 			newTableName="tmp_concept_name_tag_duplicates" newColumnName="concept_name_tag_id" 
-			newColumnDataType="int" constraintName="concept_name_tag_ids_dupes"
-		/>
+			newColumnDataType="int" constraintName="concept_name_tag_ids_dupes"/>
 		
 		<dropForeignKeyConstraint
 			constraintName="concept_name_tag_ids_dupes"
-			baseTableName="concept_name_tag" />
+			baseTableName="concept_name_tag"/>
 		
 		<!-- Leave only ids that have duplicates in the table -->
 		<delete tableName="tmp_concept_name_tag_duplicates">
@@ -265,12 +254,10 @@
 				concept_name_tag_id not in (select distinct(concept_name_tag_id) from concept_name_tag_map)
 			</where>
 		</delete>
-		
 		<dropTable tableName="tmp_concept_name_tag_duplicates" />
-		
 	</changeSet>
 	
-	<changeSet id="20090123-0305" author="bwolfe">
+	<changeSet id="20090123-0305" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="concept_name_tag_unique_tags" />
@@ -279,9 +266,7 @@
 		<comment>
 			Add unique constraint to the tags table
 		</comment>
-		
 		<addUniqueConstraint tableName="concept_name_tag" columnNames="tag" constraintName="concept_name_tag_unique_tags"/>
-		
 	</changeSet>
 	
 	<changeSet id="20090224-1229" author="Keelhaul+bwolfe">
