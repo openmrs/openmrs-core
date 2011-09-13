@@ -1246,6 +1246,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
+            <column name="edit_privilege" type="varchar(50)"/>
         </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-55">
