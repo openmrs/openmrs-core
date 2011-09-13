@@ -2284,10 +2284,10 @@
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="relationship" constraintName="relation_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-282">
-        <addForeignKeyConstraint baseColumnNames="person_a" baseTableName="relationship" constraintName="person_a_is_person" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person"/>
+        <addForeignKeyConstraint baseColumnNames="person_a" baseTableName="relationship" constraintName="person_a_is_person" deferrable="false" initiallyDeferred="false" referencedColumnNames="person_id" referencedTableName="person"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-283">
-        <addForeignKeyConstraint baseColumnNames="person_b" baseTableName="relationship" constraintName="person_b_is_person" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person"/>
+        <addForeignKeyConstraint baseColumnNames="person_b" baseTableName="relationship" constraintName="person_b_is_person" deferrable="false" initiallyDeferred="false" referencedColumnNames="person_id" referencedTableName="person"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-284">
         <addForeignKeyConstraint baseColumnNames="relationship" baseTableName="relationship" constraintName="relationship_type_id" deferrable="false" initiallyDeferred="false" referencedColumnNames="relationship_type_id" referencedTableName="relationship_type"/>
