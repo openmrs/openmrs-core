@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
-	
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
 	<!-- 
 	
 		See http://www.liquibase.org/manual/home#available_database_refactorings 
@@ -151,20 +153,20 @@
 		</comment>
 		<renameColumn tableName="hl7_in_queue" oldColumnName="state" newColumnName="message_state" columnDataType="int(1)"/>
 		
-		<modifyColumn tableName="hl7_in_queue">
+		<ext:modifyColumn tableName="hl7_in_queue">
 			<column name="message_state" type="int(1)" defaultValueNumeric="0" remarks="0=pending, 1=processing, 2=processed, 3=error">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="200901101524" author="Knoll_Frank">
 		<comment>
 			Changing datatype of drug.retire_reason from DATETIME to varchar(255)
 		</comment>
-		<modifyColumn tableName="drug">
+		<ext:modifyColumn tableName="drug">
 		    <column name="retire_reason" type="varchar(255)"/>
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="200901130950" author="bwolfe">
@@ -392,10 +394,10 @@
 			Modify the password column to fit the output of SHA-512 function
 		</comment>
 		
-		<modifyColumn tableName="users">
+		<ext:modifyColumn tableName="users">
 			<column name="password" type="varchar(128)"/>
 			<column name="salt" type="varchar(128)"/>
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>	
 	
 	<changeSet id="20090301-1259" author="bwolfe">
@@ -486,142 +488,142 @@
 			(This may take a while on large patient or obs tables)
 		</comment>
 		
-		<modifyColumn tableName="cohort">
+		<ext:modifyColumn tableName="cohort">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="concept">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept">
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
 			<column name="is_set" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="concept_class">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_class">
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="concept_datatype">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_datatype">
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="concept_name">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_name">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="concept_name_tag">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_name_tag">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="concept_numeric">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_numeric">
 			<column name="precise" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
+		</ext:modifyColumn>
 		<update tableName="concept_source">
 			<column name="voided" value="0" />
 			<where>voided is null</where>
 		</update>
-		<modifyColumn tableName="concept_source">
+		<ext:modifyColumn tableName="concept_source">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="drug">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="drug">
 			<column name="combination" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="drug_order">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="drug_order">
 			<column name="prn" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
 			<column name="complex" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="encounter">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="encounter">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="encounter_type">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="encounter_type">
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="field">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="field">
 			<column name="select_multiple" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="field_type">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="field_type">
 			<column name="is_set" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="form">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="form">
 			<column name="published" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>		
-		<modifyColumn tableName="form_field">
+		</ext:modifyColumn>		
+		<ext:modifyColumn tableName="form_field">
 			<column name="required" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>		
-		<modifyColumn tableName="location_tag">
+		</ext:modifyColumn>		
+		<ext:modifyColumn tableName="location_tag">
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>		
-		<modifyColumn tableName="obs">
+		</ext:modifyColumn>		
+		<ext:modifyColumn tableName="obs">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>		
-		<modifyColumn tableName="order_type">
+		</ext:modifyColumn>		
+		<ext:modifyColumn tableName="order_type">
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="orders">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="orders">
 			<column name="discontinued" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="patient">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="patient">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="patient_identifier">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="patient_identifier">
 			<column name="preferred" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="patient_identifier_type">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="patient_identifier_type">
 			<column name="check_digit" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
@@ -631,22 +633,22 @@
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="patient_program">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="patient_program">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="patient_state">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="patient_state">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
+		</ext:modifyColumn>
 		<update tableName="person">
 			<column name="birthdate_estimated" value="0" />
 			<where>birthdate_estimated is null</where>
 		</update>
-		<modifyColumn tableName="person">
+		<ext:modifyColumn tableName="person">
 			<column name="birthdate_estimated" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
@@ -656,47 +658,47 @@
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="person_address">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="person_address">
 			<column name="preferred" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="person_attribute">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="person_attribute">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="person_attribute_type">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="person_attribute_type">
 			<column name="searchable" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="person_name">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="person_name">
 			<column name="preferred" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="program">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="program">
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="program_workflow">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="program_workflow">
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="program_workflow_state">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="program_workflow_state">
 			<column name="initial" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
@@ -706,22 +708,22 @@
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="relationship">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="relationship">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="report_object">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="report_object">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
-		<modifyColumn tableName="users">
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="users">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="200903210905" author="mseaton">
@@ -806,9 +808,9 @@
 	
 	<changeSet author="Cory McCarthy" id="20090408-1298">
 		<comment>Changed the datatype for encounter_type to 'text' instead of just 50 chars</comment>
-		<modifyColumn tableName="encounter_type">
+		<ext:modifyColumn tableName="encounter_type">
 			<column name="description" type="text" />
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="200905150814" author="bwolfe">
@@ -2539,53 +2541,53 @@
 		<comment>
 			Change person_attribute_type.sort_weight from an integer to a float
 		</comment>
-		<modifyColumn tableName="person_attribute_type" >
+		<ext:modifyColumn tableName="person_attribute_type" >
 			<column name="sort_weight" type="double" />
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="200907161638-1" author="bwolfe">
 		<comment>Change obs.value_numeric from a double(22,0) to a double</comment>
-		<modifyColumn tableName="obs"><column name="value_numeric" type="double" /></modifyColumn>
+		<ext:modifyColumn tableName="obs"><column name="value_numeric" type="double" /></ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="200907161638-2" author="bwolfe">
 		<comment>Change concept_numeric columns from a double(22,0) type to a double</comment>
-		<modifyColumn tableName="concept_numeric">
+		<ext:modifyColumn tableName="concept_numeric">
 			<column name="hi_absolute" type="double" />
 			<column name="hi_critical" type="double" />
 			<column name="hi_normal" type="double" />
 			<column name="low_normal" type="double" />
 			<column name="low_critical" type="double" />
 			<column name="low_absolute" type="double" />
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="200907161638-3" author="bwolfe">
 		<comment>Change concept_set.sort_weight from a double(22,0) to a double</comment>
-		<modifyColumn tableName="concept_set"><column name="sort_weight" type="double" /></modifyColumn>
+		<ext:modifyColumn tableName="concept_set"><column name="sort_weight" type="double" /></ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="200907161638-4" author="bwolfe">
 		<comment>Change concept_set_derived.sort_weight from a double(22,0) to a double</comment>
-		<modifyColumn tableName="concept_set_derived"><column name="sort_weight" type="double" /></modifyColumn>
+		<ext:modifyColumn tableName="concept_set_derived"><column name="sort_weight" type="double" /></ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="200907161638-5" author="bwolfe">
 		<comment>Change drug table columns from a double(22,0) to a double</comment>
-		<modifyColumn tableName="drug" >
+		<ext:modifyColumn tableName="drug" >
 			<column name="dose_strength" type="double" />
 			<column name="maximum_daily_dose" type="double" />
 			<column name="minimum_daily_dose" type="double" />
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="200907161638-6" author="bwolfe">
 		<comment>Change drug_order.dose from a double(22,0) to a double</comment>
-		<modifyColumn tableName="drug_order">
+		<ext:modifyColumn tableName="drug_order">
 			<column name="dose" type="double" />
 			<column name="equivalent_daily_dose" type="double" />
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="20100128-1" author="djazayeri">
@@ -2719,20 +2721,20 @@
 	
 	<changeSet id="200908291938-1" author="dthomas">
 		<comment>set hl7_code in ConceptSource to nullable column</comment>
-		<modifyColumn tableName="concept_source">
+		<ext:modifyColumn tableName="concept_source">
 			<column name="hl7_code" type="varchar(50)">
 				<constraints nullable="true" />
 			</column>
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="200908291938-2a" author="dthomas">
 		<comment>set retired in ConceptSource to tinyint(1) not null</comment>
-		<modifyColumn tableName="concept_source">
+		<ext:modifyColumn tableName="concept_source">
 			<column name="retired" type="tinyint(1)">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
     <changeSet id="200909281005-1" author="nribeka">
@@ -3377,9 +3379,9 @@
 		<comment>
 			Changing the datatype of global_property.property for mysql databases
 		</comment>
-		<modifyColumn tableName="global_property">
+		<ext:modifyColumn tableName="global_property">
 			<column name="property" type="varbinary(255)" />
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="20100423-1402" author="slorenz">
@@ -3835,9 +3837,9 @@
 			Modify the error_details column of hl7_in_error to hold
 			stacktraces
 		</comment>
-		<modifyColumn tableName="hl7_in_error">
+		<ext:modifyColumn tableName="hl7_in_error">
 			<column name="error_details" type="mediumtext" />
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="201008021047" author="bwolfe" failOnError="false">
@@ -3861,11 +3863,11 @@
 
 	<changeSet id="201008242121" author="misha680">			
 		<comment>Make person_name.person_id not NULLable</comment>
-		<modifyColumn tableName="person_name">
+		<ext:modifyColumn tableName="person_name">
 			<column name="person_id" type="int">
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="20100924-1110" author="mseaton">
@@ -4016,16 +4018,16 @@
 			<not><changeSetExecuted id="201012092009" author="djazayeri" changeLogFile="liquibase-update-to-latest.xml"/></not>
 		</preConditions>
 		<comment>Increasing length of address fields in person_address and location to 255</comment>
-		<modifyColumn tableName="person_address"><column name="address1" type="varchar(255)"/></modifyColumn>
-		<modifyColumn tableName="person_address"><column name="address2" type="varchar(255)"/></modifyColumn>
-		<modifyColumn tableName="person_address"><column name="city_village" type="varchar(255)"/></modifyColumn>
-		<modifyColumn tableName="person_address"><column name="state_province" type="varchar(255)"/></modifyColumn>
-		<modifyColumn tableName="person_address"><column name="county_district" type="varchar(255)"/></modifyColumn>
-		<modifyColumn tableName="location"><column name="address1" type="varchar(255)"/></modifyColumn>
-		<modifyColumn tableName="location"><column name="address2" type="varchar(255)"/></modifyColumn>
-		<modifyColumn tableName="location"><column name="city_village" type="varchar(255)"/></modifyColumn>
-		<modifyColumn tableName="location"><column name="state_province" type="varchar(255)"/></modifyColumn>
-		<modifyColumn tableName="location"><column name="county_district" type="varchar(255)"/></modifyColumn>
+		<ext:modifyColumn tableName="person_address"><column name="address1" type="varchar(255)"/></ext:modifyColumn>
+		<ext:modifyColumn tableName="person_address"><column name="address2" type="varchar(255)"/></ext:modifyColumn>
+		<ext:modifyColumn tableName="person_address"><column name="city_village" type="varchar(255)"/></ext:modifyColumn>
+		<ext:modifyColumn tableName="person_address"><column name="state_province" type="varchar(255)"/></ext:modifyColumn>
+		<ext:modifyColumn tableName="person_address"><column name="county_district" type="varchar(255)"/></ext:modifyColumn>
+		<ext:modifyColumn tableName="location"><column name="address1" type="varchar(255)"/></ext:modifyColumn>
+		<ext:modifyColumn tableName="location"><column name="address2" type="varchar(255)"/></ext:modifyColumn>
+		<ext:modifyColumn tableName="location"><column name="city_village" type="varchar(255)"/></ext:modifyColumn>
+		<ext:modifyColumn tableName="location"><column name="state_province" type="varchar(255)"/></ext:modifyColumn>
+		<ext:modifyColumn tableName="location"><column name="county_district" type="varchar(255)"/></ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="201011011600" author="jkeiper">
@@ -4319,11 +4321,11 @@
 	
 	<changeSet id="201101221453" author="suho">
 		<comment>Increasing the serialized_data column of serialized_object to hold mediumtext</comment>
-		<modifyColumn tableName="serialized_object">
+		<ext:modifyColumn tableName="serialized_object">
 			<column name="serialized_data" type="mediumtext" >
 				<constraints nullable="false" />
 			</column>
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="201101121434" author="gbalaji,gobi">
@@ -4666,9 +4668,9 @@
 		<comment>
 			Increasing maximum length of patient identifier type regex format
 		</comment>
-		<modifyColumn tableName="patient_identifier_type">
+		<ext:modifyColumn tableName="patient_identifier_type">
 			<column name="format" type="varchar(255)" defaultValue="null"/>
-		</modifyColumn>
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="20110708-2105" author="cta">
