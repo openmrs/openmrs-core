@@ -903,7 +903,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200903210905" author="mseaton">
+	<changeSet id="200903210905" author="mseaton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="serialized_object"/></not>
 		</preConditions>
@@ -945,27 +945,33 @@
 			<column name="retired_by" type="int"/>
 			<column name="retire_reason" type="varchar(1000)"/>
 		</createTable>
-
 		<addForeignKeyConstraint constraintName="serialized_object_creator" 
-								 baseTableName="serialized_object" baseColumnNames="creator"
-								 referencedTableName="users" referencedColumnNames="user_id"
-		/>
+					baseTableName="serialized_object" baseColumnNames="creator"
+					referencedTableName="users" referencedColumnNames="user_id"/>
 		<addForeignKeyConstraint constraintName="serialized_object_changed_by" 
-								 baseTableName="serialized_object" baseColumnNames="changed_by"
-								 referencedTableName="users" referencedColumnNames="user_id"
-		/>
+					baseTableName="serialized_object" baseColumnNames="changed_by"
+					referencedTableName="users" referencedColumnNames="user_id"/>
 		<addForeignKeyConstraint constraintName="serialized_object_retired_by" 
-								 baseTableName="serialized_object" baseColumnNames="retired_by"
-								 referencedTableName="users" referencedColumnNames="user_id"
-		/>
+					baseTableName="serialized_object" baseColumnNames="retired_by"
+					referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="200903210905-fix" author="sunbiz" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="serialized_object"/>
+		</preConditions>
+		<comment>(Fixed)Add a table to enable generic storage of serialized objects</comment>		
+		<ext:modifyColumn tableName="serialized_object">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200904091023" author="bwolfe">
+	<changeSet id="200904091023" author="bwolfe" dbms="mysql">
 		<comment>
 			Remove Manage Tribes and View Tribes privileges from the privilege table and role_privilege table.
 			The privileges will be recreated by the Tribe module if it is installed.
 		</comment>
-		
 		<delete tableName="role_privilege">
 			<where>privilege='Manage Tribes'</where>
 		</delete>
@@ -983,31 +989,29 @@
 		</delete>
 	</changeSet>
 	
-	<changeSet author="Cory McCarthy" id="20090408-1298">
+	<changeSet author="Cory McCarthy" id="20090408-1298" dbms="mysql">
 		<comment>Changed the datatype for encounter_type to 'text' instead of just 50 chars</comment>
 		<ext:modifyColumn tableName="encounter_type">
 			<column name="description" type="text" />
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200905150814" author="bwolfe">
+	<changeSet id="200905150814" author="bwolfe" dbms="mysql">
 		<comment>Deleting invalid concept words</comment>
 		<delete tableName="concept_word">
 			<where>concept_name_id = 0</where>
 		</delete>
 	</changeSet>
 	
-	<changeSet id="200905071626" author="bwolfe" failOnError="false">
+	<changeSet id="200905071626" author="bwolfe" failOnError="false" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="concept_word_concept_idx"/>
 			</not>
 		</preConditions>
-	
 		<comment>
 			Add an index to the concept_word.concept_id column (This update may fail if it already exists)
 		</comment>
-		
 		<createIndex tableName="concept_word" indexName="concept_word_concept_idx">
 			<column name="concept_id" />
 		</createIndex>
