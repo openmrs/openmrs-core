@@ -93,6 +93,17 @@ public interface PatientService extends OpenmrsService {
 	public Patient getPatient(Integer patientId) throws APIException;
 	
 	/**
+	 * Get patient by internal identifier. If this id is for an existing person
+	 * then instantiates a new patient from that person, copying over all the fields.
+	 * @param patientOrPersonId
+	 * @return a new unsaved patient or null if person or patient is not found
+	 * @throws APIException
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
+	@Transactional(readOnly = true)
+	Patient getPatientOrPromotePerson(Integer patientOrPersonId) throws APIException;
+	
+	/**
 	 * Get patient by universally unique identifier.
 	 * 
 	 * @param uuid universally unique identifier
