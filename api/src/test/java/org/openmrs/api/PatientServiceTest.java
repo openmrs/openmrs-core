@@ -77,6 +77,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String USERS_WHO_ARE_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-usersWhoArePatients.xml";
 	
+	protected static final String USER_WHO_IS_NOT_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-userNotAPatient.xml";
+	
 	protected static final String FIND_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-findPatients.xml";
 	
 	private static final String ACTIVE_LIST_INITIAL_XML = "org/openmrs/api/include/ActiveListTest.xml";
@@ -2174,5 +2176,22 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addName(new PersonName("Horatio", "Test", "name"));
 		Context.getPatientService().savePatient(patient);
 		Assert.assertEquals(1, Context.getPatientService().getCountOfPatients("Hor").intValue());
+	}
+	
+	@Test
+	@Verifies(value = "should create Patient from Person", method = "getPatient")
+	public void getPatient_shouldCreatePatientFromPerson() throws Exception {
+		executeDataSet(USER_WHO_IS_NOT_PATIENT_XML);
+		Patient patient = patientService.getPatientOrPromotePerson(202);
+		Assert.assertNotNull(patient);
+		Assert.assertEquals(202, patient.getId().intValue());
+	}
+	
+	@Test
+	@Verifies(value = "should return null when Person does not exist", method = "getPatient")
+	public void getPatient_shouldReturnNullWhenPersonDoesNotExist() throws Exception {
+		executeDataSet(USER_WHO_IS_NOT_PATIENT_XML);
+		Patient patient = patientService.getPatientOrPromotePerson(-1);
+		Assert.assertNull(patient);
 	}
 }
