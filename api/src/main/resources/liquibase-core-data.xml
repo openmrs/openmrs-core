@@ -369,6 +369,14 @@
             <column name="date_retired"/>
             <column name="retire_reason"/>
         </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" value="13"/>
+            <column name="name" value="Complex"/>
+            <column name="hl7_abbreviation" value="ED"/>
+            <column name="description" value="Complex value.  Analogous to HL7 Embedded Datatype"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2008-05-28T12:25:34" />
+        </insert>
     </changeSet>
     <changeSet author="ben (generated)" id="1226348923233-13">
         <insert tableName="role">
