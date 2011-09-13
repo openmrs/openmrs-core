@@ -894,6 +894,7 @@
             <column name="value_numeric" type="double precision"/>
             <column name="value_modifier" type="varchar(2)"/>
             <column name="value_text" type="text"/>
+            <column name="value_complex" type="varchar(255)"/>
             <column name="date_started" type="DATETIME"/>
             <column name="date_stopped" type="DATETIME"/>
             <column name="comments" type="varchar(255)"/>
@@ -1607,6 +1608,14 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="sunbiz" id="20110914-0114">
+        <createTable tableName="concept_complex">
+            <column name="concept_id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="handler" type="varchar(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-73">
@@ -2346,5 +2355,11 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-303">
         <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="users" constraintName="user_who_voided_user" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet author="sunbiz" id="20110914-0104">
+        <addForeignKeyConstraint constraintName="privilege_which_can_edit" baseTableName="person_attribute_type" baseColumnNames="edit_privilege" referencedTableName="privilege" referencedColumnNames="privilege"/>
+    </changeSet>
+    <changeSet author="sunbiz" id="20110914-0117">
+        <addForeignKeyConstraint constraintName="concept_attributes" baseTableName="concept_complex" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
     </changeSet>
 </databaseChangeLog>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
@@ -44,7 +44,7 @@
 		<modifyDataType tableName="person_attribute_type" columnName="edit_privilege" newDataType="varchar(50)"/>
 	</changeSet>
 	
-	<changeSet id="2" author="upul">
+	<changeSet id="2" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit"/></not>
 		</preConditions>
@@ -56,7 +56,7 @@
 			baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
 			referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
-    
+	
 	<changeSet id="200811261102" author="bwolfe">
 		<comment>
 			Fix field property for new Tribe person attribute
@@ -66,8 +66,8 @@
 			<where>default_value='$!{patient.getTribe().getTribeId()}^$!{patient.getTribe().getName()}'</where>
 		</update>
 	</changeSet>
-    
-	<changeSet id="200805281223" author="bmckown">
+	
+	<changeSet id="200805281223" author="bmckown" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_complex"/></not>
 		</preConditions>
@@ -83,11 +83,10 @@
 		
 		<addForeignKeyConstraint constraintName="concept_attributes"
 			baseTableName="concept_complex" baseColumnNames="concept_id"
-			referencedTableName="concept" referencedColumnNames="concept_id"
-			/>		
-    </changeSet>
-    
-	<changeSet id="200805281224" author="bmckown">
+			referencedTableName="concept" referencedColumnNames="concept_id"/>		
+	</changeSet>
+	
+	<changeSet id="200805281224" author="bmckown" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="obs" columnName="value_complex"/></not>
 		</preConditions>
