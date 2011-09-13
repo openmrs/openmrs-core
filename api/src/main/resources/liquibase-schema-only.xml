@@ -35,18 +35,6 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-3">
-        <createTable tableName="complex_obs">
-            <column defaultValueNumeric="0" name="obs_id" type="int">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column defaultValueNumeric="0" name="mime_type_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="urn" type="text"/>
-            <column name="complex_value" type="text"/>
-        </createTable>
-    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-4">
         <createTable tableName="concept">
             <column autoIncrement="true" name="concept_id" type="int">
@@ -680,6 +668,7 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
+            <column name="message_state" type="int" defaultValueNumeric="0" remarks="2=processed, 4=deleted"/>
         </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-34">
@@ -715,7 +704,7 @@
             <column name="hl7_data" type="text">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="state" remarks="0=pending, 1=processing, 2=processed, 3=error" type="int">
+            <column name="message_state" defaultValueNumeric="0" remarks="0=pending, 1=processing, 2=processed, 3=error" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="date_processed" type="DATETIME"/>
@@ -774,17 +763,6 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-        </createTable>
-    </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-38">
-        <createTable tableName="mime_type">
-            <column autoIncrement="true" name="mime_type_id" type="int">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column defaultValue="" name="mime_type" type="varchar(75)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="description" type="text"/>
         </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-39">
@@ -1785,12 +1763,6 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-112">
         <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="cohort_member" constraintName="member_patient" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="patient_id" referencedTableName="patient"/>
-    </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-113">
-        <addForeignKeyConstraint baseColumnNames="mime_type_id" baseTableName="complex_obs" constraintName="complex_obs_ibfk_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="mime_type_id" referencedTableName="mime_type"/>
-    </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-114">
-        <addForeignKeyConstraint baseColumnNames="obs_id" baseTableName="complex_obs" constraintName="obs_pointing_to_complex_content" deferrable="false" initiallyDeferred="false" referencedColumnNames="obs_id" referencedTableName="obs"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-115">
         <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="concept" constraintName="user_who_changed_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
