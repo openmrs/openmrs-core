@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -8,12 +7,9 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<!-- 
-	
 		See http://www.liquibase.org/manual/home#available_database_refactorings 
 		for a list of supported elements and attributes 
-		
 	-->
-	
 	
 	<changeSet id="0" author="bwolfe">
 		<preConditions onFail="MARK_RAN">
@@ -42,20 +38,10 @@
 	</changeSet>
 	<changeSet id="1-fix" author="sunbiz" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="person_attribute_type" columnName="edit_privilege"/></not>
+			<columnExists tableName="person_attribute_type" columnName="edit_privilege"/>
 		</preConditions>
 		<comment>(Fixed)Modified edit_privilege to correct column size</comment>
-		<modifyDataType tableName="person_attribute_type" columnName="edit_privilege" newDataType="varchar(50)" />
-	</changeSet>
-	<changeSet id="1-others" author="sunbiz">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="person_attribute_type" columnName="edit_privilege"/></not>
-			<and><not><dbms type="mysql"/></not></and>
-		</preConditions>
-		<comment>Add the column to person_attribute type to connect each type to a privilege</comment>
-		<addColumn tableName="person_attribute_type">
-			<column name="edit_privilege" type="varchar(50)" />
-		</addColumn>
+		<modifyDataType tableName="person_attribute_type" columnName="edit_privilege" newDataType="varchar(50)"/>
 	</changeSet>
 	
 	<changeSet id="2" author="upul">
@@ -68,9 +54,8 @@
 		</comment>
 		<addForeignKeyConstraint constraintName="privilege_which_can_edit"
 			baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
-			referencedTableName="privilege" referencedColumnNames="privilege"
-		    />
-    </changeSet>
+			referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
     
 	<changeSet id="200811261102" author="bwolfe">
 		<comment>
@@ -80,7 +65,7 @@
 			<column name="default_value" value="$!{patient.attributeMap.Tribe.hydratedObject.tribeId}^$!{patient.attributeMap.Tribe.hydratedObject.name}"/>
 			<where>default_value='$!{patient.getTribe().getTribeId()}^$!{patient.getTribe().getName()}'</where>
 		</update>
-    </changeSet>
+	</changeSet>
     
 	<changeSet id="200805281223" author="bmckown">
 		<preConditions onFail="MARK_RAN">
