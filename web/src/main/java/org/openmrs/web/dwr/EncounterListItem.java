@@ -41,6 +41,8 @@ public class EncounterListItem {
 	
 	private String encounterDateString;
 	
+	private String entererName;
+	
 	private boolean voided = false;
 	
 	public EncounterListItem() {
@@ -71,6 +73,18 @@ public class EncounterListItem {
 			if (encounter.getForm() != null)
 				formName = encounter.getForm().getName();
 			voided = encounter.isVoided();
+			if (encounter.getCreator() != null) {
+				PersonName entererPersonName = encounter.getCreator().getPersonName();
+				if (entererPersonName != null) {
+					entererName = "";
+					if (entererPersonName.getGivenName() != null)
+						entererName += entererPersonName.getGivenName();
+					if (entererPersonName.getMiddleName() != null)
+						entererName += " " + entererPersonName.getMiddleName();
+					if (entererPersonName.getFamilyName() != null)
+						entererName += " " + entererPersonName.getFamilyName();
+				}
+			}
 		}
 	}
 	
@@ -136,6 +150,22 @@ public class EncounterListItem {
 	
 	public void setFormName(String formName) {
 		this.formName = formName;
+	}
+	
+	/**
+	 * @return the entererName
+	 * @since 1.9
+	 */
+	public String getEntererName() {
+		return entererName;
+	}
+	
+	/**
+	 * @param entererName the entererName to set
+	 * @since 1.9
+	 */
+	public void setEntererName(String entererName) {
+		this.entererName = entererName;
 	}
 	
 	public boolean isVoided() {
