@@ -5405,6 +5405,26 @@
 		<comment>Dropping concept_reference_map.comment column</comment>
 		<dropColumn tableName="concept_reference_map" columnName="comment"/>
 	</changeSet>
+
+	<changeSet id="20110913-0300" author="sunbiz">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="person_a" />
+		</preConditions>
+		<comment>Remove ON DELETE CASCADE from relationship table for person_a</comment>
+		<dropForeignKeyConstraint baseTableName="relationship" constraintName="person_a" />
+		<addForeignKeyConstraint baseColumnNames="person_a" baseTableName="relationship" constraintName="person_a_is_person" 
+            deferrable="false" initiallyDeferred="false" referencedColumnNames="person_id" referencedTableName="person"/>
+	</changeSet>
+
+	<changeSet id="20110913-0300b" author="sunbiz">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="person_b" />
+		</preConditions>
+		<comment>Remove ON DELETE CASCADE from relationship table for person_b</comment>
+		<dropForeignKeyConstraint baseTableName="relationship" constraintName="person_b" />
+		<addForeignKeyConstraint baseColumnNames="person_b" baseTableName="relationship" constraintName="person_b_is_person" 
+            deferrable="false" initiallyDeferred="false" referencedColumnNames="person_id" referencedTableName="person"/>
+	</changeSet>
 	
 </databaseChangeLog>
 
