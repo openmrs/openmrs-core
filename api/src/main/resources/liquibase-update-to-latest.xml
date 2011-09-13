@@ -29,7 +29,7 @@
 		</customChange>
 	</changeSet>
 	
-	<changeSet id="1" author="upul">
+	<changeSet id="1" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="person_attribute_type" columnName="edit_privilege"/></not>
 		</preConditions>
@@ -38,6 +38,23 @@
 		</comment>
 		<addColumn tableName="person_attribute_type">
 			<column name="edit_privilege" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+	<changeSet id="1-fix" author="sunbiz" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="person_attribute_type" columnName="edit_privilege"/></not>
+		</preConditions>
+		<comment>(Fixed)Modified edit_privilege to correct column size</comment>
+		<modifyDataType tableName="person_attribute_type" columnName="edit_privilege" newDataType="varchar(50)" />
+	</changeSet>
+	<changeSet id="1-others" author="sunbiz">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="person_attribute_type" columnName="edit_privilege"/></not>
+			<and><not><dbms type="mysql"/></not></and>
+		</preConditions>
+		<comment>Add the column to person_attribute type to connect each type to a privilege</comment>
+		<addColumn tableName="person_attribute_type">
+			<column name="edit_privilege" type="varchar(50)" />
 		</addColumn>
 	</changeSet>
 	
