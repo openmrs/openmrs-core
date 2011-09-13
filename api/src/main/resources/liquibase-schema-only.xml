@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.8 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.8.xsd">
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
     <changeSet author="ben (generated)" id="1227303685425-1">
         <createTable tableName="cohort">
             <column autoIncrement="true" name="cohort_id" type="int">
@@ -423,7 +428,7 @@
             </column>
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
-            <column name="retire_reason" type="DATETIME"/>
+            <column name="retire_reason" type="varchar(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-23">
@@ -2333,5 +2338,8 @@
     </changeSet>
     <changeSet author="sunbiz" id="20110914-0117">
         <addForeignKeyConstraint constraintName="concept_attributes" baseTableName="concept_complex" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
+    </changeSet>
+    <changeSet author="sunbiz" id="20110914-0245">
+        <addUniqueConstraint tableName="concept_name_tag" columnNames="tag" constraintName="concept_name_tag_unique_tags"/>
     </changeSet>
 </databaseChangeLog>
