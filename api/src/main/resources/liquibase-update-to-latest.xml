@@ -840,6 +840,9 @@
 		<addColumn tableName="cohort">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept" columnName="uuid"/></not></preConditions>
@@ -847,6 +850,9 @@
 		<addColumn tableName="concept">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept_answer" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_answer" columnName="uuid"/></not></preConditions>
@@ -854,6 +860,9 @@
 		<addColumn tableName="concept_answer">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept_class" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_class" columnName="uuid"/></not></preConditions>
@@ -861,6 +870,9 @@
 		<addColumn tableName="concept_class">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept_datatype" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_datatype" columnName="uuid"/></not></preConditions>
@@ -868,6 +880,9 @@
 		<addColumn tableName="concept_datatype">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept_description" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_description" columnName="uuid"/></not></preConditions>
@@ -875,6 +890,9 @@
 		<addColumn tableName="concept_description">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept_map" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_map" columnName="uuid"/></not></preConditions>
@@ -882,6 +900,9 @@
 		<addColumn tableName="concept_map">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept_name" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_name" columnName="uuid"/></not></preConditions>
@@ -889,6 +910,9 @@
 		<addColumn tableName="concept_name">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept_name_tag" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_name_tag" columnName="uuid"/></not></preConditions>
@@ -896,6 +920,9 @@
 		<addColumn tableName="concept_name_tag">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept_proposal" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_proposal" columnName="uuid"/></not></preConditions>
@@ -903,6 +930,9 @@
 		<addColumn tableName="concept_proposal">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept_set" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_set" columnName="uuid"/></not></preConditions>
@@ -910,6 +940,9 @@
 		<addColumn tableName="concept_set">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept_source" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_source" columnName="uuid"/></not></preConditions>
@@ -917,6 +950,9 @@
 		<addColumn tableName="concept_source">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-concept_state_conversion" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_state_conversion" columnName="uuid"/></not></preConditions>
@@ -924,6 +960,9 @@
 		<addColumn tableName="concept_state_conversion">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-drug" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="drug" columnName="uuid"/></not></preConditions>
@@ -931,6 +970,9 @@
 		<addColumn tableName="drug">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-encounter" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="encounter" columnName="uuid"/></not></preConditions>
@@ -938,6 +980,9 @@
 		<addColumn tableName="encounter">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-encounter_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="encounter_type" columnName="uuid"/></not></preConditions>
@@ -945,6 +990,9 @@
 		<addColumn tableName="encounter_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-field" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field" columnName="uuid"/></not></preConditions>
@@ -952,6 +1000,9 @@
 		<addColumn tableName="field">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-field_answer" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field_answer" columnName="uuid"/></not></preConditions>
@@ -959,6 +1010,9 @@
 		<addColumn tableName="field_answer">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-field_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field_type" columnName="uuid"/></not></preConditions>
@@ -966,6 +1020,9 @@
 		<addColumn tableName="field_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-form" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="form" columnName="uuid"/></not></preConditions>
@@ -973,6 +1030,9 @@
 		<addColumn tableName="form">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-form_field" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="form_field" columnName="uuid"/></not></preConditions>
@@ -980,6 +1040,9 @@
 		<addColumn tableName="form_field">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-global_property" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="global_property" columnName="uuid"/></not></preConditions>
@@ -987,6 +1050,9 @@
 		<addColumn tableName="global_property">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-hl7_in_archive" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_archive" columnName="uuid"/></not></preConditions>
@@ -994,6 +1060,9 @@
 		<addColumn tableName="hl7_in_archive">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-hl7_in_error" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_error" columnName="uuid"/></not></preConditions>
@@ -1001,6 +1070,9 @@
 		<addColumn tableName="hl7_in_error">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-hl7_in_queue" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_queue" columnName="uuid"/></not></preConditions>
@@ -1008,6 +1080,9 @@
 		<addColumn tableName="hl7_in_queue">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-hl7_source" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_source" columnName="uuid"/></not></preConditions>
@@ -1015,6 +1090,9 @@
 		<addColumn tableName="hl7_source">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-location" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="location" columnName="uuid"/></not></preConditions>
@@ -1022,6 +1100,9 @@
 		<addColumn tableName="location">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-location_tag" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="location_tag" columnName="uuid"/></not></preConditions>
@@ -1029,6 +1110,9 @@
 		<addColumn tableName="location_tag">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-note" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="note" columnName="uuid"/></not></preConditions>
@@ -1036,6 +1120,9 @@
 		<addColumn tableName="note">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-notification_alert" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_alert" columnName="uuid"/></not></preConditions>
@@ -1043,6 +1130,9 @@
 		<addColumn tableName="notification_alert">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-notification_template" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_template" columnName="uuid"/></not></preConditions>
@@ -1050,6 +1140,9 @@
 		<addColumn tableName="notification_template">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-obs" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="obs" columnName="uuid"/></not></preConditions>
@@ -1057,6 +1150,9 @@
 		<addColumn tableName="obs">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-order_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="order_type" columnName="uuid"/></not></preConditions>
@@ -1064,6 +1160,9 @@
 		<addColumn tableName="order_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-orders" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="orders" columnName="uuid"/></not></preConditions>
@@ -1071,6 +1170,9 @@
 		<addColumn tableName="orders">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-patient_identifier" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier" columnName="uuid"/></not></preConditions>
@@ -1078,6 +1180,9 @@
 		<addColumn tableName="patient_identifier">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-patient_identifier_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier_type" columnName="uuid"/></not></preConditions>
@@ -1085,6 +1190,9 @@
 		<addColumn tableName="patient_identifier_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-patient_program" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_program" columnName="uuid"/></not></preConditions>
@@ -1092,6 +1200,9 @@
 		<addColumn tableName="patient_program">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-patient_state" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_state" columnName="uuid"/></not></preConditions>
@@ -1099,6 +1210,9 @@
 		<addColumn tableName="patient_state">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-person" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person" columnName="uuid"/></not></preConditions>
@@ -1106,6 +1220,9 @@
 		<addColumn tableName="person">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-person_address" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_address" columnName="uuid"/></not></preConditions>
@@ -1113,6 +1230,9 @@
 		<addColumn tableName="person_address">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-person_attribute" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_attribute" columnName="uuid"/></not></preConditions>
@@ -1120,6 +1240,9 @@
 		<addColumn tableName="person_attribute">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-person_attribute_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_attribute_type" columnName="uuid"/></not></preConditions>
@@ -1127,6 +1250,9 @@
 		<addColumn tableName="person_attribute_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-person_name" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_name" columnName="uuid"/></not></preConditions>
@@ -1134,6 +1260,9 @@
 		<addColumn tableName="person_name">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-privilege" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="privilege" columnName="uuid"/></not></preConditions>
@@ -1141,6 +1270,9 @@
 		<addColumn tableName="privilege">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-program" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program" columnName="uuid"/></not></preConditions>
@@ -1148,6 +1280,9 @@
 		<addColumn tableName="program">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-program_workflow" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program_workflow" columnName="uuid"/></not></preConditions>
@@ -1155,6 +1290,9 @@
 		<addColumn tableName="program_workflow">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-program_workflow_state" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program_workflow_state" columnName="uuid"/></not></preConditions>
@@ -1162,6 +1300,9 @@
 		<addColumn tableName="program_workflow_state">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-relationship" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="relationship" columnName="uuid"/></not></preConditions>
@@ -1169,6 +1310,9 @@
 		<addColumn tableName="relationship">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-relationship_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="relationship_type" columnName="uuid"/></not></preConditions>
@@ -1176,6 +1320,9 @@
 		<addColumn tableName="relationship_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-report_object" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="report_object" columnName="uuid"/></not></preConditions>
@@ -1183,6 +1330,9 @@
 		<addColumn tableName="report_object">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-report_schema_xml" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="report_schema_xml" columnName="uuid"/></not></preConditions>
@@ -1190,6 +1340,9 @@
 		<addColumn tableName="report_schema_xml">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-role" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="role" columnName="uuid"/></not></preConditions>
@@ -1197,6 +1350,9 @@
 		<addColumn tableName="role">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	<changeSet id="20090402-1515-38-serialized_object" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="serialized_object" columnName="uuid"/></not></preConditions>
@@ -1204,11 +1360,14 @@
 		<addColumn tableName="serialized_object">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 
 
 	<changeSet id="20090402-1516-cohort" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in cohort table via built in uuid function.</comment>
 		<update tableName="cohort" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1216,10 +1375,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept table via built in uuid function.</comment>
 		<update tableName="concept" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1227,10 +1385,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_answer" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_answer table via built in uuid function.</comment>
 		<update tableName="concept_answer" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1238,10 +1395,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_class" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_class table via built in uuid function.</comment>
 		<update tableName="concept_class" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1249,10 +1405,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_datatype" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_datatype table via built in uuid function.</comment>
 		<update tableName="concept_datatype" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1260,10 +1415,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_description" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_description table via built in uuid function.</comment>
 		<update tableName="concept_description" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1271,10 +1425,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_map" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_map table via built in uuid function.</comment>
 		<update tableName="concept_map" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1282,10 +1435,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_name" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_name table via built in uuid function.</comment>
 		<update tableName="concept_name" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1293,10 +1445,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_name_tag" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_name_tag table via built in uuid function.</comment>
 		<update tableName="concept_name_tag" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1304,10 +1455,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_proposal" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_proposal table via built in uuid function.</comment>
 		<update tableName="concept_proposal" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1315,10 +1465,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_set" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_set table via built in uuid function.</comment>
 		<update tableName="concept_set" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1326,10 +1475,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_source" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_source table via built in uuid function.</comment>
 		<update tableName="concept_source" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1337,10 +1485,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_state_conversion" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_state_conversion table via built in uuid function.</comment>
 		<update tableName="concept_state_conversion" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1348,10 +1495,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-drug" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in drug table via built in uuid function.</comment>
 		<update tableName="drug" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1359,10 +1505,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-encounter" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in encounter table via built in uuid function.</comment>
 		<update tableName="encounter" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1370,10 +1515,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-encounter_type" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in encounter_type table via built in uuid function.</comment>
 		<update tableName="encounter_type" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1381,10 +1525,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-field" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in field table via built in uuid function.</comment>
 		<update tableName="field" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1392,10 +1535,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-field_answer" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in field_answer table via built in uuid function.</comment>
 		<update tableName="field_answer" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1403,10 +1545,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-field_type" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in field_type table via built in uuid function.</comment>
 		<update tableName="field_type" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1414,10 +1555,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-form" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in form table via built in uuid function.</comment>
 		<update tableName="form" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1425,10 +1565,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-form_field" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in form_field table via built in uuid function.</comment>
 		<update tableName="form_field" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1436,10 +1575,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-global_property" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in global_property table via built in uuid function.</comment>
 		<update tableName="global_property" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1447,10 +1585,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-hl7_in_archive" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in hl7_in_archive table via built in uuid function.</comment>
 		<update tableName="hl7_in_archive" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1458,10 +1595,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-hl7_in_error" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in hl7_in_error table via built in uuid function.</comment>
 		<update tableName="hl7_in_error" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1469,10 +1605,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-hl7_in_queue" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in hl7_in_queue table via built in uuid function.</comment>
 		<update tableName="hl7_in_queue" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1480,10 +1615,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-hl7_source" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in hl7_source table via built in uuid function.</comment>
 		<update tableName="hl7_source" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1491,10 +1625,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-location" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in location table via built in uuid function.</comment>
 		<update tableName="location" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1502,10 +1635,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-location_tag" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in location_tag table via built in uuid function.</comment>
 		<update tableName="location_tag" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1513,10 +1645,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-note" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in note table via built in uuid function.</comment>
 		<update tableName="note" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1524,10 +1655,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-notification_alert" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in notification_alert table via built in uuid function.</comment>
 		<update tableName="notification_alert" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1535,10 +1665,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-notification_template" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in notification_template table via built in uuid function.</comment>
 		<update tableName="notification_template" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1546,10 +1675,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-obs" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in obs table via built in uuid function.</comment>
 		<update tableName="obs" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1557,10 +1685,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-order_type" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in order_type table via built in uuid function.</comment>
 		<update tableName="order_type" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1568,10 +1695,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-orders" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in orders table via built in uuid function.</comment>
 		<update tableName="orders" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1579,10 +1705,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-patient_identifier" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in patient_identifier table via built in uuid function.</comment>
 		<update tableName="patient_identifier" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1590,10 +1715,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-patient_identifier_type" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in patient_identifier_type table via built in uuid function.</comment>
 		<update tableName="patient_identifier_type" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1601,10 +1725,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-patient_program" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in patient_program table via built in uuid function.</comment>
 		<update tableName="patient_program" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1612,10 +1735,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-patient_state" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in patient_state table via built in uuid function.</comment>
 		<update tableName="patient_state" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1623,10 +1745,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-person" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in person table via built in uuid function.</comment>
 		<update tableName="person" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1634,10 +1755,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-person_address" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in person_address table via built in uuid function.</comment>
 		<update tableName="person_address" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1645,10 +1765,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-person_attribute" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in person_attribute table via built in uuid function.</comment>
 		<update tableName="person_attribute" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1656,10 +1775,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-person_attribute_type" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in person_attribute_type table via built in uuid function.</comment>
 		<update tableName="person_attribute_type" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1667,10 +1785,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-person_name" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in person_name table via built in uuid function.</comment>
 		<update tableName="person_name" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1678,10 +1795,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-privilege" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in privilege table via built in uuid function.</comment>
 		<update tableName="privilege" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1689,10 +1805,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-program" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in program table via built in uuid function.</comment>
 		<update tableName="program" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1700,10 +1815,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-program_workflow" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in program_workflow table via built in uuid function.</comment>
 		<update tableName="program_workflow" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1711,10 +1825,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-program_workflow_state" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in program_workflow_state table via built in uuid function.</comment>
 		<update tableName="program_workflow_state" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1722,10 +1835,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-relationship" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in relationship table via built in uuid function.</comment>
 		<update tableName="relationship" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1733,10 +1845,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-relationship_type" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in relationship_type table via built in uuid function.</comment>
 		<update tableName="relationship_type" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1744,10 +1855,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-report_object" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in report_object table via built in uuid function.</comment>
 		<update tableName="report_object" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1755,10 +1865,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-report_schema_xml" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in report_schema_xml table via built in uuid function.</comment>
 		<update tableName="report_schema_xml" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1766,10 +1875,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-role" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in role table via built in uuid function.</comment>
 		<update tableName="role" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1777,10 +1885,9 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-serialized_object" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in serialized_object table via built in uuid function.</comment>
 		<update tableName="serialized_object" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -1788,7 +1895,6 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 
 	<changeSet id="20090402-1517" author="bwolfe">
@@ -1829,6 +1935,7 @@
 	<changeSet id="20090402-1518" author="bwolfe">
 		<validCheckSum>64e353f08027fb48155b5be8a69cfca</validCheckSum> <!-- Checksum when datatype was "uuid" -->
 		<validCheckSum>dfaf705d7776613e619dedf3e06d7640</validCheckSum><!-- New checksum when datatype is "char(38)" -->
+		<preConditions onFail="MARK_RAN"><not><dbms type="mssql" /></not></preConditions>
 		<comment>
 			Now that UUID generation is done, set the uuid columns to not "NOT NULL" 
 		</comment>
@@ -2526,10 +2633,13 @@
 		<addColumn tableName="scheduler_task_config">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	
 	<changeSet id="20090831-1040-scheduler_task_config" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in scheduler_task_config table via built in uuid function.</comment>
 		<update tableName="scheduler_task_config" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -2537,7 +2647,6 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	
 	<changeSet id="20090831-1041-scheduler_task_config" author="bwolfe">
@@ -2565,6 +2674,7 @@
 	</changeSet>
 	
 	<changeSet id="20090831-1042-scheduler_task_config" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><dbms type="mssql" /></not></preConditions>
 		<comment>
 			Now that UUID generation is done for scheduler_task_config, set the uuid column to not "NOT NULL" 
 		</comment>
@@ -2991,10 +3101,13 @@
 		<addColumn tableName="users">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 
 	<changeSet id="200912140039" author="djazayeri">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in users table via built in uuid function.</comment>
 		<update tableName="users" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -3002,10 +3115,10 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 	
 	<changeSet id="20100415-forgotten-from-before" author="djazayeri">
+		<preConditions onFail="MARK_RAN"><not><dbms type="mssql" /></not></preConditions>
 		<comment>Adding not null constraint to users.uuid</comment>
 		<addNotNullConstraint tableName="users" columnName="uuid" columnDataType="char(38)"/>
 	</changeSet>
@@ -3201,10 +3314,13 @@
 		<addColumn tableName="notification_alert_recipient">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 
 	<changeSet id="20100412-2218" author="bwolfe">
-		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in notification_alert_recipient table via built in uuid function.</comment>
 		<update tableName="notification_alert_recipient" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
@@ -3212,7 +3328,6 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
 
 	<changeSet id="20100412-2219" author="bwolfe">
@@ -3237,6 +3352,7 @@
 	</changeSet>
 	
 	<changeSet id="20100412-2220" author="bwolfe">
+		<preConditions><not><dbms type="mssql"/></not></preConditions>
 		<comment>
 			Now that UUID generation is done, set the notification_alert_recipient.uuid column to not "NOT NULL" 
 		</comment>
@@ -3436,6 +3552,9 @@
 		<addForeignKeyConstraint constraintName="user_who_created_active_list_type"
 			baseTableName="active_list_type" baseColumnNames="creator"
 			referencedTableName="users" referencedColumnNames="user_id" />
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	
 	<changeSet id="20100525-818-2" author="syhaas">
@@ -3502,6 +3621,9 @@
 		<addForeignKeyConstraint constraintName="stop_obs_active_list"
 			baseTableName="active_list" baseColumnNames="stop_obs_id"
 			referencedTableName="obs" referencedColumnNames="obs_id" />
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	
 	<changeSet id="20100525-818-3" author="syhaas">
@@ -4071,10 +4193,12 @@
 
 		<addUniqueConstraint tableName="concept_stop_word"
 			columnNames="word,locale" constraintName="Unique_StopWord_Key" />
-
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 
-    <changeSet id="20101029-1026" author="gobi/prasann">
+	<changeSet id="20101029-1026" author="gobi/prasann">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">select count(*) from concept_stop_word where word = 'A'</sqlCheck>
 		</preConditions>
@@ -4261,6 +4385,9 @@
 		<addForeignKeyConstraint constraintName="form_resource_form"
 			baseTableName="form_resource" baseColumnNames="form_id"
 			referencedTableName="form" referencedColumnNames="form_id" />
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 
 	<changeSet id="201103152243-b" author="jkeiper">
@@ -4408,6 +4535,9 @@
 		<createIndex tableName="visit" indexName="visit_patient_index">
 			<column name="patient_id" />
 		</createIndex>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	
 	<changeSet id="20101209-10000-encounter-add-visit-id-column" author="dkayiwa">
@@ -4524,6 +4654,9 @@
         <addForeignKeyConstraint constraintName="visit_attribute_voided_by_fk"
             baseTableName="visit_attribute" baseColumnNames="voided_by" referencedTableName="users"
             referencedColumnNames="user_id" />
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
     </changeSet>
 
     <changeSet id="201107192313-change-length-of-regex-column" author="jtellez">
@@ -4675,6 +4808,9 @@
         <addForeignKeyConstraint constraintName="location_attribute_voided_by_fk"
             baseTableName="location_attribute" baseColumnNames="voided_by" referencedTableName="users"
             referencedColumnNames="user_id" />
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
     </changeSet>
     
 	<changeSet id="201103112152" author="suho">
@@ -5199,6 +5335,9 @@
 		<addForeignKeyConstraint constraintName="mapped_user_retired_concept_map_type" 
 			referencedTableName="users" referencedColumnNames="user_id" 
 			baseTableName="concept_map_type" baseColumnNames="retired_by" />
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
 	</changeSet>
 	
 	<changeSet id="20110301-1030d" author="wyclif">
