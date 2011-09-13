@@ -57,7 +57,7 @@
 			referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
 	
-	<changeSet id="200811261102" author="bwolfe">
+	<changeSet id="200811261102" author="bwolfe" dbms="mysql">
 		<comment>
 			Fix field property for new Tribe person attribute
 		</comment>
@@ -383,14 +383,10 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="20090214-2246" author="isherman">
-		<preConditions onFail="MARK_RAN">
-			<dbms type="mysql" />
-		</preConditions>
+	<changeSet id="20090214-2246" author="isherman" dbms="mysql">
 		<comment>
 			Add weight and cd4 to patientGraphConcepts user property (mysql specific)
 		</comment>
-		
 		<sql>
 			UPDATE user_property
 				SET property_value = CONCAT(
@@ -409,12 +405,12 @@
 				<dbms type="postgresql" />
 				<dbms type="oracle" />
 				<dbms type="db2" />
+				<dbms type="mssql" />
 			</or>
 		</preConditions>
 		<comment>
 			Add weight and cd4 to patientGraphConcepts user property (using standard sql)
 		</comment>
-		
 		<sql>
 			UPDATE user_property
 				SET property_value = 
@@ -423,38 +419,20 @@
 					'-' ||
 					(SELECT property_value FROM global_property WHERE property = 'concept.cd4_count') ||
 					property_value
-				) WHERE property = 'patientGraphConcepts';			
+				 WHERE property = 'patientGraphConcepts';			
 		</sql>
+		<modifySql dbms="mssql">
+			<replace replace="||" with="+"/>
+		</modifySql>
 	</changeSet>
 	
-	<changeSet id="20090214-2248" author="isherman">
-		<preConditions onFail="MARK_RAN">
-			<dbms type="mssql" />
-		</preConditions>
-		<comment>
-			Add weight and cd4 to patientGraphConcepts user property (mssql specific)
-		</comment>
-		
-		<sql>
-			UPDATE user_property
-				SET property_value = 
-					'-' + 
-					(SELECT property_value FROM global_property WHERE property = 'concept.weight') +
-					'-' +
-					(SELECT property_value FROM global_property WHERE property = 'concept.cd4_count') +
-					property_value
-				) WHERE property = 'patientGraphConcepts';			
-		</sql>
-	</changeSet>
-	
-	<changeSet id="20090316-1008" author="vanand">
+	<changeSet id="20090316-1008" author="vanand" dbms="mysql">
 		<validCheckSum>cf32d07af2933e9a3555395737b5142</validCheckSum><!-- old checksum before adding in person.birthdate_estimated cleanup -->
 		<validCheckSum>fcdde237e04473db1e6fd16f56bf80e9</validCheckSum><!-- new checksum after adding in person.birthdate_estimated cleanup -->
 		<comment>
 			Change column types of all boolean columns to smallint. The columns used to be either tinyint(4) or MySQL's BIT.
 			(This may take a while on large patient or obs tables)
 		</comment>
-		
 		<ext:modifyColumn tableName="cohort">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
@@ -688,6 +666,238 @@
 		</ext:modifyColumn>
 		<ext:modifyColumn tableName="users">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
+
+	<changeSet id="20090316-1008-fix" author="sunbiz" dbms="mysql">
+		<comment>(Fixed)Changing from smallint to BOOLEAN type on BOOLEAN properties</comment>
+		<ext:modifyColumn tableName="cohort">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="is_set" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_class">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_datatype">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_name">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_name_tag">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_numeric">
+			<column name="precise" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_source">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="drug">
+			<column name="combination" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="drug_order">
+			<column name="prn" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="complex" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="encounter">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="encounter_type">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="field">
+			<column name="select_multiple" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="field_type">
+			<column name="is_set" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="form">
+			<column name="published" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>		
+		<ext:modifyColumn tableName="form_field">
+			<column name="required" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>		
+		<ext:modifyColumn tableName="location_tag">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>		
+		<ext:modifyColumn tableName="obs">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>		
+		<ext:modifyColumn tableName="order_type">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="orders">
+			<column name="discontinued" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="patient">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="patient_identifier">
+			<column name="preferred" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="patient_identifier_type">
+			<column name="check_digit" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="required" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="patient_program">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="patient_state">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="person">
+			<column name="birthdate_estimated" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="dead" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="person_address">
+			<column name="preferred" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="person_attribute">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="person_attribute_type">
+			<column name="searchable" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="person_name">
+			<column name="preferred" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="program">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="program_workflow">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="program_workflow_state">
+			<column name="initial" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="terminal" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="relationship">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="report_object">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="users">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
 				<constraints nullable="false" />
 			</column>
 		</ext:modifyColumn>
