@@ -9,32 +9,45 @@
 
 <script type="text/javascript">
 var selectedVisitRow;
+var visibleEncountersRow;
 function updateEncounters(visitId){
 	//user has selected the same visit as the one before
 	if(selectedVisitRow && $j(selectedVisitRow).attr('id') == visitId)
 		return;
 	
 	//clear the table
-	$j("#visitEncountersTable > tbody > tr").remove();
+	$j('#visitEncountersTable-'+visitId+' > tbody > tr').remove();
 	if(selectedVisitRow){
+		//remove the row highlight
 		$j(selectedVisitRow).removeClass('selected-visit');
 	}
+	//hide the visible visit encounters
+	if(visibleEncountersRow)
+		$j(visibleEncountersRow).hide();
+		
 	selectedVisitRow = $j("#"+visitId);
+	visibleEncountersRow = $j("#encountersRow-"+visitId);
 	$j(selectedVisitRow).addClass('selected-visit');
-	
+	$j(visibleEncountersRow).show();
+		
 	DWRVisitService.findEncountersByVisit(visitId, function(encounters) {
 		if(encounters){
 			if(encounters.length > 0){
 				for(var i in encounters){
 					var e = encounters[i];
-					$j('#visitEncountersTable tbody:last').append('<tr>'+
-						'<td>'+e.encounterDateString+'</td>'+
-						'<td>'+e.encounterType+'</td>'+
-						'<td>'+e.providerName+'</td>'+
-						'<td>'+((e.formName) ? e.formName:"")+'</td>'+
-						'<td>'+e.location+'</td>'+
-					'</tr>');
+					$j('#visitEncountersTable-'+visitId+' tbody:last').append('<tr>'+
+							'<td>'+e.encounterDateString+'</td>'+
+							'<td>'+e.encounterType+'</td>'+
+							'<td>'+e.providerName+'</td>'+
+							'<td>'+((e.formName) ? e.formName:"")+'</td>'+
+							'<td>'+e.location+'</td>'+
+							'<td>'+e.entererName+'</td>'+
+						'</tr>');
 				}
+			}else{
+				$j('#visitEncountersTable-'+visitId+' tbody:last').append('<tr>'+
+						'<td colspan="6" class="centerAligned"><spring:message code="general.none"/></td>'+
+					'</tr>');
 			}
 		}else{
 			alert('<spring:message code="Visit.find.encounters.error"/>');
@@ -52,6 +65,9 @@ function updateEncounters(visitId){
 }
 .selected-visit{
 	background-color: #A8D0F7; color: white; font-weight: bold;
+}
+.centerAligned{
+	text-align: center;
 }
 </style>
 
@@ -101,27 +117,29 @@ function updateEncounters(visitId){
 									</td>
 									<td class="indication"><openmrs:format concept="${visit.indication}"/></td>
 								</tr>
+								<tr id="encountersRow-${visit.visitId}" style="display: none">
+									<td>&nbsp;</td>
+									<td colspan="5">
+										<table id="visitEncountersTable-${visit.visitId}" cellspacing="0" cellpadding="2">
+											<thead>
+				 								<tr>
+				 									<th><spring:message code="Encounter.datetime"/></th>
+													<th><spring:message code="Encounter.type"/></th>
+													<th><spring:message code="Encounter.provider"/></th>
+													<th><spring:message code="Encounter.form"/></th>
+													<th><spring:message code="Encounter.location"/></th>
+													<th><spring:message code="Encounter.enterer"/></th>
+				 								</tr>
+											<thead>
+											<tbody></tbody>
+										</table>
+									</td>
+								</tr>
 							</openmrs:forEachVisit>
 						</tbody>
 					</table>
 				</div>
 			</div>
-		</div>
-		<br />
-		<div class="boxHeader"><spring:message code="Visit.encounters.selectedVisit"/></div>
-		<div class="box">
-			<table cellspacing="0" cellpadding="2" id="visitEncountersTable">
-				<thead>
-				 <tr>
-					<th> <spring:message code="Encounter.datetime"/></th>
-					<th> <spring:message code="Encounter.type"/></th>
-					<th> <spring:message code="Encounter.provider"/></th>
-					<th> <spring:message code="Encounter.form"/></th>
-					<th> <spring:message code="Encounter.location"/></th>
-				 </tr>
-				<thead>
-				<tbody></tbody>
-			</table>
 		</div>
 		
 		<c:if test="${model.showPagination != 'true'}">
