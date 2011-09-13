@@ -503,7 +503,7 @@
             <column defaultValue="" name="name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="" name="description" type="varchar(50)">
+            <column defaultValue="" name="description" type="text">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="creator" type="int">
@@ -1628,6 +1628,43 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="20110914-0448" author="sunbiz">
+        <createTable tableName="serialized_object">
+            <column name="serialized_object_id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(5000)"/>
+            <column name="type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subtype" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="serialization_class" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="serialized_data" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_changed" type="DATETIME" />
+            <column name="changed_by" type="int"/>
+            <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_retired" type="DATETIME"/>
+            <column name="retired_by" type="int"/>
+            <column name="retire_reason" type="varchar(1000)"/>
+        </createTable>
+    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-73">
         <addPrimaryKey columnNames="cohort_id, patient_id" tableName="cohort_member"/>
     </changeSet>
@@ -1782,6 +1819,11 @@
     <changeSet author="ben (generated)" id="1227303685425-107">
         <createIndex indexName="middle_name" tableName="person_name" unique="false">
             <column name="middle_name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="20110914-0509" author="sunbiz">
+        <createIndex tableName="concept_word" indexName="concept_word_concept_idx">
+            <column name="concept_id" />
         </createIndex>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-108">
@@ -2383,5 +2425,14 @@
     </changeSet>
     <changeSet id="20110914-0321" author="sunbiz">
         <addForeignKeyConstraint constraintName="parent_location" baseTableName="location" baseColumnNames="parent_location" referencedTableName="location" referencedColumnNames="location_id"/>
+    </changeSet>
+    <changeSet id="20110914-0453" author="sunbiz">
+        <addForeignKeyConstraint constraintName="serialized_object_creator" baseTableName="serialized_object" baseColumnNames="creator"	referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+    <changeSet id="20110914-0434" author="sunbiz">
+        <addForeignKeyConstraint constraintName="serialized_object_changed_by" baseTableName="serialized_object" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+    <changeSet id="20110914-0435" author="sunbiz">
+        <addForeignKeyConstraint constraintName="serialized_object_retired_by" baseTableName="serialized_object" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
     </changeSet>
 </databaseChangeLog>
