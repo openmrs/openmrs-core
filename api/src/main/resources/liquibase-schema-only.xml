@@ -358,6 +358,9 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-17">
         <createTable tableName="concept_set">
+            <column name="concept_set_id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="concept_set_pk" />
+            </column>
             <column defaultValueNumeric="0" name="concept_id" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -1121,6 +1124,9 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-47">
         <createTable tableName="patient_identifier">
+            <column name="patient_identifier_id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="patient_identifier_pk" />
+            </column>
             <column defaultValueNumeric="0" name="patient_id" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -1879,9 +1885,6 @@
     <changeSet author="ben (generated)" id="1227303685425-73">
         <addPrimaryKey columnNames="cohort_id, patient_id" tableName="cohort_member"/>
     </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-74">
-        <addPrimaryKey columnNames="concept_id, concept_set" tableName="concept_set"/>
-    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-75">
         <addPrimaryKey columnNames="concept_id, concept_set" tableName="concept_set_derived"/>
     </changeSet>
@@ -1896,9 +1899,6 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-79">
         <addPrimaryKey columnNames="alert_id, user_id" tableName="notification_alert_recipient"/>
-    </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-80">
-        <addPrimaryKey columnNames="patient_id, identifier, identifier_type" tableName="patient_identifier"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-81">
         <addPrimaryKey columnNames="privilege, role" tableName="role_privilege"/>
@@ -2037,6 +2037,16 @@
             <column name="concept_id" />
         </createIndex>
     </changeSet>
+    <changeSet id="20110914-0943" author="sunbiz">
+        <createIndex tableName="concept_set" indexName="idx_concept_set_concept">
+            <column name="concept_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="20110914-0956" author="sunbiz">
+        <createIndex tableName="patient_identifier" indexName="idx_patient_identifier_patient">
+            <column name="patient_id"/>
+        </createIndex>
+    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-108">
         <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="cohort" constraintName="user_who_changed_cohort" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
@@ -2150,9 +2160,6 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-147">
         <addForeignKeyConstraint baseColumnNames="concept_proposal_id" baseTableName="concept_proposal_tag_map" constraintName="mapped_concept_proposal" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_proposal_id" referencedTableName="concept_proposal"/>
-    </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-148">
-        <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_set" constraintName="is_a" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-149">
         <addForeignKeyConstraint baseColumnNames="concept_set" baseTableName="concept_set" constraintName="has_a" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
@@ -2418,9 +2425,6 @@
     <changeSet author="ben (generated)" id="1227303685425-237">
         <addForeignKeyConstraint baseColumnNames="location_id" baseTableName="patient_identifier" constraintName="patient_identifier_ibfk_2" deferrable="false" initiallyDeferred="false" referencedColumnNames="location_id" referencedTableName="location"/>
     </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-238">
-        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_identifier" constraintName="identifies_patient" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="patient_id" referencedTableName="patient"/>
-    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-239">
         <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="patient_identifier" constraintName="identifier_voider" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
@@ -2645,5 +2649,11 @@
     </changeSet>
     <changeSet id="20110914-0435" author="sunbiz">
         <addForeignKeyConstraint constraintName="serialized_object_retired_by" baseTableName="serialized_object" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+    <changeSet id="20110914-0945" author="sunbiz">
+        <addForeignKeyConstraint baseTableName="concept_set" baseColumnNames="concept_id" constraintName="is_a" referencedTableName="concept" referencedColumnNames="concept_id"/>
+    </changeSet>
+    <changeSet id="20110914-0958" author="sunbiz">
+        <addForeignKeyConstraint baseTableName="patient_identifier" baseColumnNames="patient_id" constraintName="identifies_patient" referencedTableName="patient" referencedColumnNames="patient_id"/>
     </changeSet>
 </databaseChangeLog>
