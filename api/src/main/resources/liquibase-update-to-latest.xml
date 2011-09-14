@@ -11,7 +11,7 @@
 		for a list of supported elements and attributes 
 	-->
 	
-	<changeSet id="0" author="bwolfe">
+	<changeSet id="0" author="bwolfe" failOnError="false">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="The update-to-latest.sql file needs to be run on this db.">
 				<![CDATA[
