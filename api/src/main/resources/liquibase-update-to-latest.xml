@@ -400,11 +400,14 @@
 	</changeSet>
 	
 	<changeSet id="20090214-2247" author="isherman">
+		<validCheckSum><comment>Fixing sql extra bracket</comment>3:e4eeb4a09c2ab695bbde832cd7b6047d</validCheckSum>
+		<validCheckSum>3:27ccd45178be533e880f88abbae24c2d</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<or>
 				<dbms type="postgresql" />
 				<dbms type="oracle" />
 				<dbms type="db2" />
+				<dbms type="mssql" />
 			</or>
 		</preConditions>
 		<comment>
@@ -418,28 +421,11 @@
 					'-' ||
 					(SELECT property_value FROM global_property WHERE property = 'concept.cd4_count') ||
 					property_value
-				) WHERE property = 'patientGraphConcepts';			
+				WHERE property = 'patientGraphConcepts';
 		</sql>
-	</changeSet>
-
-	<changeSet id="20090214-2248" author="isherman">
-		<preConditions onFail="MARK_RAN">
-			<dbms type="mssql" />
-		</preConditions>
-		<comment>
-			Add weight and cd4 to patientGraphConcepts user property (mssql specific)
-		</comment>
-		
-		<sql>
-			UPDATE user_property
-				SET property_value = 
-					'-' + 
-					(SELECT property_value FROM global_property WHERE property = 'concept.weight') +
-					'-' +
-					(SELECT property_value FROM global_property WHERE property = 'concept.cd4_count') +
-					property_value
-				) WHERE property = 'patientGraphConcepts';			
-		</sql>
+		<modifySql dbms="mssql">
+			<replace replace="||" with="+"/>
+		</modifySql>
 	</changeSet>
 	
 	<changeSet id="20090316-1008" author="vanand" dbms="mysql">
@@ -2270,7 +2256,7 @@
 		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for" />
 	</changeSet>
 	
-	<changeSet id="20090428-0811aa" author="bwolfe" failOnError="false">
+	<changeSet id="20090428-0811aa" author="bwolfe" failOnError="false" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
 		</preConditions>
@@ -2278,7 +2264,7 @@
 		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for_name" />
 	</changeSet>
 	
-	<changeSet id="20090414-0811b" author="bwolfe" failOnError="false">
+	<changeSet id="20090414-0811b" author="bwolfe" failOnError="false" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
 		</preConditions>
@@ -2286,7 +2272,7 @@
 		<dropPrimaryKey tableName="concept_word" />
 	</changeSet>
 	
-	<changeSet id="20090414-0812" author="bwolfe">
+	<changeSet id="20090414-0812" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
 		</preConditions>
@@ -2302,12 +2288,15 @@
 		</modifySql>
 	</changeSet>
 	
-	<changeSet id="20090414-0812b" author="bwolfe" failOnError="false">
+	<changeSet id="20090414-0812b" author="bwolfe" failOnError="false" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><foreignKeyConstraintExists foreignKeyName="word_for_name"/></not>
+		</preConditions>
 		<comment>Re-adding foreign key for concept_word.concept_name_id</comment>
 		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_name_id" constraintName="word_for_name" referencedTableName="concept_name" referencedColumnNames="concept_name_id"/>
 	</changeSet>
 	
-	<changeSet id="20090428-0854" author="bwolfe">
+	<changeSet id="20090428-0854" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<foreignKeyConstraintExists foreignKeyName="word_for"/>
@@ -2317,7 +2306,7 @@
 		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_id" constraintName="word_for" referencedTableName="concept" referencedColumnNames="concept_id" />
 	</changeSet>
 	
-	<changeSet id="200905150821" author="bwolfe">
+	<changeSet id="200905150821" author="bwolfe" dbms="mysql">
 		<comment>Deleting duplicate concept word keys</comment>
 		<sql>delete from concept_word
              where
@@ -2336,13 +2325,13 @@
 		</sql>
 	</changeSet>
 	
-	<changeSet id="200904271042" author="bwolfe">
+	<changeSet id="200904271042" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_word" columnName="synonym"/></preConditions>
 		<comment>Remove the now unused synonym column</comment>
 		<dropColumn tableName="concept_word" columnName="synonym"/>
 	</changeSet>
 	
-	<changeSet id="200902142212" author="ewolodzko">
+	<changeSet id="200902142212" author="ewolodzko" dbms="mysql">
 		<comment>
 			Add a sortWeight field to PersonAttributeType
 		</comment>
@@ -2351,7 +2340,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="200902142213" author="ewolodzko">
+	<changeSet id="200902142213" author="ewolodzko" dbms="mysql">
 		<comment>
 			Add default sortWeights to all current PersonAttributeTypes
 		</comment>
@@ -2362,7 +2351,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="200906301606" author="bwolfe">
+	<changeSet id="200906301606" author="bwolfe" dbms="mysql">
 		<comment>
 			Change person_attribute_type.sort_weight from an integer to a float
 		</comment>
@@ -2371,12 +2360,12 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-1" author="bwolfe">
+	<changeSet id="200907161638-1" author="bwolfe" dbms="mysql">
 		<comment>Change obs.value_numeric from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="obs"><column name="value_numeric" type="double" /></ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-2" author="bwolfe">
+	<changeSet id="200907161638-2" author="bwolfe" dbms="mysql">
 		<comment>Change concept_numeric columns from a double(22,0) type to a double</comment>
 		<ext:modifyColumn tableName="concept_numeric">
 			<column name="hi_absolute" type="double" />
@@ -2388,17 +2377,17 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-3" author="bwolfe">
+	<changeSet id="200907161638-3" author="bwolfe" dbms="mysql">
 		<comment>Change concept_set.sort_weight from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="concept_set"><column name="sort_weight" type="double" /></ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-4" author="bwolfe">
+	<changeSet id="200907161638-4" author="bwolfe" dbms="mysql">
 		<comment>Change concept_set_derived.sort_weight from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="concept_set_derived"><column name="sort_weight" type="double" /></ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-5" author="bwolfe">
+	<changeSet id="200907161638-5" author="bwolfe" dbms="mysql">
 		<comment>Change drug table columns from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="drug" >
 			<column name="dose_strength" type="double" />
@@ -2407,7 +2396,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-6" author="bwolfe">
+	<changeSet id="200907161638-6" author="bwolfe" dbms="mysql">
 		<comment>Change drug_order.dose from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="drug_order">
 			<column name="dose" type="double" />
@@ -2415,7 +2404,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20100128-1" author="djazayeri">
+	<changeSet id="20100128-1" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				SELECT COUNT(*) FROM role where role = 'System Developer'
@@ -2429,11 +2418,10 @@
 		</insert>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 		<modifySql><replace replace="name-of-uuid-function" with="current_timestamp * 99999999999999"/></modifySql>
 	</changeSet>	
 	
-	<changeSet id="20100128-2" author="djazayeri">
+	<changeSet id="20100128-2" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<changeSetExecuted id="20090803-1" author="jkariuki" changeLogFile="liquibase-update-to-latest.xml"/>
 		</preConditions>
@@ -2444,7 +2432,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="20100128-3" author="djazayeri">
+	<changeSet id="20100128-3" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<changeSetExecuted id="20090803-1" author="jkariuki" changeLogFile="liquibase-update-to-latest.xml"/>
 		</preConditions>
@@ -2454,18 +2442,15 @@
 		</delete>
 	</changeSet>
 	    
-	<changeSet id="20090831-1039-38-scheduler_task_config" author="bwolfe">
+	<changeSet id="20090831-1039-38-scheduler_task_config" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="scheduler_task_config" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to scheduler_task_config table</comment>
 		<addColumn tableName="scheduler_task_config">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
-		</modifySql>
 	</changeSet>
 	
-	<changeSet id="20090831-1040-scheduler_task_config" author="bwolfe">
+	<changeSet id="20090831-1040-scheduler_task_config" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in scheduler_task_config table via built in uuid function.</comment>
 		<update tableName="scheduler_task_config" >
@@ -2477,6 +2462,8 @@
 	</changeSet>
 	
 	<changeSet id="20090831-1041-scheduler_task_config" author="bwolfe">
+		<validCheckSum><comment>Fixed missing id from scheduler_task_config</comment>3:25127273b2d501664ce325922b0c7db2</validCheckSum>
+		<validCheckSum>3:0db7f5c882500d1fac41550a1184073c</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<or>
@@ -2495,7 +2482,7 @@
 			</param>
 			<param name="columnName" value="uuid"/>
 			<param name="idExceptions">
-				scheduler_task_config=task_config_id
+				scheduler_task_config_id=task_config_id
 			</param>
 		</customChange>
 	</changeSet>
@@ -2516,35 +2503,34 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="20090907-1" author="Knoll_Frank">
+	<changeSet id="20090907-1" author="Knoll_Frank" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="date_voided"/></preConditions>
 		<comment>Rename the concept_source.date_voided column to date_retired</comment>
 		<renameColumn tableName="concept_source" oldColumnName="date_voided" newColumnName="date_retired" columnDataType="datetime" />
 	</changeSet>
-	
-	<changeSet id="20090907-2a" author="Knoll_Frank">
+	<changeSet id="20090907-2a" author="Knoll_Frank" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><foreignKeyConstraintExists foreignKeyName="user_who_voided_concept_source"/></preConditions>
 		<comment>Remove the concept_source.voided_by foreign key constraint</comment>	
 		<dropForeignKeyConstraint baseTableName="concept_source" constraintName="user_who_voided_concept_source" />
 	</changeSet>
-	<changeSet id="20090907-2b" author="Knoll_Frank">
+	<changeSet id="20090907-2b" author="Knoll_Frank" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="voided_by"/></preConditions>
 		<comment>Rename the concept_source.voided_by column to retired_by</comment>	
 		<renameColumn tableName="concept_source" oldColumnName="voided_by" newColumnName="retired_by" columnDataType="int" />
 		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_source" constraintName="user_who_retired_concept_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users" />
 	</changeSet>
-	<changeSet id="20090907-3" author="Knoll_Frank">
+	<changeSet id="20090907-3" author="Knoll_Frank" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="voided"/></preConditions>
 		<comment>Rename the concept_source.voided column to retired</comment>
 		<renameColumn tableName="concept_source" oldColumnName="voided" newColumnName="retired" columnDataType="smallint" />
-	</changeSet>
-	<changeSet id="20090907-4" author="Knoll_Frank">
+	</changeSet> <!-- Fix not required. See changeset 200908291938-2a -->
+	<changeSet id="20090907-4" author="Knoll_Frank" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="void_reason"/></preConditions>
 		<comment>Rename the concept_source.void_reason column to retire_reason</comment>
 		<renameColumn tableName="concept_source" oldColumnName="void_reason" newColumnName="retire_reason" columnDataType="varchar(255)" />
 	</changeSet>
 	
-	<changeSet id="200908291938-1" author="dthomas">
+	<changeSet id="200908291938-1" author="dthomas" dbms="mysql">
 		<comment>set hl7_code in ConceptSource to nullable column</comment>
 		<ext:modifyColumn tableName="concept_source">
 			<column name="hl7_code" type="varchar(50)">
@@ -2553,7 +2539,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200908291938-2a" author="dthomas">
+	<changeSet id="200908291938-2a" author="dthomas" dbms="mysql">
 		<comment>set retired in ConceptSource to tinyint(1) not null</comment>
 		<ext:modifyColumn tableName="concept_source">
 			<column name="retired" type="tinyint(1)">
