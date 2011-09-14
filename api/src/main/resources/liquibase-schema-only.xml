@@ -2182,9 +2182,6 @@
     <changeSet author="ben (generated)" id="1227303685425-155">
         <addForeignKeyConstraint baseColumnNames="program_workflow_state_id" baseTableName="concept_state_conversion" constraintName="conversion_to_state" deferrable="false" initiallyDeferred="false" referencedColumnNames="program_workflow_state_id" referencedTableName="program_workflow_state"/>
     </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-156">
-        <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_word" constraintName="word_for" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
-    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-157">
         <addForeignKeyConstraint baseColumnNames="concept_name_id" baseTableName="concept_word" constraintName="word_for_name" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_name_id" referencedTableName="concept_name"/>
     </changeSet>

@@ -226,7 +226,7 @@
 			SET 
 				concept_name_tag_id = (SELECT 
 										 min(concept_name_tag_id)
-										FROM concept_name_tag
+									   FROM concept_name_tag
 									   WHERE 
 									     tag = (select tag from concept_name_tag where concept_name_tag_id = map.concept_name_tag_id)
 									  );
@@ -405,7 +405,6 @@
 				<dbms type="postgresql" />
 				<dbms type="oracle" />
 				<dbms type="db2" />
-				<dbms type="mssql" />
 			</or>
 		</preConditions>
 		<comment>
@@ -419,11 +418,28 @@
 					'-' ||
 					(SELECT property_value FROM global_property WHERE property = 'concept.cd4_count') ||
 					property_value
-				 WHERE property = 'patientGraphConcepts';			
+				) WHERE property = 'patientGraphConcepts';			
 		</sql>
-		<modifySql dbms="mssql">
-			<replace replace="||" with="+"/>
-		</modifySql>
+	</changeSet>
+
+	<changeSet id="20090214-2248" author="isherman">
+		<preConditions onFail="MARK_RAN">
+			<dbms type="mssql" />
+		</preConditions>
+		<comment>
+			Add weight and cd4 to patientGraphConcepts user property (mssql specific)
+		</comment>
+		
+		<sql>
+			UPDATE user_property
+				SET property_value = 
+					'-' + 
+					(SELECT property_value FROM global_property WHERE property = 'concept.weight') +
+					'-' +
+					(SELECT property_value FROM global_property WHERE property = 'concept.cd4_count') +
+					property_value
+				) WHERE property = 'patientGraphConcepts';			
+		</sql>
 	</changeSet>
 	
 	<changeSet id="20090316-1008" author="vanand" dbms="mysql">
@@ -1697,15 +1713,22 @@
 	</changeSet>
 	
 	<changeSet id="20090414-0805" author="bwolfe" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_set" columnName="concept_set_id"/></not>
+		</preConditions>
 		<comment>Dropping primary key on concept set table</comment>
 		<dropPrimaryKey tableName="concept_set" />
 	</changeSet>
 	
 	<changeSet id="20090414-0806" author="bwolfe" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_set" columnName="concept_set_id"/></not>
+		</preConditions>
 		<comment>Adding new integer primary key to concept set table</comment>
 		<addColumn tableName="concept_set">
-			<column name="concept_set_id" type="int" autoIncrement="true">
-				<constraints nullable="false" primaryKey="true" primaryKeyName="concept_set_pk" />
+			<column name="concept_set_id" type="int(11)" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="concept_set_pk" 
+							 unique="true" uniqueConstraintName="concept_set_id_unique" />
 			</column>
 		</addColumn>
 		<modifySql dbms="mysql">
@@ -1714,6 +1737,9 @@
 	</changeSet>
 
 	<changeSet id="20090414-0807" author="bwolfe" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists indexName="idx_concept_set_concept"/></not>
+		</preConditions>
 		<comment>Adding index and foreign key to concept_set.concept_id column</comment>
 		<createIndex tableName="concept_set" indexName="idx_concept_set_concept">
 			<column name="concept_id"/>
@@ -1730,15 +1756,22 @@
 	</changeSet>
 	
 	<changeSet id="20090414-0808b" author="bwolfe" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="patient_identifier" columnName="patient_identifier_id"/></not>
+		</preConditions>
 		<comment>Dropping non-integer primary key on patient identifier table before adding a new integer primary key</comment> 
 		<dropPrimaryKey tableName="patient_identifier" />
 	</changeSet>
 
 	<changeSet id="20090414-0809" author="bwolfe" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="patient_identifier" columnName="patient_identifier_id"/></not>
+		</preConditions>
 		<comment>Adding new integer primary key to patient identifier table</comment>
 		<addColumn tableName="patient_identifier">
-			<column name="patient_identifier_id" type="int" autoIncrement="true">
-				<constraints nullable="false" primaryKey="true" primaryKeyName="patient_identifier_pk" />
+			<column name="patient_identifier_id" type="int(11)" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="patient_identifier_pk" 
+							 unique="true" uniqueConstraintName="patient_identifier_id_unique" />
 			</column>
 		</addColumn>
 		<modifySql dbms="mysql">
@@ -1747,6 +1780,9 @@
 	</changeSet>
 
 	<changeSet id="20090414-0810" author="bwolfe" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists indexName="idx_patient_identifier_patient"/></not>
+		</preConditions>
 		<comment>Adding index and foreign key on patient_identifier.patient_id column</comment>
 		<createIndex tableName="patient_identifier" indexName="idx_patient_identifier_patient">
 			<column name="patient_id"/>
@@ -1792,7 +1828,9 @@
 	<changeSet id="20090402-1518" author="bwolfe">
 		<validCheckSum>64e353f08027fb48155b5be8a69cfca</validCheckSum> <!-- Checksum when datatype was "uuid" -->
 		<validCheckSum>dfaf705d7776613e619dedf3e06d7640</validCheckSum><!-- New checksum when datatype is "char(38)" -->
-		<preConditions onFail="MARK_RAN"><not><dbms type="mssql" /></not></preConditions>
+		<preConditions onFail="MARK_RAN">
+			<not><dbms type="mssql" /></not>
+		</preConditions>
 		<comment>
 			Now that UUID generation is done, set the uuid columns to not "NOT NULL" 
 		</comment>
@@ -2224,7 +2262,7 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="20090414-0811a" author="bwolfe">
+	<changeSet id="20090414-0811a" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyName="word_for" />
 		</preConditions>
