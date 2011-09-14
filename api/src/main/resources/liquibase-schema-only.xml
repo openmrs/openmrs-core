@@ -28,7 +28,11 @@
             <column name="void_reason" type="varchar(255)"/>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-2">
         <createTable tableName="cohort_member">
@@ -73,7 +77,11 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-5">
         <createTable tableName="concept_answer">
@@ -91,7 +99,11 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-6">
         <createTable tableName="concept_class">
@@ -116,7 +128,11 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-7">
         <createTable tableName="concept_datatype">
@@ -142,7 +158,11 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-8">
         <createTable tableName="concept_derived">
@@ -177,7 +197,11 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-10">
         <createTable tableName="concept_map">
@@ -196,7 +220,11 @@
             <column defaultValueNumeric="0" name="concept_id" type="int">
                 <constraints nullable="false"/>
             </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-11">
         <createTable tableName="concept_name">
@@ -222,7 +250,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-12">
         <createTable tableName="concept_name_tag">
@@ -247,7 +279,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-13">
         <createTable tableName="concept_name_tag_map">
@@ -304,7 +340,11 @@
             <column defaultValue="" name="locale" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-16">
         <createTable tableName="concept_proposal_tag_map">
@@ -331,7 +371,11 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-18">
         <createTable tableName="concept_set_derived">
@@ -370,7 +414,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-20">
         <createTable tableName="concept_state_conversion">
@@ -380,7 +428,11 @@
             <column defaultValueNumeric="0" name="concept_id" type="int"/>
             <column defaultValueNumeric="0" name="program_workflow_id" type="int"/>
             <column defaultValueNumeric="0" name="program_workflow_state_id" type="int"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-21">
         <createTable tableName="concept_word">
@@ -431,7 +483,11 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-23">
         <createTable tableName="drug_ingredient">
@@ -493,7 +549,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-26">
         <createTable tableName="encounter_type">
@@ -518,7 +578,11 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-27">
         <createTable tableName="field">
@@ -551,7 +615,11 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-28">
         <createTable tableName="field_answer">
@@ -567,7 +635,11 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-29">
         <createTable tableName="field_type">
@@ -585,7 +657,11 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-30">
         <createTable tableName="form">
@@ -620,7 +696,11 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retired_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-31">
         <createTable tableName="form_field">
@@ -651,7 +731,11 @@
                 <constraints nullable="false"/>
             </column>
             <column name="sort_weight" type="real"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-32">
         <createTable tableName="global_property">
@@ -660,7 +744,11 @@
             </column>
             <column name="property_value" type="text"/>
             <column name="description" type="text"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-33">
         <createTable tableName="hl7_in_archive">
@@ -678,7 +766,11 @@
                 <constraints nullable="false"/>
             </column>
             <column name="message_state" type="int" defaultValueNumeric="0" remarks="2=processed, 4=deleted"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-34">
         <createTable tableName="hl7_in_error">
@@ -699,7 +791,11 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-35">
         <createTable tableName="hl7_in_queue">
@@ -719,7 +815,11 @@
             <column name="date_processed" type="DATETIME"/>
             <column name="error_msg" type="text"/>
             <column name="date_created" type="DATETIME"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-36">
         <createTable tableName="hl7_source">
@@ -736,7 +836,11 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-37">
         <createTable tableName="location">
@@ -773,7 +877,11 @@
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
             <column name="parent_location" type="int"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-39">
         <createTable tableName="note">
@@ -797,7 +905,11 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-40">
         <createTable tableName="notification_alert">
@@ -823,7 +935,11 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-41">
         <createTable tableName="notification_alert_recipient">
@@ -850,7 +966,11 @@
             <column name="sender" type="varchar(255)"/>
             <column name="recipients" type="varchar(512)"/>
             <column defaultValueNumeric="0" name="ordinal" type="int"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-43">
         <createTable tableName="obs">
@@ -898,7 +1018,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-44">
         <createTable tableName="order_type">
@@ -923,7 +1047,11 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-45">
         <createTable tableName="orders">
@@ -963,7 +1091,11 @@
                 <constraints nullable="false"/>
             </column>
             <column name="accession_number" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-46">
         <createTable tableName="patient">
@@ -1016,7 +1148,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-48">
         <createTable tableName="patient_identifier_type">
@@ -1050,7 +1186,11 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-49">
         <createTable tableName="patient_program">
@@ -1079,7 +1219,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-50">
         <createTable tableName="patient_state">
@@ -1108,7 +1252,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-51">
         <createTable tableName="person">
@@ -1139,7 +1287,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-52">
         <createTable tableName="person_address">
@@ -1175,7 +1327,11 @@
             <column name="region" type="varchar(50)"/>
             <column name="subregion" type="varchar(50)"/>
             <column name="township_division" type="varchar(50)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-53">
         <createTable tableName="person_attribute">
@@ -1205,7 +1361,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-54">
         <createTable tableName="person_attribute_type">
@@ -1238,7 +1398,11 @@
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
             <column name="edit_privilege" type="varchar(50)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-55">
         <createTable tableName="person_name">
@@ -1271,7 +1435,11 @@
             <column name="void_reason" type="varchar(255)"/>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-56">
         <createTable tableName="privilege">
@@ -1281,7 +1449,11 @@
             <column defaultValue="" name="description" type="varchar(250)">
                 <constraints nullable="false"/>
             </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-57">
         <createTable tableName="program">
@@ -1306,7 +1478,11 @@
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="varchar(500)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-58">
         <createTable tableName="program_workflow">
@@ -1330,7 +1506,11 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-59">
         <createTable tableName="program_workflow_state">
@@ -1360,7 +1540,11 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-60">
         <createTable tableName="relationship">
@@ -1388,7 +1572,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-61">
         <createTable tableName="relationship_type">
@@ -1416,7 +1604,11 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-62">
         <createTable tableName="report_object">
@@ -1448,7 +1640,11 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-63">
         <createTable tableName="report_schema_xml">
@@ -1464,7 +1660,11 @@
             <column name="xml_data" type="text">
                 <constraints nullable="false"/>
             </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-64">
         <createTable tableName="role">
@@ -1473,8 +1673,11 @@
             </column>
             <column defaultValue="" name="description" type="varchar(255)">
                 <constraints nullable="false"/>
-            </column>
+            </column><column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-65">
         <createTable tableName="role_privilege">
@@ -1616,7 +1819,11 @@
             <column name="retired_by" type="int" />
             <column name="date_retired" type="datetime" />
             <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet id="20110914-0312" author="sunbiz">
         <createTable tableName="location_tag_map">
@@ -1663,7 +1870,11 @@
             <column name="date_retired" type="DATETIME"/>
             <column name="retired_by" type="int"/>
             <column name="retire_reason" type="varchar(1000)"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-73">
         <addPrimaryKey columnNames="cohort_id, patient_id" tableName="cohort_member"/>
