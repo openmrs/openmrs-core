@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Properties;
 
 import org.dbunit.database.DatabaseConfig;
@@ -189,5 +190,20 @@ public class TestUtil {
 		}
 		gp.setPropertyValue(value);
 		Context.getAdministrationService().saveGlobalProperty(gp);
+	}
+	
+	/**
+	 * Waits until the System.currentTimeMillis() results has changed. Useful because the
+	 * granularity of the clock on some systems is low, so doing a Thread.sleep(10) may not give you
+	 * a different clock value, for example.
+	 */
+	public static void waitForClockTick() {
+		long t = System.currentTimeMillis();
+		while (System.currentTimeMillis() == t) {
+			try {
+	            Thread.sleep(1);
+            }
+            catch (InterruptedException ex) { }
+		}
 	}
 }

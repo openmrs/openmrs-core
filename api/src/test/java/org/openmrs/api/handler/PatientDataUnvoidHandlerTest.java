@@ -29,6 +29,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 
 /**
@@ -120,7 +121,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(testOrder.isVoided());
 		
 		//wait a bit so that the patient isn't voided on the same millisecond
-		Thread.sleep(20);
+		TestUtil.waitForClockTick();
 		
 		//now void the patient for testing purposes
 		patient = Context.getPatientService().voidPatient(patient, "Void Reason");
