@@ -563,7 +563,7 @@
             <column defaultValue="" name="name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="" name="description" type="text">
+            <column name="description" type="text">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="creator" type="int">
