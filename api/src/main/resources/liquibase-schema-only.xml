@@ -403,7 +403,7 @@
                 <constraints nullable="false"/>
             </column>
             <column defaultValue="" name="hl7_code" type="varchar(50)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
@@ -411,12 +411,12 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+            <column defaultValueBoolean="false" name="retired" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="voided_by" type="int"/>
-            <column name="date_voided" type="DATETIME"/>
-            <column name="void_reason" type="varchar(255)"/>
+            <column name="retired_by" type="int"/>
+            <column name="date_retired" type="DATETIME"/>
+            <column name="retire_reason" type="varchar(255)"/>
             <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
@@ -439,13 +439,13 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-21">
         <createTable tableName="concept_word">
+            <column name="concept_word_id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="concept_word_pk"/>
+            </column>
             <column defaultValueNumeric="0" name="concept_id" type="int">
                 <constraints nullable="false"/>
             </column>
             <column defaultValue="" name="word" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column defaultValue="" name="synonym" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
             <column defaultValue="" name="locale" type="varchar(20)">
@@ -1404,6 +1404,7 @@
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
             <column name="edit_privilege" type="varchar(50)"/>
+            <column name="sort_weight" type="double precision"/>
             <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
@@ -1679,7 +1680,8 @@
             </column>
             <column defaultValue="" name="description" type="varchar(255)">
                 <constraints nullable="false"/>
-            </column><column name="uuid" type="char(38)" />
+            </column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1730,7 +1732,11 @@
             <column defaultValueDate="2005-01-01T00:00:00.0" name="date_created" type="DATETIME"/>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-68">
         <createTable tableName="scheduler_task_config_property">
@@ -1887,9 +1893,6 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-75">
         <addPrimaryKey columnNames="concept_id, concept_set" tableName="concept_set_derived"/>
-    </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-76">
-        <addPrimaryKey columnNames="concept_id, word, synonym, locale" tableName="concept_word"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-77">
         <addPrimaryKey columnNames="ingredient_id, concept_id" tableName="drug_ingredient"/>
@@ -2170,9 +2173,6 @@
     <changeSet author="ben (generated)" id="1227303685425-151">
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_source" constraintName="concept_source_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-152">
-        <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="concept_source" constraintName="user_who_voided_concept_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
-    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-153">
         <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_state_conversion" constraintName="concept_triggers_conversion" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
     </changeSet>
@@ -2181,9 +2181,6 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-155">
         <addForeignKeyConstraint baseColumnNames="program_workflow_state_id" baseTableName="concept_state_conversion" constraintName="conversion_to_state" deferrable="false" initiallyDeferred="false" referencedColumnNames="program_workflow_state_id" referencedTableName="program_workflow_state"/>
-    </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-157">
-        <addForeignKeyConstraint baseColumnNames="concept_name_id" baseTableName="concept_word" constraintName="word_for_name" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_name_id" referencedTableName="concept_name"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-158">
         <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="drug" constraintName="primary_drug_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
@@ -2652,5 +2649,14 @@
     </changeSet>
     <changeSet id="20110914-0958" author="sunbiz">
         <addForeignKeyConstraint baseTableName="patient_identifier" baseColumnNames="patient_id" constraintName="identifies_patient" referencedTableName="patient" referencedColumnNames="patient_id"/>
+    </changeSet>
+    <changeSet id="20110915-0258" author="sunbiz">
+        <addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_name_id" constraintName="word_for_name" referencedTableName="concept_name" referencedColumnNames="concept_name_id"/>
+    </changeSet>
+    <changeSet id="20110915-0259" author="sunbiz">
+        <addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_id" constraintName="word_for" referencedTableName="concept" referencedColumnNames="concept_id"/>
+    </changeSet>
+    <changeSet id="20110915-0357" author="sunbiz">
+        <addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_source" constraintName="user_who_retired_concept_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
 </databaseChangeLog>
