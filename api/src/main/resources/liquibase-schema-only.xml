@@ -198,9 +198,6 @@
             <column autoIncrement="true" name="concept_map_id" type="int">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="source" type="int"/>
-            <column name="source_code" type="varchar(255)"/>
-            <column name="comment" type="varchar(255)"/>
             <column name="concept_reference_term_id" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -216,6 +213,8 @@
             <column defaultValueNumeric="0" name="concept_id" type="int">
                 <constraints nullable="false"/>
             </column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="DATETIME"/>
             <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
@@ -683,6 +682,8 @@
             <column defaultValueBoolean="false" name="published" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+            <column name="xslt" type="text"/> <!--TODO-->
+            <column name="template" type="text"/> <!--TODO-->
             <column name="description" type="text"/>
             <column name="encounter_type" type="int"/>
             <column defaultValueNumeric="0" name="creator" type="int">
@@ -2009,7 +2010,7 @@
             <column name="sort_weight" type="double precision"/>
         </createTable>
     </changeSet>
-    <changeSet id="20110915-0847" author="sunbiz">
+    <changeSet id="20110915-0848" author="sunbiz">
         <createTable tableName="concept_stop_word">
             <column name="concept_stop_word_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -2333,6 +2334,36 @@
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
         </modifySql>
     </changeSet>
+    <changeSet id="20110915-1528" author="sunbiz">
+        <createTable tableName="concept_reference_term_map">
+            <column name="concept_reference_term_map_id" type="int" autoIncrement="true" >
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="term_a_id" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="term_b_id" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="a_is_to_b_id" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="DATETIME" />
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+        </modifySql>
+    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-73">
         <addPrimaryKey columnNames="cohort_id, patient_id" tableName="cohort_member"/>
     </changeSet>
@@ -2389,9 +2420,8 @@
         </createIndex>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-90">
-        <createIndex indexName="unique_hl7_code" tableName="concept_source" unique="false">
+        <createIndex indexName="unique_hl7_code" tableName="concept_reference_source" unique="false">
             <column name="hl7_code"/>
-            <column name="voided"/>
         </createIndex>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-91">
@@ -2597,9 +2627,6 @@
     <changeSet author="ben (generated)" id="1227303685425-126">
         <addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_datatype" constraintName="user_who_retired_concept_datatype" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-127">
-        <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_derived" constraintName="derived_attributes" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
-    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-128">
         <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="concept_description" constraintName="user_who_changed_description" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
@@ -2610,13 +2637,10 @@
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_description" constraintName="user_who_created_description" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-131">
-        <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_map" constraintName="map_for_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+        <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_reference_map" constraintName="map_for_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-132">
-        <addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_map" constraintName="map_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
-    </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-133">
-        <addForeignKeyConstraint baseColumnNames="source" baseTableName="concept_map" constraintName="map_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_source_id" referencedTableName="concept_source"/>
+        <addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_reference_map" constraintName="map_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-134">
         <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_name" constraintName="name_for_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
@@ -2664,7 +2688,7 @@
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_set" constraintName="user_who_created" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-151">
-        <addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_source" constraintName="concept_source_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_reference_source" constraintName="concept_source_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-153">
         <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_state_conversion" constraintName="concept_triggers_conversion" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
@@ -3095,9 +3119,6 @@
     <changeSet author="ben (generated)" id="1227303685425-301">
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="users" constraintName="user_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-303">
-        <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="users" constraintName="user_who_voided_user" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
-    </changeSet>
     <changeSet author="sunbiz" id="20110914-0104">
         <addForeignKeyConstraint constraintName="privilege_which_can_edit" baseTableName="person_attribute_type" baseColumnNames="edit_privilege" referencedTableName="privilege" referencedColumnNames="privilege"/>
     </changeSet>
@@ -3144,7 +3165,7 @@
         <addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_id" constraintName="word_for" referencedTableName="concept" referencedColumnNames="concept_id"/>
     </changeSet>
     <changeSet id="20110915-0357" author="sunbiz">
-        <addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_source" constraintName="user_who_retired_concept_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_reference_source" constraintName="user_who_retired_concept_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
     <changeSet id="20110915-0547" author="sunbiz">
         <addForeignKeyConstraint constraintName="encounter_changed_by" baseTableName="encounter" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
@@ -3276,7 +3297,7 @@
         <addForeignKeyConstraint constraintName="visit_attribute_voided_by_fk" baseTableName="visit_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
     </changeSet>
     <changeSet id="20110915-1317" author="sunbiz">
-        <addUniqueConstraint tableName="concept_source" columnNames="hl7_code" constraintName="concept_source_unique_hl7_codes"/>
+        <addUniqueConstraint tableName="concept_reference_source" columnNames="hl7_code" constraintName="concept_source_unique_hl7_codes"/>
     </changeSet>
     <changeSet id="20110915-1320" author="sunbiz">
         <addForeignKeyConstraint constraintName="program_outcomes_concept_id_fk" baseTableName="program" baseColumnNames="outcomes_concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
@@ -3331,5 +3352,152 @@
     </changeSet>
     <changeSet id="20110915-1311" author="sunbiz">
         <addForeignKeyConstraint constraintName="mapped_concept_map_type" referencedTableName="concept_map_type" referencedColumnNames="concept_map_type_id" baseTableName="concept_reference_map" baseColumnNames="concept_map_type_id"/>
+    </changeSet>
+    <changeSet id="20110915-1524" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_user_changed_ref_term" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_map" baseColumnNames="changed_by"/>
+    </changeSet>
+    <changeSet id="20110915-1530" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_term_a" referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" baseTableName="concept_reference_term_map" baseColumnNames="term_a_id"/>
+    </changeSet>
+    <changeSet id="20110915-1531" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_term_b" referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" baseTableName="concept_reference_term_map" baseColumnNames="term_b_id"/>
+    </changeSet>
+    <changeSet id="20110915-1532" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_concept_map_type_ref_term_map" referencedTableName="concept_map_type" referencedColumnNames="concept_map_type_id" baseTableName="concept_reference_term_map" baseColumnNames="a_is_to_b_id"/>
+    </changeSet>
+    <changeSet id="20110915-1533" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_user_creator_ref_term_map" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_term_map" baseColumnNames="creator"/>
+    </changeSet>
+    <changeSet id="20110915-1534" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_user_changed_ref_term_map" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_term_map" baseColumnNames="changed_by"/>
+    </changeSet>
+    <changeSet id="20110915-1536" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_concept_reference_term" referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" baseTableName="concept_reference_map" baseColumnNames="concept_reference_term_id"/>
+    </changeSet>
+    
+    <!-- Skip changesets from liquibase-update-to-latest when new installation -->
+    <!-- TODO: CustomChange to avoid replicated columns-->
+    <!-- TODO: Add all changesets that are not required. Only blockers now-->
+    <changeSet id="20110915-1700" author="sunbiz">
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20090316-1008"/>
+            <column name="author" value="vanand"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10000"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20090225-1551"/>
+            <column name="author" value="dthomas"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10001"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20090402-1515-38-concept_map"/>
+            <column name="author" value="bwolfe"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10002"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20090402-1515-38-concept_source"/>
+            <column name="author" value="bwolfe"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10003"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20090402-1516-concept_map"/>
+            <column name="author" value="bwolfe"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10004"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20090402-1516-concept_source"/>
+            <column name="author" value="bwolfe"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10005"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20090402-1519-concept_map"/>
+            <column name="author" value="bwolfe"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10006"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20090402-1519-concept_source"/>
+            <column name="author" value="bwolfe"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10007"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="200908291938-1"/>
+            <column name="author" value="dthomas"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10008"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="200908291938-2a"/>
+            <column name="author" value="dthomas"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10009"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="200912211118"/>
+            <column name="author" value="nribeka"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10010"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20091215-0210"/>
+            <column name="author" value="jmiranda"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10011"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="200912091821"/>
+            <column name="author" value="djazayeri"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10012"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20110218-1206"/>
+            <column name="author" value="rubailly"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10013"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20110218-1210"/>
+            <column name="author" value="rubailly"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-15"/>
+            <column name="orderexecuted" value="10013"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

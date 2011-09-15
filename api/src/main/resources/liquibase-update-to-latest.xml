@@ -1815,7 +1815,10 @@
 		<validCheckSum>64e353f08027fb48155b5be8a69cfca</validCheckSum> <!-- Checksum when datatype was "uuid" -->
 		<validCheckSum>dfaf705d7776613e619dedf3e06d7640</validCheckSum><!-- New checksum when datatype is "char(38)" -->
 		<preConditions onFail="MARK_RAN">
-			<not><dbms type="mssql" /></not>
+                    <and>
+                        <not><dbms type="mssql" /></not>
+                        <tableExists tableName="concept_map"/> <!--TODO-->
+                    </and>
 		</preConditions>
 		<comment>
 			Now that UUID generation is done, set the uuid columns to not "NOT NULL" 
@@ -2332,6 +2335,7 @@
 	</changeSet>
 	
 	<changeSet id="200902142212" author="ewolodzko" dbms="mysql">
+                <preConditions onFail="MARK_RAN"><not><columnExists tableName="person_attribute_type" columnName="sort_weight"/></not></preConditions>
 		<comment>
 			Add a sortWeight field to PersonAttributeType
 		</comment>
@@ -5181,7 +5185,7 @@
 			baseTableName="concept_reference_map" baseColumnNames="concept_map_type_id" />
 	</changeSet>
 	
-	<changeSet id="20110301-1030h" author="wyclif">
+	<changeSet id="20110301-1030h" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><columnExists tableName="concept_reference_map" columnName="changed_by" /></not>
@@ -5196,7 +5200,7 @@
 			baseTableName="concept_reference_map" baseColumnNames="changed_by" />
 	</changeSet>
 	
-	<changeSet id="20110301-1030i" author="wyclif">
+	<changeSet id="20110301-1030i" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><columnExists tableName="concept_reference_map" columnName="date_changed" /></not>
@@ -5208,7 +5212,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20110301-1030j" author="wyclif">
+	<changeSet id="20110301-1030j" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_reference_term_map" /></not>
 		</preConditions>
@@ -5284,7 +5288,7 @@
 		</sql>
 	</changeSet>
 	
-	<changeSet id="20110301-1030n" author="wyclif">
+	<changeSet id="20110301-1030n" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyName="mapped_concept_reference_term" /></not>
 		</preConditions>
@@ -5294,7 +5298,7 @@
 			baseTableName="concept_reference_map" baseColumnNames="concept_reference_term_id" />
 	</changeSet>
 	
-	<changeSet id="20110301-1030o" author="wyclif">
+	<changeSet id="20110301-1030o" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyName="map_source"/>
 		</preConditions>
@@ -5302,7 +5306,7 @@
 		<dropForeignKeyConstraint baseTableName="concept_reference_map"  constraintName="map_source"/>
 	</changeSet>
 	
-	<changeSet id="20110301-1030p" author="wyclif">
+	<changeSet id="20110301-1030p" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept_reference_map" columnName="source"/>
 		</preConditions>
@@ -5310,7 +5314,7 @@
 		<dropColumn tableName="concept_reference_map" columnName="source"/>
 	</changeSet>
 	
-	<changeSet id="20110301-1030q" author="wyclif">
+	<changeSet id="20110301-1030q" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept_reference_map" columnName="source_code"/>
 		</preConditions>
@@ -5318,7 +5322,7 @@
 		<dropColumn tableName="concept_reference_map" columnName="source_code"/>
 	</changeSet>
 	
-	<changeSet id="20110301-1030r" author="wyclif">
+	<changeSet id="20110301-1030r" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept_reference_map" columnName="comment"/>
 		</preConditions>
