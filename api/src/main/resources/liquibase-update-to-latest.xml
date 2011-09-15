@@ -2558,6 +2558,8 @@
 	</changeSet>
 	
 	<changeSet id="200910271049-2" author="bwolfe">
+		<validCheckSum><comment>Escape character for SQL Server</comment>3:3132d4cbfaab0c0b612c3fe1c55bd0f1</validCheckSum>
+		<validCheckSum>3:58c30dc9bab676050d5e08cc9484f9fc</validCheckSum>
 		<comment>Setting core person attribute types to have standard UUIDs</comment>
 		<update tableName="person_attribute_type"><column name="uuid" value="8d8718c2-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '2' and name = 'Birthplace'</where></update>
 		<update tableName="person_attribute_type"><column name="uuid" value="8d871afc-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '3' and name = 'Citizenship'</where></update>
@@ -2566,6 +2568,9 @@
 		<update tableName="person_attribute_type"><column name="uuid" value="8d872150-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '6' and name = 'Health District'</where></update>
 		<update tableName="person_attribute_type"><column name="uuid" value="8d871d18-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '4' and name = 'Mother\'s Name'</where></update>
 		<update tableName="person_attribute_type"><column name="uuid" value="8d871386-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '1' and name = 'Race'</where></update>
+		<modifySql>
+			<replace replace="\'" with="''"/>
+		</modifySql>
 	</changeSet>
 	
 	<changeSet id="200910271049-3" author="bwolfe">
@@ -2648,7 +2653,7 @@
 		<update tableName="global_property"><column name="property" value="person.searchMaxResults"/><where> property = 'patient.searchMaxResults'</where></update> 
 	</changeSet>
 
-	<changeSet id="200912141552" author="madanmohan">
+	<changeSet id="200912141552" author="madanmohan" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="encounter" columnName="changed_by" />
@@ -2665,7 +2670,7 @@
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 		
-	<changeSet id="200912141553" author="madanmohan">
+	<changeSet id="200912141553" author="madanmohan" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="encounter" columnName="date_changed" />
@@ -2679,7 +2684,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="200912211118" author="nribeka">
+	<changeSet id="200912211118" author="nribeka" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="concept_derived" columnName="language" />
@@ -2693,7 +2698,7 @@
 		</addColumn>
 	</changeSet>	
 
-	<changeSet id="200912031842" author="djazayeri">
+	<changeSet id="200912031842" author="djazayeri" dbms="mysql">
 		<!-- This is safe to re-run, and the pre-condition is hard to write, so I'm not writing one -->
 		<comment>Changing encounter.provider_id to reference person instead of users</comment>
 		<dropForeignKeyConstraint baseTableName="encounter" constraintName="encounter_provider"/>
@@ -2701,7 +2706,7 @@
                                  referencedTableName="person" referencedColumnNames="person_id"/>
 	</changeSet>
 	
-	<changeSet id="201102280948" author="bwolfe">
+	<changeSet id="201102280948" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<foreignKeyConstraintExists foreignKeyName="person_id_for_user"/>
@@ -2712,7 +2717,7 @@
 		<dropForeignKeyConstraint baseTableName="users" constraintName="person_id_for_user"/>
 	</changeSet>
 	
-	<changeSet id="200912031846-1" author="djazayeri">
+	<changeSet id="200912031846-1" author="djazayeri" dbms="mysql">
 		<validCheckSum>3aff267520eec4d52e81ef7614b2da3</validCheckSum>
 		<validCheckSum>11f84b948fc7731d1ffb6869980e6cb</validCheckSum>
 		<preConditions onFail="MARK_RAN">
@@ -2729,7 +2734,7 @@
 		</update>
 	</changeSet>
 
-	<changeSet id="200912031846-2" author="djazayeri">
+	<changeSet id="200912031846-2" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
@@ -2745,7 +2750,7 @@
 		<addNotNullConstraint tableName="users" columnName="person_id" columnDataType="int"/>
 	</changeSet>
 
-	<changeSet id="200912031846-3" author="djazayeri">
+	<changeSet id="200912031846-3" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<foreignKeyConstraintExists foreignKeyName="person_id_for_user"/>
@@ -2758,7 +2763,7 @@
 		<addAutoIncrement tableName="users" columnName="user_id" columnDataType="int"/>
 	</changeSet>
 	
-	<changeSet id="200912091819" author="djazayeri">
+	<changeSet id="200912091819" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="users" columnName="retired"/>
@@ -2775,11 +2780,21 @@
 		</addColumn>
 		<addForeignKeyConstraint constraintName="user_who_retired_this_user"
 			baseTableName="users" baseColumnNames="retired_by"
-			referencedTableName="users" referencedColumnNames="user_id"
-		/>
+			referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="200912091819-fix" author="sunbiz" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="users" columnName="retired"/>
+		</preConditions>
+		<comment>(Fixed)users.retired to BOOLEAN</comment>
+		<ext:modifyColumn tableName="users">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200912091820" author="djazayeri">
+	<changeSet id="200912091820" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<columnExists tableName="users" columnName="retired"/>
@@ -2795,7 +2810,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="200912091821" author="djazayeri">
+	<changeSet id="200912091821" author="djazayeri" dbms="mysql">
 		<preConditions onFail="HALT">
 			<and>
 				<columnExists tableName="users" columnName="retired"/>
@@ -2813,15 +2828,12 @@
 		<dropColumn tableName="users" columnName="void_reason"/>
 	</changeSet>
 	
-	<changeSet id="200912140038" author="djazayeri">
+	<changeSet id="200912140038" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="users" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to users table</comment>
 		<addColumn tableName="users">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
-		</modifySql>
 	</changeSet>
 
 	<changeSet id="200912140039" author="djazayeri">
@@ -2833,12 +2845,6 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
-	</changeSet>
-	
-	<changeSet id="20100415-forgotten-from-before" author="djazayeri">
-		<preConditions onFail="MARK_RAN"><not><dbms type="mssql" /></not></preConditions>
-		<comment>Adding not null constraint to users.uuid</comment>
-		<addNotNullConstraint tableName="users" columnName="uuid" columnDataType="char(38)"/>
 	</changeSet>
 
 	<changeSet id="200912140040" author="djazayeri">
@@ -2864,8 +2870,13 @@
 			</param>
 		</customChange>
 	</changeSet>
+
+	<changeSet id="20100415-forgotten-from-before" author="djazayeri">
+		<comment>Adding not null constraint to users.uuid</comment>
+		<addNotNullConstraint tableName="users" columnName="uuid" columnDataType="char(38)"/>
+	</changeSet>
 	
-	<changeSet id="200912151032" author="n.nehete">
+	<changeSet id="200912151032" author="n.nehete" dbms="mysql">
 		<preConditions onFail="HALT">
 			<sqlCheck expectedResult="All encounters have a non-null encounter type.">
 				<![CDATA[
@@ -2880,7 +2891,7 @@
 		<addNotNullConstraint tableName="encounter" columnName="encounter_type" columnDataType="int" />
 	</changeSet>	
 	
-	<changeSet id="201001072007" author="upul">
+	<changeSet id="201001072007" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="scheduler_task_config" columnName="last_execution_time"/></not>
 		</preConditions>
@@ -2894,12 +2905,12 @@
 		</addColumn>
 	</changeSet>    	
 	
-    <changeSet id="20091001-1023" author="rcrichton">
-    	<preConditions onFail="MARK_RAN">
-    		<not>
-    			<columnExists tableName="relationship_type" columnName="retired"/>
-    		</not>
-    	</preConditions>
+	<changeSet id="20091001-1023" author="rcrichton" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="relationship_type" columnName="retired"/>
+			</not>
+		</preConditions>
 		<comment>add retired column to relationship_type table</comment>
 		<addColumn tableName="relationship_type">
 			<column name="retired" type="tinyint(1)" defaultValue="0">
@@ -2908,19 +2919,19 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20091001-1024" author="rcrichton">
+	<changeSet id="20091001-1024" author="rcrichton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-    		<not>
-    			<columnExists tableName="relationship_type" columnName="retired_by"/>
-    		</not>
-    	</preConditions>
+			<not>
+				<columnExists tableName="relationship_type" columnName="retired_by"/>
+			</not>
+		</preConditions>
 		<comment>add retired_by column to relationship_type table</comment>
 		<addColumn tableName="relationship_type">
 			<column name="retired_by" type="int"/>
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20091001-1025" author="rcrichton">
+	<changeSet id="20091001-1025" author="rcrichton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyName="user_who_retired_relationship_type"/></not>
 		</preConditions>
@@ -2930,33 +2941,33 @@
 		<addForeignKeyConstraint constraintName="user_who_retired_relationship_type"
 			baseTableName="relationship_type" baseColumnNames="retired_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
-    </changeSet>
+	</changeSet>
 	
-	<changeSet id="20091001-1026" author="rcrichton">
+	<changeSet id="20091001-1026" author="rcrichton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-    		<not>
-    			<columnExists tableName="relationship_type" columnName="date_retired"/>
-    		</not>
-    	</preConditions>
+			<not>
+				<columnExists tableName="relationship_type" columnName="date_retired"/>
+			</not>
+		</preConditions>
 		<comment>add date_retired column to relationship_type table</comment>
 		<addColumn tableName="relationship_type">
 			<column name="date_retired" type="datetime" />
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20091001-1027" author="rcrichton">
+	<changeSet id="20091001-1027" author="rcrichton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-    		<not>
-    			<columnExists tableName="relationship_type" columnName="retire_reason"/>
-    		</not>
-    	</preConditions>
+			<not>
+				<columnExists tableName="relationship_type" columnName="retire_reason"/>
+			</not>
+		</preConditions>
 		<comment>add retire_reason column to relationship_type table</comment>
 		<addColumn tableName="relationship_type">
 			<column name="retire_reason" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20091215-0208" author="sunbiz">
+	<changeSet id="20091215-0208" author="sunbiz" dbms="mysql">
 		<comment>
 			Prune concepts rows orphaned in concept_numeric tables
 		</comment>
@@ -2969,7 +2980,7 @@
 		</sql>
 	</changeSet>
 
-	<changeSet id="20091215-0209" author="jmiranda">
+	<changeSet id="20091215-0209" author="jmiranda" dbms="mysql">
 		<comment>
 			Prune concepts rows orphaned in concept_complex tables
 		</comment>
@@ -2982,7 +2993,7 @@
 		</sql>
 	</changeSet>
 
-	<changeSet id="20091215-0210" author="jmiranda">
+	<changeSet id="20091215-0210" author="jmiranda" dbms="mysql">
 		<comment>
 			Prune concepts rows orphaned in concept_derived tables
 		</comment>
@@ -2995,7 +3006,7 @@
 		</sql>
 	</changeSet>
 	
-	<changeSet id="20100306-095513a" author="thilini.hg">
+	<changeSet id="20100306-095513a" author="thilini.hg" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyName="alert_assigned_to_user"/>
 		</preConditions>
@@ -3003,7 +3014,7 @@
 		<dropForeignKeyConstraint baseTableName="notification_alert" constraintName="alert_assigned_to_user"/>
 	</changeSet>
 	
-	<changeSet id="20100306-095513b" author="thilini.hg">
+	<changeSet id="20100306-095513b" author="thilini.hg" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="notification_alert" columnName="user_id"/>
 		</preConditions>
