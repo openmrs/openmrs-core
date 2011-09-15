@@ -100,6 +100,7 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
+            <column name="sort_weight" type="double precision"></column>
             <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
@@ -232,6 +233,9 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-11">
         <createTable tableName="concept_name">
+            <column autoIncrement="true" name="concept_name_id" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
             <column name="concept_id" type="int"/>
             <column defaultValue="" name="name" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -239,15 +243,14 @@
             <column defaultValue="" name="locale" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="locale_preferred" type="BOOLEAN" defaultValueBoolean="false"/>
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column autoIncrement="true" name="concept_name_id" type="int">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
+            <column name="concept_name_type" type="varchar(50)"/>
             <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
@@ -539,9 +542,7 @@
             <column defaultValueNumeric="0" name="provider_id" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="location_id" type="int">
-                <constraints nullable="false"/>
-            </column>
+            <column defaultValueNumeric="0" name="location_id" type="int"/>
             <column name="form_id" type="int"/>
             <column defaultValueDate="0002-11-30T00:00:00.0" name="encounter_datetime" type="DATETIME">
                 <constraints nullable="false"/>
@@ -776,7 +777,7 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column name="message_state" type="int" defaultValueNumeric="0" remarks="2=processed, 4=deleted"/>
+            <column name="message_state" type="int" defaultValueNumeric="2" remarks="2=processed, 4=deleted"/>
             <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
@@ -963,7 +964,11 @@
                 <constraints nullable="false"/>
             </column>
             <column name="date_changed" type="timestamp"/>
+            <column name="uuid" type="char(38)" />
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-42">
         <createTable tableName="notification_template">
@@ -998,9 +1003,7 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="obs_datetime" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="location_id" type="int">
-                <constraints nullable="false"/>
-            </column>
+            <column defaultValueNumeric="0" name="location_id" type="int"/>
             <column name="obs_group_id" type="int"/>
             <column name="accession_number" type="varchar(255)"/>
             <column name="value_group_id" type="int"/>
@@ -1838,7 +1841,7 @@
             <column name="location_tag_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="tag" type="varchar(50)">
+            <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="varchar(255)" defaultValue="null"/>
@@ -1910,6 +1913,95 @@
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
         </modifySql>
+    </changeSet>
+    <changeSet id="" author="">
+        <createTable tableName="active_list_type">
+            <column name="active_list_type_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired_by" type="int"/>
+            <column name="date_retired" type="DATETIME"/>
+            <column name="retire_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
+    </changeSet>
+    <changeSet id="20110915-0825" author="sunbiz">
+        <createTable tableName="active_list">
+            <column name="active_list_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="active_list_type_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="person_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="concept_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_obs_id" type="int"/>
+            <column name="stop_obs_id" type="int"/>
+            <column name="start_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_date" type="datetime"/>
+            <column name="comments" type="varchar(255)"/>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_by" type="int"/>
+            <column name="date_voided" type="datetime"/>
+            <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
+    </changeSet>
+    <changeSet id="20110915-0845" author="sunbiz">
+        <createTable tableName="active_list_allergy">
+            <column name="active_list_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="allergy_type" type="varchar(50)"/>
+            <column name="reaction_concept_id" type="int"/>
+            <column name="severity" type="varchar(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="20110915-0847" author="sunbiz">
+        <createTable tableName="active_list_problem">
+            <column name="active_list_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status" type="varchar(50)"/>
+            <column name="sort_weight" type="double precision"/>
+        </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-73">
         <addPrimaryKey columnNames="cohort_id, patient_id" tableName="cohort_member"/>
@@ -2073,6 +2165,16 @@
             <column name="patient_id"/>
         </createIndex>
     </changeSet>
+    <changeSet id="2011091-0749" author="sunbiz">
+        <createIndex tableName="encounter" indexName="encounter_datetime_idx">
+            <column name="encounter_datetime"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="2011091-0750" author="sunbiz">
+        <createIndex tableName="obs" indexName="obs_datetime_idx">
+            <column name="obs_datetime"/>
+        </createIndex>
+    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-108">
         <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="cohort" constraintName="user_who_changed_cohort" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
@@ -2156,9 +2258,6 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-137">
         <addForeignKeyConstraint baseColumnNames="concept_name_id" baseTableName="concept_name_tag_map" constraintName="mapped_concept_name" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_name_id" referencedTableName="concept_name"/>
-    </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-138">
-        <addForeignKeyConstraint baseColumnNames="concept_name_tag_id" baseTableName="concept_name_tag_map" constraintName="mapped_concept_name_tag" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_name_tag_id" referencedTableName="concept_name_tag"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-139">
         <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_numeric" constraintName="numeric_attributes" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
@@ -2690,5 +2789,38 @@
     </changeSet>
     <changeSet id="20110915-0634" author="sunbiz">
         <addForeignKeyConstraint constraintName="user_who_retired_relationship_type" baseTableName="relationship_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+    <changeSet id="20110915-0823" author="sunbiz">
+        <addForeignKeyConstraint constraintName="user_who_retired_active_list_type" baseTableName="active_list_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+    <changeSet id="20110915-0824" author="sunbiz">
+        <addForeignKeyConstraint constraintName="user_who_created_active_list_type" baseTableName="active_list_type" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+    <changeSet id="20110915-0836" author="sunbiz">
+        <addForeignKeyConstraint constraintName="user_who_voided_active_list" baseTableName="active_list" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+    <changeSet id="20110915-0837" author="sunbiz">
+        <addForeignKeyConstraint constraintName="user_who_created_active_list" baseTableName="active_list" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+    <changeSet id="20110915-0838" author="sunbiz">
+        <addForeignKeyConstraint constraintName="active_list_type_of_active_list" baseTableName="active_list" baseColumnNames="active_list_type_id" referencedTableName="active_list_type" referencedColumnNames="active_list_type_id"/>
+    </changeSet>
+    <changeSet id="20110915-0839" author="sunbiz">
+        <addForeignKeyConstraint constraintName="person_of_active_list" baseTableName="active_list" baseColumnNames="person_id" referencedTableName="person" referencedColumnNames="person_id" />
+    </changeSet>
+    <changeSet id="20110915-0840" author="sunbiz">
+        <addForeignKeyConstraint constraintName="concept_active_list" baseTableName="active_list" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id" />
+    </changeSet>
+    <changeSet id="20110915-0841" author="sunbiz">
+        <addForeignKeyConstraint constraintName="start_obs_active_list"	baseTableName="active_list" baseColumnNames="start_obs_id" referencedTableName="obs" referencedColumnNames="obs_id" />
+    </changeSet>
+    <changeSet id="20110915-0842" author="sunbiz">
+        <addForeignKeyConstraint constraintName="stop_obs_active_list" baseTableName="active_list" baseColumnNames="stop_obs_id" referencedTableName="obs" referencedColumnNames="obs_id" />
+    </changeSet>
+    <changeSet id="20110915-0846" author="sunbiz">
+        <addForeignKeyConstraint constraintName="reaction_allergy" baseTableName="active_list_allergy" baseColumnNames="reaction_concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
+    </changeSet>
+    <changeSet id="20110915-0903" author="sunbiz">
+        <addForeignKeyConstraint referencedTableName="concept_name_tag" baseColumnNames="concept_name_tag_id" baseTableName="concept_name_tag_map" referencedColumnNames="concept_name_tag_id" constraintName="mapped_concept_name_tag"/>
     </changeSet>
 </databaseChangeLog>
