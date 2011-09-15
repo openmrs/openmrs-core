@@ -1327,6 +1327,26 @@
            <column name="uuid" value="f5f49cda-e2a7-11df-87ae-18a905e044dc"/>
        </insert>
    </changeSet>
+   <changeSet id="20110915-1459" author="sunbiz">
+       <customChange class="org.openmrs.util.databasechange.AddConceptMapTypesChangeset">
+           <param name="visibleConceptMapTypes">
+               SAME-AS, NARROWER-THAN, BROADER-THAN, Associated finding, Associated morphology, Associated procedure,
+               Associated with, Causative agent, Finding site, Has specimen, Laterality, Severity
+           </param>
+           <param name="hiddenConceptMapTypes">
+               Access, After, Clinical course, Component, Direct device, Direct morphology, Direct substance, Due to,
+               Episodicity, Finding context, Finding informer, Finding method, Has active ingredient,
+               Has definitional manifestation,	Has dose form, Has focus, Has intent, Has interpretation, Indirect device,
+               Indirect morphology, Interprets, Measurement method, Method, Occurrence, Part of, Pathological process,
+               Priority, Procedure context, Procedure device, Procedure morphology, Procedure site, Procedure site - Direct,
+               Procedure site - Indirect, Property, Recipient category, Revision status, Route of administration, Scale type,
+               Specimen procedure, Specimen source identity, Specimen source morphology, Specimen source topography,
+               Specimen substance, Subject of information, Subject relationship context, Surgical approach, Temporal context,
+               Time aspect, Using access device, Using device, Using energy, Using substance, IS A, MAY BE A, MOVED FROM,
+               MOVED TO, REPLACED BY, WAS A
+           </param>
+      </customChange>
+   </changeSet>
 
    <changeSet author="sunbiz" id="function-enable-sqlserver" runAlways="true" dbms="mssql">
         <sql>

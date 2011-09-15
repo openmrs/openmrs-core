@@ -4354,7 +4354,7 @@
 	<changeSet id="20110425-1600-create-visit-attribute-type-table-fix" author="sunbiz">
 		<comment>(Fixed)Change visit_attribute_type.retired to BOOLEAN</comment>
 		<ext:modifyColumn tableName="visit_attribute_type">
-			<column name="retired" type="BOOLEAN" defaultValueBoolean="0">
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
 				<constraints nullable="false"/>
 			</column>
 		</ext:modifyColumn>
@@ -4403,7 +4403,7 @@
 	<changeSet id="20110425-1700-create-visit-attribute-table-fix" author="sunbiz">
 		<comment>(Fixed)Change visit_attribute.voided to BOOLEAN</comment>
 		<ext:modifyColumn tableName="visit_attribute">
-			<column name="voided" type="BOOLEAN" defaultValueBoolean="0">
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
 				<constraints nullable="false"/>
 			</column>
 		</ext:modifyColumn>
@@ -4521,7 +4521,7 @@
 	<changeSet id="20110817-1544-create-location-attribute-type-table-fix" author="sunbiz">
 		<comment>(Fixed)Change visit_attribute.retired to BOOLEAN</comment>
 		<ext:modifyColumn tableName="location_attribute_type">
-			<column name="retired" type="BOOLEAN" defaultValueBoolean="0">
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
 				<constraints nullable="false"/>
 			</column>
 		</ext:modifyColumn>
@@ -4570,7 +4570,7 @@
 	<changeSet id="20110817-1601-create-location-attribute-table-fix" author="sunbiz">
 		<comment>(Fixed)Change visit_attribute.retired to BOOLEAN</comment>
 		<ext:modifyColumn tableName="location_attribute">
-			<column name="voided" type="BOOLEAN" defaultValueBoolean="0">
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
 				<constraints nullable="false"/>
 			</column>
 		</ext:modifyColumn>
@@ -5027,7 +5027,7 @@
 		<renameTable oldTableName="concept_source" newTableName="concept_reference_source"/>
 	</changeSet>
 	
-	<changeSet id="20110301-1030b" author="wyclif">
+	<changeSet id="20110301-1030b" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_reference_term" /></not>
 		</preConditions>
@@ -5064,8 +5064,16 @@
 			referencedTableName="concept_reference_source" referencedColumnNames="concept_source_id" 
 			baseTableName="concept_reference_term" baseColumnNames="concept_source_id" />
 	</changeSet>
+	<changeSet id="20110301-1030b-fix" author="sunbiz">
+		<comment>(Fixed)Change concept_reference_term.retired to BOOLEAN</comment>
+		<ext:modifyColumn tableName="concept_reference_term">
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
 	
-	<changeSet id="20110301-1030c" author="wyclif">
+	<changeSet id="20110301-1030c" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_map_type" /></not>
 		</preConditions>
@@ -5098,12 +5106,22 @@
 		<addForeignKeyConstraint constraintName="mapped_user_retired_concept_map_type" 
 			referencedTableName="users" referencedColumnNames="user_id" 
 			baseTableName="concept_map_type" baseColumnNames="retired_by" />
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
-		</modifySql>
+	</changeSet>
+	<changeSet id="20110301-1030c-fix" author="sunbiz">
+		<comment>(Fixed)Change concept_map_type.retired to BOOLEAN</comment>
+		<ext:modifyColumn tableName="concept_map_type">
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_map_type">
+			<column name="isHidden" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20110301-1030d" author="wyclif">
+	<changeSet id="20110301-1030d" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><tableExists tableName="concept_reference_map" /></not>
@@ -5113,7 +5131,7 @@
 		<renameTable oldTableName="concept_map" newTableName="concept_reference_map"/>
 	</changeSet>
 	
-	<changeSet id="20110301-1030e" author="wyclif">
+	<changeSet id="20110301-1030e" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_reference_map" columnName="concept_reference_term_id" /></not>
 		</preConditions>
@@ -5123,7 +5141,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20110301-1030f" author="wyclif">
+	<changeSet id="20110301-1030f" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_map_type" />
 		</preConditions>
@@ -5148,7 +5166,7 @@
 		</customChange>
 	</changeSet>
 	
-	<changeSet id="20110301-1030g" author="wyclif">
+	<changeSet id="20110301-1030g" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><columnExists tableName="concept_reference_map" columnName="concept_map_type_id" /></not>

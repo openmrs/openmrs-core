@@ -194,13 +194,19 @@
         </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-10">
-        <createTable tableName="concept_map">
+        <createTable tableName="concept_reference_map">
             <column autoIncrement="true" name="concept_map_id" type="int">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="source" type="int"/>
             <column name="source_code" type="varchar(255)"/>
             <column name="comment" type="varchar(255)"/>
+            <column name="concept_reference_term_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="concept_map_type_id" type="int" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -2257,6 +2263,76 @@
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
         </modifySql>
     </changeSet>
+    <changeSet id="20110915-1435" author="sunbiz">
+        <createTable tableName="concept_reference_term">
+            <column name="concept_reference_term_id" type="int" autoIncrement="true" >
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="concept_source_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+            <column name="code" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="varchar(255)"/>
+            <column name="description" type="varchar(255)"/>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_changed" type="DATETIME"/>
+            <column name="changed_by" type="int"/>
+            <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired_by" type="int"/>
+            <column name="date_retired" type="DATETIME"/>
+            <column name="retire_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="20110915-1450" author="sunbiz">
+        <createTable tableName="concept_map_type">
+            <column name="concept_map_type_id" type="int" autoIncrement="true" >
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="DATETIME" />
+            <column name="isHidden" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired_by" type="int" />
+            <column name="date_retired" type="DATETIME" />
+            <column name="retire_reason" type="varchar(255)" />
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+        </modifySql>
+    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-73">
         <addPrimaryKey columnNames="cohort_id, patient_id" tableName="cohort_member"/>
     </changeSet>
@@ -3231,5 +3307,29 @@
     </changeSet>
     <changeSet id="20110915-1346" author="sunbiz">
         <addForeignKeyConstraint constraintName="location_attribute_voided_by_fk" baseTableName="location_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+    <changeSet id="20110915-1440" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_user_creator" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_term" baseColumnNames="creator"/>
+    </changeSet>
+    <changeSet id="20110915-1441" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_user_changed" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_term" baseColumnNames="changed_by"/>
+    </changeSet>
+    <changeSet id="20110915-1442" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_user_retired" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_term" baseColumnNames="retired_by"/>
+    </changeSet>
+    <changeSet id="20110915-1443" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_concept_source" referencedTableName="concept_reference_source" referencedColumnNames="concept_source_id" baseTableName="concept_reference_term" baseColumnNames="concept_source_id"/>
+    </changeSet>
+    <changeSet id="20110915-1451" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_user_creator_concept_map_type" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_map_type" baseColumnNames="creator"/>
+    </changeSet>
+    <changeSet id="20110915-1452" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_user_changed_concept_map_type" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_map_type" baseColumnNames="changed_by"/>
+    </changeSet>
+    <changeSet id="20110915-1453" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_user_retired_concept_map_type" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_map_type" baseColumnNames="retired_by"/>
+    </changeSet>
+    <changeSet id="20110915-1311" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_concept_map_type" referencedTableName="concept_map_type" referencedColumnNames="concept_map_type_id" baseTableName="concept_reference_map" baseColumnNames="concept_map_type_id"/>
     </changeSet>
 </databaseChangeLog>
