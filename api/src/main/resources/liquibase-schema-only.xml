@@ -3,7 +3,8 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="ben (generated)" id="1227303685425-1">
         <createTable tableName="cohort">
@@ -173,6 +174,9 @@
             <column name="compile_date" type="DATETIME"/>
             <column name="compile_status" type="varchar(255)"/>
             <column name="class_name" type="varchar(1024)"/>
+            <column name="language" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-9">
@@ -526,7 +530,9 @@
             <column autoIncrement="true" name="encounter_id" type="int">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="encounter_type" type="int"/>
+            <column name="encounter_type" type="int">
+                <constraints nullable="false"/>
+            </column>
             <column defaultValueNumeric="0" name="patient_id" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -552,6 +558,8 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="DATETIME"/>
             <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
@@ -919,7 +927,6 @@
             <column autoIncrement="true" name="alert_id" type="int">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="user_id" type="int"/>
             <column name="text" type="varchar(512)">
                 <constraints nullable="false"/>
             </column>
@@ -1611,6 +1618,12 @@
             <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
+            <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired_by" type="int"/>
+            <column name="date_retired" type="DATETIME"/>
+            <column name="retire_reason" type="varchar(255)"/>
             <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
@@ -1732,6 +1745,9 @@
             <column defaultValueDate="2005-01-01T00:00:00.0" name="date_created" type="DATETIME"/>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
+            <column name="last_execution_time" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
             <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
@@ -1794,13 +1810,20 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
-            <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+            <column name="person_id" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="voided_by" type="int"/>
-            <column name="date_voided" type="DATETIME"/>
-            <column name="void_reason" type="varchar(255)"/>
+            <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired_by" type="int"/>
+            <column name="date_retired" type="DATETIME"/>
+            <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+            <column name="uuid" type="char(38)"/>
         </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
     </changeSet>
     <changeSet author="sunbiz" id="20110914-0114">
         <createTable tableName="concept_complex">
@@ -2224,9 +2247,6 @@
     <changeSet author="ben (generated)" id="1227303685425-171">
         <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="encounter" constraintName="encounter_patient" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="patient_id" referencedTableName="patient"/>
     </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-172">
-        <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="encounter" constraintName="encounter_provider" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
-    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-173">
         <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="encounter" constraintName="user_who_voided_encounter" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
@@ -2325,9 +2345,6 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-205">
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="notification_alert" constraintName="alert_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
-    </changeSet>
-    <changeSet author="ben (generated)" id="1227303685425-206">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="notification_alert" constraintName="alert_assigned_to_user" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-207">
         <addForeignKeyConstraint baseColumnNames="alert_id" baseTableName="notification_alert_recipient" constraintName="id_of_alert" deferrable="false" initiallyDeferred="false" referencedColumnNames="alert_id" referencedTableName="notification_alert"/>
@@ -2658,5 +2675,20 @@
     </changeSet>
     <changeSet id="20110915-0357" author="sunbiz">
         <addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_source" constraintName="user_who_retired_concept_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="20110915-0547" author="sunbiz">
+        <addForeignKeyConstraint constraintName="encounter_changed_by" baseTableName="encounter" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+    <changeSet id="20110915-0552" author="sunbiz">
+        <addForeignKeyConstraint baseTableName="encounter" baseColumnNames="provider_id" constraintName="encounter_provider" referencedTableName="person" referencedColumnNames="person_id"/>
+    </changeSet>
+    <changeSet id="20110915-0603" author="sunbiz">
+        <addForeignKeyConstraint constraintName="person_id_for_user" baseTableName="users" baseColumnNames="person_id" referencedTableName="person" referencedColumnNames="person_id"/>
+    </changeSet>
+    <changeSet id="20110915-0610" author="sunbiz">
+        <addForeignKeyConstraint constraintName="user_who_retired_this_user" baseTableName="users" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+    <changeSet id="20110915-0634" author="sunbiz">
+        <addForeignKeyConstraint constraintName="user_who_retired_relationship_type" baseTableName="relationship_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
     </changeSet>
 </databaseChangeLog>
