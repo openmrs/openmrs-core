@@ -1035,15 +1035,16 @@
             <column name="password" value="4a1750c8607dfa237de36c6305715c223415189"/>
             <column name="salt" value="c788c6ad82a157b712392ca695dfcf2eed193d7f"/>
             <column name="secret_question"/>
+            <column name="person_id" valueNumeric="1"/>
             <column name="secret_answer"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2005-01-01"/>
             <column name="changed_by"/>
             <column name="date_changed"/>
-            <column name="voided" valueBoolean="false"/>
-            <column name="voided_by"/>
-            <column name="date_voided"/>
-            <column name="void_reason"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
         </insert>
     </changeSet>
     <changeSet author="sunbiz" id="20110915-0751">
@@ -1053,6 +1054,7 @@
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2010-04-26T13:25:00"/>
             <column name="retired" valueBoolean="false"/>
+            <column name="person_id" valueNumeric="1"/>
             <column name="uuid" value="A4F30A1B-5EB9-11DF-A648-37A07F9C90FB"/>
         </insert>
     </changeSet>
@@ -1139,10 +1141,10 @@
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2005-09-22"/>
             <column name="county_district"/>
-            <column name="neighborhood_cell"/>
-            <column name="region"/>
-            <column name="subregion"/>
-            <column name="township_division"/>
+            <column name="address3"/>
+            <column name="address4"/>
+            <column name="address5"/>
+            <column name="address6"/>
             <column name="retired" valueBoolean="false"/>
             <column name="retired_by"/>
             <column name="date_retired"/>
