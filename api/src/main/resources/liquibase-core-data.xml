@@ -1046,6 +1046,16 @@
             <column name="void_reason"/>
         </insert>
     </changeSet>
+    <changeSet author="sunbiz" id="20110915-0751">
+        <insert tableName="users">
+            <column name="system_id" value="daemon"/>
+            <column name="username" value="daemon"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2010-04-26T13:25:00"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="uuid" value="A4F30A1B-5EB9-11DF-A648-37A07F9C90FB"/>
+        </insert>
+    </changeSet>
     <changeSet author="ben (generated)" id="1226348923233-17">
         <insert tableName="patient_identifier_type">
             <column name="patient_identifier_type_id" valueNumeric="1"/>
@@ -1226,6 +1236,43 @@
         <modifySql dbms="mssql">
             <replace replace="\'" with="\''" />
         </modifySql>
+   </changeSet>
+   <changeSet id="20110915-0803" author="sunbiz">
+       <insert tableName="order_type">
+           <column name="order_type_id" valueNumeric="2"/>
+           <column name="name" value="Drug Order"/>
+           <column name="description" value="An order for a medication to be given to the patient"/>
+           <column name="creator" valueNumeric="1"/>
+           <column name="date_created" valueDate="2010-05-12"/>
+           <column name="retired" valueBoolean="false"/>
+           <column name="date_retired"/>
+           <column name="retire_reason"/>
+           <column name="uuid" value="131168f4-15f5-102d-96e4-000c29c2a5d7"/>
+       </insert>
+   </changeSet>
+   <changeSet id="20110915-0848" author="sunbiz">
+       <insert tableName="active_list_type">
+           <column name="active_list_type_id" valueNumeric="1"/>
+           <column name="name" value="Allergy"/>
+           <column name="description" value="An Allergy the Patient may have"/>
+           <column name="creator" valueNumeric="1" />
+           <column name="date_created" valueDate="2010-05-28"/>
+           <column name="retired" valueBoolean="false"/>
+           <column name="date_retired"/>
+           <column name="retire_reason"/>
+           <column name="uuid" value="96f4f603-6a99-11df-a648-37a07f9c90fb"/>
+       </insert>
+       <insert tableName="active_list_type">
+           <column name="active_list_type_id" valueNumeric="2"/>
+           <column name="name" value="Problem"/>
+           <column name="description" value="A Problem the Patient may have"/>
+           <column name="creator" valueNumeric="1"/>
+           <column name="date_created" valueDate="2010-05-28"/>
+           <column name="retired" valueBoolean="false"/>
+           <column name="date_retired"/>
+           <column name="retire_reason"/>
+           <column name="uuid" value="a0c7422b-6a99-11df-a648-37a07f9c90fb"/>
+       </insert>
    </changeSet>
    
    <changeSet author="sunbiz" id="function-enable-sqlserver" runAlways="true" dbms="mssql">

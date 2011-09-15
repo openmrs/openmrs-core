@@ -3022,7 +3022,7 @@
 		<dropColumn tableName="notification_alert" columnName="user_id"/>
 	</changeSet>
 	
-	<changeSet id="20100322-0908" author="syhaas">
+	<changeSet id="20100322-0908" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="concept_answer" columnName="sort_weight"/>
@@ -3037,15 +3037,12 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="20100412-2217" author="bwolfe">
+	<changeSet id="20100412-2217" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_alert_recipient" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to notification_alert_recipient table</comment>
 		<addColumn tableName="notification_alert_recipient">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
-		</modifySql>
 	</changeSet>
 
 	<changeSet id="20100412-2218" author="bwolfe">
@@ -3060,6 +3057,8 @@
 	</changeSet>
 
 	<changeSet id="20100412-2219" author="bwolfe">
+		<validCheckSum><comment>Added idExceptions as idColumn is alert_id</comment>3:1401fe5f2d0c6bc23afa70b162e15346</validCheckSum>
+		<validCheckSum>3:9a1bdeabe1d03d6b1c955ca8f035cce7</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<or>
@@ -3077,6 +3076,9 @@
 				notification_alert_recipient
 			</param>
 			<param name="columnName" value="uuid"/>
+			<param name="idExceptions">
+				notification_alert_recipient_id=alert_id
+			</param>
 		</customChange>
 	</changeSet>
 	
@@ -3088,7 +3090,7 @@
 		<addNotNullConstraint tableName="notification_alert_recipient" columnName="uuid" columnDataType="char(38)"/>
 	</changeSet>
 	
-	<changeSet id="20100413-1509" author="djazayeri">
+	<changeSet id="20100413-1509" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location_tag" columnName="tag"/>
 		</preConditions>
@@ -3099,10 +3101,7 @@
    			 oldColumnName="tag" newColumnName="name" columnDataType="varchar(50)"/>
 	</changeSet>
 	
-	<changeSet id="20100427-1334" author="bwolfe">
-		<preConditions onFail="MARK_RAN">
-			<dbms type="mysql" />
-		</preConditions>
+	<changeSet id="20100427-1334" author="bwolfe" dbms="mysql">
 		<comment>
 			Changing the datatype of global_property.property for mysql databases
 		</comment>
@@ -3111,7 +3110,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20100423-1402" author="slorenz">
+	<changeSet id="20100423-1402" author="slorenz" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="encounter_datetime_idx"/>
@@ -3124,7 +3123,7 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="20100423-1406" author="slorenz">
+	<changeSet id="20100423-1406" author="slorenz" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="obs_datetime_idx"/>
@@ -3136,7 +3135,7 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="20100426-1947" author="syhaas">
+	<changeSet id="20100426-1947" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				<![CDATA[
@@ -3165,7 +3164,7 @@
 		</delete>
 	</changeSet>
 
-	<changeSet id="20100512-1400" author="djazayeri">
+	<changeSet id="20100512-1400" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				select count(*) from order_type where order_type_id = 2
@@ -3185,33 +3184,33 @@
 		</insert>
 	</changeSet>
 	
-	<changeSet id="20100517-1545" author="wyclif and djazayeri">
+	<changeSet id="20100517-1545" author="wyclif and djazayeri" dbms="mysql">
 		<comment>Switch boolean concepts/observations to be stored as coded</comment>
 		<customChange class="org.openmrs.util.databasechange.BooleanConceptChangeSet"/>				
 	</changeSet>
 	
-	<changeSet id="20100526-1025" author="Harsha.cse">
+	<changeSet id="20100526-1025" author="Harsha.cse" dbms="mysql">
 		<comment>
 			Drop Not-Null constraint from location column in Encounter and Obs table
 		</comment>
 		<dropNotNullConstraint tableName="encounter" columnName="location_id" columnDataType="int"/>
 		<dropNotNullConstraint tableName="obs" columnName="location_id" columnDataType="int"/>
-    </changeSet>
-    
-    <changeSet id="20100604-0933a" author="wyclif">
-    	<preConditions onFail="MARK_RAN">
-    		<columnExists columnName="message_state" tableName="hl7_in_archive" />
-    	</preConditions>
-    	<comment>
-    		Changing the default value to 2 for 'message_state' column in 'hl7_in_archive' table
-    	</comment>    	
-    	<addDefaultValue columnName="message_state" tableName="hl7_in_archive" defaultValue="2"/>
-    </changeSet>
-    
-    <changeSet id="20100604-0933b" author="wyclif">
-    	<preConditions onFail="MARK_RAN">
-    		<columnExists columnName="message_state" tableName="hl7_in_archive" />    		
-    	</preConditions>
+	</changeSet>
+
+	<changeSet id="20100604-0933a" author="wyclif" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<columnExists columnName="message_state" tableName="hl7_in_archive" />
+		</preConditions>
+		<comment>
+			Changing the default value to 2 for 'message_state' column in 'hl7_in_archive' table
+		</comment>
+		<addDefaultValue columnName="message_state" tableName="hl7_in_archive" defaultValue="2"/>
+	</changeSet>
+
+	<changeSet id="20100604-0933b" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<columnExists columnName="message_state" tableName="hl7_in_archive" />
+		</preConditions>
 		<comment>Converting 0 and 1 to 2 for 'message_state' column in 'hl7_in_archive' table</comment>
 		<update tableName="hl7_in_archive">
 			<column name="message_state" value="2"/>
@@ -3219,7 +3218,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="20100323-192043" author="ricardosbarbosa">
+	<changeSet id="20100323-192043" author="ricardosbarbosa" dbms="mysql">
 		<comment>
 			Removing the duplicate privilege 'Add Concept Proposal' in favor of 'Add Concept Proposals'
 		</comment>
@@ -3231,7 +3230,7 @@
 		<delete tableName="privilege"><where>privilege='Add Concept Proposal'</where></delete>
 	</changeSet>
 		
-	<changeSet id="20100330-190413" author="ricardosbarbosa">
+	<changeSet id="20100330-190413" author="ricardosbarbosa" dbms="mysql">
 		<comment>
 			Removing the duplicate privilege 'Edit Concept Proposal' in favor of 'Edit Concept Proposals'
 		</comment>		
@@ -3243,8 +3242,8 @@
 		<delete tableName="privilege"><where>privilege='Edit Concept Proposal'</where></delete>
 	</changeSet>
 	
-    
-	<changeSet id="20100525-818-1" author="syhaas">
+
+	<changeSet id="20100525-818-1" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="active_list_type"/>
@@ -3281,12 +3280,17 @@
 		<addForeignKeyConstraint constraintName="user_who_created_active_list_type"
 			baseTableName="active_list_type" baseColumnNames="creator"
 			referencedTableName="users" referencedColumnNames="user_id" />
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
-		</modifySql>
+	</changeSet>
+	<changeSet id="20100525-818-1-fix" author="sunbiz" dbms="mysql">
+		<comment>(Fixed)Change active_list_type.retired to BOOLEAN</comment>
+		<ext:modifyColumn tableName="active_list_type">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20100525-818-2" author="syhaas">
+	<changeSet id="20100525-818-2" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="active_list"/>
@@ -3350,12 +3354,17 @@
 		<addForeignKeyConstraint constraintName="stop_obs_active_list"
 			baseTableName="active_list" baseColumnNames="stop_obs_id"
 			referencedTableName="obs" referencedColumnNames="obs_id" />
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
-		</modifySql>
+	</changeSet>
+	<changeSet id="20100525-818-2-fix" author="sunbiz">
+		<comment>(Fixed)Change active_list_type.retired to BOOLEAN</comment>
+			<ext:modifyColumn tableName="active_list">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20100525-818-3" author="syhaas">
+	<changeSet id="20100525-818-3" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="active_list_allergy"/>
@@ -3375,7 +3384,7 @@
 			referencedTableName="concept" referencedColumnNames="concept_id" />
 	</changeSet>
 	
-	<changeSet id="20100525-818-4" author="syhaas">
+	<changeSet id="20100525-818-4" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="active_list_problem"/>
@@ -3391,7 +3400,7 @@
 		</createTable>
 	</changeSet>
 	
-	<changeSet id="20100525-818-5" author="syhaas">
+	<changeSet id="20100525-818-5" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				SELECT count(*) FROM active_list_type
@@ -3422,8 +3431,8 @@
 		</insert>
 	</changeSet>
 	
-	<changeSet id="20100607-1550a" author="wyclif">
-    	<preConditions onFail="MARK_RAN">
+	<changeSet id="20100607-1550a" author="wyclif" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists columnName="concept_name_type" tableName="concept_name"/>
 			</not>
@@ -3432,10 +3441,10 @@
 		<addColumn tableName="concept_name">
 			<column name="concept_name_type" type="varchar(50)"></column>
 		</addColumn>
-    </changeSet>
-    
-    <changeSet id="20100607-1550b" author="wyclif">
-    	<preConditions onFail="MARK_RAN">
+	</changeSet>
+
+	<changeSet id="20100607-1550b" author="wyclif" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists columnName="locale_preferred" tableName="concept_name"/>
 			</not>
@@ -3444,18 +3453,24 @@
 		<addColumn tableName="concept_name">
 			<column name="locale_preferred" type="smallint" defaultValueNumeric="0"></column>
 		</addColumn>
-    </changeSet>
-    
-    <changeSet id="20100607-1550c" author="wyclif">
-    	<preConditions onFail="MARK_RAN">			
+	</changeSet>
+	<changeSet id="20100607-1550b-fix" author="sunbiz" dbms="mysql">
+		<comment>(Fixed)Change concept_name.locale_preferred to BOOLEAN</comment>
+		<ext:modifyColumn tableName="concept_name">
+			<column name="locale_preferred" type="boolean" defaultValueBoolean="false"/>
+		</ext:modifyColumn>
+	</changeSet>
+
+	<changeSet id="20100607-1550c" author="wyclif" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyName="mapped_concept_name_tag"/>
 		</preConditions>
 		<comment>Dropping foreign key constraint on concept_name_tag_map.concept_name_tag_id</comment>
 		<dropForeignKeyConstraint baseTableName="concept_name_tag_map" constraintName="mapped_concept_name_tag"/>		
-    </changeSet>
-    
-    <changeSet id="20100607-1550e" author="wyclif">
-    	<preConditions onFail="MARK_RAN">
+	</changeSet>
+
+	<changeSet id="20100607-1550e" author="wyclif">
+		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
 					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 4
@@ -3463,7 +3478,7 @@
 			</not>
 		</preConditions>
 		<comment>Converting preferred names to FULLY_SPECIFIED names</comment>
-    	<update tableName="concept_name">
+		<update tableName="concept_name">
 			<column name="concept_name_type" value="FULLY_SPECIFIED"/>
 			<where>concept_name_id IN (SELECT concept_name_id FROM concept_name_tag_map WHERE concept_name_tag_id = 4)</where>
 		</update>			
@@ -3473,17 +3488,17 @@
 		<delete tableName="concept_name_tag">
 			<where>concept_name_tag_id = 4</where>
 		</delete>
-    </changeSet>
-    
-    <changeSet id="20100607-1550d" author="wyclif">
-    	<preConditions onFail="MARK_RAN">
+	</changeSet>
+
+	<changeSet id="20100607-1550d" author="wyclif">
+		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
 					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 2
 				</sqlCheck>
 			</not>
 		</preConditions>
-		<comment>Setting the concept name type for short names</comment>    			
+		<comment>Setting the concept name type for short names</comment>
 		<update tableName="concept_name">
 			<column name="concept_name_type" value="SHORT"/>
 			<where>concept_name_id IN (SELECT concept_name_id FROM concept_name_tag_map WHERE concept_name_tag_id = 2)</where>
@@ -3494,10 +3509,12 @@
 		<delete tableName="concept_name_tag">
 			<where>concept_name_tag_id = 2</where>
 		</delete>
-    </changeSet>        
-    
-    <changeSet id="20100607-1550f" author="wyclif">
-    	<preConditions onFail="MARK_RAN">
+	</changeSet>
+
+	<changeSet id="20100607-1550f" author="wyclif">
+		<validCheckSum><comment>After changing to boolean</comment>3:b57c0f651ed477457fd16e503eaf51a4</validCheckSum>
+		<validCheckSum>3:002108aacdf55731f4fd472d5308c5c8</validCheckSum>
+		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
 					SELECT count(*) FROM concept_name_tag WHERE tag like 'preferred\___'
@@ -3508,7 +3525,7 @@
 			Converting concept names with country specific concept name tags to preferred names
 		</comment>    	
 		<update tableName="concept_name">
-			<column name="locale_preferred" valueNumeric="1"/>
+			<column name="locale_preferred" valueBoolean="true"/>
 			<where>
 				concept_name_id IN (SELECT concept_name_id FROM concept_name_tag cnt, concept_name_tag_map cntm 
 				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND cnt.tag LIKE 'preferred\___')
@@ -3520,10 +3537,10 @@
 			</where>
 		</delete>
 		<delete tableName="concept_name_tag"><where>tag LIKE 'preferred\___'</where></delete>
-    </changeSet>
-    
-    <changeSet id="20100607-1550g" author="wyclif">
-    	<preConditions onFail="MARK_RAN">				
+	</changeSet>
+
+	<changeSet id="20100607-1550g" author="wyclif">
+		<preConditions onFail="MARK_RAN">				
 			<not>
 				<sqlCheck expectedResult="0">
 					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id IN (1,3)
@@ -3537,17 +3554,17 @@
 		<delete tableName="concept_name_tag">
 			<where>concept_name_tag_id IN (1,3)</where>
 		</delete>
-    </changeSet>
-    
+	</changeSet>
+
 	<changeSet id="20100607-1550h" author="wyclif">
 		<preConditions onFail="MARK_RAN">
-			<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept WHERE retired = 0</sqlCheck></not>
+			<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept WHERE retired = FALSE</sqlCheck></not>
 		</preConditions>				
 		<comment>Validating and attempting to fix invalid concepts and ConceptNames</comment>
 		<customChange class="org.openmrs.util.databasechange.ConceptValidatorChangeSet"/>				
 	</changeSet>
 	
-	<changeSet id="20100607-1550i" author="wyclif">
+	<changeSet id="20100607-1550i" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">			
 			<not>
 				<foreignKeyConstraintExists foreignKeyName="mapped_concept_name_tag"/>
@@ -3557,9 +3574,9 @@
 		<addForeignKeyConstraint referencedTableName="concept_name_tag" baseColumnNames="concept_name_tag_id" 
 								baseTableName="concept_name_tag_map" referencedColumnNames="concept_name_tag_id" 
 								constraintName="mapped_concept_name_tag"/>
-    </changeSet>
-    
-	<changeSet id="20100621-1443" author="jkeiper">
+	</changeSet>
+
+	<changeSet id="20100621-1443" author="jkeiper" dbms="mysql">
 		<comment>
 			Modify the error_details column of hl7_in_error to hold
 			stacktraces
