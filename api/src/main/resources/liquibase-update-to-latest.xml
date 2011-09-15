@@ -4521,7 +4521,7 @@
 	<changeSet id="20110817-1544-create-location-attribute-type-table-fix" author="sunbiz">
 		<comment>(Fixed)Change visit_attribute.retired to BOOLEAN</comment>
 		<ext:modifyColumn tableName="location_attribute_type">
-			<column name="retured" type="BOOLEAN" defaultValueBoolean="0">
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="0">
 				<constraints nullable="false"/>
 			</column>
 		</ext:modifyColumn>
@@ -5017,7 +5017,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="20110301-1030a" author="wyclif">
+	<changeSet id="20110301-1030a" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><tableExists tableName="concept_reference_source" /></not>

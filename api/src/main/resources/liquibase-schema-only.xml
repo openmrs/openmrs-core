@@ -384,7 +384,7 @@
         </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-19">
-        <createTable tableName="concept_source">
+        <createTable tableName="concept_reference_source">
             <column autoIncrement="true" name="concept_source_id" type="int">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
