@@ -1274,7 +1274,60 @@
            <column name="uuid" value="a0c7422b-6a99-11df-a648-37a07f9c90fb"/>
        </insert>
    </changeSet>
-   
+   <changeSet id="20110915-1107" author="sunbiz">
+       <insert tableName="scheduler_task_config">
+           <column name="name" value="Update Concept Index" />
+           <column name="description" value="Iterates through the concept dictionary, re-creating the concept index (which are used for searcing). This task is started when using the 'Update Concept Index Storage' page and no range is given.  This task stops itself when one iteration has completed." />
+           <column name="schedulable_class" value="org.openmrs.scheduler.tasks.ConceptIndexUpdateTask" />
+           <column name="start_on_startup" valueBoolean="true" />
+           <column name="date_created" valueDate="2005-01-01T00:00:00" />
+           <column name="created_by" value="1" />
+           <column name="uuid" value="7c75911e-0310-11e0-8222-18a905e044dc" />
+       </insert>
+   </changeSet>
+   <changeSet id="20110915-1149" author="sunbiz">
+       <insert tableName="concept_stop_word">
+           <column name="word" value="A"/>
+           <column name="uuid" value="f5f45540-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="AND"/>
+           <column name="uuid" value="f5f469ae-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="AT"/>
+           <column name="uuid" value="f5f47070-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="BUT"/>
+           <column name="uuid" value="f5f476c4-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="BY"/>
+           <column name="uuid" value="f5f47d04-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="FOR"/>
+           <column name="uuid" value="f5f4834e-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="HAS"/>
+           <column name="uuid" value="f5f48a24-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="OF"/>
+           <column name="uuid" value="f5f49064-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="THE"/>
+           <column name="uuid" value="f5f496ae-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="TO"/>
+           <column name="uuid" value="f5f49cda-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+   </changeSet>
+
    <changeSet author="sunbiz" id="function-enable-sqlserver" runAlways="true" dbms="mssql">
         <sql>
             EXEC sp_msforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all";
