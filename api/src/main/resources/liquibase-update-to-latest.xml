@@ -3586,7 +3586,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="201008021047" author="bwolfe" failOnError="false">
+	<changeSet id="201008021047" author="bwolfe" failOnError="false" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="family_name2"/>
@@ -3605,7 +3605,7 @@
 		<customChange class="org.openmrs.util.databasechange.ProgramValidatorChangeSet"/>				
 	</changeSet>
 
-	<changeSet id="201008242121" author="misha680">			
+	<changeSet id="201008242121" author="misha680" dbms="mysql">
 		<comment>Make person_name.person_id not NULLable</comment>
 		<ext:modifyColumn tableName="person_name">
 			<column name="person_id" type="int">
@@ -3614,7 +3614,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20100924-1110" author="mseaton">
+	<changeSet id="20100924-1110" author="mseaton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="patient_program" columnName="location_id"/></not>
 		</preConditions>
@@ -3626,11 +3626,10 @@
 		</addColumn>
 		<addForeignKeyConstraint constraintName="patient_program_location_id"
 			baseTableName="patient_program" baseColumnNames="location_id"
-			referencedTableName="location" referencedColumnNames="location_id"
-			/>
+			referencedTableName="location" referencedColumnNames="location_id"/>
 	</changeSet>
 
-	<changeSet id="201009281047" author="misha680">
+	<changeSet id="201009281047" author="misha680" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept" columnName="default_charge"/>
 		</preConditions>
@@ -3654,17 +3653,17 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="201010151054" author="bwolfe">
+	<changeSet id="201010151054" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="form_published_index" /></not>
 		</preConditions>
 		<comment>Adding index to form.published column</comment>
 		<createIndex tableName="form" indexName="form_published_index">
 			<column name="published" />
-		</createIndex>	
+		</createIndex>
 	</changeSet>
 	
-	<changeSet id="201010151055" author="bwolfe">
+	<changeSet id="201010151055" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="form_retired_index" /></not>
 		</preConditions>
@@ -3674,7 +3673,7 @@
 		</createIndex>	
 	</changeSet>
 	
-	<changeSet id="201010151056" author="bwolfe">
+	<changeSet id="201010151056" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="form_published_and_retired_index" /></not>
 		</preConditions>
@@ -3685,7 +3684,7 @@
 		</createIndex>	
 	</changeSet>
 	
-	<changeSet id="201010261143" author="crecabarren">
+	<changeSet id="201010261143" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="neighborhood_cell"/>
 		</preConditions>
@@ -3694,7 +3693,7 @@
 			oldColumnName="neighborhood_cell" newColumnName="address3" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261145" author="crecabarren">
+	<changeSet id="201010261145" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="township_division"/>
 		</preConditions>
@@ -3703,7 +3702,7 @@
 			oldColumnName="township_division" newColumnName="address4" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261147" author="crecabarren">
+	<changeSet id="201010261147" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="subregion"/>
 		</preConditions>
@@ -3712,7 +3711,7 @@
 			oldColumnName="subregion" newColumnName="address5" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261149" author="crecabarren">
+	<changeSet id="201010261149" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="region"/>
 		</preConditions>
@@ -3721,7 +3720,7 @@
 			oldColumnName="region" newColumnName="address6" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261151" author="crecabarren">
+	<changeSet id="201010261151" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="neighborhood_cell"/>
 		</preConditions>
@@ -3730,7 +3729,7 @@
 			oldColumnName="neighborhood_cell" newColumnName="address3" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261153" author="crecabarren">
+	<changeSet id="201010261153" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="township_division"/>
 		</preConditions>
@@ -3739,7 +3738,7 @@
 			oldColumnName="township_division" newColumnName="address4" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261156" author="crecabarren">
+	<changeSet id="201010261156" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="subregion"/>
 		</preConditions>
@@ -3748,7 +3747,7 @@
 			oldColumnName="subregion" newColumnName="address5" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261159" author="crecabarren">
+	<changeSet id="201010261159" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="region"/>
 		</preConditions>
@@ -3757,7 +3756,7 @@
 			oldColumnName="region" newColumnName="address6" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201012092009" author="djazayeri">
+	<changeSet id="201012092009" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><changeSetExecuted id="201012092009" author="djazayeri" changeLogFile="liquibase-update-to-latest.xml"/></not>
 		</preConditions>
@@ -3774,7 +3773,7 @@
 		<ext:modifyColumn tableName="location"><column name="county_district" type="varchar(255)"/></ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="201011011600" author="jkeiper">
+	<changeSet id="201011011600" author="jkeiper" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="hl7_in_archive_message_state_idx" /></not>
 		</preConditions>
@@ -3789,7 +3788,7 @@
 		<customChange class="org.openmrs.util.databasechange.MoveDeletedHL7sChangeSet"/>				
 	</changeSet>
 	
-	<changeSet id="20101209-1721" author="wyclif">
+	<changeSet id="20101209-1721" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="weight"/></not>
 		</preConditions>
@@ -3799,7 +3798,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20101209-1722" author="wyclif">
+	<changeSet id="20101209-1722" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="concept_word_weight_index" /></not>
 		</preConditions>
@@ -3809,10 +3808,10 @@
 		</createIndex>
 	</changeSet>
 		
-	<changeSet id="20101209-1723" author="wyclif">
-        <validCheckSum>db17937286d48f680b2be16bee24e62</validCheckSum> <!-- old checksum without specifying date_created -->
-        <validCheckSum>4d67c48557f5665a8c2be7e87e22913</validCheckSum> <!-- current checksum with date_created property added -->
-    	<preConditions onFail="MARK_RAN">
+	<changeSet id="20101209-1723" author="wyclif" dbms="mysql">
+		<validCheckSum>db17937286d48f680b2be16bee24e62</validCheckSum> <!-- old checksum without specifying date_created -->
+		<validCheckSum>4d67c48557f5665a8c2be7e87e22913</validCheckSum> <!-- current checksum with date_created property added -->
+		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				SELECT COUNT(*) FROM scheduler_task_config WHERE schedulable_class = 'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask'
 			</sqlCheck>
@@ -3827,24 +3826,27 @@
 			<column name="created_by" value="1" />
 			<column name="uuid" value="7c75911e-0310-11e0-8222-18a905e044dc" />
 		</insert>
-    </changeSet>
-    
-    <changeSet id="20101209-1731" author="wyclif">
-    	<preConditions onFail="MARK_RAN">
-    		<sqlCheck expectedResult="1">
+	</changeSet>
+
+	<changeSet id="20101209-1731" author="wyclif" dbms="mysql">
+		<validCheckSum><comment>Using Correct BOOLEAN in update query</comment>3:6de3e859f77856fe939d3ae6a73b4752</validCheckSum>
+		<validCheckSum>3:5b57be46af9578a59fb2b4f2af24c816</validCheckSum>
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
 				SELECT COUNT(*) FROM scheduler_task_config 
 				WHERE schedulable_class = 'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask' 
-				AND start_on_startup = 0;
-			</sqlCheck>
+				AND start_on_startup = FALSE;
+		</sqlCheck>
 		</preConditions>
 		<comment>Setting the value of 'start_on_startup' to trigger off conceptIndexUpdateTask on startup</comment>
 		<update tableName="scheduler_task_config">
-			<column name="start_on_startup" value="1" />
+			<column name="start_on_startup" value="true" />
 			<where>schedulable_class = 'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask'</where>
 		</update>
-    </changeSet>
+	</changeSet>
 
-	<changeSet id="201012081716" author="nribeka">
+	<!-- TODO: https://source.openmrs.org/cru/CR-TRUNK-204#CFR-4477 -->
+	<changeSet id="201012081716" author="nribeka" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_derived" />
 		</preConditions>
@@ -3852,7 +3854,7 @@
 		<delete tableName="concept_derived" />
 	</changeSet>
 	
-	<changeSet id="201012081717" author="nribeka">
+	<changeSet id="201012081717" author="nribeka" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_derived" />
 		</preConditions>
@@ -3860,7 +3862,7 @@
 		<dropTable tableName="concept_derived"/>
 	</changeSet>
 	
-	<changeSet id="201011051300" author="bwolfe">
+	<changeSet id="201011051300" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="alert_date_to_expire_idx" /></not>
 		</preConditions>
@@ -3870,7 +3872,7 @@
 		</createIndex>
 	</changeSet>
 
-	<changeSet id="20100603-1625-1-person_address" author="sapna">
+	<changeSet id="20100603-1625-1-person_address" author="sapna" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_address" columnName="date_changed"/></not></preConditions>
 		<comment>Adding "date_changed" column to person_address table</comment>
 		<addColumn tableName="person_address">
@@ -3879,7 +3881,7 @@
 	</changeSet>
 	
 
-	<changeSet id="20100603-1625-2-person_address" author="sapna">
+	<changeSet id="20100603-1625-2-person_address" author="sapna" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_address" columnName="changed_by"/></not></preConditions>
 		<comment>Adding "changed_by" column to person_address table</comment>
 		<addColumn tableName="person_address">
@@ -3890,7 +3892,7 @@
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 	
-	<changeSet id="20110218-1206" author="rubailly">
+	<changeSet id="20110218-1206" author="rubailly" dbms="mysql">
 		<preConditions>
 			<not>
 				<columnExists tableName="patient_identifier_type"
@@ -3905,7 +3907,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20110218-1210" author="rubailly">
+	<changeSet id="20110218-1210" author="rubailly" dbms="mysql">
 		<comment>
 			Drop Not-Null constraint from location_id column in patient_identifier table
 		</comment>
@@ -3913,15 +3915,13 @@
 			columnName="location_id" columnDataType="int" />
 	</changeSet>
 
-	<changeSet id="20101029-1016" author="gobi/prasann">
+	<changeSet id="20101029-1016" author="gobi/prasann" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="concept_stop_word" />
 			</not>
 		</preConditions>
-
 		<comment>Create table to store concept stop words to avoid in search key indexing</comment>
-
 		<createTable tableName="concept_stop_word">
 			<column name="concept_stop_word_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false" />
@@ -3936,21 +3936,15 @@
 				<constraints nullable="false" unique="true"/>
 			</column>
 		</createTable>
-
 		<addUniqueConstraint tableName="concept_stop_word"
 			columnNames="word,locale" constraintName="Unique_StopWord_Key" />
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
-		</modifySql>
 	</changeSet>
 
-	<changeSet id="20101029-1026" author="gobi/prasann">
+	<changeSet id="20101029-1026" author="gobi/prasann" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">select count(*) from concept_stop_word where word = 'A'</sqlCheck>
 		</preConditions>
-		
 		<comment>Inserting the initial concept stop words</comment>
-
 		<insert tableName="concept_stop_word">
 			<column name="word" value="A" />
 			<column name="uuid" value="f5f45540-e2a7-11df-87ae-18a905e044dc" />
@@ -3993,7 +3987,7 @@
 		</insert>
 	</changeSet>
 	
-	<changeSet id="201118012301" author="lkellett">
+	<changeSet id="201118012301" author="lkellett" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="orders" columnName="discontinued_reason_non_coded"/></not>
 		</preConditions>
@@ -4005,7 +3999,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20110125-1435" author="wyclif">
+	<changeSet id="20110125-1435" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="person_address" columnName="start_date"/></not>
 		</preConditions>
@@ -4015,7 +4009,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20110125-1436" author="wyclif">
+	<changeSet id="20110125-1436" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="person_address" columnName="end_date"/></not>
 		</preConditions>
@@ -4025,7 +4019,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20110201-1625-1" author="arahulkmit">
+	<changeSet id="20110201-1625-1" author="arahulkmit" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier" columnName="date_changed"/></not></preConditions>
 		<comment>Adding "date_changed" column to patient_identifier table</comment>
 		<addColumn tableName="patient_identifier">
@@ -4033,7 +4027,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20110201-1625-2" author="arahulkmit">
+	<changeSet id="20110201-1625-2" author="arahulkmit" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier" columnName="changed_by"/></not></preConditions>
 		<comment>Adding "changed_by" column to patient_identifier table</comment>
 		<addColumn tableName="patient_identifier">
@@ -4052,7 +4046,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20110201-1626-2" author="arahulkmit">
+	<changeSet id="20110201-1626-2" author="arahulkmit" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="relationship" columnName="changed_by"/></not></preConditions>
 		<comment>Adding "changed_by" column to relationship table</comment>
 		<addColumn tableName="relationship">
@@ -4063,7 +4057,7 @@
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 	
-	<changeSet id="201101221453" author="suho">
+	<changeSet id="201101221453" author="suho" dbms="mysql">
 		<comment>Increasing the serialized_data column of serialized_object to hold mediumtext</comment>
 		<ext:modifyColumn tableName="serialized_object">
 			<column name="serialized_data" type="mediumtext" >
@@ -4072,7 +4066,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="201101121434" author="gbalaji,gobi">
+	<changeSet id="201101121434" author="gbalaji,gobi" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="obs" columnName="date_started"/>
 		</preConditions>
@@ -4080,7 +4074,7 @@
 		<dropColumn tableName="obs" columnName="date_started"/>
 	</changeSet>
 	
-	<changeSet id="201102081800" author="gbalaji,gobi">
+	<changeSet id="201102081800" author="gbalaji,gobi" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="obs" columnName="date_stopped"/>			
 		</preConditions>
@@ -4088,7 +4082,7 @@
 		<dropColumn tableName="obs" columnName="date_stopped"/>
 	</changeSet>
 	
-	<changeSet id="20110124-1030" author="surangak">
+	<changeSet id="20110124-1030" author="surangak" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<foreignKeyConstraintExists
@@ -4101,7 +4095,7 @@
 			referencedTableName="drug" referencedColumnNames="drug_id" />
 	</changeSet>
 
-	<changeSet id="201103152243-a" author="jkeiper">
+	<changeSet id="201103152243-a" author="jkeiper" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="form_resource" />
@@ -4131,9 +4125,6 @@
 		<addForeignKeyConstraint constraintName="form_resource_form"
 			baseTableName="form_resource" baseColumnNames="form_id"
 			referencedTableName="form" referencedColumnNames="form_id" />
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
-		</modifySql>
 	</changeSet>
 
 	<changeSet id="201103152243-b" author="jkeiper">
@@ -4145,7 +4136,7 @@
 			class="org.openmrs.util.databasechange.CopyFormMetadataChangeSet" />
 	</changeSet>
 
-	<changeSet id="201103152243-c" author="jkeiper">
+	<changeSet id="201103152243-c" author="jkeiper" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="form" columnName="xslt" />
 		</preConditions>
@@ -4153,7 +4144,7 @@
 		<dropColumn tableName="form" columnName="xslt" />
 	</changeSet>
 
-	<changeSet id="201103152243-d" author="jkeiper">
+	<changeSet id="201103152243-d" author="jkeiper" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="form" columnName="template" />
 		</preConditions>
@@ -4181,14 +4172,13 @@
 		</delete>
 	</changeSet>
 	
-	<changeSet id="20090224-1002-create-visit_type" author="dkayiwa">
+	<changeSet id="20090224-1002-create-visit_type" author="dkayiwa" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="visit_type"/></not>
 		</preConditions>
 		<comment>
 			Create visit type table
 		</comment>
-		
 		<createTable tableName="visit_type">
 			<column name="visit_type_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
@@ -4215,22 +4205,18 @@
 			<column name="date_retired" type="datetime" />
 			<column name="retire_reason" type="varchar(255)" defaultValue="null"/>
 		</createTable>
-		
 		<addForeignKeyConstraint constraintName="visit_type_creator"
 			baseTableName="visit_type" baseColumnNames="creator"
-			referencedTableName="users" referencedColumnNames="user_id"
-			/>
+			referencedTableName="users" referencedColumnNames="user_id"/>
 		<addForeignKeyConstraint constraintName="visit_type_changed_by" 
-								 baseTableName="visit_type" baseColumnNames="changed_by"
-								 referencedTableName="users" referencedColumnNames="user_id"
-			/>
+			baseTableName="visit_type" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id"/>
 		<addForeignKeyConstraint constraintName="visit_type_retired_by"
 			baseTableName="visit_type" baseColumnNames="retired_by"
-			referencedTableName="users" referencedColumnNames="user_id"
-			/>
+			referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 	
-	<changeSet id="20100419-1209" author="wyclif">
+	<changeSet id="20100419-1209" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="visit" /> </not>
 		</preConditions>
@@ -4281,12 +4267,17 @@
 		<createIndex tableName="visit" indexName="visit_patient_index">
 			<column name="patient_id" />
 		</createIndex>
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
-		</modifySql>
+	</changeSet>
+	<changeSet id="20100419-1209-fix" author="sunbiz">
+		<comment>(Fixed)Changed visit.voided to BOOLEAN</comment>
+		<ext:modifyColumn tableName="visit">
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20101209-10000-encounter-add-visit-id-column" author="dkayiwa">
+	<changeSet id="20101209-10000-encounter-add-visit-id-column" author="dkayiwa" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="encounter" columnName="visit_id"/></not>
 		</preConditions>
@@ -4299,7 +4290,7 @@
 			referencedTableName="visit" referencedColumnNames="visit_id" />
 	</changeSet>
 	
-	<changeSet id="201101271456-add-startdate-to-relationship" author="misha680">
+	<changeSet id="201101271456-add-startdate-to-relationship" author="misha680" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="relationship" columnName="start_date"/></not>
 		</preConditions>
@@ -4311,7 +4302,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="201101271456-add-enddate-to-relationship" author="misha680">
+	<changeSet id="201101271456-add-enddate-to-relationship" author="misha680" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="relationship" columnName="end_date"/></not>
 		</preConditions>
@@ -4323,7 +4314,7 @@
 		</addColumn>
 	</changeSet>
 	
-    <changeSet id="20110425-1600-create-visit-attribute-type-table" author="djazayeri">
+    <changeSet id="20110425-1600-create-visit-attribute-type-table" author="djazayeri" dbms="mysql">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="visit_attribute_type"/></not>
         </preConditions>
@@ -4360,8 +4351,16 @@
             baseTableName="visit_attribute_type" baseColumnNames="retired_by" referencedTableName="users"
             referencedColumnNames="user_id" />
     </changeSet>
-    
-    <changeSet id="20110425-1700-create-visit-attribute-table" author="djazayeri">
+	<changeSet id="20110425-1600-create-visit-attribute-type-table-fix" author="sunbiz">
+		<comment>(Fixed)Change visit_attribute_type.retired to BOOLEAN</comment>
+		<ext:modifyColumn tableName="visit_attribute_type">
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="0">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
+
+    <changeSet id="20110425-1700-create-visit-attribute-table" author="djazayeri" dbms="mysql">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="visit_attribute"/></not>
         </preConditions>
@@ -4400,12 +4399,17 @@
         <addForeignKeyConstraint constraintName="visit_attribute_voided_by_fk"
             baseTableName="visit_attribute" baseColumnNames="voided_by" referencedTableName="users"
             referencedColumnNames="user_id" />
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
-		</modifySql>
     </changeSet>
+	<changeSet id="20110425-1700-create-visit-attribute-table-fix" author="sunbiz">
+		<comment>(Fixed)Change visit_attribute.voided to BOOLEAN</comment>
+		<ext:modifyColumn tableName="visit_attribute">
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="0">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
 
-    <changeSet id="201107192313-change-length-of-regex-column" author="jtellez">
+    <changeSet id="201107192313-change-length-of-regex-column" author="jtellez" dbms="mysql">
 		<preConditions onFail="HALT">
 			<columnExists tableName="patient_identifier_type" columnName="format" />
 		</preConditions>
@@ -4417,7 +4421,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20110708-2105" author="cta">
+	<changeSet id="20110708-2105" author="cta" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="concept_source_unique_hl7_codes" />
@@ -4429,7 +4433,7 @@
 		<addUniqueConstraint tableName="concept_source" columnNames="hl7_code" constraintName="concept_source_unique_hl7_codes"/>
 	</changeSet>
 
-	<changeSet id="2011-07-12-1947-add-outcomesConcept-to-program" author="grwarren">
+	<changeSet id="2011-07-12-1947-add-outcomesConcept-to-program" author="grwarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="program" columnName="outcomes_concept_id"/>
@@ -4447,7 +4451,7 @@
 								 referencedColumnNames="concept_id"/>
 	</changeSet>
 
-	<changeSet id="2011-07-12-2005-add-outcome-to-patientprogram" author="grwarren">
+	<changeSet id="2011-07-12-2005-add-outcome-to-patientprogram" author="grwarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="patient_program" columnName="outcome_concept_id"/>
@@ -4465,7 +4469,7 @@
 								 referencedColumnNames="concept_id"/>
 	</changeSet>
 
-	<changeSet id="20110817-1544-create-location-attribute-type-table" author="djazayeri">
+	<changeSet id="20110817-1544-create-location-attribute-type-table" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="location_attribute_type" />
@@ -4514,6 +4518,14 @@
 			baseTableName="location_attribute_type" baseColumnNames="retired_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
+	<changeSet id="20110817-1544-create-location-attribute-type-table-fix" author="sunbiz">
+		<comment>(Fixed)Change visit_attribute.retired to BOOLEAN</comment>
+		<ext:modifyColumn tableName="location_attribute_type">
+			<column name="retured" type="BOOLEAN" defaultValueBoolean="0">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
 
     <changeSet id="20110817-1601-create-location-attribute-table" author="djazayeri">
         <preConditions onFail="MARK_RAN">
@@ -4554,10 +4566,15 @@
         <addForeignKeyConstraint constraintName="location_attribute_voided_by_fk"
             baseTableName="location_attribute" baseColumnNames="voided_by" referencedTableName="users"
             referencedColumnNames="user_id" />
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38) NOT NULL" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
-		</modifySql>
     </changeSet>
+	<changeSet id="20110817-1601-create-location-attribute-table-fix" author="sunbiz">
+		<comment>(Fixed)Change visit_attribute.retired to BOOLEAN</comment>
+		<ext:modifyColumn tableName="location_attribute">
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="0">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
     
 	<changeSet id="201103112152" author="suho">
 		<preConditions onFail="MARK_RAN">
