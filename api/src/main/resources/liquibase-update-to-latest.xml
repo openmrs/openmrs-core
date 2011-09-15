@@ -5581,5 +5581,22 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
+	
+	<changeSet id="201109152336" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				select count(*) from global_property where property = 'log.level.openmrs';
+			</sqlCheck>
+			<sqlCheck expectedResult="0">
+				select count(*) from global_property where property = 'log.level';
+			</sqlCheck>
+		</preConditions>
+		<comment>Updating logging level global property</comment>
+			<update tableName="global_property">
+				<column name="property" value="log.level"/>
+				<where>property = 'log.level.openmrs'</where>
+			</update>
+	</changeSet>
+	
 </databaseChangeLog>
 

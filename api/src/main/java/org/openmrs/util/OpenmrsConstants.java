@@ -1170,8 +1170,8 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_LOG_LEVEL,
-		                LOG_LEVEL_INFO,
-		                "log level used by the logger 'org.openmrs'. This value will override the log4j.xml value. Valid values are trace, debug, info, warn, error or fatal"));
+		                "org.openmrs.api:" + LOG_LEVEL_INFO,
+		                "Logging levels for log4j.xml. Valid format is class:level,class:level. If class not specified, 'org.openmrs.api' presumed. Valid levels are trace, debug, info, warn, error or fatal"));
 		
 		props
 		        .add(new GlobalProperty(
@@ -1474,10 +1474,10 @@ public final class OpenmrsConstants {
 	public static final String SHORT_SERIALIZATION = "isShortSerialization";
 	
 	// Global property key for global logger level
-	public static final String GLOBAL_PROPERTY_LOG_LEVEL = "log.level.openmrs";
+	public static final String GLOBAL_PROPERTY_LOG_LEVEL = "log.level";
 	
 	// Global logger category
-	public static final String LOG_CLASS_DEFAULT = "org.openmrs";
+	public static final String LOG_CLASS_DEFAULT = "org.openmrs.api";
 	
 	// Log levels
 	public static final String LOG_LEVEL_TRACE = "trace";

@@ -20,6 +20,7 @@ import org.openmrs.annotation.AddOnStartup;
  * AddOnStartup annotation.
  * 
  * @see org.openmrs.annotation.AddOnStartup
+ * @since 1.8
  */
 public class RoleConstants {
 	
