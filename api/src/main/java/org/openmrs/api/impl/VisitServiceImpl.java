@@ -155,7 +155,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		if (errors.hasErrors())
-			throw new APIException("Validation errors found");
+			throw new APIException("Validation errors found. " + errors);
 		
 		return dao.saveVisit(visit);
 	}

@@ -546,12 +546,17 @@ public class OpenmrsUtil {
 	 */
 	public static void applyLogLevels() {
 		AdministrationService adminService = Context.getAdministrationService();
-		String logLevel = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
-		String logClass = OpenmrsConstants.LOG_CLASS_DEFAULT;
+		String logLevel = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "");
 		
-		// potentially have different levels here. only doing org.openmrs right
-		// now
-		applyLogLevel(logClass, logLevel);
+		String[] levels = logLevel.split(",");
+		for (String level : levels) {
+			String[] classAndLevel = level.split(":");
+			if (classAndLevel.length == 1)
+				applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, logLevel);
+			else
+				applyLogLevel(classAndLevel[0].trim(), classAndLevel[1].trim());
+		}
+		
 	}
 	
 	/**
