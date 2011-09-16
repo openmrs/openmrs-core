@@ -161,40 +161,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @should not fail if given obj has null conceptid
-	 * @should not fail if given obj is null
-	 * @should not fail if concept id is null
-	 * @should confirm two new concept objects are equal
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
-		if (obj instanceof Concept) {
-			Concept c = (Concept) obj;
-			if (getConceptId() == null && c.getConceptId() == null)
-				return this == obj;
-			if (getConceptId() != null)
-				return (this.getConceptId().equals(c.getConceptId()));
-		}
-		return this == obj;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 * @should not fail if concept id is null
-	 */
-	@Override
-	public int hashCode() {
-		if (this.getConceptId() == null)
-			return super.hashCode();
-		int hash = 8;
-		hash = 31 * this.getConceptId() + hash;
-		return hash;
-	}
-	
-	/**
 	 * @return Returns all answers (including retired answers).
 	 * @should return retired and non-retired answers
 	 * @should not return null if no answers defined
@@ -1093,7 +1059,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			conceptName.setConcept(this);
 			if (names == null)
 				names = new HashSet<ConceptName>();
-			if (conceptName != null && !names.contains(conceptName)) {
+			if (!names.contains(conceptName)) {
 				if (getNames().size() == 0
 				        && !OpenmrsUtil.nullSafeEquals(conceptName.getConceptNameType(), ConceptNameType.FULLY_SPECIFIED)) {
 					conceptName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
@@ -1328,18 +1294,29 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Gets the synonyms in the given locale. Returns a list of names from the same language, or an
-	 * empty list if none found.
+	 * Gets the synonyms in the given locale. Returns a list of names from the same language
+	 * with the preferred synonym sorted first, or an empty list if none found.
 	 * 
 	 * @param locale
 	 * @return Collection of ConceptNames which are synonyms for the Concept in the given locale
 	 */
 	public Collection<ConceptName> getSynonyms(Locale locale) {
 		
-		Collection<ConceptName> syns = new Vector<ConceptName>();
+		List<ConceptName> syns = new Vector<ConceptName>();
+		ConceptName preferredConceptName = null;
 		for (ConceptName possibleSynonymInLoc : getSynonyms()) {
-			if (locale.equals(possibleSynonymInLoc.getLocale()))
-				syns.add(possibleSynonymInLoc);
+			if (locale.equals(possibleSynonymInLoc.getLocale())) {
+				if (possibleSynonymInLoc.isPreferred()) {
+					preferredConceptName = possibleSynonymInLoc;
+				} else {
+					syns.add(possibleSynonymInLoc);
+				}
+			}
+		}
+		
+		// Add preferred name first in the list.
+		if (preferredConceptName != null) {
+			syns.add(0, preferredConceptName);
 		}
 		log.debug("returning: " + syns);
 		return syns;

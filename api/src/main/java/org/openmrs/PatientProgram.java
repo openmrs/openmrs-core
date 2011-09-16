@@ -302,17 +302,6 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 		return ret;
 	}
 	
-	/** @see Object#equals(Object) */
-	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof PatientProgram) {
-			PatientProgram p = (PatientProgram) obj;
-			if (this.getPatientProgramId() != null) {
-				return (this.getPatientProgramId().equals(p.getPatientProgramId()));
-			}
-		}
-		return this == obj;
-	}
-	
 	/** @see Object#toString() */
 	public String toString() {
 		return "PatientProgram(id=" + getPatientProgramId() + ", patient=" + getPatient() + ", program=" + getProgram()

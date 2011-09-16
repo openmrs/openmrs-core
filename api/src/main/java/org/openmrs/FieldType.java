@@ -37,26 +37,6 @@ public class FieldType extends BaseOpenmrsMetadata implements java.io.Serializab
 		this.fieldTypeId = fieldTypeId;
 	}
 	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof FieldType) {
-			FieldType f = (FieldType) obj;
-			return (fieldTypeId.equals(f.getFieldTypeId()));
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getFieldTypeId() == null)
-			return super.hashCode();
-		return this.getFieldTypeId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

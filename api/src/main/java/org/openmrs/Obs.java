@@ -187,40 +187,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Compares two Obs for similarity. The comparison is done on obsId of both this and the given
-	 * <code>obs</code> object. If either has a null obsId, then they are not equal
-	 * 
-	 * @param obj
-	 * @return boolean True if the obsIds match, false otherwise or if either obsId is null.
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof Obs) {
-			Obs o = (Obs) obj;
-			if (this.getObsId() != null && o.getObsId() != null)
-				return (this.getObsId().equals(o.getObsId()));
-			/*
-			 * return (this.getConcept().equals(o.getConcept()) &&
-			 * this.getPatient().equals(o.getPatient()) &&
-			 * this.getEncounter().equals(o.getEncounter()) &&
-			 * this.getLocation().equals(o.getLocation()));
-			 */
-		}
-		
-		// if the obsIds don't match, its possible that they are the same
-		// exact object. Check that now on the way out.
-		return this == obj;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getObsId() == null)
-			return super.hashCode();
-		return this.getObsId().hashCode();
-	}
-	
-	/**
 	 * This method isn't needed anymore. There are handlers that are mapped around the saveObs(obs)
 	 * method that get called automatically. See {@link SaveHandler}, et al.
 	 * 
@@ -674,8 +640,10 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return false if value coded answer concept is false concept
 	 */
 	public Boolean getValueBoolean() {
-		if (getConcept() != null && valueCoded != null && getConcept().getDatatype().isBoolean())
-			return valueCoded.equals(Context.getConceptService().getTrueConcept());
+		if (getConcept() != null && valueCoded != null && getConcept().getDatatype().isBoolean()) {
+			Concept trueConcept = Context.getConceptService().getTrueConcept();
+			return trueConcept != null && valueCoded.getId().equals(trueConcept.getId());
+		}
 		
 		return null;
 	}

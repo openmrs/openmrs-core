@@ -18,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.TestUtil.containsId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -327,9 +328,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		List<User> users = Context.getUserService().getUsers("Johnson", null, false);
 		Assert.assertEquals(3, users.size());
-		Assert.assertTrue(users.contains(new User(2)));
-		Assert.assertTrue(users.contains(new User(4)));
-		Assert.assertTrue(users.contains(new User(5)));
+		Assert.assertTrue(containsId(users, 2));
+		Assert.assertTrue(containsId(users, 4));
+		Assert.assertTrue(containsId(users, 5));
 	}
 	
 	/**

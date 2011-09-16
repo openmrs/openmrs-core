@@ -216,18 +216,19 @@ public class ORUR01Handler implements Application {
 			log.debug("Creating observations for message " + messageControlId + "...");
 		// we ignore all MEDICAL_RECORD_OBSERVATIONS that are OBRs.  We do not
 		// create obs_groups for them
-		List<Concept> ignoredConcepts = new ArrayList<Concept>();
+		List<Integer> ignoredConceptIds = new ArrayList<Integer>();
 		
-		String ignoreOBRConceptId = Context.getAdministrationService().getGlobalProperty(
+		String obrConceptId = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238");
-		if (ignoreOBRConceptId.length() > 0)
-			ignoredConcepts.add(new Concept(Integer.valueOf(ignoreOBRConceptId)));
+		if (StringUtils.hasLength(obrConceptId)) {
+			ignoredConceptIds.add(Integer.valueOf(obrConceptId));
+		}
 		
 		// we also ignore all PROBLEM_LIST that are OBRs
-		ignoreOBRConceptId = Context.getAdministrationService().getGlobalProperty(
+		String obrProblemListConceptId = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PROBLEM_LIST, "1284");
-		if (ignoreOBRConceptId.length() > 0)
-			ignoredConcepts.add(new Concept(Integer.valueOf(ignoreOBRConceptId)));
+		if (StringUtils.hasLength(obrProblemListConceptId))
+			ignoredConceptIds.add(Integer.valueOf(obrProblemListConceptId));
 		
 		ORU_R01_PATIENT_RESULT patientResult = oru.getPATIENT_RESULT();
 		int numObr = patientResult.getORDER_OBSERVATIONReps();
@@ -243,7 +244,7 @@ public class ORUR01Handler implements Application {
 			// Obs grouper object that the underlying obs objects will use
 			Obs obsGrouper = null;
 			Concept obrConcept = getConcept(obr.getUniversalServiceIdentifier(), messageControlId);
-			if (obrConcept != null && !ignoredConcepts.contains(obrConcept)) {
+			if (obrConcept != null && !ignoredConceptIds.contains(obrConcept.getId())) {
 				// maybe check for a parent obs group from OBR-29 Parent ?
 				
 				// create an obs for this obs group too
@@ -644,7 +645,7 @@ public class ORUR01Handler implements Application {
 					Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
 					if (conceptAnswers != null && conceptAnswers.size() > 0) {
 						for (ConceptAnswer conceptAnswer : conceptAnswers) {
-							if (conceptAnswer.getAnswerConcept().equals(answer)) {
+							if (conceptAnswer.getAnswerConcept().getId().equals(answer.getId())) {
 								obs.setValueCoded(answer);
 								isValidAnswer = true;
 								break;

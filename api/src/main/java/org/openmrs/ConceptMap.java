@@ -57,21 +57,6 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof ConceptMap) {
-			ConceptMap c = (ConceptMap) obj;
-			
-			if (getConceptMapId() == null)
-				return false;
-			
-			return (this.conceptMapId.equals(c.getConceptMapId()));
-		}
-		return false;
-	}
-	
-	/**
 	 * @see org.openmrs.BaseOpenmrsObject#toString()
 	 */
 	@Override
@@ -79,15 +64,6 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 		if (conceptMapId == null)
 			return "";
 		return conceptMapId.toString();
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getConceptMapId() == null)
-			return super.hashCode();
-		return this.getConceptMapId().hashCode();
 	}
 	
 	/**

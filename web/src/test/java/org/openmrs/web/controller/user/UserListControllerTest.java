@@ -19,7 +19,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.test.TestUtil;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.ui.ModelMap;
 

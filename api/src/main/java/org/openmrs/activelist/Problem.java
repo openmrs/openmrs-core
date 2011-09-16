@@ -18,7 +18,6 @@ import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * TODO
@@ -100,16 +99,6 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 	 */
 	public void setProblem(Concept problem) {
 		setConcept(problem);
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		return (obj instanceof Problem) && OpenmrsUtil.nullSafeEquals(((Problem) obj).getActiveListId(), getActiveListId());
-	}
-	
-	@Override
-	public int hashCode() {
-		return 41 * ((getActiveListId() == null) ? super.hashCode() : getActiveListId());
 	}
 	
 	/**

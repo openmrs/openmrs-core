@@ -87,42 +87,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj PersonName to compare to
-	 * @return boolean true/false whether or not they are the same objects
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @should not fail if either has a null person property
-	 * @should return false if this has a missing person property
-	 * @should return false if obj has a missing person property
-	 * @should return true if properties are equal and have null person
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof PersonName) {
-			PersonName pname = (PersonName) obj;
-			if (this.personNameId != null && pname.getPersonNameId() != null)
-				return (this.personNameId.equals(pname.getPersonNameId()));
-			else {
-				return (OpenmrsUtil.nullSafeEquals(getPerson(), pname.getPerson())
-				        && OpenmrsUtil.nullSafeEqualsIgnoreCase(getGivenName(), pname.getGivenName())
-				        && OpenmrsUtil.nullSafeEqualsIgnoreCase(getMiddleName(), pname.getMiddleName()) && OpenmrsUtil
-				        .nullSafeEqualsIgnoreCase(getFamilyName(), pname.getFamilyName()));
-			}
-			
-		}
-		return false;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getPersonNameId() == null)
-			return super.hashCode();
-		return this.getPersonNameId().hashCode();
-	}
-	
-	/**
 	 * Compares this PersonName object to the given otherName. This method differs from
 	 * {@link #equals(Object)} in that this method compares the inner fields of each name for
 	 * equality. Note: Null/empty fields on <code>otherName</code> /will not/ cause a false value to
@@ -215,8 +179,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 		
 		return newName;
 	}
-	
-	// Property accessors
 	
 	/**
 	 * This still exists on PersonName for the SimpleFramework annotation

@@ -16,6 +16,7 @@ package org.openmrs.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.openmrs.test.TestUtil.containsId;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -44,6 +45,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -377,7 +379,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		service.savePersonAttributeType(pat);
 		
-		assertEquals(new User(1), pat.getCreator());
+		assertEquals(1, pat.getCreator().getId().intValue());
 		assertNotNull(pat.getDateCreated());
 	}
 	
@@ -396,7 +398,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		// save the type again
 		service.savePersonAttributeType(pat);
 		
-		assertEquals(new User(1), pat.getChangedBy());
+		assertEquals(1, pat.getChangedBy().getId().intValue());
 		assertNotNull(pat.getDateChanged());
 	}
 	
@@ -442,8 +444,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri Junior", 1979, "M");
 		Assert.assertEquals(2, matches.size());
-		Assert.assertTrue(matches.contains(new Person(1006)));
-		Assert.assertTrue(matches.contains(new Person(1007)));
+		Assert.assertTrue(containsId(matches, 1006));
+		Assert.assertTrue(containsId(matches, 1007));
 	}
 	
 	/**
@@ -455,15 +457,15 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius", 1979, "M");
 		Assert.assertEquals(9, matches.size());
-		Assert.assertTrue(matches.contains(new Person(1000)));
-		Assert.assertTrue(matches.contains(new Person(1001)));
-		Assert.assertTrue(matches.contains(new Person(1002)));
-		Assert.assertTrue(matches.contains(new Person(1003)));
-		Assert.assertTrue(matches.contains(new Person(1004)));
-		Assert.assertTrue(matches.contains(new Person(1005)));
-		Assert.assertTrue(matches.contains(new Person(1006)));
-		Assert.assertTrue(matches.contains(new Person(1007)));
-		Assert.assertTrue(matches.contains(new Person(1008)));
+		Assert.assertTrue(containsId(matches, 1000));
+		Assert.assertTrue(containsId(matches, 1001));
+		Assert.assertTrue(containsId(matches, 1002));
+		Assert.assertTrue(containsId(matches, 1003));
+		Assert.assertTrue(containsId(matches, 1004));
+		Assert.assertTrue(containsId(matches, 1005));
+		Assert.assertTrue(containsId(matches, 1006));
+		Assert.assertTrue(containsId(matches, 1007));
+		Assert.assertTrue(containsId(matches, 1008));
 	}
 	
 	/**
@@ -475,12 +477,12 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham", 1979, "M");
 		Assert.assertEquals(6, matches.size());
-		Assert.assertTrue(matches.contains(new Person(1000)));
-		Assert.assertTrue(matches.contains(new Person(1003)));
-		Assert.assertTrue(matches.contains(new Person(1004)));
-		Assert.assertTrue(matches.contains(new Person(1005)));
-		Assert.assertTrue(matches.contains(new Person(1006)));
-		Assert.assertTrue(matches.contains(new Person(1007)));
+		Assert.assertTrue(containsId(matches, 1000));
+		Assert.assertTrue(containsId(matches, 1003));
+		Assert.assertTrue(containsId(matches, 1004));
+		Assert.assertTrue(containsId(matches, 1005));
+		Assert.assertTrue(containsId(matches, 1006));
+		Assert.assertTrue(containsId(matches, 1007));
 	}
 	
 	/**
@@ -492,9 +494,9 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri", 1979, "M");
 		Assert.assertEquals(3, matches.size());
-		Assert.assertTrue(matches.contains(new Person(1003)));
-		Assert.assertTrue(matches.contains(new Person(1006)));
-		Assert.assertTrue(matches.contains(new Person(1007)));
+		Assert.assertTrue(containsId(matches, 1003));
+		Assert.assertTrue(containsId(matches, 1006));
+		Assert.assertTrue(containsId(matches, 1007));
 	}
 	
 	/**
@@ -507,9 +509,9 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		List<Person> people = Context.getPersonService().getPeople("Johnson", false);
 		Assert.assertEquals(3, people.size());
-		Assert.assertTrue(people.contains(new Patient(2)));
-		Assert.assertTrue(people.contains(new Patient(4)));
-		Assert.assertTrue(people.contains(new Patient(5)));
+		Assert.assertTrue(TestUtil.containsId(people, 2));
+		Assert.assertTrue(TestUtil.containsId(people, 4));
+		Assert.assertTrue(TestUtil.containsId(people, 5));
 	}
 	
 	/**
@@ -522,8 +524,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		Set<Person> people = Context.getPersonService().getSimilarPeople("Johnson", null, "M");
 		Assert.assertEquals(2, people.size());
-		Assert.assertTrue(people.contains(new Patient(2)));
-		Assert.assertTrue(people.contains(new Patient(4)));
+		Assert.assertTrue(TestUtil.containsId(people, 2));
+		Assert.assertTrue(TestUtil.containsId(people, 4));
 	}
 	
 	/**

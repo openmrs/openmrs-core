@@ -720,7 +720,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Obs obs = obsService.getObs(7);
 		
-		Assert.assertEquals(new Concept(5089), obs.getConcept());
+		Assert.assertEquals(5089, obs.getConcept().getId().intValue());
 	}
 	
 	/**

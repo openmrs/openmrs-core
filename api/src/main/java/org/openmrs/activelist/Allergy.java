@@ -18,7 +18,6 @@ import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * TODO
@@ -116,15 +115,5 @@ public class Allergy extends ActiveListItem {
 	 */
 	public void setAllergen(Concept allergen) {
 		setConcept(allergen);
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		return (obj instanceof Allergy) && OpenmrsUtil.nullSafeEquals(((Allergy) obj).getActiveListId(), getActiveListId());
-	}
-	
-	@Override
-	public int hashCode() {
-		return 51 * ((getActiveListId() == null) ? super.hashCode() : getActiveListId());
 	}
 }

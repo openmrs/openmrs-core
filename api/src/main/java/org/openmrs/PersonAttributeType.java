@@ -46,30 +46,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 		this.personAttributeTypeId = myPersonAttributeTypeId;
 	}
 	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getPersonAttributeTypeId() == null)
-			return super.hashCode();
-		return 7 * this.getPersonAttributeTypeId().hashCode();
-	}
-	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof PersonAttributeType) {
-			PersonAttributeType p = (PersonAttributeType) obj;
-			if (p != null)
-				return (personAttributeTypeId.equals(p.getPersonAttributeTypeId()));
-		}
-		return false;
-	}
-	
 	// Property accessors
 	
 	/**

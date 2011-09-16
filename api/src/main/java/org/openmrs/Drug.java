@@ -53,29 +53,6 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 		this.drugId = drugId;
 	}
 	
-	/**
-	 * Compares two Drug objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Drug))
-			return false;
-		
-		Drug drug = (Drug) obj;
-		if (this.drugId != null && drug.drugId != null)
-			return this.drugId.equals(drug.getDrugId());
-		
-		return this == obj;
-	}
-	
-	public int hashCode() {
-		if (this.getDrugId() == null)
-			return super.hashCode();
-		return this.getDrugId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

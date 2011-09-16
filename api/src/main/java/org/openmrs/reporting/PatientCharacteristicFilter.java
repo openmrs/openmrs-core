@@ -94,21 +94,6 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 		return ret;
 	}
 	
-	public boolean equals(Object o) {
-		if (o == null) {
-			return false;
-		}
-		if (o instanceof PatientCharacteristicFilter) {
-			PatientCharacteristicFilter other = (PatientCharacteristicFilter) o;
-			return equals(gender, other.gender) && equals(minBirthdate, other.minBirthdate)
-			        && equals(maxBirthdate, other.maxBirthdate) && equals(minAge, other.minAge)
-			        && equals(maxAge, other.maxAge) && equals(aliveOnly, other.aliveOnly)
-			        && equals(deadOnly, other.deadOnly);
-		} else {
-			return false;
-		}
-	}
-	
 	public String getDescription() {
 		if (gender == null && minBirthdate == null && maxBirthdate == null && minAge == null && maxAge == null
 		        && aliveOnly == null && deadOnly == null)

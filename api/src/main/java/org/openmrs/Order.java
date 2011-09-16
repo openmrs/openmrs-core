@@ -120,33 +120,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof Order) {
-			Order o = (Order) obj;
-			if (this.getOrderId() != null && o.getOrderId() != null)
-				return (this.getOrderId().equals(o.getOrderId()));
-			/*
-			 * return (this.getOrderType().equals(o.getOrderType()) &&
-			 * this.getConcept().equals(o.getConcept()) &&
-			 * this.getEncounter().equals(o.getEncounter()) &&
-			 * this.getInstructions().matches(o.getInstructions()));
-			 */
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getOrderId() == null)
-			return super.hashCode();
-		return this.getOrderId().hashCode();
-	}
-	
-	/**
 	 * true/false whether or not this is a drug order overridden in extending class drugOrders.
 	 */
 	public boolean isDrugOrder() {

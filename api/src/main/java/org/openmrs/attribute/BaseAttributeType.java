@@ -85,19 +85,4 @@ public abstract class BaseAttributeType<OwningType extends Customizable<?>> exte
 	public void setDatatype(String datatype) {
 		this.datatype = datatype;
 	}
-	
-	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof AttributeType) {
-			AttributeType at = (AttributeType) obj;
-			if (at != null)
-				return getUuid().equals(at.getUuid());
-		}
-		return false;
-		
-	}
-	
 }

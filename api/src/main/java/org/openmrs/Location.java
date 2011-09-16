@@ -81,29 +81,6 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		this.locationId = locationId;
 	}
 	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Location) {
-			Location loc = (Location) obj;
-			if (this.getLocationId() != null && loc.getLocationId() != null)
-				return (this.getLocationId().equals(loc.getLocationId()));
-		}
-		return obj == this;
-	}
-	
-	@Override
-	public int hashCode() {
-		if (this.getLocationId() == null)
-			return super.hashCode();
-		return this.getLocationId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**
@@ -234,7 +211,11 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	@Override
 	public String toString() {
-		return getName();
+		if (getName() != null)
+			return getName();
+		if (getId() != null)
+			return getId().toString();
+		return "";
 	}
 	
 	/**

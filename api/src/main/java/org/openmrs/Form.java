@@ -62,39 +62,6 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 		this.formId = formId;
 	}
 	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 * @should have equal form objects by form id
-	 * @should not have equal form objects by formId
-	 * @should have equal form objects with no formId
-	 * @should not have equal form objects when one has null formId
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Form) {
-			Form f = (Form) obj;
-			if (this.getFormId() != null && f.getFormId() != null)
-				return (this.getFormId().equals(f.getFormId()));
-		}
-		
-		// default to comparing the object pointers
-		return this == obj;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 * @should get hashCode even with null attributes
-	 */
-	@Override
-	public int hashCode() {
-		if (this.getFormId() == null)
-			return super.hashCode();
-		return this.getFormId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**
