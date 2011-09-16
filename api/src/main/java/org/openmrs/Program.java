@@ -108,17 +108,6 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 		return null;
 	}
 	
-	/** @see Object#equals(Object) */
-	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof Program) {
-			Program p = (Program) obj;
-			if (this.getProgramId() != null) {
-				return (this.getProgramId().equals(p.getProgramId()));
-			}
-		}
-		return this == obj;
-	}
-	
 	/** @see Object#toString() */
 	public String toString() {
 		return "Program(id=" + getProgramId() + ", concept=" + getConcept() + ", workflows=" + getWorkflows() + ")";

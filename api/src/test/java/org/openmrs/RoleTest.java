@@ -45,31 +45,26 @@ public class RoleTest {
 		
 		Privilege priv1 = new Privilege("priv1");
 		role.addPrivilege(priv1);
-		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges()
-		        .size() == 1);
+		assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
 		
 		// adding the same privilege should not be allowed
 		role.addPrivilege(priv1);
-		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges()
-		        .size() == 1);
+		assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
 		
 		// adding a different privilege with the same name should not be allowed
 		Privilege priv2 = new Privilege(priv1.getPrivilege());
 		role.addPrivilege(priv2);
-		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges()
-		        .size() == 1);
+		assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
 		
 		Privilege priv3 = new Privilege("priv3");
 		
 		// removing a fake privilege shouldn't do anything
 		role.removePrivilege(priv3);
-		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges()
-		        .size() == 1);
+		assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
 		
 		// removing the first privilege
 		role.removePrivilege(priv1);
-		assertTrue("The role should have 0 privileges but instead has " + role.getPrivileges().size(), role.getPrivileges()
-		        .size() == 0);
+		assertEquals("Incorrect number of privileges", 0, role.getPrivileges().size());
 	}
 	
 	/**

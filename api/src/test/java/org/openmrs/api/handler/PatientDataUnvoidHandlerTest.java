@@ -71,7 +71,8 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 			Assert.assertNotNull(order.getVoidReason());
 		}
 		
-		new PatientDataUnvoidHandler().handle(patient, new User(1), patient.getDateVoided(), null);
+		User user = Context.getUserService().getUser(1);
+		new PatientDataUnvoidHandler().handle(patient, user, patient.getDateVoided(), null);
 		
 		//check that the voided related fields were set null 
 		for (Encounter encounter : encounters) {

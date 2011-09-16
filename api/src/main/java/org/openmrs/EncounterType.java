@@ -51,37 +51,6 @@ public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serial
 		setDescription(description);
 	}
 	
-	/**
-	 * Compares two EncounterType objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 * @should have equal encounter type objects by encounter type id
-	 * @should not have equal encounter type objects by encounterTypeId
-	 * @should have equal encounter type objects with no encounterTypeId
-	 * @should not have equal encounter type objects when one has null encounterTypeId
-	 */
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof EncounterType))
-			return false;
-		
-		EncounterType encounterType = (EncounterType) obj;
-		if (this.encounterTypeId != null && encounterType.getEncounterTypeId() != null)
-			return (this.encounterTypeId.equals(encounterType.getEncounterTypeId()));
-		else
-			return this == encounterType;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 * @should get hashCode even with null attributes
-	 */
-	public int hashCode() {
-		if (this.getEncounterTypeId() == null)
-			return super.hashCode();
-		return this.getEncounterTypeId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

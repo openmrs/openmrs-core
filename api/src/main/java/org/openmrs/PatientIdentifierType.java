@@ -31,7 +31,7 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 		/**
 		 * Indicates that location is not used for the current identifier type
 		 */
-		NOT_USED;
+		NOT_USED
 	}
 	
 	// Fields	
@@ -56,27 +56,6 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	/** constructor with id */
 	public PatientIdentifierType(Integer patientIdentifierTypeId) {
 		this.patientIdentifierTypeId = patientIdentifierTypeId;
-	}
-	
-	public int hashCode() {
-		if (this.getPatientIdentifierTypeId() == null)
-			return super.hashCode();
-		return this.getPatientIdentifierTypeId().hashCode();
-	}
-	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof PatientIdentifierType) {
-			PatientIdentifierType p = (PatientIdentifierType) obj;
-			if (getPatientIdentifierTypeId() != null && p != null)
-				return (patientIdentifierTypeId.equals(p.getPatientIdentifierTypeId()));
-		}
-		return this == obj;
 	}
 	
 	// Property accessors

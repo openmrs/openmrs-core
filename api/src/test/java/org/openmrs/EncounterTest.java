@@ -34,108 +34,6 @@ import org.openmrs.test.Verifies;
 public class EncounterTest {
 	
 	/**
-	 * @see {@link Encounter#equals(Object)}
-	 */
-	@Test
-	@Verifies(value = "should equal encounter with same encounter id", method = "equals(Object)")
-	public void equals_shouldEqualEncounterWithSameEncounterId() throws Exception {
-		Encounter encounter1 = new Encounter(1);
-		// another encounter with the same encounter id
-		Encounter encounter2 = new Encounter(1);
-		
-		Assert.assertTrue(encounter1.equals(encounter2));
-	}
-	
-	/**
-	 * @see {@link Encounter#equals(Object)}
-	 */
-	@Test
-	@Verifies(value = "should not equal encounter with different encounter id", method = "equals(Object)")
-	public void equals_shouldNotEqualEncounterWithDifferentEncounterId() throws Exception {
-		Encounter encounter1 = new Encounter(1);
-		// another encounter with a different encounter id
-		Encounter encounter2 = new Encounter(2);
-		
-		Assert.assertFalse(encounter1.equals(encounter2));
-	}
-	
-	/**
-	 * @see {@link Encounter#equals(Object)}
-	 */
-	@Test
-	@Verifies(value = "should not equal on null", method = "equals(Object)")
-	public void equals_shouldNotEqualOnNull() throws Exception {
-		Assert.assertFalse(new Encounter(1).equals(null));
-	}
-	
-	/**
-	 * @see {@link Encounter#hashCode()}
-	 */
-	@Test
-	@Verifies(value = "should have different hash code when not equal", method = "hashCode()")
-	public void hashCode_shouldHaveDifferentHashCodeWhenNotEqual() throws Exception {
-		Encounter encounter1 = new Encounter(1);
-		// another encounter with a different encounter id
-		Encounter encounter2 = new Encounter(2);
-		
-		Assert.assertNotSame(encounter1.hashCode(), encounter2.hashCode());
-	}
-	
-	/**
-	 * @see {@link Encounter#hashCode()}
-	 */
-	@Test
-	@Verifies(value = "should have same hashcode when equal", method = "hashCode()")
-	public void hashCode_shouldHaveSameHashcodeWhenEqual() throws Exception {
-		Encounter encounter1 = new Encounter(1);
-		// another encounter with a different encounter id
-		Encounter encounter2 = new Encounter(1);
-		
-		Assert.assertSame(encounter1.hashCode(), encounter2.hashCode());
-	}
-	
-	/**
-	 * @see {@link Encounter#equals(Object)}
-	 */
-	@Test
-	@Verifies(value = "should have equal encounter objects with no encounter ids", method = "equals(Object)")
-	public void equals_shouldHaveEqualEncounterObjectsWithNoEncounterIds() throws Exception {
-		// an encounter object with no encounter id
-		Encounter encounter = new Encounter();
-		
-		Assert.assertTrue(encounter.equals(encounter));
-	}
-	
-	/**
-	 * @see {@link Encounter#equals(Object)}
-	 */
-	@Test
-	@Verifies(value = "should not have equal encounter objects when one has null encounter id", method = "equals(Object)")
-	public void equals_shouldNotHaveEqualEncounterObjectsWhenOneHasNullEncounterId() throws Exception {
-		Encounter encounterWithId = new Encounter(1);
-		// another encounter that doesn't have an encounter id
-		Encounter encounterWithoutId = new Encounter();
-		
-		Assert.assertFalse(encounterWithId.equals(encounterWithoutId));
-		
-		// now test the reverse
-		Assert.assertFalse(encounterWithoutId.equals(encounterWithId));
-		
-		Encounter anotherEncounterWithoutId = new Encounter();
-		// now test with both not having an id
-		Assert.assertFalse(encounterWithoutId.equals(anotherEncounterWithoutId));
-	}
-	
-	/**
-	 * @see {@link Encounter#hashCode()}
-	 */
-	@Test
-	@Verifies(value = "should get hash code with null attributes", method = "hashCode()")
-	public void hashCode_shouldGetHashCodeWithNullAttributes() throws Exception {
-		new Encounter().hashCode();
-	}
-	
-	/**
 	 * @see {@link Encounter#toString()}
 	 */
 	@Test
@@ -357,7 +255,7 @@ public class EncounterTest {
 		//obsGroup should recurse and ONLY the child obs should be picked up:
 		assertEquals(1, encounter.getObs().size());
 		// make sure that the obs is the oChild
-		Obs obsInEncounter = encounter.getObs().toArray(new Obs[] {})[0];
+		Obs obsInEncounter = (Obs) encounter.getObs().toArray()[0];
 		assertTrue(childObs.equals(obsInEncounter));
 		assertFalse(obsInEncounter.isObsGrouping());
 	}
@@ -385,7 +283,7 @@ public class EncounterTest {
 		assertEquals(1, encounter.getObsAtTopLevel(false).size());
 		
 		// make sure that the obs is the parent obs
-		Obs obsInEncounter = encounter.getObsAtTopLevel(false).toArray(new Obs[] {})[0];
+		Obs obsInEncounter = (Obs) encounter.getObsAtTopLevel(false).toArray()[0];
 		assertTrue(obsInEncounter.isObsGrouping());
 	}
 	
@@ -410,7 +308,7 @@ public class EncounterTest {
 		assertEquals(1, encounter.getAllObs(true).size());
 		assertNotNull(encounter.getAllObs(false));
 		assertEquals(1, encounter.getAllObs(false).size());
-		Obs obsInEncounter = encounter.getAllObs(false).toArray(new Obs[] {})[0];
+		Obs obsInEncounter = (Obs) encounter.getAllObs(false).toArray()[0];
 		assertTrue(obsInEncounter.isObsGrouping());
 	}
 	
@@ -436,7 +334,7 @@ public class EncounterTest {
 		
 		// do the check
 		assertEquals(1, encounter.getObs().size());
-		Obs obsInEncounter = encounter.getObs().toArray(new Obs[] {})[0];
+		Obs obsInEncounter = (Obs) encounter.getObs().toArray()[0];
 		assertFalse(obsInEncounter.isObsGrouping());
 	}
 	
@@ -462,7 +360,7 @@ public class EncounterTest {
 		
 		// do the check
 		assertEquals(1, encounter.getObsAtTopLevel(false).size());
-		Obs obsInEncounter = encounter.getObsAtTopLevel(false).toArray(new Obs[] {})[0];
+		Obs obsInEncounter = (Obs) encounter.getObsAtTopLevel(false).toArray()[0];
 		assertTrue(obsInEncounter.isObsGrouping());
 	}
 	

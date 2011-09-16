@@ -76,31 +76,6 @@ public class Patient extends Person implements java.io.Serializable {
 		this.patientId = patientId;
 	}
 	
-	/**
-	 * Compares two objects for similarity This must pass through to the parent object
-	 * (org.openmrs.Person) in order to get similarity of person/patient objects
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 * @see org.openmrs.Person#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		return super.equals(obj);
-	}
-	
-	/**
-	 * The hashcode for a patient/person is used to index the objects in a tree This must pass
-	 * through to the parent object (org.openmrs.Person) in order to get similarity of
-	 * person/patient objects
-	 * 
-	 * @see org.openmrs.Person#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

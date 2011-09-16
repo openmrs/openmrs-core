@@ -74,28 +74,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		return target;
 	}
 	
-	/**
-	 * Compares two DrugOrder objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof DrugOrder) {
-			//DrugOrder d = (DrugOrder)obj;
-			return (super.equals((Order) obj)); /* &&
-			                                    				this.getDrug().equals(d.getDrug()) &&
-			                                    				this.getDose().equals(d.getDose())); */
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getOrderId() == null)
-			return super.hashCode();
-		return this.getOrderId().hashCode();
-	}
-	
 	public boolean isDrugOrder() {
 		return true;
 	}

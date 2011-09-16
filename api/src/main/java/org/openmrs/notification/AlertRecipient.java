@@ -67,32 +67,6 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof AlertRecipient) {
-			AlertRecipient a = (AlertRecipient) obj;
-			if (alert != null && a.getAlert() != null && recipient != null && a.getRecipient() != null)
-				return (alert.equals(a.getAlert()) && recipient.equals(a.getRecipient()));
-		}
-		return obj == this;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (this.getAlert() == null)
-			return super.hashCode();
-		int hash = 8;
-		hash = 31 * this.getAlert().hashCode() + hash;
-		hash = 31 * this.getRecipient().hashCode() + hash;
-		return hash;
-	}
-	
-	/**
 	 * @return Returns the alert.
 	 */
 	public Alert getAlert() {

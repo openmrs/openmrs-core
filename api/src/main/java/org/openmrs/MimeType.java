@@ -41,26 +41,6 @@ public class MimeType extends BaseOpenmrsMetadata implements java.io.Serializabl
 		this.mimeTypeId = mimeTypeId;
 	}
 	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof MimeType) {
-			MimeType m = (MimeType) obj;
-			return (mimeTypeId.equals(m.getMimeTypeId()));
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getMimeTypeId() == null)
-			return super.hashCode();
-		return this.getMimeTypeId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

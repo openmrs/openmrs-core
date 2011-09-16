@@ -39,20 +39,6 @@ public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Seriali
 		this.conceptClassId = conceptClassId;
 	}
 	
-	public boolean equals(Object obj) {
-		if (obj instanceof ConceptClass) {
-			ConceptClass c = (ConceptClass) obj;
-			return (this.conceptClassId.equals(c.getConceptClassId()));
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getConceptClassId() == null)
-			return super.hashCode();
-		return this.getConceptClassId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

@@ -49,27 +49,6 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 		setDescription(description);
 	}
 	
-	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof OrderType) {
-			OrderType o = (OrderType) obj;
-			if (o != null)
-				return (getOrderTypeId().equals(o.getOrderTypeId()));
-		}
-		return false;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getOrderTypeId() == null)
-			return super.hashCode();
-		return this.getOrderTypeId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

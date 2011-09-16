@@ -36,7 +36,7 @@ public class AuditableSaveHandlerTest {
 		AuditableSaveHandler handler = new AuditableSaveHandler();
 		Auditable auditable = new ConceptName(); // a createable with a null creator
 		handler.handle(auditable, new User(2), null, null);
-		Assert.assertEquals(new User(2), auditable.getCreator());
+		Assert.assertEquals(2, auditable.getCreator().getId().intValue());
 	}
 	
 	/**
@@ -49,7 +49,7 @@ public class AuditableSaveHandlerTest {
 		Auditable auditable = new ConceptName();
 		auditable.setCreator(new User(3)); // a createable with a nonnull creator
 		handler.handle(auditable, new User(2), null, null);
-		Assert.assertEquals(new User(3), auditable.getCreator());
+		Assert.assertEquals(3, auditable.getCreator().getId().intValue());
 	}
 	
 	/**

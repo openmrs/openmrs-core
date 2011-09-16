@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
@@ -244,7 +245,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		List<Form> forms = formService.getForms(null, null, null, null, null, null, fields);
 		
-		Assert.assertEquals(3, forms.size());
+		assertEquals(3, forms.size());
 	}
 	
 	/**
@@ -282,7 +283,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		formService.saveFieldType(fieldType);
 		
 		FieldType refetchedFieldType = formService.getFieldType(1);
-		Assert.assertEquals("SOME OTHER NEW NAME", refetchedFieldType.getName());
+		assertEquals("SOME OTHER NEW NAME", refetchedFieldType.getName());
 	}
 	
 	/**
@@ -299,9 +300,9 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		// some of these assertions are affected by inserting resources after creating the form
 		//Assert.assertNull(dupForm.getChangedBy());
 		//Assert.assertNull(dupForm.getDateChanged());
-		Assert.assertEquals(Context.getAuthenticatedUser(), dupForm.getCreator());
+		assertEquals(Context.getAuthenticatedUser(), dupForm.getCreator());
 		long oneMinuteDelta = 60 * 1000;
-		Assert.assertEquals(new Date().getTime(), dupForm.getDateCreated().getTime(), oneMinuteDelta);
+		assertEquals(new Date().getTime(), dupForm.getDateCreated().getTime(), oneMinuteDelta);
 	}
 	
 	/**
@@ -356,7 +357,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void getFieldByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "db016b7d-39a5-4911-89da-0eefbfef7cb2";
 		Field field = Context.getFormService().getFieldByUuid(uuid);
-		Assert.assertEquals(1, (int) field.getFieldId());
+		assertEquals(1, (int) field.getFieldId());
 	}
 	
 	/**
@@ -376,7 +377,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void getFieldTypeByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "e7016b7d-39a5-4911-89da-0eefbfef7cb5";
 		FieldType fieldType = Context.getFormService().getFieldTypeByUuid(uuid);
-		Assert.assertEquals(2, (int) fieldType.getFieldTypeId());
+		assertEquals(2, (int) fieldType.getFieldTypeId());
 	}
 	
 	/**
@@ -396,7 +397,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void getFormByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "d9218f76-6c39-45f4-8efa-4c5c6c199f50";
 		Form form = Context.getFormService().getFormByUuid(uuid);
-		Assert.assertEquals(1, (int) form.getFormId());
+		assertEquals(1, (int) form.getFormId());
 	}
 	
 	/**
@@ -416,7 +417,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void getFormFieldByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "1c822b7b-7840-463d-ba70-e0c8338a4c2d";
 		FormField formField = Context.getFormService().getFormFieldByUuid(uuid);
-		Assert.assertEquals(2, (int) formField.getFormFieldId());
+		assertEquals(2, (int) formField.getFormFieldId());
 	}
 	
 	/**
@@ -459,7 +460,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void getFormsContainingConcept_shouldGetAllFormsForConcept() throws Exception {
 		Concept concept = Context.getConceptService().getConcept(3);
 		
-		Assert.assertEquals(1, Context.getFormService().getFormsContainingConcept(concept).size());
+		assertEquals(1, Context.getFormService().getFormsContainingConcept(concept).size());
 	}
 	
 	/**
@@ -478,7 +479,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(Context.getFormService().getFieldByUuid("b1843148-da2f-4349-c9c7-1164b98d91dd"));
 		
 		// duplicateField should be purged
-		Assert.assertEquals(2, Context.getFormService().getAllFields().size());
+		assertEquals(2, Context.getFormService().getAllFields().size());
 	}
 	
 	/**
@@ -491,7 +492,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Form form = Context.getFormService().getForm(1);
 		String owner = "towner";
 		String name = "tname";
-		byte[] expected = new String("whoopee").getBytes();
+		byte[] expected = "whoopee".getBytes();
 		Context.getFormService().saveFormResource(form, owner, name, expected);
 		
 		// duplicate the form
@@ -604,7 +605,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Form form = Context.getFormService().getForm(1);
 		String owner = "formentry";
 		String name = "other";
-		byte[] expected = new String("whoopee").getBytes();
+		byte[] expected = "whoopee".getBytes();
 		byte[] previous = (byte[]) Context.getFormService().getFormResource(form, owner, name);
 		
 		// TODO figure out why this is necessary
@@ -628,7 +629,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Form form = Context.getFormService().getForm(1);
 		String owner = "towner";
 		String name = "tname";
-		byte[] expected = new String("whoopee").getBytes();
+		byte[] expected = "whoopee".getBytes();
 		Context.getFormService().saveFormResource(form, owner, name, expected);
 		
 		// get the resource
@@ -651,7 +652,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		// get the resource
 		Privilege actual = (Privilege) Context.getFormService().getFormResource(form, owner, name);
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected.getName(), actual.getName());
 	}
 	
 	/**
@@ -675,7 +676,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		// make sure the resource is saved
 		String actual = (String) Context.getFormService().getFormResource(form, owner, name);
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected, actual);
 		
 		// delete the form
 		Context.getFormService().purgeForm(form);

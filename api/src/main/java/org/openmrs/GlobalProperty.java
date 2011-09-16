@@ -106,31 +106,6 @@ public class GlobalProperty extends BaseOpenmrsObject {
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object o) {
-		if (o instanceof GlobalProperty) {
-			GlobalProperty gp = (GlobalProperty) o;
-			if (property != null && property.equals(gp.getProperty()))
-				return true;
-		}
-		
-		return this == o;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.property == null)
-			return super.hashCode();
-		
-		int hash = 5 * this.property.hashCode();
-		
-		return hash;
-	}
-	
-	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

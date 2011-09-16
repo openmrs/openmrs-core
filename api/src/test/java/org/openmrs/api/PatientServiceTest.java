@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.openmrs.test.TestUtil.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,7 +60,6 @@ import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -123,7 +123,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		expectedValidators
 		        .add(patientService.getIdentifierValidator("org.openmrs.patient.impl.VerhoeffIdentifierValidator"));
 		Assert.assertEquals(2, patientService.getAllIdentifierValidators().size());
-		TestUtil.assertCollectionContentsEquals(expectedValidators, patientService.getAllIdentifierValidators());
+		assertCollectionContentsEquals(expectedValidators, patientService.getAllIdentifierValidators());
 	}
 	
 	/**
@@ -550,7 +550,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(USERS_WHO_ARE_PATIENTS_XML);
 		Context.getPatientService().mergePatients(patientService.getPatient(6), patientService.getPatient(2));
 		User user = Context.getUserService().getUser(2);
-		Assert.assertEquals(new Person(6), user.getPerson());
+		Assert.assertEquals(6, user.getPerson().getId().intValue());
 	}
 	
 	/**
@@ -598,9 +598,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		List<Patient> patients = patientService.getPatients("Johnson", null, null, false);
 		Assert.assertEquals(3, patients.size());
-		Assert.assertTrue(patients.contains(new Patient(2)));
-		Assert.assertTrue(patients.contains(new Patient(4)));
-		Assert.assertTrue(patients.contains(new Patient(5)));
+		Assert.assertTrue(TestUtil.containsId(patients, 2));
+		Assert.assertTrue(TestUtil.containsId(patients, 4));
+		Assert.assertTrue(TestUtil.containsId(patients, 5));
 	}
 	
 	/**
@@ -942,7 +942,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Collection<IdentifierValidator> actualValidators = patientService.getAllIdentifierValidators();
 		Assert.assertNotNull(actualValidators);
 		Assert.assertEquals(2, actualValidators.size());
-		TestUtil.assertCollectionContentsEquals(expectedValidators, actualValidators);
+		assertCollectionContentsEquals(expectedValidators, actualValidators);
 		
 	}
 	
@@ -1565,7 +1565,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @see PatientService#mergePatients(Patient, Patient)
 	 */
 	@Test
 	@Verifies(value = "should copy nonvoided identifiers to preferred patient", method = "mergePatients(Patient,Patient)")
@@ -1573,22 +1573,35 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferred = patientService.getPatient(7);
 		Patient notPreferred = patientService.getPatient(8);
 		
+		PatientIdentifier nonvoidedPI = null;
+		PatientIdentifier voidedPI = null;
+		
+		for (PatientIdentifier patientIdentifier : notPreferred.getIdentifiers()) {
+			if (patientIdentifier.getIdentifier().equals("7TU-8")) {
+				nonvoidedPI = patientIdentifier;
+			}
+			if (patientIdentifier.getIdentifier().equals("ABC123")) {
+				voidedPI = patientIdentifier;
+			}
+		}
+		
 		patientService.mergePatients(preferred, notPreferred);
 		
-		PatientIdentifier nonvoidedPI = new PatientIdentifier("7TU-8", new PatientIdentifierType(1), new Location(1));
-		nonvoidedPI.setPatient(preferred);
-		PatientIdentifier voidedPI = new PatientIdentifier("ABC123", new PatientIdentifierType(2), new Location(1));
-		voidedPI.setPatient(preferred);
-		// we can't use contains since it checks for equality basing on
-		// identifierId which is null in this test setup
-		boolean containsNonVoidedPI = false;
-		for (PatientIdentifier id : preferred.getIdentifiers()) {
-			if (id.equalsContent(nonvoidedPI))
-				containsNonVoidedPI = true;
+		Assert.assertNotNull(nonvoidedPI);
+		Assert
+		        .assertTrue(contains(new ArrayList<PatientIdentifier>(preferred.getIdentifiers()), nonvoidedPI
+		                .getIdentifier()));
+		Assert.assertNotNull(voidedPI);
+		Assert.assertFalse(contains(new ArrayList<PatientIdentifier>(preferred.getIdentifiers()), voidedPI.getIdentifier()));
+	}
+	
+	public static boolean contains(List<PatientIdentifier> list, String identifier) {
+		for (PatientIdentifier patientIdentifier : list) {
+			if (patientIdentifier.getIdentifier().equals(identifier)) {
+				return true;
+			}
 		}
-		Assert.assertTrue(containsNonVoidedPI);
-		Assert.assertFalse("The voided identifier: " + voidedPI + " should not have been moved over because it was voided",
-		    OpenmrsUtil.collectionContains(preferred.getIdentifiers(), voidedPI));
+		return false;
 	}
 	
 	/**
@@ -2186,7 +2199,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEqualsInt(88, problem.getProblem().getConceptId());
 		Assert.assertNotNull(problem.getPerson());
 		Assert.assertNotNull(problem.getStartDate());
-		Assert.assertEquals(Double.valueOf(2), problem.getSortWeight());
+		Assert.assertEquals(2d, problem.getSortWeight());
 	}
 	
 	/**

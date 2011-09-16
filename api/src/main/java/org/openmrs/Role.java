@@ -13,6 +13,7 @@
  */
 package org.openmrs;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -60,26 +61,6 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Role) || role == null)
-			return false;
-		return role.equals(((Role) obj).getRole());
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getRole() == null)
-			return super.hashCode();
-		return this.getRole().hashCode();
-	}
-	
-	// Property accessors
-	
-	/**
 	 * @return Returns the privileges.
 	 */
 	public Set<Privilege> getPrivileges() {
@@ -105,8 +86,17 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	public void addPrivilege(Privilege privilege) {
 		if (privileges == null)
 			privileges = new HashSet<Privilege>();
-		if (!privileges.contains(privilege) && privilege != null)
+		if (privilege != null && !containsPrivilege(privileges, privilege.getPrivilege()))
 			privileges.add(privilege);
+	}
+	
+	private boolean containsPrivilege(Collection<Privilege> privileges, String privilegeName) {
+		for (Privilege privilege : privileges) {
+			if (privilege.getPrivilege().equals(privilegeName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**

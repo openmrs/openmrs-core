@@ -185,33 +185,6 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Visit)) {
-			return false;
-		}
-		Visit rhs = (Visit) obj;
-		if (this.visitId != null && rhs.visitId != null)
-			return (this.visitId.equals(rhs.visitId));
-		
-		return this == obj;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (this.visitId == null)
-			return super.hashCode();
-		int hash = 3;
-		hash = hash + 31 * this.visitId;
-		return hash;
-	}
-	
-	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

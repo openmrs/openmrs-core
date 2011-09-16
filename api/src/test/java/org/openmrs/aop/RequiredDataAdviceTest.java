@@ -69,11 +69,12 @@ public class RequiredDataAdviceTest {
 	public void getChildCollection_shouldGetValueOfGivenChildCollectionOnGivenField() throws Exception {
 		MiniOpenmrsObject oo = new MiniOpenmrsObject();
 		List<Location> locs = new ArrayList<Location>();
-		locs.add(new Location(1));
+		Location location = new Location(1);
+		locs.add(location);
 		oo.setLocations(locs);
 		Collection<OpenmrsObject> fetchedLocations = RequiredDataAdvice.getChildCollection(oo, MiniOpenmrsObject.class
 		        .getDeclaredField("locations"));
-		Assert.assertTrue(fetchedLocations.contains(new Location(1)));
+		Assert.assertTrue(fetchedLocations.contains(location));
 	}
 	
 	/**

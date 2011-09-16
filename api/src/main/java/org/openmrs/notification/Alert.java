@@ -92,31 +92,6 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Alert) {
-			Alert a = (Alert) obj;
-			if (alertId != null && a != null)
-				return (alertId.equals(a.getAlertId()));
-		}
-		return obj == this;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (this.getAlertId() == null)
-			return super.hashCode();
-		int hash = 8;
-		hash = 31 * this.getAlertId().hashCode() + hash;
-		return hash;
-	}
-	
-	/**
 	 * @return Returns the alertId.
 	 */
 	public Integer getAlertId() {

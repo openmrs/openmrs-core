@@ -70,45 +70,6 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 		this.encounterId = encounterId;
 	}
 	
-	/**
-	 * Compares two Encounter objects for similarity
-	 * 
-	 * @param obj Encounter object to compare to
-	 * @return boolean true/false whether or not they are the same objects
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @should equal encounter with same encounter id
-	 * @should not equal encounter with different encounter id
-	 * @should not equal on null
-	 * @should have equal encounter objects with no encounter ids
-	 * @should not have equal encounter objects when one has null encounter id
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof Encounter) {
-			Encounter enc = (Encounter) obj;
-			if (this.getEncounterId() != null && enc.getEncounterId() != null)
-				return (this.getEncounterId().equals(enc.getEncounterId()));
-			/*return (this.getEncounterType().equals(enc.getEncounterType()) &&
-					this.getPatient().equals(enc.getPatient()) &&
-					this.getProvider().equals(enc.getProvider()) &&
-					this.getLocation().equals(enc.getLocation()) &&
-					this.getEncounterDatetime().equals(enc.getEncounterDatetime())); */
-		}
-		return this == obj;
-		
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 * @should have same hashcode when equal
-	 * @should have different hash code when not equal
-	 * @should get hash code with null attributes
-	 */
-	public int hashCode() {
-		if (this.getEncounterId() == null)
-			return super.hashCode();
-		return this.getEncounterId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

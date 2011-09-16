@@ -190,25 +190,6 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 		return sb.toString();
 	}
 	
-	public boolean equals(Object obj) {
-		if (this.getCohortId() == null)
-			return false;
-		if (obj instanceof Cohort) {
-			Cohort c = (Cohort) obj;
-			return (this.getCohortId().equals(c.getCohortId()));
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getCohortId() == null)
-			return super.hashCode();
-		final int START = 8;
-		final int MULTIPLIER = 8;
-		int hash = MULTIPLIER * this.getCohortId() + START;
-		return hash;
-	}
-	
 	public void addMember(Integer memberId) {
 		getMemberIds().add(memberId);
 	}

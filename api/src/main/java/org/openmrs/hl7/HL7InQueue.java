@@ -72,23 +72,6 @@ public class HL7InQueue extends BaseOpenmrsObject implements Serializable {
 		
 	}
 	
-	public boolean equals(Object obj) {
-		if (obj instanceof HL7InQueue) {
-			HL7InQueue hl7InQueue = (HL7InQueue) obj;
-			if (this.getHL7InQueueId() != null && hl7InQueue.getHL7InQueueId() != null)
-				return this.getHL7InQueueId().equals(hl7InQueue.getHL7InQueueId());
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getHL7InQueueId() == null)
-			return super.hashCode();
-		int hash = 7;
-		hash = 37 * hash + this.getHL7InQueueId().hashCode();
-		return hash;
-	}
-	
 	/**
 	 * @return Returns the dateCreated.
 	 */

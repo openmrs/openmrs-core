@@ -32,20 +32,6 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	public DrugIngredient() {
 	}
 	
-	public boolean equals(Object obj) {
-		if (obj instanceof DrugIngredient) {
-			DrugIngredient c = (DrugIngredient) obj;
-			return (this.drug.equals(c.getDrug()) && this.ingredient.equals(c.getIngredient()));
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getDrug() == null || this.getIngredient() == null)
-			return super.hashCode();
-		return this.getDrug().hashCode() + this.getIngredient().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

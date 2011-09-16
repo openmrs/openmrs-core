@@ -19,7 +19,6 @@ import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Person;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * TODO
@@ -192,10 +191,5 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	 */
 	public void setComments(String comments) {
 		this.comments = comments;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		return (obj instanceof ActiveListItem) && OpenmrsUtil.nullSafeEquals(((ActiveListItem) obj).getId(), getId());
 	}
 }

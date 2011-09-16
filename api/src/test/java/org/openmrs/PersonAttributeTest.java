@@ -107,41 +107,6 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#equals(Object)}
-	 */
-	@Test
-	@Verifies(value = "should return true if personAttributeIds match", method = "equals(Object)")
-	public void equals_shouldReturnTrueIfPersonAttributeIdsMatch() throws Exception {
-		PersonAttribute pa = new PersonAttribute(1);
-		PersonAttribute other = new PersonAttribute(1);
-		
-		Assert.assertTrue(pa.equals(other));
-	}
-	
-	/**
-	 * @see {@link PersonAttribute#equals(Object)}
-	 */
-	@Test
-	@Verifies(value = "should return false if personAttributeIds dont match", method = "equals(Object)")
-	public void equals_shouldReturnFalseIfPersonAttributeIdsDontMatch() throws Exception {
-		PersonAttribute pa = new PersonAttribute(2);
-		PersonAttribute other = new PersonAttribute(1);
-		
-		Assert.assertFalse(pa.equals(other));
-	}
-	
-	/**
-	 * @see {@link PersonAttribute#equals(Object)}
-	 */
-	@Test
-	@Verifies(value = "should match on object equality if a personAttributeId is null", method = "equals(Object)")
-	public void equals_shouldMatchOnObjectEqualityIfAPersonAttributeIdIsNull() throws Exception {
-		PersonAttribute pa = new PersonAttribute();
-		
-		Assert.assertTrue(pa.equals(pa));
-	}
-	
-	/**
 	 * @see {@link PersonAttribute#equalsContent(PersonAttribute)}
 	 */
 	@Test
