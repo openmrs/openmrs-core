@@ -274,7 +274,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	public void purgeConcept(Concept concept) throws DAOException {
 		// must delete all the stored concept words first
-		sessionFactory.getCurrentSession().createQuery("delete from ConceptWord where concept_id = :c").setInteger("c",
+		sessionFactory.getCurrentSession().createQuery("delete ConceptWord where concept = :c").setInteger("c",
 		    concept.getConceptId()).executeUpdate();
 		
 		// now we can safely delete the concept
@@ -700,7 +700,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				
 				log.debug(authUserId + "|ConceptWord|" + words);
 			}
-			sessionFactory.getCurrentSession().createQuery("delete from ConceptWord where concept_id = :c").setInteger("c",
+			sessionFactory.getCurrentSession().createQuery("delete ConceptWord where concept = :c").setInteger("c",
 			    concept.getConceptId()).executeUpdate();
 		}
 	}
@@ -790,7 +790,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#updateConceptSetDerived()
 	 */
 	public void updateConceptSetDerived() throws DAOException {
-		sessionFactory.getCurrentSession().createQuery("delete from ConceptSetDerived").executeUpdate();
+		sessionFactory.getCurrentSession().createQuery("delete ConceptSetDerived").executeUpdate();
 		try {
 			// remake the derived table by copying over the basic concept_set table
 			sessionFactory
