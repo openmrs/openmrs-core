@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
@@ -59,16 +60,17 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	public OpenmrsSerializer getDefaultSerializer() {
 		String prop = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_SERIALIZER);
-		try {
-			Class<?> clazz = Context.loadClass(prop);
-			if (clazz != null && OpenmrsSerializer.class.isAssignableFrom(clazz)) {
-				return (OpenmrsSerializer) clazz.newInstance();
+		if (StringUtils.isNotEmpty(prop)) {
+			try {
+				Class<?> clazz = Context.loadClass(prop);
+				if (clazz != null && OpenmrsSerializer.class.isAssignableFrom(clazz)) {
+					return (OpenmrsSerializer) clazz.newInstance();
+				}
+			}
+			catch (Exception e) {
+				log.warn("No default serializer specified - trying first serializer found.");
 			}
 		}
-		catch (Exception e) {
-			log.warn("No default serializer specified - trying first serializer found.");
-		}
-		
 		return serializerMap.get(SimpleXStreamSerializer.class);
 	}
 	
