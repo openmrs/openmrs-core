@@ -45,6 +45,8 @@ public class EncounterListItem {
 	
 	private boolean voided = false;
 	
+	private Integer formId;
+	
 	public EncounterListItem() {
 	}
 	
@@ -70,8 +72,10 @@ public class EncounterListItem {
 				location = encounter.getLocation().getName();
 			if (encounter.getEncounterType() != null)
 				encounterType = encounter.getEncounterType().getName();
-			if (encounter.getForm() != null)
+			if (encounter.getForm() != null) {
 				formName = encounter.getForm().getName();
+				formId = encounter.getForm().getFormId();
+			}
 			voided = encounter.isVoided();
 			if (encounter.getCreator() != null) {
 				PersonName entererPersonName = encounter.getCreator().getPersonName();
@@ -174,6 +178,22 @@ public class EncounterListItem {
 	
 	public void setVoided(boolean voided) {
 		this.voided = voided;
+	}
+	
+	/**
+	 * @return the formId
+	 * @since 1.9
+	 */
+	public Integer getFormId() {
+		return formId;
+	}
+	
+	/**
+	 * @param formId the formId to set
+	 * @since 1.9
+	 */
+	public void setFormId(Integer formId) {
+		this.formId = formId;
 	}
 	
 }
