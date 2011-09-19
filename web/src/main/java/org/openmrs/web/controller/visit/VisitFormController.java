@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
@@ -28,6 +29,7 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.validator.VisitValidator;
 import org.openmrs.web.WebConstants;
@@ -36,6 +38,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -83,20 +86,19 @@ public class VisitFormController {
 	 * 
 	 * @param request the {@link WebRequest} object
 	 * @param visit the visit object to save/update
-	 * @param status the {@link SessionStatus}
 	 * @param result the {@link BindingResult} object
 	 * @param model the {@link ModelMap} object
 	 * @return the url to forward/redirect to
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping(method = RequestMethod.POST, value = VISIT_FORM_URL)
 	public String saveVisit(HttpServletRequest request, @ModelAttribute("visit") Visit visit, BindingResult result,
-	        SessionStatus status, ModelMap model) {
+	        ModelMap model) {
 		
 		// manually handle the attribute parameters
-		@SuppressWarnings("unchecked")
 		List<VisitAttributeType> attributeTypes = (List<VisitAttributeType>) model.get("attributeTypes");
-		WebAttributeUtil.handleSubmittedAttributesForType(visit, result, VisitAttribute.class, request, attributeTypes);
 		
+		WebAttributeUtil.handleSubmittedAttributesForType(visit, result, VisitAttribute.class, request, attributeTypes);
 		new VisitValidator().validate(visit, result);
 		if (!result.hasErrors()) {
 			try {
@@ -104,6 +106,40 @@ public class VisitFormController {
 				if (log.isDebugEnabled())
 					log.debug("Saved visit: " + visit.toString());
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Visit.saved");
+				
+				//deal with the encounters
+				String[] ids = ServletRequestUtils.getStringParameters(request, "encounterIds");
+				List<Integer> encounterIds = new ArrayList<Integer>();
+				EncounterService es = Context.getEncounterService();
+				if (!ArrayUtils.isEmpty(ids)) {
+					for (String id : ids) {
+						if (StringUtils.hasText(id))
+							encounterIds.add(Integer.valueOf(id));
+					}
+					
+					List<Encounter> visitEncounters = (List<Encounter>) model.get("visitEncounters");
+					for (Encounter e : visitEncounters) {
+						if (!encounterIds.contains(e.getEncounterId())) {
+							//this encounter was removed in the UI so remove it from this visit
+							e.setVisit(null);
+							es.saveEncounter(e);
+						} else {
+							//remove the ecounterId so that we don't deal with it below
+							encounterIds.remove(e.getEncounterId());
+						}
+					}
+					
+					//the remaining encounterIds are for the newly added ones, associate them to this visit
+					for (Integer encounterId : encounterIds) {
+						Encounter e = es.getEncounter(encounterId);
+						//the patient for the encounter and visit should be matching
+						if (e != null && (e.getPatient().equals(visit.getPatient()))) {
+							e.setVisit(visit);
+							es.saveEncounter(e);
+						}
+					}
+				}
+				
 				return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
 			}
 			catch (APIException e) {
