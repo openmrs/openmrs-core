@@ -15,6 +15,8 @@ package org.openmrs.web.controller.encounter;
 
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
@@ -22,6 +24,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.form.encounter.EncounterVisitHandlerForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -79,7 +82,7 @@ public class EncounterVisitHandlerFormController {
 	
 	@RequestMapping(value = MANAGE_ENCOUNTER_VISIT_HANDLERS_PATH, method = RequestMethod.POST)
 	public void manageEncounterVisitHandlers(@ModelAttribute(ENCOUNTER_VISIT_HANDLER_FORM) EncounterVisitHandlerForm form,
-	        Errors errors) {
+	        Errors errors, HttpServletRequest request) {
 		Context.requirePrivilege(PrivilegeConstants.MANAGE_ENCOUNTER_VISITS);
 		
 		if (errors.hasErrors()) {
@@ -97,5 +100,7 @@ public class EncounterVisitHandlerFormController {
 			form.setEncounterVisitHandler(administrationService
 			        .getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER));
 		}
+		
+		request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Encounter.visits.configuration.savedSuccessfully");
 	}
 }
