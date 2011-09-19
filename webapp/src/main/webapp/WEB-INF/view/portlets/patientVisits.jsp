@@ -10,10 +10,22 @@
 <script type="text/javascript">
 var selectedVisitRow;
 var visibleEncountersRow;
+var formToEditUrlMap = {};
+var editUrl = '<openmrs:contextPath />/admin/encounters/encounter.form';
+var editEncounterImage = '<img src="<openmrs:contextPath />/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" />';
+var canEditEncounters = false;
+
 function updateEncounters(visitId){
 	//user has selected the same visit as the one before
-	if(selectedVisitRow && $j(selectedVisitRow).attr('id') == visitId)
+	if(selectedVisitRow && $j(selectedVisitRow).attr('id') == visitId){
+		//just toggle the visible encounters since the user selected the same visit row
+		if($j(visibleEncountersRow).is(':visible'))
+			$j(visibleEncountersRow).hide();
+		else
+			$j(visibleEncountersRow).show();
+		
 		return;
+	}
 	
 	//clear the table
 	$j('#visitEncountersTable-'+visitId+' > tbody > tr').remove();
@@ -35,7 +47,14 @@ function updateEncounters(visitId){
 			if(encounters.length > 0){
 				for(var i in encounters){
 					var e = encounters[i];
+					var actualEditUrl = editUrl;
+					if(formToEditUrlMap[e.formId] != null)
+						actualEditUrl = formToEditUrlMap[e.formId];
+					
+					actualEditUrl = actualEditUrl+"?encounterId="+e.encounterId;
+		
 					$j('#visitEncountersTable-'+visitId+' tbody:last').append('<tr>'+
+							((canEditEncounters) ? '<td align="center"><a href="'+actualEditUrl+'">'+editEncounterImage+'</a></td>':'')+
 							'<td>'+e.encounterDateString+'</td>'+
 							'<td>'+e.encounterType+'</td>'+
 							'<td>'+e.providerName+'</td>'+
@@ -46,7 +65,7 @@ function updateEncounters(visitId){
 				}
 			}else{
 				$j('#visitEncountersTable-'+visitId+' tbody:last').append('<tr>'+
-						'<td colspan="6" class="centerAligned"><spring:message code="general.none"/></td>'+
+						'<td colspan="'+((canEditEncounters) ? 7 : 6)+'" class="centerAligned"><spring:message code="general.none"/></td>'+
 					'</tr>');
 			}
 		}else{
@@ -123,6 +142,10 @@ function updateEncounters(visitId){
 										<table id="visitEncountersTable-${visit.visitId}" cellspacing="0" cellpadding="2">
 											<thead>
 				 								<tr>
+				 									<openmrs:hasPrivilege privilege="Edit Encounters">
+				 									<th><spring:message code="general.edit"/></th>
+				 									<script type="text/javascript">canEditEncounters = true;</script>
+				 									</openmrs:hasPrivilege>
 				 									<th><spring:message code="Encounter.datetime"/></th>
 													<th><spring:message code="Encounter.type"/></th>
 													<th><spring:message code="Encounter.provider"/></th>
@@ -152,3 +175,11 @@ function updateEncounters(visitId){
 	
 </div>
 </div>
+
+<c:if test="${fn:length(model.formToEditUrlMap) > 0}">
+<script type="text/javascript">
+<c:forEach var="entry" items="${model.formToEditUrlMap}">
+	formToEditUrlMap[${entry.key}] = '${entry.value}';
+</c:forEach>
+</script>
+</c:if>

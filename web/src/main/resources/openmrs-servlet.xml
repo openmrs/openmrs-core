@@ -235,6 +235,8 @@
 				<prop key="**/patientRegimenAdd.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientEncounters.portlet">patientEncountersPortletController</prop>
+				<!-- Ensures formToEditUrlMaps are added to the model to be used on the patientVisits portlet -->
+				<prop key="**/patientVisits.portlet">patientEncountersPortletController</prop>
 				<prop key="**/personFormEntry.portlet">personFormEntryPortletController</prop>
 				<prop key="**/activeListAllergy.portlet">activeListPortletController</prop>
 				<prop key="**/activeListProblem.portlet">activeListPortletController</prop>
