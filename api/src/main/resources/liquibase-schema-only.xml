@@ -3507,5 +3507,21 @@
             <column name="orderexecuted" value="10015"/>
             <column name="exectype" value="MARK_RAN"/>
         </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20110301-1030c-fix"/>
+            <column name="author" value="sunbiz"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-19"/>
+            <column name="orderexecuted" value="10014"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="0"/>
+            <column name="author" value="bwolfe"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-20"/>
+            <column name="orderexecuted" value="10016"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

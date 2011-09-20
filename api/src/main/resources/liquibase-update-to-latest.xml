@@ -11,8 +11,8 @@
 		for a list of supported elements and attributes 
 	-->
 	
-	<changeSet id="0" author="bwolfe" failOnError="false">
-		<preConditions onFail="MARK_RAN">
+	<changeSet id="0" author="bwolfe">
+		<preConditions onError="MARK_RAN" onFail="MARK_RAN">
 			<sqlCheck expectedResult="The update-to-latest.sql file needs to be run on this db.">
 				<![CDATA[
 				SELECT case when REPLACE(property_value, '.', '0') >= REPLACE('1.4.0.20', '.', '0') then 'database_version greater than 1.4.0.20' else 'The update-to-latest.sql file needs to be run on this db.' end FROM global_property WHERE property = 'database_version';
@@ -1779,6 +1779,7 @@
 	<changeSet id="20090402-1517" author="bwolfe">
 		<validCheckSum>1b6141be59a8a243b9e56d0aad952af</validCheckSum> <!-- checksum from before idExceptions added -->
 		<validCheckSum>89cc7a14b0582f157ea2dbb9de092fd</validCheckSum> <!-- current checksum with idExceptions param added -->
+		<validCheckSum><comment>Changes to new concept_reference tables</comment>3:4edd135921eb263d4811cf1c22ef4846</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<or>
@@ -1794,8 +1795,8 @@
 		<customChange class="org.openmrs.util.databasechange.GenerateUuid">
 			<param name="tableNames">
 				cohort concept concept_answer concept_class concept_datatype concept_description 
-				concept_map concept_name concept_name_tag concept_proposal
-				concept_set concept_source concept_state_conversion drug
+				concept_reference_map concept_name concept_name_tag concept_proposal
+				concept_set concept_reference_source concept_state_conversion drug
 				encounter encounter_type field field_answer field_type form form_field global_property hl7_in_archive 
 				hl7_in_error hl7_in_queue hl7_source location location_tag note notification_alert 
 				notification_template obs order_type orders patient_identifier 
@@ -1806,7 +1807,8 @@
 			<param name="columnName" value="uuid"/>
 			<param name="idExceptions">
 				field_answer_id=field_id|role_id=role|privilege_id=privilege|global_property_id=property|notification_alert_id=alert_id
-				|notification_template_id=template_id|orders_id=order_id|report_schema_xml_id=report_schema_id
+				|notification_template_id=template_id|orders_id=order_id|report_schema_xml_id=report_schema_id|concept_reference_map_id=concept_map_id
+				|concept_reference_source_id=concept_source_id
 			</param>
 		</customChange>
 	</changeSet>
