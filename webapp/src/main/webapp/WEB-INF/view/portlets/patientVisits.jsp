@@ -14,6 +14,11 @@ var formToEditUrlMap = {};
 var editUrl = '<openmrs:contextPath />/admin/encounters/encounter.form';
 var editEncounterImage = '<img src="<openmrs:contextPath />/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" />';
 var canEditEncounters = false;
+<c:if test="${fn:length(model.formToEditUrlMap) > 0}">
+<c:forEach var="entry" items="${model.formToEditUrlMap}">
+	formToEditUrlMap[${entry.key}] = '${entry.value}';
+</c:forEach>
+</c:if>
 
 function updateEncounters(visitId){
 	//user has selected the same visit as the one before
@@ -175,11 +180,3 @@ function updateEncounters(visitId){
 	
 </div>
 </div>
-
-<c:if test="${fn:length(model.formToEditUrlMap) > 0}">
-<script type="text/javascript">
-<c:forEach var="entry" items="${model.formToEditUrlMap}">
-	formToEditUrlMap[${entry.key}] = '${entry.value}';
-</c:forEach>
-</script>
-</c:if>
