@@ -60,8 +60,8 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		//TODO Is is correct?
 		visit.setVisitType(Context.getVisitService().getAllVisitTypes().get(0));
 		
-		//set stop date time to last minute of the encounter day.
-		visit.setStopDatetime(OpenmrsUtil.getLastMillisecondOfDay(encounter.getEncounterDatetime()));
+		//set stop date time to last millisecond of the encounter day.
+		visit.setStopDatetime(OpenmrsUtil.getLastMomentOfDay(encounter.getEncounterDatetime()));
 		
 		encounter.setVisit(visit);
 	}

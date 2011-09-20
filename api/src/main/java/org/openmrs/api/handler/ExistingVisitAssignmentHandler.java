@@ -14,7 +14,6 @@
 package org.openmrs.api.handler;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -58,7 +57,12 @@ public class ExistingVisitAssignmentHandler extends BaseEncounterVisitHandler {
 		
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(encounter.getPatient());
-		List<Visit> visits = Context.getVisitService().getVisitsByPatient(encounter.getPatient(), true, false);
+		List<Visit> visits = Context.getVisitService().getVisits(/*visitTypes*/null, patients,
+		/*locations*/null, /*indications*/null, /*minStartDatetime*/null,
+		/*maxStartDatetime*/encounter.getEncounterDatetime(),
+		/*minEndDatetime*/null, /*maxEndDatetime*/null, /*attributeValues*/null, /*includeInactive*/true, /*includeVoided*/
+		false);
+		
 		if (visits == null)
 			return;
 		
@@ -67,11 +71,6 @@ public class ExistingVisitAssignmentHandler extends BaseEncounterVisitHandler {
 		for (Visit visit : visits) {
 			//skip visits which are started after the encounter date.
 			if (visit.getStartDatetime().after(encounterDate)) {
-				continue;
-			}
-			
-			//skip visits which have ended before the encounter date.
-			if (visit.getStopDatetime() != null && visit.getStopDatetime().before(encounterDate)) {
 				continue;
 			}
 			
