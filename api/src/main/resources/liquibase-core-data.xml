@@ -1236,7 +1236,10 @@
             ]]>
         </sql>
         <modifySql dbms="mssql">
-            <replace replace="\'" with="\''" />
+            <replace replace="\'" with="''" />
+        </modifySql>
+        <modifySql dbms="postgresql">
+            <replace replace="\'" with="''" />
         </modifySql>
    </changeSet>
    <changeSet id="20110915-0803" author="sunbiz">
