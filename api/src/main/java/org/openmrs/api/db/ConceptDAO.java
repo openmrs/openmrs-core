@@ -52,6 +52,7 @@ public interface ConceptDAO {
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#purgeConcept(org.openmrs.Concept)
+	 * @should delete concept and related conceptWords from datastore
 	 */
 	public void purgeConcept(Concept concept) throws DAOException;
 	
@@ -287,6 +288,7 @@ public interface ConceptDAO {
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#updateConceptWord(org.openmrs.Concept)
+	 * @should update conceptWords for this concept in datastore
 	 */
 	public void updateConceptWord(Concept concept) throws DAOException;
 	
