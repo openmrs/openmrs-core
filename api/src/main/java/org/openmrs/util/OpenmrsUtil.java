@@ -86,6 +86,7 @@ import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
@@ -895,7 +896,9 @@ public class OpenmrsUtil {
 	 * 
 	 * @param date date to adjust
 	 * @return a date that is the last possible time in the day
+	 * @deprecated use {@link #getLastMomentOfDay(Date)}
 	 */
+	@Deprecated
 	public static Date lastSecondOfDay(Date date) {
 		if (date == null)
 			return null;
@@ -910,7 +913,7 @@ public class OpenmrsUtil {
 		c.add(Calendar.SECOND, -1);
 		return c.getTime();
 	}
-	
+
 	/**
 	 * Gets the date having the last millisecond of a given day. Meaning that the hours, seconds, 
 	 * and milliseconds are the latest possible for that day.
@@ -918,7 +921,7 @@ public class OpenmrsUtil {
 	 * @param day the day.
 	 * @return the date with the last millisecond of the day.
 	 */
-	public static Date getLastMillisecondOfDay(Date day) {
+	public static Date getLastMomentOfDay(Date day) {
 		Calendar calender = Calendar.getInstance();
 		calender.setTime(day);
 		calender.set(Calendar.HOUR_OF_DAY, 23);
