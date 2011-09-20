@@ -4099,7 +4099,15 @@
 			referencedTableName="drug" referencedColumnNames="drug_id" />
 	</changeSet>
 
+	<changeSet id="20110920-1211" author="sunbiz" dbms="mysql">
+		<preConditions onFail="MARK_RAN"><columnExists tableName="form_resource" columnName="value"/></preConditions>
+		<comment>Convert form_resource.value to blob to medium blob for MySQL</comment>
+		<modifyDataType tableName="form_resource" columnName="value" newDataType="mediumblob"/>
+	</changeSet>
+
 	<changeSet id="201103152243-a" author="jkeiper" dbms="mysql">
+		<validCheckSum><comment>Changing blob to mediumblob for MySQL</comment>3:b992da942628790574a0a87faf912423</validCheckSum>
+		<validCheckSum>3:f8398b04bd7738afb216ee75c415c044</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="form_resource" />
@@ -4129,6 +4137,9 @@
 		<addForeignKeyConstraint constraintName="form_resource_form"
 			baseTableName="form_resource" baseColumnNames="form_id"
 			referencedTableName="form" referencedColumnNames="form_id" />
+		<modifySql dbms="mysql">
+			<replace replace="blob" with="mediumblob"/>
+		</modifySql>
 	</changeSet>
 
 	<changeSet id="201103152243-b" author="jkeiper">
@@ -5597,6 +5608,6 @@
 				<where>property = 'log.level.openmrs'</where>
 			</update>
 	</changeSet>
-	
+        
 </databaseChangeLog>
 
