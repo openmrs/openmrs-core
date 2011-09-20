@@ -1,5 +1,10 @@
 package org.openmrs.api.db;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.Assert;
@@ -7,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -312,8 +318,38 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		ConceptName cn = new ConceptName("bonjour monsieur", locale);
 		ConceptWord word = new ConceptWord("BONJOUR", new Concept(), cn, locale);
 		//Sanity check for the test to be concrete, i.e. the word should be part of the concept name
-		Assert.assertTrue(cn.getName().toUpperCase().indexOf(word.getWord()) > -1);
+		Assert.assertTrue(cn.getName().toUpperCase().contains(word.getWord()));
 		dao.weighConceptWord(word);
 	}
 	
+	@Test
+	public void updateConceptSetDerived_shouldRecreateConceptSetDerived() throws Exception {
+		Concept concept = dao.getConcept(5497);
+		List<ConceptSet> conceptSetsByConcept = dao.getConceptSetsByConcept(concept);
+		assertNotNull(conceptSetsByConcept);
+		dao.updateConceptSetDerived();
+		List<ConceptSet> conceptSetsByConceptAfterUpdate = dao.getConceptSetsByConcept(concept);
+		assertNotNull(conceptSetsByConceptAfterUpdate);
+		assertEquals(conceptSetsByConcept.size(), conceptSetsByConceptAfterUpdate.size());
+	}
+	
+	@Test
+	@Verifies(value = "should delete concept from datastore", method = "purgeConcept")
+	public void purgeConcept_shouldDeleteConceptWithWords() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		Concept concept = dao.getConcept(5497);
+		dao.purgeConcept(concept);
+		
+		assertNull(dao.getConcept(5497));
+	}
+	
+	@Test
+	@Verifies(value = "should update concept in datastore", method = "updateConcept")
+	public void updateConceptWord_shouldUpdateConceptWithWords() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		Concept concept = dao.getConcept(5497);
+		dao.updateConceptWord(concept);
+		
+		assertNotNull(dao.getConcept(5497));
+	}
 }
