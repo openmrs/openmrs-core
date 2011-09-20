@@ -2317,7 +2317,7 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME" />
-            <column name="isHidden" type="BOOLEAN" defaultValueBoolean="false">
+            <column name="is_hidden" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
@@ -3497,6 +3497,14 @@
             <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10013"/>
+            <column name="exectype" value="MARK_RAN"/>
+        </insert>
+        <insert tableName="liquibasechangelog">
+            <column name="id" value="20110919-0638"/>
+            <column name="author" value="sunbiz"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
+            <column name="dateexecuted" valueDate="2011-09-19"/>
+            <column name="orderexecuted" value="10015"/>
             <column name="exectype" value="MARK_RAN"/>
         </insert>
     </changeSet>

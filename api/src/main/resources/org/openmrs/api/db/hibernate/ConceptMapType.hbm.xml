@@ -29,7 +29,7 @@
 		
 		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
 		
-		<property name="isHidden" type="java.lang.Boolean" column="isHidden" length="1" not-null="true"/>
+		<property name="isHidden" type="java.lang.Boolean" column="is_hidden" length="1" not-null="true"/>
 		
 		<property name="retired" type="java.lang.Boolean" column="retired" length="1" not-null="true"/>
 		
