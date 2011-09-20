@@ -306,7 +306,7 @@ function CreateCallback(options) {
 		if (typeof item == 'string')
 			return { label: item, value: "" };
 		
-		var textShown = " " + item.code+" ("+omsgs.conceptSource+" &rArr; "+item.conceptSourceName+")";
+		var textShown = " " + item.code+((item.name != null && item.name.trim() != '') ? " - "+item.name : "")+" ["+item.conceptSourceName+"]";
 		
 		// highlight each search term in the results
 		textShown = highlightWords(textShown, origQuery);

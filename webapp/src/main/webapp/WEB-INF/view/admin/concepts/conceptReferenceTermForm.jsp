@@ -151,6 +151,7 @@ $j(document).ready( function() {
             <td valign="top">
 			<spring:bind path="conceptSource">
 				<select name="${status.expression}">
+					<option value=""></option>
 					<openmrs:forEachRecord name="conceptSource">
 					<option value="${record.conceptSourceId}" <c:if test="${record.conceptSourceId == status.value}">selected="selected"</c:if>>
 						${record.name} (${record.hl7Code})
@@ -336,8 +337,9 @@ $j(document).ready( function() {
 		</tr>
 		</c:if>
        	<tr>
-			<td colspan="2">
-				<table cellpadding="0" cellspacing="20" align="center">
+			<th></th>
+			<td>
+				<table cellpadding="0" cellspacing="20" align="left">
         			<tr>
         				<td><input type="submit" name="" value="<spring:message code="general.save"/>"></td>
         				<td><input type="button" value="<spring:message code="general.cancel"/>" onclick="javascript:window.location='conceptReferenceTerms.htm'"></td>
