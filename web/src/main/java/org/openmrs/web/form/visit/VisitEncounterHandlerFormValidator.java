@@ -11,25 +11,25 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.web.form.encounter;
+package org.openmrs.web.form.visit;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Validates {@link EncounterVisitHandlerForm}
+ * Validates {@link VisitEncounterHandlerForm}
  */
-public class EncounterVisitHandlerFormValidator implements Validator {
+public class VisitEncounterHandlerFormValidator implements Validator {
 	
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return EncounterVisitHandlerForm.class.isAssignableFrom(clazz);
+		return VisitEncounterHandlerForm.class.isAssignableFrom(clazz);
 	}
 	
 	@Override
 	public void validate(Object target, Errors errors) {
-		EncounterVisitHandlerForm form = (EncounterVisitHandlerForm) target;
+		VisitEncounterHandlerForm form = (VisitEncounterHandlerForm) target;
 		
 		if (form.isEnableVisits()) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterVisitHandler",
