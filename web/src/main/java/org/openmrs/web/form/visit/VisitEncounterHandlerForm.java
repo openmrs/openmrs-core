@@ -11,31 +11,31 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.web.form.encounter;
+package org.openmrs.web.form.visit;
 
-import org.openmrs.web.controller.encounter.EncounterVisitHandlerFormController;
+import org.openmrs.web.controller.visit.VisitEncounterHandlerFormController;
 
 /**
- * Form used by {@link EncounterVisitHandlerFormController}.
+ * Form used by {@link VisitEncounterHandlerFormController}.
  */
-public class EncounterVisitHandlerForm {
+public class VisitEncounterHandlerForm {
 	
-	private String encounterVisitHandler;
+	private String visitEncounterHandler;
 	
 	private boolean enableVisits;
 	
 	/**
-	 * @return the encounterVisitHandler
+	 * @return the visitEncounterHandler
 	 */
-	public String getEncounterVisitHandler() {
-		return encounterVisitHandler;
+	public String getVisitEncounterHandler() {
+		return visitEncounterHandler;
 	}
 	
 	/**
-	 * @param encounterVisitHandler the encounterVisitHandler to set
+	 * @param visitEncounterHandler the visitEncounterHandler to set
 	 */
-	public void setEncounterVisitHandler(String encounterVisitHandler) {
-		this.encounterVisitHandler = encounterVisitHandler;
+	public void setVisitEncounterHandler(String visitEncounterHandler) {
+		this.visitEncounterHandler = visitEncounterHandler;
 	}
 	
 	/**

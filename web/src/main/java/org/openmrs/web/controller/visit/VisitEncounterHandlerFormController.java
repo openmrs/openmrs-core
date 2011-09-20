@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.web.controller.encounter;
+package org.openmrs.web.controller.visit;
 
 import java.util.Collection;
 
@@ -25,7 +25,7 @@ import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.form.encounter.EncounterVisitHandlerForm;
+import org.openmrs.web.form.visit.VisitEncounterHandlerForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -36,17 +36,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
- * This class controls the encounterVisitHandler.form jsp page. See
- * /web/WEB-INF/view/admin/encounters/encounterVisitHandler.jsp
+ * This class controls the visitEncounterHandler.form jsp page. See
+ * /web/WEB-INF/view/admin/visits/visitEncounterHandler.jsp
  */
 @Controller
-public class EncounterVisitHandlerFormController {
+public class VisitEncounterHandlerFormController {
 	
-	public static final String MANAGE_ENCOUNTER_VISIT_HANDLERS_PATH = "/admin/encounters/encounterVisitHandler";
+	public static final String MANAGE_VISIT_ENCOUNTER_HANDLERS_PATH = "/admin/visits/visitEncounterHandler";
 	
-	public static final String ENCOUNTER_VISIT_HANDLER_FORM = "encounterVisitHandlerForm";
+	public static final String VISIT_ENCOUNTER_HANDLER_FORM = "visitEncounterHandlerForm";
 	
-	public static final String ENCOUNTER_VISIT_HANDLERS = "encounterVisitHandlers";
+	public static final String VISIT_ENCOUNTER_HANDLERS = "visitEncounterHandlers";
 	
 	@Autowired
 	private EncounterService encounterService;
@@ -55,33 +55,33 @@ public class EncounterVisitHandlerFormController {
 	@Qualifier("adminService")
 	private AdministrationService administrationService;
 	
-	@ModelAttribute(ENCOUNTER_VISIT_HANDLERS)
+	@ModelAttribute(VISIT_ENCOUNTER_HANDLERS)
 	public Collection<EncounterVisitHandler> getEncounterVisitHandlers() {
 		return encounterService.getEncounterVisitHandlers();
 	}
 	
-	@RequestMapping(value = MANAGE_ENCOUNTER_VISIT_HANDLERS_PATH, method = RequestMethod.GET)
+	@RequestMapping(value = MANAGE_VISIT_ENCOUNTER_HANDLERS_PATH, method = RequestMethod.GET)
 	public void manageEncounterVisitHandlers(Model model) {
 		Context.requirePrivilege(PrivilegeConstants.MANAGE_ENCOUNTER_VISITS);
 		
-		String encounterVisitHandler = administrationService.getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER);
+		String visitEncounterHandler = administrationService.getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER);
 		String enableVisits = administrationService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENABLE_VISITS,
 		    Boolean.FALSE.toString());
 		
-		EncounterVisitHandlerForm form = new EncounterVisitHandlerForm();
+		VisitEncounterHandlerForm form = new VisitEncounterHandlerForm();
 		form.setEnableVisits(Boolean.valueOf(enableVisits));
 		for (EncounterVisitHandler visitHandler : getEncounterVisitHandlers()) {
-			if (visitHandler.getClass().getName().equals(encounterVisitHandler)) {
-				form.setEncounterVisitHandler(visitHandler.getClass().getName());
+			if (visitHandler.getClass().getName().equals(visitEncounterHandler)) {
+				form.setVisitEncounterHandler(visitHandler.getClass().getName());
 				break;
 			}
 		}
 		
-		model.addAttribute(ENCOUNTER_VISIT_HANDLER_FORM, form);
+		model.addAttribute(VISIT_ENCOUNTER_HANDLER_FORM, form);
 	}
 	
-	@RequestMapping(value = MANAGE_ENCOUNTER_VISIT_HANDLERS_PATH, method = RequestMethod.POST)
-	public void manageEncounterVisitHandlers(@ModelAttribute(ENCOUNTER_VISIT_HANDLER_FORM) EncounterVisitHandlerForm form,
+	@RequestMapping(value = MANAGE_VISIT_ENCOUNTER_HANDLERS_PATH, method = RequestMethod.POST)
+	public void manageEncounterVisitHandlers(@ModelAttribute(VISIT_ENCOUNTER_HANDLER_FORM) VisitEncounterHandlerForm form,
 	        Errors errors, HttpServletRequest request) {
 		Context.requirePrivilege(PrivilegeConstants.MANAGE_ENCOUNTER_VISITS);
 		
@@ -93,11 +93,11 @@ public class EncounterVisitHandlerFormController {
 		        .toString(form.isEnableVisits()));
 		administrationService.saveGlobalProperty(gpEnableVisits);
 		if (form.isEnableVisits()) {
-			String type = form.getEncounterVisitHandler();
-			GlobalProperty gpEncounterVisitHandler = new GlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER, type);
-			administrationService.saveGlobalProperty(gpEncounterVisitHandler);
+			String type = form.getVisitEncounterHandler();
+			GlobalProperty gpVisitEncounterHandler = new GlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER, type);
+			administrationService.saveGlobalProperty(gpVisitEncounterHandler);
 		} else {
-			form.setEncounterVisitHandler(administrationService
+			form.setVisitEncounterHandler(administrationService
 			        .getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER));
 		}
 		

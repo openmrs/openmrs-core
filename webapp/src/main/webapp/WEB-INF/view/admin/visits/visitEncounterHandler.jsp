@@ -2,7 +2,7 @@
 
 <openmrs:require privilege="Manage Encounter Visits"
 	otherwise="/login.htm"
-	redirect="/admin/encounters/encounterVisitHandler.form" />
+	redirect="/admin/visits/visitEncounterHandler.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>
@@ -10,16 +10,16 @@
 <script type="text/javascript">
 	var $j = jQuery.noConflict();
 	$j(document).ready(function() {
-		toggleEncounterVisitHandler();
+		toggleVisitEncounterHandler();
 		
-		$j("#enableVisits").click(toggleEncounterVisitHandler);
+		$j("#enableVisits").click(toggleVisitEncounterHandler);
 	});
-	function toggleEncounterVisitHandler() {
+	function toggleVisitEncounterHandler() {
 		if ($j("#enableVisits").is(":checked")) {
-			$j("#encounterVisitHandler").removeAttr("disabled").removeClass(
+			$j("#visitEncounterHandler").removeAttr("disabled").removeClass(
 					"disabled");
 		} else {
-			$j("#encounterVisitHandler").attr("disabled", "disabled").addClass(
+			$j("#visitEncounterHandler").attr("disabled", "disabled").addClass(
 					"diabled");
 		}
 	}
@@ -29,15 +29,15 @@
 	<spring:message code="Encounter.manage.visits" />
 </h2>
 
-<spring:hasBindErrors name="encounterVisitHandlerForm">
+<spring:hasBindErrors name="visitEncounterHandlerForm">
 	<spring:message code="fix.error" />
 	<br />
 </spring:hasBindErrors>
 
 <b class="boxHeader"><spring:message
-		code="Encounter.visits.configure" /> </b>
+		code="Visit.configure" /> </b>
 <div class="box">
-	<form:form method="post" commandName="encounterVisitHandlerForm">
+	<form:form method="post" commandName="visitEncounterHandlerForm">
 		<p>
 			<b><spring:message code="Encounter.visits.enable" />
 			</b>
@@ -48,11 +48,11 @@
 		<p>
 			<b><spring:message code="Encounter.visits.handler.choose" />
 			</b> <br />
-			<form:select path="encounterVisitHandler" id="encounterVisitHandler">
-				<form:options items="${encounterVisitHandlers}"
+			<form:select path="visitEncounterHandler" id="visitEncounterHandler">
+				<form:options items="${visitEncounterHandlers}"
 					itemLabel="displayName" itemValue="class.name" />
 			</form:select>
-			<form:errors path="encounterVisitHandler" cssClass="error" />
+			<form:errors path="visitEncounterHandler" cssClass="error" />
 		</p>
 		<input type="submit" value='<spring:message code="general.save"/>'>
 	</form:form>

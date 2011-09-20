@@ -16,13 +16,6 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Manage Encounter Visits">
-		<li <c:if test='<%= request.getRequestURI().contains("encounterVisitHandler") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/encounters/encounterVisitHandler.htm">
-				<spring:message code="Encounter.manage.visits"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >
