@@ -103,7 +103,7 @@ public class HibernateUtil {
 			}
 			//insert an escape character before each sql wildcard in the search phrase
 			return StringUtils.replaceEach(oldString, new String[] { "%", "_", "*", "'" }, new String[] {
-			        escapeCharacter + "%", escapeCharacter + "_", escapeCharacter + "*", escapeCharacter + "'" });
+			        escapeCharacter + "%", escapeCharacter + "_", escapeCharacter + "*", "''" });
 		} else
 			return oldString;
 	}
