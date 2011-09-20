@@ -32,7 +32,7 @@ public class VisitEncounterHandlerFormValidator implements Validator {
 		VisitEncounterHandlerForm form = (VisitEncounterHandlerForm) target;
 		
 		if (form.isEnableVisits()) {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterVisitHandler",
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "visitEncounterHandler",
 			    "Encounter.error.visits.handler.empty");
 		}
 	}
