@@ -867,7 +867,8 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	public <T> List<T> getRegisteredComponents(Class<T> type) {
 		Map<String, T> m = getRegisteredComponents(applicationContext, type);
-		log.debug("getRegisteredComponents(" + type + ") = " + m);
+		if (log.isTraceEnabled())
+			log.trace("getRegisteredComponents(" + type + ") = " + m);
 		return new ArrayList<T>(m.values());
 	}
 	
@@ -882,7 +883,8 @@ public class ServiceContext implements ApplicationContextAware {
 	private <T> Map<String, T> getRegisteredComponents(ApplicationContext context, Class<T> type) {
 		Map<String, T> components = new HashMap<String, T>();
 		Map registeredComponents = context.getBeansOfType(type);
-		log.debug("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
+		if (log.isTraceEnabled())
+			log.trace("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
 		if (registeredComponents != null) {
 			components.putAll(registeredComponents);
 		}
