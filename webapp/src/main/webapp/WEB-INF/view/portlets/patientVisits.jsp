@@ -20,7 +20,7 @@ var canEditEncounters = false;
 </c:forEach>
 </c:if>
 
-function updateEncounters(visitId){
+function toggleEncounters(visitId){
 	//user has selected the same visit as the one before
 	if(selectedVisitRow && $j(selectedVisitRow).attr('id') == visitId){
 		//just toggle the visible encounters since the user selected the same visit row
@@ -122,8 +122,8 @@ function updateEncounters(visitId){
 						</thead>
 						<tbody>
 							<openmrs:forEachVisit visits="${model.patientVisits}" sortBy="startDatetime" descending="true" var="visit" num="${model.num}">
-								<tr id="${visit.visitId}" class='visitRow ${status.index % 2 == 0 ? "evenRow" : "oddRow"}'
-									onclick="updateEncounters(${visit.visitId})">
+								<tr id="${visit.visitId}" class='visitRow ${status.index % 2 == 0 ? "evenRow" : "oddRow"}' 
+									<openmrs:hasPrivilege privilege="View Encounters">onclick="toggleEncounters(${visit.visitId})"</openmrs:hasPrivilege>>
 									<td class="visitEdit" align="center">
 										<openmrs:hasPrivilege privilege="Edit Visits">
 											<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=${visit.visitId}">
@@ -158,7 +158,7 @@ function updateEncounters(visitId){
 													<th><spring:message code="Encounter.location"/></th>
 													<th><spring:message code="Encounter.enterer"/></th>
 				 								</tr>
-											<thead>
+											</thead>
 											<tbody></tbody>
 										</table>
 									</td>
@@ -168,6 +168,54 @@ function updateEncounters(visitId){
 					</table>
 				</div>
 			</div>
+			<openmrs:hasPrivilege privilege="View Encounters">
+			<br />
+			<div class="boxHeader"><spring:message code="Visit.encounters.notAssignedToVisit"/></div>
+			<div class="box">
+				<table cellpadding="2">
+					<thead>
+				 	<tr>
+				 		<openmrs:hasPrivilege privilege="Edit Encounters">
+				 		<th><spring:message code="general.edit"/></th>
+				 		</openmrs:hasPrivilege>
+				 		<th><spring:message code="Encounter.datetime"/></th>
+						<th><spring:message code="Encounter.type"/></th>
+						<th><spring:message code="Encounter.provider"/></th>
+						<th><spring:message code="Encounter.form"/></th>
+						<th><spring:message code="Encounter.location"/></th>
+						<th><spring:message code="Encounter.enterer"/></th>
+				 	</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="enc" items="${model.otherEncounters}" varStatus="varStatus">
+						<tr class='${varStatus.index % 2 == 0 ? "evenRow" : "oddRow"}'>
+						<openmrs:hasPrivilege privilege="Edit Encounters">
+							<td align="center">
+				 			<openmrs:hasPrivilege privilege="Edit Encounters">
+							<c:set var="editUrl" value="<openmrs:contextPath />/admin/encounters/encounter.form?encounterId=${enc.encounterId}"/>
+							<c:if test="${ model.formToEditUrlMap[enc.form] != null }">
+								<c:url var="editUrl" value="${model.formToEditUrlMap[enc.form]}">
+									<c:param name="encounterId" value="${enc.encounterId}"/>
+								</c:url>
+							</c:if>
+							<a href="${editUrl}">
+								<img src="<openmrs:contextPath />/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" />
+							</a>
+							</openmrs:hasPrivilege>
+				 			</td>
+				 			</openmrs:hasPrivilege>
+				 			<td><openmrs:formatDate date="${enc.encounterDatetime}" type="small" /></td>
+							<td><openmrs:format encounterType="${enc.encounterType}"/></td>
+							<td><openmrs:format person="${enc.provider}"/></td>
+							<td>${enc.form.name}</td>
+							<td><openmrs:format location="${enc.location}"/></td>
+							<td>${enc.creator.personName}</td>
+						</tr>
+						</c:forEach>
+					</tbody>						
+				</table>
+			</div>
+			</openmrs:hasPrivilege>	
 		</div>
 		
 		<c:if test="${model.showPagination != 'true'}">
