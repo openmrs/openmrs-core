@@ -15,9 +15,13 @@ package org.openmrs.api.handler;
 
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -57,12 +61,47 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		visit.setLocation(encounter.getLocation());
 		visit.setPatient(encounter.getPatient());
 		
-		//TODO Is is correct?
-		visit.setVisitType(Context.getVisitService().getAllVisitTypes().get(0));
+		visit.setVisitType(getVisitType(encounter.getEncounterType()));
 		
 		//set stop date time to last millisecond of the encounter day.
 		visit.setStopDatetime(OpenmrsUtil.getLastMomentOfDay(encounter.getEncounterDatetime()));
 		
 		encounter.setVisit(visit);
+	}
+	
+	/**
+	 * Gets the visit type for an encounter type.
+	 * 
+	 * @param encounterType the encounter type.
+	 * @return the visit type for the encounter type.
+	 */
+	private VisitType getVisitType(EncounterType encounterType) {
+		String value = Context.getAdministrationService().getGlobalPropertyValue(
+		    OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING, "");
+		
+		//Value should be in this format "3:4, 5:2, 1:2, 2:2" for encounterTypeId:visitTypeId
+		if (!StringUtils.isBlank(value)) {
+			String targetEncounterTypeId = encounterType.getId().toString();
+			
+			String[] mappings = value.split(",");
+			for (String mapping : mappings) {
+				int index = mapping.indexOf(':');
+				if (index > 0) {
+					String encounterTypeId = mapping.substring(0, index).trim();
+					if (targetEncounterTypeId.equals(encounterTypeId)) {
+						String visitTypeId = mapping.substring(index + 1).trim();
+						VisitType visitType = Context.getVisitService().getVisitType(Integer.parseInt(visitTypeId));
+						if (visitType != null) {
+							return visitType;
+						}
+					}
+				}
+			}
+			
+			//TODO Reaching here means this encounter type is not in the user's mapping.
+			//should we throw an exception or just ignore and assign the first visit type?
+		}
+		
+		return Context.getVisitService().getAllVisitTypes().get(0);
 	}
 }
