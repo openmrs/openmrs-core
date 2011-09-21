@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="Edit Concepts" otherwise="/login.htm" redirect="/dictionary/concept.form" />
+<openmrs:require privilege="Manage Concepts" otherwise="/login.htm" redirect="/dictionary/concept.form" />
 
 <c:choose>
 	<c:when test="${command.concept.conceptId != null}">
