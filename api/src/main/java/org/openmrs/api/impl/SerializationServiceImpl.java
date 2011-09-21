@@ -68,7 +68,7 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 				}
 			}
 			catch (Exception e) {
-				log.warn("No default serializer specified - trying first serializer found.");
+				log.warn("No default serializer specified - using builtin SimpleXStreamSerializer.");
 			}
 		}
 		return serializerMap.get(SimpleXStreamSerializer.class);
