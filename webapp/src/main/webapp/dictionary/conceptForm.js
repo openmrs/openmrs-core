@@ -399,17 +399,9 @@ function setCloneRadioValue(textElement){
  * @param initialSizeOfClonedSiblings the number of mappings on page load
  */
 function addConceptMapping(initialSizeOfClonedSiblings){
-	
-	//if the term field is empty then we can't even create the mapping
-	if(!document.getElementById("term.code") || document.getElementById("term.code").value.trim() == "")
-		return;
-	
+		
 	var inputNamePrefix = 'conceptMappings';
-	var selectedMapTypeIndex = document.getElementById("map.type").selectedIndex;
-	var selectedSourceIndex = document.getElementById("map.source").selectedIndex;
 	var newMappingRow = cloneElement('newConceptMapping', initialSizeOfClonedSiblings, inputNamePrefix);
-	var sourceElement = document.getElementById("map.source");
-	//var columns = newMappingRow.getElementsByTagName("td");
 	
 	if(newMappingRow){
 		newMappingRow.id = "";
@@ -425,19 +417,8 @@ function addConceptMapping(initialSizeOfClonedSiblings){
 				input.id = inputNamePrefix+'[' + index + '].conceptReferenceTerm';
 			}else if (input && input.name == 'term.code' && input.type == 'text') {
 				input.id = 'term[' + index + '].code';
-				$j(input).attr('readonly','readonly');
-				//input.parentNode.appendChild(document.createTextNode(input.value));
-				//$j(input).hide();
-			}if (input && input.name == 'term.name' && input.type == 'text') {
-				input.id = '';
-			}else if (input && input.id == 'removeMapButton' && input.type == 'button') {
-				//show the remove button for this map row
-				input.id = '';
-				$j(input).show();
-			}else if (input && input.id == 'addMapButton' && input.type == 'button') {
-				//hide the add button for this map row
-				input.id = '';
-				$j(input).hide();
+			}else if (input && input.name == 'term.name' && input.type == 'text') {
+				input.id = 'term[' + index + '].name';
 			}
 		}
 		
@@ -447,24 +428,13 @@ function addConceptMapping(initialSizeOfClonedSiblings){
 			if (select && select.name == "type.name") {
 				select.id = 'term[' + index + '].conceptMapType';
 				select.name = inputNamePrefix+'[' + index + '].conceptMapType';
-				select.selectedIndex = selectedMapTypeIndex;
 			}else if (select && select.name == "term.source") {
 				select.id = 'term[' + index + '].source';
-				//replace the drop down with the source name so that the user doesn't assume they can change it
-				//$j(columns[1]).prepend($j(sourceElement.options[selectedSourceIndex]).text());
-				//$j(sourceElement).hide(0);
-				select.selectedIndex = selectedSourceIndex;
-				select.disabled ='disabled';
 			}
 		}
 		
-		//reset the values of the prototype Row input fields
-		var prototypeRow = document.getElementById('newConceptMapping');
-		document.getElementById("map.type").selectedIndex = 0;
-		document.getElementById("map.source").selectedIndex = 0;
-		document.getElementById("term.code").value = "";
-		document.getElementById("termId").value = "";
-		document.getElementById("termName").value = "";
+		//set up the auto complete
+		addAutoComplete('term[' + index + '].code', 'term[' + index + '].source', inputNamePrefix+'[' + index + '].conceptReferenceTerm', 'term[' + index + '].name')
 	}
 }
 
@@ -476,18 +446,9 @@ function addAutoComplete(displayInputId, sourceSelectElementId, hiddenElementId,
 			jquerySelectEscaped(hiddenElementId).val(ui.item.object.conceptReferenceTermId);
 			//set the concept source in the source dropdown to match that of the selected term
 			selectOption.value = ui.item.object.conceptSourceId;
-			var actualNameInputId = "termName";
-			//if the form is was redisplayed due to errors, use the passed in nameInputId
-			if(nameInputId && nameInputId.trim() != '')
-				actualNameInputId = nameInputId;
-			//display the name if the term has one
-			if(ui.item.object.name && ui.item.object.name.trim() != '' && document.getElementById(actualNameInputId)){
-				document.getElementById(actualNameInputId).value = ui.item.object.name;
-				document.getElementById(actualNameInputId).style.display = '';
-			}else if(document.getElementById(actualNameInputId)){
-				document.getElementById(actualNameInputId).value = '';
-				document.getElementById(actualNameInputId).style.display = 'none';
-			}
+			//display the name of the term
+			if(document.getElementById(nameInputId))
+				document.getElementById(nameInputId).value = ui.item.object.name;
 		},
 		placeholder:omsgs.referencTermSearchPlaceholder
 	});

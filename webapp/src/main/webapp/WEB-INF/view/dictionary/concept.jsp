@@ -93,7 +93,7 @@
 </c:if>
 
 <c:if test="${conceptsLocked != 'true'}">
-	| <openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form" id="newConcept" valign="middle"></openmrs:hasPrivilege><spring:message code="general.new"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege>
+	| <openmrs:hasPrivilege privilege="Manage Concepts"><a href="concept.form" id="newConcept" valign="middle"></openmrs:hasPrivilege><spring:message code="general.new"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege>
 </c:if>
 
 <form class="inlineForm" action="index.htm" method="get">

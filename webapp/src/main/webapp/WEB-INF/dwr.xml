@@ -269,7 +269,7 @@
 			DWRConceptService.findCountAndConceptReferenceTerms(String phrase, Integer sourceId, Integer start, Integer length, boolean includeRetired, boolean getMatchCount);
 			DWRConceptService.findBatchOfConceptReferenceTerms(String phrase, Integer sourceId, Integer start, Integer length, boolean includeRetired);
 			DWRConceptService.getConceptReferenceTerm(Integer conceptReferenceTermId);
-			DWRConceptService.createConceptReferenceTerm(String code, Integer conceptSourceId);
+			DWRConceptService.createConceptReferenceTerm(String code, Integer conceptSourceId, String name);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
 			DWREncounterService.findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length);
 			DWREncounterService.findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length, boolean getMatchCount);
