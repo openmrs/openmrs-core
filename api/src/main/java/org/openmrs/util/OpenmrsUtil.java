@@ -913,7 +913,7 @@ public class OpenmrsUtil {
 		c.add(Calendar.SECOND, -1);
 		return c.getTime();
 	}
-
+	
 	/**
 	 * Gets the date having the last millisecond of a given day. Meaning that the hours, seconds, 
 	 * and milliseconds are the latest possible for that day.
