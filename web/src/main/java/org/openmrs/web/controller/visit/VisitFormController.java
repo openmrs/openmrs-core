@@ -18,8 +18,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -262,24 +260,5 @@ public class VisitFormController {
 			visitEncounters = Context.getEncounterService().getEncountersByVisit(visit, false);
 		
 		return visitEncounters;
-	}
-	
-	@ModelAttribute("encountersToAdd")
-	public List<Encounter> setEncounterToAdd(@ModelAttribute("visit") Visit visit) {
-		List<Encounter> patientEncounters = new ArrayList<Encounter>();
-		if (visit.getPatient() != null && visit.getPatient().getPatientId() != null)
-			patientEncounters = Context.getEncounterService().getEncountersByPatient(visit.getPatient());
-		
-		//remove all encounters that are already associated to visits
-		CollectionUtils.filter(patientEncounters, new Predicate() {
-			
-			@Override
-			public boolean evaluate(Object object) {
-				Encounter e = (Encounter) object;
-				return e.getVisit() == null;
-			}
-		});
-		
-		return patientEncounters;
 	}
 }
