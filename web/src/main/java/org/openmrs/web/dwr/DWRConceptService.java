@@ -707,9 +707,10 @@ public class DWRConceptService {
 	 * 
 	 * @param code the unique code for the reference term
 	 * @param conceptSourceId the concept source for the term
+	 * @param name the unique name for the reference term
 	 * @return a list of error messages
 	 */
-	public List<String> createConceptReferenceTerm(String code, Integer conceptSourceId) {
+	public List<String> createConceptReferenceTerm(String code, Integer conceptSourceId, String name) {
 		List<String> errors = new ArrayList<String>();
 		MessageSourceService mss = Context.getMessageSourceService();
 		ConceptService cs = Context.getConceptService();
@@ -720,6 +721,7 @@ public class DWRConceptService {
 		
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setCode(code);
+		term.setName(name);
 		term.setConceptSource(source);
 		
 		Errors bindErrors = new BindException(term, "term");

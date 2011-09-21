@@ -685,9 +685,9 @@
 				</tr>
 				</spring:nestedPath>
 				</c:forEach>
-				<tr id="newConceptMapping">
+				<tr id="newConceptMapping" style="display: none">
 					<td valign="top">
-						<select id="map.type" name="type.name">
+						<select name="type.name">
 							<openmrs:forEachRecord  name="conceptMapType">
 								<option value="${record.conceptMapTypeId}">
 									${record.name}
@@ -696,7 +696,7 @@
 						</select>
 					</td>
 					<td valign="top">
-						<select id="map.source" name="term.source" >
+						<select name="term.source" >
 							<option value=""><spring:message code="ConceptReferenceTerm.searchAllSources" /></option>
 							<openmrs:forEachRecord  name="conceptSource">
 							<option value="${record.conceptSourceId}">
@@ -706,27 +706,30 @@
 						</select>
 					</td>
 					<td valign="top">
-						<input type="text" id="term.code" name="term.code" size="25" />
-						<input type="hidden" id="termId" name="termId" />
-						<script type="text/javascript">addAutoComplete('term.code', 'map.source', 'termId')</script>
+						<input type="text" name="term.code" size="25" />
+						<input type="hidden" name="termId" />
 					</td>
 					<td>
-						<input type="text" id="termName" name="term.name" size="25" style="display: none" readonly="readonly" />
+						<input type="text" name="term.name" size="25" readonly="readonly" />
 					</td>
 					<td>
-						<input id="removeMapButton" style="display: none;" type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this.parentNode)" />
-						<input id="addMapButton" type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" onClick="addConceptMapping(${fn:length(command.conceptMappings)})" />
+						<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this.parentNode)" />
 					</td>
 				</tr>
 				
 				<tr>
-					<td colspan="3">&nbsp;</td>
-					<td valign="top" align="right">
-						<input id="term.createNew" class="smallButton" type="button" 
+					<td colspan="3" valign="top" align="left">
+						<input id="addMapButton" type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" 
+							   onClick="addConceptMapping(${fn:length(command.conceptMappings)})" />
+					</td>
+					<td align="right">
+						<openmrs:hasPrivilege privilege="Create Reference Terms While Editing Concepts">
+						<input class="smallButton" type="button" 
 						       value="<spring:message code="ConceptReferenceTerm.createNewTerm" />" 
 						       onclick="javascript:$j('#create-new-term-dialog').dialog('open')" />
+						</openmrs:hasPrivilege>
 					</td>
-					<td>&nbsp;</td>
+					<td></td>
 				</tr>
 				
 			</table>
@@ -877,10 +880,17 @@
             </td>
         </tr>
         <tr>
+            <th class="alignRight" valign="top"><spring:message code="general.name"/></th>
+            <td valign="top">
+                <input type="text" id="newTermName" value=""/>
+            </td>
+        </tr>
+        <tr>
         <tr>
             <th class="alignRight" valign="top"><spring:message code="ConceptReferenceTerm.source"/><span class="required">*</span></th>
             <td valign="top">
 				<select id="newTermSource">
+					<option value=""></option>
 					<openmrs:forEachRecord name="conceptSource">
 					<option value="${record.conceptSourceId}">
 						${record.name} (${record.hl7Code})
@@ -916,7 +926,7 @@ $j(document).ready( function() {
 });
 
 function createNewTerm(){
-	DWRConceptService.createConceptReferenceTerm( $j('#newTermCode').val(), $j('#newTermSource').val(), function(errors) {
+	DWRConceptService.createConceptReferenceTerm( $j('#newTermCode').val(), $j('#newTermSource').val(),$j('#newTermName').val(), function(errors) {
 		if(errors){
 			var errorMessages = "";
 			for (var i in errors) {
@@ -937,6 +947,7 @@ function createNewTerm(){
 
 function resetNewTermForm(){
 	$j('#newTermCode').val('');
+	$j('#newTermName').val('');
 	$j('select#newTermSource').val(0);
 	$j('#newTermErrorMsg').html('');
 	$j('#newTermErrorMsg').hide();
