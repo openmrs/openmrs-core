@@ -57,11 +57,10 @@ public class ExistingVisitAssignmentHandler extends BaseEncounterVisitHandler {
 		
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(encounter.getPatient());
-		List<Visit> visits = Context.getVisitService().getVisits(/*visitTypes*/null, patients,
-		/*locations*/null, /*indications*/null, /*minStartDatetime*/null,
-		/*maxStartDatetime*/encounter.getEncounterDatetime(),
-		/*minEndDatetime*/null, /*maxEndDatetime*/null, /*attributeValues*/null, /*includeInactive*/true, /*includeVoided*/
-		false);
+		
+		//Fetch visits for this patient that haven't ended by the encounter date.
+		List<Visit> visits = Context.getVisitService().getVisits(null, patients, null, null, null,
+		    encounter.getEncounterDatetime(), null, null, null, true, false);
 		
 		if (visits == null)
 			return;
