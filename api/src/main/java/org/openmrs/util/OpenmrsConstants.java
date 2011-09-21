@@ -889,6 +889,11 @@ public final class OpenmrsConstants {
 	public static final String GP_VISIT_ASSIGNMENT_HANDLER = "visit.assignmentHandler";
 	
 	/**
+	 * Global property name for mapping encounter types to visit types.
+	 */
+	public static final String GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING = "visit.encounterTypeToVisitTypeMapping";
+	
+	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
 	 */
 	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/CBC/PKCS5Padding";
@@ -1280,6 +1285,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_VISIT_ASSIGNMENT_HANDLER, "",
 		        "Set to the name of the class responsible for assigning visits to encounters."));
+		
+		props.add(new GlobalProperty(GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING, "",
+        		"Specifies how encounter types are mapped to visit types when automatically assigning visits to encounters. e.g 1:1, 2:1, 3:2 in the format encounterTypeId:visitTypeId"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
