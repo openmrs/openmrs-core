@@ -125,9 +125,10 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 		
 		encounter.setEncounterDatetime(calendar.getTime());
 		
-		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING, "3:4, 5:2, 1:2, 2:2");
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING,
+		        "3:4, 5:2, 1:2, 2:2");
 		Context.getAdministrationService().saveGlobalProperty(gp);
-		    
+		
 		new ExistingOrNewVisitAssignmentHandler().beforeCreateEncounter(encounter);
 		
 		Assert.assertNotNull(encounter.getVisit());
