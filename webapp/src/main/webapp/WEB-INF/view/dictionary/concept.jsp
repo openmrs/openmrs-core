@@ -85,7 +85,7 @@
 		<input type="hidden" name="jumpAction" id="jumpAction" value="previous"/>
 		<a href="#previousConcept" id="previousConcept" valign="middle" accesskey="," onclick="return jumpToConcept('previous')"><spring:message code="general.previous"/></a> |
 		<c:if test="${conceptsLocked != 'true'}">
-		<openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form?conceptId=${command.concept.conceptId}" id="editConcept" accesskey="e" valign="middle"></openmrs:hasPrivilege><spring:message code="general.edit"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege> |
+		<openmrs:hasPrivilege privilege="Manage Concepts"><a href="concept.form?conceptId=${command.concept.conceptId}" id="editConcept" accesskey="e" valign="middle"></openmrs:hasPrivilege><spring:message code="general.edit"/><openmrs:hasPrivilege privilege="Manage Concepts"></a></openmrs:hasPrivilege> |
 		</c:if>
 		<a href="conceptStats.form?conceptId=${command.concept.conceptId}" accesskey="s" id="conceptStats" valign="middle"><spring:message code="Concept.stats"/></a> |
 		<a href="#nextConcept" id="nextConcept" valign="middle" accesskey="." onclick="return jumpToConcept('next')"><spring:message code="general.next"/></a> 
@@ -93,7 +93,7 @@
 </c:if>
 
 <c:if test="${conceptsLocked != 'true'}">
-	| <openmrs:hasPrivilege privilege="Manage Concepts"><a href="concept.form" id="newConcept" valign="middle"></openmrs:hasPrivilege><spring:message code="general.new"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege>
+	| <openmrs:hasPrivilege privilege="Manage Concepts"><a href="concept.form" id="newConcept" valign="middle"></openmrs:hasPrivilege><spring:message code="general.new"/><openmrs:hasPrivilege privilege="Manage Concepts"></a></openmrs:hasPrivilege>
 </c:if>
 
 <form class="inlineForm" action="index.htm" method="get">
