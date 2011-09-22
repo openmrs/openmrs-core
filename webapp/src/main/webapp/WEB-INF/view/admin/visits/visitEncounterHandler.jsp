@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="Manage Encounter Visits"
+<openmrs:require privilege="Configure Visits"
 	otherwise="/login.htm"
 	redirect="/admin/visits/visitEncounterHandler.form" />
 
@@ -26,7 +26,7 @@
 </script>
 
 <h2>
-	<spring:message code="Encounter.manage.visits" />
+	<spring:message code="Visit.configure" />
 </h2>
 
 <spring:hasBindErrors name="visitEncounterHandlerForm">

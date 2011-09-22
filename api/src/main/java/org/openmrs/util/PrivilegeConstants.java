@@ -89,7 +89,7 @@ public class PrivilegeConstants {
 	public static final String PURGE_ENCOUNTER_TYPES = "Purge Encounter Types";
 	
 	@AddOnStartup(description = "Able to choose encounter visit handler and enable/disable encounter visits")
-	public static final String MANAGE_ENCOUNTER_VISITS = "Manage Encounter Visits";
+	public static final String CONFIGURE_VISITS = "Configure Visits";
 	
 	@AddOnStartup(description = "Able to view locations")
 	public static final String VIEW_LOCATIONS = "View Locations";

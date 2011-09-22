@@ -62,7 +62,7 @@ public class VisitEncounterHandlerFormController {
 	
 	@RequestMapping(value = MANAGE_VISIT_ENCOUNTER_HANDLERS_PATH, method = RequestMethod.GET)
 	public void manageEncounterVisitHandlers(Model model) {
-		Context.requirePrivilege(PrivilegeConstants.MANAGE_ENCOUNTER_VISITS);
+		Context.requirePrivilege(PrivilegeConstants.CONFIGURE_VISITS);
 		
 		String visitEncounterHandler = administrationService.getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER);
 		String enableVisits = administrationService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENABLE_VISITS,
@@ -83,7 +83,7 @@ public class VisitEncounterHandlerFormController {
 	@RequestMapping(value = MANAGE_VISIT_ENCOUNTER_HANDLERS_PATH, method = RequestMethod.POST)
 	public void manageEncounterVisitHandlers(@ModelAttribute(VISIT_ENCOUNTER_HANDLER_FORM) VisitEncounterHandlerForm form,
 	        Errors errors, HttpServletRequest request) {
-		Context.requirePrivilege(PrivilegeConstants.MANAGE_ENCOUNTER_VISITS);
+		Context.requirePrivilege(PrivilegeConstants.CONFIGURE_VISITS);
 		
 		if (errors.hasErrors()) {
 			return;
