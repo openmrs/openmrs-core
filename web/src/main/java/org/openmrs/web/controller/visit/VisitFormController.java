@@ -29,13 +29,18 @@ import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
+import org.openmrs.validator.EncounterValidator;
 import org.openmrs.validator.VisitValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -93,6 +98,46 @@ public class VisitFormController {
 	public String saveVisit(HttpServletRequest request, @ModelAttribute("visit") Visit visit, BindingResult result,
 	        ModelMap model) {
 		
+		String[] ids = ServletRequestUtils.getStringParameters(request, "encounterIds");
+		List<Integer> encounterIds = new ArrayList<Integer>();
+		EncounterService es = Context.getEncounterService();
+		List<Encounter> encountersToSave = new ArrayList<Encounter>();
+		if (!ArrayUtils.isEmpty(ids)) {
+			for (String id : ids) {
+				if (StringUtils.hasText(id))
+					encounterIds.add(Integer.valueOf(id));
+			}
+			//validate that the encounters
+			List<Encounter> visitEncounters = (List<Encounter>) model.get("visitEncounters");
+			for (Encounter e : visitEncounters) {
+				if (!encounterIds.contains(e.getEncounterId())) {
+					//this encounter was removed in the UI, remove it from this visit
+					e.setVisit(null);
+					validateEncounter(e, result);
+					if (result.hasErrors())
+						return VISIT_FORM;
+					
+					encountersToSave.add(e);
+				} else {
+					//this is an already added encounter
+					encounterIds.remove(e.getEncounterId());
+				}
+			}
+			
+			//the remaining encounterIds are for the newly added ones, validate and associate them to this visit
+			for (Integer encounterId : encounterIds) {
+				Encounter e = es.getEncounter(encounterId);
+				if (e != null) {
+					e.setVisit(visit);
+					validateEncounter(e, result);
+					if (result.hasErrors())
+						return VISIT_FORM;
+					
+					encountersToSave.add(e);
+				}
+			}
+		}
+		
 		// manually handle the attribute parameters
 		List<VisitAttributeType> attributeTypes = (List<VisitAttributeType>) model.get("attributeTypes");
 		
@@ -105,38 +150,8 @@ public class VisitFormController {
 					log.debug("Saved visit: " + visit.toString());
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Visit.saved");
 				
-				//deal with the encounters
-				String[] ids = ServletRequestUtils.getStringParameters(request, "encounterIds");
-				List<Integer> encounterIds = new ArrayList<Integer>();
-				EncounterService es = Context.getEncounterService();
-				if (!ArrayUtils.isEmpty(ids)) {
-					for (String id : ids) {
-						if (StringUtils.hasText(id))
-							encounterIds.add(Integer.valueOf(id));
-					}
-					
-					List<Encounter> visitEncounters = (List<Encounter>) model.get("visitEncounters");
-					for (Encounter e : visitEncounters) {
-						if (!encounterIds.contains(e.getEncounterId())) {
-							//this encounter was removed in the UI so remove it from this visit
-							e.setVisit(null);
-							es.saveEncounter(e);
-						} else {
-							//remove the ecounterId so that we don't deal with it below
-							encounterIds.remove(e.getEncounterId());
-						}
-					}
-					
-					//the remaining encounterIds are for the newly added ones, associate them to this visit
-					for (Integer encounterId : encounterIds) {
-						Encounter e = es.getEncounter(encounterId);
-						//the patient for the encounter and visit should be matching
-						if (e != null && (e.getPatient().equals(visit.getPatient()))) {
-							e.setVisit(visit);
-							es.saveEncounter(e);
-						}
-					}
-				}
+				for (Encounter encounter : encountersToSave)
+					es.saveEncounter(encounter);
 				
 				return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
 			}
@@ -260,5 +275,15 @@ public class VisitFormController {
 			visitEncounters = Context.getEncounterService().getEncountersByVisit(visit, false);
 		
 		return visitEncounters;
+	}
+	
+	private void validateEncounter(Encounter e, BindingResult result) {
+		Errors encounterErrors = new BindException(e, "encounter");
+		ValidationUtils.invokeValidator(new EncounterValidator(), e, encounterErrors);
+		if (encounterErrors.hasErrors()) {
+			//bind the errors to the model object
+			for (ObjectError error : encounterErrors.getAllErrors())
+				result.reject(error.getCode(), error.getArguments(), error.getDefaultMessage());
+		}
 	}
 }
