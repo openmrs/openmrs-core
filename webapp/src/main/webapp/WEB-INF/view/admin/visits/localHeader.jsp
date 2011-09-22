@@ -16,7 +16,7 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Manage Encounter Visits">
+	<openmrs:hasPrivilege privilege="Configure Visits">
 		<li <c:if test='<%= request.getRequestURI().contains("visitEncounterHandler") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/visits/visitEncounterHandler.htm">
 				<spring:message code="Visit.configure"/>
