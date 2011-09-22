@@ -25,7 +25,7 @@
                     <td class="question">Do you want to also add demo data to your database - ${databaseName}?</td>
                 </tr>
                 <tr>
-                    <td>Yes: <input type="radio" name="add_demo_data" value="yes" #if( $addDemoData == true )checked="checked"#end/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <td class="yes">Yes: <input type="radio" name="add_demo_data" value="yes" #if( $addDemoData == true )checked="checked"#end/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     No: <input type="radio" name="add_demo_data" value="no" #if( $addDemoData == false )checked="checked"#end/></td>
                 </tr>
                 <tr>
