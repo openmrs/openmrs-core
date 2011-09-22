@@ -330,7 +330,7 @@ public class InitializationFilter extends StartupFilter {
 			// default wizardModel.databaseName is openmrs
 			// default wizardModel.createDatabaseUsername is root
 			wizardModel.createDatabasePassword = wizardModel.databaseRootPassword;
-			wizardModel.addDemoData = false;
+			wizardModel.addDemoData = "yes".equals(httpRequest.getParameter("add_demo_data"));
 			
 			wizardModel.hasCurrentDatabaseUser = false;
 			wizardModel.createDatabaseUser = true;
