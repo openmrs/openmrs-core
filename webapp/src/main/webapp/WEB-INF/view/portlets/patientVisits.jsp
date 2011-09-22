@@ -24,10 +24,15 @@ function toggleEncounters(visitId){
 	//user has selected the same visit as the one before
 	if(selectedVisitRow && $j(selectedVisitRow).attr('id') == visitId){
 		//just toggle the visible encounters since the user selected the same visit row
-		if($j(visibleEncountersRow).is(':visible'))
+		if($j(visibleEncountersRow).is(':visible')){
 			$j(visibleEncountersRow).hide();
-		else
+			//remove the row highlight
+			$j(selectedVisitRow).removeClass('selected-visit');
+		}
+		else{
 			$j(visibleEncountersRow).show();
+			$j(selectedVisitRow).addClass('selected-visit');
+		}
 		
 		return;
 	}
@@ -113,6 +118,9 @@ function toggleEncounters(visitId){
 								<th class="visitEdit" align="center">
 									<spring:message code="general.edit"/>
 								</th>
+								<openmrs:hasPrivilege privilege="View Encounters">
+				 				<th></th>
+				 				</openmrs:hasPrivilege>
 								<th class="visitTypeHeader"> <spring:message code="Visit.type"/>     </th>
 								<th class="visitLocationHeader"> <spring:message code="Visit.location"/> </th>
 								<th class="startDatetimeHeader"> <spring:message code="Visit.startDatetime"/> </th>
@@ -122,8 +130,7 @@ function toggleEncounters(visitId){
 						</thead>
 						<tbody>
 							<openmrs:forEachVisit visits="${model.patientVisits}" sortBy="startDatetime" descending="true" var="visit" num="${model.num}">
-								<tr id="${visit.visitId}" class='visitRow ${status.index % 2 == 0 ? "evenRow" : "oddRow"}' 
-									<openmrs:hasPrivilege privilege="View Encounters">onclick="toggleEncounters(${visit.visitId})"</openmrs:hasPrivilege>>
+								<tr id="${visit.visitId}" class='visitRow ${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
 									<td class="visitEdit" align="center">
 										<openmrs:hasPrivilege privilege="Edit Visits">
 											<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=${visit.visitId}">
@@ -131,6 +138,13 @@ function toggleEncounters(visitId){
 											</a>
 										</openmrs:hasPrivilege>
 									</td>
+									<openmrs:hasPrivilege privilege="View Encounters">
+				 					<td>
+										<a href="javascript:void(0)" onclick="toggleEncounters(${visit.visitId})">
+											<img src="<openmrs:contextPath />/images/file.gif" title="<spring:message code="Visit.viewEncounters"/>" border="0" />
+										</a>
+									</td>
+				 					</openmrs:hasPrivilege>
 					 				<td class="visitType"><openmrs:format visitType="${visit.visitType}"/></td>
 					 				<td class="visitLocation"><openmrs:format location="${visit.location}"/></td>
 					 				<td class="startDatetime">
