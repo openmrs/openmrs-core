@@ -264,7 +264,10 @@ function CreateCallback(options) {
 		textShown += " " + enc.encounterType;
 		textShown += " - " + enc.personName;
 		textShown += " - " + enc.providerName;
-		textShown += " - " + enc.location;
+		
+		if (enc.location) {
+			textShown += " - " + enc.location;
+		}
 		
 		// highlight each search term in the results
 		textShown = highlightWords(textShown, origQuery);
