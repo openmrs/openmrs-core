@@ -55,6 +55,12 @@ function toggleEncounters(visitId){
 	DWRVisitService.findEncountersByVisit(visitId, function(encounters) {
 		if(encounters){
 			if(encounters.length > 0){
+				//if this is an error message
+				if(typeof encounters[0] == 'string'){
+					displayMessage('<span class="error"><spring:message code="Visit.find.encounters.error"/></span>', visitId);
+					return;
+				}
+				
 				for(var i in encounters){
 					var e = encounters[i];
 					var actualEditUrl = editUrl;
@@ -74,14 +80,18 @@ function toggleEncounters(visitId){
 						'</tr>');
 				}
 			}else{
-				$j('#visitEncountersTable-'+visitId+' tbody:last').append('<tr>'+
-						'<td colspan="'+((canEditEncounters) ? 7 : 6)+'" class="centerAligned"><spring:message code="general.none"/></td>'+
-					'</tr>');
+				displayMessage('<spring:message code="general.none"/></span>', visitId);
 			}
 		}else{
-			alert('<spring:message code="Visit.find.encounters.error"/>');
+			displayMessage('<span class="error"><spring:message code="Visit.find.encounters.error"/></span>', visitId);
 		}
 	});
+}
+
+function displayMessage(msg, visitId){
+	$j('#visitEncountersTable-'+visitId+' tbody:last').append('<tr>'+
+			'<td colspan="'+((canEditEncounters) ? 7 : 6)+'" class="centerAligned">'+msg+'</td>'+
+		'</tr>');
 }
 </script>
 
