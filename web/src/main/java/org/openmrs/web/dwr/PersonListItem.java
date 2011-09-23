@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -24,7 +25,6 @@ import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.util.Format;
-import org.springframework.util.StringUtils;
 
 /**
  * A mini/simplified Person object. Used as the return object from DWR methods to allow javascript
@@ -123,7 +123,7 @@ public class PersonListItem {
 					givenName = pn.getGivenName();
 					first = false;
 				} else {
-					if (!"".equals(otherNames))
+					if (!StringUtils.isBlank(otherNames))
 						otherNames += ",";
 					otherNames += " " + pn.getGivenName() + " " + pn.getMiddleName() + " " + pn.getFamilyName();
 				}
@@ -142,6 +142,60 @@ public class PersonListItem {
 			}
 			
 		}
+	}
+	
+	/**
+	 * Convenience constructor that creates a PersonListItem from the given Person. All relevant
+	 * attributes are pulled off of the Person object and copied to this PersonListItem. And
+	 * set the best match name based on the search criteria.
+	 *
+	 * @param person the Person to turn into a PersonListItem
+	 * @param searchName Search query string of the name
+	 * @should identify best matching name for the family name
+	 * @should identify best matching name as preferred name even if other names match
+	 * @should identify best matching name as other name for the middle name
+	 * @should identify best matching name as other name for the given name
+	 * @should identify best matching name in multiple search names
+	 */
+	public PersonListItem(Person person, String searchName) {
+		this(person);
+		
+		if (person != null && !StringUtils.isBlank(searchName)) {
+			String[] searchNames = searchName.split(" ");
+			String fullName;
+			boolean foundABestMatch = false;
+			for (PersonName personName : person.getNames()) {
+				fullName = personName.getFullName();
+				if (!foundABestMatch && containsAll(fullName, searchNames)) {
+					familyName = personName.getFamilyName();
+					givenName = personName.getGivenName();
+					middleName = personName.getMiddleName();
+					foundABestMatch = true;
+					continue; // process the next name
+				}
+				if (!StringUtils.isBlank(otherNames))
+					otherNames += ",";
+				otherNames += " " + fullName;
+			}
+		}
+	}
+	
+	/**
+	 *Helper method to check if all the search names(separated by spaces) are contained in the person's full name.
+
+	 *@param fullName the fullName upon which the search names are to be compared
+	 *@param searchNames Array<String> of searched names
+	 *@should return true when all searched names are found in full name
+	 *@should return false if even one of the searched names are not found in full name
+	 */
+	private boolean containsAll(String fullName, String[] searchNames) {
+		for (String name : searchNames) {
+			if (StringUtils.containsIgnoreCase(fullName, name)) {
+				continue;
+			}
+			return false;
+		}
+		return true;
 	}
 	
 	/**
@@ -244,13 +298,13 @@ public class PersonListItem {
 	public String getPersonName() {
 		String name = "";
 		
-		if (StringUtils.hasText(givenName))
+		if (!StringUtils.isBlank(givenName))
 			name = givenName;
 		
-		if (StringUtils.hasText(middleName))
+		if (!StringUtils.isBlank(middleName))
 			name = name + (name.length() > 0 ? " " : "") + middleName;
 		
-		if (StringUtils.hasText(familyName))
+		if (!StringUtils.isBlank(familyName))
 			name = name + (name.length() > 0 ? " " : "") + familyName;
 		
 		return name;

@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -122,7 +121,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 		
 		patientList = new Vector<Object>(patients.size());
 		for (Patient p : patients)
-			patientList.add(new PatientListItem(p));
+			patientList.add(new PatientListItem(p, searchValue));
 		// if the length wasn't limited to less than 3 or this is the second ajax call
 		// and only 2 results found and a number was not in the
 		// search, then do a decapitated search: trim each word
@@ -145,7 +144,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 					patientList = new Vector<Object>(patients.size());
 					//patientList.add("Minimal patients returned. Results for <b>" + newSearch + "</b>");
 					for (Patient p : newPatients) {
-						PatientListItem pi = new PatientListItem(p);
+						PatientListItem pi = new PatientListItem(p, newSearch);
 						patientList.add(pi);
 					}
 				}
