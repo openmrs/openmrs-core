@@ -79,9 +79,13 @@ public class EncounterValidator implements Validator {
 			
 			Visit visit = encounter.getVisit();
 			Date encounterDateTime = encounter.getEncounterDatetime();
-			if (visit != null && encounterDateTime != null && visit.getStartDatetime() != null) {
-				if (encounterDateTime.before(visit.getStartDatetime())
-				        || (visit.getStopDatetime() != null && encounterDateTime.after(visit.getStopDatetime()))) {
+			if (visit != null && encounterDateTime != null) {
+				if (visit.getStartDatetime() != null && encounterDateTime.before(visit.getStartDatetime())) {
+					errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeInVisitDatesRange",
+					    "The encounter datetime should be between the visit start and stop dates.");
+				}
+				
+				if (visit.getStopDatetime() != null && encounterDateTime.after(visit.getStopDatetime())) {
 					errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeInVisitDatesRange",
 					    "The encounter datetime should be between the visit start and stop dates.");
 				}
