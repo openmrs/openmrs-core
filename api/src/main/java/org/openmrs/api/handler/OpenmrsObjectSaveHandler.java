@@ -13,13 +13,20 @@
  */
 package org.openmrs.api.handler;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
+import org.openmrs.util.Reflect;
 
 /**
  * This class deals with any object that implements {@link OpenmrsObject}. When an
@@ -36,15 +43,40 @@ import org.openmrs.aop.RequiredDataAdvice;
 @Handler(supports = OpenmrsObject.class)
 public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 	
+	private static final Log log = LogFactory.getLog(OpenmrsObjectSaveHandler.class);
+	
 	/**
 	 * This sets the uuid property on the given OpenmrsObject if it is non-null.
 	 * 
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
+	 * 
+	 * @should set empty string properties to null
 	 */
 	public void handle(OpenmrsObject openmrsObject, User creator, Date dateCreated, String reason) {
 		if (openmrsObject.getUuid() == null)
 			openmrsObject.setUuid(UUID.randomUUID().toString());
+		
+		//Set all empty string properties to null
+		List<Field> fields = Reflect.getAllFields(openmrsObject.getClass());
+		for (Field field : fields) {
+			if (Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
+			
+			if (!field.getType().getSimpleName().equals("String")) {
+				continue;
+			}
+			
+			try {
+				Object value = PropertyUtils.getProperty(openmrsObject, field.getName());
+				if (value != null && value.toString().trim().isEmpty()) {
+					PropertyUtils.setProperty(openmrsObject, field.getName(), null);
+				}
+			}
+			catch (Exception ex) {
+				log.error("Failed to set property value for " + field.getName() + " to NULL", ex);
+			}
+		}
 	}
-	
 }
