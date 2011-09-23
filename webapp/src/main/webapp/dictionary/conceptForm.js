@@ -191,14 +191,23 @@ function hotkeys(event) {
 	var k = event.keyCode;
 	if (event.cntrlKey == true) {
 		if (k == 86) { // v
-			document.location = document.getElementById('viewConcept').href;
+			var element = document.getElementById('viewConcept');
+			if (element) {
+				document.location = element.href;
+			}
 		}
 	}
 	if (k == 37) { // left key
-		document.location = document.getElementById('previousConcept').href;
+		var element = document.getElementById('previousConcept');
+		if (element) {
+			document.location = element.href;
+		}
 	}
 	else if (k == 39) { //right key
-		document.location = document.getElementById('nextConcept').href;
+		var element = document.getElementById('nextConcept');
+		if (element) {
+			document.location = element.href;
+		}
 	}
 }
 
