@@ -71,7 +71,9 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 			try {
 				Object value = PropertyUtils.getProperty(openmrsObject, field.getName());
 				if (value != null && value.toString().isEmpty()) {
-					PropertyUtils.setProperty(openmrsObject, field.getName(), null);
+					//TODO Commenting this out until we resolve the cases where some non
+					//nullable fields have emptry string holders.
+					//PropertyUtils.setProperty(openmrsObject, field.getName(), null);
 				}
 			}
 			catch (Exception ex) {
