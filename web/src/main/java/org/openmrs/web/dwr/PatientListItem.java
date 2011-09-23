@@ -36,7 +36,11 @@ public class PatientListItem extends PersonListItem {
 	}
 	
 	public PatientListItem(Patient patient) {
-		super(patient);
+		this(patient, null);
+	}
+	
+	public PatientListItem(Patient patient, String searchName) {
+		super(patient, searchName);
 		
 		if (patient != null) {
 			
