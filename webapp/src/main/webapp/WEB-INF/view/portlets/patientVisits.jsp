@@ -67,7 +67,8 @@ function toggleEncounters(visitId){
 					if(formToEditUrlMap[e.formId] != null)
 						actualEditUrl = formToEditUrlMap[e.formId];
 					
-					actualEditUrl = actualEditUrl+"?encounterId="+e.encounterId;
+					actualEditUrl += actualEditUrl.indexOf("?") != -1 ? "&"  : "?";
+					actualEditUrl += "encounterId="+e.encounterId;
 		
 					$j('#visitEncountersTable-'+visitId+' tbody:last').append('<tr>'+
 							((canEditEncounters) ? '<td align="center"><a href="'+actualEditUrl+'">'+editEncounterImage+'</a></td>':'')+
