@@ -36,7 +36,6 @@ $j(document).ready( function() {
 <h2><spring:message code="ConceptMapType.form.title"/></h2>
 <br/>
 
-<openmrs:hasPrivilege privilege="Manage Concept Map Types">
 <c:if test="${conceptMapType.conceptMapTypeId != null && conceptMapType.retired}">
 <form:form action="unretireConceptMapType.htm" method="post" modelAttribute="conceptMapType">
 	<c:if test="${param.conceptMapTypeId != null}">
@@ -49,7 +48,6 @@ $j(document).ready( function() {
 	</div>
 </form:form>
 </c:if>
-</openmrs:hasPrivilege>
 
 <form:form method="post" action="conceptMapType.form" modelAttribute="conceptMapType">
 	<c:if test="${param.conceptMapTypeId != null}">
@@ -143,7 +141,6 @@ $j(document).ready( function() {
 <table cellpadding="3" cellspacing="3">
 	<tr>
 		<td>
-			<openmrs:hasPrivilege privilege="Manage Concept Map Types">
 			<c:if test="${conceptMapType.retired == false }">
 			<input type="submit" value='<spring:message code="general.delete"/>' onclick="javascript:$j('#delete-dialog').dialog('open')"/>
 			<div id="delete-dialog" title="<spring:message code="general.delete.confirmation"/>">
@@ -167,7 +164,6 @@ $j(document).ready( function() {
 			</form:form>
 			</div>
 			</c:if>
-			</openmrs:hasPrivilege>
 		</td>
 		<td>
 			<openmrs:hasPrivilege privilege="Purge Concept Map Types">
