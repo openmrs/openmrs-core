@@ -126,8 +126,10 @@ public class PortletController implements Controller {
 				
 				// remove cached parameters 
 				List<String> parameterKeys = (List<String>) model.get("parameterKeys");
-				for (String key : parameterKeys) {
-					model.remove(key);
+				if (parameterKeys != null) {
+					for (String key : parameterKeys) {
+						model.remove(key);
+					}
 				}
 			}
 			if (model == null) {
