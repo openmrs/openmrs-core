@@ -323,6 +323,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		return dao.getHL7InQueue(hl7InQueueId);
 	}
 	
+	@Override
+	public HL7InQueue getHL7InQueueByUuid(String uuid) throws APIException {
+	    return dao.getHL7InQueueByUuid(uuid);
+	}
+	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InQueues()
 	 * @deprecated
@@ -473,6 +478,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 */
 	public HL7InError getHL7InError(Integer hl7InErrorId) {
 		return dao.getHL7InError(hl7InErrorId);
+	}
+	
+	@Override
+	public HL7InError getHL7InErrorByUuid(String uuid) throws APIException {
+	    return dao.getHL7InErrorByUuid(uuid);
 	}
 	
 	/**
