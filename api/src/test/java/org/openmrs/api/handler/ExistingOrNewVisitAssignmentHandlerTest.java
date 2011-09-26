@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
-import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -86,6 +86,8 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	@Test
 	@Verifies(value = "should assign first visit type if mapping global property is not set", method = "beforeCreateEncounter(Encounter)")
 	public void beforeCreateEncounter_shouldAssignFirstVisitTypeIfMappingGlobalPropertyIsNotSet() throws Exception {
+		VisitType visitType = Context.getVisitService().getAllVisitTypes().get(0);
+		
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
 		
@@ -97,17 +99,8 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 		
 		new ExistingOrNewVisitAssignmentHandler().beforeCreateEncounter(encounter);
 		
-		Assert.assertNotNull(encounter.getVisit());
-		
-		//The visit needs to be persisted, else the assert below will throw
-		//org.hibernate.TransientObjectException: object references an unsaved transient 
-		//instance - save the transient instance before flushing: org.openmrs.Visit
-		Visit visit = encounter.getVisit();
-		encounter.setVisit(null);
-		Context.getVisitService().saveVisit(visit);
-		encounter.setVisit(visit);
-		
-		Assert.assertEquals(Context.getVisitService().getAllVisitTypes().get(0), encounter.getVisit().getVisitType());
+		Assert.assertNotNull(encounter.getVisit());		
+		Assert.assertEquals(visitType, encounter.getVisit().getVisitType());
 	}
 	
 	/**
@@ -132,14 +125,6 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 		new ExistingOrNewVisitAssignmentHandler().beforeCreateEncounter(encounter);
 		
 		Assert.assertNotNull(encounter.getVisit());
-		
-		//The visit needs to be persisted, else the assert below will throw
-		//org.hibernate.TransientObjectException: object references an unsaved transient 
-		//instance - save the transient instance before flushing: org.openmrs.Visit
-		Visit visit = encounter.getVisit();
-		encounter.setVisit(null);
-		Context.getVisitService().saveVisit(visit);
-		encounter.setVisit(visit);
 		
 		//should be set according to: 1:2 encounterTypeId:visitTypeId
 		Assert.assertEquals(1, encounter.getEncounterType().getEncounterTypeId().intValue());

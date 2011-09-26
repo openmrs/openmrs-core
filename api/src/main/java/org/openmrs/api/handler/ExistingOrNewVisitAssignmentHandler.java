@@ -17,9 +17,9 @@ import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -61,7 +61,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		visit.setLocation(encounter.getLocation());
 		visit.setPatient(encounter.getPatient());
 		
-		visit.setVisitType(getVisitType(encounter.getEncounterType()));
+		visit.setVisitType(getVisitType(encounter));
 		
 		//set stop date time to last millisecond of the encounter day.
 		visit.setStopDatetime(OpenmrsUtil.getLastMomentOfDay(encounter.getEncounterDatetime()));
@@ -70,18 +70,21 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 	}
 	
 	/**
-	 * Gets the visit type for an encounter type.
+	 * Gets the visit type for an encounter.
 	 * 
-	 * @param encounterType the encounter type.
-	 * @return the visit type for the encounter type.
+	 * @param encounterType the encounter.
+	 * @return the visit type for the encounter.
 	 */
-	private VisitType getVisitType(EncounterType encounterType) {
+	protected VisitType getVisitType(Encounter encounter) throws APIException {
+		
+		//TODO this GP should be parsed and cached (as a map) instead of fetching it and parsing it every time. 
+		//(And we should have a global property change listener to recalculate it when that GP is changed.)
 		String value = Context.getAdministrationService().getGlobalPropertyValue(
 		    OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING, "");
-		
+				
 		//Value should be in this format "3:4, 5:2, 1:2, 2:2" for encounterTypeId:visitTypeId
 		if (!StringUtils.isBlank(value)) {
-			String targetEncounterTypeId = encounterType.getId().toString();
+			String targetEncounterTypeId = encounter.getEncounterType().getId().toString();
 			
 			String[] mappings = value.split(",");
 			for (String mapping : mappings) {
@@ -98,8 +101,8 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 				}
 			}
 			
-			//TODO Reaching here means this encounter type is not in the user's mapping.
-			//should we throw an exception or just ignore and assign the first visit type?
+			//Reaching here means this encounter type is not in the user's mapping.
+			throw new APIException("Failed to find visit type for encounterTypeId:" + encounter.getEncounterType().getEncounterTypeId());
 		}
 		
 		return Context.getVisitService().getAllVisitTypes().get(0);
