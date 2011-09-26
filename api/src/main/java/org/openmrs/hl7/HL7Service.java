@@ -665,4 +665,17 @@ public interface HL7Service extends OpenmrsService {
 	 */
 	public void loadHL7InArchiveData(HL7InArchive archive) throws APIException;
 	
+	/**
+	 * Get {@link HL7QueueItem} with the given uuid.
+	 * <p>
+	 * It calls {@link #getHL7InQueueByUuid(String)}, {@link #getHL7InArchiveByUuid(String)} and
+	 * {@link #getHL7InErrorByUuid(String)} consecutively and returns the first non-null result.
+	 * 
+	 * @param uuid
+	 * @return the queue item or <code>null</code>
+	 * @throws APIException
+	 * @sine 1.9
+	 */
+	public HL7QueueItem getHl7QueueItemByUuid(String uuid) throws APIException;
+	
 }
