@@ -21,7 +21,7 @@
 			column="uuid" length="38" unique="true"/>
 
 		<property name="gender" type="java.lang.String" column="gender"
-			not-null="true" length="50" />
+			not-null="false" length="50" />
 
 		<property name="birthdate" type="java.util.Date"
 			column="birthdate" length="10" />

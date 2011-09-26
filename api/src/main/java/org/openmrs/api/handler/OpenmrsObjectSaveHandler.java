@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
+import org.openmrs.Voidable;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.util.Reflect;
@@ -71,9 +72,11 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 			try {
 				Object value = PropertyUtils.getProperty(openmrsObject, field.getName());
 				if (value != null && value.toString().isEmpty()) {
-					//TODO Commenting this out until we resolve the cases where some non
-					//nullable fields have emptry string holders.
-					//PropertyUtils.setProperty(openmrsObject, field.getName(), null);
+					
+					//Set to null only if object is not already voided
+					if (!(openmrsObject instanceof Voidable && ((Voidable)openmrsObject).isVoided())) {
+						PropertyUtils.setProperty(openmrsObject, field.getName(), null);
+					}
 				}
 			}
 			catch (Exception ex) {
