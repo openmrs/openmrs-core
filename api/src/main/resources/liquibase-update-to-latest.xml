@@ -4438,6 +4438,23 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
+	<changeSet id="20110926-1200" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="concept_source"/>
+			<not>
+				<sqlCheck expectedResult="0">
+	 	 	 		select count(*) from concept_source where hl7_code like ''
+	 	 	 	</sqlCheck>
+ 	 	 	</not>
+		</preConditions>
+		<comment>
+			Change all empty concept_source.hl7_code to NULL
+		</comment>
+		<sql>
+			update concept_source set hl7_code = NULL where hl7_code like ''
+		</sql>
+	</changeSet>
+	
 	<changeSet id="20110708-2105" author="cta" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
