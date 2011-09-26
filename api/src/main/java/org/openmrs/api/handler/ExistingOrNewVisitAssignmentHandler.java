@@ -81,7 +81,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		//(And we should have a global property change listener to recalculate it when that GP is changed.)
 		String value = Context.getAdministrationService().getGlobalPropertyValue(
 		    OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING, "");
-				
+		
 		//Value should be in this format "3:4, 5:2, 1:2, 2:2" for encounterTypeId:visitTypeId
 		if (!StringUtils.isBlank(value)) {
 			String targetEncounterTypeId = encounter.getEncounterType().getId().toString();
@@ -102,7 +102,8 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 			}
 			
 			//Reaching here means this encounter type is not in the user's mapping.
-			throw new APIException("Failed to find visit type for encounterTypeId:" + encounter.getEncounterType().getEncounterTypeId());
+			throw new APIException("Failed to find visit type for encounterTypeId:"
+			        + encounter.getEncounterType().getEncounterTypeId());
 		}
 		
 		return Context.getVisitService().getAllVisitTypes().get(0);

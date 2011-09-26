@@ -260,7 +260,7 @@ public interface HL7Service extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public List<HL7InArchive> getHL7InArchiveBatch(int start, int length, int messageState, String query)
-	    throws APIException;
+	        throws APIException;
 	
 	/**
 	 * the total count of all HL7InArchive objects in the database
