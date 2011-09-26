@@ -1,7 +1,7 @@
 <%@page import="java.util.Locale" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Concept Map Types" otherwise="/login.htm"
+<openmrs:require privilege="Manage Concept Reference Terms" otherwise="/login.htm"
                  redirect="/admin/concepts/conceptReferenceTerm.form"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
@@ -95,7 +95,6 @@ $j(document).ready( function() {
 <h2><spring:message code="ConceptReferenceTerm.form.title"/></h2>
 <br/>
 
-<openmrs:hasPrivilege privilege="Manage Concept Reference Terms">
 <c:if test="${conceptReferenceTermModel.conceptReferenceTerm.conceptReferenceTermId != null && 
 	conceptReferenceTermModel.conceptReferenceTerm.retired}">
 <form:form action="unretireConceptReferenceTerm.htm" method="post" modelAttribute="conceptReferenceTermModel">
@@ -107,7 +106,6 @@ $j(document).ready( function() {
 	</div>
 </form:form>
 </c:if>
-</openmrs:hasPrivilege>
 
 <spring:hasBindErrors name="conceptReferenceTermModel">
 	<spring:message code="fix.error"/>
@@ -356,7 +354,6 @@ $j(document).ready( function() {
 <table cellpadding="3" cellspacing="3">
 	<tr>
 		<td>
-			<openmrs:hasPrivilege privilege="Manage Concept Reference Terms">
 			<c:if test="${conceptReferenceTermModel.conceptReferenceTerm.retired == false }">
 			<input type="submit" value='<spring:message code="general.delete"/>' onclick="javascript:$j('#delete-dialog').dialog('open')"/>
 			<div id="delete-dialog" title="<spring:message code="general.delete.confirmation"/>">
@@ -380,7 +377,6 @@ $j(document).ready( function() {
 			</form:form>
 			</div>
 			</c:if>
-			</openmrs:hasPrivilege>
 		</td>
 		<td>
 			<openmrs:hasPrivilege privilege="Purge Concept Reference Terms">

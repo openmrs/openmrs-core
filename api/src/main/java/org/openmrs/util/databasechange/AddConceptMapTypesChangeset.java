@@ -14,11 +14,13 @@
 package org.openmrs.util.databasechange;
 
 import java.sql.BatchUpdateException;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -97,8 +99,8 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				existingMapTypes.add(rs.getString("name").trim().toUpperCase());
 			
 			pStmt = connection
-			        .prepareStatement("INSERT INTO concept_map_type (name, is_hidden, creator, date_created, uuid) VALUES(?,?,"
-			                + userId + ", NOW(),?)");
+			        .prepareStatement("INSERT INTO concept_map_type (name, is_hidden, retired, creator, date_created, uuid) VALUES(?,?,?,"
+			                + userId + ", ?,?)");
 			
 			for (String mapType : visibleConceptMapTypeArray) {
 				mapType = mapType.trim();
@@ -107,7 +109,9 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				
 				pStmt.setString(1, mapType);
 				pStmt.setBoolean(2, false);
-				pStmt.setString(3, UUID.randomUUID().toString());
+				pStmt.setBoolean(3, false);
+				pStmt.setDate(4, new Date(Calendar.getInstance().getTimeInMillis()));
+				pStmt.setString(5, UUID.randomUUID().toString());
 				pStmt.addBatch();
 			}
 			
@@ -118,7 +122,9 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				
 				pStmt.setString(1, mapType);
 				pStmt.setBoolean(2, true);
-				pStmt.setString(3, UUID.randomUUID().toString());
+				pStmt.setBoolean(3, false);
+				pStmt.setDate(4, new Date(Calendar.getInstance().getTimeInMillis()));
+				pStmt.setString(5, UUID.randomUUID().toString());
 				pStmt.addBatch();
 			}
 			
@@ -157,8 +163,10 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				}
 				catch (Exception rbe) {
 					log.warn("Error generated while rolling back batch insert", be);
-					throw new CustomChangeException("Failed to insert one or more concet map types:", be);
 				}
+				
+				//marks the changeset as a failed one
+				throw new CustomChangeException("Failed to insert one or more concet map types");
 			}
 		}
 		catch (DatabaseException e) {
