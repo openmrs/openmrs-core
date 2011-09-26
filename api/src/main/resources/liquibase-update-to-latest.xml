@@ -5635,5 +5635,19 @@
 		<renameColumn tableName="concept_map_type" oldColumnName="isHidden" newColumnName="is_hidden" columnDataType="boolean"/>
 	</changeSet>
 
+	<changeSet id="20110919-0639-void_empty_attributes" author="dkayiwa" dbms="mysql" >
+		<comment>
+			Void all attributes that have empty string values.
+		</comment>
+		<sql>
+			<![CDATA[
+				UPDATE person_attribute set voided = true, void_reason = 'Empty values not allowed', 
+				date_voided = date_created, voided_by = creator
+				WHERE value = ''
+				AND voided = false
+			]]>
+		</sql>
+	</changeSet>
+	
 </databaseChangeLog>
 
