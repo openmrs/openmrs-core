@@ -99,7 +99,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 		
 		new ExistingOrNewVisitAssignmentHandler().beforeCreateEncounter(encounter);
 		
-		Assert.assertNotNull(encounter.getVisit());		
+		Assert.assertNotNull(encounter.getVisit());
 		Assert.assertEquals(visitType, encounter.getVisit().getVisitType());
 	}
 	

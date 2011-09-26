@@ -325,7 +325,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
 	@Override
 	public HL7InQueue getHL7InQueueByUuid(String uuid) throws APIException {
-	    return dao.getHL7InQueueByUuid(uuid);
+		return dao.getHL7InQueueByUuid(uuid);
 	}
 	
 	/**
@@ -482,7 +482,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
 	@Override
 	public HL7InError getHL7InErrorByUuid(String uuid) throws APIException {
-	    return dao.getHL7InErrorByUuid(uuid);
+		return dao.getHL7InErrorByUuid(uuid);
 	}
 	
 	/**
