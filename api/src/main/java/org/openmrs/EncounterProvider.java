@@ -16,6 +16,8 @@ package org.openmrs;
 
 /**
  * Mapping Class between Encounters and Providers which allows many to many relationship.
+ * 
+ * @since 1.9
  */
 public class EncounterProvider extends BaseOpenmrsData {
 	
