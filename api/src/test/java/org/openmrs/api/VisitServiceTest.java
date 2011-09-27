@@ -348,8 +348,8 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link VisitService#voidVisit(Visit,String)}
 	 */
 	@Test
-	@Verifies(value = "should void encounters of the visit", method = "voidVisit(Visit,String)")
-	public void voidVisit_shouldVoidEncountersOfTheVisit() throws Exception {
+	@Verifies(value = "should void encounters with visit", method = "voidVisit(Visit,String)")
+	public void voidVisit_shouldVoidEncountersWithVisit() throws Exception {
 		//given
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Visit visit = service.getVisit(7);
@@ -391,15 +391,19 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link VisitService#unvoidVisit(Visit)}
 	 */
 	@Test
-	@Verifies(value = "should unvoid encounters of the visit", method = "unvoidVisit(Visit)")
-	public void unvoidVisit_shouldUnvoidEncountersOfTheVisit() throws Exception {
+	@Verifies(value = "should unvoid encounters voided with visit", method = "unvoidVisit(Visit)")
+	public void unvoidVisit_shouldUnvoidEncountersVoidedWithVisit() throws Exception {
 		//given
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Visit visit = service.getVisit(7);
+		
+		List<Encounter> encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, true);
+		Assert.assertEquals(2, encountersByVisit.size());
+		
 		service.voidVisit(visit, "test reason");
 		Assert.assertTrue(visit.isVoided());
 		
-		List<Encounter> encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
+		encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
 		Assert.assertTrue(encountersByVisit.isEmpty());
 		
 		//when
@@ -409,7 +413,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(visit.isVoided());
 		
 		encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
-		Assert.assertFalse(encountersByVisit.isEmpty());
+		Assert.assertEquals(1, encountersByVisit.size());
 	}
 	
 	/**

@@ -65,7 +65,14 @@ public class VisitFormController {
 	 * Processes requests to display the form
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = VISIT_FORM_URL)
-	public String showForm() {
+	public String showForm(@ModelAttribute("visit") Visit visit, ModelMap model) {
+		List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(visit, false);
+		model.put("encounterCount", encounters.size());
+		
+		Integer observationCount = Context.getObsService().getObservationCount(null, encounters, null, null,
+		    null, null, null, null, null, false);
+		model.put("observationCount", observationCount);
+		
 		return VISIT_FORM;
 	}
 	
@@ -82,28 +89,6 @@ public class VisitFormController {
 		}
 		
 		return visit;
-	}
-	
-	@ModelAttribute("encountersByVisitCount")
-	public Integer getEncountersByVisitCount(@ModelAttribute("visit") Visit visit) {
-		if (visit != null && visit.getId() != null) {
-			List<Encounter> encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
-			return encountersByVisit.size();
-		}
-		return null;
-	}
-	
-	@ModelAttribute("obsByVisitCount")
-	public Integer getObsByVisitCount(@ModelAttribute("visit") Visit visit) {
-		if (visit != null && visit.getId() != null) {
-			List<Encounter> encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
-			int obsByVisitCount = 0;
-			for (Encounter encounter : encountersByVisit) {
-	            obsByVisitCount += encounter.getObs().size();
-            }
-			return obsByVisitCount;
-		}
-		return null;
 	}
 	
 	/**

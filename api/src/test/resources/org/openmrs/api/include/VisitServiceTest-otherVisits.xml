@@ -23,6 +23,7 @@
   
   <encounter_type encounter_type_id="1" name="Test Enc Type B" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="759799ab-c9a5-435e-b671-77773ada74e4"/>
   <encounter encounter_id="15" encounter_type="1" form_id="1" encounter_datetime="2005-01-01 02:00:00.0" patient_id="2" location_id="1" visit_id="7" creator="1" date_created="2005-01-01 02:00:00.0" voided="0" uuid="7fffd6b9-0970-4967-88c7-0b7b50f12bc6"/>
+   <encounter encounter_id="16" encounter_type="1" form_id="1" encounter_datetime="2005-01-01 02:00:00.0" patient_id="2" location_id="1" visit_id="7" creator="1" date_created="2005-01-01 02:00:00.0" voided="1" date_voided="2005-01-01 02:00:00.0" void_reason="for testing" uuid="929809cc-8ef7-11e0-a7a1-91c116298e4b"/>
   <encounter_role encounter_role_id="2" name = "surgeon" description = "who did the operation" creator="1" date_created="2005-01-01 00:00:00.0" retired = "true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="for testing" uuid="430bbb70-6a9c-4e1e-badb-9c1054b1b5e9"/>
   <encounter_provider encounter_provider_id="3" encounter_id="15" provider_id="1" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="8a030bef-4362-4a1c-9967-ac4a4b425b45" />
 </dataset>

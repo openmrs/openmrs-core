@@ -324,7 +324,7 @@ $j(document).ready( function() {
 			<c:if test="${param.patientId != null}">
 				<input type="hidden" name="patientId" value="${param.patientId}"/>
 			</c:if>
-			<p><spring:message code="Visit.delete.info" arguments="${encountersByVisitCount}, ${obsByVisitCount}"/></p>
+			<p><spring:message code="Visit.delete.info" arguments="${encounterCount}, ${observationCount}"/></p>
 			<table cellpadding="3" cellspacing="3" align="center">
 				<tr>
 					<th><spring:message code="general.reason"/></th>
