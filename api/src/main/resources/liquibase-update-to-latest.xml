@@ -5869,8 +5869,8 @@
  		</preConditions>
  		<comment>Creating providers for persons from the encounter table</comment>
  		<sql>
- 			insert into provider(person_id, creator, date_created, retired, uuid)
- 				select distinct person.person_id, 1, now(), person.voided, person.uuid
+ 			insert into provider(person_id, identifier, creator, date_created, retired, uuid)
+ 				select distinct person.person_id, person.person_id, 1, now(), person.voided, person.uuid
  				from person as person inner join encounter as encounter
  				on encounter.provider_id = person.person_id 
  				where encounter.provider_id not in (select person_id from provider);
