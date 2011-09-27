@@ -13,21 +13,21 @@
  */
 package org.openmrs.api.handler;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.TransientObjectException;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.Voidable;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
-import org.openmrs.util.Reflect;
+import org.openmrs.api.APIException;
 
 /**
  * This class deals with any object that implements {@link OpenmrsObject}. When an
@@ -59,28 +59,47 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 			openmrsObject.setUuid(UUID.randomUUID().toString());
 		
 		//Set all empty string properties to null
-		List<Field> fields = Reflect.getAllFields(openmrsObject.getClass());
-		for (Field field : fields) {
-			if (Modifier.isStatic(field.getModifiers())) {
+		PropertyDescriptor[] properties = PropertyUtils.getPropertyDescriptors(openmrsObject);
+		for (PropertyDescriptor property : properties) {
+			
+			if (property.getPropertyType() == null) {
 				continue;
 			}
 			
-			if (!field.getType().getSimpleName().equals("String")) {
+			//For instance Patient has no setter methods for familyName, middleName and givenName
+			//yet it has getters for these properties and is why we loop through them.
+			if (property.getWriteMethod() == null) {
+				continue;
+			}
+			
+			if (!property.getPropertyType().getName().equals("java.lang.String")) {
 				continue;
 			}
 			
 			try {
-				Object value = PropertyUtils.getProperty(openmrsObject, field.getName());
-				if (value != null && value.toString().isEmpty()) {
+				Object value = PropertyUtils.getProperty(openmrsObject, property.getName());
+				if (value != null && ((String) value).isEmpty()) {
 					
 					//Set to null only if object is not already voided
 					if (!(openmrsObject instanceof Voidable && ((Voidable) openmrsObject).isVoided())) {
-						PropertyUtils.setProperty(openmrsObject, field.getName(), null);
+						PropertyUtils.setProperty(openmrsObject, property.getName(), null);
 					}
 				}
 			}
+			catch (InvocationTargetException ex) {
+				if (ex.getTargetException() instanceof TransientObjectException) {
+					//The FormServiceTest throws this for the "xslt" and "template" properties, with this error message:
+					//org.hibernate.TransientObjectException: object references an unsaved transient 
+					//instance - save the transient instance before flushing: org.openmrs.Form
+					log.error("Failed to change property value from empty string to null for " + property.getName(), ex);
+				} else {
+					throw new APIException("Failed to change property value from empty string to null for "
+					        + property.getName(), ex);
+				}
+			}
 			catch (Exception ex) {
-				log.error("Failed to set property value for " + field.getName() + " to NULL", ex);
+				throw new APIException(
+				        "Failed to change property value from empty string to null for " + property.getName(), ex);
 			}
 		}
 	}
