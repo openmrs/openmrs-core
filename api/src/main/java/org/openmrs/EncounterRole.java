@@ -17,6 +17,7 @@ package org.openmrs;
  * An EncounterRole a role specific to the encounter. While these could match up to existing
  * organizational roles (e.g., "Nurse"), they don't have to (e.g., "Lead Surgeon")
  *
+ * @since 1.9
  */
 public class EncounterRole extends BaseOpenmrsMetadata {
 	
