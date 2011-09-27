@@ -66,13 +66,7 @@ public class VisitFormController {
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = VISIT_FORM_URL)
 	public String showForm(@ModelAttribute("visit") Visit visit, ModelMap model) {
-		List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(visit, false);
-		model.put("encounterCount", encounters.size());
-		
-		Integer observationCount = Context.getObsService().getObservationCount(null, encounters, null, null,
-		    null, null, null, null, null, false);
-		model.put("observationCount", observationCount);
-		
+		addEncounterAndObservationCounts(visit, model);
 		return VISIT_FORM;
 	}
 	
@@ -87,7 +81,7 @@ public class VisitFormController {
 			if (patientId != null)
 				visit.setPatient(Context.getPatientService().getPatient(patientId));
 		}
-		
+		addEncounterAndObservationCounts(visit, model);
 		return visit;
 	}
 	
@@ -104,6 +98,7 @@ public class VisitFormController {
 	@RequestMapping(method = RequestMethod.POST, value = VISIT_FORM_URL)
 	public String saveVisit(HttpServletRequest request, @ModelAttribute("visit") Visit visit, BindingResult result,
 	                        ModelMap model) {
+		addEncounterAndObservationCounts(visit, model);
 		
 		String[] ids = ServletRequestUtils.getStringParameters(request, "encounterIds");
 		List<Integer> encounterIds = new ArrayList<Integer>();
@@ -185,6 +180,7 @@ public class VisitFormController {
 	public String voidVisit(WebRequest request, @ModelAttribute(value = "visit") Visit visit,
 	                        @RequestParam(required = false, value = "voidReason") String voidReason, SessionStatus status,
 	                        ModelMap model) {
+		addEncounterAndObservationCounts(visit, model);
 		
 		if (!StringUtils.hasText(voidReason))
 			voidReason = Context.getMessageSourceService().getMessage("general.default.voidReason");
@@ -218,6 +214,7 @@ public class VisitFormController {
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/visits/unvoidVisit")
 	public String unvoidVisit(WebRequest request, @ModelAttribute(value = "visit") Visit visit, SessionStatus status,
 	                          ModelMap model) {
+		addEncounterAndObservationCounts(visit, model);
 		
 		try {
 			Context.getVisitService().unvoidVisit(visit);
@@ -248,6 +245,8 @@ public class VisitFormController {
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/visits/purgeVisit")
 	public String purgeVisit(WebRequest request, @ModelAttribute(value = "visit") Visit visit, SessionStatus status,
 	                         ModelMap model) {
+		addEncounterAndObservationCounts(visit, model);
+		
 		try {
 			Integer patientId = visit.getPatient().getPatientId();
 			Context.getVisitService().purgeVisit(visit);
@@ -293,5 +292,21 @@ public class VisitFormController {
 			for (ObjectError error : encounterErrors.getAllErrors())
 				result.reject(error.getCode(), error.getArguments(), error.getDefaultMessage());
 		}
+	}
+	
+	private void addEncounterAndObservationCounts(Visit visit, ModelMap model) {
+		int encounterCount = 0;
+		int observationCount = 0;
+		if (visit != null && visit.getId() != null) {
+			List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(visit, false);
+			encounterCount = encounters.size();
+			
+			if (encounters.isEmpty()) {
+				observationCount = Context.getObsService().getObservationCount(null, encounters, null, null, null, null,
+				    null, null, null, false);
+			}
+		}
+		model.put("encounterCount", encounterCount);
+		model.put("observationCount", observationCount);
 	}
 }
