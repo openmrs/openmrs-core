@@ -72,7 +72,7 @@ public class VisitFormController {
 	
 	@ModelAttribute("visit")
 	public Visit getVisit(@RequestParam(value = "visitId", required = false) Integer visitId,
-	                      @RequestParam(value = "patientId", required = false) Integer patientId, ModelMap model) {
+	        @RequestParam(value = "patientId", required = false) Integer patientId, ModelMap model) {
 		Visit visit = null;
 		if (visitId != null)
 			visit = Context.getVisitService().getVisit(visitId);
@@ -96,7 +96,7 @@ public class VisitFormController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = RequestMethod.POST, value = VISIT_FORM_URL)
 	public String saveVisit(HttpServletRequest request, @ModelAttribute("visit") Visit visit, BindingResult result,
-	                        ModelMap model) {
+	        ModelMap model) {
 		addEncounterAndObservationCounts(visit, model);
 		
 		String[] ids = ServletRequestUtils.getStringParameters(request, "encounterIds");
@@ -177,8 +177,7 @@ public class VisitFormController {
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/visits/voidVisit")
 	public String voidVisit(WebRequest request, @ModelAttribute(value = "visit") Visit visit,
-	                        @RequestParam(required = false, value = "voidReason") String voidReason, SessionStatus status,
-	                        ModelMap model) {
+	        @RequestParam(required = false, value = "voidReason") String voidReason, SessionStatus status, ModelMap model) {
 		addEncounterAndObservationCounts(visit, model);
 		
 		if (!StringUtils.hasText(voidReason))
@@ -194,8 +193,8 @@ public class VisitFormController {
 		}
 		catch (APIException e) {
 			log.warn("Error occurred while attempting to void visit", e);
-			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-			    Context.getMessageSourceService().getMessage("Visit.void.error"), WebRequest.SCOPE_SESSION);
+			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+			    "Visit.void.error"), WebRequest.SCOPE_SESSION);
 		}
 		
 		return VISIT_FORM;
@@ -212,21 +211,21 @@ public class VisitFormController {
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/visits/unvoidVisit")
 	public String unvoidVisit(WebRequest request, @ModelAttribute(value = "visit") Visit visit, SessionStatus status,
-	                          ModelMap model) {
+	        ModelMap model) {
 		addEncounterAndObservationCounts(visit, model);
 		
 		try {
 			Context.getVisitService().unvoidVisit(visit);
 			if (log.isDebugEnabled())
 				log.debug("Unvoided visit with id: " + visit.getId());
-			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
-			    Context.getMessageSourceService().getMessage("Visit.unvoided"), WebRequest.SCOPE_SESSION);
+			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
+			    "Visit.unvoided"), WebRequest.SCOPE_SESSION);
 			return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
 		}
 		catch (APIException e) {
 			log.warn("Error occurred while attempting to unvoid visit", e);
-			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-			    Context.getMessageSourceService().getMessage("Visit.unvoid.error"), WebRequest.SCOPE_SESSION);
+			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+			    "Visit.unvoid.error"), WebRequest.SCOPE_SESSION);
 		}
 		
 		return VISIT_FORM;
@@ -243,7 +242,7 @@ public class VisitFormController {
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/visits/purgeVisit")
 	public String purgeVisit(WebRequest request, @ModelAttribute(value = "visit") Visit visit, SessionStatus status,
-	                         ModelMap model) {
+	        ModelMap model) {
 		addEncounterAndObservationCounts(visit, model);
 		
 		try {
@@ -257,8 +256,8 @@ public class VisitFormController {
 		}
 		catch (APIException e) {
 			log.warn("Error occurred while attempting to purge visit", e);
-			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-			    Context.getMessageSourceService().getMessage("Visit.purge.error"), WebRequest.SCOPE_SESSION);
+			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+			    "Visit.purge.error"), WebRequest.SCOPE_SESSION);
 		}
 		//there was an exception thrown
 		return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
