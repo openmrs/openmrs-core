@@ -39,6 +39,7 @@ public class VisitVoidHandler implements VoidHandler<Visit> {
 	public void handle(Visit voidableObject, User voidingUser, Date voidedDate, String voidReason) {
 		List<Encounter> encountersByVisit = Context.getEncounterService().getEncountersByVisit(voidableObject, false);
 		for (Encounter encounter : encountersByVisit) {
+			encounter.setDateVoided(voidedDate);
 			Context.getEncounterService().voidEncounter(encounter, voidReason);
 		}
 	}

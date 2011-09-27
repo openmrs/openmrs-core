@@ -26,7 +26,7 @@ import org.openmrs.api.context.Context;
 /**
  * This class sets the void attributes on the given {@link Visit} object when an unvoid* method is
  * called with this class. This differs from the {@link BaseUnvoidHandler} because unvoiding the
- * Visit object implies unvoiding encounters.
+ * Visit object implies unvoiding encounters voided with that visit.
  * 
  * @see RequiredDataAdvice
  * @see UnvoidHandler
@@ -36,10 +36,13 @@ import org.openmrs.api.context.Context;
 public class VisitUnvoidHandler implements UnvoidHandler<Visit> {
 	
 	@Override
-	public void handle(Visit voidableObject, User voidingUser, Date origParentVoidedDate, String unused) {
-		List<Encounter> encountersByVisit = Context.getEncounterService().getEncountersByVisit(voidableObject, true);
+	public void handle(Visit visit, User voidingUser, Date origParentVoidedDate, String unused) {
+		List<Encounter> encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, true);
 		for (Encounter encounter : encountersByVisit) {
-			Context.getEncounterService().unvoidEncounter(encounter);
+			if (encounter.isVoided() && encounter.getDateVoided().equals(visit.getDateVoided())
+			        && encounter.getVoidReason().equals(visit.getVoidReason())) {
+				Context.getEncounterService().unvoidEncounter(encounter);
+			}
 		}
 	}
 	
