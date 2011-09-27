@@ -301,7 +301,7 @@ public class VisitFormController {
 			List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(visit, false);
 			encounterCount = encounters.size();
 			
-			if (encounters.isEmpty()) {
+			if (!encounters.isEmpty()) {
 				observationCount = Context.getObsService().getObservationCount(null, encounters, null, null, null, null,
 				    null, null, null, false);
 			}
