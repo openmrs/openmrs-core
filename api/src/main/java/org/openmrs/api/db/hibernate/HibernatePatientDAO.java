@@ -17,11 +17,14 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -178,6 +181,11 @@ public class HibernatePatientDAO implements PatientDAO {
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException {
+		if (StringUtils.isBlank(name) && StringUtils.isBlank(identifier)
+		        && (identifierTypes == null || identifierTypes.isEmpty())) {
+			return Collections.emptyList();
+		}
+		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
 		    matchIdentifierExactly, true);

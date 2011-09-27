@@ -515,4 +515,24 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to purge location attribute types")
 	public static final String PURGE_LOCATION_ATTRIBUTE_TYPES = "Purge Location Attribute Types";
+	
+	@AddOnStartup(description = "Able to view Provider")
+	public static final String VIEW_PROVIDERS = "View Providers";
+	
+	@AddOnStartup(description = "Able to edit Provider")
+	public static final String EDIT_PROVIDER = "Edit Providers";
+	
+	@AddOnStartup(description = "Able to add Provider")
+	public static final String ADD_PROVIDER = "Add Providers";
+	
+	@AddOnStartup(description = "Able to delete provider")
+	public static final String PURGE_PROVIDER = "Purge Providers";
+	
+	@AddOnStartup(description = "Able to view encounter roles")
+	public static final String VIEW_ENCOUNTER_ROLES = "View Encounter Roles";
+	
+	public static final String PURGE_ENCOUNTER_ROLES = "Purge Encounter Roles";
+	
+	@AddOnStartup(description = "Able to add/edit/retire encounter roles")
+	public static final String MANAGE_ENCOUNTER_ROLES = "Manage Encounter Roles";
 }

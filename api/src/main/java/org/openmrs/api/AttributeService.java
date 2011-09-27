@@ -13,12 +13,14 @@
  */
 package org.openmrs.api;
 
-import java.util.Set;
-
 import org.openmrs.attribute.Attribute;
-import org.openmrs.attribute.Customizable;
 import org.openmrs.attribute.AttributeType;
+import org.openmrs.attribute.BaseAttributeType;
+import org.openmrs.attribute.Customizable;
 import org.openmrs.attribute.handler.AttributeHandler;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains methods pertaining to user-defined attributes that extend core data types.
@@ -55,4 +57,12 @@ public interface AttributeService extends OpenmrsService {
 	 */
 	AttributeHandler<?> getHandler(AttributeType<?> attributeType);
 	
+	/**
+	 * Uses the appropriate handlers to serialize all attribute values in the input map.
+	 * This is a convenience method XyzService.getXyz(..., attributeValues, ...). 
+	 * 
+	 * @param attributeValues
+	 * @return
+	 */
+	<T extends AttributeType<?>> Map<T, String> getSerializedAttributeValues(Map<T, Object> attributeValues);
 }

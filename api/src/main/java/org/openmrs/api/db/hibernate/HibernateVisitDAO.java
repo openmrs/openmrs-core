@@ -13,12 +13,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -35,6 +35,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.VisitDAO;
+import org.openmrs.attribute.AttributeType;
 
 /**
  * Hibernate specific visit related functions This class should not be used directly. All calls
@@ -138,15 +139,13 @@ public class HibernateVisitDAO implements VisitDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.VisitDAO#getVisits(java.util.Collection, java.util.Collection,
-	 *      java.util.Collection, java.util.Collection, java.util.Date, java.util.Date,
-	 *      java.util.Date, java.util.Date, boolean)
+	 * @see org.openmrs.api.db.VisitDAO#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Date, java.util.Date, java.util.Date, java.util.Date, java.util.Map, boolean, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, String> serializedAttributeValues,
+	        Date minEndDatetime, Date maxEndDatetime, final Map<VisitAttributeType, String> serializedAttributeValues,
 	        boolean includeInactive, boolean includeVoided) throws DAOException {
 		
 		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
@@ -179,29 +178,14 @@ public class HibernateVisitDAO implements VisitDAO {
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("voided", false));
 		
-		if (serializedAttributeValues == null)
-			return criteria.list();
+		List<Visit> visits = criteria.list();
 		
-		List<Visit> ret = new ArrayList<Visit>();
-		for (Visit visit : (List<Visit>) criteria.list()) {
-			boolean allMatch = true;
-			for (Map.Entry<VisitAttributeType, String> e : serializedAttributeValues.entrySet()) {
-				boolean match = false;
-				for (VisitAttribute attr : visit.getActiveAttributes(e.getKey())) {
-					if (attr.getSerializedValue().equals(e.getValue())) {
-						match = true;
-						break;
-					}
-				}
-				if (!match) {
-					allMatch = false;
-					break;
-				}
-			}
-			if (allMatch)
-				ret.add(visit);
+		if (serializedAttributeValues != null) {
+			CollectionUtils.filter(visits, new AttributeMatcherPredicate<Visit, VisitAttributeType>(
+			        serializedAttributeValues));
 		}
-		return ret;
+		
+		return visits;
 	}
 	
 	/**

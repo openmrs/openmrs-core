@@ -16,6 +16,7 @@ package org.openmrs.api.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -23,12 +24,14 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
@@ -36,6 +39,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
@@ -45,6 +49,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.EncounterValidator;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
@@ -266,8 +271,25 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
 	        boolean includeVoided) {
-		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, null, null,
-		    includeVoided);
+		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, usersToProviders(providers),
+		    null, null, includeVoided);
+	}
+	
+	/**
+	 * Helper method that finds the corresponding providers for a collection of users
+	 * 
+	 * @param users
+	 * @return a collection of providers, with 0-n for each item in users
+	 */
+	private Collection<Provider> usersToProviders(Collection<User> users) {
+		if (users == null)
+			return null;
+		ProviderService providerService = Context.getProviderService();
+		Collection<Provider> ret = new HashSet<Provider>();
+		for (User u : users) {
+			ret.addAll(providerService.getProvidersByPerson(u.getPerson()));
+		}
+		return ret;
 	}
 	
 	/**
@@ -275,8 +297,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
+	@Override
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
 	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
 		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, visitTypes, visits,
 		    includeVoided);
@@ -416,7 +439,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws APIException {
 		if (reason == null)
-			throw new IllegalArgumentException("The 'reason' argument is required");
+			throw new IllegalArgumentException("The 'reason' for retiring is required");
 		
 		encounterType.setRetired(true);
 		encounterType.setRetireReason(reason);
@@ -669,4 +692,65 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new APIException("Failed to instantiate assignment handler object for class class: " + value, ex);
 		}
 	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#saveEncounterRole(org.openmrs.EncounterRole) 
+	 */
+	@Override
+	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws APIException {
+		ValidateUtil.validate(encounterRole);
+		dao.saveEncounterRole(encounterRole);
+		return encounterRole;
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounterRole(Integer)
+	 */
+	@Override
+	public EncounterRole getEncounterRole(Integer encounterRoleId) throws APIException {
+		return dao.getEncounterRole(encounterRoleId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#purgeEncounterRole(org.openmrs.EncounterRole)
+	 */
+	@Override
+	public void purgeEncounterRole(EncounterRole encounterRole) throws APIException {
+		dao.deleteEncounterRole(encounterRole);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getAllEncounterRoles(boolean)
+	 */
+	@Override
+	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired) {
+		return dao.getAllEncounterRoles(includeRetired);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounterRoleByUuid(String) 
+	 */
+	@Override
+	public EncounterRole getEncounterRoleByUuid(String uuid) throws APIException {
+		return dao.getEncounterRoleByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)
+	 */
+	@Override
+	public EncounterRole retireEncounterRole(EncounterRole encounterRole, String reason) throws APIException {
+		if (reason == null)
+			throw new IllegalArgumentException("The 'reason' for retiring is required");
+		return saveEncounterRole(encounterRole);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#unretireEncounterRole(org.openmrs.EncounterRole)
+	 */
+	@Override
+	public EncounterRole unretireEncounterRole(EncounterRole encounterRole) throws APIException {
+		return saveEncounterRole(encounterRole);
+	}
+	
 }

@@ -92,6 +92,7 @@
         <property name="messageSourceService"><ref bean="messageSourceService"/></property>
         <property name="activeListService"><ref bean="activeListService"/></property>
         <property name="visitService"><ref bean="visitService"/></property>
+        <property name="providerService"><ref bean="providerService"/></property>
 	</bean>	
 	
 	<bean id="context" class="org.openmrs.api.context.Context">
@@ -175,6 +176,9 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="visitDAO" class="org.openmrs.api.db.hibernate.HibernateVisitDAO">
+        <property name="sessionFactory"><ref bean="sessionFactory"/></property>
+    </bean>
+	<bean id="providerDAO" class="org.openmrs.api.db.hibernate.HibernateProviderDAO">
         <property name="sessionFactory"><ref bean="sessionFactory"/></property>
     </bean>
 	
@@ -261,7 +265,9 @@
 	<bean id="visitServiceTarget" class="org.openmrs.api.impl.VisitServiceImpl">
         <property name="visitDAO"><ref bean="visitDAO"/></property>
 	</bean>
-	
+	<bean id="providerServiceTarget" class="org.openmrs.api.impl.ProviderServiceImpl">
+        <property name="providerDAO"><ref bean="providerDAO"/></property>
+	</bean>	
 	
 	<!-- Cohort Service setup -->
 	<bean id="cohortServiceTarget" class="org.openmrs.api.impl.CohortServiceImpl">
@@ -584,6 +590,14 @@
 	    </property>
 	    <property name="transactionAttributeSource"><ref local="transactionAttributeSource"/></property>
     </bean>
+	<bean id="providerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	    <property name="transactionManager"><ref local="transactionManager"/></property>
+	    <property name="target"><ref local="providerServiceTarget"/></property>
+	    <property name="preInterceptors">
+	        <ref local="serviceInterceptors"/>
+	    </property>
+	    <property name="transactionAttributeSource"><ref local="transactionAttributeSource"/></property>
+    </bean>
 	
 	
 	<!--
@@ -737,8 +751,10 @@
 	<bean id="personAddressValidator" class="org.openmrs.validator.PersonAddressValidator"/>
 	<bean id="visitTypeValidator" class="org.openmrs.validator.VisitTypeValidator" />
 	<bean id="visitAttributeTypeValidator" class="org.openmrs.validator.VisitAttributeTypeValidator" />
+	<bean id="providerAttributeTypeValidator" class="org.openmrs.validator.ProviderAttributeTypeValidator" />	
 	<bean id="encounterValidator" class="org.openmrs.validator.EncounterValidator" />
 	<bean id="locationAttributeTypeValidator" class="org.openmrs.validator.LocationAttributeTypeValidator" />
+	<bean id="providerValidator" class="org.openmrs.validator.ProviderValidator" />
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 	

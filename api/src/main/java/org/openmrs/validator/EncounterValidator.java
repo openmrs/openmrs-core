@@ -14,10 +14,16 @@
 package org.openmrs.validator;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
+import org.openmrs.Provider;
 import org.openmrs.Visit;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
@@ -89,6 +95,21 @@ public class EncounterValidator implements Validator {
 					errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeInVisitDatesRange",
 					    "The encounter datetime should be between the visit start and stop dates.");
 				}
+			}
+			
+			Map<Integer, EncounterRole> encounterMap = new HashMap<Integer, EncounterRole>();
+			
+			Map<EncounterRole, Set<Provider>> providers = encounter.getProvidersByRoles();
+			for (Entry<EncounterRole, Set<Provider>> entry : providers.entrySet()) {
+				EncounterRole encounterRole = entry.getKey();
+				
+				if (encounterMap.containsKey(encounterRole.getEncounterRoleId())) {
+					errors.rejectValue("providersByRoles", "Encounter.error.duplicateProviderEncounterRole",
+					    "Provider cannot be added more than once for the same encounter role");
+					break;
+				}
+				
+				encounterMap.put(encounterRole.getEncounterRoleId(), encounterRole);
 			}
 		}
 	}

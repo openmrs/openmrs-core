@@ -23,6 +23,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AttributeService;
 import org.openmrs.api.context.Context;
 import org.openmrs.attribute.AttributeType;
+import org.openmrs.attribute.BaseAttributeType;
 import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.attribute.handler.StringAttributeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,23 @@ public class AttributeServiceImpl extends BaseOpenmrsService implements Attribut
 	@Override
 	public AttributeHandler<?> getHandler(AttributeType<?> attributeType) {
 		return Context.getAttributeService().getHandler(attributeType.getDatatype(), attributeType.getHandlerConfig());
+	}
+	
+	/**
+	 * @see org.openmrs.api.AttributeService#getSerializedAttributeValues(java.util.Map)
+	 */
+	@Override
+	public <T extends AttributeType<?>> Map<T, String> getSerializedAttributeValues(Map<T, Object> attributeValues) {
+		Map<T, String> serializedAttributeValues = null;
+		if (attributeValues != null) {
+			serializedAttributeValues = new HashMap<T, String>();
+			AttributeService attrService = Context.getAttributeService();
+			for (Map.Entry<T, Object> e : attributeValues.entrySet()) {
+				T vat = e.getKey();
+				serializedAttributeValues.put(vat, attrService.getHandler(vat).serialize(e.getValue()));
+			}
+		}
+		return serializedAttributeValues;
 	}
 	
 	/**

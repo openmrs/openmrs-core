@@ -23,10 +23,12 @@ import static org.junit.Assert.assertTrue;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.junit.Assert;
@@ -36,6 +38,7 @@ import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
@@ -43,6 +46,7 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
@@ -201,7 +205,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		enc.setEncounterType(Context.getEncounterService().getEncounterType(1));
 		enc.setEncounterDatetime(new Date());
 		enc.setPatient(Context.getPatientService().getPatient(3));
-		enc.setProvider(Context.getPersonService().getPerson(1));
+		enc.addProvider(Context.getEncounterService().getEncounterRole(1), Context.getProviderService().getProvider(1));
 		return enc;
 	}
 	
@@ -805,10 +809,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should get encounters by provider", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldGetEncountersByProvider() throws Exception {
 		List<User> providers = new ArrayList<User>();
-		providers.add(new User(1));
+		providers.add(Context.getUserService().getUser(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null,
 		    providers, true);
-		assertEquals(4, encounters.size());
+		assertEquals(2, encounters.size()); // should be encounters 15 and 16
 	}
 	
 	/**
@@ -1490,6 +1494,230 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
 		List<Encounter> encs = Context.getEncounterService().getEncounters("qwerty", 0, 3, false);
 		Assert.assertEquals(3, encs.size());
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#saveEncounterRole(org.openmrs.EncounterRole)
+	 */
+	@Test
+	@Verifies(value = "should save encounter role with basic details", method = "saveEncounterRole(EncounterRole)")
+	public void saveEncounterRole_shouldSaveEncounterRoleWithBasicDetails() throws Exception {
+		EncounterRole encounterRole = new EncounterRole();
+		encounterRole.setName("Attending physician");
+		encounterRole.setDescription("The person in charge");
+		EncounterService encounterService = Context.getEncounterService();
+		encounterService.saveEncounterRole(encounterRole);
+		
+		assertNotNull("The saved encounter role should have an encounter role id now", encounterRole.getEncounterRoleId());
+		EncounterRole newSavedEncounterRole = encounterService.getEncounterRole(encounterRole.getEncounterRoleId());
+		assertNotNull("We should get back an encounter role", newSavedEncounterRole);
+		assertEquals(encounterRole, newSavedEncounterRole);
+		assertTrue("The created encounter role needs to equal the pojo encounter role", encounterRole
+		        .equals(newSavedEncounterRole));
+		
+	}
+	
+	/**
+	 * Make sure that purging an encounter removes the row from the database
+	 *
+	 * @see {@link EncounterService#purgeEncounterRole(org.openmrs.EncounterRole)}
+	 */
+	@Test
+	@Verifies(value = "should purge Encounter Role", method = "purgeEncounterRole(EncounterRole)")
+	public void purgeEncounterRole_shouldPurgeEncounterRole() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterRole encounterRole = encounterService.getEncounterRole(1);
+		encounterService.purgeEncounterRole(encounterRole);
+		EncounterRole fetchedEncounterRole = encounterService.getEncounterRole(encounterRole.getEncounterRoleId());
+		assertNull("We shouldn't find the encounter after deletion", fetchedEncounterRole);
+	}
+	
+	/**
+	 * @see {@link EncounterService#getAllEncounterRoles(boolean)}
+	 */
+	@Test
+	@Verifies(value = "get all encounter roles based on include retired flag", method = "getAllEncounterRoles(boolean)")
+	public void getAllEncounterRoles_shouldGetAllEncounterRolesBasedOnIncludeRetiredFlag() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		List<EncounterRole> encounterRoles = encounterService.getAllEncounterRoles(true);
+		assertEquals("get all encounter roles including retired", 3, encounterRoles.size());
+		encounterRoles = encounterService.getAllEncounterRoles(false);
+		assertEquals("get all encounter roles excluding retired", 2, encounterRoles.size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounterRoleByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "find encounter role based on uuid", method = "getEncounterRoleByUuid(String)")
+	public void getEncounterRoleByUuid_shouldFindEncounterRoleBasedOnUuid() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterRole encounterRole = encounterService.getEncounterRoleByUuid("430bbb70-6a9c-4e1e-badb-9d1054b1b5e9");
+		assertNotNull("valid uuid should be returned", encounterRole);
+		encounterRole = encounterService.getEncounterRoleByUuid("invaid uuid");
+		assertNull("returns null for invalid uuid", encounterRole);
+	}
+	
+	/**
+	 * @see {@link EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)}
+	 */
+	@Test
+	@Verifies(value = "should retire type and set attributes", method = "retireEncounterRole(EncounterRole,String)")
+	public void retireEncounterRole_shouldRetireTypeAndSetAttributes() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterRole encounterRole = encounterService.getEncounterRole(1);
+		assertFalse(encounterRole.isRetired());
+		assertNull(encounterRole.getRetiredBy());
+		assertNull(encounterRole.getRetireReason());
+		assertNull(encounterRole.getDateRetired());
+		EncounterRole retiredEncounterRole = encounterService.retireEncounterRole(encounterRole, "Just Testing");
+		
+		assertEquals(retiredEncounterRole, encounterRole);
+		assertTrue(retiredEncounterRole.isRetired());
+		assertNotNull(retiredEncounterRole.getDateRetired());
+		assertEquals(Context.getAuthenticatedUser(), retiredEncounterRole.getRetiredBy());
+		assertEquals("Just Testing", retiredEncounterRole.getRetireReason());
+	}
+	
+	/**
+	 * @see {@link EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)}
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@Verifies(value = "should throw error if given null reason parameter", method = "retireEncounterRole(EncounterRole,String)")
+	public void retireEncounterRole_shouldThrowErrorIfGivenNullReasonParameter() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterRole encounterRole = encounterService.getEncounterRole(1);
+		encounterService.retireEncounterRole(encounterRole, null);
+	}
+	
+	/**
+	 * @see {@link EncounterService#unretireEncounterRole(org.openmrs.EncounterRole)}
+	 */
+	@Test
+	@Verifies(value = "should unretire type and unmark attributes", method = "unretireEncounterRole(EncounterRole)")
+	public void unretireEncounterRole_shouldUnretireTypeAndUnmarkAttributes() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterRole encounterRole = encounterService.getEncounterRole(2);
+		assertTrue(encounterRole.isRetired());
+		assertNotNull(encounterRole.getRetiredBy());
+		assertNotNull(encounterRole.getRetireReason());
+		assertNotNull(encounterRole.getDateRetired());
+		EncounterRole unretiredEncounterRole = encounterService.unretireEncounterRole(encounterRole);
+		
+		assertEquals(unretiredEncounterRole, encounterRole);
+		assertFalse(unretiredEncounterRole.isRetired());
+		assertNull(unretiredEncounterRole.getDateRetired());
+		assertNull(unretiredEncounterRole.getRetiredBy());
+		assertNull(unretiredEncounterRole.getRetireReason());
+	}
+	
+	/**
+	 * @see EncounterService#saveEncounter(Encounter)
+	 * @verifies cascade delete encounter providers
+	 */
+	@Test
+	public void saveEncounter_shouldCascadeDeleteEncounterProviders() throws Exception {
+		//given
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(3));
+		
+		EncounterRole role = new EncounterRole();
+		role.setName("role");
+		role = Context.getEncounterService().saveEncounterRole(role);
+		
+		Provider provider = new Provider();
+		provider.setName("provider");
+		provider.setIdentifier("id1");
+		provider = Context.getProviderService().saveProvider(provider);
+		
+		Provider provider2 = new Provider();
+		provider2.setName("provider2");
+		provider2.setIdentifier("id2");
+		provider2 = Context.getProviderService().saveProvider(provider2);
+		
+		encounter.addProvider(role, provider);
+		encounter.addProvider(role, provider2);
+		
+		EncounterService es = Context.getEncounterService();
+		encounter = es.saveEncounter(encounter);
+		
+		//when
+		encounter.setProvider(role, provider);
+		encounter = es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+		
+		//then
+		encounter = Context.getEncounterService().getEncounter(encounter.getEncounterId());
+		Assert.assertEquals(1, encounter.getProvidersByRole(role).size());
+		Assert.assertTrue("Role", encounter.getProvidersByRole(role).contains(provider));
+	}
+	
+	/**
+	 * @see EncounterService#saveEncounter(Encounter)
+	 * @verifies cascade save encounter providers
+	 */
+	@Test
+	public void saveEncounter_shouldCascadeSaveEncounterProviders() throws Exception {
+		//given
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(3));
+		
+		EncounterRole role = new EncounterRole();
+		role.setName("role");
+		role = Context.getEncounterService().saveEncounterRole(role);
+		
+		EncounterRole role2 = new EncounterRole();
+		role2.setName("role2");
+		role2 = Context.getEncounterService().saveEncounterRole(role2);
+		
+		Provider provider = new Provider();
+		provider.setName("provider");
+		provider.setIdentifier("id1");
+		provider = Context.getProviderService().saveProvider(provider);
+		
+		Provider provider2 = new Provider();
+		provider2.setName("provider2");
+		provider2.setIdentifier("id2");
+		provider2 = Context.getProviderService().saveProvider(provider2);
+		
+		encounter.addProvider(role, provider);
+		encounter.addProvider(role, provider2);
+		encounter.addProvider(role2, provider2);
+		
+		//when
+		EncounterService es = Context.getEncounterService();
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+		
+		//then
+		encounter = Context.getEncounterService().getEncounter(encounter.getEncounterId());
+		Assert.assertEquals(2, encounter.getProvidersByRole(role).size());
+		Assert.assertTrue("Role", encounter.getProvidersByRole(role).containsAll(Arrays.asList(provider, provider2)));
+		Assert.assertEquals(1, encounter.getProvidersByRole(role2).size());
+		Assert.assertTrue("Role2", encounter.getProvidersByRole(role2).contains(provider2));
+	}
+	
+	/**
+	 * @see EncounterService#getEncounters(String,Integer,Integer,boolean)
+	 * @verifies return empty list for empty query
+	 */
+	@Test
+	public void getEncounters_shouldReturnEmptyListForEmptyQuery() throws Exception {
+		//given
+		
+		//when
+		List<Encounter> encounters = Context.getEncounterService().getEncounters("", null, null, true);
+		
+		//then
+		Assert.assertTrue(encounters.isEmpty());
 	}
 	
 	/**

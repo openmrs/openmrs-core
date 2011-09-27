@@ -40,7 +40,7 @@
 			<td><spring:message code="general.name"/></td>
 			<td colspan="5">
 				<spring:bind path="location.name">
-					<input type="text" name="name" value="${status.value}" size="35" />
+					<input type="text" name="name" value='<c:out value="${status.value}"/>' size="35" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>

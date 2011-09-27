@@ -32,6 +32,8 @@ import org.openmrs.api.AttributeService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.VisitDAO;
+import org.openmrs.attribute.AttributeType;
+import org.openmrs.attribute.BaseAttributeType;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
 import org.openmrs.validator.VisitValidator;
@@ -201,16 +203,8 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues,
 	        boolean includeInactive, boolean includeVoided) throws APIException {
 		
-		Map<VisitAttributeType, String> serializedAttributeValues = null;
-		if (attributeValues != null) {
-			serializedAttributeValues = new HashMap<VisitAttributeType, String>();
-			AttributeService attrService = Context.getAttributeService();
-			for (Map.Entry<VisitAttributeType, Object> e : attributeValues.entrySet()) {
-				VisitAttributeType vat = e.getKey();
-				serializedAttributeValues.put(vat, attrService.getHandler(vat).serialize(e.getValue()));
-			}
-		}
-		
+		Map<VisitAttributeType, String> serializedAttributeValues = Context.getAttributeService()
+		        .getSerializedAttributeValues(attributeValues);
 		return dao.getVisits(visitTypes, patients, locations, indications, minStartDatetime, maxStartDatetime,
 		    minEndDatetime, maxEndDatetime, serializedAttributeValues, includeInactive, includeVoided);
 	}

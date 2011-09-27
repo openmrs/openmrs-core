@@ -51,6 +51,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
@@ -1173,5 +1174,13 @@ public class Context {
 	 */
 	public static VisitService getVisitService() {
 		return getServiceContext().getVisitService();
+	}
+	
+	/**
+	 * @since 1.9
+	 * @see ServiceContext#getProviderService()
+	 */
+	public static ProviderService getProviderService() {
+		return getServiceContext().getProviderService();
 	}
 }

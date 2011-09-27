@@ -32,6 +32,7 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
@@ -252,6 +253,64 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link VisitService#saveVisit(Visit)}
 	 */
 	@Test
+	@Verifies(value = "should save a visit though changedBy and dateCreated are not set for VisitAttribute explicitly", method = "saveVisit(Visit)")
+	public void saveVisit_shouldSaveAVisitThoughChangedByAndDateCreatedAreNotSetForVisitAttributeExplictly()
+	        throws Exception {
+		executeDataSet(VISITS_ATTRIBUTES_XML);
+		VisitService vs = Context.getVisitService();
+		Visit visit = new Visit(new Patient(2), new VisitType(3), new Date());
+		VisitAttribute visitAttribute = createVisitAttributeWithoutCreatorAndDateCreated();
+		visit.setAttribute(visitAttribute);
+		visit = vs.saveVisit(visit);
+		Assert.assertNotNull(visit.getId());
+	}
+	
+	private VisitAttribute createVisitAttributeWithoutCreatorAndDateCreated() {
+		VisitAttribute visitAttribute = new VisitAttribute();
+		VisitAttributeType attributeType = Context.getVisitService().getVisitAttributeType(1);
+		attributeType.setName("visit type");
+		visitAttribute.setSerializedValue("first visit");
+		visitAttribute.setAttributeType(attributeType);
+		return visitAttribute;
+	}
+	
+	/**
+	 * @see {@link VisitService#saveVisit(Visit)}
+	 */
+	@Test
+	@Verifies(value = "should void an attribute if max occurs is 1 and same attribute type already exists", method = "saveVisit(Visit)")
+	public void saveVisit_shouldVoidAnAttributeIfMaxOccursIs1AndSameAttributeTypeAlreadyExists() throws Exception {
+		executeDataSet(VISITS_ATTRIBUTES_XML);
+		VisitService vs = Context.getVisitService();
+		Visit visit = new Visit(new Patient(2), new VisitType(3), new Date());
+		visit.setAttribute(createVisitAttribute("first Visit"));
+		visit.setAttribute(createVisitAttribute("first Visit"));
+		Assert.assertEquals(1, visit.getAttributes().size());
+		visit = vs.saveVisit(visit);
+		Assert.assertNotNull(visit.getId());
+		visit.setAttribute(createVisitAttribute("second visit"));
+		Assert.assertEquals(2, visit.getAttributes().size());
+		VisitAttribute firstAttribute = (VisitAttribute) visit.getAttributes().toArray()[0];
+		Assert.assertTrue(firstAttribute.getVoided());
+	}
+	
+	private VisitAttribute createVisitAttribute(String serializedValue) {
+		UserService us = Context.getUserService();
+		User user = us.getUserByUsername("admin");
+		VisitAttribute visitAttribute = new VisitAttribute();
+		VisitAttributeType attributeType = Context.getVisitService().getVisitAttributeType(1);
+		attributeType.setName("visit type");
+		visitAttribute.setSerializedValue(serializedValue);
+		visitAttribute.setCreator(user);
+		visitAttribute.setDateCreated(new Date());
+		visitAttribute.setAttributeType(attributeType);
+		return visitAttribute;
+	}
+	
+	/**
+	 * @see {@link VisitService#saveVisit(Visit)}
+	 */
+	@Test
 	@Ignore
 	@Verifies(value = "should update an existing visit in the database", method = "saveVisit(Visit)")
 	public void saveVisit_shouldUpdateAnExistingVisitInTheDatabase() throws Exception {
@@ -447,7 +506,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllVisitAttributeTypes_shouldReturnAllVisitAttributeTypesIncludingRetiredOnes() throws Exception {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
-		Assert.assertEquals(2, service.getAllVisitAttributeTypes().size());
+		Assert.assertEquals(3, service.getAllVisitAttributeTypes().size());
 	}
 	
 	/**
@@ -498,9 +557,9 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void purgeVisitAttributeType_shouldCompletelyRemoveAVisitAttributeType() throws Exception {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
-		Assert.assertEquals(2, service.getAllVisitAttributeTypes().size());
+		Assert.assertEquals(3, service.getAllVisitAttributeTypes().size());
 		service.purgeVisitAttributeType(service.getVisitAttributeType(2));
-		Assert.assertEquals(1, service.getAllVisitAttributeTypes().size());
+		Assert.assertEquals(2, service.getAllVisitAttributeTypes().size());
 	}
 	
 	/**
@@ -527,13 +586,13 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveVisitAttributeType_shouldCreateANewVisitAttributeType() throws Exception {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
-		Assert.assertEquals(2, service.getAllVisitAttributeTypes().size());
+		Assert.assertEquals(3, service.getAllVisitAttributeTypes().size());
 		VisitAttributeType vat = new VisitAttributeType();
 		vat.setName("Another one");
 		vat.setDatatype("string");
 		service.saveVisitAttributeType(vat);
 		Assert.assertNotNull(vat.getId());
-		Assert.assertEquals(3, service.getAllVisitAttributeTypes().size());
+		Assert.assertEquals(4, service.getAllVisitAttributeTypes().size());
 	}
 	
 	/**
@@ -543,11 +602,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveVisitAttributeType_shouldEditAnExistingVisitAttributeType() throws Exception {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
-		Assert.assertEquals(2, service.getAllVisitAttributeTypes().size());
+		Assert.assertEquals(3, service.getAllVisitAttributeTypes().size());
 		VisitAttributeType vat = service.getVisitAttributeType(1);
 		vat.setName("A new name");
 		service.saveVisitAttributeType(vat);
-		Assert.assertEquals(2, service.getAllVisitAttributeTypes().size());
+		Assert.assertEquals(3, service.getAllVisitAttributeTypes().size());
 		Assert.assertEquals("A new name", service.getVisitAttributeType(1).getName());
 	}
 	

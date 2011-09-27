@@ -209,6 +209,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should search familyName2 with name
 	 * @should support simple regex
 	 * @should support pattern using last digit as check digit
+	 * @should return empty list if name and identifier is empty
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
