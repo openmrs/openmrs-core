@@ -280,8 +280,8 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ProviderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should reject a duplicate identifier for a new provide", method = "validate(Object,Errors)")
-	public void validate_shouldRejectADuplicateIdentifierForANewProvide() throws Exception {
+	@Verifies(value = "should reject a duplicate identifier for a new provider", method = "validate(Object,Errors)")
+	public void validate_shouldRejectADuplicateIdentifierForANewProvider() throws Exception {
 		Provider duplicateProvider = providerService.getProvider(1);
 		Assert.assertFalse(duplicateProvider.isRetired());
 		

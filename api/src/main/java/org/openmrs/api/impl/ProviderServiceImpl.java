@@ -100,7 +100,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 */
 	@Override
 	public Provider saveProvider(Provider provider) {
-		//This should be done via AOP
+		//remove this validation when TRUNK-2393 is done
 		Errors errors = new BindException(provider, "provider");
 		new ProviderValidator().validate(provider, errors);
 		if (errors.hasErrors())

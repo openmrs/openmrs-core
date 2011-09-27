@@ -70,7 +70,7 @@ public class ProviderValidator implements Validator {
 	 * @should pass for a duplicate identifier if the existing provider is retired
 	 * @should pass if an identifier for an existing provider is changed to a unique value
 	 * @should fail if an identifier for an existing provider is changed to a duplicate value
-	 * @should reject a duplicate identifier for a new provide
+	 * @should reject a duplicate identifier for a new provider
 	 * @should pass if the provider we are validating has a duplicate identifier and is retired
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
