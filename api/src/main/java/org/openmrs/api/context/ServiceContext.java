@@ -1010,7 +1010,7 @@ public class ServiceContext implements ApplicationContextAware {
 	/**
 	 * Gets the provider service.
 	 * 
-	 * @param visitService the visitService to set
+	 * @return provider service.
 	 * @since 1.9
 	 **/
 	
@@ -1019,9 +1019,9 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * Sets the visit service.
+	 * Sets the provider service.
 	 * 
-	 * @param visitService the visitService to set
+	 * @param providerService the providerService to set
 	 * @since 1.9
 	 **/
 	public void setProviderService(ProviderService providerService) {
