@@ -728,6 +728,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_DEFAULT_THEME = "default_theme";
 	
+	public static final String GLOBAL_PROPERTY_APPLICATION_NAME = "application.name";
+	
 	/**
 	 * Array of all core global property names that represent comma-separated lists of
 	 * PersonAttributeTypes. (If you rename a PersonAttributeType then these global properties are
@@ -1291,6 +1293,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_VISIT_ASSIGNMENT_HANDLER, "",
 		        "Set to the name of the class responsible for assigning encounters to visits."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_APPLICATION_NAME, "OpenMRS",
+		        "The name of this application, as presented to the user, for example on the login and welcome pages."));
 		
 		props
 		        .add(new GlobalProperty(
