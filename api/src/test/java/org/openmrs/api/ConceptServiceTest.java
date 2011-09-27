@@ -23,7 +23,6 @@ import static org.openmrs.test.TestUtil.containsId;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -33,7 +32,6 @@ import junit.framework.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -1337,20 +1335,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConcepts(String, java.util.List, boolean, java.util.List, java.util.List, java.util.List, java.util.List, org.openmrs.Concept, Integer, Integer)}
-	 */
-	@Test
-	@Ignore
-	@Verifies(value = "should return the best matched name as the first item in the searchResultsList", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
-	public void getConcepts_shouldReturnTheBestMatchedNameAsTheFirstItemInTheSearchResultsList() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
-		//TODO H2 cannot execute the generated SQL because it requires all fetched columns to be included in the group by clause
-		List<ConceptSearchResult> searchResults = Context.getConceptService().getConcepts("cd4",
-		    Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
-		Assert.assertEquals(1847, searchResults.get(0).getConceptName().getConceptNameId().intValue());
-	}
-	
-	/**
 	 * @see {@link ConceptService#saveConceptStopWord(org.openmrs.ConceptStopWord)}
 	 */
 	@Test
@@ -1625,23 +1609,15 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link 
-	 *      ConceptService#getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass
-	 *      >,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)}
+	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "should return concept search results that match unique concepts", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
 	public void getConcepts_shouldReturnConceptSearchResultsThatMatchUniqueConcepts() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
-		List<ConceptSearchResult> searchResults = conceptService.getConcepts("cd4", Collections
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust", Collections
 		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
-		Set<Concept> uniqueConcepts = new HashSet<Concept>();
-		//TODO H2 cannot execute the generated SQL because it requires all fetched columns to be included in the group by clause
-		for (ConceptSearchResult conceptSearchResult : searchResults) {
-			//if this fails, then a duplicate concept has been returned
-			Assert.assertEquals(true, uniqueConcepts.add(conceptSearchResult.getConcept()));
-		}
+		Assert.assertEquals(2, searchResults.size());
 	}
 	
 	/**
@@ -2002,5 +1978,37 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	        throws Exception {
 		Assert.assertEquals(2, Context.getConceptService().getConceptMappingsTo(
 		    Context.getConceptService().getConceptReferenceTerm(4)).size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 */
+	@Test
+	@Verifies(value = "should return a search result whose concept name contains a word with more weight", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAWordWithMoreWeight() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		Concept conceptWithMultipleMatchingNames = conceptService.getConcept(3000);
+		//recalculate the weights just in case the logic for calculating the weights is changed
+		conceptService.updateConceptIndex(conceptWithMultipleMatchingNames);
+		conceptService.updateConceptIndex(conceptService.getConcept(4000));
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust", Collections
+		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		
+		Assert.assertEquals(2, searchResults.size());
+		//the first concept is the one with a word with the highest weight
+		Assert.assertEquals(conceptWithMultipleMatchingNames, searchResults.get(0).getConcept());
+		//This test is only passing because the name select in the query happens to have a lower concept name id
+		Assert.assertEquals(9997, searchResults.get(0).getConceptName().getConceptNameId().intValue());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getCountOfConcepts(String, List, boolean, List, List, List, List, Concept)}
+	 */
+	@Test
+	@Verifies(value = "should return a count of unique concepts", method = "getCountOfConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept)")
+	public void getCountOfConcepts_shouldReturnACountOfUniqueConcepts() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		Assert.assertEquals(2, conceptService.getCountOfConcepts("trust", Collections.singletonList(Locale.ENGLISH), false,
+		    null, null, null, null, null).intValue());
 	}
 }

@@ -1457,8 +1457,8 @@ public interface ConceptService extends OpenmrsService {
 	 *            removed
 	 * @return a list of conceptSearchResults
 	 * @throws APIException
-	 * @should return the best matched name as the first item in the searchResultsList
 	 * @should return concept search results that match unique concepts
+	 * @should return a search result whose concept name contains a word with more weight
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
@@ -1543,6 +1543,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the number of concepts matching the given search phrase
 	 * @throws APIException
 	 * @since 1.8
+	 * @should return a count of unique concepts
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
