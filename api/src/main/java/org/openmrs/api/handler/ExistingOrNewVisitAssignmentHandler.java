@@ -102,8 +102,9 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 			}
 			
 			//Reaching here means this encounter type is not in the user's mapping.
-			throw new APIException("Global Property: visit.encounterTypeToVisitTypeMapping does not have a mapping for encounter type: "
-			        + encounter.getEncounterType().getName());
+			throw new APIException(
+			        "Global Property: visit.encounterTypeToVisitTypeMapping does not have a mapping for encounter type: "
+			                + encounter.getEncounterType().getName());
 		}
 		
 		return Context.getVisitService().getAllVisitTypes().get(0);
