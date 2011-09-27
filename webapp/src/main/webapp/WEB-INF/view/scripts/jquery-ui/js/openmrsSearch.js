@@ -122,6 +122,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   columnVisibility: array of bVisible values for each column
  *   initialData:The initial data to be displayed e.g if it is an encounter search, it should be an encounter list
  *   searchPhrase: The phrase to be set in the search box so that a search is triggered on page load to display initial items
+ *   doSearchWhenEmpty: If it is set to true, it lists all items initially and filters them with the given search phrase. (default:false)
  *   
  * The styling on this table works like this:
  * <pre> 
@@ -257,7 +258,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     			
     			
     			var searchDelay = SEARCH_DELAY;
-    			if(text.length < o.minLength) {
+    			if(text.length < o.minLength && !(!text && self.options.doSearchWhenEmpty)) {
         			// force a longer delay since we are going to search on a shorter string
     				searchDelay = 3000;
     			}
@@ -405,8 +406,12 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				else
 					self._table.numberOfPages = Math.floor(initialRowCount/self._table.fnSettings()._iDisplayLength)+1;
 				
-		    }else if(self.options.searchPhrase)
+		    } else if(self.options.searchPhrase || self.options.doSearchWhenEmpty) {
+		    	if (self.options.searchPhrase == null) {
+		    		self.options.searchPhrase = "";
+		    	}
 		    	$j(input).val(self.options.searchPhrase).keyup();
+		    }
 		},
 		
 		_makeColumns: function() {
@@ -470,7 +475,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				//than the minimum characters, this can arise when user presses backspace relatively fast
 				//yet there were some intermediate calls that might have returned results
 				var currInput = $j.trim($j("#inputNode").val());
-				if(currInput == ''){
+				if(!currInput && !self.options.doSearchWhenEmpty){
 					if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
@@ -776,7 +781,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				//Don't display results from delayed ajax calls when the input box is blank or has less 
 				//than the minimum characters
 				var currInput = $j.trim($j("#inputNode").val());
-				if(currInput == ''){
+				if(!currInput && !self.options.doSearchWhenEmpty){
 					$j(notification).html(" ");
 					if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");

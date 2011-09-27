@@ -251,6 +251,7 @@ public class EncounterFormController extends SimpleFormController {
 			Form form = encounter.getForm();
 			
 			map.put("encounterTypes", es.getAllEncounterTypes());
+			map.put("encounterRoles", es.getAllEncounterRoles(false));
 			map.put("forms", Context.getFormService().getAllForms());
 			// loop over the encounter's observations to find the edited obs
 			String reason = "";

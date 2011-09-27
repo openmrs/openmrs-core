@@ -16,6 +16,7 @@ package org.openmrs;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -92,21 +93,27 @@ public abstract class BaseCustomizableData<AttrClass extends Attribute> extends 
 	@Override
 	public void setAttribute(AttrClass attribute) {
 		if (getAttributes() == null)
-			setAttributes(new HashSet<AttrClass>());
+			setAttributes(new LinkedHashSet<AttrClass>());
 		// TODO validate
 		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
 			AttrClass existing = getActiveAttributes(attribute.getAttributeType()).get(0);
 			if (existing.getSerializedValue().equals(attribute.getSerializedValue())) {
 				// do nothing, since the value is already as-specified
 			} else {
-				existing.setVoided(true);
+				if (existing.getId() != null)
+					existing.setVoided(true);
+				else
+					getAttributes().remove(existing);
 				getAttributes().add(attribute);
 				attribute.setOwner(this);
 			}
 		} else {
 			for (AttrClass existing : getActiveAttributes(attribute.getAttributeType()))
 				if (existing.getAttributeType().equals(attribute.getAttributeType()))
-					existing.setVoided(true);
+					if (existing.getId() != null)
+						existing.setVoided(true);
+					else
+						getAttributes().remove(existing);
 			getAttributes().add(attribute);
 			attribute.setOwner(this);
 		}

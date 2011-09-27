@@ -9,6 +9,7 @@
 <openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRVisitService.js"/>
+<openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js"/>
 
 <script type="text/javascript">
 	dojo.addOnLoad( function() {
@@ -110,6 +111,83 @@
 		});
 	}
 
+	function removeProvider(btn, encounterRoleId, providerId) {
+		var parentNode = btn.parentNode.parentNode;
+		
+		if(confirm('<spring:message code="Encounter.provider.deleteProviderConfirm"/>' + 
+				' ' + parentNode.childNodes[1].innerHTML + 
+				' ' + '<spring:message code="Role.role"/>' + ': ' + parentNode.childNodes[0].innerHTML)){
+			
+			DWREncounterService.removeProviderFromEncounter(${encounter.encounterId}, encounterRoleId, providerId, function(encounterObj) {
+				if(encounterObj){
+					parentNode.parentNode.removeChild(btn.parentNode.parentNode);
+				}else
+					alert('<spring:message code="Encounter.provider.failedToRemoveProvider"/>');
+			});	
+			
+		}
+	}
+	
+	function cancelProvider(btn) {
+		document.getElementById("addNewProviderTemplate").style.display = "none";
+		document.getElementById("encounterRole").value = "";
+		document.getElementById("providerId_id_selection").value = "";
+		document.getElementById("providerId_id").value = "";
+	}
+	
+	function addProvider(btn){
+		document.getElementById("addNewProviderTemplate").style.display = "";
+		document.getElementById("encounterRole").focus();
+	}
+	
+	function saveProvider(encounter){
+		if(document.getElementById("encounterRole").selectedIndex < 1){
+			alert('<spring:message code="Encounter.provider.selectEncounterRole"/>');
+			document.getElementById("encounterRole").focus();
+			return;
+		}
+		if(document.getElementById("providerId_id_selection").value.length == 0){
+			alert('<spring:message code="Encounter.provider.selectProvider"/>');
+			document.getElementById("providerId_id_selection").focus();
+			return;
+		}
+		
+		var encounterRoleId = document.getElementById("encounterRole").value;
+		var providerId = document.getElementById("providerId_id").value;
+		
+		DWREncounterService.addProviderToEncounter(${encounter.encounterId}, encounterRoleId, providerId, function(providerObj) {
+			if(providerObj){
+				addProviderRow(providerObj);
+			}else
+				alert('<spring:message code="Encounter.provider.failedToAddProvider"/>');
+		});
+	}
+	
+	function addProviderRow(providerObj){
+		var refElement = document.getElementById("addNewProviderTemplate");
+		
+		var tr = document.createElement("tr");
+		refElement.parentNode.insertBefore(tr, refElement);
+		
+		var td = document.createElement("td");
+		tr.appendChild(td);
+		td.innerHTML = document.getElementById("encounterRole").options[document.getElementById("encounterRole").selectedIndex].innerHTML.trim();
+		
+		td = document.createElement("td");
+		tr.appendChild(td);
+		td.innerHTML = document.getElementById("providerId_id_selection").value.trim();
+		
+		td = document.createElement("td");
+		tr.appendChild(td);
+		td.innerHTML = providerObj.identifier;
+		
+		td = document.createElement("td");
+		tr.appendChild(td);
+		td.innerHTML = "<input type='button' value='<spring:message code='general.remove'/>' class='smallButton' onClick='removeProvider(this)'/>";
+	
+		cancelProvider();
+	}
+	
 </script>
 
 <style>
@@ -140,15 +218,6 @@
 			<td>
 				<spring:bind path="encounter.patient">
 					<openmrs_tag:patientField formFieldName="patientId" searchLabelCode="Patient.find" initialValue="${status.value.patientId}" linkUrl="${pageContext.request.contextPath}/admin/patients/patient.form" callback="updateSaveButtonAndVisits" allowSearch="${encounter.encounterId == null}"/>
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<th><spring:message code="Encounter.provider"/></th>
-			<td>
-				<spring:bind path="encounter.provider">
-					<openmrs_tag:personField formFieldName="providerId" initialValue="${status.value.personId}" roles="Provider" callback="enableSaveButton"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -279,6 +348,43 @@
 	</form>
 </div>
 
+	<br/>
+	<div class="boxHeader">
+		<b><spring:message code="Provider.header"/></b>
+	</div>
+	<div class="box">
+	<table cellspacing="0" cellpadding="2" width="98%" id="providers">
+		<tr id="providersListingHeaderRow">
+			<th><spring:message code="Role.role"/></th>
+			<th><spring:message code="Provider.name"/></th>
+			<th><spring:message code="Provider.identifier"/></th>
+		</tr>
+		<c:forEach items="${encounter.providersByRoles}" var="providerRole">
+			<c:forEach items="${providerRole.value}" var="provider">
+				<tr><td>${providerRole.key.name}</td><td>${provider}</td><td>${provider.identifier}</td><td><input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeProvider(this, ${providerRole.key.encounterRoleId}, ${provider.providerId})" /></td></tr>
+			</c:forEach>
+		</c:forEach>
+		<tr id="addNewProviderTemplate" style="display:none;">
+			<td>
+				<select id="encounterRole" >
+					<option value=""></option>
+					<c:forEach items="${encounterRoles}" var="encounterRole">
+						<option value="${encounterRole.encounterRoleId}">
+							${encounterRole.name}
+						</option>
+					</c:forEach>
+				</select>
+			</td>
+			<td><openmrs_tag:providerField formFieldName="providerId" initialValue=""/></td>
+			<td>
+				<input type="button" value='<spring:message code="general.save"/>' class="smallButton" onClick="saveProvider(this)" />
+				<input type="button" value='<spring:message code="general.cancel"/>' class="smallButton" onClick="cancelProvider(this)" />
+			</td>
+		</tr>
+	</table>
+	<input type="button" value='<spring:message code="Provider.add"/>' class="smallButton" onClick="addProvider(this)" />
+	</div>
+	
 <c:if test="${encounter.encounterId != null}">
 	<br/>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterFormBeforeObs" type="html" parameters="encounterId=${encounter.encounterId}">

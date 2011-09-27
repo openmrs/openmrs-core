@@ -168,6 +168,8 @@ public interface VisitService extends OpenmrsService {
 	 * @should fail if validation errors are found
 	 * @should pass if no validation errors are found
 	 * @should be able to add an attribute to a visit
+	 * @should void an attribute if max occurs is 1 and same attribute type already exists
+	 * @should save a visit though changedBy and dateCreated are not set for VisitAttribute explicitly
 	 */
 	@Authorized( { PrivilegeConstants.ADD_VISITS, PrivilegeConstants.EDIT_VISITS })
 	public Visit saveVisit(Visit visit) throws APIException;

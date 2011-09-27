@@ -5648,6 +5648,260 @@
 			]]>
 		</sql>
 	</changeSet>
+
+ 	<changeSet id="20110426-11701" author="zabil">
+ 		<preConditions onFail="MARK_RAN">
+ 			<not>
+ 				<tableExists tableName="provider" />
+ 			</not>
+ 		</preConditions>
+ 		<comment>
+ 			Create provider table
+ 		</comment>
+ 		<createTable tableName="provider">
+ 			<column name="provider_id" type="int" autoIncrement="true">
+ 				<constraints primaryKey="true" nullable="false" />
+ 			</column>
+ 			<column name="person_id" type="int">
+ 				<constraints nullable="true" />
+ 			</column>
+ 			<column name="name" type="varchar(255)"></column>
+ 			<column name="identifier" type="varchar(255)"><constraints nullable="false" /></column>
+ 			<column name="creator" type="int">
+ 				<constraints nullable="false" />
+ 			</column>
+ 			<column name="date_created" type="datetime">
+ 				<constraints nullable="false" />
+ 			</column>
+ 			<column name="changed_by" type="int" />
+ 			<column name="date_changed" type="datetime" />
+ 			<column name="retired" type="tinyint" defaultValueNumeric="0">
+ 				<constraints nullable="false" />
+ 			</column>
+ 			<column name="retired_by" type="int(11)" />
+ 			<column name="date_retired" type="datetime" />
+ 			<column name="retire_reason" type="varchar(255)" defaultValue="null" />
+ 			<column name="uuid" type="char(38)">
+ 				<constraints nullable="false" unique="true" />
+ 			</column>
+ 		</createTable>
+ 		<addForeignKeyConstraint constraintName="provider_changed_by_fk"
+ 			baseTableName="provider" baseColumnNames="changed_by"
+ 			referencedTableName="users" referencedColumnNames="user_id" />
+ 		<addForeignKeyConstraint constraintName="provider_person_id_fk"
+ 			baseTableName="provider" baseColumnNames="person_id"
+ 			referencedTableName="person" referencedColumnNames="person_id" />
+ 
+ 		<addForeignKeyConstraint constraintName="provider_retired_by_fk"
+ 			baseTableName="provider" baseColumnNames="retired_by"
+ 			referencedTableName="users" referencedColumnNames="user_id" />
+ 		<addForeignKeyConstraint constraintName="provider_creator_fk"
+ 			baseTableName="provider" baseColumnNames="creator"
+ 			referencedTableName="users" referencedColumnNames="user_id" />
+ 	</changeSet>
+  	
+     <changeSet id="20110510-11702-create-provider-attribute-type-table" author="zabil">
+         <preConditions onFail="MARK_RAN">
+             <not><tableExists tableName="provider_attribute_type"/></not>
+         </preConditions>
+         <comment>Creating provider_attribute_type table</comment>
+         <createTable tableName="provider_attribute_type">
+             <column name="provider_attribute_type_id" type="int" autoIncrement="true">
+                 <constraints primaryKey="true" nullable="false" />
+             </column>
+             <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
+             <column name="description" type="varchar(1024)"/>
+             <column name="datatype" type="varchar(255)" />
+             <column name="handler_config" type="text" />
+             <column name="min_occurs" type="int"><constraints nullable="false" /></column>
+             <column name="max_occurs" type="int"></column>
+             <column name="creator" type="int"><constraints nullable="false"/></column>
+             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+             <column name="changed_by" type="int"/>
+             <column name="date_changed" type="datetime" />
+             <column name="retired" type="smallint" defaultValueNumeric="0">
+                 <constraints nullable="false"/>
+             </column>
+             <column name="retired_by" type="int(11)" />
+             <column name="date_retired" type="datetime" />
+             <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+             <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+         </createTable>
+         <addForeignKeyConstraint constraintName="provider_attribute_type_creator_fk"
+             baseTableName="provider_attribute_type" baseColumnNames="creator" referencedTableName="users"
+             referencedColumnNames="user_id" />
+         <addForeignKeyConstraint constraintName="provider_attribute_type_changed_by_fk"
+             baseTableName="provider_attribute_type" baseColumnNames="changed_by" referencedTableName="users"
+             referencedColumnNames="user_id" />
+         <addForeignKeyConstraint constraintName="provider_attribute_type_retired_by_fk"
+             baseTableName="provider_attribute_type" baseColumnNames="retired_by" referencedTableName="users"
+             referencedColumnNames="user_id" />
+     </changeSet>
+     
+     <changeSet id="20110628-1400-create-provider-attribute-table" author="kishoreyekkanti">
+         <preConditions onFail="MARK_RAN">
+             <not><tableExists tableName="provider_attribute"/></not>
+         </preConditions>
+         <comment>Creating provider_attribute table</comment>
+         <createTable tableName="provider_attribute">
+             <column name="provider_attribute_id" type="int" autoIncrement="true">
+                 <constraints primaryKey="true" nullable="false" />
+             </column>
+             <column name="provider_id" type="int"><constraints nullable="false" /></column>
+             <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+             <column name="serialized_value" type="text"><constraints nullable="false" /></column>
+             <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+             <column name="creator" type="int"><constraints nullable="false"/></column>
+             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+             <column name="changed_by" type="int"/>
+             <column name="date_changed" type="datetime" />
+             <column name="voided" type="smallint" defaultValueNumeric="0">
+                 <constraints nullable="false"/>
+             </column>
+             <column name="voided_by" type="int(11)" />
+             <column name="date_voided" type="datetime" />
+             <column name="void_reason" type="varchar(255)" defaultValue="null"/>
+         </createTable>
+         <addForeignKeyConstraint constraintName="provider_attribute_provider_fk"
+             baseTableName="provider_attribute" baseColumnNames="provider_id" referencedTableName="provider"
+             referencedColumnNames="provider_id" />
+         <addForeignKeyConstraint constraintName="provider_attribute_attribute_type_id_fk"
+             baseTableName="provider_attribute" baseColumnNames="attribute_type_id" referencedTableName="provider_attribute_type"
+             referencedColumnNames="provider_attribute_type_id" />
+         <addForeignKeyConstraint constraintName="provider_attribute_creator_fk"
+             baseTableName="provider_attribute" baseColumnNames="creator" referencedTableName="users"
+             referencedColumnNames="user_id" />
+         <addForeignKeyConstraint constraintName="provider_attribute_changed_by_fk"
+             baseTableName="provider_attribute" baseColumnNames="changed_by" referencedTableName="users"
+             referencedColumnNames="user_id" />
+         <addForeignKeyConstraint constraintName="provider_attribute_voided_by_fk"
+             baseTableName="provider_attribute" baseColumnNames="voided_by" referencedTableName="users"
+             referencedColumnNames="user_id" />
+     </changeSet>
+     
+     <changeSet id="20110705-2300-create-encounter-role-table" author="kishoreyekkanti">
+         <preConditions onFail="MARK_RAN">
+             <not><tableExists tableName="encounter_role"/></not>
+         </preConditions>
+         <comment>Creating encounter_role table</comment>
+         <createTable tableName="encounter_role">
+             <column name="encounter_role_id" type="int" autoIncrement="true">
+                 <constraints primaryKey="true" nullable="false" />
+             </column>
+             <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
+             <column name="description" type="varchar(1024)"/>
+             <column name="creator" type="int"><constraints nullable="false"/></column>
+             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+             <column name="changed_by" type="int"/>
+             <column name="date_changed" type="datetime" />
+             <column name="retired" type="smallint" defaultValueNumeric="0">
+                 <constraints nullable="false"/>
+             </column>
+             <column name="retired_by" type="int(11)" />
+             <column name="date_retired" type="datetime" />
+             <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+             <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+         </createTable>
+         <addForeignKeyConstraint constraintName="encounter_role_creator_fk"
+             baseTableName="encounter_role" baseColumnNames="creator" referencedTableName="users"
+             referencedColumnNames="user_id" />
+         <addForeignKeyConstraint constraintName="encounter_role_changed_by_fk"
+             baseTableName="encounter_role" baseColumnNames="changed_by" referencedTableName="users"
+             referencedColumnNames="user_id" />
+         <addForeignKeyConstraint constraintName="encounter_role_retired_by_fk"
+             baseTableName="encounter_role" baseColumnNames="retired_by" referencedTableName="users"
+             referencedColumnNames="user_id" />
+     </changeSet>
+ 
+     <changeSet id="20110811-1205-create-encounter-provider-table" author="sree/vishnu">
+         <preConditions onFail="MARK_RAN">
+             <not><tableExists tableName="encounter_provider"/></not>
+         </preConditions>
+         <comment>Creating encounter_provider table</comment>
+         <createTable tableName="encounter_provider">
+             <column name="encounter_provider_id" type="int" autoIncrement="true">
+                 <constraints primaryKey="true" nullable="false" />
+         </column>
+             <column name="encounter_id" type="int(11)"><constraints nullable="false" /></column>
+             <column name="provider_id" type="int(11)"><constraints nullable="false" /> </column>
+             <column name="encounter_role_id" type="int(11)"><constraints nullable="false" /></column>
+             <column defaultValueNumeric="0" name="creator" type="int"><constraints nullable="false"/></column>
+             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+             <column name="changed_by" type="int"/>
+             <column name="date_changed" type="datetime" />
+             <column defaultValueNumeric="0" name="voided" type="tinyint"><constraints nullable="false" /></column>
+             <column name="date_voided" type="datetime" />
+             <column name="voided_by" type="int" />
+             <column name="void_reason" type="varchar(255)" />
+             <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+         </createTable>
+         <addForeignKeyConstraint constraintName="encounter_id_fk"
+             baseTableName="encounter_provider" baseColumnNames="encounter_id" referencedTableName="encounter"
+             referencedColumnNames="encounter_id" />
+         <addForeignKeyConstraint constraintName="provider_id_fk"
+             baseTableName="encounter_provider" baseColumnNames="provider_id" referencedTableName="provider"
+             referencedColumnNames="provider_id" />
+         <addForeignKeyConstraint constraintName="encounter_role_id_fk"
+             baseTableName="encounter_provider" baseColumnNames="encounter_role_id" referencedTableName="encounter_role"
+             referencedColumnNames="encounter_role_id" />
+     </changeSet>
+     
+     <changeSet id="20110819-1455-insert-unknown-encounter-role" author="raff">
+     	<preConditions onFail="MARK_RAN">
+ 			<sqlCheck expectedResult="0">
+ 				select count(*) from encounter_role where uuid = 'a0b03050-c99b-11e0-9572-0800200c9a66'
+ 			</sqlCheck>
+ 		</preConditions>
+     	<comment>Inserting the unknown encounter role into the encounter_role table</comment>
+ 		<insert tableName="encounter_role">
+ 			<column name="name" value="Unknown"/>
+ 			<column name="description" value="Unknown encounter role for legacy providers with no encounter role set"/>
+ 			<column name="creator" valueNumeric="1"/>
+ 			<column name="date_created" valueDate="2011-08-18T14:00:00.0" />
+ 			<column name="retired" valueBoolean="false" />
+ 			<column name="uuid" value="a0b03050-c99b-11e0-9572-0800200c9a66" />
+ 		</insert>
+     </changeSet>
+     
+     <changeSet id="20110825-1000-creating-providers-for-persons-from-encounter" author="raff">
+     	<preConditions onFail="MARK_RAN">
+ 			<columnExists tableName="encounter" columnName="provider_id"/>
+ 		</preConditions>
+ 		<comment>Creating providers for persons from the encounter table</comment>
+ 		<sql>
+ 			insert into provider(person_id, creator, date_created, retired, uuid)
+ 				select distinct person.person_id, 1, now(), person.voided, person.uuid
+ 				from person as person inner join encounter as encounter
+ 				on encounter.provider_id = person.person_id 
+ 				where encounter.provider_id not in (select person_id from provider);
+         </sql>
+ 	</changeSet>
+     
+     <changeSet id="20110825-1000-migrating-providers-to-encounter-provider" author="raff">
+     	<preConditions onFail="MARK_RAN">
+ 			<columnExists tableName="encounter" columnName="provider_id"/>
+ 		</preConditions>
+ 		<comment>Migrating providers from the encounter table to the encounter_provider table</comment>
+ 		<sql>			
+ 			insert into encounter_provider(provider_id, encounter_id, encounter_role_id, creator, date_created, voided, uuid) 
+ 				select distinct provider.provider_id, encounter.encounter_id, encounter_role.encounter_role_id, 
+ 					encounter.creator, encounter.date_created, encounter.voided, encounter.uuid
+ 				from encounter as encounter 
+ 					inner join encounter_role as encounter_role 
+ 						on encounter_role.uuid = "a0b03050-c99b-11e0-9572-0800200c9a66"
+ 					inner join provider as provider on encounter.provider_id = provider.person_id
+ 				where encounter.encounter_id not in (select encounter_id from encounter_provider);
+         </sql>
+ 	</changeSet>
+ 	
+ 	<changeSet id="20110825-1000-drop-provider-id-column-from-encounter-table" author="raff">
+ 		<preConditions onFail="MARK_RAN">
+ 			<columnExists tableName="encounter" columnName="provider_id"/>
+ 		</preConditions>
+ 		<comment>Dropping the provider_id column from the encounter table</comment>
+ 		<dropForeignKeyConstraint baseTableName="encounter" constraintName="encounter_provider"/>
+         <dropColumn tableName="encounter" columnName="provider_id"/>
+ 	</changeSet>
 	
 </databaseChangeLog>
 

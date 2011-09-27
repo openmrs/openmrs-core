@@ -2485,4 +2485,19 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//then
 		Assert.assertTrue(Context.getUserService().getUsersByPerson(patient, false).isEmpty());
 	}
+	
+	/**
+	 * @see PatientService#getPatients(String,String,List,boolean)
+	 * @verifies return empty list if name and identifier is empty
+	 */
+	@Test
+	public void getPatients_shouldReturnEmptyListIfNameAndIdentifierIsEmpty() throws Exception {
+		//given
+		
+		//when
+		List<Patient> patients = patientService.getPatients("", "", null, false);
+		
+		//then
+		Assert.assertTrue(patients.isEmpty());
+	}
 }

@@ -39,8 +39,8 @@
 		</convert>
 		<convert converter="bean" match="org.openmrs.web.dwr.VisitListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ConceptReferenceTermListItem"/>
-
-	
+		<convert converter="bean" match="org.openmrs.web.dwr.ProviderListItem" />
+		
 		<create creator="new" javascript="DWRPatientService">
 			<param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
 			<include method="findPatients"/>
@@ -107,6 +107,8 @@
 			<include method="findBatchOfEncounters"/>
 			<include method="findCountAndLocations"/>
 			<include method="findBatchOfLocations"/>
+			<include method="addProviderToEncounter"/>
+			<include method="removeProviderFromEncounter"/>
 		</create>
 		
 		<create creator="new" javascript="DWRUserService">
@@ -243,6 +245,12 @@
 			<include method="getVisit"/>
 			<include method="findEncountersByVisit"/>
 		</create>
+		
+		<create creator="new" javascript="DWRProviderService">
+			<param name="class" value="org.openmrs.web.dwr.DWRProviderService" />
+			<include method="findProviderCountAndProvider"/>
+			<include method="findProvider"/>
+		</create>
 				
 	</allow>
 	
@@ -255,9 +263,11 @@
 			import org.openmrs.web.dwr.DWRPatientService;
 			import org.openmrs.web.dwr.DWRUserService;
 			import org.openmrs.web.dwr.DWRObsService;
+			import org.openmrs.web.dwr.DWRProviderService;
 			import org.openmrs.notification.web.dwr.DWRMessageService;
 			import java.util.Date;
 			import java.util.List;
+			
 			DWRConceptService.findConcepts(String phrase, boolean includeRetired, List<String> includeClassNames, List<String> excludeClassNames, List<String> includeDatatypes, List<String> excludeDatatypes, boolean includeDrugConcepts);
 			DWRConceptService.findConceptAnswers(String phrase, Integer conceptId, boolean includeRetired, boolean includeDrugConcepts);
 			DWRConceptService.findBatchOfConcepts(String phrase, boolean includeRetired, List<String> includeClassNames, List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames, Integer start, Integer length);
@@ -275,6 +285,8 @@
 			DWREncounterService.findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length, boolean getMatchCount);
 			DWREncounterService.findCountAndLocations(String phrase, boolean includeRetired, Integer start, Integer length, boolean getMatchCount)
 			DWREncounterService.findBatchOfLocations(String searchValue, boolean includeRetired, Integer start, Integer length);
+			DWREncounterService.addProviderToEncounter(Integer encounterId, Integer encounterRoleId, Integer providerId)
+			DWREncounterService.removeProviderFromEncounter(Integer encounterId, Integer encounterRoleId, Integer providerId)
 			DWRPersonService.getSimilarPeople(String name, String birthdate, String age, String gender);
 			DWRPersonService.findBatchOfPeopleByRoles(String searchPhrase, boolean includeRetired, String roles, Integer start, Integer length);
 			DWRPersonService.findCountAndPeople(String phrase, boolean includeRetired, String roles, Integer start, Integer length, boolean getMatchCount);
@@ -301,6 +313,8 @@
 			DWRVisitService.findVisitsByPatient(Integer patientId, boolean includeEnded, boolean includeVoided);
 			DWRVisitService.getVisit(Integer visitId);
 			DWRVisitService.findEncountersByVisit(Integer visitId)
+			DWRProviderService.findProviderCountAndProvider(String phrase, boolean includeVoided, Integer start, Integer length);
+			DWRProviderService.findProvider(String phrase, boolean includeVoided, Integer start, Integer length);
 		]]>
 	</signatures>
   	

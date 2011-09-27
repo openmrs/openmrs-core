@@ -137,6 +137,17 @@ function CreateCallback(options) {
 		DWRConceptService.findBatchOfConceptReferenceTerms(q, sourceId, null, maxresults, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayConceptReferenceTerm));
 	}}
 	
+	/**
+	 * Use this method if searching for provider objects
+	 */
+	this.providerCallback = function() { var thisObject = this; return function(q, response) {
+		if (jQuery.trim(q).length == 0)
+			return response(false);
+		
+		thisObject.searchCounter += 1;
+		DWRProviderService.findProvider(q, false, 0, 50, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayProvider));
+	}}
+	
 	/*
 	 * a 'private' method
 	 * the method that dwr calls back with results 
@@ -224,6 +235,28 @@ function CreateCallback(options) {
 		textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
 		
 		return { label: textShown, value: person.personName, id: person.personId, object: person };
+	}; }
+	
+	/**
+	 * This is what maps each ProviderListItem returned object to a name in the drop down
+	 */
+	this.displayProvider = function(origQuery) { return function(provider) {
+		
+		// dwr methods sometimes put strings into the results, just display those
+		if (typeof provider == 'string')
+			return { label: provider, value: "" };
+		
+		var textShown = "";
+		
+		if (provider.identifier)
+			textShown += provider.identifier + " ";
+		
+		textShown += provider.displayName;
+		
+		// wrap each result in a span tag (needed?)
+		textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
+		
+		return { label: textShown, value: provider.displayName, id: provider.providerId, object: provider };
 	}; }
 	
 	// a 'private' method

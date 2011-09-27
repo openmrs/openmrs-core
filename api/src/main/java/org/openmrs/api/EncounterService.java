@@ -20,10 +20,12 @@ import java.util.Map;
 
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
@@ -70,6 +72,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @should not assign encounter to visit if the no assign handler is registered
 	 * @should assign encounter to visit if the assign to existing handler is registered
 	 * @should assign encounter to visit if the assign to existing or new handler is registered
+	 * @should cascade save encounter providers
+	 * @should cascade delete encounter providers
 	 */
 	@Authorized( { PrivilegeConstants.ADD_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter saveEncounter(Encounter encounter) throws APIException;
@@ -208,7 +212,7 @@ public interface EncounterService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
 	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided);
 	
 	/**
@@ -639,6 +643,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @since 1.8
 	 * @should get all the unique encounters that match the specified parameter values
 	 * @should not return voided encounters if includeVoided is set to true
+	 * @should return empty list for empty query
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
@@ -706,4 +711,90 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public EncounterVisitHandler getActiveEncounterVisitHandler() throws APIException;
+	
+	/**
+	 * Saves a new encounter role or updates an existing encounter role.
+	 * @param encounterRole to be saved
+	 * @throws APIException
+	 * @return EncounterRole
+	 * @since 1.9
+	 * @should save encounter role with basic details
+	 * @should update encounter role successfully
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws APIException;
+	
+	/**
+	 * Gets an encounter role when and internal encounter role id is provided.
+	 *
+	 * @param encounterRoleId to be retrieved
+	 * @throws APIException
+	 * @return EncounterRole
+	 * @since 1.9
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTER_ROLES })
+	public EncounterRole getEncounterRole(Integer encounterRoleId) throws APIException;
+	
+	/**
+	 * Completely remove an encounter role from database. For super users only. If dereferencing
+	 * encounter roles, use <code>retireEncounterRole(org.openmrs.Encounter, java.lang.String)</code>
+	 *
+	 * @param encounterRole encounter role object to be purged
+	 * @since 1.9
+	 * @should purge Encounter Role
+	 */
+	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTER_ROLES })
+	public void purgeEncounterRole(EncounterRole encounterRole) throws APIException;
+	
+	/**
+	 * Get all encounter roles based on includeRetired flag
+	 *
+	 * @param includeRetired 
+	 * @return List of all encounter roles
+	 * @since 1.9
+	 * @should get all encounter roles based on include retired flag.
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired);
+	
+	/**
+	 * Get EncounterRole by its UUID
+	 *
+	 * @param uuid
+	 * @return EncounterRole
+	 * @since 1.9
+	 * @should find encounter role based on uuid
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	public EncounterRole getEncounterRoleByUuid(String uuid) throws APIException;
+	
+	/**
+	 * Retire an EncounterRole. This essentially marks the given encounter role as a non-current
+	 * type that shouldn't be used anymore.
+	 *
+	 * @param encounterRole the encounter role to retire
+	 * @param reason required non-null purpose for retiring this encounter role
+	 * @throws APIException
+	 * @since 1.9
+	 * @should retire type and set attributes
+	 * @should throw error if given null reason parameter
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	public EncounterRole retireEncounterRole(EncounterRole encounterRole, String reason) throws APIException;
+	
+	/**
+	 * Unretire an EncounterRole. This brings back the given encounter role and says that it can be
+	 * used again
+	 *
+	 * @param encounterRole the encounter role to unretire
+	 * @throws APIException
+	 * @since 1.9     
+	 * @should unretire type and unmark attributes
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	public EncounterRole unretireEncounterRole(EncounterRole encounterType) throws APIException;
+	
 }

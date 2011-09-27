@@ -184,7 +184,7 @@ Parameters
 					 				<td class="encounterVisit">
 					 					<c:if test="${enc.visit != null}"><openmrs:format visitType="${enc.visit.visitType}"/></c:if>
 					 				</td>
-					 				<td class="encounterProvider"><openmrs:format person="${enc.provider}"/></td>
+					 				<td class="encounterProvider"><openmrs:format encounterProviders="${enc.providersByRoles}"/></td>
 					 				<td class="encounterForm">${enc.form.name}</td>
 					 				<td class="encounterLocation"><openmrs:format location="${enc.location}"/></td>
 					 				<td class="encounterEnterer">${enc.creator.personName}</td>

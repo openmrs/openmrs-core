@@ -894,6 +894,12 @@ public final class OpenmrsConstants {
 	public static final String GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING = "visit.encounterTypeToVisitTypeMapping";
 	
 	/**
+	 * Global property name for the encounter roles to display on the provider column of the patient 
+	 * dashboard under the encounters tab.
+	 */
+	public static final String GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES = "dashboard.encounters.providerDisplayRoles";
+	
+	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
 	 */
 	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/CBC/PKCS5Padding";
@@ -1291,6 +1297,12 @@ public final class OpenmrsConstants {
 		                GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING,
 		                "",
 		                "Specifies how encounter types are mapped to visit types when automatically assigning encounters to visits. e.g 1:1, 2:1, 3:2 in the format encounterTypeId:visitTypeId"));
+		
+		props
+		        .add(new GlobalProperty(
+		                GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES,
+		                "",
+		                "A comma-separated list of encounter roles (by name or id). Providers with these roles in an encounter will be displayed on the encounter tab of the patient dashboard."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
