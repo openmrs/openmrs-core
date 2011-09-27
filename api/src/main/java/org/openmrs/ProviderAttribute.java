@@ -20,6 +20,7 @@ import org.openmrs.attribute.BaseAttribute;
  * A value for a user-defined {@link ProviderAttributeType} that is stored on a {@link Provider}.
  *
  * @see Attribute
+ * @since 1.9
  */
 public class ProviderAttribute extends BaseAttribute<Provider> implements Attribute<Provider> {
 	
