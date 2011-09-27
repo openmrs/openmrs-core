@@ -1617,6 +1617,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust", Collections
 		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		//trust is included in 2 names for conceptid=3000 and in one name for conceptid=4000. 
+		//So we should see 2 results only
 		Assert.assertEquals(2, searchResults.size());
 	}
 	
@@ -1997,7 +1999,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(2, searchResults.size());
 		//the first concept is the one with a word with the highest weight
 		Assert.assertEquals(conceptWithMultipleMatchingNames, searchResults.get(0).getConcept());
-		//This test is only passing because the name select in the query happens to have a lower concept name id
+		//This test is only passing because the name select in the query happens to have a lower concept name id.
+		//For conceptId=3000, its search result should ALWAYS match on 'TRUST ME' because it is shorter THAN 'TRUST ALWAYS'
+		//so it has a higher weight hence giving this concept a higher weight when being compared to other concept hits.
 		Assert.assertEquals(9997, searchResults.get(0).getConceptName().getConceptNameId().intValue());
 	}
 	
