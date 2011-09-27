@@ -694,7 +694,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#saveEncounterRole(org.openmrs.EncounterRole) 
+	 * @see org.openmrs.api.EncounterService#saveEncounterRole(org.openmrs.EncounterRole)
 	 */
 	@Override
 	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws APIException {
@@ -728,7 +728,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncounterRoleByUuid(String) 
+	 * @see org.openmrs.api.EncounterService#getEncounterRoleByUuid(String)
 	 */
 	@Override
 	public EncounterRole getEncounterRoleByUuid(String uuid) throws APIException {
@@ -753,4 +753,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		return saveEncounterRole(encounterRole);
 	}
 	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncountersNotAssignedToAnyVisit(org.openmrs.Patient)
+	 */
+	@Override
+	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws APIException {
+		return dao.getEncountersNotAssignedToAnyVisit(patient);
+	}
 }

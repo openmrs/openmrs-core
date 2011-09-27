@@ -416,6 +416,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	
 	/**
 	 * Convenience method since this DAO fetches several different domain objects by uuid
+	 * 
 	 * @param uuid uuid to fetch
 	 * @param table a simple classname (e.g. "Encounter")
 	 * @return
@@ -425,4 +426,11 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		    uuid).uniqueResult();
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws DAOException {
+		return sessionFactory.getCurrentSession().createCriteria(Encounter.class).add(Restrictions.eq("patient", patient))
+		        .add(Restrictions.isNull("visit")).add(Restrictions.eq("voided", false)).addOrder(
+		            Order.desc("encounterDatetime")).setMaxResults(100).list();
+	}
 }

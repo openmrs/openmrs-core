@@ -19,8 +19,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
@@ -46,23 +44,12 @@ public class PatientVisitsPortletController extends PortletController {
 		
 		PortletControllerUtil.addFormToEditAndViewUrlMaps(model);
 		
-		List<Encounter> otherEncounters = new ArrayList<Encounter>();
+		List<Encounter> unAssignedEncounters = new ArrayList<Encounter>();
 		Patient patient = (Patient) model.get("patient");
-		if (patient.getPatientId() != null) {
-			otherEncounters = Context.getEncounterService().getEncountersByPatient(patient);
-			
-			//remove all encounters that are already associated to visits
-			CollectionUtils.filter(otherEncounters, new Predicate() {
-				
-				@Override
-				public boolean evaluate(Object object) {
-					Encounter e = (Encounter) object;
-					return e.getVisit() == null;
-				}
-			});
-		}
+		if (patient.getPatientId() != null)
+			unAssignedEncounters = Context.getEncounterService().getEncountersNotAssignedToAnyVisit(patient);
 		
-		model.put("otherEncounters", otherEncounters);
+		model.put("unAssignedEncounters", unAssignedEncounters);
 	}
 	
 }

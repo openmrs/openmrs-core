@@ -689,9 +689,8 @@ public interface EncounterService extends OpenmrsService {
 	List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided);
 	
 	/**
-	 * @return list of handlers for determining if an encounter should go into a
-	 *         visit. If none are found, an empty list.
-	 *         
+	 * @return list of handlers for determining if an encounter should go into a visit. If none are
+	 *         found, an empty list.
 	 * @see EncounterVisitHandler
 	 * @since 1.9
 	 * @should return the no assignment handler
@@ -714,6 +713,7 @@ public interface EncounterService extends OpenmrsService {
 	
 	/**
 	 * Saves a new encounter role or updates an existing encounter role.
+	 * 
 	 * @param encounterRole to be saved
 	 * @throws APIException
 	 * @return EncounterRole
@@ -726,7 +726,7 @@ public interface EncounterService extends OpenmrsService {
 	
 	/**
 	 * Gets an encounter role when and internal encounter role id is provided.
-	 *
+	 * 
 	 * @param encounterRoleId to be retrieved
 	 * @throws APIException
 	 * @return EncounterRole
@@ -738,8 +738,9 @@ public interface EncounterService extends OpenmrsService {
 	
 	/**
 	 * Completely remove an encounter role from database. For super users only. If dereferencing
-	 * encounter roles, use <code>retireEncounterRole(org.openmrs.Encounter, java.lang.String)</code>
-	 *
+	 * encounter roles, use
+	 * <code>retireEncounterRole(org.openmrs.Encounter, java.lang.String)</code>
+	 * 
 	 * @param encounterRole encounter role object to be purged
 	 * @since 1.9
 	 * @should purge Encounter Role
@@ -749,8 +750,8 @@ public interface EncounterService extends OpenmrsService {
 	
 	/**
 	 * Get all encounter roles based on includeRetired flag
-	 *
-	 * @param includeRetired 
+	 * 
+	 * @param includeRetired
 	 * @return List of all encounter roles
 	 * @since 1.9
 	 * @should get all encounter roles based on include retired flag.
@@ -761,7 +762,7 @@ public interface EncounterService extends OpenmrsService {
 	
 	/**
 	 * Get EncounterRole by its UUID
-	 *
+	 * 
 	 * @param uuid
 	 * @return EncounterRole
 	 * @since 1.9
@@ -774,7 +775,7 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Retire an EncounterRole. This essentially marks the given encounter role as a non-current
 	 * type that shouldn't be used anymore.
-	 *
+	 * 
 	 * @param encounterRole the encounter role to retire
 	 * @param reason required non-null purpose for retiring this encounter role
 	 * @throws APIException
@@ -788,13 +789,25 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Unretire an EncounterRole. This brings back the given encounter role and says that it can be
 	 * used again
-	 *
+	 * 
 	 * @param encounterRole the encounter role to unretire
 	 * @throws APIException
-	 * @since 1.9     
+	 * @since 1.9
 	 * @should unretire type and unmark attributes
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
 	public EncounterRole unretireEncounterRole(EncounterRole encounterType) throws APIException;
 	
+	/**
+	 * Gets the unvoided encounters for the specified patient that are not assigned to any visit.
+	 * Note that this method will return a maximum of 100 encounters.
+	 * 
+	 * @param patient the patient to match against
+	 * @return a list of {@link Encounter}s
+	 * @throws APIException
+	 * @should return the unvoided encounters not assigned to any visit
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws APIException;
 }
