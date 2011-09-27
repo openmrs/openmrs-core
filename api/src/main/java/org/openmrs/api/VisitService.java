@@ -182,6 +182,7 @@ public interface VisitService extends OpenmrsService {
 	 * @return the visit that has been voided
 	 * @throws APIException
 	 * @should void the visit and set the voidReason
+	 * @should void encounters of the visit
 	 */
 	@Authorized(PrivilegeConstants.DELETE_VISITS)
 	public Visit voidVisit(Visit visit, String reason) throws APIException;
@@ -193,6 +194,7 @@ public interface VisitService extends OpenmrsService {
 	 * @return the unvoided visit
 	 * @throws APIException
 	 * @should unvoid the visit and unset all the void related fields
+	 * @should unvoid encounters of the visit
 	 */
 	@Authorized(PrivilegeConstants.DELETE_VISITS)
 	public Visit unvoidVisit(Visit visit) throws APIException;
