@@ -196,7 +196,7 @@ public interface EncounterDAO {
 	
 	/**
 	 * Saves an encounter role
-	 *
+	 * 
 	 * @param encounter role to be saved
 	 * @throws org.openmrs.api.db.DAOException
 	 */
@@ -204,14 +204,14 @@ public interface EncounterDAO {
 	
 	/**
 	 * Purge an encounter role from database.
-	 *
+	 * 
 	 * @param encounterRole encounter role object to be purged
 	 */
 	public void deleteEncounterRole(EncounterRole encounterRole) throws DAOException;
 	
 	/**
 	 * Get encounter role by internal identifier
-	 *
+	 * 
 	 * @param encounterRoleId encounter role id
 	 * @return encounter role with given internal identifier
 	 * @throws org.openmrs.api.db.DAOException
@@ -220,7 +220,7 @@ public interface EncounterDAO {
 	
 	/**
 	 * Find {@link org.openmrs.EncounterRole} matching a uuid
-	 *
+	 * 
 	 * @param uuid
 	 * @return {@link org.openmrs.EncounterRole}
 	 */
@@ -228,11 +228,16 @@ public interface EncounterDAO {
 	
 	/**
 	 * Get all enconter roles and optionally specify whehter to include retired encontered roles
-	 *
+	 * 
 	 * @param includeRetired include retired
 	 * @return enconter roles
 	 * @throws org.openmrs.api.db.DAOException
 	 * @see org.openmrs.api.EncounterRoleService#getAllEncounterRoles(boolan includeRetired)
 	 */
 	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired) throws DAOException;
+	
+	/**
+	 * @see EncounterService#getEncountersNotAssignedToAnyVisit(Patient)
+	 */
+	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws DAOException;
 }

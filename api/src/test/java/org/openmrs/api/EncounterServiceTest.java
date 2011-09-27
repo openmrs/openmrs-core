@@ -28,7 +28,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.junit.Assert;
@@ -1519,7 +1518,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Make sure that purging an encounter removes the row from the database
-	 *
+	 * 
 	 * @see {@link EncounterService#purgeEncounterRole(org.openmrs.EncounterRole)}
 	 */
 	@Test
@@ -1873,5 +1872,19 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		//The visit should be persisted.
 		assertNotNull(encounter.getVisit().getVisitId());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncountersNotAssignedToAnyVisit(Patient)}
+	 */
+	@Test
+	@Verifies(value = "should return the unvoided encounters not assigned to any visit", method = "getEncountersNotAssignedToAnyVisit(Patient)")
+	public void getEncountersNotAssignedToAnyVisit_shouldReturnTheUnvoidedEncountersNotAssignedToAnyVisit() throws Exception {
+		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
+		List<Encounter> encs = Context.getEncounterService().getEncountersNotAssignedToAnyVisit(
+		    Context.getPatientService().getPatient(10));
+		Assert.assertEquals(2, encs.size());
+		Assert.assertEquals(17, encs.get(0).getEncounterId().intValue());
+		Assert.assertEquals(18, encs.get(1).getEncounterId().intValue());
 	}
 }

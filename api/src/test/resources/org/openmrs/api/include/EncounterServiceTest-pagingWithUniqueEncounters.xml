@@ -10,9 +10,13 @@
   	<patient patient_id="10" creator="1" date_created="2005-09-22 00:00:00.0" voided="0" />
   	<patient patient_id="11" creator="1" date_created="2005-09-22 00:00:00.0" voided="0" />
   	
-  	<encounter encounter_id="16" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="10" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="0" uuid="03c4fe3c-90df-11e0-9c16-705ab6a580e0"/>
-	<encounter encounter_id="17" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="10" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="0" uuid="0e4ae574-90df-11e0-9c16-705ab6a580e0"/>
-	<encounter encounter_id="18" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="10" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="1" uuid="1cb903f2-90df-11e0-9c16-705ab6a580e0"/>
-	
-	<encounter encounter_id="23" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="11" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="0" uuid="5a4e92c2-90df-11e0-9c16-705ab6a580e0"/>
+  	<encounter encounter_id="17" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="10" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="0" uuid="03c4fe3c-90df-11e0-9c16-705ab6a580e0"/>
+	<encounter encounter_id="18" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="10" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="0" uuid="0e4ae574-90df-11e0-9c16-705ab6a580e0"/>
+	<encounter encounter_id="19" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="10" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="1" uuid="1cb903f2-90df-11e0-9c16-705ab6a580e0"/>
+	<encounter encounter_id="23" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="11" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="0" uuid="5a4e92c2-90df-11e0-9c16-705ab6a580e0"/>
+
+	<encounter_provider encounter_provider_id="4" encounter_id="17" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="0da0dd7e-e948-11e0-950d-00248140a5eb" />
+  	<encounter_provider encounter_provider_id="5" encounter_id="18" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="3202c6c8-e948-11e0-950d-00248140a5eb" />
+  	<encounter_provider encounter_provider_id="6" encounter_id="19" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="3a8d03e4-e948-11e0-950d-00248140a5eb" />
+  	<encounter_provider encounter_provider_id="7" encounter_id="23" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="49617684-e948-11e0-950d-00248140a5eb" />
 </dataset>

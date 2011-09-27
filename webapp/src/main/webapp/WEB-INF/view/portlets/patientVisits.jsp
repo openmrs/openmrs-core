@@ -193,10 +193,23 @@ function displayMessage(msg, visitId){
 					</table>
 				</div>
 			</div>
+			<c:if test="${model.patient.patientId != null && fn:length(model.unAssignedEncounters) > 0}">
 			<openmrs:hasPrivilege privilege="View Encounters">
 			<br />
-			<div class="boxHeader"><spring:message code="Visit.encounters.notAssignedToVisit"/></div>
-			<div class="box">
+			<div class="boxHeader">
+			<spring:message code="Visit.encounters.notAssignedToVisit"/>&nbsp;
+				<a href="javascript:void(0)">
+					<b>
+					<span class="toggleableEle" onclick="javascript:$j('.toggleableEle').toggle()">
+						<spring:message code="general.show"/>
+					</span>
+					<span class="toggleableEle" onclick="javascript:$j('.toggleableEle').toggle()" style="display: none">
+						<spring:message code="general.hide"/>
+					</span>
+					</b>
+				</a>
+			</div>
+			<div class="box toggleableEle" style="display: none">
 				<table cellpadding="2">
 					<thead>
 				 	<tr>
@@ -212,7 +225,7 @@ function displayMessage(msg, visitId){
 				 	</tr>
 					</thead>
 					<tbody>
-						<c:forEach var="enc" items="${model.otherEncounters}" varStatus="varStatus">
+						<c:forEach var="enc" items="${model.unAssignedEncounters}" varStatus="varStatus">
 						<tr class='${varStatus.index % 2 == 0 ? "evenRow" : "oddRow"}'>
 						<openmrs:hasPrivilege privilege="Edit Encounters">
 							<td align="center">
@@ -234,13 +247,14 @@ function displayMessage(msg, visitId){
 							<td><openmrs:format person="${enc.provider}"/></td>
 							<td>${enc.form.name}</td>
 							<td><openmrs:format location="${enc.location}"/></td>
-							<td>${enc.creator.personName}</td>
+							<td><openmrs:format user="${enc.creator}"/></td>
 						</tr>
 						</c:forEach>
 					</tbody>						
 				</table>
 			</div>
-			</openmrs:hasPrivilege>	
+			</openmrs:hasPrivilege>
+			</c:if>
 		</div>
 		
 		<c:if test="${model.showPagination != 'true'}">
