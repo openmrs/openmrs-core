@@ -81,7 +81,6 @@ public class VisitFormController {
 			if (patientId != null)
 				visit.setPatient(Context.getPatientService().getPatient(patientId));
 		}
-		addEncounterAndObservationCounts(visit, model);
 		return visit;
 	}
 	
