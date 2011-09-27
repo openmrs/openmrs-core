@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+    <class name="ProviderAttribute" table="provider_attribute">
+
+        <id name="providerAttributeId" type="int" column="provider_attribute_id">
+            <generator class="native" />
+        </id>
+
+        <discriminator column="provider_attribute_id" insert="false" />
+        
+        <many-to-one name="provider" class="Provider" not-null="true" column="provider_id" />
+        
+        <many-to-one name="attributeType" class="ProviderAttributeType" not-null="true" column="attribute_type_id" />
+        
+        <!-- TODO CHECK LENGTH -->
+        <property name="serializedValue" type="text" not-null="true" column="serialized_value" length="16777215" />
+        
+        <many-to-one name="creator" class="User" not-null="true" column="creator" />
+        
+        <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+        
+        <many-to-one name="changedBy" class="User" column="changed_by" />
+        
+        <property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
+        
+        <property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true" />
+        
+        <many-to-one name="voidedBy" class="User" column="voided_by" />
+        
+        <property name="dateVoided" type="java.util.Date" column="date_voided" length="19" />
+               
+        <property name="voidReason" type="java.lang.String" column="void_reason" length="255" />
+        
+        <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+        
+    </class>
+
+</hibernate-mapping>
