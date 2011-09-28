@@ -230,11 +230,19 @@ function displayMessage(msg, visitId){
 						<openmrs:hasPrivilege privilege="Edit Encounters">
 							<td align="center">
 				 			<openmrs:hasPrivilege privilege="Edit Encounters">
-							<c:set var="editUrl" value="<openmrs:contextPath />/admin/encounters/encounter.form?encounterId=${enc.encounterId}"/>
+							<c:set var="editUrl" value="admin/encounters/encounter.form?encounterId=${enc.encounterId}"/>
 							<c:if test="${ model.formToEditUrlMap[enc.form] != null }">
-								<c:url var="editUrl" value="${model.formToEditUrlMap[enc.form]}">
+								<c:set var="editUrl" value="${model.formToEditUrlMap[enc.form]}" />
+								<c:choose>
+									<c:when test="${!fn:contains(editUrl, '?')}">
+									<c:url var="editUrl" value="${editUrl}">
 									<c:param name="encounterId" value="${enc.encounterId}"/>
-								</c:url>
+									</c:url>
+									</c:when>
+									<c:otherwise>
+									<c:set var="editUrl" value="${editUrl}&encounterId=${enc.encounterId}" />
+									</c:otherwise>
+								</c:choose>
 							</c:if>
 							<a href="${editUrl}">
 								<img src="<openmrs:contextPath />/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" />
