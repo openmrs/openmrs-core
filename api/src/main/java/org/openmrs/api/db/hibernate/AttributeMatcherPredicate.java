@@ -21,7 +21,7 @@ import org.openmrs.attribute.Customizable;
 import java.util.Map;
 
 /**
- * A predicate for matching attribute values
+ * Used in conjunction with commons-collections filter to find attributes with values in the given map.
  * @since 1.9
  */
 public class AttributeMatcherPredicate<T extends Customizable, AT extends AttributeType> implements Predicate {
