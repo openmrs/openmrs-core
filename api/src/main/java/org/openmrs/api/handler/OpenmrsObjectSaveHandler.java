@@ -101,7 +101,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 					}
 				}
 			}
-			/*catch (InvocationTargetException ex) {
+			catch (InvocationTargetException ex) {
 				if (ex.getTargetException() instanceof TransientObjectException) {
 					//The FormServiceTest throws this for the "xslt" and "template" properties, with this error message:
 					//org.hibernate.TransientObjectException: object references an unsaved transient 
@@ -111,7 +111,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 					throw new APIException("Failed to change property value from empty string to null for "
 					        + property.getName(), ex);
 				}
-			}*/
+			}
 			catch (Exception ex) {
 				throw new APIException(
 				        "Failed to change property value from empty string to null for " + property.getName(), ex);
