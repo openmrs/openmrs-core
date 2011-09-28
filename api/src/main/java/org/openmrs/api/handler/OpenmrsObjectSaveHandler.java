@@ -25,6 +25,8 @@ import org.hibernate.TransientObjectException;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.Voidable;
+import org.openmrs.annotation.AllowEmptyStrings;
+import org.openmrs.annotation.AllowLeadingOrTrailingWhitespace;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
@@ -51,8 +53,9 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 	 * 
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * 
 	 * @should set empty string properties to null
+	 * @should not set empty string properties to null for AllowEmptyStrings annotation
+	 * @should not trim empty strings for AllowLeadingOrTrailingWhitespace annotation
 	 */
 	public void handle(OpenmrsObject openmrsObject, User creator, Date dateCreated, String reason) {
 		if (openmrsObject.getUuid() == null)
@@ -72,13 +75,25 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 				continue;
 			}
 			
-			if (!property.getPropertyType().getName().equals("java.lang.String")) {
+			if (!property.getPropertyType().equals(String.class)) {
+				continue;
+			}
+			
+			if (property.getWriteMethod().getAnnotation(AllowEmptyStrings.class) != null) {
 				continue;
 			}
 			
 			try {
 				Object value = PropertyUtils.getProperty(openmrsObject, property.getName());
-				if (value != null && ((String) value).isEmpty()) {
+				if (value == null) {
+					continue;
+				}
+				
+				if (property.getWriteMethod().getAnnotation(AllowLeadingOrTrailingWhitespace.class) == null) {
+					value = ((String) value).trim();
+				}
+				
+				if ("".equals(value)) {
 					
 					//Set to null only if object is not already voided
 					if (!(openmrsObject instanceof Voidable && ((Voidable) openmrsObject).isVoided())) {
@@ -86,7 +101,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 					}
 				}
 			}
-			catch (InvocationTargetException ex) {
+			/*catch (InvocationTargetException ex) {
 				if (ex.getTargetException() instanceof TransientObjectException) {
 					//The FormServiceTest throws this for the "xslt" and "template" properties, with this error message:
 					//org.hibernate.TransientObjectException: object references an unsaved transient 
@@ -96,7 +111,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 					throw new APIException("Failed to change property value from empty string to null for "
 					        + property.getName(), ex);
 				}
-			}
+			}*/
 			catch (Exception ex) {
 				throw new APIException(
 				        "Failed to change property value from empty string to null for " + property.getName(), ex);

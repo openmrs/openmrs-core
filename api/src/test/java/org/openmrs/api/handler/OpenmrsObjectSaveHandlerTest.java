@@ -17,9 +17,12 @@ import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.annotation.AllowEmptyStrings;
+import org.openmrs.annotation.AllowLeadingOrTrailingWhitespace;
 import org.openmrs.test.Verifies;
 
 /**
@@ -43,5 +46,71 @@ public class OpenmrsObjectSaveHandlerTest {
 		Assert.assertNull(role.getName());
 		Assert.assertNull(role.getDescription());
 		Assert.assertNull(role.getRole());
+	}
+	
+	/**
+	 * @see {@link OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)}
+	 */
+	@Test
+	@Verifies(value = "not set empty string properties to null for AllowEmptyStrings annotation", method = "handle(OpenmrsObject,User,Date,String)")
+	public void handle_shouldNotSetEmptyStringPropertiesToNullForAllowEmptyStringsAnnotation() {
+		SomeClass obj = new SomeClass("");
+		new OpenmrsObjectSaveHandler().handle(obj, null, null, null);
+		Assert.assertNotNull(obj.getName());
+	}
+	
+	/**
+	 * @see {@link OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)}
+	 */
+	@Test
+	@Verifies(value = "not trim empty strings for AllowLeadingOrTrailingWhitespace annotation", method = "handle(OpenmrsObject,User,Date,String)")
+	public void handle_shouldNotTrimEmptyStringsForAllowLeadingOrTrailingWhitespaceAnnotation() {
+		SomeClass obj = new SomeClass(null, " ");
+		new OpenmrsObjectSaveHandler().handle(obj, null, null, null);
+		Assert.assertNotNull(obj.getDescription());
+	}
+	
+	public class SomeClass extends BaseOpenmrsObject {
+		
+		private Integer id;
+		
+		private String name;
+		
+		private String description;
+		
+		public SomeClass(String name){
+			setName(name);
+		}
+		
+		public SomeClass(String name, String description){
+			setName(name);
+			setDescription(description);
+		}
+		
+        public String getName() {
+        	return name;
+        }
+		
+        @AllowEmptyStrings
+        public void setName(String name) {
+        	this.name = name;
+        }
+		
+        public String getDescription(){
+        	return description;
+        }
+		
+        @AllowLeadingOrTrailingWhitespace
+        public void setDescription(String description) {
+        	this.description = description;
+        }
+        
+        public void setId(Integer id){
+        	this.id = id;
+        }
+        
+        public Integer getId(){
+        	return id;
+        }
 	}
 }
