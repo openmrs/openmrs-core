@@ -135,10 +135,10 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		//only reschedule a task if it is started, is not running and the time is not in the past
 		if (task.getStarted() && OpenmrsUtil.compareWithNullAsEarliest(task.getStartTime(), new Date()) > 0
-		        && (task.getTaskInstance() == null || !task.getTaskInstance().isExecuting()))
+		        && (task.getTaskInstance() == null || !task.getTaskInstance().isExecuting())) {
 			Context.getSchedulerService().rescheduleTask(task);
-		else
-			Context.getSchedulerService().saveTask(task);
+		}
+		Context.getSchedulerService().saveTask(task);
 		
 		view = getSuccessView();
 		
