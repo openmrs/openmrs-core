@@ -21,6 +21,7 @@ var canEditEncounters = false;
 </c:if>
 
 function toggleEncounters(visitId){
+	$j('.hideShowVisitEncounters-'+visitId).toggle();
 	//user has selected the same visit as the one before
 	if(selectedVisitRow && $j(selectedVisitRow).attr('id') == visitId){
 		//just toggle the visible encounters since the user selected the same visit row
@@ -35,6 +36,11 @@ function toggleEncounters(visitId){
 		}
 		
 		return;
+	}else if(selectedVisitRow){//the user has switched to view another visit's encounters
+		var selectedVisitRowVisitId = $j(selectedVisitRow).attr('id');
+		//switch to the expand_icon of the visit that was last selected
+		if($j('#collapse-'+selectedVisitRowVisitId).is(':visible'))
+			$j('.hideShowVisitEncounters-'+selectedVisitRowVisitId).toggle();
 	}
 	
 	//clear the table
@@ -152,7 +158,10 @@ function displayMessage(msg, visitId){
 									<openmrs:hasPrivilege privilege="View Encounters">
 				 					<td>
 										<a href="javascript:void(0)" onclick="toggleEncounters(${visit.visitId})">
-											<img src="<openmrs:contextPath />/images/file.gif" title="<spring:message code="Visit.viewEncounters"/>" border="0" />
+											<img class="hideShowVisitEncounters-${visit.visitId}" src="<openmrs:contextPath />/images/expand_icon.gif" 
+												title="<spring:message code="Visit.viewEncounters"/>" border="0" />
+											<img id="collapse-${visit.visitId}" class="hideShowVisitEncounters-${visit.visitId}" src="<openmrs:contextPath />/images/collapse_icon.gif" 
+												title="<spring:message code="Visit.hideEncounters"/>" border="0" style="display: none" />
 										</a>
 									</td>
 				 					</openmrs:hasPrivilege>
@@ -196,21 +205,20 @@ function displayMessage(msg, visitId){
 			<c:if test="${model.patient.patientId != null && fn:length(model.unAssignedEncounters) > 0}">
 			<openmrs:hasPrivilege privilege="View Encounters">
 			<br />
-			<div class="boxHeader">
-			<spring:message code="Visit.encounters.notAssignedToVisit"/>&nbsp;
+			<div class="boxHeader"><spring:message code="Visit.encounters.notAssignedToVisit"/></div>
+			<div class="box">
+				&nbsp;
 				<a href="javascript:void(0)">
 					<b>
 					<span class="toggleableEle" onclick="javascript:$j('.toggleableEle').toggle()">
-						<spring:message code="general.show"/>
+						<spring:message code="general.view"/>
 					</span>
 					<span class="toggleableEle" onclick="javascript:$j('.toggleableEle').toggle()" style="display: none">
 						<spring:message code="general.hide"/>
 					</span>
 					</b>
 				</a>
-			</div>
-			<div class="box toggleableEle" style="display: none">
-				<table cellpadding="2">
+				<table class="toggleableEle" cellpadding="2" style="display: none">
 					<thead>
 				 	<tr>
 				 		<openmrs:hasPrivilege privilege="Edit Encounters">
