@@ -144,7 +144,7 @@ function displayMessage(msg, visitId){
 								<tr id="${visit.visitId}" class='visitRow ${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
 									<td class="visitEdit" align="center">
 										<openmrs:hasPrivilege privilege="Edit Visits">
-											<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=${visit.visitId}">
+											<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=${visit.visitId}&patientId=${model.patient.patientId}">
 												<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" />
 											</a>
 										</openmrs:hasPrivilege>
