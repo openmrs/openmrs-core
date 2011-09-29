@@ -1679,9 +1679,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getAllConceptMapTypes()}
 	 */
 	@Test
-	@Verifies(value = "should return all the concept map types excluding retired and hidden ones", method = "getAllConceptMapTypes()")
-	public void getAllConceptMapTypes_shouldReturnAllTheConceptMapTypesExcludingRetiredAndHiddenOnes() throws Exception {
-		Assert.assertEquals(5, Context.getConceptService().getAllConceptMapTypes().size());
+	@Verifies(value = "should return all the concept map types excluding hidden ones", method = "getAllConceptMapTypes()")
+	public void getAllConceptMapTypes_shouldReturnAllTheConceptMapTypesExcludingHiddenOnes() throws Exception {
+		Assert.assertEquals(6, Context.getConceptService().getAllConceptMapTypes().size());
 	}
 	
 	/**
@@ -1784,20 +1784,20 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getAllConceptReferenceTerms(null)}
 	 */
 	@Test
-	@Verifies(value = "should return all the concept reference terms if includeRetired is set to true", method = "getAllConceptReferenceTerms(null)")
-	public void getAllConceptReferenceTerms_shouldReturnAllTheConceptReferenceTermsIfIncludeRetiredIsSetToTrue()
+	@Verifies(value = "should return all the concept reference terms if includeRetired is set to true", method = "getConceptReferenceTerms(null)")
+	public void getConceptReferenceTerms_shouldReturnAllTheConceptReferenceTermsIfIncludeRetiredIsSetToTrue()
 	        throws Exception {
-		Assert.assertEquals(11, Context.getConceptService().getAllConceptReferenceTerms(true).size());
+		Assert.assertEquals(11, Context.getConceptService().getConceptReferenceTerms(true).size());
 	}
 	
 	/**
 	 * @see {@link ConceptService#getAllConceptReferenceTerms(null)}
 	 */
 	@Test
-	@Verifies(value = "should return only un retired concept reference terms if includeRetired is set to false", method = "getAllConceptReferenceTerms(null)")
-	public void getAllConceptReferenceTerms_shouldReturnOnlyUnRetiredConceptReferenceTermsIfIncludeRetiredIsSetToFalse()
+	@Verifies(value = "should return only un retired concept reference terms if includeRetired is set to false", method = "getConceptReferenceTerms(null)")
+	public void getConceptReferenceTerms_shouldReturnOnlyUnRetiredConceptReferenceTermsIfIncludeRetiredIsSetToFalse()
 	        throws Exception {
-		Assert.assertEquals(10, Context.getConceptService().getAllConceptReferenceTerms(false).size());
+		Assert.assertEquals(10, Context.getConceptService().getConceptReferenceTerms(false).size());
 	}
 	
 	/**
@@ -1956,29 +1956,29 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getAllConceptReferenceTerms()}
 	 */
 	@Test
-	@Verifies(value = "should return all un retired concept reference terms in the database", method = "getAllConceptReferenceTerms()")
-	public void getAllConceptReferenceTerms_shouldReturnAllUnRetiredConceptReferenceTermsInTheDatabase() throws Exception {
-		Assert.assertEquals(10, Context.getConceptService().getAllConceptReferenceTerms().size());
+	@Verifies(value = "should return all concept reference terms in the database", method = "getAllConceptReferenceTerms()")
+	public void getAllConceptReferenceTerms_shouldReturnAllConceptReferenceTermsInTheDatabase() throws Exception {
+		Assert.assertEquals(11, Context.getConceptService().getAllConceptReferenceTerms().size());
 	}
 	
 	/**
 	 * @see {@link ConceptService#getConceptMapsBySource(ConceptSource)}
 	 */
 	@Test
-	@Verifies(value = "should return a List of ConceptMaps from the given source", method = "getConceptMapsBySource(ConceptSource)")
-	public void getConceptMapsBySource_shouldReturnAListOfConceptMapsFromTheGivenSource() throws Exception {
-		Assert.assertEquals(8, Context.getConceptService().getConceptMapsBySource(
+	@Verifies(value = "should return a List of ConceptMaps from the given source", method = "getConceptMappingsToSource(ConceptSource)")
+	public void getConceptMappingsToSource_shouldReturnAListOfConceptMapsFromTheGivenSource() throws Exception {
+		Assert.assertEquals(8, Context.getConceptService().getConceptMappingsToSource(
 		    Context.getConceptService().getConceptSource(1)).size());
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptMappingsTo(ConceptReferenceTerm)}
+	 * @see {@link ConceptService#getReferenceTermMappingsTo(ConceptReferenceTerm)}
 	 */
 	@Test
-	@Verifies(value = "should return all concept reference term maps where the specified term is the termB", method = "getConceptMappingsTo(ConceptReferenceTerm)")
-	public void getConceptMappingsTo_shouldReturnAllConceptReferenceTermMapsWhereTheSpecifiedTermIsTheTermB()
+	@Verifies(value = "should return all concept reference term maps where the specified term is the termB", method = "getReferenceTermMappingsTo(ConceptReferenceTerm)")
+	public void getReferenceTermMappingsTo_shouldReturnAllConceptReferenceTermMapsWhereTheSpecifiedTermIsTheTermB()
 	        throws Exception {
-		Assert.assertEquals(2, Context.getConceptService().getConceptMappingsTo(
+		Assert.assertEquals(2, Context.getConceptService().getReferenceTermMappingsTo(
 		    Context.getConceptService().getConceptReferenceTerm(4)).size());
 	}
 	

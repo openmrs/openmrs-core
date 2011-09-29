@@ -556,12 +556,12 @@ public interface ConceptDAO {
 	/**
 	 * @see ConceptService#purgeConceptMapType(ConceptMapType)
 	 */
-	public void purgeConceptMapType(ConceptMapType conceptMapType) throws DAOException;
+	public void deleteConceptMapType(ConceptMapType conceptMapType) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getAllConceptReferenceTerms(boolean)
+	 * @see ConceptService#getConceptReferenceTerms(boolean)
 	 */
-	public List<ConceptReferenceTerm> getAllConceptReferenceTerms(boolean includeRetired) throws DAOException;
+	public List<ConceptReferenceTerm> getConceptReferenceTerms(boolean includeRetired) throws DAOException;
 	
 	/**
 	 * @see ConceptService#getConceptReferenceTerm(Integer)
@@ -596,7 +596,7 @@ public interface ConceptDAO {
 	/**
 	 * @see ConceptService#purgeConceptReferenceTerm(ConceptReferenceTerm)
 	 */
-	public void purgeConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws DAOException;
+	public void deleteConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws DAOException;
 	
 	/**
 	 * @see ConceptService#getCountOfConceptReferenceTerms(String, ConceptSource, boolean)
@@ -612,12 +612,12 @@ public interface ConceptDAO {
 	        Integer length, boolean includeRetired) throws APIException;
 	
 	/**
-	 * @see
+	 * @see ConceptService#getReferenceTermMappingsTo(ConceptReferenceTerm)
 	 */
-	public List<ConceptMap> getConceptMappingsTo(ConceptReferenceTerm term) throws DAOException;
+	public List<ConceptReferenceTermMap> getReferenceTermMappingsTo(ConceptReferenceTerm term) throws DAOException;
 	
 	/**
-	 * Checks if there are any {@link ConceptReferenceTermMap}s or {@link ConceptMap}S using the
+	 * Checks if there are any {@link ConceptReferenceTermMap}s or {@link ConceptMap}s using the
 	 * specified term
 	 * 
 	 * @param term
@@ -630,7 +630,7 @@ public interface ConceptDAO {
 	public boolean isConceptReferenceTermInUse(ConceptReferenceTerm term) throws DAOException;
 	
 	/**
-	 * Checks if there are any {@link ConceptReferenceTermMap}s or {@link ConceptMap}S using the
+	 * Checks if there are any {@link ConceptReferenceTermMap}s or {@link ConceptMap}s using the
 	 * specified mapType
 	 * 
 	 * @param mapType

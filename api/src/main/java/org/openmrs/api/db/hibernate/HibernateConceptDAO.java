@@ -1706,19 +1706,19 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#purgeConceptMapType(org.openmrs.ConceptMapType)
+	 * @see org.openmrs.api.db.ConceptDAO#deleteConceptMapType(org.openmrs.ConceptMapType)
 	 */
 	@Override
-	public void purgeConceptMapType(ConceptMapType conceptMapType) throws DAOException {
+	public void deleteConceptMapType(ConceptMapType conceptMapType) throws DAOException {
 		sessionFactory.getCurrentSession().delete(conceptMapType);
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptReferenceTerms(boolean)
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceTerms(boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ConceptReferenceTerm> getAllConceptReferenceTerms(boolean includeRetired) throws DAOException {
+	public List<ConceptReferenceTerm> getConceptReferenceTerms(boolean includeRetired) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
 		if (!includeRetired)
 			criteria.add(Expression.eq("retired", false));
@@ -1796,10 +1796,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#purgeConceptReferenceTerm(org.openmrs.ConceptReferenceTerm)
+	 * @see org.openmrs.api.db.ConceptDAO#deleteConceptReferenceTerm(org.openmrs.ConceptReferenceTerm)
 	 */
 	@Override
-	public void purgeConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws DAOException {
+	public void deleteConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws DAOException {
 		sessionFactory.getCurrentSession().delete(conceptReferenceTerm);
 	}
 	
@@ -1851,11 +1851,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptMappingsTo(org.openmrs.ConceptReferenceTerm)
+	 * @see org.openmrs.api.db.ConceptDAO#getReferenceTermMappingsTo(ConceptReferenceTerm)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ConceptMap> getConceptMappingsTo(ConceptReferenceTerm term) throws DAOException {
+	public List<ConceptReferenceTermMap> getReferenceTermMappingsTo(ConceptReferenceTerm term) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTermMap.class);
 		criteria.add(Restrictions.eq("termB", term));
 		return criteria.list();

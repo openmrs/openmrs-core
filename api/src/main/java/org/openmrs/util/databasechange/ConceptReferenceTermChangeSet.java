@@ -130,9 +130,10 @@ public class ConceptReferenceTermChangeSet implements CustomTaskChange {
 			PreparedStatement pStmt = null;
 			try {
 				connection.setAutoCommit(false);
-				pStmt = connection.prepareStatement("INSERT INTO concept_reference_term"
-				        + "(concept_reference_term_id, concept_source_id, code, description, creator, date_created, uuid) "
-				        + "VALUES(?, ?, ?, ?, ?, ?, ?)");
+				pStmt = connection
+				        .prepareStatement("INSERT INTO concept_reference_term"
+				                + "(concept_reference_term_id, concept_source_id, code, description, creator, date_created, retired, uuid) "
+				                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
 				
 				for (Map<String, Object> propertyValueMap : listOfPropertyValueMaps) {
 					pStmt.setInt(1, (Integer) propertyValueMap.get("termId"));
@@ -142,7 +143,8 @@ public class ConceptReferenceTermChangeSet implements CustomTaskChange {
 					    "description").toString());
 					pStmt.setInt(5, (Integer) propertyValueMap.get("creator"));
 					pStmt.setDate(6, (Date) propertyValueMap.get("dateCreated"));
-					pStmt.setString(7, propertyValueMap.get("uuid").toString());
+					pStmt.setBoolean(7, false);
+					pStmt.setString(8, propertyValueMap.get("uuid").toString());
 					
 					pStmt.addBatch();
 				}
@@ -183,6 +185,10 @@ public class ConceptReferenceTermChangeSet implements CustomTaskChange {
 					catch (Exception rbe) {
 						log.warn("Error generated while rolling back batch update", be);
 					}
+					
+					//marks the changeset as a failed one
+					throw new CustomChangeException(
+					        "Failed to generate concept reference terms from existing concept mappings.");
 				}
 			}
 			catch (DatabaseException e) {
@@ -217,7 +223,7 @@ public class ConceptReferenceTermChangeSet implements CustomTaskChange {
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
 	public String getConfirmationMessage() {
-		return "Finished validating concepts";
+		return "Finished generating concept reference terms from existing concept mappings.";
 	}
 	
 	/**

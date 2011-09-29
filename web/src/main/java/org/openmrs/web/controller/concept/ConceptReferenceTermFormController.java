@@ -22,7 +22,6 @@ import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.ConceptMap;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.api.APIException;
@@ -78,10 +77,11 @@ public class ConceptReferenceTermFormController {
 	}
 	
 	@SuppressWarnings("unchecked")
-	@ModelAttribute("conceptMappingsToThisTerm")
-	public List<ConceptMap> getConceptMappingsToThisTerm(@ModelAttribute ConceptReferenceTerm conceptReferenceTerm) {
+	@ModelAttribute("referenceTermMappingsToThisTerm")
+	public List<ConceptReferenceTermMap> getConceptMappingsToThisTerm(
+	        @ModelAttribute ConceptReferenceTerm conceptReferenceTerm) {
 		if (conceptReferenceTerm.getConceptReferenceTermId() != null)
-			return Context.getConceptService().getConceptMappingsTo(conceptReferenceTerm);
+			return Context.getConceptService().getReferenceTermMappingsTo(conceptReferenceTerm);
 		
 		return ListUtils.EMPTY_LIST;
 	}
