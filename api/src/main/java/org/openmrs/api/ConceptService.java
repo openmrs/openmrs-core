@@ -1651,13 +1651,12 @@ public interface ConceptService extends OpenmrsService {
 	public List<ConceptStopWord> getAllConceptStopWords();
 	
 	/**
-	 * Returns a list of concept map types currently in the database excluding retired and hidden
-	 * ones
+	 * Returns a list of concept map types currently in the database excluding hidden ones
 	 * 
 	 * @return List of concept map type objects
 	 * @since 1.9
 	 * @throws APIException
-	 * @should return all the concept map types excluding retired and hidden ones
+	 * @should return all the concept map types excluding hidden ones
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
@@ -1768,31 +1767,32 @@ public interface ConceptService extends OpenmrsService {
 	public void purgeConceptMapType(ConceptMapType conceptMapType) throws APIException;
 	
 	/**
-	 * Returns a list of concept maps for a given ConceptSource
+	 * Returns a list of mappings from concepts to terms in the given reference terminology
 	 * 
 	 * @param conceptSource
 	 * @return a List<ConceptMap> object
+	 * @since 1.9
 	 * @throws APIException
 	 * @should return a List of ConceptMaps from the given source
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
-	public List<ConceptMap> getConceptMapsBySource(ConceptSource conceptSource) throws APIException;
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	public List<ConceptMap> getConceptMappingsToSource(ConceptSource conceptSource) throws APIException;
 	
 	/**
-	 * Gets a list of all non retired concept reference terms saved in the database
+	 * Gets a list of all concept reference terms saved in the database
 	 * 
 	 * @return a list of concept reference terms
 	 * @since 1.9
 	 * @throws APIException
-	 * @should return all un retired concept reference terms in the database
+	 * @should return all concept reference terms in the database
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
 	public List<ConceptReferenceTerm> getAllConceptReferenceTerms() throws APIException;
 	
 	/**
-	 * Gets a list of all concept reference terms saved in the database
+	 * Gets a list of concept reference terms saved in the database
 	 * 
 	 * @param includeRetired specifies if retired concept reference terms should be included
 	 * @return a list of concept reference terms
@@ -1803,7 +1803,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
-	public List<ConceptReferenceTerm> getAllConceptReferenceTerms(boolean includeRetired) throws APIException;
+	public List<ConceptReferenceTerm> getConceptReferenceTerms(boolean includeRetired) throws APIException;
 	
 	/**
 	 * Gets the concept reference term with the specified concept reference term id
@@ -1958,8 +1958,8 @@ public interface ConceptService extends OpenmrsService {
 	        throws APIException;
 	
 	/**
-	 * Fetches all the {@link ConceptReferenceTermMap} where the specified concept is the termB i.e
-	 * mappings added to other terms pointing to it
+	 * Fetches all the {@link ConceptReferenceTermMap} where the specified reference term is the
+	 * termB i.e mappings added to other terms pointing to it
 	 * 
 	 * @param term the term to match against
 	 * @return a list of {@link ConceptReferenceTermMap}s
@@ -1967,5 +1967,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return all concept reference term maps where the specified term is the termB
 	 */
-	public List<ConceptMap> getConceptMappingsTo(ConceptReferenceTerm term) throws APIException;
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
+	public List<ConceptReferenceTermMap> getReferenceTermMappingsTo(ConceptReferenceTerm term) throws APIException;
 }

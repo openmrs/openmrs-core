@@ -152,7 +152,7 @@ $j(document).ready( function() {
 					<option value=""></option>
 					<openmrs:forEachRecord name="conceptSource">
 					<option value="${record.conceptSourceId}" <c:if test="${record.conceptSourceId == status.value}">selected="selected"</c:if>>
-						${record.name} (${record.hl7Code})
+						${record.name}  <c:if test="${not empty record.hl7Code}">[${record.hl7Code}]</c:if>
 					</option>
 					</openmrs:forEachRecord>
 				</select>
@@ -285,11 +285,11 @@ $j(document).ready( function() {
 					onClick="addConceptReferenceTermMap(${fn:length(conceptReferenceTermModel.termMaps)})" />
 			</td>
 		</tr>
-		<c:if test="${fn:length(conceptMappingsToThisTerm) > 0}">
+		<c:if test="${fn:length(referenceTermMappingsToThisTerm) > 0}">
 		<tr>
         	<th class="alignRight" valign="top"><spring:message code="ConceptReferenceTerm.termsWithMappingsToThis"/></th>
         	<td valign="top">
-        		<c:forEach var="map" items="${conceptMappingsToThisTerm}">
+        		<c:forEach var="map" items="${referenceTermMappingsToThisTerm}">
         			<li class="list-item-no-style">
         				<a href="<openmrs:contextPath />/admin/concepts/conceptReferenceTerm.form?conceptReferenceTermId=${map.termA.conceptReferenceTermId}">
         					${map.termA.code}

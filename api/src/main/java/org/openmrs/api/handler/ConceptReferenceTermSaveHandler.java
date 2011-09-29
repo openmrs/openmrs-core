@@ -15,22 +15,24 @@ package org.openmrs.api.handler;
 
 import java.util.Date;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.openmrs.ConceptName;
-import org.openmrs.ConceptNameTag;
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
-import org.openmrs.api.context.Context;
+import org.openmrs.api.APIException;
 
 /**
- * This class deals with {@link ConceptName} objects when they are saved via a save* method in an
- * Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
+ * This class deals with {@link ConceptReferenceTerm} objects when they are saved via a save* method
+ * in an Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
  * class. <br/>
- * This class does a lookup on all tag name for all child {@link ConceptNameTag}s that have a null
- * {@link ConceptNameTag#getConceptNameTagId()}.
+ * This class does the following:
+ * <ul>
+ * <li>Sets a custom uuid by concatenating the code to the hl7Code of the concept source the term
+ * belongs to</li>
+ * <li>Sets the termA field for all {@link ConceptReferenceTermMap}s</li>
+ * </ul>
  * 
  * @see RequiredDataHandler
  * @see SaveHandler
@@ -48,12 +50,6 @@ public class ConceptReferenceTermSaveHandler implements SaveHandler<ConceptRefer
 	 */
 	public void handle(ConceptReferenceTerm conceptReferenceTerm, User currentUser, Date currentDate, String other) {
 		
-		if (conceptReferenceTerm.getConceptReferenceTermId() == null) {
-			if (conceptReferenceTerm.getCreator() == null)
-				conceptReferenceTerm.setCreator(Context.getAuthenticatedUser());
-			if (conceptReferenceTerm.getDateCreated() == null)
-				conceptReferenceTerm.setDateCreated(new Date());
-		}
 		if (conceptReferenceTerm.getName() != null) {
 			conceptReferenceTerm.setName(conceptReferenceTerm.getName().trim());
 		}
@@ -75,12 +71,14 @@ public class ConceptReferenceTermSaveHandler implements SaveHandler<ConceptRefer
 				conceptReferenceTerm.setVersion(conceptReferenceTerm.getVersion().trim());
 		}
 		
+		if (StringUtils.isBlank(conceptReferenceTerm.getConceptSource().getHl7Code()))
+			throw new APIException("ConceptSource.hl7Code.required");
+		
 		//always update the uuid just in case source and code have been edited
-		//term.setUuid(term.getConceptSource().getHl7Code().concat("-").concat(term.getCode()));
 		conceptReferenceTerm.setUuid(conceptReferenceTerm.getConceptSource().getHl7Code().concat("-").concat(
 		    conceptReferenceTerm.getCode()));
 		
-		if (CollectionUtils.isNotEmpty(conceptReferenceTerm.getConceptReferenceTermMaps())) {
+		if (conceptReferenceTerm.getConceptReferenceTermMaps() != null) {
 			for (ConceptReferenceTermMap map : conceptReferenceTerm.getConceptReferenceTermMaps())
 				map.setTermA(conceptReferenceTerm);
 		}

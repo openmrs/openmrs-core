@@ -47,6 +47,7 @@ import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
@@ -1530,20 +1531,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#getConceptsByConceptSource(org.openmrs.ConceptSource)
 	 */
 	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws APIException {
-		List<ConceptMap> maps = getConceptMapsBySource(conceptSource);
-		List<ConceptMap> ret = new ArrayList<ConceptMap>();
-		for (ConceptMap newMap : maps) {
-			ConceptMap oldMap = new ConceptMap();
-			try {
-				BeanUtils.copyProperties(newMap, oldMap);
-				ret.add(oldMap);
-			}
-			catch (Exception e) {
-				log.error("Error generated", e);
-				throw new APIException("Error occured, use: Concept.getConceptReferenceMapsBySource(ConceptSource)", e);
-			}
-		}
-		return ret;
+		return getConceptMappingsToSource(conceptSource);
 	}
 	
 	/**
@@ -1885,15 +1873,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see ConceptService#getConceptMapsBySource(ConceptSource)
+	 * @see ConceptService#getConceptMappingsToSource(ConceptSource)
 	 */
 	@Override
-	public List<ConceptMap> getConceptMapsBySource(ConceptSource conceptSource) throws APIException {
-		List<ConceptMap> ret = dao.getConceptMapsBySource(conceptSource);
-		if (ret != null)
-			return ret;
-		else
-			return new ArrayList<ConceptMap>();
+	public List<ConceptMap> getConceptMappingsToSource(ConceptSource conceptSource) throws APIException {
+		return dao.getConceptMapsBySource(conceptSource);
 	}
 	
 	/**
@@ -1901,7 +1885,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public List<ConceptMapType> getAllConceptMapTypes() throws APIException {
-		return dao.getConceptMapTypes(false, false);
+		return getConceptMapTypes(true, false);
 	}
 	
 	/**
@@ -1944,10 +1928,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		Errors errors = new BindException(conceptMapType, "conceptMapType");
 		new ConceptMapTypeValidator().validate(conceptMapType, errors);
 		if (errors.hasErrors()) {
-			log.error("Validation errors found while saving the concept map type");
-			//see trunk https://tickets.openmrs.org/browse/TRUNK-2393 that will give a better error message
-			throw new APIException(Context.getMessageSourceService().getMessage("error.failed.validation", null,
-			    "Found validation errors", Context.getLocale()));
+			//see trunk https://tickets.openmrs.org/browse/TRUNK-2393
+			throw new APIException(Context.getMessageSourceService().getMessage("error.failed.validation"));
 		}
 		conceptMapType.setName(conceptMapType.getName().trim());
 		if (conceptMapType.getDescription() != null)
@@ -1983,7 +1965,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public void purgeConceptMapType(ConceptMapType conceptMapType) throws APIException {
 		if (dao.isConceptMapTypeInUse(conceptMapType))
 			throw new APIException(Context.getMessageSourceService().getMessage("ConceptMapType.inUse"));
-		dao.purgeConceptMapType(conceptMapType);
+		dao.deleteConceptMapType(conceptMapType);
 	}
 	
 	/**
@@ -1991,15 +1973,15 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public List<ConceptReferenceTerm> getAllConceptReferenceTerms() throws APIException {
-		return dao.getAllConceptReferenceTerms(false);
+		return getConceptReferenceTerms(true);
 	}
 	
 	/**
-	 * @see ConceptService#getAllConceptReferenceTerms(boolean)
+	 * @see ConceptService#getConceptReferenceTerms(boolean)
 	 */
 	@Override
-	public List<ConceptReferenceTerm> getAllConceptReferenceTerms(boolean includeRetired) throws APIException {
-		return dao.getAllConceptReferenceTerms(includeRetired);
+	public List<ConceptReferenceTerm> getConceptReferenceTerms(boolean includeRetired) throws APIException {
+		return dao.getConceptReferenceTerms(includeRetired);
 	}
 	
 	/**
@@ -2057,8 +2039,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		Errors errors = new BindException(conceptReferenceTerm, "conceptReferenceTerm");
 		new ConceptReferenceTermValidator().validate(conceptReferenceTerm, errors);
 		if (errors.hasErrors()) {
-			log.error("Validation errors found while saving the concept reference term");
-			//see trunk https://tickets.openmrs.org/browse/TRUNK-2393 that will give a better error message
+			//see trunk https://tickets.openmrs.org/browse/TRUNK-2393
 			throw new APIException(Context.getMessageSourceService().getMessage("error.failed.validation"));
 		}
 		
@@ -2092,7 +2073,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public void purgeConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws APIException {
 		if (dao.isConceptReferenceTermInUse(conceptReferenceTerm))
 			throw new APIException(Context.getMessageSourceService().getMessage("ConceptRefereceTerm.inUse"));
-		dao.purgeConceptReferenceTerm(conceptReferenceTerm);
+		dao.deleteConceptReferenceTerm(conceptReferenceTerm);
 	}
 	
 	/**
@@ -2115,10 +2096,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptMappingsTo(org.openmrs.ConceptReferenceTerm)
+	 * @see org.openmrs.api.ConceptService#getReferenceTermMappingsTo(ConceptReferenceTerm)
 	 */
 	@Override
-	public List<ConceptMap> getConceptMappingsTo(ConceptReferenceTerm term) throws APIException {
-		return dao.getConceptMappingsTo(term);
+	public List<ConceptReferenceTermMap> getReferenceTermMappingsTo(ConceptReferenceTerm term) throws APIException {
+		return dao.getReferenceTermMappingsTo(term);
 	}
 }

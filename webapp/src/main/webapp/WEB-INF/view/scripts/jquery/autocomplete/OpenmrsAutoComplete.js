@@ -336,7 +336,7 @@ function CreateCallback(options) {
 	}
 	
 	// a 'private' method
-	// This is what maps each ConceptListItem or LocationListItem returned object to a name in the dropdown
+	// This is what displays the ConceptReferenceTermListItem's code, name and concept source name in the dropdown
 	this.displayConceptReferenceTerm = function(origQuery) { return function(item) {
 		// dwr sometimes puts strings into the results, just display those
 		if (typeof item == 'string')
