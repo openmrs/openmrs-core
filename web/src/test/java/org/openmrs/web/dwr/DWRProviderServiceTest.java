@@ -12,9 +12,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
 
-public class DWRProviderServiceTest extends BaseContextSensitiveTest {
+public class DWRProviderServiceTest extends BaseWebContextSensitiveTest {
 	
 	private static final String PROVIDERS_INITIAL_XML = "org/openmrs/api/include/ProviderServiceTest-initial.xml";
 	
