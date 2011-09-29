@@ -243,7 +243,7 @@ public class VisitFormController {
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/visits/purgeVisit")
 	public String purgeVisit(WebRequest request, @ModelAttribute(value = "visit") Visit visit, SessionStatus status,
-	        ModelMap model) {		
+	        ModelMap model) {
 		try {
 			Integer patientId = visit.getPatient().getPatientId();
 			Context.getVisitService().purgeVisit(visit);

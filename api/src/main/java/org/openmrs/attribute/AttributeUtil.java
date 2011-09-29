@@ -14,10 +14,12 @@
 package org.openmrs.attribute;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AttributeService;
 import org.openmrs.api.context.Context;
 import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.serialization.SerializationException;
@@ -82,5 +84,25 @@ public class AttributeUtil {
 		catch (Exception ex) {
 			return false;
 		}
+	}
+	
+	/**
+	 * Uses the appropriate handlers to serialize all attribute values in the input map.
+	 * This is a convenience method for calling XyzService.getXyz(..., attributeValues, ...). 
+	 * 
+	 * @param attributeValues
+	 * @return a map similar to the input parameter, but with typed values converted to their serialized versions with the appropriate handlers
+	 */
+	public static <T extends AttributeType<?>> Map<T, String> getSerializedAttributeValues(Map<T, Object> attributeValues) {
+		Map<T, String> serializedAttributeValues = null;
+		if (attributeValues != null) {
+			serializedAttributeValues = new HashMap<T, String>();
+			AttributeService attrService = Context.getAttributeService();
+			for (Map.Entry<T, Object> e : attributeValues.entrySet()) {
+				T vat = e.getKey();
+				serializedAttributeValues.put(vat, attrService.getHandler(vat).serialize(e.getValue()));
+			}
+		}
+		return serializedAttributeValues;
 	}
 }
