@@ -59,6 +59,7 @@ import org.openmrs.hl7.Hl7InArchivesMigrateThread.Status;
 import org.openmrs.hl7.db.HL7DAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 
 import ca.uhn.hl7v2.HL7Exception;
@@ -1243,14 +1244,20 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	public HL7QueueItem getHl7QueueItemByUuid(String uuid) throws APIException {
 		HL7QueueItem result = getHL7InQueueByUuid(uuid);
 		if (result != null) {
+			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_QUEUE);
+			return result;
+		}
+		result = getHL7InErrorByUuid(uuid);
+		if (result != null) {
+			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_EXCEPTION);
 			return result;
 		}
 		result = getHL7InArchiveByUuid(uuid);
 		if (result != null) {
+			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_ARCHIVE);
 			return result;
 		}
-		result = getHL7InErrorByUuid(uuid);
-		return result;
+		return null;
 	}
 	
 }
