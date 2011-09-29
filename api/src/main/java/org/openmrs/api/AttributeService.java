@@ -57,12 +57,4 @@ public interface AttributeService extends OpenmrsService {
 	 */
 	AttributeHandler<?> getHandler(AttributeType<?> attributeType);
 	
-	/**
-	 * Uses the appropriate handlers to serialize all attribute values in the input map.
-	 * This is a convenience method XyzService.getXyz(..., attributeValues, ...). 
-	 * 
-	 * @param attributeValues
-	 * @return
-	 */
-	<T extends AttributeType<?>> Map<T, String> getSerializedAttributeValues(Map<T, Object> attributeValues);
 }

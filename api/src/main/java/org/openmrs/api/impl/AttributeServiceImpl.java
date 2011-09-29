@@ -92,23 +92,6 @@ public class AttributeServiceImpl extends BaseOpenmrsService implements Attribut
 	}
 	
 	/**
-	 * @see org.openmrs.api.AttributeService#getSerializedAttributeValues(java.util.Map)
-	 */
-	@Override
-	public <T extends AttributeType<?>> Map<T, String> getSerializedAttributeValues(Map<T, Object> attributeValues) {
-		Map<T, String> serializedAttributeValues = null;
-		if (attributeValues != null) {
-			serializedAttributeValues = new HashMap<T, String>();
-			AttributeService attrService = Context.getAttributeService();
-			for (Map.Entry<T, Object> e : attributeValues.entrySet()) {
-				T vat = e.getKey();
-				serializedAttributeValues.put(vat, attrService.getHandler(vat).serialize(e.getValue()));
-			}
-		}
-		return serializedAttributeValues;
-	}
-	
-	/**
 	 * private method that prioritizes all registered handlers so we can quickly determin which to use for
 	 * each logical type
 	 */

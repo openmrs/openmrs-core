@@ -27,6 +27,7 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.attribute.AttributeType;
+import org.openmrs.attribute.AttributeUtil;
 import org.openmrs.validator.ProviderValidator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -140,7 +141,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributeValues) {
-		Map<ProviderAttributeType, String> serializedAttributeValues = Context.getAttributeService()
+		Map<ProviderAttributeType, String> serializedAttributeValues = AttributeUtil
 		        .getSerializedAttributeValues(attributeValues);
 		return dao.getProviders(query, serializedAttributeValues, start, length);
 	}

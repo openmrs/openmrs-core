@@ -102,7 +102,7 @@ public class SettingsController {
 	
 	@ModelAttribute(Model.SETTINGS_FORM)
 	public SettingsForm getSettingsForm(@RequestParam(value = Model.SHOW, required = false) String show,
-	                                    @ModelAttribute(Model.SECTIONS) List<String> sections) {
+	        @ModelAttribute(Model.SECTIONS) List<String> sections) {
 		SettingsForm settingsForm = new SettingsForm();
 		if (show == null && settingsForm.getSection() == null) {
 			show = SettingsProperty.GENERAL;
