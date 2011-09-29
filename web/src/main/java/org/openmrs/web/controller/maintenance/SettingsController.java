@@ -82,17 +82,22 @@ public class SettingsController {
 	
 	@ModelAttribute(Model.SECTIONS)
 	public List<String> getSections() {
-		SortedSet<String> sections = new TreeSet<String>();
-		
+		SortedSet<String> sortedSections = new TreeSet<String>();
 		List<GlobalProperty> globalProperties = getService().getAllGlobalProperties();
 		for (GlobalProperty globalProperty : globalProperties) {
 			SettingsProperty property = new SettingsProperty(globalProperty);
 			if (!isHidden(property)) {
-				sections.add(property.getSection());
+				sortedSections.add(property.getSection());
 			}
 		}
 		
-		return new ArrayList<String>(sections);
+		List<String> sections = new ArrayList<String>();
+		if (sortedSections.remove(SettingsProperty.GENERAL)) {
+			sections.add(SettingsProperty.GENERAL);
+		}
+		sections.addAll(sortedSections);
+		
+		return sections;
 	}
 	
 	@ModelAttribute(Model.SETTINGS_FORM)
@@ -100,7 +105,7 @@ public class SettingsController {
 	                                    @ModelAttribute(Model.SECTIONS) List<String> sections) {
 		SettingsForm settingsForm = new SettingsForm();
 		if (show == null && settingsForm.getSection() == null) {
-			show = sections.iterator().next();
+			show = SettingsProperty.GENERAL;
 		}
 		if (show != null) {
 			settingsForm.setSection(show);
