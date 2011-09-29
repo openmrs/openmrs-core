@@ -14,6 +14,9 @@ var formToEditUrlMap = {};
 var editUrl = '<openmrs:contextPath />/admin/encounters/encounter.form';
 var editEncounterImage = '<img src="<openmrs:contextPath />/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" />';
 var canEditEncounters = false;
+var fetchEncounters = true;//used to turn on/off visit encounter fetching
+var clickToViewEncounterTooltip = '<spring:message code="Visit.clickToViewEncounters"/>';
+var clickToHideEncounterTooltip = '<spring:message code="Visit.clickToHideEncounters"/>';
 <c:if test="${fn:length(model.formToEditUrlMap) > 0}">
 <c:forEach var="entry" items="${model.formToEditUrlMap}">
 	formToEditUrlMap[${entry.key}] = '${entry.value}';
@@ -21,17 +24,25 @@ var canEditEncounters = false;
 </c:if>
 
 function toggleEncounters(visitId){
+	//the user clicked the visit edit button
+	if(!fetchEncounters)
+		return;
+	
 	$j('.hideShowVisitEncounters-'+visitId).toggle();
+	
 	//user has selected the same visit as the one before
 	if(selectedVisitRow && $j(selectedVisitRow).attr('id') == visitId){
 		//just toggle the visible encounters since the user selected the same visit row
 		if($j(visibleEncountersRow).is(':visible')){
 			$j(visibleEncountersRow).hide();
+			//
+			document.getElementById(visitId).title = clickToViewEncounterTooltip;
 			//remove the row highlight
 			$j(selectedVisitRow).removeClass('selected-visit');
 		}
 		else{
 			$j(visibleEncountersRow).show();
+			document.getElementById(visitId).title = clickToHideEncounterTooltip;
 			$j(selectedVisitRow).addClass('selected-visit');
 		}
 		
@@ -39,8 +50,10 @@ function toggleEncounters(visitId){
 	}else if(selectedVisitRow){//the user has switched to view another visit's encounters
 		var selectedVisitRowVisitId = $j(selectedVisitRow).attr('id');
 		//switch to the expand_icon of the visit that was last selected
-		if($j('#collapse-'+selectedVisitRowVisitId).is(':visible'))
+		if($j('#collapse-'+selectedVisitRowVisitId).is(':visible')){
 			$j('.hideShowVisitEncounters-'+selectedVisitRowVisitId).toggle();
+			document.getElementById(selectedVisitRowVisitId).title = clickToViewEncounterTooltip;
+		}
 	}
 	
 	//clear the table
@@ -56,13 +69,14 @@ function toggleEncounters(visitId){
 	selectedVisitRow = $j("#"+visitId);
 	visibleEncountersRow = $j("#encountersRow-"+visitId);
 	$j(selectedVisitRow).addClass('selected-visit');
+	document.getElementById(visitId).title = clickToHideEncounterTooltip;
 	$j(visibleEncountersRow).show();
-		
+			
 	DWRVisitService.findEncountersByVisit(visitId, function(encounters) {
 		if(encounters){
 			if(encounters.length > 0){
 				//if this is an error message
-				if(typeof encounters[0] == 'string'){
+				if(typeof encounters[0] == 'string'){title
 					displayMessage('<span class="error"><spring:message code="Visit.find.encounters.error"/></span>', visitId);
 					return;
 				}
@@ -99,6 +113,13 @@ function displayMessage(msg, visitId){
 	$j('#visitEncountersTable-'+visitId+' tbody:last').append('<tr>'+
 			'<td colspan="'+((canEditEncounters) ? 7 : 6)+'" class="centerAligned">'+msg+'</td>'+
 		'</tr>');
+}
+
+//this is called when the edit visit icon is clicked to avoid 
+//unnecessary fetching of encounters from the server
+function disableEncounterFetching(){
+	//no need to reset it back to true since the user will leave the page
+	fetchEncounters = false;
 }
 </script>
 
@@ -147,10 +168,11 @@ function displayMessage(msg, visitId){
 						</thead>
 						<tbody>
 							<openmrs:forEachVisit visits="${model.patientVisits}" sortBy="startDatetime" descending="true" var="visit" num="${model.num}">
-								<tr id="${visit.visitId}" class='visitRow ${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
+								<tr id="${visit.visitId}" class='visitRow ${status.index % 2 == 0 ? "evenRow" : "oddRow"}' 
+									onclick='toggleEncounters(${visit.visitId})' title="<spring:message code="Visit.clickToViewEncounters"/>">
 									<td class="visitEdit" align="center">
 										<openmrs:hasPrivilege privilege="Edit Visits">
-											<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=${visit.visitId}&patientId=${model.patient.patientId}">
+											<a onclick="disableEncounterFetching()" href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=${visit.visitId}&patientId=${model.patient.patientId}">
 												<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" />
 											</a>
 										</openmrs:hasPrivilege>
