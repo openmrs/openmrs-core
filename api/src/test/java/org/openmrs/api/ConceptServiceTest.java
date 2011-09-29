@@ -2015,4 +2015,24 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(2, conceptService.getCountOfConcepts("trust", Collections.singletonList(Locale.ENGLISH), false,
 		    null, null, null, null, null).intValue());
 	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should not fail when a duplicate name is edited to a unique value", method = "saveConcept(Concept)")
+	public void saveConcept_shouldNotFailWhenADuplicateNameIsEditedToAUniqueValue() throws Exception {
+		//Insert a row to simulate an existing duplicate fully specified/preferred name that needs to be edited
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-conceptWithDuplicateName.xml");
+		Concept conceptToEdit = conceptService.getConcept(10000);
+		Locale locale = Locale.ENGLISH;
+		ConceptName duplicateNameToEdit = conceptToEdit.getFullySpecifiedName(locale);
+		//Ensure the name is a duplicate in it's locale
+		Concept otherConcept = conceptService.getConcept(5497);
+		Assert.assertTrue(duplicateNameToEdit.getName().equalsIgnoreCase(
+		    otherConcept.getFullySpecifiedName(locale).getName()));
+		
+		duplicateNameToEdit.setName("new unique name");
+		conceptService.saveConcept(conceptToEdit);
+	}
 }

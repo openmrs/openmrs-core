@@ -318,4 +318,32 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		//the second mapping should be rejected
 		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[1]"));
 	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass if the duplicate name in the locale for the concept being validated is voided", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfTheDuplicateNameInTheLocaleForTheConceptBeingValidatedIsVoided() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		ConceptName otherName = cs.getConceptName(1439);
+		//sanity check since names should only be unique amongst preferred and fully specified names
+		Assert.assertTrue(otherName.isFullySpecifiedName() || otherName.isPreferred());
+		Assert.assertFalse(otherName.isVoided());
+		Assert.assertFalse(otherName.getConcept().isRetired());
+		
+		//change to a duplicate name in the same locale
+		ConceptName duplicateName = cs.getConceptName(2477);
+		duplicateName.setName(otherName.getName());
+		Concept concept = duplicateName.getConcept();
+		concept.setPreferredName(duplicateName);
+		//ensure that the name has been marked as preferred in its locale
+		Assert.assertEquals(duplicateName, concept.getPreferredName(duplicateName.getLocale()));
+		Assert.assertTrue(duplicateName.isPreferred());
+		duplicateName.setVoided(true);
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
 }

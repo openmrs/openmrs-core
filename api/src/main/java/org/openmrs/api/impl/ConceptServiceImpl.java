@@ -217,11 +217,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			}
 		}
 		
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		if (errors.hasErrors())
-			throw new APIException("Validation errors found");
-		
 		if (CollectionUtils.isNotEmpty(changedConceptNames)) {
 			for (ConceptName changedName : changedConceptNames) {
 				// void old concept name
@@ -246,6 +241,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				concept.addName(clone);
 			}
 		}
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		if (errors.hasErrors())
+			throw new APIException("Validation errors found");
 		
 		//Set a preferred name for each locale for those where it isn't yet specified
 		for (Locale locale : LocaleUtility.getLocalesInOrder()) {
