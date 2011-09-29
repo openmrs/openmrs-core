@@ -37,6 +37,13 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Global Properties">
+		<li <c:if test='<%= request.getRequestURI().contains("settings") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/maintenance/settings.list">
+				<spring:message code="Settings.title"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="View Server Log">
 		<li <c:if test='<%= request.getRequestURI().contains("serverLog") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/serverLog.form">
