@@ -232,7 +232,7 @@
 	
 	<table cellspacing="0" cellpadding="7">
 	<tr>
-		<th class="headerCell"><spring:message code="Person.name"/></th>
+		<th class="headerCell" valign="top"><spring:message code="Person.name"/></th>
 		<td class="inputCell">
 			<table cellspacing="2">				
 				<thead>
@@ -245,7 +245,7 @@
 		</td>		
 	</tr>
 	<tr>
-		<th class="headerCell"><spring:message code="PatientIdentifier.title.endUser"/></th>
+		<th class="headerCell" valign="top"><spring:message code="PatientIdentifier.title.endUser"/></th>
 		<td class="inputCell">
 			<table id="identifiers" cellspacing="2">
 				<tr>
@@ -360,7 +360,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th class="headerCell"><spring:message code="patientDashboard.demographics"/></th>
+		<th class="headerCell" valign="top"><spring:message code="patientDashboard.demographics"/></th>
 		<td class="inputCell">
 			<table>
 				<tr>
@@ -426,7 +426,7 @@
 	</tr>
 
 	<tr>
-		<th class="headerCell"><spring:message code="Person.address"/></th>
+		<th class="headerCell" valign="top"><spring:message code="Person.address"/></th>
 		<td class="inputCell">
 			<spring:nestedPath path="personAddress">
 				<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=false" />
