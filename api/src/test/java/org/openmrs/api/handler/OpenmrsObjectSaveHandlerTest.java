@@ -78,39 +78,39 @@ public class OpenmrsObjectSaveHandlerTest {
 		
 		private String description;
 		
-		public SomeClass(String name){
+		public SomeClass(String name) {
 			setName(name);
 		}
 		
-		public SomeClass(String name, String description){
+		public SomeClass(String name, String description) {
 			setName(name);
 			setDescription(description);
 		}
 		
-        public String getName() {
-        	return name;
-        }
+		public String getName() {
+			return name;
+		}
 		
-        @AllowEmptyStrings
-        public void setName(String name) {
-        	this.name = name;
-        }
+		@AllowEmptyStrings
+		public void setName(String name) {
+			this.name = name;
+		}
 		
-        public String getDescription(){
-        	return description;
-        }
+		public String getDescription() {
+			return description;
+		}
 		
-        @AllowLeadingOrTrailingWhitespace
-        public void setDescription(String description) {
-        	this.description = description;
-        }
-        
-        public void setId(Integer id){
-        	this.id = id;
-        }
-        
-        public Integer getId(){
-        	return id;
-        }
+		@AllowLeadingOrTrailingWhitespace
+		public void setDescription(String description) {
+			this.description = description;
+		}
+		
+		public void setId(Integer id) {
+			this.id = id;
+		}
+		
+		public Integer getId() {
+			return id;
+		}
 	}
 }
