@@ -1,16 +1,16 @@
 package org.openmrs.web.dwr;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
-
-import java.util.Vector;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class DWRProgramWorkflowServiceTest extends BaseContextSensitiveTest {
+import java.util.Vector;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.openmrs.test.Verifies;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
+
+public class DWRProgramWorkflowServiceTest extends BaseWebContextSensitiveTest {
 	
 	private DWRProgramWorkflowService dwrProgramWorkflowService;
 	
