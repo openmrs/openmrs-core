@@ -231,14 +231,14 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterDAO#getEncounterByUuid(java.lang.String)
 	 */
 	public Encounter getEncounterByUuid(String uuid) {
-		return (Encounter) getClassByUuid(uuid, "Encounter");
+		return getClassByUuid(Encounter.class, uuid);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getEncounterTypeByUuid(java.lang.String)
 	 */
 	public EncounterType getEncounterTypeByUuid(String uuid) {
-		return (EncounterType) getClassByUuid(uuid, "EncounterType");
+		return getClassByUuid(EncounterType.class, uuid);
 	}
 	
 	/**
@@ -402,7 +402,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public EncounterRole getEncounterRoleByUuid(String uuid) {
-		return (EncounterRole) getClassByUuid(uuid, "EncounterRole");
+		return getClassByUuid(EncounterRole.class, uuid);
 	}
 	
 	/**
@@ -421,9 +421,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @param table a simple classname (e.g. "Encounter")
 	 * @return
 	 */
-	private Object getClassByUuid(String uuid, String table) {
-		return sessionFactory.getCurrentSession().createQuery("from " + table + " e where e.uuid = :uuid").setString("uuid",
-		    uuid).uniqueResult();
+	@SuppressWarnings("unchecked")
+	private <T> T getClassByUuid(Class<T> clazz, String uuid) {
+		return (T) sessionFactory.getCurrentSession().createCriteria(clazz).add(Restrictions.eq("uuid", uuid))
+		        .uniqueResult();
 	}
 	
 	@SuppressWarnings("unchecked")
