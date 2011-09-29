@@ -32,7 +32,7 @@
 					</c:when>
 					<c:otherwise>
 						<div>
-							<a href="?section=${item}">${item}</a>
+							<a href="?show=${item}">${item}</a>
 						</div>
 					</c:otherwise>
 				</c:choose>
