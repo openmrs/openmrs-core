@@ -21,7 +21,7 @@ import org.openmrs.GlobalProperty;
  */
 public class SettingsProperty implements Comparable<SettingsProperty> {
 	
-	public static final String GENERAL = "...";
+	public static final String OTHER = "Other";
 	
 	private GlobalProperty globalProperty;
 	
@@ -33,7 +33,7 @@ public class SettingsProperty implements Comparable<SettingsProperty> {
 	 * @return the section
 	 */
 	public String getSection() {
-		String section = GENERAL;
+		String section = OTHER;
 		int sectionEnd = globalProperty.getProperty().indexOf(".");
 		if (sectionEnd > 0) {
 			section = globalProperty.getProperty().substring(0, sectionEnd);

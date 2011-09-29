@@ -28,7 +28,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,7 +38,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
  * Allows to manage settings.
  */
 @Controller
-@SessionAttributes(value = { SettingsController.Model.SECTIONS, SettingsController.Model.SETTINGS_FORM })
+@SessionAttributes(value = { SettingsController.Model.SECTIONS })
 public class SettingsController {
 	
 	protected final Logger log = Logger.getLogger(getClass());
@@ -53,18 +52,13 @@ public class SettingsController {
 		
 		public static final String SETTINGS_FORM = "settingsForm";
 		
-		public static final String SECTION = "section";
+		public static final String SHOW = "show";
 		
 		public static final String SECTIONS = "sections";
 	}
 	
 	@RequestMapping(value = Path.SETTINGS, method = RequestMethod.GET)
-	public void showSettings(@RequestParam(value = Model.SECTION, required = false) String section,
-	                         @ModelAttribute(Model.SETTINGS_FORM) SettingsForm settingsForm, ModelMap model) {
-		if (section != null) {
-			settingsForm.setSection(section);
-		}
-		settingsForm.setSettings(getSettings(settingsForm.getSection()));
+	public void showSettings() {
 	}
 	
 	@RequestMapping(value = Path.SETTINGS, method = RequestMethod.POST)
@@ -102,9 +96,16 @@ public class SettingsController {
 	}
 	
 	@ModelAttribute(Model.SETTINGS_FORM)
-	public SettingsForm getSettingsForm() {
+	public SettingsForm getSettingsForm(@RequestParam(value = Model.SHOW, required = false) String show,
+	                                    @ModelAttribute(Model.SECTIONS) List<String> sections) {
 		SettingsForm settingsForm = new SettingsForm();
-		settingsForm.setSection(SettingsProperty.GENERAL);
+		if (show == null && settingsForm.getSection() == null) {
+			show = sections.iterator().next();
+		}
+		if (show != null) {
+			settingsForm.setSection(show);
+			settingsForm.setSettings(getSettings(show));
+		}
 		return settingsForm;
 	}
 	
