@@ -178,6 +178,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should void the conceptName if the text of the name has changed
 	 * @should create a new conceptName when the old name is changed
 	 * @should set a preferred name for each locale if none is marked
+	 * @should not fail when a duplicate name is edited to a unique value
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public Concept saveConcept(Concept concept) throws APIException;
