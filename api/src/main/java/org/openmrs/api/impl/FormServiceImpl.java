@@ -838,9 +838,10 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Override
 	public Serializable getFormResource(Form form, String owner, String name) {
 		if (form.getId() == null) {
-			//Return null for not persisted forms
+			//Needed to go around TRUNK-2692, i.e. not querying for resources for not persisted form
 			return null;
 		}
+		
 		byte[] data = dao.getFormResource(form, owner, name);
 		if (data.length == 0)
 			return null;
