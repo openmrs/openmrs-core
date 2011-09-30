@@ -1,65 +1,64 @@
 /**
- * Helper function to get started quickly
- * 
- * opts is a map that can be any option of the openmrsSearch widget:
- *   minLength - The minimum required number of characters a user has to enter for a search to be triggered
- *   searchLabel - The text label to appear on the left of the input text box
- *   searchPlaceholder - The text to appear as placeholder of the input text box
- *   includeVoidedLabel - The label for the includeVoided/includeRetired checkbox
- *   showIncludeVoided - If the includeVoided/includeRetired checkbox should be displayed
- *   searchHandler (Required)
- *   resultsHandler
- *   selectionHandler
- *   fieldHeaders (Required) - Array of fieldName and column header maps)
- *   displayLength - The number of results to display per page
- *   columnWidths: an array of column widths, the length of the array should be equal to the number of columns
- *   columnRenderers: array of fnRender for each column
- *   columnVisibility: array of bVisible values for each column
- *   
+ * Helper function to get started quickly, below are the required arguments:
+ * <ul>
+ * <li>div - Container element for the search widget</li>
+ * <li>showIncludeVoided - If the includeVoided/includeRetired checkbox should be displayed</li>
+ * <li>searchHandler - The function to be triggered to fetch results from server, 
+ * 		should return the projected count and results</li>
+ * <li>selectionHandler - The function to trigger when the user selects a row in the results table</li>
+ * <li>fieldHeaders - Array of fieldName and column header maps)</li>
+ * <li>opts - A map that can contain any option of the openmrsSearch widget, see below for the options</li>
+ * </ul>
  * The parameters 'showIncludeVoided' and 'selectionHandler' are options to the widget but
  * given here as simple params.
  * 
- * These are the same:
+ * These approaches below are the same:<br/><br/>
+ * <b>Approach 1:</b>
  * <pre>
-   $j(document).ready(function() {
-		$j("#elementId").openmrsSearch({
-			searchLabel:'<spring:message code="General.search"/>',
-			showIncludeVoided: true,
-			displayLength: 5,
-			minLength: 3,
-			columnWidths: ["15%","15%","15%","15%","15%", "25%"],
-			columnRenderers: [null, null, null, null, null, null], 
-			columnVisibility: [true, true, true, true, true, true],
-			searchHandler: doSearchHandler,
-			selectionHandler: doSelectionHandler,
-			fieldsAndHeaders: [
-				{fieldName:"field1", header:"Header1"},
-				{fieldName:"fiels2", header:"Header2"},
-				{fieldName:"field3", header:"Header3"},
-				{fieldName:"field4", header:"Header4"},
-				{fieldName:"fiels5", header:"Header5"},
-				{fieldName:"field6", header:"Header6"}
-			]
-		});
-
-		new OpenmrsSearch("elementid", true, doSearchHandler, doSelectionHandler, 
-			[	{fieldName:"field1", header:"Header1"},
-				{fieldName:"fiels2", header:"Header2"},
-				{fieldName:"field3", header:"Header3"},
-				{fieldName:"field4", header:"Header4"},
-				{fieldName:"fiels5", header:"Header5"},
-				{fieldName:"field6", header:"Header6"}
-			],
-			{searchLabel: '<spring:message code="General.search"/>',
-                searchPlaceholder:'<spring:message code="general.search" javaScriptEscape="true"/>',
-                displayLength: 5,
-				minLength: 3, columnWidths: ["15%","15%","15%","15%","15%", "25%"],
-				columnRenderers: [null, null, null, null, null, null], 
-				columnVisibility: [true, true, true, true, true, true]}
-		);
-	});
-	</pre>
- */
+ *  $j(document).ready(function() {
+ *		$j("#elementId").openmrsSearch({
+ *			searchLabel:'<spring:message code="General.search"/>',
+ *			showIncludeVoided: true,
+ *			displayLength: 5,
+ *			minLength: 3,
+ *			columnWidths: ["15%","15%","15%","15%","15%", "25%"],
+ *			columnRenderers: [null, null, null, null, null, null], 
+ *			columnVisibility: [true, true, true, true, true, true],
+ *			searchHandler: doSearchHandler,
+ *			selectionHandler: doSelectionHandler,
+ *			fieldsAndHeaders: [
+ *				{fieldName:"field1", header:"Header1"},
+ *				{fieldName:"fiels2", header:"Header2"},
+ *				{fieldName:"field3", header:"Header3"},
+ *				{fieldName:"field4", header:"Header4"},
+ *				{fieldName:"fiels5", header:"Header5"},
+ *				{fieldName:"field6", header:"Header6"}
+ *			]
+ *		});
+ *	});
+ *</pre>
+ *<br/><br/>
+ *<b>Approach 2:</b>
+ *<pre>
+ *	new OpenmrsSearch("elementId", true, doSearchHandler, doSelectionHandler, 
+ *			[	{fieldName:"field1", header:"Header1"},
+ *				{fieldName:"fiels2", header:"Header2"},
+ *				{fieldName:"field3", header:"Header3"},
+ *				{fieldName:"field4", header:"Header4"},
+ *				{fieldName:"fiels5", header:"Header5"},
+ *				{fieldName:"field6", header:"Header6"}
+ *			],
+ *			{searchLabel: '<spring:message code="General.search"/>',
+ *              searchPlaceholder:'<spring:message code="general.search" javaScriptEscape="true"/>',
+ *              displayLength: 5,
+ *				minLength: 3, 
+ *				columnWidths: ["15%","15%","15%","15%","15%", "25%"],
+ *				columnRenderers: [null, null, null, null, null, null], 
+ *				columnVisibility: [true, true, true, true, true, true]}
+ *		);
+ *	});
+ *	</pre>
+ **/
 function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, fieldsAndHeaders, opts) {
 	var el;
 	if(typeof div == 'string') {
@@ -79,30 +78,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	if(!opts.fieldsAndHeaders)
 		opts.fieldsAndHeaders = fieldsAndHeaders;
 
-	//Create an array of arrays from the array of objects if we have any initial data
-	if(opts.initialData){
-		opts.initialRows = new Array();//array to hold the arrays of initial row data
-		var cols = opts.fieldsAndHeaders;
-		for(var i in opts.initialData){
-			var obj = opts.initialData[i];
-			//create an array to hold each initial row's column values
-			var iRowData = new Array();
-			$j.map(cols, function(c) {				
-				iRowData.push(obj[c.fieldName]);				 
-			});
-			
-			opts.initialRows.push(iRowData);
-		}
-	}
-	
 	jQuery(el).openmrsSearch(opts);
-
-     //Add the placeholder text to the Search field
-    if(opts.searchPlaceholder){
-        //The value should not contain line feeds or carriage returns.
-        var textShown=opts.searchPlaceholder.toString().replace(/(\r\n|\n|\r)/gm,"");
-        $j('#inputNode').attr('placeHolder', textShown);
-    }
 }
 
 /**
@@ -208,7 +184,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 
 		    //when the user checks/unchecks the includeVoided checkbox, trigger a search
 		    checkBox.click(function() {
-		    	if($j.trim(input.val()) != '')
+		    	if($j.trim(input.val()) != '' || self.options.doSearchWhenEmpty)
 		    		self._doSearch(input.val());
 		    	else{
 		    		if(spinnerObj.css("visibility") == 'visible')
@@ -255,13 +231,15 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     				window.clearTimeout(self._textInputTimer);
     			}
 	        	
+    			if(text == '' && !self.options.doSearchWhenEmpty)
+    				return false;
+	        	
 	        	//This discontinues any further ajax SUB calls from the last triggered search
     			if(!inSerialMode && ajaxTimer)
     				window.clearInterval(ajaxTimer);
     			
-    			
     			var searchDelay = SEARCH_DELAY;
-    			if(text.length < o.minLength && !(!text && self.options.doSearchWhenEmpty)) {
+    			if(text.length < o.minLength && !self.options.doSearchWhenEmpty) {
         			// force a longer delay since we are going to search on a shorter string
     				searchDelay = 3000;
     			}
@@ -346,6 +324,33 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	self._results = self.options.initialData;
 		    else
 		    	div.find(".openmrsSearchDiv").hide();
+			
+			/*=============== Begin Processing of some initialization stuff  =======================*/
+		    
+		    //Add the placeholder text to the Search field
+		    if(self.options.searchPlaceholder){
+		        //The value should not contain line feeds or carriage returns.
+		        var textShown=self.options.searchPlaceholder.toString().replace(/(\r\n|\n|\r)/gm,"");
+		        $j('#inputNode').attr('placeHolder', textShown);
+		    }
+		    
+		    //Create an array of arrays from the array of objects if we have any initial data
+		  	if(self.options.initialData){
+		  		self.options.initialRows = new Array();//array to hold the arrays of initial row data
+		  		var cols = self.options.fieldsAndHeaders;
+		  		for(var i in self.options.initialData){
+		  			var obj = self.options.initialData[i];
+		  			//create an array to hold each initial row's column values
+		  			var iRowData = new Array();
+		  			$j.map(cols, function(c) {				
+		  				iRowData.push(obj[c.fieldName]);				 
+		  			});
+		  			
+		  			self.options.initialRows.push(iRowData);
+		  		}
+		  	}
+		    
+		    /*=============== End Processing of some initialization stuff  =======================*/
 
 			//TODO columns need to be built: id='searchTableHeader'
 		    this._table = table.dataTable({
@@ -478,7 +483,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				//than the minimum characters, this can arise when user presses backspace relatively fast
 				//yet there were some intermediate calls that might have returned results
 				var currInput = $j.trim($j("#inputNode").val());
-				if(!currInput && !self.options.doSearchWhenEmpty){
+				if(currInput == '' && !self.options.doSearchWhenEmpty){
 					if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
@@ -784,7 +789,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				//Don't display results from delayed ajax calls when the input box is blank or has less 
 				//than the minimum characters
 				var currInput = $j.trim($j("#inputNode").val());
-				if(!currInput && !self.options.doSearchWhenEmpty){
+				if(currInput == '' && !self.options.doSearchWhenEmpty){
 					$j(notification).html(" ");
 					if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");

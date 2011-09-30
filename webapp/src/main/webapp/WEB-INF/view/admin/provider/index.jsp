@@ -22,7 +22,8 @@
                 {
                     searchLabel: '<spring:message code="Provider.search" javaScriptEscape="true"/> ',
                     searchPlaceholder:'<spring:message code="Provider.search.placeholder" javaScriptEscape="true"/>',
-                    doSearchWhenEmpty: true
+                    doSearchWhenEmpty: true,
+                    includeVoidedLabel: '<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>'
                 });
 	});
 	
