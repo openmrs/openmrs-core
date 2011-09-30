@@ -7,57 +7,64 @@
 <openmrs:htmlInclude file="/dwr/util.js" />
 
 <script type="text/javascript">
-	function getDateString(d) {
-		var str = '';
-		if (d != null) {
-			var date = d.getDate();
-			if (date < 10)
-				str += "0";
-			str += date;
-			str += '-';
-			var month = d.getMonth() + 1;
-			if (month < 10)
-				str += "0";
-			str += month;
-			str += '-';
-			str += (d.getYear() + 1900);
-		}
-		return str;
-	}
-	
 	function isEmpty(o) {
 		return o == null || o == '';
 	}
 	
-	<%-- TODO: FORMATDATE AND PARSEDATE ARE TERRIBLE HACKS --%>
-	function formatDate(ymd) {
-		if (ymd == null || ymd == '')
-			return '';
-		<c:choose>
-			<c:when test="${model.locale == 'fr' || model.locale == 'en_GB'}">
-				return ymd.substring(8, 10) + '/' + ymd.substring(5, 7) + '/' + ymd.substring(0, 4);
-			</c:when>
-			<c:otherwise>
-				return ymd.substring(5, 7) + '/' + ymd.substring(8, 10) + '/' + ymd.substring(0, 4);
-			</c:otherwise>
-		</c:choose>
+	/** 
+	 * Parses a string of a given format into a js date object.
+	 * see web/openmrs.js parseSimpleDate
+	 * 
+	 * @param date
+	 *		string object to parse
+	 * @param format
+	 *		if not given a default format is applied
+	 * @return a js date object or null if string can't be parsed
+	 */
+	function parseDate(date, format) {
+		if (date == null || date == '')
+			return null;
+
+		if (format == null || typeof (format) == 'undefined')
+			format = '<openmrs:datePattern />';
+		format = format.toLowerCase();
+		return parseSimpleDate(date, format);
 	}
-	
-	function parseDate(date) {
+
+
+	/** 
+	 * Formats a js date object into a string of a given format.
+	 * Format should contain:
+	 * 'yyyy' for a year, 'mm' for a month, 'dd' for a day
+	 * 
+	 * @param date
+	 *		js date object to parse
+	 * @param format
+	 *		if not given a default format is applied
+	 * @return string representation of date
+	 */
+	function formatDate(date, format) {
 		if (date == null || date == '')
 			return '';
-		<c:choose>
-			<c:when test="${model.locale == 'fr' || model.locale == 'en_GB'}">
-				// dd/mm/yyyy 01/34/6789
-				return date.substring(6,10) + '-' + date.substring(3,5) + '-' + date.substring(0,2);
-			</c:when>
-			<c:otherwise>
-				// mm/dd/yyyy 01/34/6789
-				return date.substring(6,10) + '-' + date.substring(0,2) + '-' + date.substring(3,5);
-			</c:otherwise>
-		</c:choose>
+		if (format == null || typeof (format) == 'undefined')
+			format = '<openmrs:datePattern />';
+		format = format.toLowerCase();
+
+		var yyyy = date.getYear() + 1900
+		var mm = date.getMonth() + 1;
+		if (mm < 10)
+			mm = "0" + mm;
+		var dd = date.getDate();
+		if (dd < 10)
+			dd = "0" + dd;
+
+		format = format.replace('yyyy', yyyy);
+		format = format.replace('mm', mm);
+		format = format.replace('dd', dd);
+
+		return format;
 	}
-	
+
 	var currentProgramBeingEdited = null;
 	var currentWorkflowBeingEdited = null;
 	var patientProgramForWorkflowEdited = null;
@@ -70,52 +77,82 @@
 		var endDate = parseDate($('completionDateElement').value);
 		var locationId = $('programLocationElement').value;
 		var outcomeId = $('programOutcomeConceptElement').value;
-		if (endDate != '' && !$j('#editProgramOutcomeRow').is(':hidden') && outcomeId == '') {
+		if (endDate != '' && !$j('#editProgramOutcomeRow').is(':hidden')
+				&& outcomeId == '') {
 			alert("<spring:message code="PatientProgram.error.outcomeRequired" />");
+		} else if (!isEmpty(startDate) && startDate > endDate) {
+			alert('<spring:message code="Program.error.invalidDate" javaScriptEscape="true"/>');
 		} else {
 			currentProgramBeingEdited = null;
-			DWRProgramWorkflowService.updatePatientProgram(idToSave, startDate, endDate, locationId, outcomeId, function() {
-				hideLayer('editPatientProgramPopup');
-				refreshPage();
-			});
+			DWRProgramWorkflowService.updatePatientProgram(idToSave, formatDate(startDate, 'yyyy-mm-dd'),
+					formatDate(endDate, 'yyyy-mm-dd'), locationId, outcomeId, function() {
+						hideLayer('editPatientProgramPopup');
+						refreshPage();
+					});
 		}
 	}
-	
+
 	function handleDeleteProgram() {
 		if (currentProgramBeingEdited == null)
 			return;
 		var idToDelete = currentProgramBeingEdited;
 		var voidReason = document.getElementById("voidReason_PatientProgram").value;
-		DWRProgramWorkflowService.deletePatientProgram(idToDelete, voidReason , function() {
-				hideLayer('editPatientProgramPopup');
-				refreshPage();
-			});
+		DWRProgramWorkflowService.deletePatientProgram(idToDelete, voidReason,
+				function() {
+					hideLayer('editPatientProgramPopup');
+					refreshPage();
+				});
 	}
-	
+
 	function handleChangeWorkflowState() {
 		if (currentWorkflowBeingEdited == null)
 			return;
-		
+
 		var ppId = patientProgramForWorkflowEdited;
 		var wfId = currentWorkflowBeingEdited;
-		var stateId = DWRUtil.getValue('changeToState');
-		var onDate = parseDate(DWRUtil.getValue('changeStateOnDate'));
-		DWRProgramWorkflowService.changeToState(ppId, wfId, stateId, onDate, function() {
-				currentWorkflowBeingEdited = null;
-				refreshPage();
-			});
+		var stateId = $('changeToState').value;
+		var onDate = parseDate($('changeStateOnDate').value);
+		var lastStateStartDate = parseDate($('lastStateStartDate').value);
+		var lastStateEndDate = parseDate($('lastStateEndDate').value);
+		var lastState = $('lastState').value;
+
+		if (isEmpty(stateId)) {
+			alert('<spring:message code="State.error.noState" javaScriptEscape="true"/>');
+			return;
+		}
+		if (!isEmpty(lastState)) {
+			if (isEmpty(onDate)) {
+				alert('<spring:message code="State.error.noDate" javaScriptEscape="true"/>');
+				return;
+			}
+			if (!isEmpty(lastStateStartDate) && lastStateStartDate > onDate) {
+				alert('<spring:message code="State.error.invalidDate" javaScriptEscape="true"/>');
+				return;
+			}
+			if (!isEmpty(lastStateEndDate)) {
+				alert('<spring:message code="State.error.invalidChangeState" javaScriptEscape="true"/>');
+				return;
+			}
+		}
+
+		DWRProgramWorkflowService.changeToState(ppId, wfId, stateId,
+				formatDate(onDate, 'yyyy-mm-dd'), function() {
+					currentWorkflowBeingEdited = null;
+					refreshPage();
+				});
 	}
-	
+
 	function handleVoidLastState() {
 		var patientProgramId = patientProgramForWorkflowEdited;
 		var programWorkflowId = currentWorkflowBeingEdited;
-		DWRProgramWorkflowService.voidLastState(patientProgramId, programWorkflowId, '', function() {
-				currentWorkflowBeingEdited = null;
-				patientProgramForWorkflowEdited = null;
-				refreshPage();
-			});
+		DWRProgramWorkflowService.voidLastState(patientProgramId,
+				programWorkflowId, '', function() {
+					currentWorkflowBeingEdited = null;
+					patientProgramForWorkflowEdited = null;
+					refreshPage();
+				});
 	}
-	
+
 	function showEditWorkflowPopup(wfName, patientProgramId, programWorkflowId) {
 		hideLayer('editPatientProgramPopup');
 		currentWorkflowBeingEdited = programWorkflowId;
@@ -123,104 +160,161 @@
 		showLayer('editWorkflowPopup');
 		$('workflowPopupTitle').innerHTML = wfName;
 		dwr.util.removeAllRows('workflowTable');
-		dwr.util.addRows('workflowTable', ['<spring:message code="general.loading" javaScriptEscape="true"/>'], [ function(s) { return s; } ], { escapeHtml:false });
+		dwr.util
+				.addRows(
+						'workflowTable',
+						[ '<spring:message code="general.loading" javaScriptEscape="true"/>' ],
+						[ function(s) {
+							return s;
+						} ], {
+							escapeHtml : false
+						});
 		dwr.util.removeAllOptions('changeToState');
-		dwr.util.addOptions('changeToState', ['<spring:message code="general.loading" javaScriptEscape="true"/>']);
+		dwr.util
+				.addOptions(
+						'changeToState',
+						[ '<spring:message code="general.loading" javaScriptEscape="true"/>' ]);
 		$('changeStateOnDate').value = '';
-		DWRProgramWorkflowService.getPatientStates(patientProgramId, programWorkflowId, function(states) {
-				dwr.util.removeAllRows('workflowTable');
-				var count = 0;
-				var goUntil = states.length;
-				dwr.util.addRows('workflowTable', states, [
-						function(state) { return state.stateName; },
-						function(state) {
-							++count;
-							var str = '';
-							if (!isEmpty(state.startDate)) str += ' <spring:message code="general.fromDate" javaScriptEscape="true"/> ' + getDateString(state.startDate);
-							if (!isEmpty(state.endDate)) str += ' <spring:message code="general.toDate" javaScriptEscape="true" /> ' + getDateString(state.endDate);
-							if (count == goUntil)
-								str += ' <a href="javascript:handleVoidLastState()" style="color: red">[x]</a>';
-							return str;
-						},
-						function(state) {
-							var str = '';
-							str += '<small>&nbsp;&nbsp;';
-							str += '<spring:message code="general.createdBy" javaScriptEscape="true" />&nbsp;';
-							str += state.creator;
-							str += '&nbsp;<spring:message code="general.onDate" javaScriptEscape="true" />&nbsp;';
-							str += getDateString(state.dateCreated);
-							str += '</small>';
-							return str;
-						}
-					], { escapeHtml:false });
-			});
-		DWRProgramWorkflowService.getPossibleNextStates(patientProgramId, programWorkflowId, function(items) {
-				dwr.util.removeAllOptions('changeToState');
-				dwr.util.addOptions('changeToState', {'': '<spring:message code="State.select" javaScriptEscape="true"/>' });
-				dwr.util.addOptions('changeToState', items, 'id', 'name');
-			});
+		DWRProgramWorkflowService
+				.getPatientStates(
+						patientProgramId,
+						programWorkflowId,
+						function(states) {
+							dwr.util.removeAllRows('workflowTable');
+							var count = 0;
+							var goUntil = states.length;
+							dwr.util
+									.addRows(
+											'workflowTable',
+											states,
+											[
+													function(state) {
+														return state.stateName;
+													},
+													function(state) {
+														++count;
+														var str = '';
+														if (!isEmpty(state.startDate)) str += ' <spring:message code="general.fromDate" javaScriptEscape="true"/> ' + formatDate(state.startDate);
+														if (!isEmpty(state.endDate)) str += ' <spring:message code="general.toDate" javaScriptEscape="true" /> ' + formatDate(state.endDate);
+														if (count == goUntil) {
+															str += ' <a href="javascript:handleVoidLastState()" style="color: red">[x]</a>';
+															$('lastStateStartDate').value = formatDate(state.startDate);
+															$('lastStateEndDate').value = formatDate(state.endDate);
+															$('lastState').value = state.stateName;
+														}
+														return str;
+													},
+													function(state) {
+														var str = '';
+														str += '<small>&nbsp;&nbsp;';
+														str += '<spring:message code="general.createdBy" javaScriptEscape="true" />&nbsp;';
+														str += state.creator;
+														str += '&nbsp;<spring:message code="general.onDate" javaScriptEscape="true" />&nbsp;';
+														str += formatDate(state.dateCreated);
+														str += '</small>';
+														return str;
+													} ], {
+												escapeHtml : false
+											});
+						});
+		DWRProgramWorkflowService
+				.getPossibleNextStates(
+						patientProgramId,
+						programWorkflowId,
+						function(items) {
+							dwr.util.removeAllOptions('changeToState');
+							dwr.util
+									.addOptions(
+											'changeToState',
+											{
+												'' : '<spring:message code="State.select" javaScriptEscape="true"/>'
+											});
+							dwr.util.addOptions('changeToState', items, 'id',
+									'name');
+						});
 	}
-	
+
 	function setEditPatientProgramPopupSelectedLocation(locationId) {
 		locationSelect = document.getElementById("programLocationElement");
 
-		for (i=0;i<=locationSelect.length-1;i++) {
+		for (i = 0; i <= locationSelect.length - 1; i++) {
 			if (locationSelect.options[i].value == locationId) {
 				locationSelect.selectedIndex = i;
 				break;
-			}	
+			}
 		}
 	}
-	
+
 	function showEditPatientProgramPopup(patientProgramId) {
 		hideLayer('editWorkflowPopup');
 		hideLayer('changedByTR');
-        hideLayer('editProgramOutcomeRow');
-        $j('#programOutcomeConceptElement').attr('disabled', true);
+		hideLayer('editProgramOutcomeRow');
+		$j('#programOutcomeConceptElement').attr('disabled', true);
 		currentProgramBeingEdited = patientProgramId;
 		$('programNameElement').innerHTML = '<spring:message code="general.loading" javaScriptEscape="true"/>';
 		$('enrollmentDateElement').value = '';
 		$('completionDateElement').value = '';
 		showLayer('editPatientProgramPopup');
-		DWRProgramWorkflowService.getPatientProgram(patientProgramId, function(program) {
-				$('programNameElement').innerHTML = program.name;
-				$('enrollmentDateElement').value = formatDate(program.dateEnrolledAsYmd);
-				$('completionDateElement').value = formatDate(program.dateCompletedAsYmd);
-                if (!isEmpty(program.dateCompletedAsYmd))
-                    $j('#programOutcomeConceptElement').attr('disabled', false);
-				
-				setEditPatientProgramPopupSelectedLocation(program.location.locationId);
-				
-				$('createdByElement').innerHTML = program.creator;//program.creator is just a String object, not User class
-				$('dateCreatedElement').innerHTML = getDateString(program.dateCreated);
-				//show changedBy and date_changed only if changedBy is not empty
-				if(!isEmpty(program.changedBy)){
-					$('changedByElement').innerHTML = program.changedBy;//program.creator is just a String object, not User class
-					$('dateChangedElement').innerHTML = getDateString(program.dateChanged);
-					showLayer('changedByTR');
-				}
-                DWRProgramWorkflowService.getPossibleOutcomes(program.programId, function(listItems) {
-                    dwr.util.removeAllOptions('programOutcomeConceptElement');
-                    if (listItems.length != 0) {
-                        showLayer('editProgramOutcomeRow');
-                        dwr.util.addOptions('programOutcomeConceptElement', {'': '<spring:message code="Program.outcome.choose" javaScriptEscape="true"/>' }) ;
-                        dwr.util.addOptions('programOutcomeConceptElement', listItems, 'id', 'name');
-                        dwr.util.setValue('programOutcomeConceptElement', program.outcomeId);
-                    }
-                });
-			});
+		DWRProgramWorkflowService
+				.getPatientProgram(
+						patientProgramId,
+						function(program) {
+							$('programNameElement').innerHTML = program.name;
+							$('enrollmentDateElement').value = formatDate(program.dateEnrolled);
+							$('completionDateElement').value = formatDate(program.dateCompleted);
+							if (!isEmpty(program.dateCompletedAsYmd))
+								$j('#programOutcomeConceptElement').attr(
+										'disabled', false);
+
+							setEditPatientProgramPopupSelectedLocation(program.location.locationId);
+
+							$('createdByElement').innerHTML = program.creator;//program.creator is just a String object, not User class
+							$('dateCreatedElement').innerHTML = formatDate(program.dateCreated);
+							//show changedBy and date_changed only if changedBy is not empty
+							if (!isEmpty(program.changedBy)) {
+								$('changedByElement').innerHTML = program.changedBy;//program.creator is just a String object, not User class
+								$('dateChangedElement').innerHTML = formatDate(program.dateChanged);
+								showLayer('changedByTR');
+							}
+							DWRProgramWorkflowService
+									.getPossibleOutcomes(
+											program.programId,
+											function(listItems) {
+												dwr.util
+														.removeAllOptions('programOutcomeConceptElement');
+												if (listItems.length != 0) {
+													showLayer('editProgramOutcomeRow');
+													dwr.util
+															.addOptions(
+																	'programOutcomeConceptElement',
+																	{
+																		'' : '<spring:message code="Program.outcome.choose" javaScriptEscape="true"/>'
+																	});
+													dwr.util
+															.addOptions(
+																	'programOutcomeConceptElement',
+																	listItems,
+																	'id',
+																	'name');
+													dwr.util
+															.setValue(
+																	'programOutcomeConceptElement',
+																	program.outcomeId);
+												}
+											});
+						});
 	}
 
-    $j(function() {
-        $j('#completionDateElement').change(function() {
-            if (!isEmpty($j('#completionDateElement').val())) {
-                $j('#programOutcomeConceptElement').attr('disabled', false);
-            } else {
-                $j('#programOutcomeConceptElement').attr('disabled', true);
-                $j('#programOutcomeConceptElement').val("");
-            }
-        })
-    })
+	$j(function() {
+		$j('#completionDateElement').change(function() {
+			if (!isEmpty($j('#completionDateElement').val())) {
+				$j('#programOutcomeConceptElement').attr('disabled', false);
+			} else {
+				$j('#programOutcomeConceptElement').attr('disabled', true);
+				$j('#programOutcomeConceptElement').val("");
+			}
+		})
+	})
 </script>
 
 <div id="editPatientProgramPopup" style="position: absolute; background-color: #e0e0e0; z-index: 5; padding: 10px; border: 1px black dashed; display: none">
@@ -300,13 +394,16 @@
 						<table id="workflowTable">
 						</table>
 						
+						<input type="hidden" id="lastStateStartDate" value="" />
+						<input type="hidden" id="lastStateEndDate" value="" />
+						<input type="hidden" id="lastState" value="" />
 						Change to 
 							<select id="changeToState"><option value=""><spring:message code="general.loading"/></option></select>
 						on 
 							<input type="text" id="changeStateOnDate" size="10" onfocus="showCalendar(this)" />
 			
 						<input type="button" value="<spring:message code="general.change"/>" onClick="handleChangeWorkflowState()" />
-						<input type="button" value="<spring:message code="general.close"/>" onClick="currentWorkflowBeingEdited = null; hideLayer('editWorkflowPopup')" />
+						<input type="button" value="<spring:message code="general.cancel"/>" onClick="currentWorkflowBeingEdited = null; hideLayer('editWorkflowPopup')" />
 					</div>						
 	
 <c:choose>
