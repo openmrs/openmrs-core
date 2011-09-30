@@ -201,8 +201,11 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	var tmp = div.find("#includeVoided");
 			    tmp.before("<label for='includeVoided'>" + o.includeVoidedLabel + "</label>");
 		    	tmp.show();
+			    
+			    if(userProperties.showRetired)
+			    	tmp.attr('checked', true);
 		    }
-		    
+
 		    //when the user checks/unchecks the includeVoided checkbox, trigger a search
 		    checkBox.click(function() {
 		    	if($j.trim(input.val()) != '')
