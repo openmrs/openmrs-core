@@ -32,6 +32,8 @@ public class ProviderListItem {
 	
 	private Integer providerId;
 	
+	private boolean retired = false;
+	
 	public ProviderListItem(Provider provider) {
 		Person person = provider.getPerson();
 		if (person != null) {
@@ -41,6 +43,7 @@ public class ProviderListItem {
 		}
 		identifier = provider.getIdentifier();
 		providerId = provider.getProviderId();
+		retired = provider.isRetired();
 	}
 	
 	/**
@@ -62,11 +65,24 @@ public class ProviderListItem {
 	}
 	
 	/**
-	 * 
 	 * @return the provider id
-	 * @should return the provider id 
+	 * @should return the provider id
 	 */
 	public Integer getProviderId() {
 		return providerId;
+	}
+	
+	/**
+	 * @return the retired
+	 */
+	public boolean isRetired() {
+		return retired;
+	}
+	
+	/**
+	 * @param retired the retired to set
+	 */
+	public void setRetired(boolean retired) {
+		this.retired = retired;
 	}
 }
