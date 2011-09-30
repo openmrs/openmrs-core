@@ -62,7 +62,7 @@ function addConceptReferenceTermMap(initialMapSize){
 
 <c:if test="${conceptReferenceTermModel.conceptReferenceTerm.conceptReferenceTermId != null}">
 $j(document).ready( function() {
-	$j("#delete-dialog").dialog({
+	$j("#retire-dialog").dialog({
 		autoOpen: false,
 		resizable: false,
 		width:'auto',
@@ -70,7 +70,7 @@ $j(document).ready( function() {
 		modal: true
 	});
 	
-	$j("#delete-dialog").addClass("content_align_center");
+	$j("#retire-dialog").addClass("content_align_center");
 	
 	$j("#purge-dialog").dialog({
 		autoOpen: false,
@@ -182,8 +182,8 @@ $j(document).ready( function() {
         <tr>
         	<th class="alignRight" valign="top" style="padding-top: 8px"><spring:message code="ConceptReferenceTerm.relatedTerms"/></th>
         	<td valign="top">
-        	<table cellpadding="0" cellspacing="5" align="left">
-        		<tr>
+        	<table cellpadding="3" cellspacing="1">
+        		<tr class="headerRow" align="center">
         			<th><spring:message code="Concept.mappings.type"/></th>
         			<th><spring:message code="ConceptReferenceTerm.source"/></th>
         			<th><spring:message code="ConceptReferenceTerm.code"/></th>
@@ -193,7 +193,7 @@ $j(document).ready( function() {
         		
         		<c:forEach var="map" items="${conceptReferenceTermModel.termMaps}" varStatus="mapStatus">
 				<spring:nestedPath path="termMaps[${mapStatus.index}]">
-				<tr>
+				<tr <c:if test="${mapStatus.index % 2 == 0}">class='evenRow'</c:if>>
 					<td>
 						<spring:bind path="conceptMapType">
 							<select name="${status.expression}">
@@ -355,8 +355,8 @@ $j(document).ready( function() {
 	<tr>
 		<td>
 			<c:if test="${conceptReferenceTermModel.conceptReferenceTerm.retired == false }">
-			<input type="submit" value='<spring:message code="general.delete"/>' onclick="javascript:$j('#delete-dialog').dialog('open')"/>
-			<div id="delete-dialog" title="<spring:message code="general.delete.confirmation"/>">
+			<input type="submit" value='<spring:message code="general.retire"/>' onclick="javascript:$j('#retire-dialog').dialog('open')"/>
+			<div id="retire-dialog" title="<spring:message code="general.retire.confirmation"/>">
 			<form:form action="retireConceptReferenceTerm.htm" method="post" modelAttribute="conceptReferenceTermModel">
 			<input type="hidden" name="conceptReferenceTermId" value="${param.conceptReferenceTermId}"/>
 			<br/><br/>
@@ -370,8 +370,8 @@ $j(document).ready( function() {
 				<tr height="20"></tr>
 				<tr>
 					<td colspan="2" style="text-align: center">
-						<input type="submit" value="<spring:message code="general.delete"/>" /> &nbsp; <input type="button" value="<spring:message code="general.cancel"/>" 
-						onclick="javascript:$j('#delete-dialog').dialog('close')" /></td>
+						<input type="submit" value="<spring:message code="general.retire"/>" /> &nbsp; <input type="button" value="<spring:message code="general.cancel"/>" 
+						onclick="javascript:$j('#retire-dialog').dialog('close')" /></td>
 				</tr>
 			</table>
 			</form:form>

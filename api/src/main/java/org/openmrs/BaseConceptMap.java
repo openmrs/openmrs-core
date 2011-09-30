@@ -16,7 +16,7 @@ package org.openmrs;
 import java.util.Date;
 
 /**
- * Superclass for concept and concept Reference mappings
+ * Superclass for {@link ConceptMap}s and {@link ConceptReferenceTermMap}s
  * 
  * @since 1.9
  */

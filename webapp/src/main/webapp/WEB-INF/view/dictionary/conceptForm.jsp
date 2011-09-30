@@ -107,9 +107,6 @@
 		valign: center;
 		height: 42px;
 	}
-	tr.mappingsHeaderRow{
-		background-color: #CCCCCC; padding: 3px;;
-	}
 	.removeButtonCol{
 		background-color: #FFFFFF;
 	}
@@ -606,8 +603,8 @@
 			<spring:message code="Concept.mappings"/> <img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.mappings.help"/>"/>
 		</th>
 		<td>
-			<table id="conceptMapTable" cellpadding="3" cellspacing="3">
-				<tr class="mappingsHeaderRow">
+			<table id="conceptMapTable" cellpadding="3" cellspacing="1">
+				<tr class="headerRow">
 					<th class="alignCenter" align="center"><spring:message code="Concept.mappings.relationship"/></th>
 					<th><spring:message code="ConceptReferenceTerm.source"/></th>
 					<th><spring:message code="ConceptReferenceTerm.code"/></th>
