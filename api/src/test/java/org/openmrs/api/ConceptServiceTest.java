@@ -1962,7 +1962,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptMapsBySource(ConceptSource)}
+	 * @see {@link ConceptService#getConceptMappingsToSource(ConceptSource)}
 	 */
 	@Test
 	@Verifies(value = "should return a List of ConceptMaps from the given source", method = "getConceptMappingsToSource(ConceptSource)")

@@ -1369,3 +1369,6 @@ span.otherHit{
 .alignRight{
 	text-align: right;
 }
+tr.headerRow{
+	background-color: #CCCCCC;
+}

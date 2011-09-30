@@ -10,7 +10,7 @@
 <script type="text/javascript">
 <c:if test="${conceptMapType.conceptMapTypeId != null}">
 $j(document).ready( function() {
-	$j("#delete-dialog").dialog({
+	$j("#retire-dialog").dialog({
 		autoOpen: false,
 		resizable: false,
 		width:'auto',
@@ -18,7 +18,7 @@ $j(document).ready( function() {
 		modal: true
 	});
 	
-	$j("#delete-dialog").addClass("content_align_center");
+	$j("#retire-dialog").addClass("content_align_center");
 	
 	$j("#purge-dialog").dialog({
 		autoOpen: false,
@@ -142,8 +142,8 @@ $j(document).ready( function() {
 	<tr>
 		<td>
 			<c:if test="${conceptMapType.retired == false }">
-			<input type="submit" value='<spring:message code="general.delete"/>' onclick="javascript:$j('#delete-dialog').dialog('open')"/>
-			<div id="delete-dialog" title="<spring:message code="general.delete.confirmation"/>">
+			<input type="submit" value='<spring:message code="general.retire"/>' onclick="javascript:$j('#retire-dialog').dialog('open')"/>
+			<div id="retire-dialog" title="<spring:message code="general.retire.confirmation"/>">
 			<form:form action="retireConceptMapType.htm" method="post" modelAttribute="conceptMapType">
 			<input type="hidden" name="conceptMapTypeId" value="${param.conceptMapTypeId}"/>
 			<br/><br/>
@@ -157,8 +157,8 @@ $j(document).ready( function() {
 				<tr height="20"></tr>
 				<tr>
 					<td colspan="2" style="text-align: center">
-						<input type="submit" value="<spring:message code="general.delete"/>" /> &nbsp; <input type="button" value="<spring:message code="general.cancel"/>" 
-						onclick="javascript:$j('#delete-dialog').dialog('close')" /></td>
+						<input type="submit" value="<spring:message code="general.retire"/>" /> &nbsp; <input type="button" value="<spring:message code="general.cancel"/>" 
+						onclick="javascript:$j('#retire-dialog').dialog('close')" /></td>
 				</tr>
 			</table>
 			</form:form>
