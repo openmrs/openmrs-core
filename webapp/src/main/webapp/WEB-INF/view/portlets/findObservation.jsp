@@ -9,7 +9,7 @@
 		</c:when>
 		<c:when test="${model.size == 'full'}">
 			
-			<openmrs:require privilege="Manage Observations" otherwise="/login.htm" redirect="/index.htm" />
+			<openmrs:require privilege="View Observations" otherwise="/login.htm" redirect="/index.htm" />
 
 			<openmrs:htmlInclude file="/scripts/obs.js" ></openmrs:htmlInclude>
 			<openmrs:htmlInclude file="/dwr/interface/DWRObsService.js" ></openmrs:htmlInclude>

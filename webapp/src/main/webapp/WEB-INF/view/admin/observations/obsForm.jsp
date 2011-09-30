@@ -472,24 +472,25 @@
 
 <br/>
 <br/>
+<openmrs:hasPrivilege privilege="Delete Observations">
+	<c:if test="${not obs.voided && not empty obs.obsId}">
+		<form action="" method="post">
+			<fieldset>
+				<h4><spring:message code="Obs.voidObs"/></h4>
 
-<c:if test="${not obs.voided && not empty obs.obsId}">
-	<form action="" method="post">
-		<fieldset>
-			<h4><spring:message code="Obs.voidObs"/></h4>
-			
-			<b><spring:message code="general.reason"/></b>
-			<input type="text" value="" size="40" name="voidReason" />
-			<spring:hasBindErrors name="obs">
-				<c:forEach items="${errors.allErrors}" var="error">
-					<c:if test="${error.code == 'voidReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
-				</c:forEach>
-			</spring:hasBindErrors>
-			<br/>
-			<input type="submit" value='<spring:message code="Obs.voidObs"/>' name="voidObs"/>
-		</fieldset>
-	</form>
-</c:if>
+				<b><spring:message code="general.reason"/></b>
+				<input type="text" value="" size="40" name="voidReason" />
+				<spring:hasBindErrors name="obs">
+					<c:forEach items="${errors.allErrors}" var="error">
+						<c:if test="${error.code == 'voidReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+					</c:forEach>
+				</spring:hasBindErrors>
+				<br/>
+				<input type="submit" value='<spring:message code="Obs.voidObs"/>' name="voidObs"/>
+			</fieldset>
+		</form>
+	</c:if>
+</openmrs:hasPrivilege>
 
 <c:if test="${obs.obsId != null}">
 <br/>
