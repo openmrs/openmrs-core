@@ -108,4 +108,8 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 	public boolean supportsPropertyName(String propertyName) {
 		return true;
 	}
+	
+	public static void invalidateCachedResources(Map<String, String> newValue) {
+		lastModified = System.currentTimeMillis();
+	}
 }

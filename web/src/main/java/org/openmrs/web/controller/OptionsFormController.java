@@ -137,8 +137,8 @@ public class OptionsFormController extends SimpleFormController {
 			if (locale != null)
 				properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, locale.toString());
 			
-			properties.put(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, WebUtil.sanitizeLocales(opts
-			        .getProficientLocales()));
+			properties.put(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES,
+			    WebUtil.sanitizeLocales(opts.getProficientLocales()));
 			properties.put(OpenmrsConstants.USER_PROPERTY_SHOW_RETIRED, opts.getShowRetiredMessage().toString());
 			properties.put(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE, opts.getVerbose().toString());
 			properties.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION, opts.getNotification() == null ? "" : opts
@@ -183,8 +183,8 @@ public class OptionsFormController extends SimpleFormController {
 				if (!errors.hasErrors()) {
 					try {
 						user.setSecretQuestion(opts.getSecretQuestionNew());
-						us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(), opts
-						        .getSecretAnswerNew());
+						us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(),
+						    opts.getSecretAnswerNew());
 					}
 					catch (APIException e) {
 						errors.rejectValue("secretQuestionPassword", "error.password.match");
@@ -209,6 +209,7 @@ public class OptionsFormController extends SimpleFormController {
 			}
 			
 			if (!errors.hasErrors()) {
+				
 				user.setUsername(opts.getUsername());
 				user.setUserProperties(properties);
 				
@@ -235,6 +236,8 @@ public class OptionsFormController extends SimpleFormController {
 					Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 					us.saveUser(user, null);
+					//trigger updating of the javascript file cache
+					PseudoStaticContentController.invalidateCachedResources(properties);
 					// update login user object so that the new name is visible
 					// in the webapp
 					Context.refreshAuthenticatedUser();
