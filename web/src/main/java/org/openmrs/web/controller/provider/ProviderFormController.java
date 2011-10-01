@@ -46,12 +46,14 @@ public class ProviderFormController {
 	        @RequestParam(required = false) boolean linkToPerson, @ModelAttribute("provider") Provider provider,
 	        BindingResult errors, ModelMap model) throws Exception {
 		
-		//For existing providers, switch between linking to person or use name
-		if (provider.getProviderId() != null) {
-			if (linkToPerson)
-				provider.setName(null);
-			else
-				provider.setPerson(null);
+		if (saveProviderButton != null) {
+			//For existing providers, switch between linking to person or use name
+			if (provider.getProviderId() != null) {
+				if (linkToPerson)
+					provider.setName(null);
+				else
+					provider.setPerson(null);
+			}
 		}
 		
 		handleAttributeParameteres(request, provider, model);
