@@ -92,13 +92,11 @@ public class ProviderValidator implements Validator {
 		}
 		
 		//if this is a retired existing provider, skip this
-		if (!provider.isRetired() || provider.getProviderId() == null) {
-			//check if this provider has a unique identifier
-			boolean isUnique = Context.getProviderService().isProviderIdentifierUnique(provider);
-			if (!isUnique) {
-				errors.rejectValue("identifier", "Provider.error.duplicateIdentifier", new Object[] { provider
-				        .getIdentifier() }, null);
-			}
+		//check if this provider has a unique identifier
+		boolean isUnique = Context.getProviderService().isProviderIdentifierUnique(provider);
+		if (!isUnique) {
+			errors.rejectValue("identifier", "Provider.error.duplicateIdentifier",
+			    new Object[] { provider.getIdentifier() }, null);
 		}
 		
 		if (provider.isRetired() && StringUtils.isEmpty(provider.getRetireReason())) {
@@ -120,8 +118,8 @@ public class ProviderValidator implements Validator {
 					if (numFound < providerAttributeType.getMinOccurs()) {
 						// report an error
 						if (providerAttributeType.getMinOccurs() == 1)
-							errors.rejectValue("activeAttributes", "error.required", new Object[] { providerAttributeType
-							        .getName() }, null);
+							errors.rejectValue("activeAttributes", "error.required",
+							    new Object[] { providerAttributeType.getName() }, null);
 						else
 							errors.rejectValue("activeAttributes", "attribute.error.minOccurs", new Object[] {
 							        providerAttributeType.getName(), providerAttributeType.getMinOccurs() }, null);

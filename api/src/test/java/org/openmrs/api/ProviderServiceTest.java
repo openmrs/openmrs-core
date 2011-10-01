@@ -470,20 +470,4 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		existingProviderToEdit.setIdentifier(duplicateProvider.getIdentifier());
 		Assert.assertFalse(service.isProviderIdentifierUnique(duplicateProvider));
 	}
-	
-	/**
-	 * @see {@link ProviderService#isProviderIdentifierUnique(Provider)}
-	 */
-	@Test
-	@Verifies(value = "should return true if the identifier is unique among unretired providers", method = "isProviderIdentifierUnique(Provider)")
-	public void isProviderIdentifierUnique_shouldReturnTrueIfTheIdentifierIsUniqueAmongUnretiredProviders() throws Exception {
-		executeDataSet(OTHERS_PROVIDERS_XML);
-		//lets test with a duplicate name of a retired provider
-		Provider duplicateRetiredProvider = service.getProvider(201);
-		Assert.assertTrue(duplicateRetiredProvider.isRetired());
-		
-		Provider duplicateProvider = service.getProvider(1);
-		duplicateProvider.setIdentifier(duplicateRetiredProvider.getIdentifier());
-		Assert.assertTrue(service.isProviderIdentifierUnique(duplicateProvider));
-	}
 }
