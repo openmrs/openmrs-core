@@ -232,47 +232,12 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ProviderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should pass for a duplicate identifier if the existing provider is retired", method = "validate(Object,Errors)")
-	public void validate_shouldPassForADuplicateIdentifierIfTheExistingProviderIsRetired() throws Exception {
-		executeDataSet(OTHERS_PROVIDERS_XML);
-		Provider duplicateRetiredProvider = providerService.getProvider(201);
-		Assert.assertTrue(duplicateRetiredProvider.isRetired());
-		
-		Provider provider = providerService.getProvider(1);
-		provider.setIdentifier(duplicateRetiredProvider.getIdentifier());
-		
-		providerValidator.validate(provider, errors);
-		Assert.assertFalse(errors.hasErrors());
-	}
-	
-	/**
-	 * @see {@link ProviderValidator#validate(Object,Errors)}
-	 */
-	@Test
 	@Verifies(value = "should pass if an identifier for an existing provider is changed to a unique value", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfAnIdentifierForAnExistingProviderIsChangedToAUniqueValue() throws Exception {
 		Provider existingProviderToEdit = providerService.getProvider(1);
 		existingProviderToEdit.setIdentifier("unique");
 		
 		providerValidator.validate(existingProviderToEdit, errors);
-		Assert.assertFalse(errors.hasErrors());
-	}
-	
-	/**
-	 * @see {@link ProviderValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should pass if the provider we are validating has a duplicate identifier and is retired", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheProviderWeAreValidatingHasADuplicateIdentifierAndIsRetired() throws Exception {
-		executeDataSet(OTHERS_PROVIDERS_XML);
-		Provider duplicateProvider = providerService.getProvider(1);
-		Assert.assertFalse(duplicateProvider.isRetired());
-		
-		Provider providerToValidate = providerService.getProvider(201);
-		Assert.assertTrue(providerToValidate.isRetired());
-		providerToValidate.setIdentifier(duplicateProvider.getIdentifier());
-		
-		providerValidator.validate(providerToValidate, errors);
 		Assert.assertFalse(errors.hasErrors());
 	}
 	
