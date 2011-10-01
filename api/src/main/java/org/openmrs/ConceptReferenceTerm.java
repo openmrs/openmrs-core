@@ -31,6 +31,7 @@ public class ConceptReferenceTerm extends BaseOpenmrsMetadata implements java.io
 	
 	private ConceptSource conceptSource;
 	
+	//The unique code used to identify the reference term in it's reference terminology
 	private String code;
 	
 	private String version;

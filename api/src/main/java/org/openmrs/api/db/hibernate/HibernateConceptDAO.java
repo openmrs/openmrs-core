@@ -1765,8 +1765,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Expression.eq("name", name));
 		criteria.add(Expression.eq("conceptSource", conceptSource));
 		List terms = criteria.list();
-		if (terms.size() < 1)
+		if (terms.size() == 0)
 			return null;
+		else if (terms.size() > 1)
+			throw new APIException(Context.getMessageSourceService().getMessage(
+			    "ConceptReferenceTerm.foundMultipleTermsWithNameInSource", new Object[] { name, conceptSource.getName() },
+			    null));
 		return (ConceptReferenceTerm) terms.get(0);
 	}
 	
@@ -1781,8 +1785,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Expression.eq("code", code));
 		criteria.add(Expression.eq("conceptSource", conceptSource));
 		List terms = criteria.list();
-		if (terms.size() < 1)
+		if (terms.size() == 0)
 			return null;
+		else if (terms.size() > 1)
+			throw new APIException(Context.getMessageSourceService().getMessage(
+			    "ConceptReferenceTerm.foundMultipleTermsWithCodeInSource", new Object[] { code, conceptSource.getName() },
+			    null));
 		return (ConceptReferenceTerm) terms.get(0);
 	}
 	
@@ -1845,8 +1853,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (!includeRetired)
 			searchCriteria.add(Restrictions.eq("retired", false));
 		
-		searchCriteria.add(Restrictions.or(Restrictions.ilike("name", query, MatchMode.START), Restrictions.ilike("code",
-		    query, MatchMode.START)));
+		searchCriteria.add(Restrictions.or(Restrictions.ilike("name", query, MatchMode.ANYWHERE), Restrictions.ilike("code",
+		    query, MatchMode.ANYWHERE)));
 		return searchCriteria;
 	}
 	

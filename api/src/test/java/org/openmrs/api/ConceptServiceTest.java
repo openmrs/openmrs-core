@@ -23,6 +23,7 @@ import static org.openmrs.test.TestUtil.containsId;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -1933,26 +1934,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)}
-	 */
-	@Test
-	@Verifies(value = "should return terms that match the code", method = "getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)")
-	public void getConceptReferenceTerms_shouldReturnTermsThatMatchTheCode() throws Exception {
-		Assert.assertEquals(1, Context.getConceptService().getConceptReferenceTerms("retired code",
-		    Context.getConceptService().getConceptSource(1), null, null, true).size());
-	}
-	
-	/**
-	 * @see {@link ConceptService#getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)}
-	 */
-	@Test
-	@Verifies(value = "should return terms that match the name", method = "getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)")
-	public void getConceptReferenceTerms_shouldReturnTermsThatMatchTheName() throws Exception {
-		Assert.assertEquals(1, Context.getConceptService().getConceptReferenceTerms("retired name",
-		    Context.getConceptService().getConceptSource(1), null, null, true).size());
-	}
-	
-	/**
 	 * @see {@link ConceptService#getAllConceptReferenceTerms()}
 	 */
 	@Test
@@ -2034,5 +2015,22 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		duplicateNameToEdit.setName("new unique name");
 		conceptService.saveConcept(conceptToEdit);
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should return unique terms with a code or name containing the search phrase", method = "getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)")
+	public void getConceptReferenceTerms_shouldReturnUniqueTermsWithACodeOrNameContainingTheSearchPhrase() throws Exception {
+		List<ConceptReferenceTerm> matches = Context.getConceptService().getConceptReferenceTerms("cd4", null, null, null,
+		    true);
+		Assert.assertEquals(3,
+
+		matches.size());
+		Set<ConceptReferenceTerm> uniqueTerms = new HashSet<ConceptReferenceTerm>();
+		//check that we have only unique terms
+		for (ConceptReferenceTerm conceptReferenceTerm : matches)
+			Assert.assertTrue(uniqueTerms.add(conceptReferenceTerm));
 	}
 }
