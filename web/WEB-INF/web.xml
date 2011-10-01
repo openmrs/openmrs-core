@@ -421,6 +421,11 @@
  		<url-pattern>*.field</url-pattern>
 	</servlet-mapping>
 	
+	<servlet-mapping>
+		<servlet-name>jsp</servlet-name>
+		<url-pattern>*.jsp</url-pattern>
+	</servlet-mapping>
+	
 	<jsp-config>
 		<taglib>
 			<taglib-uri>/spring</taglib-uri>
