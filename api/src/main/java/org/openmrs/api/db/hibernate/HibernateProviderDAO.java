@@ -155,8 +155,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 			name = "%";
 		}
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class)
-		        .createAlias("person", "p", Criteria.LEFT_JOIN);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class).createAlias("person", "p",
+		    Criteria.LEFT_JOIN);
 		
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		if (name != null) {
@@ -181,8 +181,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 		IlikeExpression middleName = (IlikeExpression) Expression.ilike("personName.middleName", name, mode);
 		IlikeExpression familyName = (IlikeExpression) Expression.ilike("personName.familyName", name, mode);
 		IlikeExpression familyName2 = (IlikeExpression) Expression.ilike("personName.familyName2", name, mode);
-		LogicalExpression personNameExpression = Expression.and(Expression.eq("personName.voided", false),
-		    Expression.or(familyName2, Expression.or(familyName, Expression.or(middleName, givenName))));
+		LogicalExpression personNameExpression = Expression.and(Expression.eq("personName.voided", false), Expression.or(
+		    familyName2, Expression.or(familyName, Expression.or(middleName, givenName))));
 		return Expression.or(providerNameExpression, personNameExpression);
 	}
 	

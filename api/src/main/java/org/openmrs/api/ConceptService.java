@@ -1923,19 +1923,18 @@ public interface ConceptService extends OpenmrsService {
 	public void purgeConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws APIException;
 	
 	/**
-	 * Finds the concept reference term in the database that match the specified arguments, NOTE:
-	 * Both the names and codes are matched against the specified query string
+	 * Finds the concept reference term in the database that have a code or name that contains the
+	 * specified search phrase.
 	 * 
 	 * @param query the string to match against the reference term names or codes
 	 * @param conceptSource the concept source from which the terms should be looked up
 	 * @param start beginning index for the batch
 	 * @param length number of terms to return in the batch
 	 * @param includeRetired specifies if the retired terms should be included
-	 * @return a list if concept reference terms that match the specified criteria
+	 * @return a list if {@link ConceptReferenceTerm}s
 	 * @since 1.9
 	 * @throws APIException
-	 * @should return terms that match the code
-	 * @should return terms that match the name
+	 * @should return unique terms with a code or name containing the search phrase
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS })

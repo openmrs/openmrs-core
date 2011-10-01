@@ -91,8 +91,8 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptMapTypeValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should pass if the name is unique amongst all unretired concept map type names", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheNameIsUniqueAmongstAllUnretiredConceptMapTypeNames() throws Exception {
+	@Verifies(value = "pass if the name is unique amongst all concept map type names", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfTheNameIsUniqueAmongstAllConceptMapTypeNames() throws Exception {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName("unique-name");
 		Errors errors = new BindException(mapType, "mapType");
