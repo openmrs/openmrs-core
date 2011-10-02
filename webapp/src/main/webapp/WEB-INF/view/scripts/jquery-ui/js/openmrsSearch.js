@@ -102,17 +102,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   
  * The styling on this table works like this:
  * <pre> 
-#openmrsSearchTable tbody tr.even:hover {
-	background-color: #ECFFB3;
-}
-#openmrsSearchTable tbody tr.odd:hover {
-	background-color: #E6FF99;
-}
-#openmrsSearchTable tbody tr.even.row_highlight {
-	background-color: #ECFFB3;
-}
-#openmrsSearchTable tbody tr.odd.row_highlight {
-	background-color: #E6FF99;
+#openmrsSearchTable tbody tr:hover {
+	background-color: #F0E68C;
 }
 	</pre>
  */
@@ -279,10 +270,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					
 					switch(event.keyCode) {
 			    		case 33:
-			    			self._doPageDown();
+			    			self._doPageUp();
 			    			break;
 			    		case 34:
-			    			self._doPageUp();
+			    			self._doPageDown();
 			    			break;
 				    	case 35:
 				    		self._doKeyEnd();
@@ -362,7 +353,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	aoColumns: this._makeColumns(),
 		    	iDisplayLength: self.options.displayLength,
 		    	numberOfPages: 0,
-		    	currPage: 0,
 		    	bAutoWidth: false,
 		    	bJQueryUI: true,
 		    	sDom: 'rt<"fg-button ui-helper-clearfix"flip>',
@@ -372,20 +362,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		"sZeroRecords": omsgs.noMatchesFound,
 		    		"sInfoEmpty": " "
 		    	},
-		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {					
-		    		//register mouseover/out events handlers to have row highlighting
-		    		$j(nRow).bind('mouseover', function(){
-		    			$j(this).addClass('tr_row_highlight_hover');
-		    			$j(this).css("cursor", "pointer");
-		    			if(self.curRowSelection != null)
-		    				$j(self._table.fnGetNodes()[self.curRowSelection]).removeClass("row_highlight");
-					});
-		    		$j(nRow).bind('mouseout', function(){
-		    			$j(this).removeClass('tr_row_highlight_hover');
-		    			if(self.curRowSelection != null)
-		    				$j(self._table.fnGetNodes()[self.curRowSelection]).addClass("row_highlight");
-		    	    });
-		    		
+		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 		    		var currItem = self._results[iDisplayIndexFull];
 		    		//draw a strike through for all voided/retired objects that have been loaded
 		    		if(currItem && (currItem.voided || currItem.retired)){		    			
@@ -407,7 +384,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    
 		    //if we have initial data, set the current page and number of pages for the row highlight not to break
 		    if(self.options.initialData){
-		    	self._table.currPage = 1;
 		    	var initialRowCount = self.options.initialData.length;
 				if(initialRowCount % self._table.fnSettings()._iDisplayLength == 0)
 					self._table.numberOfPages = initialRowCount/self._table.fnSettings()._iDisplayLength;
@@ -592,7 +568,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			this._table.fnAddData(d);
 			
 			this._table.numberOfPages = 1;
-			this._table.currPage = 1;
 			
     	    if(matchCount <= this._table.fnSettings()._iDisplayLength){
     	    	$j('#openmrsSearchTable_paginate').hide();
@@ -668,7 +643,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 						this._table.fnGetData().length < this._table.fnSettings()._iDisplayLength)
 					return;
 				this.curRowSelection = this._table.fnGetData().length-1;
-				this._table.currPage = this._table.numberOfPages;
 				this._table.fnPageChange('last');
 			}
 			else {
@@ -695,34 +669,14 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		},
 		
 		_doPageUp: function() {
-			this._table.fnPageChange('next');
-			if(++this._table.currPage > this._table.numberOfPages)
-				this._table.currPage = this._table.numberOfPages;
-			
-			//move the highlight to the first row on the next page so that we dont lose it if the highlight isn't on the page			
-			if(this._table.currPage < this._table.numberOfPages || (this._table.currPage == this._table.numberOfPages && this.curRowSelection < 
-					((this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength)))
-				this._updateRowHighlight(((this._table.currPage - 1)*this._table.fnSettings()._iDisplayLength));
+			this._table.fnPageChange('previous');
 		},
 		
 		_doPageDown: function() {
-			var rowToHighlight = null;
-			if(--this._table.currPage < 1){
-				this._table.currPage = 1;
-				this._table.fnPageChange('first');
-				if(this.curRowSelection == null || this.curRowSelection < this._table.fnSettings()._iDisplayLength)
-					return;
-				rowToHighlight = 0;
-			}
-			else{
-				rowToHighlight = (this._table.currPage - 1)*this._table.fnSettings()._iDisplayLength;
-				this._table.fnPageChange('previous');
-			}
-			
-			this._updateRowHighlight(rowToHighlight);
+			this._table.fnPageChange('next');
 		},
 		
-		_doKeyEnter: function() {
+		_doKeyEnter: function() {alert('Selected Index:'+this._fnGetSelected());
 			if(this.curRowSelection != null) {
 				this._doSelected(this.curRowSelection, this._results[this.curRowSelection]);
 			}
@@ -730,20 +684,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		
 		_doKeyHome: function() {
 			this._table.fnPageChange('first');
-			this._table.currPage = 1;
-			if(this.curRowSelection == null || this.curRowSelection < this._table.fnSettings()._iDisplayLength)
-				return;
-			this._updateRowHighlight(0);
 		},
 		
 		_doKeyEnd: function() {
 			this._table.fnPageChange('last');
-			this._table.currPage = this._table.numberOfPages;
-			//if the highlight is already on the last page, don't switch it
-			if( this.curRowSelection != null && this.curRowSelection > (this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength )
-				return;
-				
-			this._updateRowHighlight(((this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength));
 		},
 		
 		_doSelected: function(position, rowData) {
@@ -766,19 +710,26 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	        }
 	        alert("LOG=[" + s + "]");
 	    },
+	    
+	    /* Get the rows which are currently selected */
+	    _fnGetSelected: function(){
+	    	var aReturn;
+	    	var aTrs = this._table.fnGetNodes();
+	    	
+	    	for ( var i=0 ; i<aTrs.length ; i++ ){
+	    		if ( $j(aTrs[i]).hasClass('row_selected') ){
+	    			aReturn = aTrs[i];
+	    			break;
+	    		}
+	    	}
+	    	return aReturn;
+	    },
 		
 		_updatePageInfo: function(searchText) {
 			$j('#pageInfo').html(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'"));
 
 			if($j('#pageInfo').css("visibility") != 'visible')
 				$j('#pageInfo').css("visibility", "visible");
-		},
-		
-		_updateRowHighlight: function(rowNumber){
-			//highlight the row if the highlight is visible
-			$j(this._table.fnGetNodes()[this.curRowSelection]).removeClass("row_highlight");
-			$j(this._table.fnGetNodes()[rowNumber]).addClass("row_highlight");
-			this.curRowSelection = rowNumber;
 		},
 		
 		//This function adds the data returned by the second ajax call that fetches the remaining rows
@@ -899,58 +850,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					pageStr = omsgs.pagesWithPlaceHolder.replace("_NUMBER_OF_PAGES_", self._table.numberOfPages);
 					$j('#pageInfo').append(" - "+pageStr);
 				}
-				
-				//TODO Fix this very hacky way to capture the visible buttons before the user clicks any of them,
-				//so that we can add/remove onclick events to/from each.
-				$j("#openmrsSearchTable_paginate").mouseenter(function(){
-					var buttonElement = document.getElementById('openmrsSearchTable_paginate');
-					if(buttonElement){
-					    var spans = buttonElement.getElementsByTagName("span");
-					    if(self._results && self._results.length > 0){
-					    	for(var i in spans){
-					    		var span = spans[i];
-					    		var elementClass = span.className;	
-					    		if(span.getElementsByTagName){
-					    			var children = span.getElementsByTagName("span");
-					    			//ignore disbaled buttons and the span tag that has nested spans for the numbering 1,2,3,4,5,........
-					    			if(children == null || children.length == 0){					    			
-					    				//ignore the greyed out buttons
-					    				if(span.className && span.className.indexOf("ui-state-disabled") < 0 ){
-					    					span.onclick = function(){
-					    						if(this.innerHTML){
-					    							var buttonText = $j.trim(this.innerHTML);
-					    							//if the clicked button bears a number
-					    							if(Number(buttonText)){
-					    								self._table.currPage = buttonText;
-					    								self._updateRowHighlight((self._table.currPage - 1)*self._table.fnSettings()._iDisplayLength);
-					    							}else{
-					    								//move the highlight to the first row on the displayed page
-					    								if(buttonText == omsgs.next){
-					    									self._table.currPage++;								
-					    									self._updateRowHighlight((self._table.currPage - 1)*self._table.fnSettings()._iDisplayLength);
-					    								}else if(buttonText == omsgs.previous){
-					    									self._table.currPage--;
-					    									self._updateRowHighlight((self._table.currPage - 1)*self._table.fnSettings()._iDisplayLength);
-					    								}else if(buttonText == omsgs.first){
-					    									self._table.currPage = 1;
-					    									self._updateRowHighlight(0);
-					    								}else if(buttonText == omsgs.last){
-					    									self._table.currPage = self._table.numberOfPages;
-					    									self._updateRowHighlight((self._table.numberOfPages - 1)*self._table.fnSettings()._iDisplayLength);
-					    								}
-					    							}
-					    						}
-					    					};
-					    				}else{
-					    					//drop the event handler if the button was previously active
-					    					span.onclick = "";
-					    				}
-					    			}
-					    		}
-					    	}
-					    }
-					}
-				});
 				
 				//if there are still more hits to fetch and we are in serial mode, get them
 				if(inSerialMode && actualResultCount < matchCount){
