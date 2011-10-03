@@ -552,6 +552,7 @@
 						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
 						<revisionOnScmFailure>0</revisionOnScmFailure>
+						<useLastCommittedRevision>true</useLastCommittedRevision>
 						<providerImplementations>
 							<svn>javasvn</svn>
 						</providerImplementations>
