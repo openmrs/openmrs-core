@@ -74,6 +74,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should assign encounter to visit if the assign to existing or new handler is registered
 	 * @should cascade save encounter providers
 	 * @should cascade delete encounter providers
+	 * @should void and create new obs when saving encounter
 	 */
 	@Authorized( { PrivilegeConstants.ADD_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter saveEncounter(Encounter encounter) throws APIException;

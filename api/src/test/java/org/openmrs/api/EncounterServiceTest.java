@@ -45,6 +45,7 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
@@ -1379,7 +1380,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should include voided encounters in the returned list if includedVoided is true", method = "getEncountersByPatient(String,boolean)")
 	public void getEncountersByPatient_shouldIncludeVoidedEncountersInTheReturnedListIfIncludedVoidedIsTrue()
-	        throws Exception {
+	    throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatient("12345", true);
@@ -1511,8 +1512,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterRole newSavedEncounterRole = encounterService.getEncounterRole(encounterRole.getEncounterRoleId());
 		assertNotNull("We should get back an encounter role", newSavedEncounterRole);
 		assertEquals(encounterRole, newSavedEncounterRole);
-		assertTrue("The created encounter role needs to equal the pojo encounter role", encounterRole
-		        .equals(newSavedEncounterRole));
+		assertTrue("The created encounter role needs to equal the pojo encounter role",
+		    encounterRole.equals(newSavedEncounterRole));
 		
 	}
 	
@@ -1887,4 +1888,46 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(17, encs.get(0).getEncounterId().intValue());
 		Assert.assertEquals(18, encs.get(1).getEncounterId().intValue());
 	}
+	
+	/**
+	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 */
+	@Test
+	@Ignore("TRUNK-50")
+	@Verifies(value = "should void and create new obs when saving encounter", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldVoidAndCreateNewObsWhenSavingEncounter() throws Exception {
+		// create an encounter
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(3));
+		
+		// Now add an obs to it
+		Obs obs = new Obs();
+		obs.setConcept(new Concept(1));
+		obs.setValueNumeric(50d);
+		encounter.addObs(obs);
+		
+		// save the encounter
+		EncounterService es = Context.getEncounterService();
+		es.saveEncounter(encounter);
+		
+		// get the id of this obs
+		int oldObsId = obs.getObsId();
+		
+		// now change the obs value
+		obs.setValueNumeric(100d);
+		
+		// resave the encounters
+		es.saveEncounter(encounter);
+		
+		// get the new obs id
+		int newObsId = encounter.getAllObs().iterator().next().getId();
+		
+		Assert.assertTrue(oldObsId != newObsId);
+		Assert.assertEquals(2, encounter.getAllObs(true).size());
+		Assert.assertEquals(1, encounter.getAllObs().size());
+	}
+	
 }
