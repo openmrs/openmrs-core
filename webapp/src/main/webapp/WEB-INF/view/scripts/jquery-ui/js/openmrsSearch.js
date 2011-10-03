@@ -363,6 +363,19 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		"sInfoEmpty": " "
 		    	},
 		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+		    		//register hover event handlers to unhighlight the current row highlighted with up/down keys
+		    		$j(nRow).hover(
+		    			function(){
+		    				if(self.curRowSelection != null)
+			    				$j(self._table.fnGetNodes()[self.curRowSelection]).removeClass("row_highlight");
+			    			self.hoverRowSelection = iDisplayIndexFull;
+		    			}, function(){
+		    				if(self.curRowSelection != null)
+			    				$j(self._table.fnGetNodes()[self.curRowSelection]).addClass("row_highlight");
+			    			self.hoverRowSelection = null;
+		    			}
+		    		);
+		    			
 		    		var currItem = self._results[iDisplayIndexFull];
 		    		//draw a strike through for all voided/retired objects that have been loaded
 		    		if(currItem && (currItem.voided || currItem.retired)){		    			
@@ -604,90 +617,99 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		},
 		
 		_doKeyDown: function() {
+			//the user is using the mouse and they also want to use up/down keys?, dont support this
+			if(this.hoverRowSelection != null)
+				return;
+			
 			var prevRow = this.curRowSelection;
-			if(this.curRowSelection == null) {
-				this.curRowSelection = 0;
-			}
-			else {
+			//if we are on the last page, and the last row is highlighted, do nothing
+			if(this._getCurrVisiblePage() == this._table.numberOfPages && prevRow >= (this._results.length-1))
+				return;
+			
+			//only move the highlight to next row if it is currently on the visible page otherwise shoule be first row
+			if(this._isHighlightedRowOnVisiblePage()){
 				this.curRowSelection++;
-			}
-			//if the row has yet been populated, don't highlight it
-			if(!this._results[this.curRowSelection]){
-				this.curRowSelection--;//reverse
-				return;
-			}
-			if(this.curRowSelection >= this._table.fnGetData().length) {
-				this.curRowSelection--;//redact it
-				//cant go any further so return
-				return;
-			}
-			
-			if(prevRow != null) {
-				$j(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
-			}
-			
-			//If the selected row is the first one on the next page, flip over to its page
-			if(this.curRowSelection != 0 && (this.curRowSelection % this._table.fnSettings()._iDisplayLength) == 0) {
-				this._table.fnPageChange('next');
-			}
-			
-			//hide the hover
-			$j('.tr_row_highlight_hover').removeClass("tr_row_highlight_hover");
-			$j(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
-		},
-		
-		_doKeyUp: function() {
-			var prevRow = this.curRowSelection;
-			if(this.curRowSelection == null) {
-				if($j(spinnerObj).css("visibility") == "visible" || 
-						this._table.fnGetData().length < this._table.fnSettings()._iDisplayLength)
-					return;
-				this.curRowSelection = this._table.fnGetData().length-1;
-				this._table.fnPageChange('last');
-			}
-			else {
-				this.curRowSelection--;
-			}
-			
-			if(this.curRowSelection < 0) {
-				this.curRowSelection++;//redact it
-				//cant go any further so return
-				return;
-			}
-			
-			if(prevRow != null) {
-				$j(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
-
-				if(prevRow % this._table.fnSettings()._iDisplayLength == 0) {
-					this._table.fnPageChange('previous');
+				
+				//If the selected row is the first one on the next page, flip over to its page
+				if(this.curRowSelection != 0 && (this.curRowSelection % this._table.fnSettings()._iDisplayLength) == 0) {
+					this._table.fnPageChange('next');
 				}
 			}
 			
-			//hide the hover
-			$j('.tr_row_highlight_hover').removeClass("tr_row_highlight_hover");
-			$j(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
+			if(prevRow != null) {
+				$j(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
+			}
+			
+			this._highlightRow();
+		},
+		
+		_doKeyUp: function() {
+			if(this.hoverRowSelection != null)
+				return;
+			
+			//we are on the first page and the first row is already highlighted, do nothing
+			if(this._table.fnSettings()._iDisplayStart == 0 && this.curRowSelection == 0)
+				return;
+			
+			var prevRow = this.curRowSelection;
+			//only move the highlight to prev row if it is currently on the visible page otherwise shoule be last row
+			if(this._isHighlightedRowOnVisiblePage()){
+				this.curRowSelection--;
+				if(prevRow != null) {
+					if(prevRow % this._table.fnSettings()._iDisplayLength == 0)
+						this._table.fnPageChange('previous');
+				}
+			}else{
+				//user just flipped pages, highlight the last row on the currently visible page
+				if(this._getCurrVisiblePage() < this._table.numberOfPages){
+					this.curRowSelection = this._table.fnSettings()._iDisplayStart + this._table.fnSettings()._iDisplayLength - 1;
+				}else{
+					//this is the last page, highlight the last item in the table
+					this.curRowSelection = this._results.length-1;
+				}
+			}
+			
+			if(prevRow != null)
+				$j(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
+			
+			this._highlightRow();
 		},
 		
 		_doPageUp: function() {
 			this._table.fnPageChange('previous');
+			//update the highlight to go to last row on previous page
+			this._highlightRowOnPageFlip();
 		},
 		
 		_doPageDown: function() {
 			this._table.fnPageChange('next');
+			//if this is the last page and we already have a selected row, do nothing
+			if( (this._getCurrVisiblePage() == this._table.numberOfPages) && this.curRowSelection > this._table.fnSettings()._iDisplayStart)
+			 	return;
+			
+			this._highlightRowOnPageFlip();
 		},
 		
-		_doKeyEnter: function() {alert('Selected Index:'+this._fnGetSelected());
-			if(this.curRowSelection != null) {
-				this._doSelected(this.curRowSelection, this._results[this.curRowSelection]);
+		_doKeyEnter: function() {
+			var selectedRowIndex = null;
+			if(this.hoverRowSelection != null) {
+				selectedRowIndex = this.hoverRowSelection;
+			}else if(this.curRowSelection != null){
+				selectedRowIndex = this.curRowSelection;
 			}
+			
+			if(selectedRowIndex != null)
+				this._doSelected(selectedRowIndex, this._results[selectedRowIndex]);
 		},
 		
 		_doKeyHome: function() {
 			this._table.fnPageChange('first');
+			this._highlightRowOnPageFlip();
 		},
 		
 		_doKeyEnd: function() {
 			this._table.fnPageChange('last');
+			this._highlightRowOnPageFlip();
 		},
 		
 		_doSelected: function(position, rowData) {
@@ -711,8 +733,38 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	        alert("LOG=[" + s + "]");
 	    },
 	    
+	    _highlightRowOnPageFlip: function(){
+	    	//deselect the current selected row if any
+			if(this.curRowSelection != null)
+				$j(this._table.fnGetNodes()[this.curRowSelection]).removeClass("row_highlight");
+			
+			this.curRowSelection = null;
+			this._highlightRow();
+	    },
+	    
+	    /*
+	     * Highlights the row at the index that matches the value of 'curRowSelection' otherwise the 
+	     * first on the current visible page
+	     */
+	    _highlightRow: function(){
+	    	//the row to hightlight has to be on the visible page, this helps not to lose the highlight
+	    	//when the user uses the pagination buttons(datatables provides no callback function)
+			if(!this._isHighlightedRowOnVisiblePage()){
+				//highlight the first row on the currently visible page
+				this.curRowSelection = this._table.fnSettings()._iDisplayStart;
+			}
+			
+			$j(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
+	    },
+	    
+	    /* Returnss true if the row highlight is on the current visible page */
+	    _isHighlightedRowOnVisiblePage:function(){
+	    	return this.curRowSelection != null && (this.curRowSelection >= this._table.fnSettings()._iDisplayStart) 
+					&& (this.curRowSelection < (this._table.fnSettings()._iDisplayStart + this._table.fnSettings()._iDisplayLength));
+	    },
+	    
 	    /* Get the rows which are currently selected */
-	    _fnGetSelected: function(){
+	    _getSelected: function(){
 	    	var aReturn;
 	    	var aTrs = this._table.fnGetNodes();
 	    	
@@ -724,7 +776,11 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	    	}
 	    	return aReturn;
 	    },
-		
+	    
+	    /* Gets the current page the user is viewing on the screen */
+	    _getCurrVisiblePage:function(){
+	    	return Math.ceil(this._table.fnSettings()._iDisplayStart / this._table.fnSettings()._iDisplayLength) + 1;
+	    },
 		_updatePageInfo: function(searchText) {
 			$j('#pageInfo').html(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'"));
 
