@@ -322,6 +322,14 @@ public class InitializationFilter extends StartupFilter {
 				return;
 			}
 			
+			wizardModel.databaseConnection = Context.getRuntimeProperties().getProperty("connection.url",
+			    wizardModel.databaseConnection);
+			
+			wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
+			    wizardModel.createDatabaseUsername);
+			
+			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
+			
 			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
 			checkForEmptyValue(wizardModel.databaseRootPassword, errors, "Database root password");
 			
