@@ -84,12 +84,14 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 /**
  * Expects to be put on a div.
  * Options:
- *   minLength:int (default: 3)
- *   searchLabel:string (default: omsgs.searchLabel)
- *   includeVoidedLabel:string (default: omsgs.includeVoided)
- *   showIncludeVoided:bool (default: false)
- *   searchHandler:function(text, resultHandler, options) (default:null)
- *   resultsHandler:function(results) (default:null)
+ *   minLength:int (default: 1) The minimum number of characters required to trigger a search, this is ignored if 'doSearchWhenEmpty' is set to true
+ *   searchLabel:string (default: omsgs.searchLabel) The text to be used as the label for the search textbox
+ *   includeVoidedLabel:string (default: omsgs.includeVoided) The text to be used as the label for the 'includeVoided' checkbox
+ *   showIncludeVoided:bool (default: false) - Specifies whether the 'includeVoided' checkbox and label should be displayed
+ *   includeVerboseLabel:string (default: omsgs.includeVerbose) The text to be used as the label for the 'includeVerbose' checkbox
+ *   showIncludeVerbose:bool (default: false) Specifies whether the 'includeVerbose' checkbox and label should be displayed
+ *   searchHandler:function(text, resultHandler, options) (default:null) The function to be called to fetch search results from the server
+ *   resultsHandler:function(results) (default:null) The function to be called
  *   selectionHandler:function(index, rowData)
  *   fieldsAndHeaders: Array of fieldNames and column header maps
  *   displayLength: int (default: 10)
@@ -99,16 +101,17 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   initialData:The initial data to be displayed e.g if it is an encounter search, it should be an encounter list
  *   searchPhrase: The phrase to be set in the search box so that a search is triggered on page load to display initial items
  *   doSearchWhenEmpty: If it is set to true, it lists all items initially and filters them with the given search phrase. (default:false)
+ *   verboseHandler: function to be called to return the text to display as verbose output
  *   
  * The styling on this table works like this:
- * <pre> 
-#openmrsSearchTable tbody tr:hover {
-	background-color: #F0E68C;
-}
-	</pre>
+ * <pre>  
+ *#openmrsSearchTable tbody tr:hover {
+ *	background-color: #F0E68C;
+ *}
+ *</pre>
  */
 (function($j) {
-	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off" placeholder=" "/><input type="checkbox" style="display:none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="loadingMsg"></span><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
+	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off" placeholder=" "/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/>&nbsp;&nbsp;<input type="checkbox" style="display: none" id="includeVerbose"/><span id="loadingMsg"></span><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
 	var BATCH_SIZE = gp.maxSearchResults;
 	var SEARCH_DELAY = gp.searchDelay;//time interval in ms between keyup and triggering the search off
 	var ERROR_MSG_DELAY = 600;//time interval in ms between keyup and  showing the minimum character error
@@ -123,7 +126,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			minLength: omsgs.minSearchCharactersGP,
 			searchLabel: ' ',
 			includeVoidedLabel: omsgs.includeVoided,
-			showIncludeVoided: false,
+			includeVerboseLabel: omsgs.showVerbose,
 			displayLength: 10,
 			columnWidths: null,
 			columnRenderers: null,
@@ -148,6 +151,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		        input = div.find("#inputNode"),
 		        table = div.find("#openmrsSearchTable");
 		    	checkBox = div.find("#includeVoided");
+		    	verboseCheckBox = div.find("#includeVerbose");
 		    	spinnerObj = div.find("#spinner");
 		    	spinnerObj.css("visibility", "hidden");
 		    	spinnerObj.attr("src", openmrsContextPath+"/images/loading.gif");
@@ -157,7 +161,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	loadingMsgObj = div.find("#loadingMsg");
 		    
 		    this._div = div;
-
+		    
 		    lbl.text(o.searchLabel);
 		    
 		    //3 should be the minimum number of results to display per page
@@ -168,29 +172,50 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	var tmp = div.find("#includeVoided");
 			    tmp.before("<label for='includeVoided'>" + o.includeVoidedLabel + "</label>");
 		    	tmp.show();
+		    	
+		    	//when the user checks/unchecks the includeVoided checkbox, trigger a search
+			    checkBox.click(function() {
+			    	if($j.trim(input.val()) != '' || self.options.doSearchWhenEmpty)
+			    		self._doSearch(input.val());
+			    	else{
+			    		if(spinnerObj.css("visibility") == 'visible')
+		    				spinnerObj.css("visibility", "hidden");
+			    		//if the user is viewing initial data, ignore
+			    		if($j.trim(input.val()) != ''){
+			    			$j("#minCharError").css("visibility", "visible");
+			    			$j(".openmrsSearchDiv").hide();
+			    		}
+			    		if($j('#pageInfo').css("visibility") == 'visible')
+							$j('#pageInfo').css("visibility", "hidden");
+			    	}
+			    	//to maintain keyDown and keyUp events since they are only fired when the input box has focus
+			    	input.focus();
+				});
 			    
 			    if(userProperties.showRetired)
 			    	tmp.attr('checked', true);
 		    }
-
-		    //when the user checks/unchecks the includeVoided checkbox, trigger a search
-		    checkBox.click(function() {
-		    	if($j.trim(input.val()) != '' || self.options.doSearchWhenEmpty)
-		    		self._doSearch(input.val());
-		    	else{
-		    		if(spinnerObj.css("visibility") == 'visible')
-	    				spinnerObj.css("visibility", "hidden");
-		    		//if the user is viewing initial data, ignore
-		    		if($j.trim(input.val()) != ''){
-		    			$j("#minCharError").css("visibility", "visible");
-		    			$j(".openmrsSearchDiv").hide();
-		    		}
-		    		if($j('#pageInfo').css("visibility") == 'visible')
-						$j('#pageInfo').css("visibility", "hidden");
+		    
+		    if(o.showIncludeVerbose) {
+		    	if(self._getVisibleColumnCount() == 1){
+		    		var tmp = div.find("#includeVerbose");
+		    		tmp.before("<label for='includeVerbose'>" + o.includeVerboseLabel + "</label>");
+		    		tmp.show();
+		    	
+		    		//when the user checks/unchecks the includeVerbose checkbox, show/hide the verbose rows
+		    		verboseCheckBox.click(function() {
+		    			$j('.verbose').toggle();
+		    		});
+			    
+		    		if(userProperties.showVerbose)
+		    			tmp.attr('checked', true);
 		    	}
-		    	//to maintain keyDown and keyUp events since they are only fired when the input box has focus
-		    	input.focus();
-			});
+		    	else{
+		    		o.showIncludeVerbose = false;
+	    			//typically developers should see this in dev mode and do the needful
+	    			alert('Only search tables with exactly one visible column can have verbose output');
+		    	}
+		    }
 		    
 		    //this._trigger('initialized');
 		    input.keyup(function(event) {
@@ -362,6 +387,18 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		"sZeroRecords": omsgs.noMatchesFound,
 		    		"sInfoEmpty": " "
 		    	},
+		    	
+		    	/* Called to toggle the verobse output */
+		    	fnDrawCallback : function(oSettings){
+		    		//we have nothing to hide
+		    		if(!self.options.showIncludeVerbose || !self._table || self._table.fnGetNodes().length == 0)
+	    				return;
+		    		
+		    		if(!$j(verboseCheckBox).attr('checked')){
+		    			$j('.verbose').hide();
+		    		}
+		    	},
+		    	
 		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 		    		//register hover event handlers to unhighlight the current row highlighted with up/down keys
 		    		$j(nRow).hover(
@@ -389,6 +426,12 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    				//Register onclick handlers to each row
 		    				self._doSelected(iDisplayIndexFull, self._results[iDisplayIndexFull]);
 		    			});
+		    		}
+		    		
+		    		if(self.options.showIncludeVerbose && self.options.verboseHandler){
+		    			var rowData = self._results[iDisplayIndexFull];
+		    			var verboseText = self.options.verboseHandler(iDisplayIndexFull, rowData);
+		    			$j(nRow.getElementsByTagName('td')[0]).html(self._table.fnGetData(iDisplayIndexFull)[0]+'<br /><div class="verbose">'+verboseText+'</div>');
 		    		}
 		    		
 		    		return nRow;
@@ -763,18 +806,22 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					&& (this.curRowSelection < (this._table.fnSettings()._iDisplayStart + this._table.fnSettings()._iDisplayLength));
 	    },
 	    
-	    /* Get the rows which are currently selected */
-	    _getSelected: function(){
-	    	var aReturn;
-	    	var aTrs = this._table.fnGetNodes();
+	    /* Gets the number of columns that will be visible */
+	    _getVisibleColumnCount: function(){
+	    	if(!this.options.columnVisibility)
+	    		return this.options.fieldsAndHeaders.length;
 	    	
-	    	for ( var i=0 ; i<aTrs.length ; i++ ){
-	    		if ( $j(aTrs[i]).hasClass('row_selected') ){
-	    			aReturn = aTrs[i];
-	    			break;
-	    		}
-	    	}
-	    	return aReturn;
+	    	var self = this;
+	    	var count = 0;
+	    	var columnIndex = 0;
+	    	$j.map(self.options.fieldsAndHeaders, function(c) {
+				if(self.options.columnVisibility[columnIndex] == true )
+					count++;
+				
+				columnIndex++;
+			});
+	    	
+	    	return count;
 	    },
 	    
 	    /* Gets the current page the user is viewing on the screen */

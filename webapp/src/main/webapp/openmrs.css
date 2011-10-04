@@ -1273,6 +1273,9 @@ table td#summaryHeaderPatientGender {
 #openmrsSearchTable tbody tr.odd.row_highlight {
 	 background-color: #F0E68C;
 }
+.row_highlight {
+	 background-color: #F0E68C !important;
+}
 img#spinner{
 	vertical-align: middle;
 }
@@ -1368,4 +1371,7 @@ span.otherHit{
 }
 tr.headerRow{
 	background-color: #CCCCCC;
+}
+.verbose{
+	text-align: left; padding-left: 15px;
 }
