@@ -112,9 +112,11 @@ omsgs.sInfoLabel="<spring:message code="searchWidget.sInfoLabel" javaScriptEscap
 omsgs.to="<spring:message code="general.to" javaScriptEscape="true" />";
 omsgs.viewingResultsFor="<spring:message code="searchWidget.viewingResults" javaScriptEscape="true" />";
 omsgs.loadingWithArgument="<spring:message code="searchWidget.loadingWithPlaceHolder" javaScriptEscape="true" />";
+omsgs.showVerbose="<spring:message code="searchWidget.showVerbose" javaScriptEscape="true"/>";
 
 /* User Properties*/
 userProperties.showRetired=<openmrs:userProperty key="showRetired" defaultValue="false"/>;
+userProperties.showVerbose=<openmrs:userProperty key="showVerbose" defaultValue="false"/>;
 
 omsgs.providerName="<spring:message code="Provider.name" javaScriptEscape="true" />";
 omsgs.providerIdentifier="<spring:message code="Provider.identifier" javaScriptEscape="true" />";
