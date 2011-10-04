@@ -896,7 +896,7 @@ public final class OpenmrsConstants {
 	public static final String GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING = "visit.encounterTypeToVisitTypeMapping";
 	
 	/**
-	 * Global property name for the encounter roles to display on the provider column of the patient 
+	 * Global property name for the encounter roles to display on the provider column of the patient
 	 * dashboard under the encounters tab.
 	 */
 	public static final String GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES = "dashboard.encounters.providerDisplayRoles";
@@ -915,6 +915,8 @@ public final class OpenmrsConstants {
 	public static final String ENCRYPTION_KEY_RUNTIME_PROPERTY = "encryption.key";
 	
 	public static final String ENCRYPTION_KEY_DEFAULT = "dTfyELRrAICGDwzjHDjuhw==";
+	
+	public static final String GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT = "conceptIndexUpdateTask.lastConceptUpdated";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
