@@ -16,12 +16,15 @@ package org.openmrs.scheduler.tasks;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ConceptServiceImpl;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskDefinition;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * A utility class for updating concept words in a scheduled task.
@@ -40,26 +43,51 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 		if (!isExecuting) {
 			isExecuting = true;
 			shouldExecute = true;
+			AdministrationService as = Context.getAdministrationService();
+			ConceptService cs = Context.getConceptService();
+			GlobalProperty gp = as
+			        .getGlobalPropertyObject(OpenmrsConstants.GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT);
+			if (gp == null)
+				gp = new GlobalProperty(OpenmrsConstants.GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT);
 			
 			if (log.isDebugEnabled())
 				log.debug("Updating concept words ... ");
 			try {
-				ConceptService cs = Context.getConceptService();
-				Concept currentConcept = cs.getNextConcept(new Concept(0)); // assumes that all conceptIds are positive
+				Concept currentConcept = null; // assumes that all conceptIds are positive
+				//check if we have a saved last updated concept id
+				try {
+					currentConcept = cs.getConcept(Integer.valueOf(gp.getPropertyValue()));
+				}
+				catch (NumberFormatException e) {
+					//do nothing, most likely there was none
+				}
+				
+				if (currentConcept == null)
+					currentConcept = new Concept(0);
+				
+				currentConcept = cs.getNextConcept(currentConcept);
 				int counter = 0;
 				while (currentConcept != null && shouldExecute) {
 					if (log.isDebugEnabled())
 						log.debug("updateConceptWords() : current concept: " + currentConcept);
 					cs.updateConceptIndex(currentConcept);
 					
+					gp.setPropertyValue(currentConcept.getConceptId().toString());
+					as.saveGlobalProperty(gp);
 					// keep memory consumption low
 					if (counter++ > 200) {
+						//persist to DB prior to releasing memory
+						Context.flushSession();
 						Context.clearSession();
 						counter = 0;
 					}
 					
 					currentConcept = cs.getNextConcept(currentConcept);
 				}
+				
+				//we have reached the end, get rid of the GP
+				if (currentConcept == null)
+					as.purgeGlobalProperty(gp);
 			}
 			catch (APIException e) {
 				log.error("ConceptWordUpdateTask failed, because:", e);
