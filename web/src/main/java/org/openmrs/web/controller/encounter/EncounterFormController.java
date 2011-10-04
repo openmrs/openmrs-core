@@ -105,14 +105,10 @@ public class EncounterFormController extends SimpleFormController {
 				if (StringUtils.hasText(request.getParameter("patientId")))
 					encounter.setPatient(Context.getPatientService().getPatient(
 					    Integer.valueOf(request.getParameter("patientId"))));
-				if (StringUtils.hasText(request.getParameter("providerId")))
-					encounter.setProvider(Context.getPersonService().getPerson(
-					    Integer.valueOf(request.getParameter("providerId"))));
 				if (encounter.isVoided())
 					ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 				
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "patient", "error.null");
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "provider", "error.null");
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "error.null");
 				
 			}
@@ -152,10 +148,6 @@ public class EncounterFormController extends SimpleFormController {
 				if (request.getParameter("patientId") != null)
 					encounter.setPatient(Context.getPatientService().getPatient(
 					    Integer.valueOf(request.getParameter("patientId"))));
-				
-				// set the provider if they changed it
-				encounter.setProvider(Context.getPersonService().getPerson(
-				    Integer.valueOf(request.getParameter("providerId"))));
 				
 				if (encounter.isVoided() && encounter.getVoidedBy() == null)
 					// if this is a "new" voiding, call voidEncounter to set appropriate attributes
