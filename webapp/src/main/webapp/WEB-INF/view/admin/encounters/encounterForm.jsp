@@ -14,8 +14,10 @@
 <script type="text/javascript">
 	dojo.addOnLoad( function() {
 		toggleVisibility(document, "div", "description");
+		<c:if test="${encounter.encounterId != null}">
 		toggleRowVisibilityForClass("obs", "voided", true);
 		voidedClicked(document.getElementById("voided"));
+		</c:if>
 	})
 
 </script>
@@ -77,12 +79,13 @@
 	function enableSaveButton(formFieldId, id) {
 		if (formFieldId == "patientId")
 			patientBoxFilledIn = true;
-
-		if (formFieldId == "providerId")
-			providerBoxFilledIn = true;
+		
+		//TODO: keep track of count of provider rows as they get added/removed to replace the commented lines below
+		//if (formFieldId == "providerId")
+		//	providerBoxFilledIn = true;
 
 		// only enable if both the patient and provider boxes have been entered
-		if (patientBoxFilledIn && providerBoxFilledIn)
+		if (patientBoxFilledIn)
 			document.getElementById("saveEncounterButton").disabled = false;
 	}
 	
@@ -118,13 +121,14 @@
 				' ' + parentNode.childNodes[1].innerHTML + 
 				' ' + '<spring:message code="Role.role"/>' + ': ' + parentNode.childNodes[0].innerHTML)){
 			
+			<c:if test="${encounter.encounterId != null}">
 			DWREncounterService.removeProviderFromEncounter(${encounter.encounterId}, encounterRoleId, providerId, function(encounterObj) {
 				if(encounterObj){
 					parentNode.parentNode.removeChild(btn.parentNode.parentNode);
 				}else
 					alert('<spring:message code="Encounter.provider.failedToRemoveProvider"/>');
 			});	
-			
+			</c:if>
 		}
 	}
 	
@@ -155,12 +159,14 @@
 		var encounterRoleId = document.getElementById("encounterRole").value;
 		var providerId = document.getElementById("providerId_id").value;
 		
+		<c:if test="${encounter.encounterId != null}">
 		DWREncounterService.addProviderToEncounter(${encounter.encounterId}, encounterRoleId, providerId, function(providerObj) {
 			if(providerObj){
 				addProviderRow(providerObj);
 			}else
 				alert('<spring:message code="Encounter.provider.failedToAddProvider"/>');
 		});
+		</c:if>
 	}
 	
 	function addProviderRow(providerObj){
@@ -347,7 +353,8 @@
 	<input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1); return; document.location='index.htm?autoJump=false&phrase=<request:parameter name="phrase"/>'">
 	</form>
 </div>
-
+	
+<c:if test="${encounter.encounterId != null}">
 	<br/>
 	<div class="boxHeader">
 		<b><spring:message code="Provider.header"/></b>
@@ -385,7 +392,6 @@
 	<input type="button" value='<spring:message code="Provider.add"/>' class="smallButton" onClick="addProvider(this)" />
 	</div>
 	
-<c:if test="${encounter.encounterId != null}">
 	<br/>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterFormBeforeObs" type="html" parameters="encounterId=${encounter.encounterId}">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
