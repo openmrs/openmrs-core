@@ -1357,7 +1357,7 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_LOG_LEVEL = "log.level.openmrs";
 	
 	// Global logger category
-	public static final String LOG_CLASS_DEFAULT = "org.openmrs";
+	public static final String LOG_CLASS_DEFAULT = "org.openmrs.api";
 	
 	// Log levels
 	public static final String LOG_LEVEL_TRACE = "trace";
