@@ -486,8 +486,22 @@ public class PatientFormController extends PersonFormController {
 			}
 		}
 		
-		if (patient.getIdentifiers().size() < 1)
+		if (patient.getIdentifiers().size() < 1) {
 			patient.addIdentifier(new PatientIdentifier());
+		} else {
+			// we need to check if current patient has preferred id
+			// if no we look for suitable one to set it as preferred 
+			if (patient.getPatientIdentifier() != null && !patient.getPatientIdentifier().isPreferred()) {
+				
+				List<PatientIdentifier> pi = patient.getActiveIdentifiers();
+				for (PatientIdentifier patientIdentifier : pi) {
+					if (!patientIdentifier.isVoided() && !patientIdentifier.getIdentifierType().isRetired()) {
+						patientIdentifier.setPreferred(true);
+						break;
+					}
+				}
+			}
+		}
 		
 		super.setupFormBackingObject(patient);
 		
