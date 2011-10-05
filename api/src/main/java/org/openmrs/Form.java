@@ -72,8 +72,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param formId
-	 *            The formId to set.
+	 * @param formId The formId to set.
 	 */
 	public void setFormId(Integer formId) {
 		this.formId = formId;
@@ -87,8 +86,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param version
-	 *            The version to set.
+	 * @param version The version to set.
 	 */
 	public void setVersion(String version) {
 		this.version = version;
@@ -102,8 +100,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param build
-	 *            The build number to set
+	 * @param build The build number to set
 	 */
 	public void setBuild(Integer build) {
 		this.build = build;
@@ -117,8 +114,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param published
-	 *            The published to set.
+	 * @param published The published to set.
 	 */
 	public void setPublished(Boolean published) {
 		this.published = published;
@@ -132,17 +128,15 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param encounterType
-	 *            type of encounter associated with this form
+	 * @param encounterType type of encounter associated with this form
 	 */
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
 	}
 	
 	/**
-	 * Convenience method for accessing the FormService
-	 * 
-	 * TODO: remove this method when xslt and template properties / methods are removed
+	 * Convenience method for accessing the FormService TODO: remove this method when xslt and
+	 * template properties / methods are removed
 	 * 
 	 * @return the current context's form service
 	 * @throws APIException
@@ -157,8 +151,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * @return Returns the template.
-	 * @deprecated use
-	 *             {@link org.openmrs.api.FormService#getFormResource(Form, String, String)}
+	 * @deprecated use {@link org.openmrs.api.FormService#getFormResource(Form, String, String)}
 	 */
 	@Deprecated
 	public String getTemplate() {
@@ -180,8 +173,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param template
-	 *            The template to set.
+	 * @param template The template to set.
 	 * @deprecated use
 	 *             {@link org.openmrs.api.FormService#saveFormResource(Form, String, String, byte[])}
 	 */
@@ -194,8 +186,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * @return Returns the creator
-	 * @deprecated use
-	 *             {@link org.openmrs.api.FormService#getFormResource(Form, String, String)}
+	 * @deprecated use {@link org.openmrs.api.FormService#getFormResource(Form, String, String)}
 	 */
 	@Deprecated
 	public String getXslt() {
@@ -217,8 +208,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param xslt
-	 *            the xslt to set.
+	 * @param xslt the xslt to set.
 	 * @deprecated use
 	 *             {@link org.openmrs.api.FormService#saveFormResource(Form, String, String, byte[])}
 	 */
@@ -275,8 +265,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param formFields
-	 *            The formFields to set.
+	 * @param formFields The formFields to set.
 	 */
 	public void setFormFields(Set<FormField> formFields) {
 		this.formFields = formFields;
@@ -285,8 +274,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	 * Adds a FormField to the list of form fields
 	 * 
-	 * @param formField
-	 *            FormField to be added
+	 * @param formField FormField to be added
 	 */
 	public void addFormField(FormField formField) {
 		if (formFields == null)
@@ -300,8 +288,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	 * Removes a FormField from the list of form fields
 	 * 
-	 * @param formField
-	 *            FormField to be removed
+	 * @param formField FormField to be removed
 	 */
 	public void removeFormField(FormField formField) {
 		if (formFields != null) {

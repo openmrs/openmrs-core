@@ -1380,7 +1380,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should include voided encounters in the returned list if includedVoided is true", method = "getEncountersByPatient(String,boolean)")
 	public void getEncountersByPatient_shouldIncludeVoidedEncountersInTheReturnedListIfIncludedVoidedIsTrue()
-	    throws Exception {
+	        throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatient("12345", true);
@@ -1512,8 +1512,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterRole newSavedEncounterRole = encounterService.getEncounterRole(encounterRole.getEncounterRoleId());
 		assertNotNull("We should get back an encounter role", newSavedEncounterRole);
 		assertEquals(encounterRole, newSavedEncounterRole);
-		assertTrue("The created encounter role needs to equal the pojo encounter role",
-		    encounterRole.equals(newSavedEncounterRole));
+		assertTrue("The created encounter role needs to equal the pojo encounter role", encounterRole
+		        .equals(newSavedEncounterRole));
 		
 	}
 	

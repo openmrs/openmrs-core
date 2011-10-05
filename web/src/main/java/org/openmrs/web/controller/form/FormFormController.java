@@ -205,16 +205,16 @@ public class FormFormController extends SimpleFormController {
 	 * @return true if this is the demo data basic form, else false.
 	 */
 	private boolean isBasicForm(Form form) {
-		if (form.getFormId() == null || form.getCreator() == null || form.getCreator().getUserId() == null ||
-			form.getChangedBy() == null || form.getDateChanged() == null || form.getBuild() == null) {
+		if (form.getFormId() == null || form.getCreator() == null || form.getCreator().getUserId() == null
+		        || form.getChangedBy() == null || form.getDateChanged() == null || form.getBuild() == null) {
 			return false;
 		}
 		
 		Calendar calender = Calendar.getInstance();
 		calender.setTime(form.getDateCreated());
 		
-		return form.getFormId().intValue() == 1 && form.getCreator().getUserId().intValue() == 1 &&
-			calender.get(Calendar.YEAR) == 2006 && calender.get(Calendar.MONTH) == 6 && 
-			calender.get(Calendar.DAY_OF_MONTH) == 18 && form.getBuild().intValue() == 1;
+		return form.getFormId().intValue() == 1 && form.getCreator().getUserId().intValue() == 1
+		        && calender.get(Calendar.YEAR) == 2006 && calender.get(Calendar.MONTH) == 6
+		        && calender.get(Calendar.DAY_OF_MONTH) == 18 && form.getBuild().intValue() == 1;
 	}
 }
