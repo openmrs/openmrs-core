@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.annotation.AllowEmptyStrings;
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
@@ -178,6 +179,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 *             {@link org.openmrs.api.FormService#saveFormResource(Form, String, String, byte[])}
 	 */
 	@Deprecated
+	@AllowEmptyStrings
 	public void setTemplate(String template) {
 		FormService formService = this.getFormService();
 		formService.saveFormResource(this, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
@@ -213,6 +215,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 *             {@link org.openmrs.api.FormService#saveFormResource(Form, String, String, byte[])}
 	 */
 	@Deprecated
+	@AllowEmptyStrings
 	public void setXslt(String xslt) {
 		FormService formService = this.getFormService();
 		formService.saveFormResource(this, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
