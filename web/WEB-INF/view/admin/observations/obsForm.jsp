@@ -543,6 +543,7 @@
 <br/>
 <br/>
 
+<openmrs:hasPrivilege  privilege="Delete Observations">
 <c:if test="${not obs.voided && not empty obs.obsId}">
 	<form action="" method="post">
 		<fieldset>
@@ -560,6 +561,7 @@
 		</fieldset>
 	</form>
 </c:if>
+</openmrs:hasPrivilege>
 
 <c:if test="${obs.obsId != null}">
 <br/>
