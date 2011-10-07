@@ -20,7 +20,7 @@
         <many-to-one name="attributeType" class="VisitAttributeType" not-null="true" column="attribute_type_id" />
         
         <!-- TODO CHECK LENGTH -->
-        <property name="serializedValue" type="text" not-null="true" column="serialized_value" length="16777215" />
+        <property name="valueReference" type="text" not-null="true" column="value_reference" length="16777215" />
         
         <many-to-one name="creator" class="User" not-null="true" column="creator" />
         

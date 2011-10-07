@@ -21,7 +21,7 @@ import org.openmrs.attribute.BaseAttribute;
  * @see Attribute
  * @since 1.9
  */
-public class LocationAttribute extends BaseAttribute<Location> implements Attribute<Location> {
+public class LocationAttribute extends BaseAttribute<LocationAttributeType, Location> implements Attribute<LocationAttributeType, Location> {
 	
 	private Integer locationAttributeId;
 	

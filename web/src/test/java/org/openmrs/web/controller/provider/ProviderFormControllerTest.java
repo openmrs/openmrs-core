@@ -50,11 +50,10 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 		providerAttributeType.setName("provider joined date");
 		MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
 		mockHttpServletRequest.setParameter("attribute." + providerAttributeType.getId(), "2011-04-25");
-		ServletWebRequest mockWebRequest = new ServletWebRequest(mockHttpServletRequest);
 		BindException errors = new BindException(provider, "provider");
 		ProviderFormController providerFormController = (ProviderFormController) applicationContext
 		        .getBean("providerFormController");
-		providerFormController.onSubmit(mockWebRequest, "save", null, null, true, provider, errors,
+		providerFormController.onSubmit(mockHttpServletRequest, "save", null, null, true, provider, errors,
 		    createModelMap(providerAttributeType));
 		Assert.assertFalse(((ProviderAttribute) (provider.getAttributes().toArray()[0])).getVoided());
 		Assert.assertEquals(1, provider.getAttributes().size());
@@ -75,12 +74,11 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 		providerAttributeType.setName("provider type");
 		MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
 		//If value is not set then void all the attributes.
-		mockHttpServletRequest.setParameter("attribute." + providerAttributeType.getId(), "");
-		ServletWebRequest mockWebRequest = new ServletWebRequest(mockHttpServletRequest);
+		mockHttpServletRequest.setParameter("attribute." + providerAttributeType.getId() + ".existing[1]", "");
 		BindException errors = new BindException(provider, "provider");
 		ProviderFormController visitFormController = (ProviderFormController) applicationContext
 		        .getBean("providerFormController");
-		visitFormController.onSubmit(mockWebRequest, "save", null, null, true, provider, errors,
+		visitFormController.onSubmit(mockHttpServletRequest, "save", null, null, true, provider, errors,
 		    createModelMap(providerAttributeType));
 		Assert.assertEquals(1, provider.getAttributes().size());
 		Assert.assertTrue(((ProviderAttribute) (provider.getAttributes().toArray()[0])).isVoided());

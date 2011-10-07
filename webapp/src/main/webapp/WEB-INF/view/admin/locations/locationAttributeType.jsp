@@ -80,13 +80,36 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="AttributeType.datatype"/></td>
+		<td><spring:message code="AttributeType.datatypeClassname"/></td>
 		<td>
-			<spring:bind path="attributeType.datatype">
-				<select name="datatype">
+			<spring:bind path="attributeType.datatypeClassname">
+				<select name="datatypeClassname">
 					<option value=""></option>
 					<c:forEach items="${datatypes}" var="datatype">
-						<option value="${datatype}" <c:if test="${datatype == status.value}">selected</c:if>>${datatype}</option>
+						<option value="${datatype}" <c:if test="${datatype == status.value}">selected</c:if>><spring:message code="${datatype}.name"/></option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>	
+	<tr>
+		<td><spring:message code="AttributeType.datatypeConfig"/></td>
+		<td>
+			<spring:bind path="attributeType.datatypeConfig">
+				<textarea name="datatypeConfig" rows="3" cols="40" >${status.value}</textarea>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="AttributeType.preferredHandlerClassname"/></td>
+		<td>
+			<spring:bind path="attributeType.preferredHandlerClassname">
+				<select name="preferredHandlerClassname">
+					<option value=""><spring:message code="general.default"/></option>
+					<c:forEach items="${handlers}" var="handler">
+						<option value="${handler}" <c:if test="${handler == status.value}">selected</c:if>><spring:message code="${handler}.name"/></option>
 					</c:forEach>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -101,7 +124,7 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
-	</tr>	
+	</tr>
 	<c:if test="${ not empty attributeType.creator }">
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>

@@ -4332,6 +4332,8 @@
 	</changeSet>
 	
     <changeSet id="20110425-1600-create-visit-attribute-type-table" author="djazayeri" dbms="mysql">
+    	<validCheckSum>3:fbdd2c69187f89a0abc7f27ee138441a</validCheckSum>
+    	<validCheckSum>3:3cf419ea9657f9a072881cafb2543d77</validCheckSum>
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="visit_attribute_type"/></not>
         </preConditions>
@@ -4343,6 +4345,8 @@
             <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
             <column name="description" type="varchar(1024)"/>
             <column name="datatype" type="varchar(255)" />
+            <column name="datatype_config" type="text" />
+            <column name="preferred_handler" type="varchar(255)" />
             <column name="handler_config" type="text" />
             <column name="min_occurs" type="int"><constraints nullable="false" /></column>
             <column name="max_occurs" type="int"></column>
@@ -4376,6 +4380,19 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
+		
+	<changeSet id="201110051353-fix-visit-attribute-type-columns" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="visit_attribute_type" columnName="datatype_config"/></not>
+		</preConditions>
+		<comment>Refactoring visit_attribute_type table (devs only)</comment>
+		<addColumn tableName="visit_attribute_type">
+			<column name="datatype_config" type="text" />
+		</addColumn>
+		<addColumn tableName="visit_attribute_type">
+			<column name="preferred_handler" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
 
     <changeSet id="20110425-1700-create-visit-attribute-table" author="djazayeri" dbms="mysql">
         <preConditions onFail="MARK_RAN">
@@ -4388,7 +4405,7 @@
             </column>
             <column name="visit_id" type="int"><constraints nullable="false" /></column>
             <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
-            <column name="serialized_value" type="text" />
+            <column name="value_reference" type="text"><constraints nullable="false" /></column>
             <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
             <column name="creator" type="int"><constraints nullable="false"/></column>
             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
@@ -4504,6 +4521,8 @@
 	</changeSet>
 
 	<changeSet id="20110817-1544-create-location-attribute-type-table" author="djazayeri" dbms="mysql">
+		<validCheckSum>3:fb309279a3ba9fda3358361cf02244a8</validCheckSum>
+		<validCheckSum>3:41fa30c01ec2d1107beccb8126146464</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="location_attribute_type" />
@@ -4519,7 +4538,9 @@
 			</column>
 			<column name="description" type="varchar(1024)" />
 			<column name="datatype" type="varchar(255)" />
-			<column name="handler_config" type="text" />
+            <column name="datatype_config" type="text" />
+            <column name="preferred_handler" type="varchar(255)" />
+            <column name="handler_config" type="text" />
 			<column name="min_occurs" type="int">
 				<constraints nullable="false" />
 			</column>
@@ -4560,6 +4581,20 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
+	
+	<changeSet id="201110072042-fix-location-attribute-type-columns" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="location_attribute_type" columnName="datatype_config"/></not>
+		</preConditions>
+		<comment>Refactoring location_attribute_type table (devs only)</comment>
+		<addColumn tableName="location_attribute_type">
+			<column name="datatype_config" type="text" />
+		</addColumn>
+		<addColumn tableName="location_attribute_type">
+			<column name="preferred_handler" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+	
 
     <changeSet id="20110817-1601-create-location-attribute-table" author="djazayeri">
         <preConditions onFail="MARK_RAN">
@@ -4572,7 +4607,7 @@
             </column>
             <column name="location_id" type="int"><constraints nullable="false" /></column>
             <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
-            <column name="serialized_value" type="text" />
+            <column name="value_reference" type="text"><constraints nullable="false" /></column>
             <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
             <column name="creator" type="int"><constraints nullable="false"/></column>
             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
@@ -5701,6 +5736,8 @@
  	</changeSet>
   	
      <changeSet id="20110510-11702-create-provider-attribute-type-table" author="zabil">
+     	 <validCheckSum>3:d96f09404f0aeea2956206b8941c55d0</validCheckSum>
+     	 <validCheckSum>3:dabb301881068d6f011eeefb026c46a7</validCheckSum>
          <preConditions onFail="MARK_RAN">
              <not><tableExists tableName="provider_attribute_type"/></not>
          </preConditions>
@@ -5712,6 +5749,8 @@
              <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
              <column name="description" type="varchar(1024)"/>
              <column name="datatype" type="varchar(255)" />
+             <column name="datatype_config" type="text" />
+             <column name="preferred_handler" type="varchar(255)" />
              <column name="handler_config" type="text" />
              <column name="min_occurs" type="int"><constraints nullable="false" /></column>
              <column name="max_occurs" type="int"></column>
@@ -5738,6 +5777,19 @@
              referencedColumnNames="user_id" />
      </changeSet>
      
+     <changeSet id="201110072043-fix-provider-attribute-type-columns" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="provider_attribute_type" columnName="datatype_config"/></not>
+		</preConditions>
+		<comment>Refactoring provider_attribute_type table (devs only)</comment>
+		<addColumn tableName="provider_attribute_type">
+			<column name="datatype_config" type="text" />
+		</addColumn>
+		<addColumn tableName="provider_attribute_type">
+			<column name="preferred_handler" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+     
      <changeSet id="20110628-1400-create-provider-attribute-table" author="kishoreyekkanti">
          <preConditions onFail="MARK_RAN">
              <not><tableExists tableName="provider_attribute"/></not>
@@ -5749,7 +5801,7 @@
              </column>
              <column name="provider_id" type="int"><constraints nullable="false" /></column>
              <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
-             <column name="serialized_value" type="text"><constraints nullable="false" /></column>
+             <column name="value_reference" type="text"><constraints nullable="false" /></column>
              <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
              <column name="creator" type="int"><constraints nullable="false"/></column>
              <column name="date_created" type="datetime"><constraints nullable="false"/></column>

@@ -13,11 +13,12 @@
  */
 package org.openmrs.web.controller.location;
 
-import java.util.Set;
+import java.util.Collection;
 
 import org.openmrs.LocationAttributeType;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.validator.LocationAttributeTypeValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
@@ -38,8 +39,13 @@ import org.springframework.web.context.request.WebRequest;
 public class LocationAttributeTypeFormController {
 	
 	@ModelAttribute("datatypes")
-	public Set<String> getDatatypes() {
-		return Context.getAttributeService().getDatatypes();
+	public Collection<String> getDatatypes() {
+		return CustomDatatypeUtil.getDatatypeClassnames();
+	}
+	
+	@ModelAttribute("handlers")
+	public Collection<String> getHandlers() {
+		return CustomDatatypeUtil.getHandlerClassnames();
 	}
 	
 	/**

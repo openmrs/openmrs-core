@@ -91,7 +91,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	private VisitAttribute makeAttribute(String serializedValue) {
 		VisitAttribute attr = new VisitAttribute();
 		attr.setAttributeType(service.getVisitAttributeType(1));
-		attr.setSerializedValue(serializedValue);
+		attr.setValueReference(serializedValue);
 		return attr;
 	}
 	

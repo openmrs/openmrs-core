@@ -11,50 +11,43 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.attribute;
+package org.openmrs.customdatatype;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+
+import org.openmrs.attribute.Attribute;
 
 /**
  * Marker interface for classes that may be customized by the user by adding custom attributes, e.g. Visit
  * has VisitAttributes, so it implements {@link Customizable}<VisitAttribute>
- * @param <AttrClass> the type of attribute held
+ * @param <A> the type of attribute held
  * @since 1.9
  */
-public interface Customizable<AttrClass extends Attribute> {
+@SuppressWarnings("rawtypes")
+public interface Customizable<A extends Attribute> {
 	
 	/**
 	 * @return all attributes (including voided ones)
 	 */
-	Collection<AttrClass> getAttributes();
+	Collection<A> getAttributes();
 	
 	/**
 	 * @return non-voided attributes
 	 */
-	List<AttrClass> getActiveAttributes();
+	Collection<A> getActiveAttributes();
 	
 	/**
 	 * @param ofType
 	 * @return non-voided attributes of the given type
 	 */
-	List<AttrClass> getActiveAttributes(AttributeType<?> ofType);
+	List<A> getActiveAttributes(CustomValueDescriptor ofType);
 	
 	/**
-	 * Adds an attribute. Will fail if this would cause the holder to have an invalid number of attributes
-	 * of the given type.
+	 * Adds an attribute.
 	 * 
 	 * @param attribute
 	 */
-	void addAttribute(AttrClass attribute);
-	
-	/**
-	 * Sets an attribute, voiding any existing attributes on the holder of the same attribute type. Will
-	 * fail if the relevant attribute type requires more than one value.
-	 * 
-	 * @param attribute
-	 */
-	void setAttribute(AttrClass attribute);
+	void addAttribute(A attribute);
 	
 }

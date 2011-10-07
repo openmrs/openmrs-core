@@ -27,6 +27,7 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.StringUtils;
@@ -152,7 +153,8 @@ public class ProviderAttributeTypeFormController extends SimpleFormController {
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("datatypes", Context.getAttributeService().getDatatypes());
+		map.put("datatypes", CustomDatatypeUtil.getDatatypeClassnames());
+		map.put("handlers", CustomDatatypeUtil.getHandlerClassnames());
 		
 		return map;
 	}

@@ -208,7 +208,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	private ProviderAttribute makeAttribute(String serializedValue) {
 		ProviderAttribute attr = new ProviderAttribute();
 		attr.setAttributeType(providerService.getProviderAttributeType(1));
-		attr.setSerializedValue(serializedValue);
+		attr.setValueReference(serializedValue);
 		return attr;
 	}
 	

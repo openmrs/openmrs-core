@@ -1381,3 +1381,6 @@ tr.headerRow{
 .verbose{
 	text-align: left; padding-left: 15px;
 }
+table.left-aligned-th th {
+	text-align: left
+}

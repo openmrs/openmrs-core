@@ -1,4 +1,7 @@
-<%@tag import="org.openmrs.web.attribute.handler.FieldGenAttributeHandler"%>
+<%@tag import="org.openmrs.customdatatype.CustomDatatypeHandler"%>
+<%@tag import="org.openmrs.customdatatype.CustomDatatype"%>
+<%@tag import="org.openmrs.customdatatype.CustomDatatypeUtil"%>
+<%@tag import="org.openmrs.web.attribute.handler.FieldGenDatatypeHandler"%>
 <%@tag import="java.util.Map"%>
 <%@tag import="org.openmrs.api.context.Context"%>
 
@@ -7,17 +10,15 @@
 You must specify either attributeType or handler.
 You must specify formFieldName
 --%>
-<%@ attribute name="handler" required="false" type="org.openmrs.attribute.handler.AttributeHandler" %>
 <%@ attribute name="attributeType" required="false" type="org.openmrs.attribute.AttributeType" %>
 <%@ attribute name="value" required="false" type="org.openmrs.attribute.Attribute" %>
 <%@ attribute name="formFieldName" required="true" type="java.lang.String" %>
 <%
-if (attributeType != null) {
-	handler = Context.getAttributeService().getHandler(attributeType);
-}
-%>
-<% if (handler instanceof FieldGenAttributeHandler) {
-    FieldGenAttributeHandler<?> h = (FieldGenAttributeHandler) handler;
+//CustomDatatype dt = CustomDatatypeUtil.getDatatype(attributeType);
+CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(attributeType);
+
+if (handler instanceof FieldGenDatatypeHandler) {
+    FieldGenDatatypeHandler h = (FieldGenDatatypeHandler) handler;
     String widgetName = h.getWidgetName();
     Map<String, Object> widgetConfig = h.getWidgetConfiguration();
 %>
@@ -30,7 +31,7 @@ if (attributeType != null) {
 <% } else {
 	String valueAsString = "";
 	if (value != null)
-		valueAsString = value.getSerializedValue();
+		valueAsString = value.getValueReference();
 %>
     <input type="text" name="${ formFieldName }" value="<%= valueAsString %>"/>
 <% } %>

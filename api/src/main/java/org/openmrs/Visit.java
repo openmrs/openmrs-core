@@ -16,7 +16,7 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Set;
 
-import org.openmrs.attribute.Customizable;
+import org.openmrs.customdatatype.Customizable;
 
 /**
  * A 'visit' is a contiguous time period where encounters occur between patients and healthcare

@@ -760,22 +760,22 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws APIException {
 		return dao.getEncountersNotAssignedToAnyVisit(patient);
 	}
-
+	
 	/**
-     * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatient(org.openmrs.Patient, boolean, java.lang.String, java.lang.Integer, java.lang.Integer)
-     */
-    @Override
-    public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
-                                                           Integer start, Integer length) throws APIException {
-	    return dao.getEncountersByVisitsAndPatient(patient, includeVoided, query, start, length);
-    }
-
+	 * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatient(org.openmrs.Patient, boolean, java.lang.String, java.lang.Integer, java.lang.Integer)
+	 */
+	@Override
+	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
+	        Integer start, Integer length) throws APIException {
+		return dao.getEncountersByVisitsAndPatient(patient, includeVoided, query, start, length);
+	}
+	
 	/**
-     * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatientCount(org.openmrs.Patient, boolean, java.lang.String)
-     */
-    @Override
-    public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query)
-        throws APIException {
-	    return dao.getEncountersByVisitsAndPatientCount(patient, includeVoided, query);
-    }
+	 * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatientCount(org.openmrs.Patient, boolean, java.lang.String)
+	 */
+	@Override
+	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query)
+	        throws APIException {
+		return dao.getEncountersByVisitsAndPatientCount(patient, includeVoided, query);
+	}
 }

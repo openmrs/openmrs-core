@@ -33,6 +33,7 @@ import org.openmrs.Location;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.datatype.FreeText;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
@@ -1073,7 +1074,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(2, Context.getLocationService().getAllLocationAttributeTypes().size());
 		LocationAttributeType lat = new LocationAttributeType();
 		lat.setName("Another one");
-		lat.setDatatype("string");
+		lat.setDatatypeClassname(FreeText.class.getName());
 		Context.getLocationService().saveLocationAttributeType(lat);
 		Assert.assertNotNull(lat.getId());
 		Assert.assertEquals(3, Context.getLocationService().getAllLocationAttributeTypes().size());
@@ -1124,7 +1125,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 		LocationService service = Context.getLocationService();
 		Assert.assertEquals("2011-04-25", service.getLocationAttributeByUuid("3a2bdb18-6faa-11e0-8414-001e378eb67e")
-		        .getSerializedValue());
+		        .getValueReference());
 	}
 	
 	/**

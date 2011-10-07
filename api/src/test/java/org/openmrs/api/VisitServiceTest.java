@@ -38,6 +38,7 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.datatype.FreeText;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -269,7 +270,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		VisitAttribute visitAttribute = new VisitAttribute();
 		VisitAttributeType attributeType = Context.getVisitService().getVisitAttributeType(1);
 		attributeType.setName("visit type");
-		visitAttribute.setSerializedValue("first visit");
+		visitAttribute.setValueReference("first visit");
 		visitAttribute.setAttributeType(attributeType);
 		return visitAttribute;
 	}
@@ -300,7 +301,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		VisitAttribute visitAttribute = new VisitAttribute();
 		VisitAttributeType attributeType = Context.getVisitService().getVisitAttributeType(1);
 		attributeType.setName("visit type");
-		visitAttribute.setSerializedValue(serializedValue);
+		visitAttribute.setValueReference(serializedValue);
 		visitAttribute.setCreator(user);
 		visitAttribute.setDateCreated(new Date());
 		visitAttribute.setAttributeType(attributeType);
@@ -642,7 +643,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(3, service.getAllVisitAttributeTypes().size());
 		VisitAttributeType vat = new VisitAttributeType();
 		vat.setName("Another one");
-		vat.setDatatype("string");
+		vat.setDatatypeClassname(FreeText.class.getName());
 		service.saveVisitAttributeType(vat);
 		Assert.assertNotNull(vat.getId());
 		Assert.assertEquals(4, service.getAllVisitAttributeTypes().size());
@@ -690,7 +691,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void getVisitAttributeByUuid_shouldGetTheVisitAttributeWithTheGivenUuid() throws Exception {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
 		Assert.assertEquals("2011-04-25", service.getVisitAttributeByUuid("3a2bdb18-6faa-11e0-8414-001e378eb67e")
-		        .getSerializedValue());
+		        .getValueReference());
 	}
 	
 	/**
@@ -783,7 +784,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		VisitAttributeType attrType = service.getVisitAttributeType(1);
 		VisitAttribute attr = new VisitAttribute();
 		attr.setAttributeType(attrType);
-		attr.setObjectValue(new Date());
+		attr.setValue(new Date());
 		visit.addAttribute(attr);
 		service.saveVisit(visit);
 	}

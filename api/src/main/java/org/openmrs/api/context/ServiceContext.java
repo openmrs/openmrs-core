@@ -28,10 +28,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.AttributeService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DataSetService;
+import org.openmrs.api.DatatypeService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
@@ -266,14 +266,6 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * @return attribute-related services
-	 * @since 1.9
-	 */
-	public AttributeService getAttributeService() {
-		return getService(AttributeService.class);
-	}
-	
-	/**
 	 * @return programWorkflowService
 	 */
 	public ProgramWorkflowService getProgramWorkflowService() {
@@ -381,14 +373,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setAdministrationService(AdministrationService administrationService) {
 		setService(AdministrationService.class, administrationService);
-	}
-	
-	/**
-	 * @param attributeService the attributeService to set
-	 * @since 1.9
-	 */
-	public void setAttributeService(AttributeService attributeService) {
-		setService(AttributeService.class, attributeService);
 	}
 	
 	/**
@@ -1026,6 +1010,27 @@ public class ServiceContext implements ApplicationContextAware {
 	 **/
 	public void setProviderService(ProviderService providerService) {
 		setService(ProviderService.class, providerService);
+	}
+	
+	/**
+	 * Gets the datatype service
+	 * 
+	 * @return custom datatype service
+	 * @since 1.9
+	 */
+	public DatatypeService getDatatypeService() {
+		return getService(DatatypeService.class);
+	}
+	
+	/**
+	 * Sets the datatype service
+	 * 
+	 * @param datatypeService the datatypeService to set
+	 * @since 1.9
+	 * 
+	 */
+	public void setDatatypeService(DatatypeService datatypeService) {
+		setService(DatatypeService.class, datatypeService);
 	}
 	
 }

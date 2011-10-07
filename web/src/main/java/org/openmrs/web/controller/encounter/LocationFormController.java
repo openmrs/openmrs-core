@@ -31,8 +31,6 @@ import org.openmrs.LocationTag;
 import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.attribute.Attribute;
-import org.openmrs.attribute.Customizable;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.LocationTagEditor;
 import org.openmrs.util.MetadataComparator;
