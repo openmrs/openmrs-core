@@ -14,44 +14,61 @@
 		</id>
 
 		<discriminator column="visit_id" insert="false" />
-		
-		<property name="startDatetime" type="java.util.Date" column="date_started" not-null="true" length="19" />
-		
-		<property name="stopDatetime" type="java.util.Date" column="date_stopped" length="19" />
-		
-		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
-		
-		<property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true" />
-		
-		<property name="dateVoided" type="java.util.Date" column="date_voided" length="19" />
-		
-		<property name="voidReason" type="java.lang.String" column="void_reason" length="255" />
-		
-		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
-		
-		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
-		
+
+		<property name="startDatetime" type="java.util.Date" column="date_started"
+			not-null="true" length="19" />
+
+		<property name="stopDatetime" type="java.util.Date" column="date_stopped"
+			length="19" />
+
+		<property name="dateCreated" type="java.util.Date" column="date_created"
+			not-null="true" length="19" />
+
+		<property name="voided" type="java.lang.Boolean" column="voided"
+			length="1" not-null="true" />
+
+		<property name="dateVoided" type="java.util.Date" column="date_voided"
+			length="19" />
+
+		<property name="voidReason" type="java.lang.String" column="void_reason"
+			length="255" />
+
+		<property name="dateChanged" type="java.util.Date" column="date_changed"
+			length="19" />
+
+		<property name="uuid" type="java.lang.String" column="uuid"
+			length="38" unique="true" />
+
 		<!-- Associations -->
 
-		<many-to-one name="visitType" class="VisitType"	not-null="true" column="visit_type_id" />
-		
-		<many-to-one name="patient" class="Patient" not-null="true" column="patient_id" />
-		
-		<many-to-one name="indication" class="Concept" column="indication_concept_id" />
-		
+		<many-to-one name="visitType" class="VisitType" not-null="true"
+			column="visit_type_id" />
+
+		<many-to-one name="patient" class="Patient" not-null="true"
+			column="patient_id" />
+
+		<many-to-one name="indication" class="Concept"
+			column="indication_concept_id" />
+
 		<many-to-one name="location" class="Location" column="location_id" />
-		
-		<many-to-one name="creator" class="User" not-null="true" column="creator" />
-		
+
+		<many-to-one name="creator" class="User" not-null="true"
+			column="creator" />
+
 		<many-to-one name="changedBy" class="User" column="changed_by" />
-		
+
 		<many-to-one name="voidedBy" class="User" column="voided_by" />
-		
+
 		<set name="attributes" lazy="true" inverse="true" batch-size="100"
-            cascade="all-delete-orphan" order-by="voided asc">
-            <key column="visit_id" />
-            <one-to-many class="VisitAttribute" />
-        </set>
+			cascade="all-delete-orphan" order-by="voided asc">
+			<key column="visit_id" />
+			<one-to-many class="VisitAttribute" />
+		</set>
+
+		<set name="encounters" lazy="true" inverse="true" order-by="encounter_datetime asc">
+			<key column="visit_id" />
+			<one-to-many class="Encounter" />
+		</set>
 
 	</class>
 

@@ -41,7 +41,7 @@ public class PortletControllerUtil {
 	 * 
 	 * @param model the model to which to add the maps
 	 */
-	protected static void addFormToEditAndViewUrlMaps(Map<String, Object> model) {
+	public static void addFormToEditAndViewUrlMaps(Map<String, Object> model) {
 		if (log.isDebugEnabled())
 			log.debug("In PortletControllerUtil....");
 		

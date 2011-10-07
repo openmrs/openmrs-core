@@ -811,4 +811,14 @@ public interface EncounterService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws APIException;
+	
+	
+	@Transactional(readOnly = true)
+	@Authorized({ PrivilegeConstants.VIEW_VISITS })
+	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query, Integer start, Integer length)
+	    throws APIException;
+	
+	@Transactional(readOnly = true)
+	@Authorized({ PrivilegeConstants.VIEW_VISITS })
+	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query) throws APIException;
 }

@@ -240,4 +240,14 @@ public interface EncounterDAO {
 	 * @see EncounterService#getEncountersNotAssignedToAnyVisit(Patient)
 	 */
 	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws DAOException;
+	
+	/**
+	 * @see EncounterService#getEncountersByVisitsAndPatient(Patient, boolean, String, Date, Date)
+	 */
+	List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query, Integer start, Integer length);
+	
+	/**
+	 * @see EncounterService#getEncountersByVisitsAndPatientCount(Patient, boolean, String)
+	 */
+	Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query);
 }

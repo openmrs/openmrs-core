@@ -784,6 +784,12 @@ fieldset {
 	background-color: whitesmoke;
 }
 
+.tableGroup {
+	border-top: 1px solid #1aac9b;
+    background: #e0e0f0;
+    border-bottom: 1px solid #1aac9b;
+}
+
 .oddRow {
 	background-color: white;
 }

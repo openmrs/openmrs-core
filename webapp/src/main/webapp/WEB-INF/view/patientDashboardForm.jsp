@@ -176,22 +176,32 @@
 			
 		</div>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Patient Dashboard - View Visits Section">
-		<div id="patientVisits" style="display:none;">
+	
+	<openmrs:globalProperty key="visits.enabled" defaultValue="true" var="visitsEnabled"/>
+	<c:choose>		
+			<c:when test='${visitsEnabled}'>
+				<openmrs:hasPrivilege privilege="Patient Dashboard - View Visits Section">
+					<div id="patientVisits" style="display:none;">
+						
+						<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.VisitsTabHeader" type="html" parameters="patientId=${patient.patientId}" />
+						<openmrs:portlet url="patientVisits" id="patientDashboardVisits" patientId="${patient.patientId}" />
+						
+					</div>
+				</openmrs:hasPrivilege>
+			</c:when>
+			<c:otherwise>
+				<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
+					<div id="patientEncounters" style="display:none;">
+						
+						<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.EncountersTabHeader" type="html" parameters="patientId=${patient.patientId}" />
+						<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=100|showPagination=true|formEntryReturnUrl=${pageContext.request.contextPath}/patientDashboard.form"/>
+						
+					</div>
+				</openmrs:hasPrivilege>
+			</c:otherwise>
 			
-			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.VisitsTabHeader" type="html" parameters="patientId=${patient.patientId}" />
-			<openmrs:portlet url="patientVisits" id="patientDashboardVisits" patientId="${patient.patientId}" />
-			
-		</div>
-	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
-		<div id="patientEncounters" style="display:none;">
-			
-			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.EncountersTabHeader" type="html" parameters="patientId=${patient.patientId}" />
-			<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=100|showPagination=true|formEntryReturnUrl=${pageContext.request.contextPath}/patientDashboard.form"/>
-			
-		</div>
-	</openmrs:hasPrivilege>
+	</c:choose>
+	
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Demographics Section">
 		<div id="patientDemographics" style="display:none;">
 			
