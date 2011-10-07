@@ -13,12 +13,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Map;
+
 import org.apache.commons.collections.Predicate;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.AttributeType;
-import org.openmrs.attribute.Customizable;
-
-import java.util.Map;
+import org.openmrs.customdatatype.Customizable;
 
 /**
  * Used in conjunction with commons-collections filter to find attributes with values in the given map.
@@ -38,7 +38,7 @@ public class AttributeMatcherPredicate<T extends Customizable, AT extends Attrib
 		for (Map.Entry<AT, String> entry : serializedAttributeValues.entrySet()) {
 			for (Object attr : customizable.getActiveAttributes(entry.getKey())) {
 				Attribute attribute = (Attribute) attr;
-				if (attribute.getSerializedValue().equals(entry.getValue())) {
+				if (attribute.getValueReference().equals(entry.getValue())) {
 					return true;
 				}
 			}

@@ -1,17 +1,11 @@
 package org.openmrs.attribute;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
 import org.openmrs.BaseCustomizableData;
-import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
@@ -20,29 +14,21 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 	
-	@Test(expected = InvalidAttributeValueException.class)
+	@Test
 	public void shouldTestAttributeHandler() throws Exception {
 		Visit visit = new Visit();
 		VisitAttributeType paymentDateAttrType = new VisitAttributeType();
-		paymentDateAttrType.setDatatype("date");
+		paymentDateAttrType.setDatatypeClassname(org.openmrs.customdatatype.datatype.Date.class.getName());
 		
-		try {
-			VisitAttribute legalDate = new VisitAttribute();
-			legalDate.setAttributeType(paymentDateAttrType);
-			// try using a subclass of java.util.Date, to make sure the handler can take subclasses.
-			legalDate.setObjectValue(new java.sql.Date(new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-15").getTime()));
-			Assert.assertEquals("2011-04-15", legalDate.getSerializedValue());
-			Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-15"), legalDate.getObjectValue());
-			visit.addAttribute(legalDate);
-		}
-		catch (InvalidAttributeValueException ex) {
-			Assert.fail("should not fail on a legal date");
-		}
+		VisitAttribute legalDate = new VisitAttribute();
+		legalDate.setAttributeType(paymentDateAttrType);
+		// try using a subclass of java.util.Date, to make sure the handler can take subclasses.
+		legalDate.setValue(new java.sql.Date(new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-15").getTime()));
+		Assert.assertEquals("2011-04-15", legalDate.getValueReference());
+		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-15"), legalDate.getValue());
+		visit.addAttribute(legalDate);
+		
 		Assert.assertEquals(1, visit.getAttributes().size());
-		
-		VisitAttribute illegalDate = new VisitAttribute();
-		illegalDate.setAttributeType(paymentDateAttrType);
-		illegalDate.setObjectValue(new Date(System.currentTimeMillis() + 100000));
 	}
 	
 	/**
@@ -83,7 +69,7 @@ public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 	/**
 	 * Attribute value for the parent class
 	 */
-	class VisitAttribute extends BaseAttribute<Visit> {
+	class VisitAttribute extends BaseAttribute<VisitAttributeType, Visit> {
 		
 		@Override
 		public Integer getId() {

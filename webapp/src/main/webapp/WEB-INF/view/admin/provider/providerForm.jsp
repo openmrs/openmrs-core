@@ -109,17 +109,24 @@ function toggleProviderDetails(){
 			</c:otherwise>
 			</c:choose>
 
+			<spring:bind path="provider.activeAttributes">
+				<c:if test="${status.error}">
+					<tr>
+						<th></th>
+						<td>
+							<span class="error">
+								<c:forEach var="err" items="${status.errorMessages}">
+									${ err }<br/>
+								</c:forEach>
+							</span>
+						</td>
+					</tr>
+				</c:if>
+			</spring:bind>
             <c:if test="${ not empty providerAttributeTypes }">
-    			<tr valign="top">
-    			    <th class="visitLabel"><spring:message code="Provider.attributes" /></th>
-	               	<td>
-			            <table>
-			                <c:forEach var="attrType" items="${ providerAttributeTypes }">
-			                   <openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ provider }" formFieldNamePrefix="attribute.${ attrType.providerAttributeTypeId }"/>
-			                </c:forEach>
-			            </table>
-			        </td>
-			    </tr>
+				<c:forEach var="attrType" items="${ providerAttributeTypes }">
+					<openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ provider }" formFieldNamePrefix="attribute.${ attrType.providerAttributeTypeId }"/>
+				</c:forEach>
 			</c:if>
 
 		</table>

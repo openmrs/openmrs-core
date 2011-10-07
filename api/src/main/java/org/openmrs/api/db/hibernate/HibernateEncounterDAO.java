@@ -102,9 +102,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createAlias("patient", "p")
-		        .add(Expression.eq("p.patientId", patientId)).add(Expression.eq("voided", false))
-		        .addOrder(Order.desc("encounterDatetime"));
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createAlias("patient", "p").add(
+		    Expression.eq("p.patientId", patientId)).add(Expression.eq("voided", false)).addOrder(
+		    Order.desc("encounterDatetime"));
 		
 		return crit.list();
 	}
@@ -117,9 +117,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
-	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-	                                     Collection<Provider> providers, Collection<VisitType> visitTypes,
-	                                     Collection<Visit> visits, boolean includeVoided) {
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
+	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		
@@ -215,9 +214,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	@SuppressWarnings("unchecked")
 	public List<EncounterType> findEncounterTypes(String name) throws DAOException {
 		return sessionFactory.getCurrentSession().createCriteria(EncounterType.class)
-		        // 'ilike' case insensitive search
-		        .add(Expression.ilike("name", name, MatchMode.START)).addOrder(Order.asc("name"))
-		        .addOrder(Order.asc("retired")).list();
+		// 'ilike' case insensitive search
+		        .add(Expression.ilike("name", name, MatchMode.START)).addOrder(Order.asc("name")).addOrder(
+		            Order.asc("retired")).list();
 	}
 	
 	/**
@@ -434,8 +433,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	@Override
 	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws DAOException {
 		return sessionFactory.getCurrentSession().createCriteria(Encounter.class).add(Restrictions.eq("patient", patient))
-		        .add(Restrictions.isNull("visit")).add(Restrictions.eq("voided", false))
-		        .addOrder(Order.desc("encounterDatetime")).setMaxResults(100).list();
+		        .add(Restrictions.isNull("visit")).add(Restrictions.eq("voided", false)).addOrder(
+		            Order.desc("encounterDatetime")).setMaxResults(100).list();
 	}
 	
 	/**
@@ -444,7 +443,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
-	                                                       Integer start, Integer length) {
+	        Integer start, Integer length) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		addEncountersByPatientCriteria(criteria, patient, includeVoided, query);
 		

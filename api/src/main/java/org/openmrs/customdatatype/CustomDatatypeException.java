@@ -11,32 +11,30 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.attribute;
+package org.openmrs.customdatatype;
 
 import org.openmrs.api.APIException;
 
 /**
- * Exception thrown when trying to convert between a serialized attribute value and its typed value, if the
- * serialized String is not a legal value for the given handler.
- * @since 1.9
+ * Exception related to {@link CustomDatatype} or {@link CustomDatatypeHandler}
  */
-public class InvalidAttributeValueException extends APIException {
+public class CustomDatatypeException extends APIException {
 	
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * @param message
+	 * @param string
 	 */
-	public InvalidAttributeValueException(String message) {
-		super(message);
+	public CustomDatatypeException(String msg) {
+		super(msg);
 	}
 	
 	/**
-	 * @param message
-	 * @param cause
+	 * @param string
+	 * @param ex
 	 */
-	public InvalidAttributeValueException(String message, Throwable cause) {
-		super(message, cause);
+	public CustomDatatypeException(String msg, Exception cause) {
+		super(msg, cause);
 	}
 	
 }

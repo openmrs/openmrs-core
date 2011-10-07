@@ -27,13 +27,16 @@ import org.openmrs.api.context.Context;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttribute;
-import org.openmrs.attribute.Customizable;
-import org.openmrs.attribute.handler.AttributeHandler;
-import org.openmrs.web.attribute.handler.FieldGenAttributeHandler;
+import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.customdatatype.CustomDatatypeHandler;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.Customizable;
+import org.openmrs.web.attribute.handler.FieldGenDatatypeHandler;
 import org.springframework.validation.BindingResult;
 
 /**
  * Web-layer utility methods related to customizable {@link Attribute}s
+ * @since 1.9
  */
 public class WebAttributeUtil {
 	
@@ -45,16 +48,19 @@ public class WebAttributeUtil {
 	 * @param paramName
 	 * @return
 	 */
-	public static <T> T getValue(HttpServletRequest request, AttributeHandler<T> handler, String paramName) {
-		if (handler instanceof FieldGenAttributeHandler) {
-			return ((FieldGenAttributeHandler<T>) handler).getValue(request, paramName);
-		} else {
-			String submittedValue = request.getParameter(paramName);
-			if (StringUtils.isNotEmpty(submittedValue)) // check empty instead of blank, because " " is meaningful
-				return handler.deserialize(submittedValue);
-			else
-				return null;
+	public static <T> T getValue(HttpServletRequest request, CustomDatatype<T> dt,
+	        CustomDatatypeHandler<CustomDatatype<T>, T> handler, String paramName) {
+		if (handler != null) {
+			if (handler instanceof FieldGenDatatypeHandler) {
+				return ((FieldGenDatatypeHandler<CustomDatatype<T>, T>) handler).getValue(dt, request, paramName);
+			}
 		}
+		
+		String submittedValue = request.getParameter(paramName);
+		if (StringUtils.isNotEmpty(submittedValue)) // check empty instead of blank, because " " is meaningful
+			return dt.fromReferenceString(submittedValue);
+		else
+			return null;
 	}
 	
 	/**
@@ -81,7 +87,7 @@ public class WebAttributeUtil {
 	 * @param existingAttributeId
 	 * @return
 	 */
-	private static <T extends Attribute<?>> T findAttributeById(Customizable<T> owner, Integer existingAttributeId) {
+	private static <T extends Attribute<?, ?>> T findAttributeById(Customizable<T> owner, Integer existingAttributeId) {
 		for (T candidate : owner.getActiveAttributes())
 			if (candidate.getId().equals(existingAttributeId))
 				return candidate;
@@ -93,7 +99,7 @@ public class WebAttributeUtil {
 	 * 
 	 * @param existing
 	 */
-	private static void voidAttribute(Attribute<?> existing) {
+	private static void voidAttribute(Attribute<?, ?> existing) {
 		existing.setVoided(true);
 		existing.setVoidedBy(Context.getAuthenticatedUser());
 		existing.setDateVoided(new Date());
@@ -114,7 +120,8 @@ public class WebAttributeUtil {
 		// TODO figure out if this toVoid thing is still relevant
 		List<AttributeClass> toVoid = new ArrayList<AttributeClass>(); // a bit of a hack to avoid voiding things if there are errors
 		for (AttributeType<?> attrType : attributeTypes) {
-			AttributeHandler<?> handler = Context.getAttributeService().getHandler(attrType);
+			CustomDatatype dt = CustomDatatypeUtil.getDatatype(attrType);
+			CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(attrType);
 			// Look for parameters starting with "attribute.${ attrType.id }". They may be either of: 
 			// * attribute.${ attrType.id }.new[${ meaningless int }]
 			// * attribute.${ attrType.id }.existing[${ existingAttribute.id }]
@@ -123,10 +130,9 @@ public class WebAttributeUtil {
 				String paramName = iter.nextElement();
 				if (paramName.startsWith("attribute." + attrType.getId())) {
 					String afterPrefix = paramName.substring(("attribute." + attrType.getId()).length());
-					//String paramValue = request.getParameter(paramName);
 					Object valueAsObject;
 					try {
-						valueAsObject = getValue(request, handler, paramName);
+						valueAsObject = getValue(request, dt, handler, paramName);
 					}
 					catch (Exception ex) {
 						errors.rejectValue("activeAttributes", "attribute.error.invalid",
@@ -144,7 +150,7 @@ public class WebAttributeUtil {
 								throw new RuntimeException(ex);
 							}
 							attr.setAttributeType(attrType);
-							attr.setObjectValue(valueAsObject);
+							attr.setValue(valueAsObject);
 							owner.addAttribute(attr);
 						}
 						
@@ -157,7 +163,7 @@ public class WebAttributeUtil {
 						if (valueAsObject == null) {
 							// they changed an existing value to "", so we void that attribute
 							toVoid.add(existing);
-						} else if (!existing.getObjectValue().equals(valueAsObject)) {
+						} else if (!existing.getValue().equals(valueAsObject)) {
 							// they changed an existing value to a new value
 							toVoid.add(existing);
 							AttributeClass newVal;
@@ -168,7 +174,7 @@ public class WebAttributeUtil {
 								throw new RuntimeException(ex);
 							}
 							newVal.setAttributeType(attrType);
-							newVal.setObjectValue(valueAsObject);
+							newVal.setValue(valueAsObject);
 							owner.addAttribute(newVal);
 						}
 					}
@@ -176,7 +182,7 @@ public class WebAttributeUtil {
 			}
 		}
 		
-		for (Attribute<?> attr : toVoid)
+		for (Attribute<?, ?> attr : toVoid)
 			voidAttribute(attr);
 	}
 	

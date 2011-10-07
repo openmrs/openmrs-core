@@ -244,7 +244,8 @@ public interface EncounterDAO {
 	/**
 	 * @see EncounterService#getEncountersByVisitsAndPatient(Patient, boolean, String, Date, Date)
 	 */
-	List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query, Integer start, Integer length);
+	List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query, Integer start,
+	        Integer length);
 	
 	/**
 	 * @see EncounterService#getEncountersByVisitsAndPatientCount(Patient, boolean, String)

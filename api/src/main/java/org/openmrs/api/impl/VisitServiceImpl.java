@@ -16,7 +16,6 @@ package org.openmrs.api.impl;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,13 +27,10 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AttributeService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.VisitDAO;
-import org.openmrs.attribute.AttributeType;
-import org.openmrs.attribute.AttributeUtil;
-import org.openmrs.attribute.BaseAttributeType;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
 import org.openmrs.validator.VisitValidator;
@@ -204,8 +200,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues,
 	        boolean includeInactive, boolean includeVoided) throws APIException {
 		
-		Map<VisitAttributeType, String> serializedAttributeValues = AttributeUtil
-		        .getSerializedAttributeValues(attributeValues);
+		Map<VisitAttributeType, String> serializedAttributeValues = CustomDatatypeUtil.getValueReferences(attributeValues);
 		return dao.getVisits(visitTypes, patients, locations, indications, minStartDatetime, maxStartDatetime,
 		    minEndDatetime, maxEndDatetime, serializedAttributeValues, includeInactive, includeVoided);
 	}

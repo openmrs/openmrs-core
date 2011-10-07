@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.attribute.AttributeType;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
@@ -47,7 +46,7 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 		Provider provider = new Provider();
 		provider.setIdentifier("test");
 		provider.setName("test provider");
-		AttributeType<Provider> providerAttributeType = service.getProviderAttributeType(3);
+		ProviderAttributeType providerAttributeType = service.getProviderAttributeType(3);
 		provider.setAttribute(createProviderAttribute(providerAttributeType, "bangalore"));
 		provider.setAttribute(createProviderAttribute(providerAttributeType, "chennai"));
 		Assert.assertEquals(1, provider.getAttributes().size());
@@ -59,11 +58,11 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(lastAttribute.getVoided());
 	}
 	
-	private ProviderAttribute createProviderAttribute(AttributeType<Provider> providerAttributeType, Object value)
+	private ProviderAttribute createProviderAttribute(ProviderAttributeType providerAttributeType, Object value)
 	        throws Exception {
 		ProviderAttribute providerAttribute = new ProviderAttribute();
 		providerAttribute.setAttributeType(providerAttributeType);
-		providerAttribute.setSerializedValue(value.toString());
+		providerAttribute.setValueReference(value.toString());
 		return providerAttribute;
 	}
 }

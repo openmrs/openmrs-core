@@ -35,9 +35,9 @@
 </spring:hasBindErrors>
 <form method="post">
 <fieldset>
-	<table>
+	<table class="left-aligned-th">
 		<tr>
-			<td><spring:message code="general.name"/></td>
+			<th><spring:message code="general.name"/></th>
 			<td colspan="5">
 				<spring:bind path="location.name">
 					<input type="text" name="name" value='<c:out value="${status.value}"/>' size="35" />
@@ -46,7 +46,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="general.description"/></td>
+			<th valign="top"><spring:message code="general.description"/></th>
 			<td valign="top" colspan="5">
 				<spring:bind path="location.description">
 					<textarea name="description" rows="3" cols="40">${status.value}</textarea>
@@ -58,7 +58,7 @@
 			<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=false|layoutShowExtended=false|layoutShowErrors=false" />
 		</spring:nestedPath>
 		<tr>
-			<td valign="top"><spring:message code="Location.parentLocation"/></td>
+			<th valign="top"><spring:message code="Location.parentLocation"/></th>
 			<td colspan="5">
 				<spring:bind path="location.parentLocation">
 					<openmrs_tag:locationField formFieldName="parentLocation" initialValue="${status.value}" optionHeader="[blank]"/>
@@ -66,27 +66,25 @@
 				</spring:bind>
 			</td>
 		</tr>
-		<tr>
-			<td valign="top"><spring:message code="Location.attributes"/></td>
-			<td colspan="5">
-				<spring:bind path="location.activeAttributes">
-					<c:if test="${status.error}">
+		<spring:bind path="location.activeAttributes">
+			<c:if test="${status.error}">
+				<tr>
+					<th></th>
+					<td colspan="5">
 						<span class="error">
 							<c:forEach var="err" items="${status.errorMessages}">
 								${ err }<br/>
 							</c:forEach>
 						</span>
-					</c:if>
-				</spring:bind>
-	            <table>
-	                <c:forEach var="attrType" items="${ attributeTypes }">
-	                   <openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ location }" formFieldNamePrefix="attribute.${ attrType.id }"/>
-	                </c:forEach>
-	            </table>
-			</td>
-		</tr>
+					</td>
+				</tr>
+			</c:if>
+		</spring:bind>
+		<c:forEach var="attrType" items="${ attributeTypes }">
+			<openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ location }" formFieldNamePrefix="attribute.${ attrType.id }"/>
+		</c:forEach>
 		<tr>
-			<td valign="top"><spring:message code="Location.tags"/></td>
+			<th valign="top"><spring:message code="Location.tags"/></th>
 			<td colspan="5">
 				<spring:bind path="location.tags">
 					<input type="hidden" name="_tags"/>
@@ -100,7 +98,7 @@
 		</tr>
 		<c:if test="${!(location.creator == null)}">
 			<tr>
-				<td><spring:message code="general.createdBy" /></td>
+				<th><spring:message code="general.createdBy" /></th>
 				<td colspan="5">
 					${location.creator.personName} -
 					<openmrs:formatDate date="${location.dateCreated}" type="long" />

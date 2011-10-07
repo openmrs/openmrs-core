@@ -22,7 +22,7 @@ import org.openmrs.attribute.BaseAttribute;
  * @see Attribute
  * @since 1.9
  */
-public class ProviderAttribute extends BaseAttribute<Provider> implements Attribute<Provider> {
+public class ProviderAttribute extends BaseAttribute<ProviderAttributeType, Provider> implements Attribute<ProviderAttributeType, Provider> {
 	
 	private Integer providerAttributeId;
 	
@@ -35,7 +35,7 @@ public class ProviderAttribute extends BaseAttribute<Provider> implements Attrib
 	}
 	
 	public Provider getProvider() {
-		return getOwner();
+		return (Provider) getOwner();
 	}
 	
 	public void setProvider(Provider provider) {

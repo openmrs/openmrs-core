@@ -14,16 +14,14 @@
 package org.openmrs.web.attribute.handler;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
-import org.openmrs.attribute.InvalidAttributeValueException;
-import org.openmrs.attribute.handler.DateAttributeHandler;
-import org.springframework.core.annotation.Order;
+import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.customdatatype.datatype.Date;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,11 +29,26 @@ import org.springframework.stereotype.Component;
  * @since 1.9
  */
 @Component
-@Order(0)
-public class DateFieldGenAttributeHandler extends DateAttributeHandler implements FieldGenAttributeHandler<Date> {
+public class DateFieldGenDatatypeHandler implements FieldGenDatatypeHandler<Date, java.util.Date> {
 	
 	/**
-	 * @see org.openmrs.web.attribute.handler.FieldGenAttributeHandler#getWidgetName()
+	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#setHandlerConfiguration(java.lang.String)
+	 */
+	@Override
+	public void setHandlerConfiguration(String arg0) {
+		// not used
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#render(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public String render(Date datatype, String persistedValue, String view) {
+		return Context.getDateFormat().format(datatype.fromReferenceString(persistedValue));
+	}
+	
+	/**
+	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getWidgetName()
 	 */
 	@Override
 	public String getWidgetName() {
@@ -43,7 +56,7 @@ public class DateFieldGenAttributeHandler extends DateAttributeHandler implement
 	}
 	
 	/**
-	 * @see org.openmrs.web.attribute.handler.FieldGenAttributeHandler#getWidgetConfiguration()
+	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getWidgetConfiguration()
 	 */
 	@Override
 	public Map<String, Object> getWidgetConfiguration() {
@@ -51,21 +64,22 @@ public class DateFieldGenAttributeHandler extends DateAttributeHandler implement
 	}
 	
 	/**
-	 * @see org.openmrs.web.attribute.handler.FieldGenAttributeHandler#getValue(javax.servlet.http.HttpServletRequest, java.lang.String)
+	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getValue(org.openmrs.customdatatype.CustomDatatype, javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Date getValue(HttpServletRequest request, String formFieldName) {
+	public java.util.Date getValue(org.openmrs.customdatatype.datatype.Date datatype, HttpServletRequest request,
+	        String formFieldName) throws InvalidCustomValueException {
 		String stringVal = request.getParameter(formFieldName);
 		if (StringUtils.isBlank(stringVal)) {
 			return null;
 		} else {
 			try {
-				Date date = Context.getDateFormat().parse(stringVal);
-				super.validate(date);
+				java.util.Date date = Context.getDateFormat().parse(stringVal);
+				datatype.validate(date);
 				return date;
 			}
 			catch (ParseException ex) {
-				throw new InvalidAttributeValueException("general.invalid", ex);
+				throw new InvalidCustomValueException("general.invalid", ex);
 			}
 		}
 	}

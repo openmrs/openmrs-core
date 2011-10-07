@@ -37,10 +37,10 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.AttributeService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DataSetService;
+import org.openmrs.api.DatatypeService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
@@ -475,14 +475,6 @@ public class Context {
 	 */
 	public static AdministrationService getAdministrationService() {
 		return getServiceContext().getAdministrationService();
-	}
-	
-	/**
-	 * @return attribute-related services
-	 * @since 1.9
-	 */
-	public static AttributeService getAttributeService() {
-		return getServiceContext().getAttributeService();
 	}
 	
 	/**
@@ -1182,5 +1174,13 @@ public class Context {
 	 */
 	public static ProviderService getProviderService() {
 		return getServiceContext().getProviderService();
+	}
+	
+	/**
+	 * @since 1.9
+	 * @see ServiceCotext#getDatatypeService()
+	 */
+	public static DatatypeService getDatatypeService() {
+		return getServiceContext().getDatatypeService();
 	}
 }

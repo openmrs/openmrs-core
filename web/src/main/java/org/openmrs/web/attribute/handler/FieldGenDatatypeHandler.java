@@ -17,15 +17,16 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.openmrs.attribute.InvalidAttributeValueException;
-import org.openmrs.attribute.handler.AttributeHandler;
+import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.customdatatype.CustomDatatypeHandler;
+import org.openmrs.customdatatype.InvalidCustomValueException;
 
 /**
- * A web-layer extension of an {@link AttributeHandler}, which also defines what fieldgen widget is used to
+ * A web-layer extension of a {@link CustomDatatypeHandler}, which also defines what fieldgen widget is used to
  * collect the values, and how to fetch them from a web request.
  * @since 1.9
  */
-public interface FieldGenAttributeHandler<T> extends AttributeHandler<T> {
+public interface FieldGenDatatypeHandler<DT extends CustomDatatype<T>, T> extends CustomDatatypeHandler<DT, T> {
 	
 	/**
 	 * @return the name of the fieldgen widget to be used to allow data entry for attribute types that
@@ -40,11 +41,12 @@ public interface FieldGenAttributeHandler<T> extends AttributeHandler<T> {
 	
 	/**
 	 * Fetches an attribute value from a web request, for a given form field name
+	 * @param datatype
 	 * @param request
 	 * @param formFieldName
 	 * @return
 	 * @throws InvalidAttributeValueException if the submitted value is invalid
 	 */
-	public T getValue(HttpServletRequest request, String formFieldName) throws InvalidAttributeValueException;
+	public T getValue(DT datatype, HttpServletRequest request, String formFieldName) throws InvalidCustomValueException;
 	
 }

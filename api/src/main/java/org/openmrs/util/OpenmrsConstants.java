@@ -888,12 +888,12 @@ public final class OpenmrsConstants {
 	/**
 	 * Global property name for the handler that assigns visits to encounters
 	 */
-	public static final String GP_VISIT_ASSIGNMENT_HANDLER = "visit.assignmentHandler";
+	public static final String GP_VISIT_ASSIGNMENT_HANDLER = "visits.assignmentHandler";
 	
 	/**
 	 * Global property name for mapping encounter types to visit types.
 	 */
-	public static final String GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING = "visit.encounterTypeToVisitTypeMapping";
+	public static final String GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING = "visits.encounterTypeToVisitTypeMapping";
 	
 	/**
 	 * Global property name for the encounter roles to display on the provider column of the patient

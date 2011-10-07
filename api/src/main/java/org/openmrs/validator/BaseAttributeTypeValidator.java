@@ -14,8 +14,13 @@
 package org.openmrs.validator;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.attribute.AttributeType;
+import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.customdatatype.CustomDatatypeHandler;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -27,8 +32,16 @@ import org.springframework.validation.Validator;
  */
 public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> implements Validator {
 	
+	/** Log for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @should require name
+	 * @should require minOccurs
+	 * @should not allow maxOccurs less than 1
+	 * @should not allow maxOccurs less than minOccurs
+	 * @should require datatypeClassname
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -51,18 +64,33 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 			}
 			
 			if (maxOccurs != null) {
-				if (maxOccurs < 0) {
-					errors.rejectValue("maxOccurs", "AttributeType.maxOccursShouldNotBeLessThanZero");
+				if (maxOccurs < 1) {
+					errors.rejectValue("maxOccurs", "AttributeType.maxOccursShouldNotBeLessThanOne");
 				} else if (maxOccurs < minOccurs) {
 					errors.rejectValue("maxOccurs", "AttributeType.maxOccursShouldNotBeLessThanMinOccurs");
 				}
 			}
 			
-			if (StringUtils.isBlank(attributeType.getDatatype())) {
-				errors.rejectValue("datatype", "error.null");
+			if (StringUtils.isBlank(attributeType.getDatatypeClassname())) {
+				errors.rejectValue("datatypeClassname", "error.null");
 			} else {
 				try {
-					Context.getAttributeService().getHandler(attributeType);
+					CustomDatatypeUtil.getDatatype(attributeType);
+				}
+				catch (Exception ex) {
+					errors.rejectValue("datatypeConfig", "AttributeType.datatypeConfig.invalid", new Object[] { ex
+					        .getMessage() }, "Invalid");
+				}
+			}
+			
+			// ensure that handler is suitable for datatype
+			if (StringUtils.isNotEmpty(attributeType.getPreferredHandlerClassname())) {
+				try {
+					CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(attributeType);
+					CustomDatatypeHandler<?, ?> handler = CustomDatatypeUtil.getHandler(attributeType);
+					if (!CustomDatatypeUtil.isCompatibleHandler(handler, datatype))
+						errors.rejectValue("preferredHandlerClassname",
+						    "AttributeType.preferredHandlerClassname.wrongDatatype");
 				}
 				catch (Exception ex) {
 					errors.rejectValue("handlerConfig", "AttributeType.handlerConfig.invalid", new Object[] { ex

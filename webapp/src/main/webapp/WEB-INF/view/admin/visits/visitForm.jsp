@@ -72,9 +72,6 @@ $j(document).ready( function() {
 </script>
 
 <style type="text/css">
-	TH.visitLabel{
-		text-align: left
-	}
 	.addEncounterInputs{
 		visibility: hidden;
 	}
@@ -140,177 +137,170 @@ $j(document).ready( function() {
 	</c:if>
 	<br/><br/>
 	</c:if>
-	<fieldset>
-		<legend><spring:message code="Visit.details" /></legend>
-		<table cellpadding="3" cellspacing="3">
-			<tr>
-				<th class="visitLabel">
-					<spring:message code="general.patient"/><c:if test="${visit.visitId == null}"><span class="required"> *</span></c:if>
-				</th>
-				<td>
-					<c:choose>
-						<c:when test="${visit.visitId == null}">
-						<spring:bind path="patient">
-							<openmrs_tag:patientField formFieldName="${status.expression}" initialValue="${status.value}" />
-							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-						</spring:bind>
-						</c:when>
-						<c:otherwise>${visit.patient.personName}</c:otherwise>
-					</c:choose>
-				</td>
-			</tr>
-			<tr>
-				<th class="visitLabel"><spring:message code="Visit.type"/><span class="required"> *</span></th>
-				<td>
-				<spring:bind path="visitType">
-					<select name="${status.expression}">
-					   <option value=""></option>
-					<c:forEach items="${visitTypes}" var="visitType">
-						<option value="${visitType.visitTypeId}" <c:if test="${visitType.visitTypeId == status.value}">selected="selected"</c:if>>
-							${visitType.name}
-						</option>
-					</c:forEach>
-					</select>
+	<table class="left-aligned-th" cellpadding="3" cellspacing="3">
+		<tr>
+			<th>
+				<spring:message code="general.patient"/><c:if test="${visit.visitId == null}"><span class="required"> *</span></c:if>
+			</th>
+			<td>
+				<c:choose>
+					<c:when test="${visit.visitId == null}">
+					<spring:bind path="patient">
+						<openmrs_tag:patientField formFieldName="${status.expression}" initialValue="${status.value}" />
+						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+					</spring:bind>
+					</c:when>
+					<c:otherwise>${visit.patient.personName}</c:otherwise>
+				</c:choose>
+			</td>
+		</tr>
+		<tr>
+			<th><spring:message code="Visit.type"/><span class="required"> *</span></th>
+			<td>
+			<spring:bind path="visitType">
+				<select name="${status.expression}">
+				   <option value=""></option>
+				<c:forEach items="${visitTypes}" var="visitType">
+					<option value="${visitType.visitTypeId}" <c:if test="${visitType.visitTypeId == status.value}">selected="selected"</c:if>>
+						${visitType.name}
+					</option>
+				</c:forEach>
+				</select>
+			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<th><spring:message code="Visit.startDatetime"/><span class="required"> *</span></th>
+			<td>
+				<spring:bind path="startDatetime">			
+				<input type="text" name="${status.expression}" size="10" value="${status.value}" onClick="showCalendar(this)" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<th><spring:message code="Visit.stopDatetime"/></th>
+			<td>
+				<spring:bind path="stopDatetime">			
+				<input type="text" name="${status.expression}" size="10" value="${status.value}" onClick="showCalendar(this)" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<th><spring:message code="Visit.location"/></th>
+			<td>
+				<spring:bind path="location">
+				<openmrs_tag:locationField formFieldName="${status.expression}" initialValue="${status.value}"/>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
-				</td>
-			</tr>
-			<tr>
-				<th class="visitLabel"><spring:message code="Visit.startDatetime"/><span class="required"> *</span></th>
-				<td>
-					<spring:bind path="startDatetime">			
-					<input type="text" name="${status.expression}" size="10" value="${status.value}" onClick="showCalendar(this)" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-					</spring:bind>
-				</td>
-			</tr>
-			<tr>
-				<th class="visitLabel"><spring:message code="Visit.stopDatetime"/></th>
-				<td>
-					<spring:bind path="stopDatetime">			
-					<input type="text" name="${status.expression}" size="10" value="${status.value}" onClick="showCalendar(this)" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-					</spring:bind>
-				</td>
-			</tr>
-			<tr>
-				<th class="visitLabel"><spring:message code="Visit.location"/></th>
-				<td>
-					<spring:bind path="location">
-					<openmrs_tag:locationField formFieldName="${status.expression}" initialValue="${status.value}"/>
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-					</spring:bind>
-				</td>
-			</tr>
-			<tr>
-				<th class="visitLabel"><spring:message code="Visit.indication"/></th>
-				<td>
-					<spring:bind path="indication">
-					<openmrs_tag:conceptField formFieldName="${status.expression}" formFieldId="conceptId" initialValue="${status.value}" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-					</spring:bind>
-				</td>
-			</tr>
-            <c:if test="${ not empty attributeTypes }">
-    			<tr valign="top">
-    			    <th class="visitLabel"><spring:message code="Visit.attributes" /></th>
-	               	<td>
-	               		<spring:bind path="activeAttributes">
-							<c:if test="${status.error}">
-								<span class="error">
-									<c:forEach var="err" items="${status.errorMessages}">
-										${ err }<br/>
-									</c:forEach>
-								</span>
-							</c:if>
-						</spring:bind>
-			            <table>
-			                <c:forEach var="attrType" items="${ attributeTypes }">
-			                   <openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ visit }" formFieldNamePrefix="attribute.${ attrType.id }"/>
-			                </c:forEach>
-			            </table>
-			        </td>
-			    </tr>
+			</td>
+		</tr>
+		<tr>
+			<th><spring:message code="Visit.indication"/></th>
+			<td>
+				<spring:bind path="indication">
+				<openmrs_tag:conceptField formFieldName="${status.expression}" formFieldId="conceptId" initialValue="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<spring:bind path="activeAttributes">
+			<c:if test="${status.error}">
+				<tr>
+					<th></th>
+					<td>
+						<span class="error">
+							<c:forEach var="err" items="${status.errorMessages}">
+								${ err }<br/>
+							</c:forEach>
+						</span>
+					</td>
+				</tr>
 			</c:if>
-			<tr>
-				<th class="visitLabel" valign="top"><spring:message code="Visit.encounters" /></th>
-				<td valign="top">
-					<table id="encountersTable" cellpadding="3" cellspacing="3">
-						<tr>
-							<th><spring:message code="Encounter.datetime"/></th>
-							<th><spring:message code="Encounter.type"/></th>
-							<th><spring:message code="Encounter.location"/></th>
-							<th><spring:message code="Encounter.provider"/></th>
-							<th></th>
-						</tr>
-						<c:forEach items="${visitEncounters}" var="enc" varStatus="encStatus">
-						<tr id="encounter-${enc.encounterId}" style='background-color: whitesmoke'>
-							<td><openmrs:formatDate date="${enc.encounterDatetime}" type="small" /></td>
-							<td><openmrs:format encounterType="${enc.encounterType}" /></td>
-							<td><openmrs:format location="${enc.location}" /></td>
-							<td><openmrs:format person="${enc.provider}" /></td>
-							<td class="removeButtonColumn">
-								<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onclick="removeEncounter(this)" />
-								<input type="hidden" name="encounterIds" value="${enc.encounterId}" />
-							</td>
-						</tr>
-						</c:forEach>
-						<tr id="newEncounterRow" style="display:none;">
-							<td colspan="4">
-								<input type="text" id="visitEncounters[x]-display" size="30" />
-								<input type="hidden" id="visitEncounters[x]" name="encounterIds" />
-							</td>
-							<td class="removeButtonColumn">
-								<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onclick="removeEncounter(this)" />
-							</td>
-						</tr>
-					</table>
-					<input type="button" value='<spring:message code="Visit.addEncounter"/>' class="smallButton" onclick='addEncounter()' />
-					<br /><br />
-				</td>
-			</tr>
-			<c:if test="${visit.visitId != null}">
-			<c:if test="${visit.creator != null}">
-			<tr>
-				<th class="visitLabel"><spring:message code="general.createdBy" /></th>
-				<td>
-					${visit.creator.personName} - <openmrs:formatDate date="${visit.dateCreated}" type="long" />
-				</td>
-			</tr>
-			</c:if>
-			<c:if test="${visit.changedBy != null}">
-			<tr>
-				<th class="visitLabel"><spring:message code="general.changedBy" /></th>
-				<td>
-					${visit.changedBy.personName} - <openmrs:formatDate date="${visit.dateChanged}" type="long" />
-				</td>
-			</tr>
-			</c:if>
-			</c:if>
-			<tr>
-				<td colspan="2">
-					<table cellpadding="0" cellspacing="20" align="center">
-        				<tr>
-        					<td><input type="submit" value='<spring:message code="general.save" />' /></td>
-        					<td>
-        						<c:set var="cancelUrl" value="${pageContext.request.contextPath}/admin" scope="page"></c:set>
-        						<c:if test="${not empty param.patientId}">
-        						<c:set var="cancelUrl" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${param.patientId}" />
-        						</c:if>
-        						<input type="button" value='<spring:message code="general.cancel" />' onclick='javascript:window.location="${cancelUrl}"' />
-        					</td>
-        				</tr>
-     				</table>
-				</td>
-			</tr>
-        </table>
-    </fieldset>
+		</spring:bind>
+		<c:forEach var="attrType" items="${ attributeTypes }">
+			<openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ visit }" formFieldNamePrefix="attribute.${ attrType.id }"/>
+		</c:forEach>
+		<tr>
+			<th valign="top"><spring:message code="Visit.encounters" /></th>
+			<td valign="top">
+				<table id="encountersTable" cellpadding="3" cellspacing="3">
+					<tr>
+						<th><spring:message code="Encounter.datetime"/></th>
+						<th><spring:message code="Encounter.type"/></th>
+						<th><spring:message code="Encounter.location"/></th>
+						<th><spring:message code="Encounter.provider"/></th>
+						<th></th>
+					</tr>
+					<c:forEach items="${visitEncounters}" var="enc" varStatus="encStatus">
+					<tr id="encounter-${enc.encounterId}" style='background-color: whitesmoke'>
+						<td><openmrs:formatDate date="${enc.encounterDatetime}" type="small" /></td>
+						<td><openmrs:format encounterType="${enc.encounterType}" /></td>
+						<td><openmrs:format location="${enc.location}" /></td>
+						<td><openmrs:format person="${enc.provider}" /></td>
+						<td class="removeButtonColumn">
+							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onclick="removeEncounter(this)" />
+							<input type="hidden" name="encounterIds" value="${enc.encounterId}" />
+						</td>
+					</tr>
+					</c:forEach>
+					<tr id="newEncounterRow" style="display:none;">
+						<td colspan="4">
+							<input type="text" id="visitEncounters[x]-display" size="30" />
+							<input type="hidden" id="visitEncounters[x]" name="encounterIds" />
+						</td>
+						<td class="removeButtonColumn">
+							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onclick="removeEncounter(this)" />
+						</td>
+					</tr>
+				</table>
+				<input type="button" value='<spring:message code="Visit.addEncounter"/>' class="smallButton" onclick='addEncounter()' />
+				<br /><br />
+			</td>
+		</tr>
+		<c:if test="${visit.visitId != null}">
+		<c:if test="${visit.creator != null}">
+		<tr>
+			<th><spring:message code="general.createdBy" /></th>
+			<td>
+				${visit.creator.personName} - <openmrs:formatDate date="${visit.dateCreated}" type="long" />
+			</td>
+		</tr>
+		</c:if>
+		<c:if test="${visit.changedBy != null}">
+		<tr>
+			<th><spring:message code="general.changedBy" /></th>
+			<td>
+				${visit.changedBy.personName} - <openmrs:formatDate date="${visit.dateChanged}" type="long" />
+			</td>
+		</tr>
+		</c:if>
+		</c:if>
+		<tr>
+			<td colspan="2">
+				<table cellpadding="0" cellspacing="20" align="center">
+       				<tr>
+       					<td><input type="submit" value='<spring:message code="general.save" />' /></td>
+       					<td>
+       						<c:set var="cancelUrl" value="${pageContext.request.contextPath}/admin" scope="page"></c:set>
+       						<c:if test="${not empty param.patientId}">
+       						<c:set var="cancelUrl" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${param.patientId}" />
+       						</c:if>
+       						<input type="button" value='<spring:message code="general.cancel" />' onclick='javascript:window.location="${cancelUrl}"' />
+       					</td>
+       				</tr>
+    				</table>
+			</td>
+		</tr>
+	</table>
 </form:form>
 
 
 <c:if test="${visit.visitId != null}">
 <br/>
-<table cellpadding="3" cellspacing="3">
+<table cellpadding="3" cellspacing="3" style="float: right">
 	<tr>
 		<td>
 			<openmrs:hasPrivilege privilege="Delete Visits">
