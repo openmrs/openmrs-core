@@ -14,6 +14,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.Set;
 
 import org.openmrs.attribute.Customizable;
 
@@ -39,6 +40,8 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	private Date startDatetime;
 	
 	private Date stopDatetime;
+	
+	private Set<Encounter> encounters;
 	
 	/**
 	 * Default Constructor
@@ -190,6 +193,20 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	@Override
 	public String toString() {
 		return "Visit #" + visitId;
+	}
+	
+	/**
+	 * @return the encounters
+	 */
+	public Set<Encounter> getEncounters() {
+		return encounters;
+	}
+	
+	/**
+	 * @param encounters the encounters to set
+	 */
+	public void setEncounters(Set<Encounter> encounters) {
+		this.encounters = encounters;
 	}
 	
 }
