@@ -6,7 +6,6 @@
 <%@ include file="localHeader.jsp" %>
 
 <script type="text/javascript">
-
 	function confirmPurge() {
 		if (confirm("<spring:message code='VisitAttributeType.purgeConfirmMessage' />")) {
 			return true;
@@ -15,14 +14,26 @@
 		}
 	}
 	
-</script>
-
-<script type="text/javascript">
    function forceMaxLength(object, maxLength) {
       if( object.value.length >= maxLength) {
          object.value = object.value.substring(0, maxLength); 
       }
    }
+   
+   $j(function() {
+	  $j('select[name="datatypeClassname"]').change(function() {
+		 $j('#datatypeDescription').load(openmrsContextPath + '/q/message.form', { key: $j(this).val() + '.description' });
+	  });
+	  $j('select[name="preferredHandlerClassname"]').change(function() {
+		 $j('#handlerDescription').load(openmrsContextPath + '/q/message.form', { key: $j(this).val() + '.description' });  
+	  });
+	  <c:if test="${ not empty visitAttributeType.datatypeClassname }">
+	  	$j('#datatypeDescription').load(openmrsContextPath + '/q/message.form', { key: '${ visitAttributeType.datatypeClassname }.description' });
+	  </c:if>
+	  <c:if test="${ not empty visitAttributeType.preferredHandlerClassname }">
+	  	$j('#handlerDescription').load(openmrsContextPath + '/q/message.form', { key: '${ visitAttributeType.preferredHandlerClassname }.description' });
+	  </c:if>
+   });
 </script>
 
 <h2><spring:message code="VisitAttributeType.title"/></h2>
@@ -83,6 +94,8 @@
 					</c:forEach>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<br/>
+				<span id="datatypeDescription"></span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -107,6 +120,8 @@
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
+			<br/>
+			<span id="handlerDescription"></span>
 		</td>
 	</tr>
 	<tr>

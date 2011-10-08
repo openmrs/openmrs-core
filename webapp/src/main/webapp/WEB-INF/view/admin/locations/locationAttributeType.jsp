@@ -13,14 +13,27 @@
 			return false;
 		}
 	}
-</script>
 
-<script type="text/javascript">
 	function forceMaxLength(object, maxLength) {
 		if ( object.value.length >= maxLength) {
 			object.value = object.value.substring(0, maxLength); 
 		}
 	}
+	
+	$j(function() {
+		$j('select[name="datatypeClassname"]').change(function() {
+			$j('#datatypeDescription').load(openmrsContextPath + '/q/message.form', { key: $j(this).val() + '.description' });
+		});
+		$j('select[name="preferredHandlerClassname"]').change(function() {
+			$j('#handlerDescription').load(openmrsContextPath + '/q/message.form', { key: $j(this).val() + '.description' });  
+		});
+		<c:if test="${ not empty attributeType.datatypeClassname }">
+			$j('#datatypeDescription').load(openmrsContextPath + '/q/message.form', { key: '${ attributeType.datatypeClassname }.description' });
+		</c:if>
+		<c:if test="${ not empty attributeType.preferredHandlerClassname }">
+			$j('#handlerDescription').load(openmrsContextPath + '/q/message.form', { key: '${ attributeType.preferredHandlerClassname }.description' });
+		</c:if>
+	});
 </script>
 
 <h2>
@@ -90,6 +103,8 @@
 					</c:forEach>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<br/>
+				<span id="datatypeDescription"></span>
 			</spring:bind>
 		</td>
 	</tr>	
@@ -113,6 +128,8 @@
 					</c:forEach>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<br/>
+				<span id="handlerDescription"></span>
 			</spring:bind>
 		</td>
 	</tr>
