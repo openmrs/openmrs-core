@@ -19,15 +19,22 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.directwebremoting.util.Logger;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.customdatatype.CustomDatatypeHandler;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.attribute.WebAttributeUtil;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -62,22 +69,53 @@ public class SettingsController {
 	}
 	
 	@RequestMapping(value = Path.SETTINGS, method = RequestMethod.POST)
-	public void updateSettings(@ModelAttribute(Model.SETTINGS_FORM) SettingsForm settingsForm, HttpSession session) {
+	public void updateSettings(@ModelAttribute(Model.SETTINGS_FORM) SettingsForm settingsForm, Errors errors,
+	        HttpServletRequest request, HttpSession session) {
+		
+		List<GlobalProperty> toSave = new ArrayList<GlobalProperty>();
 		try {
-			for (SettingsProperty property : settingsForm.getSettings()) {
-				getService().saveGlobalProperty(property.getGlobalProperty());
+			for (int i = 0; i < settingsForm.getSettings().size(); ++i) {
+				SettingsProperty property = settingsForm.getSettings().get(i);
+				if (StringUtils.isNotEmpty(property.getGlobalProperty().getDatatypeClassname())) {
+					// we need to handle the submitted value with the appropriate widget
+					CustomDatatype dt = CustomDatatypeUtil.getDatatype(property.getGlobalProperty());
+					CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(property.getGlobalProperty());
+					if (handler != null) {
+						try {
+							Object value = WebAttributeUtil.getValue(request, dt, handler, "settings[" + i
+							        + "].globalProperty.propertyValue");
+							property.getGlobalProperty().setPropertyValue(dt.toReferenceString(value));
+						}
+						catch (Exception ex) {
+							String originalValue = request.getParameter("originalValue[" + i + "]");
+							property.getGlobalProperty().setPropertyValue(originalValue);
+							errors.rejectValue("settings[" + i + "].globalProperty.propertyValue", "general.invalid");
+						}
+					}
+				}
+				toSave.add(property.getGlobalProperty());
 			}
 		}
 		catch (Exception e) {
 			log.error("Error saving global property", e);
-			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.not.saved");
+			errors.reject("GlobalProperty.not.saved");
 			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, e.getMessage());
 		}
 		
-		session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.saved");
+		if (errors.hasErrors()) {
+			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.not.saved");
+			
+		} else {
+			for (GlobalProperty gp : toSave) {
+				getService().saveGlobalProperty(gp);
+			}
+			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.saved");
+			
+			// TODO: move this to a GlobalPropertyListener
+			// refresh log level from global property(ies)
+			OpenmrsUtil.applyLogLevels();
+		}
 		
-		// refresh log level from global property(ies)
-		OpenmrsUtil.applyLogLevels();
 	}
 	
 	@ModelAttribute(Model.SECTIONS)

@@ -5966,6 +5966,46 @@
  		<dropForeignKeyConstraint baseTableName="encounter" constraintName="encounter_provider"/>
          <dropColumn tableName="encounter" columnName="provider_id"/>
  	</changeSet>
+ 	
+	<changeSet id="20111008-0938-1" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="global_property" columnName="datatype" /></not>
+		</preConditions>
+		<comment>Allow Global Properties to be typed</comment>
+		<addColumn tableName="global_property">
+			<column name="datatype" type="varchar(255)" />
+		</addColumn>
+	</changeSet> 	
+
+	<changeSet id="20111008-0938-2" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="global_property" columnName="datatype_config" /></not>
+		</preConditions>
+		<comment>Allow Global Properties to be typed</comment>
+		<addColumn tableName="global_property">
+			<column name="datatype_config" type="text" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20111008-0938-3" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="global_property" columnName="preferred_handler" /></not>
+		</preConditions>
+		<comment>Allow Global Properties to be typed</comment>
+		<addColumn tableName="global_property">
+			<column name="preferred_handler" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20111008-0938-4" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="global_property" columnName="handler_config" /></not>
+		</preConditions>
+		<comment>Allow Global Properties to be typed</comment>
+		<addColumn tableName="global_property">
+			<column name="handler_config" type="text" />
+		</addColumn>
+	</changeSet> 	
 	
 </databaseChangeLog>
 

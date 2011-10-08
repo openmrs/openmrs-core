@@ -15,6 +15,7 @@ package org.openmrs.customdatatype.datatype;
 
 import java.text.SimpleDateFormat;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.springframework.stereotype.Component;
@@ -51,6 +52,8 @@ public class Date implements CustomDatatype<java.util.Date> {
 	 */
 	@Override
 	public java.util.Date fromReferenceString(String persistedValue) throws InvalidCustomValueException {
+		if (StringUtils.isBlank(persistedValue))
+			return null;
 		try {
 			return new SimpleDateFormat(dateFormat).parse(persistedValue);
 		}

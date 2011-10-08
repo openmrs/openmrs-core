@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 /**
  * ajax-accessible queries related to localization
  */
@@ -30,13 +29,13 @@ public class LocalizationController {
 	
 	@RequestMapping("/q/message")
 	@ResponseBody
-	public String getMessage(@RequestParam("key") String key, @RequestParam(required=false, value="locale") Locale locale) {
+	public String getMessage(@RequestParam("key") String key, @RequestParam(required = false, value = "locale") Locale locale) {
 		String ret;
 		if (locale != null) {
 			ret = Context.getMessageSourceService().getMessage(key);
 		} else {
 			ret = Context.getMessageSourceService().getMessage(key, null, locale);
 		}
-		return (ret == null || key.equals(ret) ) ? "" : ret;
+		return (ret == null || key.equals(ret)) ? "" : ret;
 	}
 }
