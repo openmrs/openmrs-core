@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.ConceptService;
+import org.openmrs.customdatatype.datatype.Boolean;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
@@ -928,26 +929,32 @@ public final class OpenmrsConstants {
 		List<GlobalProperty> props = new Vector<GlobalProperty>();
 		
 		props.add(new GlobalProperty("use_patient_attribute.healthCenter", "false",
-		        "Indicates whether or not the 'health center' attribute is shown when viewing/searching for patients"));
+		        "Indicates whether or not the 'health center' attribute is shown when viewing/searching for patients",
+		        Boolean.class, null));
 		props.add(new GlobalProperty("use_patient_attribute.mothersName", "false",
-		        "Indicates whether or not mother's name is able to be added/viewed for a patient"));
+		        "Indicates whether or not mother's name is able to be added/viewed for a patient", Boolean.class, null));
 		
 		props.add(new GlobalProperty("new_patient_form.showRelationships", "false",
-		        "true/false whether or not to show the relationship editor on the addPatient.htm screen"));
+		        "true/false whether or not to show the relationship editor on the addPatient.htm screen", Boolean.class,
+		        null));
 		
 		props.add(new GlobalProperty("dashboard.overview.showConcepts", "",
 		        "Comma delimited list of concepts ids to show on the patient dashboard overview tab"));
 		props.add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true",
-		        "true/false whether or not to show empty fields on the 'View Encounter' window"));
+		        "true/false whether or not to show empty fields on the 'View Encounter' window", Boolean.class, null));
 		props
 		        .add(new GlobalProperty(
 		                "dashboard.encounters.usePages",
 		                "smart",
 		                "true/false/smart on how to show the pages on the 'View Encounter' window.  'smart' means that if > 50% of the fields have page numbers defined, show data in pages"));
-		props.add(new GlobalProperty("dashboard.encounters.showViewLink", "true",
-		        "true/false whether or not to show the 'View Encounter' link on the patient dashboard"));
-		props.add(new GlobalProperty("dashboard.encounters.showEditLink", "true",
-		        "true/false whether or not to show the 'Edit Encounter' link on the patient dashboard"));
+		props
+		        .add(new GlobalProperty("dashboard.encounters.showViewLink", "true",
+		                "true/false whether or not to show the 'View Encounter' link on the patient dashboard",
+		                Boolean.class, null));
+		props
+		        .add(new GlobalProperty("dashboard.encounters.showEditLink", "true",
+		                "true/false whether or not to show the 'Edit Encounter' link on the patient dashboard",
+		                Boolean.class, null));
 		props
 		        .add(new GlobalProperty(
 		                "dashboard.header.programs_to_show",
@@ -961,9 +968,10 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty("dashboard.relationships.show_types", "",
 		        "Types of relationships separated by commas.  Doctor/Patient,Parent/Child"));
 		props.add(new GlobalProperty("FormEntry.enableDashboardTab", "true",
-		        "true/false whether or not to show a Form Entry tab on the patient dashboard"));
+		        "true/false whether or not to show a Form Entry tab on the patient dashboard", Boolean.class, null));
 		props.add(new GlobalProperty("FormEntry.enableOnEncounterTab", "false",
-		        "true/false whether or not to show a Enter Form button on the encounters tab of the patient dashboard"));
+		        "true/false whether or not to show a Enter Form button on the encounters tab of the patient dashboard",
+		        Boolean.class, null));
 		props
 		        .add(new GlobalProperty(
 		                "dashboard.regimen.displayDrugSetIds",
@@ -1107,7 +1115,7 @@ public final class OpenmrsConstants {
 		        "Password for the OpenMRS user that will perform the scheduler activities"));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_CONCEPTS_LOCKED, "false",
-		        "true/false whether or not concepts can be edited in this database."));
+		        "if true, do not allow editing concepts", Boolean.class, null));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "",
 		        "A comma delimited list of PersonAttributeType names that should be displayed for patients in _lists_"));
@@ -1228,7 +1236,7 @@ public final class OpenmrsConstants {
 		                "Specifies the default locale. You can specify both the language code(ISO-639) and the country code(ISO-3166), e.g. 'en_GB' or just country: e.g. 'en'"));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true",
-		        "Configure whether passwords must not match user's username or system id"));
+		        "Configure whether passwords must not match user's username or system id", Boolean.class, null));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_CUSTOM_REGEX, "",
 		        "Configure a custom regular expression that a password must match"));
@@ -1237,22 +1245,24 @@ public final class OpenmrsConstants {
 		        "Configure the minimum length required of all passwords"));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_DIGIT, "true",
-		        "Configure whether passwords must contain at least one digit"));
+		        "Configure whether passwords must contain at least one digit", Boolean.class, null));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_NON_DIGIT, "true",
-		        "Configure whether passwords must contain at least one non-digit"));
+		        "Configure whether passwords must contain at least one non-digit", Boolean.class, null));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",
-		        "Configure whether passwords must contain both upper and lower case characters"));
+		        "Configure whether passwords must contain both upper and lower case characters", Boolean.class, null));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
-		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored"));
+		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",
+		        Boolean.class, null));
 		
 		props
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_SHOW_PATIENT_NAME,
 		                "false",
-		                "Whether or not to display the patient name in the patient dashboard title. Note that enabling this could be security risk if multiple users operate on the same computer."));
+		                "Whether or not to display the patient name in the patient dashboard title. Note that enabling this could be security risk if multiple users operate on the same computer.",
+		                Boolean.class, null));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_THEME, "",
 		        "Default theme for users.  OpenMRS ships with themes of 'green', 'orange', 'purple', and 'legacy'"));
@@ -1270,7 +1280,8 @@ public final class OpenmrsConstants {
 		        .add(new GlobalProperty(
 		                GP_SEARCH_WIDGET_IN_SERIAL_MODE,
 		                "false",
-		                "Specifes whether the search widgets should make ajax requests in serial or parallel order, a value of true is appropriate for implementations running on a slow network connection and vice versa"));
+		                "Specifes whether the search widgets should make ajax requests in serial or parallel order, a value of true is appropriate for implementations running on a slow network connection and vice versa",
+		                Boolean.class, null));
 		
 		props
 		        .add(new GlobalProperty(
@@ -1287,11 +1298,14 @@ public final class OpenmrsConstants {
 		                "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
 		
 		props.add(new GlobalProperty(GP_ENABLE_CONCEPT_MAP_TYPE_MANAGEMENT, "false",
-		        "Enable or disables management of concept map types"));
+		        "Enable or disables management of concept map types", Boolean.class, null));
 		
 		props
-		        .add(new GlobalProperty(GLOBAL_PROPERTY_ENABLE_VISITS, "true",
-		                "Set to true to enable the Visits feature. This will replace the 'Encounters' tab with a 'Visits' tab on the dashboard."));
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_ENABLE_VISITS,
+		                "true",
+		                "Set to true to enable the Visits feature. This will replace the 'Encounters' tab with a 'Visits' tab on the dashboard.",
+		                Boolean.class, null));
 		
 		props.add(new GlobalProperty(GP_VISIT_ASSIGNMENT_HANDLER, "",
 		        "Set to the name of the class responsible for assigning encounters to visits."));

@@ -24,8 +24,8 @@ howManyToShow = Math.max(howManyToShow, existing.size());
 	else
 		formFieldName += ".new[" + i + "]";
 %>
-        <openmrs_tag:attribute
-            attributeType="${ attributeType }"
+        <openmrs_tag:singleCustomValue
+            customValueDescriptor="${ attributeType }"
             formFieldName="<%= formFieldName %>"
             value="<%= val %>"/>
         <br/>

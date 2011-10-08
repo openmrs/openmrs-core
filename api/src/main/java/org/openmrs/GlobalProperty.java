@@ -13,17 +13,31 @@
  */
 package org.openmrs;
 
+import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.CustomValueDescriptor;
+import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.customdatatype.SingleCustomValue;
+
 /**
  * Global properties are simple key-value pairs persisted in the database GPs can be thought of as
  * something similar to environment variables used in operating systems.
  */
-public class GlobalProperty extends BaseOpenmrsObject {
+public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<GlobalProperty> {
 	
 	private String property = "";
 	
 	private String propertyValue = "";
 	
 	private String description = "";
+	
+	private String datatypeClassname;
+	
+	private String datatypeConfig;
+	
+	private String preferredHandlerClassname;
+	
+	private String handlerConfig;
 	
 	/**
 	 * Default empty constructor
@@ -61,6 +75,21 @@ public class GlobalProperty extends BaseOpenmrsObject {
 	public GlobalProperty(String property, String value, String description) {
 		this(property, value);
 		this.description = description;
+	}
+	
+	/**
+	 * Constructor defining key/value/description/customDatatype/datatypeConfig
+	 * @param property
+	 * @param value
+	 * @param description
+	 * @param datatypeClass
+	 * @param datatypeConfig
+	 */
+	public GlobalProperty(String property, String value, String description,
+	    Class<? extends CustomDatatype<?>> datatypeClass, String datatypeConfig) {
+		this(property, value, description);
+		this.datatypeClassname = datatypeClass.getName();
+		this.datatypeConfig = datatypeConfig;
 	}
 	
 	/**
@@ -122,9 +151,120 @@ public class GlobalProperty extends BaseOpenmrsObject {
 	}
 	
 	/**
+	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getDatatypeClassname()
+	 * @since 1.9
+	 */
+	@Override
+	public String getDatatypeClassname() {
+		return datatypeClassname;
+	}
+	
+	/**
+	 * @param datatypeClassname the datatypeClassname to set
+	 * @since 1.9
+	 */
+	public void setDatatypeClassname(String datatypeClassname) {
+		this.datatypeClassname = datatypeClassname;
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getDatatypeConfig()
+	 * @since 1.9
+	 */
+	@Override
+	public String getDatatypeConfig() {
+		return datatypeConfig;
+	}
+	
+	/**
+	 * @param datatypeConfig the datatypeConfig to set
+	 * @since 1.9
+	 */
+	public void setDatatypeConfig(String datatypeConfig) {
+		this.datatypeConfig = datatypeConfig;
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getPreferredHandlerClassname()
+	 * @since 1.9
+	 */
+	@Override
+	public String getPreferredHandlerClassname() {
+		return preferredHandlerClassname;
+	}
+	
+	/**
+	 * @param preferredHandlerClassname the preferredHandlerClassname to set
+	 * @since 1.9
+	 */
+	public void setPreferredHandlerClassname(String preferredHandlerClassname) {
+		this.preferredHandlerClassname = preferredHandlerClassname;
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getHandlerConfig()
+	 * @since 1.9
+	 */
+	@Override
+	public String getHandlerConfig() {
+		return handlerConfig;
+	}
+	
+	/**
+	 * @param handlerConfig the handlerConfig to set
+	 * @since 1.9
+	 */
+	public void setHandlerConfig(String handlerConfig) {
+		this.handlerConfig = handlerConfig;
+	}
+	
+	/**
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
 		return "property: " + getProperty() + " value: " + getPropertyValue();
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.SingleCustomValue#getDescriptor()
+	 */
+	@Override
+	public GlobalProperty getDescriptor() {
+		return this;
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.SingleCustomValue#getValueReference()
+	 */
+	@Override
+	public String getValueReference() {
+		return getPropertyValue();
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReference(java.lang.String)
+	 */
+	@Override
+	public void setValueReference(String valueToPersist) throws InvalidCustomValueException {
+		setPropertyValue(valueToPersist);
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.SingleCustomValue#getValue()
+	 */
+	@Override
+	public Object getValue() throws InvalidCustomValueException {
+		return CustomDatatypeUtil.getDatatype(this).fromReferenceString(getValueReference());
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.SingleCustomValue#setValue(java.lang.Object)
+	 */
+	@Override
+	public <T> void setValue(T typedValue) throws InvalidCustomValueException {
+		@SuppressWarnings("unchecked")
+		CustomDatatype<T> datatype = (CustomDatatype<T>) CustomDatatypeUtil.getDatatype(this);
+		datatype.validate(typedValue);
+		setValueReference(datatype.toReferenceString(typedValue));
 	}
 }
