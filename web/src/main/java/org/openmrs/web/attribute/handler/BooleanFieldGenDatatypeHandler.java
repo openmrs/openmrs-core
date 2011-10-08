@@ -19,7 +19,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.messagesource.MessageSourceService;
 import org.springframework.stereotype.Component;
 
 /**
@@ -57,8 +59,11 @@ public class BooleanFieldGenDatatypeHandler implements FieldGenDatatypeHandler<o
 	 */
 	@Override
 	public Map<String, Object> getWidgetConfiguration() {
+		MessageSourceService mss = Context.getMessageSourceService();
 		Map<String, Object> ret = new HashMap<String, Object>();
 		ret.put("isNullable", "false");
+		ret.put("trueLabel", mss.getMessage("general.true"));
+		ret.put("falseLabel", mss.getMessage("general.false"));
 		return ret;
 	}
 	
