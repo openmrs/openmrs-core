@@ -14,6 +14,7 @@
 package org.openmrs.api.context;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +29,7 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 
 import org.aopalliance.aop.Advice;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -1004,10 +1006,14 @@ public class Context {
 			Context.addProxyPrivilege(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES);
 			Set<String> currentPropNames = new HashSet<String>();
 			Map<String, GlobalProperty> propsMissingDescription = new HashMap<String, GlobalProperty>();
+			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<String, GlobalProperty>();
 			for (GlobalProperty prop : Context.getAdministrationService().getAllGlobalProperties()) {
 				currentPropNames.add(prop.getProperty().toUpperCase());
 				if (prop.getDescription() == null) {
 					propsMissingDescription.put(prop.getProperty().toUpperCase(), prop);
+				}
+				if (prop.getDatatypeClassname() == null) {
+					propsMissingDatatype.put(prop.getProperty().toUpperCase(), prop);
 				}
 			}
 			
@@ -1023,6 +1029,15 @@ public class Context {
 					GlobalProperty propToUpdate = propsMissingDescription.get(corePropName);
 					if (propToUpdate != null) {
 						propToUpdate.setDescription(coreProp.getDescription());
+						Context.getAdministrationService().saveGlobalProperty(propToUpdate);
+					}
+					// set missing datatypes
+					propToUpdate = propsMissingDatatype.get(corePropName);
+					if (propToUpdate != null && coreProp.getDatatypeClassname() != null) {
+						propToUpdate.setDatatypeClassname(coreProp.getDatatypeClassname());
+						propToUpdate.setDatatypeConfig(coreProp.getDatatypeConfig());
+						propToUpdate.setPreferredHandlerClassname(coreProp.getPreferredHandlerClassname());
+						propToUpdate.setHandlerConfig(coreProp.getHandlerConfig());
 						Context.getAdministrationService().saveGlobalProperty(propToUpdate);
 					}
 				}

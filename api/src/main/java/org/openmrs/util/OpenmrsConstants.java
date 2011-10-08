@@ -1173,7 +1173,8 @@ public final class OpenmrsConstants {
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_GZIP_ENABLED,
 		                "false",
-		                "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression."));
+		                "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression.",
+		                Boolean.class, null));
 		props
 		        .add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_XML_MACROS, "",
 		                "Macros that will be applied to Report Schema XMLs when they are interpreted. This should be java.util.properties format."));
