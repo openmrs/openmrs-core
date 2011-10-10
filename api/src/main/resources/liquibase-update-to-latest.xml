@@ -5944,7 +5944,9 @@
 			<changeSetExecuted id="201103152243-c" author="jkeiper" changeLogFile="liquibase-update-to-latest.xml"/>
 		</preConditions>
 		<comment>Add xslt column back to the form table</comment>
-		<addColumn tableName="form" columnName="xslt" />
+		<addColumn tableName="form">
+            <column name="xslt" type="text"/>
+        </addColumn>
 	</changeSet>
 
 	<changeSet id="201110091820-b" author="jkeiper" dbms="mysql">
@@ -5952,7 +5954,9 @@
 			<changeSetExecuted id="201103152243-d" author="jkeiper" changeLogFile="liquibase-update-to-latest.xml"/>
 		</preConditions>
 		<comment>Add template column back to the form table</comment>
-		<addColumn tableName="form" columnName="template" />
+		<addColumn tableName="form">
+            <column name="template" type="text"/>
+        </addColumn>
 	</changeSet>
 
 </databaseChangeLog>
