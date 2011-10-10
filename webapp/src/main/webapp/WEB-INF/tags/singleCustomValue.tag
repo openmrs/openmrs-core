@@ -1,6 +1,7 @@
 <%@tag import="org.openmrs.customdatatype.CustomDatatypeHandler"%>
 <%@tag import="org.openmrs.customdatatype.CustomDatatypeUtil"%>
 <%@tag import="org.openmrs.web.attribute.handler.FieldGenDatatypeHandler"%>
+<%@tag import="org.openmrs.web.attribute.handler.WebDatatypeHandler"%>
 <%@tag import="java.util.Map"%>
 <%@tag import="org.openmrs.api.context.Context"%>
 
@@ -28,7 +29,13 @@ if (handler instanceof FieldGenDatatypeHandler) {
         type="<%= widgetName %>"
         parameterMap="<%= widgetConfig %>"
         val="${ value.value }"/>
-    
+<% } else if (handler instanceof WebDatatypeHandler) {
+	WebDatatypeHandler h = (WebDatatypeHandler) handler;
+	CustomDatatype dt = CustomDatatypeUtil.getDatatype(customValueDescriptor);
+%>
+
+	<%= h.getWidgetHtml(dt, formFieldName, value.value) %>
+
 <% } else {
 	String valueAsString = "";
 	if (value != null)

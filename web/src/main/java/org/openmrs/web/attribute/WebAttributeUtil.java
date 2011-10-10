@@ -32,6 +32,7 @@ import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.web.attribute.handler.FieldGenDatatypeHandler;
+import org.openmrs.web.attribute.handler.WebDatatypeHandler;
 import org.springframework.validation.BindingResult;
 
 /**
@@ -53,6 +54,8 @@ public class WebAttributeUtil {
 		if (handler != null) {
 			if (handler instanceof FieldGenDatatypeHandler) {
 				return ((FieldGenDatatypeHandler<CustomDatatype<T>, T>) handler).getValue(dt, request, paramName);
+			} else if (handler instanceof WebDatatypeHandler) {
+				return ((WebDatatypeHandler<CustomDatatype<T>, T>) handler).getValue(dt, request, paramName);
 			}
 		}
 		
