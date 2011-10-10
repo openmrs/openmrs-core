@@ -166,14 +166,14 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				}
 				
 				//marks the changeset as a failed one
-				throw new CustomChangeException("Failed to insert one or more concet map types");
+				throw new CustomChangeException("Failed to insert one or more concept map types");
 			}
 		}
 		catch (DatabaseException e) {
-			throw new CustomChangeException("Failed to insert one or more concet map types:", e);
+			throw new CustomChangeException("Failed to insert one or more concept map types:", e);
 		}
 		catch (SQLException e) {
-			throw new CustomChangeException("Failed to insert one or more concet map types:", e);
+			throw new CustomChangeException("Failed to insert one or more concept map types:", e);
 		}
 		finally {
 			//reset to auto commit mode
