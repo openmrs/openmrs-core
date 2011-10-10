@@ -32,12 +32,12 @@ public interface FieldGenDatatypeHandler<DT extends CustomDatatype<T>, T> extend
 	 * @return the name of the fieldgen widget to be used to allow data entry for attribute types that
 	 * use this handler
 	 */
-	public String getWidgetName();
+	String getWidgetName();
 	
 	/**
 	 * @return extra configuration properties to be passed to the fieldgen widget
 	 */
-	public Map<String, Object> getWidgetConfiguration();
+	Map<String, Object> getWidgetConfiguration();
 	
 	/**
 	 * Fetches an attribute value from a web request, for a given form field name
@@ -47,6 +47,6 @@ public interface FieldGenDatatypeHandler<DT extends CustomDatatype<T>, T> extend
 	 * @return
 	 * @throws InvalidAttributeValueException if the submitted value is invalid
 	 */
-	public T getValue(DT datatype, HttpServletRequest request, String formFieldName) throws InvalidCustomValueException;
+	T getValue(DT datatype, HttpServletRequest request, String formFieldName) throws InvalidCustomValueException;
 	
 }
