@@ -4101,74 +4101,6 @@
 			referencedTableName="drug" referencedColumnNames="drug_id" />
 	</changeSet>
 
-	<changeSet id="20110920-1211" author="sunbiz" dbms="mysql">
-		<preConditions onFail="MARK_RAN"><columnExists tableName="form_resource" columnName="value"/></preConditions>
-		<comment>Convert form_resource.value to blob to medium blob for MySQL</comment>
-		<modifyDataType tableName="form_resource" columnName="value" newDataType="mediumblob"/>
-	</changeSet>
-
-	<changeSet id="201103152243-a" author="jkeiper" dbms="mysql">
-		<validCheckSum><comment>Changing blob to mediumblob for MySQL</comment>3:b992da942628790574a0a87faf912423</validCheckSum>
-		<validCheckSum>3:f8398b04bd7738afb216ee75c415c044</validCheckSum>
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="form_resource" />
-			</not>
-		</preConditions>
-		<comment>Create the form resource table</comment>
-		<createTable tableName="form_resource">
-			<column name="form_resource_id" type="int" autoIncrement="true">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-			<column name="form_id" type="int(11)">
-				<constraints nullable="false" />
-			</column>
-			<column name="owner" type="varchar(100)">
-				<constraints nullable="false" />
-			</column>
-			<column name="name" type="varchar(100)">
-				<constraints nullable="false" />
-			</column>
-			<column name="value" type="blob" />
-			<column name="uuid" type="char(38)">
-				<constraints nullable="false"/>
-			</column>
-		</createTable>
-		<addUniqueConstraint tableName="form_resource" columnNames="form_id, owner, name"
-			constraintName="form_resource_unique_form_owner_name" />
-		<addForeignKeyConstraint constraintName="form_resource_form"
-			baseTableName="form_resource" baseColumnNames="form_id"
-			referencedTableName="form" referencedColumnNames="form_id" />
-		<modifySql dbms="mysql">
-			<replace replace="blob" with="mediumblob"/>
-		</modifySql>
-	</changeSet>
-
-	<changeSet id="201103152243-b" author="jkeiper">
-		<preConditions onFail="MARK_RAN">
-			<tableExists tableName="form_resource" />
-		</preConditions>
-		<comment>Copy form xslts and templates to the form resource table</comment>
-		<customChange
-			class="org.openmrs.util.databasechange.CopyFormMetadataChangeSet" />
-	</changeSet>
-
-	<changeSet id="201103152243-c" author="jkeiper" dbms="mysql">
-		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="form" columnName="xslt" />
-		</preConditions>
-		<comment>Remove xslt column from form table</comment>
-		<dropColumn tableName="form" columnName="xslt" />
-	</changeSet>
-
-	<changeSet id="201103152243-d" author="jkeiper" dbms="mysql">
-		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="form" columnName="template" />
-		</preConditions>
-		<comment>Remove template column from form table</comment>
-		<dropColumn tableName="form" columnName="template" />
-	</changeSet>
-	
 	<changeSet id="20110329-2317" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="role_privilege" />
@@ -6006,6 +5938,22 @@
 			<column name="handler_config" type="text" />
 		</addColumn>
 	</changeSet> 	
-	
+
+    <changeSet id="201110091820-a" author="jkeiper">
+		<preConditions onFail="MARK_RAN">
+			<changeSetExecuted id="201103152243-c" author="jkeiper" changeLogFile="liquibase-update-to-latest.xml"/>
+		</preConditions>
+		<comment>Add xslt column back to the form table</comment>
+		<addColumn tableName="form" columnName="xslt" />
+	</changeSet>
+
+	<changeSet id="201110091820-b" author="jkeiper" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<changeSetExecuted id="201103152243-d" author="jkeiper" changeLogFile="liquibase-update-to-latest.xml"/>
+		</preConditions>
+		<comment>Add template column back to the form table</comment>
+		<addColumn tableName="form" columnName="template" />
+	</changeSet>
+
 </databaseChangeLog>
 

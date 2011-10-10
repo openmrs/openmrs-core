@@ -2029,29 +2029,6 @@
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()" />
         </modifySql>
     </changeSet>
-    <changeSet id="20110915-1209" author="sunbiz">
-        <createTable tableName="form_resource">
-            <column name="form_resource_id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="form_id" type="int">
-                <constraints nullable="false" />
-            </column>
-            <column name="owner" type="varchar(100)">
-                <constraints nullable="false" />
-            </column>
-            <column name="name" type="varchar(100)">
-                <constraints nullable="false" />
-            </column>
-            <column name="value" type="blob" />
-            <column name="uuid" type="char(38)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <modifySql dbms="mssql">
-            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()" />
-        </modifySql>
-    </changeSet>
     <changeSet id="20110915-1222" author="sunbiz">
         <createTable tableName="visit_type">
             <column name="visit_type_id" type="int" autoIncrement="true">
@@ -3232,12 +3209,6 @@
     </changeSet>
     <changeSet id="20110915-1210" author="sunbiz">
         <addForeignKeyConstraint baseTableName="concept_answer"	baseColumnNames="answer_drug" constraintName="answer_answer_drug_fk" referencedTableName="drug" referencedColumnNames="drug_id"/>
-    </changeSet>
-    <changeSet id="20110915-1211" author="sunbiz">
-        <addUniqueConstraint tableName="form_resource" columnNames="form_id, owner, name" constraintName="form_resource_unique_form_owner_name"/>
-    </changeSet>
-    <changeSet id="20110915-1214" author="sunbiz">
-        <addForeignKeyConstraint constraintName="form_resource_form" baseTableName="form_resource" baseColumnNames="form_id" referencedTableName="form" referencedColumnNames="form_id" />
     </changeSet>
     <changeSet id="20110915-1225" author="sunbiz">
         <addForeignKeyConstraint constraintName="visit_type_creator" baseTableName="visit_type" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>

@@ -21,7 +21,6 @@ import java.util.UUID;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.TransientObjectException;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.Voidable;
@@ -100,6 +99,10 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 						PropertyUtils.setProperty(openmrsObject, property.getName(), null);
 					}
 				}
+			}
+			catch (InvocationTargetException ex) {
+				if (log.isWarnEnabled())
+					log.warn("Failed to access property " + property.getName() + "; accessor threw exception.", ex);
 			}
 			catch (Exception ex) {
 				throw new APIException(
