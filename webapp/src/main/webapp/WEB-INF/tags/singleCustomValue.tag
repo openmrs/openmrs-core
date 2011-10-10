@@ -1,3 +1,4 @@
+<%@tag import="org.openmrs.customdatatype.CustomDatatype"%>
 <%@tag import="org.openmrs.customdatatype.CustomDatatypeHandler"%>
 <%@tag import="org.openmrs.customdatatype.CustomDatatypeUtil"%>
 <%@tag import="org.openmrs.web.attribute.handler.FieldGenDatatypeHandler"%>
@@ -34,7 +35,7 @@ if (handler instanceof FieldGenDatatypeHandler) {
 	CustomDatatype dt = CustomDatatypeUtil.getDatatype(customValueDescriptor);
 %>
 
-	<%= h.getWidgetHtml(dt, formFieldName, value.value) %>
+	<%= h.getWidgetHtml(dt, formFieldName, value.getValue()) %>
 
 <% } else {
 	String valueAsString = "";
