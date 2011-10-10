@@ -41,7 +41,6 @@ import org.openmrs.FormField;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.FormDAO;
-import org.openmrs.api.db.FormResource;
 
 /**
  * Hibernate specific Form related functions This class should not be used directly. All calls
@@ -518,86 +517,6 @@ public class HibernateFormDAO implements FormDAO {
 	public List<FormField> getFormFieldsByField(Field field) {
 		return sessionFactory.getCurrentSession().createQuery("from FormField f where f.field = :field").setEntity("field",
 		    field).list();
-	}
-	
-	/**
-	 * convenience method for retrieving a form resource
-	 */
-	private FormResource getFormResourceObject(Form form, String owner, String name) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormResource.class);
-		crit.add(Restrictions.eq("form", form));
-		crit.add(Restrictions.eq("owner", owner));
-		crit.add(Restrictions.eq("name", name));
-		return (FormResource) crit.uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#getFormResource(Form, String, String)
-	 */
-	@Override
-	public byte[] getFormResource(Form form, String owner, String name) {
-		FormResource res = getFormResourceObject(form, owner, name);
-		
-		if (res == null)
-			throw new DAOException("unable to find form resource for form #" + form.getId() + " with owner '" + owner
-			        + "' and name '" + name + "'");
-		
-		return res.getValue();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#saveFormResource(Form, String, String,
-	 *      byte[])
-	 */
-	@Override
-	public void saveFormResource(Form form, String owner, String name, byte[] value) {
-		FormResource res = getFormResourceObject(form, owner, name);
-		
-		// if the form resource does not exist, create a new one
-		if (res == null) {
-			res = new FormResource();
-			res.setForm(form);
-			res.setOwner(owner);
-			res.setName(name);
-			res.setUuid(UUID.randomUUID().toString());
-		}
-		
-		res.setValue(value);
-		sessionFactory.getCurrentSession().saveOrUpdate(res);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#purgeFormResource(Form, String, String)
-	 */
-	@Override
-	public void purgeFormResource(Form form, String owner, String name) {
-		FormResource res = getFormResourceObject(form, owner, name);
-		sessionFactory.getCurrentSession().delete(res);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#getFormResourceNamesByOwner(Form, String)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public Set<String> getFormResourceNamesByOwner(Form form, String owner) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormResource.class);
-		crit.add(Restrictions.eq("form", form));
-		crit.add(Restrictions.eq("owner", owner));
-		crit.setProjection(Projections.property("name"));
-		return new HashSet<String>(crit.list());
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#getFormResourceOwners(Form)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public Set<String> getFormResourceOwners(Form form) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormResource.class);
-		crit.add(Restrictions.eq("form", form));
-		crit.setProjection(Projections.property("owner"));
-		return new HashSet<String>(crit.list());
 	}
 	
 }

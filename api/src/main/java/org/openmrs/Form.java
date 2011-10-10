@@ -18,12 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openmrs.annotation.AllowEmptyStrings;
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.DAOException;
-import org.openmrs.util.FormConstants;
 
 /**
  * Form
@@ -136,90 +133,39 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method for accessing the FormService TODO: remove this method when xslt and
-	 * template properties / methods are removed
-	 * 
-	 * @return the current context's form service
-	 * @throws APIException
-	 */
-	private FormService getFormService() throws APIException {
-		FormService formService = Context.getFormService();
-		if (formService == null)
-			throw new APIException("Cannot retrieve form template; no service available from context");
-		
-		return formService;
-	}
-	
-	/**
 	 * @return Returns the template.
-	 * @deprecated use {@link org.openmrs.api.FormService#getFormResource(Form, String, String)}
+	 * @deprecated
 	 */
 	@Deprecated
 	public String getTemplate() {
-		FormService formService = this.getFormService();
-		
-		String template;
-		try {
-			template = (String) formService.getFormResource(this, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
-			    FormConstants.FORM_RESOURCE_FORMENTRY_TEMPLATE);
-		}
-		catch (DAOException e) {
-			// template does not exist
-			return null;
-		}
-		
-		// TODO use a conversion method in FormUtil, for various reasons (i.e.
-		// compression)
-		return template;
+		throw new UnsupportedOperationException("Templates no longer exist on Forms. Use Form Attributes.");
 	}
 	
 	/**
 	 * @param template The template to set.
-	 * @deprecated use
-	 *             {@link org.openmrs.api.FormService#saveFormResource(Form, String, String, byte[])}
+	 * @deprecated
 	 */
 	@Deprecated
-	@AllowEmptyStrings
 	public void setTemplate(String template) {
-		FormService formService = this.getFormService();
-		formService.saveFormResource(this, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
-		    FormConstants.FORM_RESOURCE_FORMENTRY_TEMPLATE, template);
+		throw new UnsupportedOperationException("Templates no longer exist on Forms. Use Form Attributes.");
 	}
 	
 	/**
 	 * @return Returns the creator
-	 * @deprecated use {@link org.openmrs.api.FormService#getFormResource(Form, String, String)}
+	 * @deprecated
 	 */
 	@Deprecated
 	public String getXslt() {
-		FormService formService = this.getFormService();
-		
-		String xslt;
-		try {
-			xslt = (String) formService.getFormResource(this, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
-			    FormConstants.FORM_RESOURCE_FORMENTRY_XSLT);
-		}
-		catch (DAOException e) {
-			// xslt does not exist
-			return null;
-		}
-		
-		// TODO use a conversion method in FormUtil, for various reasons (i.e.
-		// compression)
-		return xslt;
+		throw new UnsupportedOperationException("XSLTs no longer exist on Forms. Use Form Attributes.");
 	}
 	
 	/**
 	 * @param xslt the xslt to set.
-	 * @deprecated use
-	 *             {@link org.openmrs.api.FormService#saveFormResource(Form, String, String, byte[])}
+	 * @deprecated
 	 */
 	@Deprecated
-	@AllowEmptyStrings
 	public void setXslt(String xslt) {
-		FormService formService = this.getFormService();
-		formService.saveFormResource(this, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
-		    FormConstants.FORM_RESOURCE_FORMENTRY_XSLT, xslt);
+		throw new UnsupportedOperationException("XSLTs no longer exist on Forms. Use Form Attributes.");
 	}
 	
 	/**
