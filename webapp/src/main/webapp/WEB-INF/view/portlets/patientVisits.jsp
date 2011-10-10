@@ -11,41 +11,122 @@
 	href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css"
 	type="text/css" rel="stylesheet" />
 
-<div id="visitsPortletdisplayEncounterPopup">
-	<div id="visitsPortletdisplayEncounterPopupLoading"><spring:message code="general.loading"/></div>
-	<iframe id="visitsPortletdisplayEncounterPopupIframe" width="100%" height="100%" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"></iframe>
+<div id="visitsPortletDisplayEncounterPopup">
+	<div id="visitsPortletDisplayEncounterPopupLoading"><spring:message code="general.loading"/></div>
+	<iframe id="visitsPortletDisplayEncounterPopupIframe" width="100%" height="100%" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"></iframe>
 </div>
 
 <script type="text/javascript">
 	$j(document).ready(function() {
-		$j('#visitsPortletdisplayEncounterPopup').dialog({
+		$j('#visitsPortletDisplayEncounterPopup').dialog({
 				title: 'dynamic',
 				autoOpen: false,
 				draggable: false,
 				resizable: false,
 				width: '95%',
 				modal: true,
-				open: function(a, b) { $j('#visitsPortletdisplayEncounterPopupLoading').show(); }
+				open: function(a, b) { $j('#visitsPortletDisplayEncounterPopupLoading').show(); }
 		});
-		$j("#visitsPortletdisplayEncounterPopupIframe").load(function() { $j('#visitsPortletdisplayEncounterPopupLoading').hide(); });
+		$j("#visitsPortletDisplayEncounterPopupIframe").load(function() { $j('#visitsPortletDisplayEncounterPopupLoading').hide(); });
 	});
 
 	function visitsPortletLoadUrlIntoEncounterPopup(title, urlToLoad) {
-		$j("#visitsPortletdisplayEncounterPopupIframe").attr("src", urlToLoad);
-		$j('#visitsPortletdisplayEncounterPopup')
+		$j("#visitsPortletDisplayEncounterPopupIframe").attr("src", urlToLoad);
+		$j('#visitsPortletDisplayEncounterPopup')
 			.dialog('option', 'title', title)
 			.dialog('option', 'height', $j(window).height() - 50) 
 			.dialog('open');
 	}
 </script>
 
-<script type="text/javascript">
-	var $j = jQuery.noConflict();
-	
-	var popupHoverBox;
-	
-	var previousVisitId;
+<div id="visitsPortletVisitInfoPopup">
+	<b><span id="visitsPortletType"></span></b><br/>
+    @ <span id="visitsPortletLocation"></span><br/>
+    From: <span id="visitsPortletFrom"></span><br/>
+    To: <span id="visitsPortletTo"></span><br/>
+    Indication: <span id="visitsPortletIndication"></span>
+</div>
 
+<style>
+#visitsPortletVisitInfoPopup {
+	border: 1px solid #1aac9b;
+	background: #ffffff;
+	padding: 5px 5px 5px 5px;
+	display: none;
+	position: absolute;
+}
+</style>
+
+<script type="text/javascript">
+	function visitsPortletShowVisitInfoPopup(href, active, type, location, from, to, indication) {
+		var popup = $j('#visitsPortletVisitInfoPopup');
+		if (active == 'true') {
+			$j('#visitsPortletType', popup).html('<spring:message code="Visit.active.label" />: ' + type);
+		} else {
+			$j('#visitsPortletType', popup).html('<spring:message code="Visit" />: ' + type);
+		}
+		$j('#visitsPortletLocation', popup).html(location);
+		$j('#visitsPortletFrom', popup).html(from);
+		$j('#visitsPortletTo', popup).html(to);
+		$j('#visitsPortletIndication', popup).html(indication);
+		
+		$j(popup).show();
+		
+		$j(href).mousemove(function (e) {
+			$j('#visitsPortletVisitInfoPopup').css({"left": e.pageX + 10, "top": e.pageY + 20});
+		});
+		
+		$j(href).mouseleave(function() {
+			$j('#visitsPortletVisitInfoPopup').hide();
+		});
+	}
+</script>
+
+<style>
+tr.encounter-in-visit td {
+	border-color: #1aac9b;
+	border-style: solid;
+	padding: 5px;
+}
+
+tr.encounter-in-visit td:first-child {
+	border-left-width: 1px;
+}
+
+tr.encounter-in-visit td:last-child {
+	border-right-width: 1px;
+}
+
+tr.top-encounter-in-visit td {
+	border-top-width: 1px;
+}
+
+tr.top-encounter-in-visit td:first-child {
+	border-left-width: 1px;
+	border-top-left-radius: 10px;
+}
+
+tr.top-encounter-in-visit td:last-child {
+	border-right-width: 1px;
+	border-top-right-radius: 10px;
+}
+
+tr.bottom-encounter-in-visit td {
+	border-bottom-width: 1px;
+}
+
+tr.bottom-encounter-in-visit td:first-child {
+	border-left-width: 1px;
+	border-bottom-left-radius: 10px;
+}
+
+tr.bottom-encounter-in-visit td:last-child {
+	border-right-width: 1px;
+	border-bottom-right-radius: 10px;
+}
+</style>
+
+<script type="text/javascript">
 	$j(document).ready(function() {
 		$j('#patientVisitsTable').dataTable({
 			"bProcessing" : true,
@@ -53,113 +134,87 @@
 			"sAjaxSource" : "${pageContext.request.contextPath}/admin/visits/datatable.list?patient=${model.patient.patientId}",
 			"bLengthChange": false,
 			"aoColumns": [ 
-				{ "bVisible": false }, { "bVisible": false }, { "bVisible": false }, { "bVisible": false },
+				{ "bVisible": false }, { "bVisible": false }, null, { "bVisible": false },
 				{ "bVisible": false }, { "bVisible": false }, { "bVisible": false },
 				null, null, null, null, null, null, { "bVisible": false }, { "bVisible": false }
 			],
-			"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+			"fnRowCallback": function(nRow, aData, iDisplayIndex) {				
 				var encounterId = aData[7];
 				if (encounterId != '') {
+					//Changes the action column
 					var actions = '';
-					var img;
-					var url;
+					
 					<openmrs:hasPrivilege privilege="Edit Encounters">
-						img = '<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" />';
-						actions = actions + ' <a href="'+ aData[14] + '">' + img + '</a>';
+						var editImg = '<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" />';
+						actions = actions + ' <a href="'+ aData[14] + '">' + editImg + '</a>';
 					</openmrs:hasPrivilege>
-					<openmrs:hasPrivilege privilege="View Encounters">
-						url =  $j('<div/>').text(aData[13] + "&inPopup=true").html();
-						var method = "visitsPortletLoadUrlIntoEncounterPopup('Encounter Preview', '" + url + "')";
-						img = '<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" />';
-						actions = actions + ' <a href="javascript:;" onclick="' + method + '">' + img + '</a>';
-					</openmrs:hasPrivilege>
-					$j('td:eq(0)', nRow).html(actions);
+					
+					var url =  visitsPortletEscapeHtml(aData[13] + "&inPopup=true");
+					var method = "visitsPortletLoadUrlIntoEncounterPopup('Encounter Preview', '" + url + "')";
+					var viewImg = '<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" />';
+					actions = actions + ' <a href="javascript:;" onclick="' + method + '">' + viewImg + '</a>';
+					
+					$j('td:eq(1)', nRow).html(actions);
 				}
 				return nRow;
 			},
-			"fnDrawCallback": function ( oSettings ) {
-				if ( oSettings.aiDisplay.length == 0 ) {
+			"fnDrawCallback": function (oSettings) {
+				if (oSettings.aiDisplay.length == 0) {
 					return;
 				}
 				
-				var nTrs = $j('#patientVisitsTable tbody tr');
-				var iColspan = nTrs[0].getElementsByTagName('td').length;
-				var iLastVisitId = "";
-				for ( var i=0 ; i<nTrs.length ; i++ ) {
+				var trs = $j('#patientVisitsTable tbody tr');
+				var colspan = trs[0].getElementsByTagName('td').length;
+				var lastVisitId = "";
+				for (var i = 0; i < trs.length; i++) {
 					var iDisplayIndex = i;
-					var aoData = oSettings.aoData[ oSettings.aiDisplay[iDisplayIndex] ];
-					var iVisidId = aoData._aData[0];
-					if ( iVisidId != iLastVisitId ) {
-						var nGroup = document.createElement( 'tr' );
-						var nCell = document.createElement( 'td' );
-						
-						var active = aoData._aData[1];
-						var type = $j('<div/>').text(aoData._aData[2]).html();
-						var location = $j('<div/>').text(aoData._aData[3]).html();
-						var from = $j('<div/>').text(aoData._aData[4]).html();
-						var to = $j('<div/>').text(aoData._aData[5]).html();
-						var indication = $j('<div/>').text(aoData._aData[6]).html();
-						var encounterId = aoData._aData[7];
-
-						if (active == 'true') {
-							nCell.className = "tableGroup highlighted";
-						} else {
-							nCell.className = "tableGroup";
+					var aoData = oSettings.aoData[oSettings.aiDisplay[iDisplayIndex]];
+					var visitId = aoData._aData[0];
+					
+					if (visitId != '') {
+						$j(trs[i]).addClass('encounter-in-visit');
+					}
+					
+					if (visitId != lastVisitId) {
+						//Adds a group
+						if (i > 0) {
+							$j(trs[i-1]).addClass('bottom-encounter-in-visit');
 						}
+						$j(trs[i]).addClass('top-encounter-in-visit');
 						
-						if (iVisidId != '') {
-							var img = ' <img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" />';
-							var editLink = '<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=' + iVisidId + '&patientId=${model.patient.patientId}">' + img + '</a>';
-							nCell.innerHTML = editLink;
-						}
-						nGroup.appendChild( nCell );
+						//Adds a whitespace between groups
+						var trGroup = document.createElement('tr');
+						var tdGroup = document.createElement('td');
+						tdGroup.colSpan = colspan;
+						trGroup.appendChild(tdGroup);
+						trs[i].parentNode.insertBefore(trGroup, trs[i]);
 						
-						nCell = document.createElement('td');
-						nCell.colSpan = iColspan - 1;
-						
-						if (active == 'true') {
-							nCell.className = "tableGroup highlighted";
-						} else {
-							nCell.className = "tableGroup";
-						}
-						if (iVisidId != '') {
-							var sGroup = '';
-							if (active == 'true') {
-								sGroup = sGroup + '<spring:message code="Visit.active.label" />:';
-							} else {
-								sGroup = sGroup + '<spring:message code="Visit" />:';
-							}
-							sGroup = sGroup + " <strong>" + type + "</strong>";
-							if (indication != '') {
-								sGroup = sGroup + " <spring:message code="general.with" /> <strong>" + indication + "</strong> <spring:message code="Visit.indication" /> ";
-							}
-							sGroup = sGroup + " <spring:message code="general.at" />  " + location + " <spring:message code="general.startedAt" /> " + from;
-							if (to != '') {
-								sGroup = sGroup + " <spring:message code="general.completedAt" /> " + to;
-							}
-							nCell.innerHTML = sGroup;
-						} else {
-							nCell.innerHTML = "<spring:message code="Visit.noVisitAssigned" /> ";
-						}
-						nGroup.appendChild( nCell );
-						nTrs[i].parentNode.insertBefore( nGroup, nTrs[i] );
-						
-						if (encounterId == '') {
-							nGroup = document.createElement('tr');
-							nCell = document.createElement('td');
+						if (visitId != '') {
+							var active = aoData._aData[1];
+							var type = visitsPortletEscapeHtml(aoData._aData[2]);
+							var location = visitsPortletEscapeHtml(aoData._aData[3]);
+							var from = aoData._aData[4];
+							var to = aoData._aData[5];
+							var indication = visitsPortletEscapeHtml(aoData._aData[6]);
 							
-							nCell.colSpan = iColspan;
-							nCell.innerHTML = "<spring:message code="Encounter.noEncounters" />";
-							nGroup.appendChild(nCell);
-							nTrs[i+1].parentNode.insertBefore(nGroup, nTrs[i+1]);
+							var method = "visitsPortletShowVisitInfoPopup(this, '" + active + "', '" + type + "', '" + location + "', '" + from + "', '" + to + "', '" + indication + "')";
+							var editImg = '<img src="${pageContext.request.contextPath}/images/info.gif" />';
+							var visit = type + ' <a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=' + visitId + '&patientId=${model.patient.patientId}" onmouseover="' + method + '">' + editImg + '</a>';
+							$j('td:eq(0)', trs[i]).html(visit);
 						}
 						
-						iLastVisitId = iVisidId;
+						lastVisitId = visitId;
+					} else {
+						$j('td:eq(0)', trs[i]).html('');
 					}
 				}
 			}
 		});
 	});
+	
+	function visitsPortletEscapeHtml(text) {
+		return $j('<div/>').text(text).html();
+	}
 </script>
 
 <div id="portlet${model.portletUUID}">
@@ -191,12 +246,14 @@
 								<tr>
 									<th class="visitIdHeader"></th>
 									<th class="visitActiveHeader"></th>
-									<th class="visitTypeHeader"></th>
+									<th class="visitTypeHeader"><spring:message 
+											code="Visit" /></th>
 									<th class="visitLocationHeader"></th>
 									<th class="visitFromHeader"></th>
 									<th class="visitToHeader"></th>
 									<th class="visitIndicationHeader"></th>
-									<th class="encounterIdHeader">Actions</th>
+									<th class="encounterIdHeader"><spring:message 
+											code="general.action" /></th>
 									<th class="encounterDateHeader"><spring:message
 											code="Encounter.datetime" /></th>
 									<th class="encounterTypeHeader"><spring:message
