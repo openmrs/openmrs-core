@@ -26,7 +26,6 @@ import java.util.Map;
 import junit.framework.Assert;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -312,16 +311,15 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link VisitService#saveVisit(Visit)}
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "should update an existing visit in the database", method = "saveVisit(Visit)")
 	public void saveVisit_shouldUpdateAnExistingVisitInTheDatabase() throws Exception {
-		Visit visit = Context.getVisitService().getVisit(1);
-		Assert.assertNull(visit.getLocation());
+		Visit visit = Context.getVisitService().getVisit(2);
+		Assert.assertNull(visit.getLocation());//this is the field we are editing
 		Assert.assertNull(visit.getChangedBy());
 		Assert.assertNull(visit.getDateChanged());
 		visit.setLocation(new Location(1));
 		visit = Context.getVisitService().saveVisit(visit);
-		//TODO Auditable interceptor is currently not able to set these fields as expected
+		
 		Assert.assertNotNull(visit.getChangedBy());
 		Assert.assertNotNull(visit.getDateChanged());
 	}
@@ -470,8 +468,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get visits by indications", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean)")
 	public void getVisits_shouldGetVisitsByIndications() throws Exception {
-		Assert.assertEquals(1, Context.getVisitService().getVisits(null, null, null,
-		    Collections.singletonList(new Concept(5497)), null, null, null, null, null, true, false).size());
+		Assert.assertEquals(
+		    1,
+		    Context.getVisitService()
+		            .getVisits(null, null, null, Collections.singletonList(new Concept(5497)), null, null, null, null, null,
+		                true, false).size());
 	}
 	
 	/**
@@ -482,8 +483,9 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void getVisits_shouldGetVisitsByLocations() throws Exception {
 		List<Location> locations = new ArrayList<Location>();
 		locations.add(new Location(1));
-		Assert.assertEquals(1, Context.getVisitService().getVisits(null, null, locations, null, null, null, null, null,
-		    null, true, false).size());
+		Assert.assertEquals(1,
+		    Context.getVisitService().getVisits(null, null, locations, null, null, null, null, null, null, true, false)
+		            .size());
 	}
 	
 	/**
@@ -494,8 +496,9 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void getVisits_shouldGetVisitsByVisitType() throws Exception {
 		List<VisitType> visitTypes = new ArrayList<VisitType>();
 		visitTypes.add(new VisitType(1));
-		Assert.assertEquals(4, Context.getVisitService().getVisits(visitTypes, null, null, null, null, null, null, null,
-		    null, true, false).size());
+		Assert.assertEquals(4,
+		    Context.getVisitService().getVisits(visitTypes, null, null, null, null, null, null, null, null, true, false)
+		            .size());
 	}
 	
 	/**
@@ -510,8 +513,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Date minEndDate = cal.getTime();
 		cal.set(2005, 1, 2, 23, 59, 0);
 		Date maxEndDate = cal.getTime();
-		Assert.assertEquals(2, Context.getVisitService().getVisits(null, null, null, null, null, null, minEndDate,
-		    maxEndDate, null, true, false).size());
+		Assert.assertEquals(
+		    2,
+		    Context.getVisitService()
+		            .getVisits(null, null, null, null, null, null, minEndDate, maxEndDate, null, true, false).size());
 	}
 	
 	/**
@@ -526,8 +531,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Date minStartDate = cal.getTime();
 		cal.set(2005, 0, 1, 4, 0, 0);
 		Date maxStartDate = cal.getTime();
-		Assert.assertEquals(2, Context.getVisitService().getVisits(null, null, null, null, minStartDate, maxStartDate, null,
-		    null, null, true, false).size());
+		Assert.assertEquals(
+		    2,
+		    Context.getVisitService()
+		            .getVisits(null, null, null, null, minStartDate, maxStartDate, null, null, null, true, false).size());
 	}
 	
 	/**
@@ -536,8 +543,8 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return all visits if includeVoided is set to true", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean)")
 	public void getVisits_shouldReturnAllVisitsIfIncludeVoidedIsSetToTrue() throws Exception {
-		Assert.assertEquals(6, Context.getVisitService().getVisits(null, null, null, null, null, null, null, null, null,
-		    true, true).size());
+		Assert.assertEquals(6,
+		    Context.getVisitService().getVisits(null, null, null, null, null, null, null, null, null, true, true).size());
 	}
 	
 	@Test(expected = APIException.class)
