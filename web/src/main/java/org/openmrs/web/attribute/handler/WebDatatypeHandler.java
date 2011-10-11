@@ -19,7 +19,6 @@ import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 
-
 /**
  * A web-layer extension of {@link CustomDatatypeHandler}, which generates the HTML for a widget, and handles the submission of that widget 
  */

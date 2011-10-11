@@ -71,8 +71,8 @@ public class BooleanFieldGenDatatypeHandler implements FieldGenDatatypeHandler<o
 	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getValue(org.openmrs.customdatatype.CustomDatatype, javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Boolean getValue(org.openmrs.customdatatype.datatype.Boolean datatype, HttpServletRequest request, String formFieldName)
-	        throws InvalidCustomValueException {
+	public Boolean getValue(org.openmrs.customdatatype.datatype.Boolean datatype, HttpServletRequest request,
+	        String formFieldName) throws InvalidCustomValueException {
 		String result = request.getParameter(formFieldName);
 		if (StringUtils.isBlank(result))
 			return null;
