@@ -65,7 +65,7 @@
 			<one-to-many class="VisitAttribute" />
 		</set>
 
-		<set name="encounters" lazy="true" inverse="true" order-by="encounter_datetime asc">
+		<set name="encounters" lazy="true" inverse="true" order-by="encounter_datetime desc, encounter_id desc">
 			<key column="visit_id" />
 			<one-to-many class="Encounter" />
 		</set>

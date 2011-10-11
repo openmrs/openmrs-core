@@ -96,12 +96,13 @@ public class VisitListController {
 		
 		response.setsColumns("visitId", "visitActive", "visitType", "visitLocation", "visitFrom", "visitTo",
 		    "visitIndication", "encounterId", "encounterDate", "encounterType", "encounterProviders", "encounterLocation",
-		    "encounterEnterer", "formViewURL", "formEditURL");
+		    "encounterEnterer", "formViewURL", "formEditURL", "firstInVisit", "lastInVisit");
 		
 		String[] row;
 		for (Encounter encounter : encounters) {
-			row = new String[15];
+			row = new String[17];
 			Arrays.fill(row, "");
+			
 			if (encounter.getVisit() != null) {
 				Visit visit = encounter.getVisit();
 				row[0] = visit.getId().toString();
@@ -117,53 +118,76 @@ public class VisitListController {
 				if (visit.getIndication() != null && visit.getIndication().getName() != null) {
 					row[6] = visit.getIndication().getName().getName();
 				}
+				
+				Object[] visitEncounters = visit.getEncounters().toArray();
+				if (visitEncounters.length > 0) {
+					if (encounter.equals(visitEncounters[0])) {
+						row[15] = Boolean.TRUE.toString();
+					} else if (encounter.equals(visitEncounters[visitEncounters.length - 1])) {
+						row[16] = Boolean.TRUE.toString();
+					}
+				} else {
+					row[15] = Boolean.TRUE.toString();
+					row[16] = Boolean.TRUE.toString();
+				}
 			}
 			
 			if (encounter.getId() != null) { //If it is not mocked encounter
 				row[7] = encounter.getId().toString();
 				row[8] = Context.getDateFormat().format(encounter.getEncounterDatetime());
 				row[9] = encounter.getEncounterType().getName();
-				
-				StringBuilder providersBuilder = new StringBuilder();
-				for (Set<Provider> providers : encounter.getProvidersByRoles().values()) {
-					for (Provider provider : providers) {
-						if (provider.getPerson() != null) {
-							providersBuilder.append(provider.getPerson().getPersonName().getFullName());
-						} else {
-							providersBuilder.append(provider.getIdentifier());
-						}
-						providersBuilder.append(", ");
-					}
-				}
-				if (providersBuilder.length() > 1) {
-					row[10] = providersBuilder.substring(0, providersBuilder.length() - 2);
-				}
-				
+				row[10] = getProviders(encounter);
 				row[11] = (encounter.getLocation() != null) ? encounter.getLocation().getName() : "";
 				row[12] = (encounter.getCreator() != null) ? encounter.getCreator().getPersonName().toString() : "";
-				String viewFormURL = formToViewUrlMap.get(encounter.getForm());
-				if (viewFormURL != null) {
-					viewFormURL = request.getContextPath() + "/" + viewFormURL + "?encounterId=" + encounter.getId();
-				} else {
-					viewFormURL = request.getContextPath() + "/admin/encounters/encounterDisplay.list?encounterId="
-					        + encounter.getId();
-				}
-				row[13] = viewFormURL;
-				
-				String editFormURL = formToEditUrlMap.get(encounter.getForm());
-				if (editFormURL != null) {
-					editFormURL = request.getContextPath() + "/" + editFormURL + "&encounterId=" + encounter.getId();
-				} else {
-					editFormURL = request.getContextPath() + "/admin/encounters/encounter.form?encounterId="
-					        + encounter.getId();
-				}
-				row[14] = editFormURL;
+				row[13] = getViewFormURL(request, formToViewUrlMap, encounter);
+				row[14] = getEditFormURL(request, formToEditUrlMap, encounter);
 			}
 			
 			response.addRow(row);
 		}
 		
 		return response;
+	}
+	
+	private String getViewFormURL(HttpServletRequest request, Map<Form, String> formToViewUrlMap, Encounter encounter) {
+		String viewFormURL = formToViewUrlMap.get(encounter.getForm());
+		if (viewFormURL != null) {
+			viewFormURL = request.getContextPath() + "/" + viewFormURL + "?encounterId=" + encounter.getId();
+		} else {
+			viewFormURL = request.getContextPath() + "/admin/encounters/encounterDisplay.list?encounterId="
+			        + encounter.getId();
+		}
+		return viewFormURL;
+	}
+	
+	private String getEditFormURL(HttpServletRequest request, Map<Form, String> formToEditUrlMap, Encounter encounter) {
+		String editFormURL = formToEditUrlMap.get(encounter.getForm());
+		if (editFormURL != null) {
+			editFormURL = request.getContextPath() + "/" + editFormURL + "&encounterId=" + encounter.getId();
+		} else {
+			editFormURL = request.getContextPath() + "/admin/encounters/encounter.form?encounterId=" + encounter.getId();
+		}
+		return editFormURL;
+	}
+	
+	private String getProviders(Encounter encounter) {
+		StringBuilder providersBuilder = new StringBuilder();
+		for (Set<Provider> providers : encounter.getProvidersByRoles().values()) {
+			for (Provider provider : providers) {
+				if (provider.getPerson() != null) {
+					providersBuilder.append(provider.getPerson().getPersonName().getFullName());
+				} else {
+					providersBuilder.append(provider.getIdentifier());
+				}
+				providersBuilder.append(", ");
+			}
+		}
+		
+		if (providersBuilder.length() > 1) {
+			return providersBuilder.substring(0, providersBuilder.length() - 2);
+		} else {
+			return "";
+		}
 	}
 	
 	@ModelAttribute
