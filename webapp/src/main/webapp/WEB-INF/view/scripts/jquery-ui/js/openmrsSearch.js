@@ -666,7 +666,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			
 			var prevRow = this.curRowSelection;
 			//if we are on the last page, and the last row is highlighted, do nothing
-			if(this._getCurrVisiblePage() == this._table.numberOfPages && prevRow >= (this._results.length-1))
+			if(this._getCurrVisiblePage() == this._table.numberOfPages && prevRow >= (this._results.length-1) && this._results.length > 1)
 				return;
 			
 			//only move the highlight to next row if it is currently on the visible page otherwise shoule be first row
@@ -679,7 +679,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				}
 			}
 			
-			if(prevRow != null) {
+			if(prevRow != null && this._results.length > 1) {
 				$j(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
 			}
 			
