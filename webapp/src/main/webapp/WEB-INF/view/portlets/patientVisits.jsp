@@ -169,6 +169,8 @@ tr.bottom-encounter-in-visit td:last-child {
 					actions = actions + ' <a href="javascript:;" onclick="' + method + '">' + viewImg + '</a>';
 					
 					$j('td:eq(1)', nRow).html(actions);
+				} else {
+					$j('td:eq(2)', nRow).html('<i><spring:message code="Encounter.noEncounters" /></i>');
 				}
 				return nRow;
 			},
