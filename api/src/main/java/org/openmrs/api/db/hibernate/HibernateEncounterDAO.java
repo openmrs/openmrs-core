@@ -464,14 +464,13 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			}
 			
 			Collections.sort(encounters, new Comparator<Encounter>() {
-				
+
 				@Override
-				public int compare(Encounter o1, Encounter o2) {
-					Date o1start = (o1.getVisit() != null) ? o1.getVisit().getStartDatetime() : o1.getEncounterDatetime();
-					Date o2start = (o2.getVisit() != null) ? o2.getVisit().getStartDatetime() : o2.getEncounterDatetime();
-					return o2start.compareTo(o1start);
-				}
-			});
+                public int compare(Encounter o1, Encounter o2) {
+					Date o1Date = (o1.getVisit() != null) ? o1.getVisit().getStartDatetime() : o1.getEncounterDatetime();
+					Date o2Date = (o2.getVisit() != null) ? o2.getVisit().getStartDatetime() : o2.getEncounterDatetime();
+					return o2Date.compareTo(o1Date);
+                }});
 		}
 		
 		if (start == null) {
@@ -528,6 +527,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		}
 		
 		criteria.addOrder(Order.desc("startDatetime"));
+		criteria.addOrder(Order.desc("visitId"));
 	}
 	
 	private void addEncountersByPatientCriteria(Criteria criteria, Patient patient, boolean includeVoided, String query) {
@@ -553,6 +553,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		}
 		
 		criteria.addOrder(Order.desc("visit.startDatetime"));
+		criteria.addOrder(Order.desc("visit.visitId"));
 		criteria.addOrder(Order.desc("encounterDatetime"));
+		criteria.addOrder(Order.desc("encounterId"));
 	}
 }

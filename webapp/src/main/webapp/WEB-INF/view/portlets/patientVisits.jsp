@@ -42,9 +42,9 @@
 <div id="visitsPortletVisitInfoPopup">
 	<b><span id="visitsPortletType"></span></b><br/>
     @ <span id="visitsPortletLocation"></span><br/>
-    From: <span id="visitsPortletFrom"></span><br/>
-    To: <span id="visitsPortletTo"></span><br/>
-    Indication: <span id="visitsPortletIndication"></span>
+    <spring:message code="Visit.from"/>: <span id="visitsPortletFrom"></span><br/>
+    <spring:message code="Visit.to"/>: <span id="visitsPortletTo"></span><br/>
+    <spring:message code="Visit.indication"/>: <span id="visitsPortletIndication"></span>
 </div>
 
 <style>
@@ -83,6 +83,19 @@
 </script>
 
 <style>
+div.visit {
+	border: 1px solid #1aac9b;
+	border-radius: 10px;
+	padding: 5px;
+	background-color: #e0e0f0;
+	color: #000000;
+	white-space: nowrap;
+}
+
+a.visitLink {
+	text-decoration: none;
+}
+
 tr.encounter-in-visit td {
 	border-color: #1aac9b;
 	border-style: solid;
@@ -136,7 +149,8 @@ tr.bottom-encounter-in-visit td:last-child {
 			"aoColumns": [ 
 				{ "bVisible": false }, { "bVisible": false }, null, { "bVisible": false },
 				{ "bVisible": false }, { "bVisible": false }, { "bVisible": false },
-				null, null, null, null, null, null, { "bVisible": false }, { "bVisible": false }
+				null, null, null, null, null, null, { "bVisible": false }, { "bVisible": false }, 
+				{ "bVisible": false }, { "bVisible": false }
 			],
 			"fnRowCallback": function(nRow, aData, iDisplayIndex) {				
 				var encounterId = aData[7];
@@ -167,28 +181,34 @@ tr.bottom-encounter-in-visit td:last-child {
 				var colspan = trs[0].getElementsByTagName('td').length;
 				var lastVisitId = "";
 				for (var i = 0; i < trs.length; i++) {
+					//Groups visits
+					
 					var iDisplayIndex = i;
 					var aoData = oSettings.aoData[oSettings.aiDisplay[iDisplayIndex]];
 					var visitId = aoData._aData[0];
+					var first = aoData._aData[15];
+					var last = aoData._aData[16];
 					
 					if (visitId != '') {
 						$j(trs[i]).addClass('encounter-in-visit');
 					}
 					
-					if (visitId != lastVisitId) {
-						//Adds a group
-						if (i > 0) {
-							$j(trs[i-1]).addClass('bottom-encounter-in-visit');
-						}
+					if (first == 'true') {
 						$j(trs[i]).addClass('top-encounter-in-visit');
+					}
+					if (last == 'true') {
+						$j(trs[i]).addClass('bottom-encounter-in-visit');
 						
 						//Adds a whitespace between groups
 						var trGroup = document.createElement('tr');
 						var tdGroup = document.createElement('td');
 						tdGroup.colSpan = colspan;
 						trGroup.appendChild(tdGroup);
-						trs[i].parentNode.insertBefore(trGroup, trs[i]);
-						
+						trs[i].parentNode.insertBefore(trGroup, trs[i + 1]);
+					}
+					
+					if (visitId != lastVisitId) {
+						//Adds info about a visit to the first displayed row
 						if (visitId != '') {
 							var active = aoData._aData[1];
 							var type = visitsPortletEscapeHtml(aoData._aData[2]);
@@ -198,8 +218,10 @@ tr.bottom-encounter-in-visit td:last-child {
 							var indication = visitsPortletEscapeHtml(aoData._aData[6]);
 							
 							var method = "visitsPortletShowVisitInfoPopup(this, '" + active + "', '" + type + "', '" + location + "', '" + from + "', '" + to + "', '" + indication + "')";
-							var editImg = '<img src="${pageContext.request.contextPath}/images/info.gif" />';
-							var visit = type + ' <a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=' + visitId + '&patientId=${model.patient.patientId}" onmouseover="' + method + '">' + editImg + '</a>';
+							var editImg = ' <img src="${pageContext.request.contextPath}/images/info.gif" />';
+							var visit = type + editImg;
+							visit = '<div class="visit">' + visit + ' </div>';
+							visit = '<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=' + visitId + '&patientId=${model.patient.patientId}" onmouseover="' + method + '" class="visitLink">' + visit + '</a>';
 							$j('td:eq(0)', trs[i]).html(visit);
 						}
 						
@@ -221,18 +243,6 @@ tr.bottom-encounter-in-visit td:last-child {
 
 	<div id="visitPortlet">
 		<openmrs:hasPrivilege privilege="View Visits, View Encounters">
-			<div id="visits">
-				<div class="boxHeader${model.patientVariation}">
-					<c:choose>
-						<c:when test="${empty model.title}">
-							<spring:message code="Visit.header" />
-						</c:when>
-						<c:otherwise>
-							<spring:message code="${model.title}" />
-						</c:otherwise>
-					</c:choose>
-				</div>
-				<div class="box${model.patientVariation}">
 					<openmrs:hasPrivilege privilege="Add Visits">
 				&nbsp;<a
 							href="<openmrs:contextPath />/admin/visits/visit.form?patientId=${model.patient.patientId}"><spring:message
@@ -266,14 +276,14 @@ tr.bottom-encounter-in-visit td:last-child {
 											code="Encounter.enterer" /></th>
 									<th class="encounterViewURLHeader"></th>
 									<th class="encounterEditURLHeader"></th>
+									<th class="encounterFirstHeader"></th>
+									<th class="encounterLastHeader"></th>
 								</tr>
 							</thead>
 							<tbody>
 							</tbody>
 						</table>
 					</div>
-				</div>
-			</div>
 		</openmrs:hasPrivilege>
 
 	</div>
