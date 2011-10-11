@@ -117,10 +117,10 @@ public class EncounterFormController extends SimpleFormController {
 				
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "patient", "error.null");
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "error.null");
-				if (ArrayUtils.isEmpty(ServletRequestUtils.getStringParameters(request, "providerIds")))
+				String[] providerIdsArray = ServletRequestUtils.getStringParameters(request, "providerIds");
+				if (ArrayUtils.isEmpty(providerIdsArray))
 					errors.reject("Encounter.provider.atleastOneProviderRequired");
 				
-				String[] providerIdsArray = ServletRequestUtils.getStringParameters(request, "providerIds");
 				String[] roleIdsArray = ServletRequestUtils.getStringParameters(request, "encounterRoleIds");
 				
 				ProviderService ps = Context.getProviderService();
