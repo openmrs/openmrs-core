@@ -484,3 +484,35 @@ function colorVisibleTableRows(tableId, oddColorClass, evenColorClass, includeHe
          object.value = object.value.substring(0, maxLength); 
       }
    }
+ 
+ /**
+  * Removes the specified DOM node from it's parent node
+  * 
+  * @param node the node to remove
+  */
+function removeNode(node){
+	node.parentNode.removeChild(node);
+}
+
+/**
+ * Adds the autocomplete feature to the specified field
+ * 
+ * @param displayNameInputId (Required) The id for the display input element
+ * @param formFieldId (Required) The id for the formFieldId element
+ * @param searchFunction (Required) The callback function to call to perform the search
+ * @param valueField (Required) The field of the list item to be set as the value of the selected item
+ * @param placeHolderText (Optional) Placeholder text for the input field
+ * @param callBack (Optional) The callBack function
+ */
+function addAutoComplete(displayNameInputId, formFieldId, searchFunction, valueField, placeHolderText, callBack){
+	new AutoComplete(displayNameInputId, searchFunction,  {
+		select: function(event, ui) {
+			jquerySelectEscaped(formFieldId).val(ui.item.object[valueField]);
+			if (ui.item.object && callBack) {
+				// only call the callback if we got a true selection, not a click on an error field
+				callBack(ui.item.object);
+			}
+		},
+		placeholder: placeHolderText
+	});
+}
