@@ -3,6 +3,7 @@
 <%@ attribute name="formFieldName" required="true" %>
 <%@ attribute name="initialValue" required="false" %> <%-- This should be a providerId --%>
 <%@ attribute name="callback" required="false" %> <%-- gets the relType, ProviderListItem sent back --%>
+<%@ attribute name="formFieldId" required="false" description="The unique id to assign to the formField" %>
 
 <openmrs:htmlInclude file="/dwr/interface/DWRProviderService.js" />
 <openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />

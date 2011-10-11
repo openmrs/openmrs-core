@@ -6,24 +6,21 @@
 <%@ include file="localHeader.jsp" %>
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
-<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRVisitService.js"/>
 <openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js"/>
+<openmrs:htmlInclude file="/dwr/interface/DWRProviderService.js" />
 
 <script type="text/javascript">
-	dojo.addOnLoad( function() {
+	var providersCount = ${fn:length(encounter.providersByRoles)};
+	var numberOfClonedElements = 0;
+	
+	$j(document).ready( function() {
 		toggleVisibility(document, "div", "description");
 		<c:if test="${encounter.encounterId != null}">
 		toggleRowVisibilityForClass("obs", "voided", true);
 		voidedClicked(document.getElementById("voided"));
 		</c:if>
-	})
-
-</script>
-
-
-<script type="text/javascript">
+	});
 
 	function mouseover(row, isDescription) {
 		if (row.className.indexOf("searchHighlight") == -1) {
@@ -75,17 +72,12 @@
 	}
 
 	var patientBoxFilledIn = false;
-	var providerBoxFilledIn = false;
 	function enableSaveButton(formFieldId, id) {
 		if (formFieldId == "patientId")
 			patientBoxFilledIn = true;
-		
-		//TODO: keep track of count of provider rows as they get added/removed to replace the commented lines below
-		//if (formFieldId == "providerId")
-		//	providerBoxFilledIn = true;
 
-		// only enable if both the patient and provider boxes have been entered
-		if (patientBoxFilledIn)
+		// only enable if both the patient and at least one provider has been added
+		if (patientBoxFilledIn && providersCount > 0)
 			document.getElementById("saveEncounterButton").disabled = false;
 	}
 	
@@ -114,84 +106,93 @@
 		});
 	}
 
-	function removeProvider(btn, encounterRoleId, providerId) {
-		var parentNode = btn.parentNode.parentNode;
+	function removeProvider(buttonObj) {
+		removeNode(buttonObj.parentNode.parentNode);
+		providersCount--;
+		if(providersCount == 0)
+			$j("saveEncounterButton").attr('disabled', 'disabled');
 		
-		if(confirm('<spring:message code="Encounter.provider.deleteProviderConfirm"/>' + 
-				' ' + parentNode.childNodes[1].innerHTML + 
-				' ' + '<spring:message code="Role.role"/>' + ': ' + parentNode.childNodes[0].innerHTML)){
-			
-			<c:if test="${encounter.encounterId != null}">
-			DWREncounterService.removeProviderFromEncounter(${encounter.encounterId}, encounterRoleId, providerId, function(encounterObj) {
-				if(encounterObj){
-					parentNode.parentNode.removeChild(btn.parentNode.parentNode);
+	}
+	
+	function addProvider(providerObj){
+		var index = ${fn:length(encounter.providersByRoles)}+numberOfClonedElements;
+		var providerTemplateRow = document.getElementById("addNewProviderTemplate");
+		var newRow = providerTemplateRow.cloneNode(true);
+		newRow.id = '';
+		var inputs = newRow.getElementsByTagName("input");
+		var errorSpans = newRow.getElementsByTagName("span");
+		var selects = newRow.getElementsByTagName("select");
+		var displayInputObj = null;
+		var formFieldObj = null;
+		var selectElement = null;
+		for (var i = 0; i < inputs.length; i++) {
+			var input = inputs[i];
+			if(input){
+				if(input.type == 'text' && input.name == 'providerName') {
+					input.id = input.id.replace('[x]', '[' + index + ']');
+					displayInputObj = input;
+				}else if(input.type == 'hidden' && input.name == 'providerIds') {
+					input.id = input.id.replace('[x]', '[' + index + ']');
+					$j(input).addClass('providerInput');
+					formFieldObj = input;
+				}
+			}
+		}
+		//find the role select element
+		for (var i = 0; i < selects.length; i++) {
+			var select = selects[i];
+			if(select && select.name == 'encounterRoleIds') {
+				select.id = select.id.replace('[x]', '[' + index + ']');
+				$j(select).addClass('roleSelect');
+				selectElement = select;
+			}
+		}
+		//find the error messages spans and assign them ids
+		for (var i = 0; i < errorSpans.length; i++) {
+			var span = errorSpans[i];
+			if(span.id == 'providerErrors') {
+				span.id = formFieldObj.id+'-errors';
+				continue;
+			}else if(span.id == 'roleErrors') {
+				span.id = selectElement.id+'-errors';
+				continue;
+			}
+		}
+		
+		providerTemplateRow.parentNode.insertBefore(newRow, providerTemplateRow);
+		addAutoComplete(displayInputObj.id, formFieldObj.id, new CreateCallback().providerCallback(), 'providerId',
+				'<spring:message code="Provider.search.placeholder" javaScriptEscape="true"/>')
+		$j(newRow).show();
+		providersCount++;
+		numberOfClonedElements++;
+		enableSaveButton(null, null);
+	}
+	
+	//Called when the form is submitted to check if the roles and providers have been set for new providers.
+	//It also removes the hidden provider template row
+	function onFormSubmission(){
+		var hasErrors = false;
+		$j.each($j('.providerInput'), function(index, providerInput) {
+				if($j(providerInput).val() == ''){
+					hasErrors = true;
+					document.getElementById(providerInput.id+'-errors').style.display = '';
 				}else
-					alert('<spring:message code="Encounter.provider.failedToRemoveProvider"/>');
-			});	
-			</c:if>
-		}
-	}
-	
-	function cancelProvider(btn) {
-		document.getElementById("addNewProviderTemplate").style.display = "none";
-		document.getElementById("encounterRole").value = "";
-		document.getElementById("providerId_id_selection").value = "";
-		document.getElementById("providerId_id").value = "";
-	}
-	
-	function addProvider(btn){
-		document.getElementById("addNewProviderTemplate").style.display = "";
-		document.getElementById("encounterRole").focus();
-	}
-	
-	function saveProvider(encounter){
-		if(document.getElementById("encounterRole").selectedIndex < 1){
-			alert('<spring:message code="Encounter.provider.selectEncounterRole"/>');
-			document.getElementById("encounterRole").focus();
-			return;
-		}
-		if(document.getElementById("providerId_id_selection").value.length == 0){
-			alert('<spring:message code="Encounter.provider.selectProvider"/>');
-			document.getElementById("providerId_id_selection").focus();
-			return;
-		}
-		
-		var encounterRoleId = document.getElementById("encounterRole").value;
-		var providerId = document.getElementById("providerId_id").value;
-		
-		<c:if test="${encounter.encounterId != null}">
-		DWREncounterService.addProviderToEncounter(${encounter.encounterId}, encounterRoleId, providerId, function(providerObj) {
-			if(providerObj){
-				addProviderRow(providerObj);
-			}else
-				alert('<spring:message code="Encounter.provider.failedToAddProvider"/>');
+					document.getElementById(providerInput.id+'-errors').style.display = 'none';
 		});
-		</c:if>
-	}
-	
-	function addProviderRow(providerObj){
-		var refElement = document.getElementById("addNewProviderTemplate");
+		$j.each($j('.roleSelect'), function(index, roleSelect) {
+			if(roleSelect.selectedIndex == 0){
+				hasErrors = true;
+				document.getElementById(roleSelect.id+'-errors').style.display = '';
+			}else
+				document.getElementById(roleSelect.id+'-errors').style.display = 'none';
+		});
 		
-		var tr = document.createElement("tr");
-		refElement.parentNode.insertBefore(tr, refElement);
+		if(hasErrors)
+			return false;
 		
-		var td = document.createElement("td");
-		tr.appendChild(td);
-		td.innerHTML = document.getElementById("encounterRole").options[document.getElementById("encounterRole").selectedIndex].innerHTML.trim();
+		removeNode(document.getElementById("addNewProviderTemplate"));
 		
-		td = document.createElement("td");
-		tr.appendChild(td);
-		td.innerHTML = document.getElementById("providerId_id_selection").value.trim();
-		
-		td = document.createElement("td");
-		tr.appendChild(td);
-		td.innerHTML = providerObj.identifier;
-		
-		td = document.createElement("td");
-		tr.appendChild(td);
-		td.innerHTML = "<input type='button' value='<spring:message code='general.remove'/>' class='smallButton' onClick='removeProvider(this)'/>";
-	
-		cancelProvider();
+		return true;
 	}
 	
 </script>
@@ -212,12 +213,17 @@
 
 <spring:hasBindErrors name="encounter">
 	<spring:message code="fix.error"/>
+	<div class="error">
+		<c:forEach items="${errors.allErrors}" var="error">
+			<spring:message code="${error.code}" text="${error.code}"/><br/>
+		</c:forEach>
+	</div>
 	<br />
 </spring:hasBindErrors>
 
 <b class="boxHeader"><spring:message code="Encounter.summary"/></b>
+<form method="post" onsubmit="return onFormSubmission()">
 <div class="box">
-	<form method="post">
 	<table cellpadding="3" cellspacing="0">
 		<tr>
 			<th><spring:message code="Encounter.patient"/></th>
@@ -346,15 +352,8 @@
 			</c:if>
 		</c:if>
 	</table>
-	
-	<input type="hidden" name="phrase" value='<request:parameter name="phrase" />'/>
-	<input type="submit" id="saveEncounterButton" value='<spring:message code="Encounter.save"/>' disabled>
-	&nbsp;
-	<input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1); return; document.location='index.htm?autoJump=false&phrase=<request:parameter name="phrase"/>'">
-	</form>
 </div>
-	
-<c:if test="${encounter.encounterId != null}">
+
 	<br/>
 	<div class="boxHeader">
 		<b><spring:message code="Provider.header"/></b>
@@ -365,15 +364,25 @@
 			<th><spring:message code="Role.role"/></th>
 			<th><spring:message code="Provider.name"/></th>
 			<th><spring:message code="Provider.identifier"/></th>
+			<th></th>
 		</tr>
 		<c:forEach items="${encounter.providersByRoles}" var="providerRole">
 			<c:forEach items="${providerRole.value}" var="provider">
-				<tr><td>${providerRole.key.name}</td><td>${provider}</td><td>${provider.identifier}</td><td><input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeProvider(this, ${providerRole.key.encounterRoleId}, ${provider.providerId})" /></td></tr>
+				<tr>
+					<td>${providerRole.key.name}
+						<input type="hidden" name="encounterRoleIds" value="${providerRole.key.encounterRoleId}" />
+					</td>
+					<td>${provider}
+						<input type="hidden" name="providerIds" value="${provider.providerId}" />
+					</td>
+					<td>${provider.identifier}</td>
+					<td><input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeProvider(this, ${providerRole.key.encounterRoleId}, ${provider.providerId})" /></td>
+				</tr>
 			</c:forEach>
 		</c:forEach>
 		<tr id="addNewProviderTemplate" style="display:none;">
 			<td>
-				<select id="encounterRole" >
+				<select id="roleIds[x]" name="encounterRoleIds">
 					<option value=""></option>
 					<c:forEach items="${encounterRoles}" var="encounterRole">
 						<option value="${encounterRole.encounterRoleId}">
@@ -381,17 +390,33 @@
 						</option>
 					</c:forEach>
 				</select>
+				<span id="roleErrors" class="error" style="display: none;">
+					<spring:message code="Encounter.provider.selectEncounterRole"/>
+				</span>
 			</td>
-			<td><openmrs_tag:providerField formFieldName="providerId" initialValue=""/></td>
 			<td>
-				<input type="button" value='<spring:message code="general.save"/>' class="smallButton" onClick="saveProvider(this)" />
-				<input type="button" value='<spring:message code="general.cancel"/>' class="smallButton" onClick="cancelProvider(this)" />
+			<input id="providers[x]" type="text" name="providerName"  />
+			<span id="providerErrors" class="error" style="display: none;">
+				<spring:message code="Encounter.provider.selectProvider"/>
+			</span>
+			<input id="providerIds[x]" type="hidden" name="providerIds"  />
+			</td>
+			<td id="identifierColumn-[x]"></td>
+			<td>
+				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onclick="removeProvider(this)" />
 			</td>
 		</tr>
 	</table>
-	<input type="button" value='<spring:message code="Provider.add"/>' class="smallButton" onClick="addProvider(this)" />
+	<input type="button" value='<spring:message code="Provider.add"/>' class="smallButton" onclick="addProvider()" />
 	</div>
+	<br/>
+	<input type="hidden" name="phrase" value='<request:parameter name="phrase" />'/>
+	<input type="submit" id="saveEncounterButton" value='<spring:message code="Encounter.save"/>' >
+	&nbsp;
+	<input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1); return; document.location='index.htm?autoJump=false&phrase=<request:parameter name="phrase"/>'">
+	</form>
 	
+<c:if test="${encounter.encounterId != null}">
 	<br/>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterFormBeforeObs" type="html" parameters="encounterId=${encounter.encounterId}">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
