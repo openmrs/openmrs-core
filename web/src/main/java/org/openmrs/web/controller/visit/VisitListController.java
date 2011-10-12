@@ -123,7 +123,8 @@ public class VisitListController {
 				if (visitEncounters.length > 0) {
 					if (encounter.equals(visitEncounters[0])) {
 						row[15] = Boolean.TRUE.toString();
-					} else if (encounter.equals(visitEncounters[visitEncounters.length - 1])) {
+					}
+					if (encounter.equals(visitEncounters[visitEncounters.length - 1])) {
 						row[16] = Boolean.TRUE.toString();
 					}
 				} else {
