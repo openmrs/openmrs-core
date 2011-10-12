@@ -41,6 +41,7 @@
                             <td class="question">This option allows you to select the database url, name etc. and customize all the installation settings.
                                 Choose this option when you are installing OpenMRS in a production environment.</td>
                         </tr>
+                        #*
                         <tr>
                             <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_TESTING}" #if( $installMethod == $INSTALL_METHOD_TESTING )checked="checked"#end/> Testing</td>
                             <td class="question">
@@ -55,6 +56,7 @@
                             	</ul>
                             </td>
                         </tr>
+                        *#
                         <tr>
                             <td colspan="2"><input class="button" type="submit" value="Continue"/></td>
                         </tr>                        
