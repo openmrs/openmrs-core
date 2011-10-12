@@ -47,6 +47,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.controller.PortletControllerUtil;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -195,6 +196,8 @@ public class PortletController implements Controller {
 						
 						// add visits if this user can view them
 						if (Context.hasPrivilege(PrivilegeConstants.VIEW_VISITS)) {
+							model.put("person", p);
+							PortletControllerUtil.addFormToEditAndViewUrlMaps(model);
 							model.put("patientVisits", Context.getVisitService().getVisitsByPatient(p));
 							model.put("activeVisits", Context.getVisitService().getActiveVisitsByPatient(p));
 						}

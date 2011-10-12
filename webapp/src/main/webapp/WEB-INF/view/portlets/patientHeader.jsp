@@ -235,23 +235,84 @@
 		</c:if>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="View Visits, View Encounters">
-		<c:forEach var="v" items="${model.activeVisits}">
+	
+		<div id="patientHeaderEncounterPopup">
+		<div id="patientHeaderEncounterPopupLoading"><spring:message code="general.loading"/></div>
+		<iframe id="patientHeaderEncounterPopupIframe" width="100%" height="100%" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"></iframe>
+		</div>
+		
+		<script type="text/javascript">
+			$j(document).ready(function() {
+				$j('#patientHeaderEncounterPopup').dialog({
+						title: 'dynamic',
+						autoOpen: false,
+						draggable: false,
+						resizable: false,
+						width: '95%',
+						modal: true,
+						open: function(a, b) { $j('#patientHeaderEncounterPopupLoading').show(); }
+				});
+				
+				$j("#patientHeaderEncounterPopupIframe").load(function() { $j('#patientHeaderEncounterPopupLoading').hide(); });
+			});
+		
+			function loadUrlIntoPatientHeaderEncounterPopup(title, urlToLoad) {
+				$j("#patientHeaderEncounterPopupIframe").attr("src", urlToLoad);
+				$j('#patientHeaderEncounterPopup')
+					.dialog('option', 'title', title)
+					.dialog('option', 'height', $j(window).height() - 50) 
+					.dialog('open');
+			}
+		</script>
+		
+		<script type="text/javascript">					
+			function endVisitNow(visitId, patientId) {
+				if (confirm("<spring:message code="Visit.confirm.endNow"/>")) {
+					window.location = '<openmrs:contextPath />/admin/visits/visitEnd.form?visitId=' + visitId + '&patientId=' + patientId;
+				}
+			}
+		</script>
+	
+		<c:forEach var="visit" items="${model.activeVisits}">
 			<div id="patientVisitsSubheader" class="box" style="margin-top: 2px">
 				&nbsp;<strong><spring:message code="Visit.active.label" />: <a
-					href="<openmrs:contextPath />/admin/visits/visit.form?visitId=${ v.visitId }&patientId=${model.patient.patientId}"><openmrs:format
-							visitType="${ v.visitType }" /></a></strong>
-				<c:if test="${ not empty v.location }">
+					href="<openmrs:contextPath />/admin/visits/visit.form?visitId=${ visit.visitId }&patientId=${model.patient.patientId}"><openmrs:format
+							visitType="${ visit.visitType }" /></a></strong>
+				<c:if test="${ not empty visit.location }">
 					<spring:message code="general.atLocation" />
-					<strong><openmrs:format location="${ v.location }" /></strong></c:if>,
+					<strong><openmrs:format location="${ visit.location }" /></strong></c:if>,
 				<spring:message code="Visit.from" />
-				<openmrs:formatDate date="${ v.startDatetime }" />
-				<c:if test="${not empty v.stopDatetime }">
+				<openmrs:formatDate date="${ visit.startDatetime }" />
+				<c:if test="${not empty visit.stopDatetime }">
 					<spring:message code="Visit.to" />
-					<openmrs:formatDate date="${ v.stopDatetime }" />
+					<openmrs:formatDate date="${ visit.stopDatetime }" />
 				</c:if>
-				<input type="button" value="<spring:message code="Visit.edit"/>"
-					onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?visitId=${ v.visitId }&patientId=${model.patient.patientId}'" />
-				<br />
+				<openmrs:hasPrivilege privilege="Edit Visits">
+					<input type="button" value="<spring:message code="Visit.edit"/>"
+						onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?visitId=${ visit.visitId }&patientId=${model.patient.patientId}'" />
+					<input type="button" value="<spring:message code="Visit.endNow"/>" onclick="endVisitNow('${visit.visitId}', '${model.patient.patientId}');" />
+				</openmrs:hasPrivilege>
+				<br />&nbsp;
+				<c:if test="${empty visit.encounters}">
+					<i><spring:message code="Encounter.noEncounters" /></i>
+				</c:if>
+				<c:forEach var="encounter" items="${visit.encounters}" varStatus="status">
+					<c:set var="viewEncounterUrl" value="${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=${encounter.encounterId}"/>
+						<c:if test="${ model.formToViewUrlMap[encounter.form] != null }">
+						<c:url var="viewEncounterUrl" value="${model.formToViewUrlMap[encounter.form]}">
+							<c:param name="encounterId" value="${encounter.encounterId}"/>
+							<c:param name="inPopup" value="true"/>
+						</c:url>
+					</c:if>
+					<a href="javascript:void(0)" onClick="loadUrlIntoPatientHeaderEncounterPopup('<openmrs:format encounter="${encounter}" javaScriptEscape="true"/>', '${viewEncounterUrl}'); return false;">
+						<openmrs:format encounterType="${encounter.encounterType}" /></a><c:if test="${not status.last}">,</c:if>
+				</c:forEach>
+				<openmrs:hasPrivilege privilege="Add Encounters">
+				<!-- 
+				<input type="button" value="<spring:message code="Visit.addEncounter"/>"
+					onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?visitId=${ visit.visitId }&patientId=${model.patient.patientId}'" />
+				-->
+				</openmrs:hasPrivilege>
 			</div>
 		</c:forEach>
 	</openmrs:hasPrivilege>

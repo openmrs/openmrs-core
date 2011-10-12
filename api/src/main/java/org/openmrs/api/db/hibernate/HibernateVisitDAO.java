@@ -178,6 +178,9 @@ public class HibernateVisitDAO implements VisitDAO {
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("voided", false));
 		
+		criteria.addOrder(Order.desc("startDatetime"));
+		criteria.addOrder(Order.desc("visitId"));
+		
 		List<Visit> visits = criteria.list();
 		
 		if (serializedAttributeValues != null) {
