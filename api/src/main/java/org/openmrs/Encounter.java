@@ -546,6 +546,8 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 		encounterProvider.setEncounter(this);
 		encounterProvider.setEncounterRole(role);
 		encounterProvider.setProvider(provider);
+		encounterProvider.setDateCreated(new Date());
+		encounterProvider.setCreator(Context.getAuthenticatedUser());
 		encounterProviders.add(encounterProvider);
 	}
 	
@@ -561,13 +563,21 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should clear providers and set provider for role
 	 */
 	public void setProvider(EncounterRole role, Provider provider) {
+		boolean hasProvider = false;
 		for (Iterator<EncounterProvider> it = encounterProviders.iterator(); it.hasNext();) {
 			EncounterProvider encounterProvider = it.next();
 			if (encounterProvider.getEncounterRole().equals(role)) {
-				it.remove();
+				if (!encounterProvider.getProvider().equals(provider)) {
+					it.remove();
+				} else {
+					hasProvider = true;
+				}
 			}
 		}
-		addProvider(role, provider);
+		
+		if (!hasProvider) {
+			addProvider(role, provider);
+		}
 	}
 	
 	/**
