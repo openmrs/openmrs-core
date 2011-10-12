@@ -15,7 +15,10 @@ $j(document).ready( function() {
 		resizable: false,
 		width:'auto',
 		height:'auto',
-		modal: true
+		modal: true,
+		beforeClose: function(event, ui){
+			$j('#retireReason').val('');
+		}
 	});
 	
 	$j("#retire-dialog").addClass("content_align_center");
@@ -151,7 +154,7 @@ $j(document).ready( function() {
 				<tr>
 					<th><spring:message code="general.reason"/></th>
 					<td>
-						<input type="text" name="voidReason" size="40" />
+						<input id="retireReason" type="text" name="retireReason" size="40" />
 					</td>
 				</tr>
 				<tr height="20"></tr>
