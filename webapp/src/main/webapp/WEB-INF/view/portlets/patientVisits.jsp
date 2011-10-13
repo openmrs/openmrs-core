@@ -72,6 +72,7 @@ a.visitLink {
 }
 
 tr.encounter-in-visit td {
+	border-width: 0px;
 	border-color: #1aac9b;
 	border-style: solid;
 	padding: 5px;

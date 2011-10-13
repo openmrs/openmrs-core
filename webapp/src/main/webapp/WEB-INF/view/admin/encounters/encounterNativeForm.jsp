@@ -68,6 +68,7 @@
 
 	function displayEncounterUrl(url) {
 		$j('#displayEncounterLoading').show();
+		$j("#displayEncounterIframe").attr("height", $j(window).height() - 180); 
 		$j("#displayEncounterIframe").attr("src",
 				"${pageContext.request.contextPath}/" + url);
 	}
