@@ -111,7 +111,35 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *</pre>
  */
 (function($j) {
-	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off" placeholder=" "/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/>&nbsp;&nbsp;<input type="checkbox" style="display: none" id="includeVerbose"/><span id="loadingMsg"></span><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
+	var openmrsSearch_div = 
+	'<span>'+
+		'<span style="white-space: nowrap">'+
+		'<table cellspacing="0" width="100%">'+
+			'<tr>'+
+				'<td><span id="searchLabelNode"></span>'+
+					'<input type="text" value="" id="inputNode" autocomplete="off" placeholder=" " />'+
+					'<img id="spinner" src="" /><input type="checkbox" style="display: none" id="includeVoided" />&nbsp;&nbsp;'+
+					'<input type="checkbox" style="display: none" id="includeVerbose" />'+
+					'<span id="loadingMsg"></span>'+
+					'<span id="minCharError" class="error"></span>'+
+				'</td>'+
+				'<td align="left"><span id="pageInfo"></span></td>'+
+			'</tr>'+
+			'<tr>'+
+				'<td colspan="2" align="left"><span id="searchWidgetNotification"></span></td>'+
+				'</tr>'+
+		'</table>'+
+		'</span>'+
+		'<span class="openmrsSearchDiv">'+
+			'<table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%">'+
+				'<thead id="searchTableHeader">'+
+					'<tr></tr>'+
+				'</thead>'+
+				'<tbody></tbody>'+
+		'</table>'+
+		'</span>'+
+	'</span>';
+	
 	var BATCH_SIZE = gp.maxSearchResults;
 	var SEARCH_DELAY = gp.searchDelay;//time interval in ms between keyup and triggering the search off
 	var ERROR_MSG_DELAY = 600;//time interval in ms between keyup and  showing the minimum character error
