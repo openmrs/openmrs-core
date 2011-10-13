@@ -197,24 +197,17 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    }
 		    
 		    if(o.showIncludeVerbose) {
-		    	if(self._getVisibleColumnCount() == 1){
-		    		var tmp = div.find("#includeVerbose");
-		    		tmp.before("<label for='includeVerbose'>" + o.includeVerboseLabel + "</label>");
-		    		tmp.show();
+		    	var tmp = div.find("#includeVerbose");
+		    	tmp.before("<label for='includeVerbose'>" + o.includeVerboseLabel + "</label>");
+		    	tmp.show();
 		    	
-		    		//when the user checks/unchecks the includeVerbose checkbox, show/hide the verbose rows
-		    		verboseCheckBox.click(function() {
-		    			$j('.verbose').toggle();
-		    		});
+		    	//when the user checks/unchecks the includeVerbose checkbox, show/hide the verbose rows
+		    	verboseCheckBox.click(function() {
+		    		$j('.verbose').toggle();
+		    	});
 			    
-		    		if(userProperties.showVerbose)
-		    			tmp.attr('checked', true);
-		    	}
-		    	else{
-		    		o.showIncludeVerbose = false;
-	    			//typically developers should see this in dev mode and do the needful
-	    			alert('Only search tables with exactly one visible column can have verbose output');
-		    	}
+		    	if(userProperties.showVerbose)
+		    		tmp.attr('checked', true);
 		    }
 		    
 		    //this._trigger('initialized');
@@ -393,6 +386,55 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		//we have nothing to hide
 		    		if(!self.options.showIncludeVerbose || !self._table || self._table.fnGetNodes().length == 0)
 	    				return;
+		    		pageRowCount = oSettings._iDisplayStart+oSettings._iDisplayLength;
+		    		for(var i = oSettings._iDisplayStart; i < pageRowCount; i++){
+		    			if(self.options.showIncludeVerbose && self.options.verboseHandler){
+		    				rowData = self._results[i];
+		    				verboseText = self.options.verboseHandler(i, rowData);
+		    				nRow = self._table.fnGetNodes()[i];
+		    				if(!nRow)
+		    					break;
+		    			
+		    				verboseRow = self._table.fnOpen( nRow, verboseText, 'verbose' );
+		    				$j(verboseRow).css('background-color', $j(nRow).css('background-color'));
+		    				$j(verboseRow).hover(
+		    		    			function(){
+		    		    				$j(nRow).css("cursor", "pointer");
+				    					if(self.curRowSelection != null){
+				    						currNode = self._table.fnGetNodes()[self.curRowSelection];
+				    						self._unHighlightRow(currNode);
+				    					}
+				    					self.hoverRowSelection = i;
+				    					$j(this.previousSibling).addClass('row_highlight');
+		    		    			}, function(){
+		    		    				if(self.curRowSelection != null){
+				    						currNode = self._table.fnGetNodes()[self.curRowSelection];
+				    						$j(currNode).addClass("row_highlight");
+				    						$j(currNode.nextSibling).addClass("row_highlight");
+				    					}
+		    		    				self.hoverRowSelection = null;
+		    		    				dataRow = this.previousSibling;
+		    		    				//If this is the current highlighted row with up/down arrows and at the sametime 
+		    		    				//was hovered over, keep it highlighted
+		    		    				if(self.curRowSelection != null && self._table.fnGetPosition(dataRow) == self.curRowSelection)
+		    			    				return;
+		    		    				$j(dataRow).removeClass('row_highlight');
+		    		    			}
+		    		    		);
+		    				//draw a strike through for all voided/retired objects that have been loaded
+				    		if(rowData && (rowData.voided || rowData.retired)){		    			
+				    			$j(verboseRow).children().each(function(){		    				
+				    				$j(this).addClass('voided');
+				    			}); 
+				    		}
+				    		if(self.options.selectionHandler) {
+				    			$j(verboseRow).bind('click', function() {
+				    				rowIndex = self._table.fnGetPosition(this.previousSibling);
+				    				//Onclick handlers should work on the verbose row too
+				    				self._doSelected(rowIndex, self._results[rowIndex]);
+				    			});
+				    		}
+		    		}}
 		    		
 		    		if(!$j(verboseCheckBox).attr('checked')){
 		    			$j('.verbose').hide();
@@ -403,13 +445,25 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		//register hover event handlers to unhighlight the current row highlighted with up/down keys
 		    		$j(nRow).hover(
 		    			function(){
-		    				if(self.curRowSelection != null)
-			    				$j(self._table.fnGetNodes()[self.curRowSelection]).removeClass("row_highlight");
+		    				if(self.curRowSelection != null){
+		    					currentNode = self._table.fnGetNodes()[self.curRowSelection];
+		    					self._unHighlightRow(currentNode);
+		    				}
 			    			self.hoverRowSelection = iDisplayIndexFull;
+			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).attr('checked'))
+			    				$j(this.nextSibling).addClass('row_highlight');
 		    			}, function(){
-		    				if(self.curRowSelection != null)
-			    				$j(self._table.fnGetNodes()[self.curRowSelection]).addClass("row_highlight");
+		    				if(self.curRowSelection != null){
+		    					currentNode = self._table.fnGetNodes()[self.curRowSelection];
+			    				$j(currentNode).addClass("row_highlight");
+			    				if(self.options.showIncludeVerbose)
+				    				$j(currentNode.nextSibling).addClass('row_highlight');
+		    				}
 			    			self.hoverRowSelection = null;
+			    			if(self.curRowSelection != null && self._table.fnGetPosition(this) == self.curRowSelection)
+			    				return;
+			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).attr('checked'))
+			    				$j(this.nextSibling).removeClass('row_highlight');
 		    			}
 		    		);
 		    			
@@ -426,12 +480,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    				//Register onclick handlers to each row
 		    				self._doSelected(iDisplayIndexFull, self._results[iDisplayIndexFull]);
 		    			});
-		    		}
-		    		
-		    		if(self.options.showIncludeVerbose && self.options.verboseHandler){
-		    			var rowData = self._results[iDisplayIndexFull];
-		    			var verboseText = self.options.verboseHandler(iDisplayIndexFull, rowData);
-		    			$j(nRow.getElementsByTagName('td')[0]).html(self._table.fnGetData(iDisplayIndexFull)[0]+'<br /><div class="verbose">'+verboseText+'</div>');
 		    		}
 		    		
 		    		return nRow;
@@ -669,7 +717,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			if(this._getCurrVisiblePage() == this._table.numberOfPages && prevRow >= (this._results.length-1) && this._results.length > 1)
 				return;
 			
-			//only move the highlight to next row if it is currently on the visible page otherwise shoule be first row
+			//only move the highlight to next row if it is currently on the visible page otherwise should be on first row
 			if(this._isHighlightedRowOnVisiblePage()){
 				this.curRowSelection++;
 				
@@ -680,7 +728,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			}
 			
 			if(prevRow != null && this._results.length > 1) {
-				$j(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
+				this._unHighlightRow(this._table.fnGetNodes()[prevRow]);
 			}
 			
 			this._highlightRow();
@@ -712,8 +760,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				}
 			}
 			
-			if(prevRow != null)
-				$j(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
+			if(prevRow != null){
+				this._unHighlightRow(this._table.fnGetNodes()[prevRow]);
+			}
 			
 			this._highlightRow();
 		},
@@ -778,8 +827,12 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	    
 	    _highlightRowOnPageFlip: function(){
 	    	//deselect the current selected row if any
-			if(this.curRowSelection != null)
-				$j(this._table.fnGetNodes()[this.curRowSelection]).removeClass("row_highlight");
+			if(this.curRowSelection != null){
+				currentNode = this._table.fnGetNodes()[this.curRowSelection];
+				$j(currentNode).removeClass("row_highlight");
+				if(this.options.showIncludeVerbose)
+					$j(currentNode.nextSibling).removeClass('row_highlight');
+			}
 			
 			this.curRowSelection = null;
 			this._highlightRow();
@@ -796,8 +849,19 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				//highlight the first row on the currently visible page
 				this.curRowSelection = this._table.fnSettings()._iDisplayStart;
 			}
-			
-			$j(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
+			currentNode = this._table.fnGetNodes()[this.curRowSelection];
+			$j(currentNode).addClass("row_highlight");
+			if(this.options.showIncludeVerbose)
+				$j($j(currentNode).next()).addClass('row_highlight');
+	    },
+	    
+	    /*
+	     * Unhighlights the specified row
+	     */
+	    _unHighlightRow: function(row){
+	    	$j(row).removeClass("row_highlight");
+			if(this.options.showIncludeVerbose)
+				$j($j(row).next()).removeClass('row_highlight');
 	    },
 	    
 	    /* Returnss true if the row highlight is on the current visible page */
@@ -899,7 +963,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 							for(var i in self._bufferedAjaxCallCounters){
 								subCallCounter = self._bufferedAjaxCallCounters[i];
 								//Skip past the ones that come after those that are not yet returned by DWR calls e.g if we have ajax
-								//calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ingore 5 since it has to wait on 4							
+								//calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ignore 5 since it has to wait on 4							
 								bufferedRows = buffer[subCallCounter];
 								if(subCallCounter && (subCallCounter == nextSubCallCount) && bufferedRows){
 									self._table.fnAddData(bufferedRows);

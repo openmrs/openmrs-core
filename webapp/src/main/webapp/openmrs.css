@@ -1282,6 +1282,12 @@ table td#summaryHeaderPatientGender {
 .row_highlight {
 	 background-color: #F0E68C !important;
 }
+.verbose{
+	text-align: left; padding-left: 15px;
+}
+.verbose:hover{
+	background-color: #F0E68C !important;
+}
 img#spinner{
 	vertical-align: middle;
 }
@@ -1377,9 +1383,6 @@ span.otherHit{
 }
 tr.headerRow{
 	background-color: #CCCCCC;
-}
-.verbose{
-	text-align: left; padding-left: 15px;
 }
 table.left-aligned-th th {
 	text-align: left
