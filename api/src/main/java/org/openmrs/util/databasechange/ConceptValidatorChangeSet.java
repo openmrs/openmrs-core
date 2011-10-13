@@ -78,7 +78,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 */
 	@Override
 	public void execute(Database database) throws CustomChangeException {
-		/*
+		
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		//In the liquibase changelog file, there is a precondition that checks if this is a fresh installation
 		//with no rows in the concept table or if it has some active concepts, we don't need to check again.
@@ -102,7 +102,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		//we need this memory in case the lists are large
 		updateWarnings = null;
 		updatedConceptNames = null;
-		logMessages = null;*/
+		logMessages = null;
 	}
 	
 	/**
@@ -250,7 +250,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					logMessages.add("The name '" + entry.getKey() + "' was found multiple times for the concept with id '"
 					        + conceptId + "' in locale '" + conceptNameLocale.getDisplayName() + "'");
 					
-					ConceptName chosenName = null;
+					/*ConceptName chosenName = null;
 					List<ConceptName> voidedNames = new ArrayList<ConceptName>();
 					for (ConceptName duplicate : entry.getValue()) {
 						//The first name found should be retained and void the rest of the duplicates
@@ -264,7 +264,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 							        + " has been voided because it is a duplicate name for concept with id " + conceptId
 							        + " in locale '" + conceptNameLocale.getDisplayName() + "'");
 						}
-					}
+					}*/
 				}
 				
 				//if this locale has no preferred name found, set one
@@ -483,15 +483,14 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 */
 	private boolean isNameUniqueInLocale(JdbcConnection connection, ConceptName conceptName, int conceptId) {
 		
-		int duplicates = getInt(
-		    connection,
+		int duplicates = getInt(connection,
 		    "SELECT count(*) FROM concept_name cn, concept c WHERE cn.concept_id = c.concept_id  AND (cn.concept_name_type = '"
 		            + ConceptNameType.FULLY_SPECIFIED
 		            + "' OR cn.locale_preferred = '1') AND cn.voided = '0' AND cn.name = '"
 		            + HibernateUtil.escapeSqlWildcards(conceptName.getName(), connection.getUnderlyingConnection())
 		            + "' AND cn.locale = '"
-		            + HibernateUtil.escapeSqlWildcards(conceptName.getLocale().toString(),
-		                connection.getUnderlyingConnection()) + "' AND c.retired = '0' AND c.concept_id != " + conceptId);
+		            + HibernateUtil.escapeSqlWildcards(conceptName.getLocale().toString(), connection
+		                    .getUnderlyingConnection()) + "' AND c.retired = '0' AND c.concept_id != " + conceptId);
 		
 		return duplicates == 0;
 	}
