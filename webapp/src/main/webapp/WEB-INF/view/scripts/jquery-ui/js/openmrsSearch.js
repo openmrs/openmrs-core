@@ -204,6 +204,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	//when the user checks/unchecks the includeVerbose checkbox, show/hide the verbose rows
 		    	verboseCheckBox.click(function() {
 		    		$j('.verbose').toggle();
+		    		input.focus();
 		    	});
 			    
 		    	if(userProperties.showVerbose)
