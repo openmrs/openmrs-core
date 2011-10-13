@@ -2,8 +2,15 @@
 
 <openmrs:require privilege="View Encounters" otherwise="/login.htm" redirect="/admin/encounters/encounter.form" />
 
+<c:choose>
+<c:when test="${param.inPopup}">
+<%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
+</c:when>
+<c:otherwise>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
+</c:otherwise>
+</c:choose>
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRVisitService.js"/>
