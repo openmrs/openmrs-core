@@ -47,6 +47,8 @@
 	
 	//generates and returns the verbose text
 	function doGetVerbose(index, data){
+		if(!data)
+			return "";
 		return "#"+data.conceptId+": "+data.description;
 	}
 </script>
