@@ -1295,7 +1295,7 @@ img#spinner{
 	background-color: #F0E68C; cursor: pointer;
 }
 #pageInfo{
-	float:right; margin-right: 20px; font-style: italic; margin-bottom: 5px;
+	text-align:right; font-style: italic;
 }
 #openmrsSearchTable{
 	padding-bottom: 10px;
@@ -1380,6 +1380,9 @@ span.otherHit{
 }
 .alignRight{
 	text-align: right;
+}
+div#openmrsSearchTable_length{
+	text-align: left; float: left; padding-top: 5px;
 }
 tr.headerRow{
 	background-color: #CCCCCC;
