@@ -1390,3 +1390,9 @@ tr.headerRow{
 table.left-aligned-th th {
 	text-align: left
 }
+td.dataTables_empty{
+	background-color: #BBCCF7;
+}
+td.dataTables_empty:hover{
+	background-color: #BBCCF7;
+}
