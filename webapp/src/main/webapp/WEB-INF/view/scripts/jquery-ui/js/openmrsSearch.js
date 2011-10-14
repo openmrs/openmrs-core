@@ -114,21 +114,22 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	var openmrsSearch_div = 
 	'<span>'+
 		'<span style="white-space: nowrap">'+
-		'<table cellspacing="0" width="100%">'+
-			'<tr>'+
-				'<td><span id="searchLabelNode"></span>'+
-					'<input type="text" value="" id="inputNode" autocomplete="off" placeholder=" " />'+
-					'<img id="spinner" src="" /><input type="checkbox" style="display: none" id="includeVoided" />&nbsp;&nbsp;'+
-					'<input type="checkbox" style="display: none" id="includeVerbose" />'+
-					'<span id="loadingMsg"></span>'+
-					'<span id="minCharError" class="error"></span>'+
-				'</td>'+
-				'<td align="left"><span id="pageInfo"></span></td>'+
-			'</tr>'+
-			'<tr>'+
-				'<td colspan="2" align="left"><span id="searchWidgetNotification"></span></td>'+
+			'<table cellspacing="0" width="100%">'+
+				'<tr>'+
+					'<td align="left">'+
+						'<span id="searchLabelNode"></span>'+
+						'<input type="text" value="" id="inputNode" autocomplete="off" placeholder=" " />'+
+						'<img id="spinner" src="" /><input type="checkbox" style="display: none" id="includeVoided" />&nbsp;&nbsp;'+
+						'<input type="checkbox" style="display: none" id="includeVerbose" />'+
+						'<span id="loadingMsg"></span>'+
+						'<span id="minCharError" class="error"></span>'+
+					'</td>'+
+					'<td align="right"><span id="pageInfo"></span></td>'+
 				'</tr>'+
-		'</table>'+
+				'<tr>'+
+					'<td colspan="2" align="left"><span id="searchWidgetNotification"></span></td>'+
+				'</tr>'+
+			'</table>'+
 		'</span>'+
 		'<span class="openmrsSearchDiv">'+
 			'<table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%">'+
@@ -136,7 +137,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					'<tr></tr>'+
 				'</thead>'+
 				'<tbody></tbody>'+
-		'</table>'+
+			'</table>'+
 		'</span>'+
 	'</span>';
 	
@@ -922,7 +923,11 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	    	return Math.ceil(this._table.fnSettings()._iDisplayStart / this._table.fnSettings()._iDisplayLength) + 1;
 	    },
 		_updatePageInfo: function(searchText) {
-			$j('#pageInfo').html(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'"));
+			textToDisplay = omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'");
+			if($j.trim(searchText) == '')
+				textToDisplay = omsgs.viewingAll;
+			
+			$j('#pageInfo').html(textToDisplay);
 
 			if($j('#pageInfo').css("visibility") != 'visible')
 				$j('#pageInfo').css("visibility", "visible");
