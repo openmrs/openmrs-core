@@ -113,6 +113,7 @@ omsgs.to="<spring:message code="general.to" javaScriptEscape="true" />";
 omsgs.viewingResultsFor="<spring:message code="searchWidget.viewingResults" javaScriptEscape="true" />";
 omsgs.loadingWithArgument="<spring:message code="searchWidget.loadingWithPlaceHolder" javaScriptEscape="true" />";
 omsgs.showVerbose="<spring:message code="searchWidget.showVerbose" javaScriptEscape="true"/>";
+omsgs.viewingAll="<spring:message code="searchWidget.viewingAll" javaScriptEscape="true"/>";
 
 /* User Properties*/
 userProperties.showRetired=<openmrs:userProperty key="showRetired" defaultValue="false"/>;
