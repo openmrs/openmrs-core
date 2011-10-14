@@ -149,6 +149,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	var ajaxTimer = null;
 	var buffer = null;
 	var inSerialMode = Boolean(gp.searchRunInSerialMode);
+	var MAXIMUM_NUMBER_OF_RESULTS = gp.maximumResults;
+	if(!Number(MAXIMUM_NUMBER_OF_RESULTS))
+		MAXIMUM_NUMBER_OF_RESULTS = 10000;
 	$j.widget("ui.openmrsSearch", {
 		plugins: {},
 		options: {
@@ -394,7 +397,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			//TODO columns need to be built: id='searchTableHeader'
 		    this._table = table.dataTable({
 		    	bFilter: false,
-		    	bLengthChange: false,
+		    	bLengthChange: true,
 		    	bSort: false,
 		    	sPaginationType: "full_numbers",
 		    	aaData: self.options.initialRows,
@@ -403,12 +406,13 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	numberOfPages: 0,
 		    	bAutoWidth: false,
 		    	bJQueryUI: true,
-		    	sDom: 'rt<"fg-button ui-helper-clearfix"flip>',
+		    	sDom: 't<"fg-button ui-helper-clearfix"ip><"ui-helper-clearfix"l>',
 		    	oLanguage: {
 		    		"sInfo": omsgs.sInfoLabel,
 		    		"oPaginate": {"sFirst": omsgs.first, "sPrevious": omsgs.previous, "sNext": omsgs.next, "sLast": omsgs.last},
 		    		"sZeroRecords": omsgs.noMatchesFound,
-		    		"sInfoEmpty": " "
+		    		"sInfoEmpty": " ",
+		    		"sLengthMenu": omsgs.showNumberofEntries
 		    	},
 		    	
 		    	/* Called to toggle the verobse output */
@@ -516,6 +520,15 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	}
 		    });
 		    
+		    //register an onchange event handler for the length dropdown so that we don't lose 
+		    //the row highlight when the user makes changes to the length
+		    var selectElement = document.getElementById('openmrsSearchTable_length').getElementsByTagName('select')[0];
+		    if(selectElement){
+		    	$j(selectElement).change(function(){
+		    		input.focus();
+		    	});
+		    }
+		    
 		    //if we have initial data, set the current page and number of pages for the row highlight not to break
 		    if(self.options.initialData){
 		    	var initialRowCount = self.options.initialData.length;
@@ -564,9 +577,12 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				var storedCallCount = this._callCount++;
 				spinnerObj.css("visibility", "visible");
 				this._lastCallCount = storedCallCount;
+				numberOfResults = this._table.fnSettings()._iDisplayLength;
+				if(MAXIMUM_NUMBER_OF_RESULTS && MAXIMUM_NUMBER_OF_RESULTS > 0)
+					numberOfResults = MAXIMUM_NUMBER_OF_RESULTS;
 				//First get data to appear on the first page
 				this.options.searchHandler(text, this._handleResults(text, storedCallCount), true, 
-						{includeVoided: tmpIncludeVoided, start: 0, length: this._table.fnSettings()._iDisplayLength});
+						{includeVoided: tmpIncludeVoided, start: 0, length: numberOfResults});
 			}
 		},
 		
@@ -578,6 +594,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					$j(notification).html(results["notification"]);
 				
 				var matchCount = results["count"];
+				//if we have any hits, enforce the max results limit
+				if(matchCount > 0 && MAXIMUM_NUMBER_OF_RESULTS > 0 && matchCount > MAXIMUM_NUMBER_OF_RESULTS)
+					matchCount = MAXIMUM_NUMBER_OF_RESULTS;
+				
 				self._results = results["objectList"];
 				if(matchCount <= self._table.fnSettings()._iDisplayLength){
 					spinnerObj.css("visibility", "hidden");

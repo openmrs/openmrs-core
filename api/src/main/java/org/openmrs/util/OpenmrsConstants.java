@@ -882,6 +882,12 @@ public final class OpenmrsConstants {
 	public static final String GP_SEARCH_WIDGET_DELAY_INTERVAL = "searchWidget.searchDelayInterval";
 	
 	/**
+	 * Global property name for the maximum number of results to return from a single search in the
+	 * search widgets
+	 */
+	public static final String GP_SEARCH_WIDGET_MAXIMUM_RESULTS = "searchWidget.maximumResults";
+	
+	/**
 	 * Global property name for enabling/disabling concept map type management
 	 */
 	public static final String GP_ENABLE_CONCEPT_MAP_TYPE_MANAGEMENT = "concept_map_type_management.enable";
@@ -1325,6 +1331,9 @@ public final class OpenmrsConstants {
 		                GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES,
 		                "",
 		                "A comma-separated list of encounter roles (by name or id). Providers with these roles in an encounter will be displayed on the encounter tab of the patient dashboard."));
+		
+		props.add(new GlobalProperty(GP_SEARCH_WIDGET_MAXIMUM_RESULTS, "10000",
+		        "Specifies the maximum number of results to return from a single search in the search widgets"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
