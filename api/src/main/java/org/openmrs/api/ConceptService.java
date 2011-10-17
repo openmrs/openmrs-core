@@ -567,6 +567,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param cc ConceptClass
 	 * @return Returns all concepts in a given class
 	 * @throws APIException
+	 * 
+	 * @should not fail due to no name in search
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)

@@ -522,17 +522,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@SuppressWarnings("unchecked")
 	public List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
 	        List<ConceptDatatype> datatypes) throws DAOException {
-		if (StringUtils.isBlank(name)) {
-			name = "%"; // match all
-		}
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Concept.class);
 		
 		criteria.add(Expression.eq("retired", false));
 		
-		if (name != null) {
+		if (! StringUtils.isBlank(name)) {
 			if (loc == null)
-				throw new DAOException("Locale must be not null");
+				// TRUNK-2730 replaces this behavior with use of the default locale
+				// throw new DAOException("Locale must be not null");
+				loc = Context.getLocale();
 			
 			criteria.createAlias("names", "names");
 			MatchMode matchmode = MatchMode.EXACT;
