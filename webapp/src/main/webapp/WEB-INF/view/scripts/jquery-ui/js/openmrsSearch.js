@@ -578,8 +578,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				spinnerObj.css("visibility", "visible");
 				this._lastCallCount = storedCallCount;
 				numberOfResults = this._table.fnSettings()._iDisplayLength;
-				if(MAXIMUM_NUMBER_OF_RESULTS && MAXIMUM_NUMBER_OF_RESULTS > 0)
-					numberOfResults = MAXIMUM_NUMBER_OF_RESULTS;
+				if(MAXIMUM_NUMBER_OF_RESULTS && MAXIMUM_NUMBER_OF_RESULTS > 0 && 
+						MAXIMUM_NUMBER_OF_RESULTS < numberOfResults)
+					numberOfResults = MAXIMUM_NUMBER_OF_RESULTS
 				//First get data to appear on the first page
 				this.options.searchHandler(text, this._handleResults(text, storedCallCount), true, 
 						{includeVoided: tmpIncludeVoided, start: 0, length: numberOfResults});
@@ -661,10 +662,13 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			if(curCallCount && this._lastCallCount > curCallCount) {
 				return;
 			}
+			actualBatchSize = BATCH_SIZE;
+			if((startIndex+BATCH_SIZE) > matchCount)
+				actualBatchSize = matchCount-this._results.length;
 			
 			this.options.searchHandler(searchText, this._addMoreRows(curCallCount, searchText, matchCount, startIndex, curSubCallCount),
 				false, {includeVoided: this.options.showIncludeVoided && checkBox.attr('checked'),
-				start: startIndex, length: BATCH_SIZE});
+				start: startIndex, length: actualBatchSize});
 					
 			if(inSerialMode)
 				return;
@@ -679,7 +683,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					if(ajaxTimer)
 						window.clearTimeout(ajaxTimer);
 						return;
-					}
+				}
 			}, 10);//fetch more results every 10ms till we have all
 		},
 			
