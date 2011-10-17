@@ -179,7 +179,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Deprecated
 	public Collection<ConceptAnswer> getSortedAnswers(Locale locale) {
-		Vector<ConceptAnswer> sortedAnswers = new Vector<ConceptAnswer>(getAnswers());
+		Vector<ConceptAnswer> sortedAnswers = new Vector<ConceptAnswer>(getAnswers(false));
 		Collections.sort(sortedAnswers);
 		return sortedAnswers;
 	}
