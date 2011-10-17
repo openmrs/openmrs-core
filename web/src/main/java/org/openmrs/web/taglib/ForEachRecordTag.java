@@ -117,10 +117,10 @@ public class ForEachRecordTag extends BodyTagSupport {
 			if (civilStatus == null)
 				log.error("OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID is defined incorrectly.");
 			
-			records = civilStatus.getAnswers().iterator();
+			records = civilStatus.getAnswers(false).iterator();
 			
 			Map<String, String> opts = new HashMap<String, String>();
-			for (ConceptAnswer a : civilStatus.getAnswers()) {
+			for (ConceptAnswer a : civilStatus.getAnswers(false)) {
 				opts.put(a.getAnswerConcept().getConceptId().toString(), a.getAnswerConcept().getBestName(locale).getName());
 			}
 			records = opts.entrySet().iterator();
@@ -155,8 +155,8 @@ public class ForEachRecordTag extends BodyTagSupport {
 			if (c == null) {
 				log.error("Can't find concept with name or id of: " + concept + " and so no answers will be returned");
 				records = null;
-			} else if (c.getAnswers() != null)
-				records = c.getAnswers().iterator();
+			} else if (c.getAnswers(false) != null)
+				records = c.getAnswers(false).iterator();
 			else
 				records = new ArrayList<Concept>().iterator();
 		} else {
