@@ -2033,4 +2033,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		for (ConceptReferenceTerm conceptReferenceTerm : matches)
 			Assert.assertTrue(uniqueTerms.add(conceptReferenceTerm));
 	}
+
+	/**
+	 * @see ConceptService#getConceptsByClass(ConceptClass)
+	 * @verifies not fail due to no name in search
+	 */
+	@Test
+	public void getConceptsByClass_shouldNotFailDueToNoNameInSearch() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		cs.getConceptsByClass(cs.getConceptClass(1));
+	}
 }
