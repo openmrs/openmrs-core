@@ -67,10 +67,13 @@
 	});
 
 	function displayEncounterUrl(url) {
+		if(url.indexOf("${pageContext.request.contextPath}/") == -1){
+			url = "${pageContext.request.contextPath}/" + url;
+		}
+			
 		$j('#displayEncounterLoading').show();
 		$j("#displayEncounterIframe").attr("height", $j(window).height() - 180); 
-		$j("#displayEncounterIframe").attr("src",
-				"${pageContext.request.contextPath}/" + url);
+		$j("#displayEncounterIframe").attr("src", url);
 	}
 </script>
 
