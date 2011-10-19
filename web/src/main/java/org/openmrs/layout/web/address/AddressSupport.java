@@ -34,7 +34,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	
 	static Log log = LogFactory.getLog(AddressSupport.class);
 	
-	public AddressSupport() {
+	private AddressSupport() {
 		if (singleton == null) {
 			singleton = this;
 		}
