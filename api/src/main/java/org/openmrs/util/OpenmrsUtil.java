@@ -2339,7 +2339,8 @@ public class OpenmrsUtil {
 		catch (FileNotFoundException e) {
 			log.warn("Unable to find a runtime properties file at " + new File(filepath).getAbsolutePath());
 		}
-		// next look in the OpenMRS application data directory
+		
+		// next look from environment variable
 		if (propertyStream == null) {
 			String envVarName = applicationName.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
 			filepath = System.getenv(envVarName);
