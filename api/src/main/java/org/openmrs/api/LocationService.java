@@ -22,6 +22,7 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.LocationDAO;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -404,12 +405,15 @@ public interface LocationService extends OpenmrsService {
 	
 	/**
 	 * Returns the xml of default address template.
-	 *
-	 * @return a string value of the default address template
+	 * 
+	 * @return a string value of the default address template. If the GP is
+	 *         empty, the default template is returned
+	 * @see OpenmrsConstants#GLOBAL_PROPERTY_ADDRESS_TEMPLATE
+	 * @see OpenmrsConstants#DEFAULT_ADDRESS_TEMPLATE
 	 * @since 1.9
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public String getAddressTemplate() throws APIException;
 	
 	/**

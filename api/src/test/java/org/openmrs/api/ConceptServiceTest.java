@@ -2033,7 +2033,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		for (ConceptReferenceTerm conceptReferenceTerm : matches)
 			Assert.assertTrue(uniqueTerms.add(conceptReferenceTerm));
 	}
-
+	
 	/**
 	 * @see ConceptService#getConceptsByClass(ConceptClass)
 	 * @verifies not fail due to no name in search
