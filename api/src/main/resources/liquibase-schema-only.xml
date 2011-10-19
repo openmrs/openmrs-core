@@ -2294,7 +2294,7 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME" />
-            <column name="is_hidden" type="BOOLEAN" defaultValueBoolean="false">
+            <column name="isHidden" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
