@@ -5143,6 +5143,12 @@
 		</addColumn>
 	</changeSet>
 	
+	<changeSet id="20110919-0638" author="sunbiz">
+		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_map_type" columnName="isHidden"/></preConditions>
+		<comment>Renaming concept_map_type.isHidden to is_hidden</comment>
+		<renameColumn tableName="concept_map_type" oldColumnName="isHidden" newColumnName="is_hidden" columnDataType="boolean"/>
+	</changeSet>
+	
 	<changeSet id="20110301-1030f" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_map_type" />
@@ -5594,12 +5600,6 @@
 				<column name="property" value="log.level"/>
 				<where>property = 'log.level.openmrs'</where>
 			</update>
-	</changeSet>
-
-	<changeSet id="20110919-0638" author="sunbiz">
-		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_map_type" columnName="isHidden"/></preConditions>
-		<comment>Renaming concept_map_type.isHidden to is_hidden</comment>
-		<renameColumn tableName="concept_map_type" oldColumnName="isHidden" newColumnName="is_hidden" columnDataType="boolean"/>
 	</changeSet>
 
 	<changeSet id="20110919-0639-void_empty_attributes" author="dkayiwa" dbms="mysql" >

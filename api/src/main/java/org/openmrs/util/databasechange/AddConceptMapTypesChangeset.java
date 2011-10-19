@@ -99,7 +99,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				existingMapTypes.add(rs.getString("name").trim().toUpperCase());
 			
 			pStmt = connection
-			        .prepareStatement("INSERT INTO concept_map_type (name, isHidden, retired, creator, date_created, uuid) VALUES(?,?,?,"
+			        .prepareStatement("INSERT INTO concept_map_type (name, is_hidden, retired, creator, date_created, uuid) VALUES(?,?,?,"
 			                + userId + ", ?,?)");
 			
 			for (String mapType : visibleConceptMapTypeArray) {
