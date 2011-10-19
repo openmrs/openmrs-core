@@ -2309,9 +2309,9 @@ public class OpenmrsUtil {
 	 * <pre>
 	 * Finds and loads the runtime properties file for a specific OpenMRS application.
 	 * Searches for the file in this order:
-	 * 1) an environment variable called "{APPLICATIONNAME}_RUNTIME_PROPERTIES_FILE"
-	 * 2) {openmrs_app_dir}/{applicationName}_runtime.properties   // openmrs_app_dir is typically {user_home}/.OpenMRS
-	 * 3) {current directory}/{applicationname}_runtime.properties
+	 * 1) {current directory}/{applicationname}_runtime.properties
+	 * 2) an environment variable called "{APPLICATIONNAME}_RUNTIME_PROPERTIES_FILE"
+	 * 3) {openmrs_app_dir}/{applicationName}_runtime.properties   // openmrs_app_dir is typically {user_home}/.OpenMRS
 	 * </pre>
 	 * 
 	 * @see #getApplicationDataDirectory()
