@@ -59,8 +59,9 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 	
 	/**
-	 * Optional constructor for turning a Concept into a ConceptNumeric Note: This cannot copy over
-	 * numeric specific values
+	 * Optional constructor for turning a Concept into a ConceptNumeric <br/>
+	 * <br/>
+	 * Note: This cannot copy over numeric specific values
 	 * 
 	 * @param c
 	 */
@@ -80,6 +81,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		this.setConceptMappings(c.getConceptMappings());
 		this.setRetired(c.isRetired());
 		this.setVersion(c.getVersion());
+		this.setUuid(c.getUuid());
 		
 		this.hiAbsolute = null;
 		this.hiCritical = null;
