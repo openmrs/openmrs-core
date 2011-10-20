@@ -710,8 +710,7 @@ public class InitializationFilter extends StartupFilter {
 		String pathName = OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME);
 		if (pathName != null) {
 			file = new File(pathName);
-		}
-		else
+		} else
 			file = new File(OpenmrsUtil.getApplicationDataDirectory(), WebConstants.WEBAPP_NAME + "-runtime.properties");
 		
 		log.debug("Using file: " + file.getAbsolutePath());
@@ -1127,6 +1126,9 @@ public class InitializationFilter extends StartupFilter {
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY, Base64.encode(Security
 						        .generateNewSecretKey()));
 						
+						Properties properties = Context.getRuntimeProperties();
+						properties.putAll(runtimeProperties);
+						runtimeProperties = properties;
 						Context.setRuntimeProperties(runtimeProperties);
 						
 						/**
