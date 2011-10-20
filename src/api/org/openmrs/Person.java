@@ -114,6 +114,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 			return;
 		
 		personId = person.getPersonId();
+		setUuid(person.getUuid());
 		addresses = person.getAddresses();
 		names = person.getNames();
 		attributes = person.getAttributes();
