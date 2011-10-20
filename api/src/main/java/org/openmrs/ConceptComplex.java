@@ -73,6 +73,7 @@ public class ConceptComplex extends Concept implements Serializable {
 		this.setConceptMappings(c.getConceptMappings());
 		this.setRetired(c.isRetired());
 		this.setVersion(c.getVersion());
+		this.setUuid(c.getUuid());
 		
 		this.handler = "";
 	}
