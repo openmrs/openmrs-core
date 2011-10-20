@@ -705,12 +705,14 @@ public class InitializationFilter extends StartupFilter {
 	 * @return the runtime properties file.
 	 */
 	private File getRuntimePropertiesFile() {
-		File file = new File(OpenmrsUtil.getApplicationDataDirectory(), WebConstants.WEBAPP_NAME + "-runtime.properties");
+		File file = null;
 		
 		String pathName = OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME);
 		if (pathName != null) {
 			file = new File(pathName);
 		}
+		else
+			file = new File(OpenmrsUtil.getApplicationDataDirectory(), WebConstants.WEBAPP_NAME + "-runtime.properties");
 		
 		log.debug("Using file: " + file.getAbsolutePath());
 		
