@@ -136,7 +136,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Possibly used for decapitating a ConceptNumeric (to remove the row in
+	 * Possibly used for decapitating a ConceptNumeric (to remove the row in concept_numeric)
 	 * 
 	 * @param cn
 	 * @deprecated
@@ -157,6 +157,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		answers = cn.getAnswers(true);
 		conceptSets = cn.getConceptSets();
 		conceptMappings = cn.getConceptMappings();
+		setUuid(cn.getUuid());
 	}
 	
 	/**
