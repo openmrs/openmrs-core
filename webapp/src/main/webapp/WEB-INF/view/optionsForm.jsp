@@ -172,7 +172,7 @@ function containsError(element) {
 	<tr>
 		<td><spring:message code="options.showRetiredMessage" /></td>
 		<td>
-			<label for="${status.expression}"><spring:bind path="opts.showRetiredMessage"></label>
+			<label for="${status.expression}"> <spring:bind path="opts.showRetiredMessage"> </label>
 				<input type="hidden" name="_${status.expression}" value="true" />
 				<input type="checkbox" name="${status.expression}" value="true" id="${status.expression}" <c:if test="${status.value == true}">checked</c:if> />
 				<c:if test="${status.errorMessage != ''}">
@@ -341,8 +341,34 @@ function containsError(element) {
 <br />
 <br />
 </fieldset>
+<openmrs:extensionPoint pointId="org.openmrs.userOptionExtension" requiredClass="org.openmrs.module.web.extension.UserOptionExtension"  type="html">
+	<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+		<c:catch var="ex">
+			<c:choose>
+				<c:when
+					test="${extension.portletUrl == '' || extension.portletUrl == null}">
+							portletId is null: '${extension.extensionId}'
+						</c:when>
+				<c:otherwise>
+					<fieldset><legend>${extension.tabName}</legend> <openmrs:portlet
+						url="${extension.portletUrl}" id="${extension.tabId}"
+						moduleId="${extension.moduleId}" parameters="${extension.portletParameters}" /></fieldset>
+				</c:otherwise>
+			</c:choose>
+		</c:catch>
+		<c:if test="${not empty ex}">
+			<div class="error"><spring:message code="fix.error.plain" /> <br />
+			<b>${ex}</b>
+			<div style="height: 200px; width: 800px; overflow: scroll"><c:forEach
+				var="row" items="${ex.cause.stackTrace}">
+								${row}<br />
+			</c:forEach></div>
+			</div>
+		</c:if>
 
-</div>
+
+	</openmrs:hasPrivilege>
+</openmrs:extensionPoint></div>
 <br />
 <input type="submit" value="<spring:message code="options.save"/>">
 </form>
