@@ -80,7 +80,7 @@
 	<c:if test="${status.value != null}">
 		<tr>
 			<td><spring:message code="general.changedBy" /></td>
-			<td colspan="2">
+			<td>
 				${status.value.personName} -
 				<openmrs:formatDate path="dateChanged" type="long" />
 			</td>
