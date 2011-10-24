@@ -1116,6 +1116,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					conditional = true;
 				continue;
 				//log.debug("c: " + c.getConceptId() + " attribute: " + attribute);
+			} else if (attribute.equals("valueDate")) {
+				// pass -- same column name
+			} else if (attribute.equals("valueTime")) {
+				// pass -- same column name
 			} else if (attribute.equals("valueDatetime")) {
 				// pass -- same column name
 			} else if (attribute.equals("obsDatetime")) {

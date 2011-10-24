@@ -1152,6 +1152,30 @@ public class Context {
 	}
 	
 	/**
+	 * Gets the simple time format for the current user's locale. The format will be similar
+	 * to hh:mm a
+	 *
+	 * @return SimpleDateFormat for the user's current locale
+	 * @see org.openmrs.util.OpenmrsUtil#getTimeFormat(Locale)
+	 * @should return a pattern with two h characters in it
+	 */
+	public static SimpleDateFormat getTimeFormat() {
+		return OpenmrsUtil.getTimeFormat(getLocale());
+	}
+	
+	/**
+	 * Gets the simple datetime format for the current user's locale. The format will be similar
+	 * to mm/dd/yyyy hh:mm a
+	 *
+	 * @return SimpleDateFormat for the user's current locale
+	 * @see org.openmrs.util.OpenmrsUtil#getDateTimeFormat(Locale)
+	 * @should return a pattern with four y characters and two h characters in it
+	 */
+	public static SimpleDateFormat getDateTimeFormat() {
+		return OpenmrsUtil.getDateTimeFormat(getLocale());
+	}
+	
+	/**
 	 * @return true/false whether the service context is currently being refreshed
 	 * @see org.openmrs.api.context.ServiceContext#isRefreshingContext()
 	 */

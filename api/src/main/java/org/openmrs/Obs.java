@@ -365,7 +365,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * Convenience method that checks for nullity and length to determine if this obs has group
 	 * members. The parameter specifies if this method whether or not voided obs should be
 	 * considered.
-	 * 
+	 *
 	 * @param includeVoided determines if Voided members should be considered as group members.
 	 * @return true if this is the parent group of other Obs
 	 * @should return true if this obs has group members based on parameter
@@ -395,7 +395,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * Get the group members of this obs group, if this obs is a group. This method will either
 	 * return all group members, or only non-voided group members, depending on if the argument is
 	 * set to be true or false respectively.
-	 * 
+	 *
 	 * @param includeVoided
 	 * @return the set of group members in this obs group
 	 * @should Get all group members if passed true, and non-voided if passed false
@@ -709,6 +709,34 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * @return the value of this obs as a Date. Note that this uses a java.util.Date, so it includes a time component, that should be ignored.
+	 */
+	public Date getValueDate() {
+		return valueDatetime;
+	}
+	
+	/**
+	 * @param valueDate The date value to set.
+	 */
+	public void setValueDate(Date valueDate) {
+		this.valueDatetime = valueDate;
+	}
+	
+	/**
+	 * @return the time value of this obs. Note that this uses a java.util.Date, so it includes a date component, that should be ignored.
+	 */
+	public Date getValueTime() {
+		return valueDatetime;
+	}
+	
+	/**
+	 * @param valueTime the time value to set
+	 */
+	public void setValueTime(Date valueTime) {
+		this.valueDatetime = valueTime;
+	}
+	
+	/**
 	 * @return Returns the valueGroupId.
 	 */
 	public Integer getValueGroupId() {
@@ -971,11 +999,15 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		return "";
 	}
 	
-	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	
+	private static DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+	
+	private static DateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	/**
 	 * Sets the value for the obs from a string depending on the datatype of the question concept
-	 * 
+	 *
 	 * @param s the string to coerce to a boolean
 	 * @should set value as boolean if the datatype of the question concept is boolean
 	 * @should fail if the value of the string is null
@@ -993,8 +1025,12 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 				throw new RuntimeException("Not Yet Implemented");
 			} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
 				setValueNumeric(Double.valueOf(s));
-			} else if (abbrev.equals("DT") || abbrev.equals("TM") || abbrev.equals("TS")) {
-				setValueDatetime(df.parse(s));
+			} else if (abbrev.equals("DT")) {
+				setValueDatetime(dateFormat.parse(s));
+			} else if (abbrev.equals("TM")) {
+				setValueDatetime(timeFormat.parse(s));
+			} else if (abbrev.equals("TS")) {
+				setValueDatetime(datetimeFormat.parse(s));
 			} else if (abbrev.equals("ST")) {
 				setValueText(s);
 			} else {

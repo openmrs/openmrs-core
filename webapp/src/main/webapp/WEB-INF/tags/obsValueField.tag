@@ -62,9 +62,21 @@
 			</span>
 		</c:when>
 		<c:when test="${c.datatype.date}">
-			<span id="valueDatetimeRow${conceptId}" class="obsValue">
-				<input type="text" name="${formFieldName}" id="valueDatetimeField${conceptId}" value="${initialValue}" size="${empty size ? 10 : size}" onFocus="showCalendar(this)"/>
+			<span id="valueDateRow${conceptId}" class="obsValue">
+				<input type="text" name="${formFieldName}" id="valueDateField${conceptId}" value="${initialValue}" size="${empty size ? 10 : size}" onFocus="showCalendar(this)"/>
 				<c:if test="${empty showFormat || showFormat=='true'}">(<openmrs:datePattern />)</c:if>
+			</span>
+		</c:when>
+        <c:when test="${c.datatype.time}">
+			<span id="valueTimeRow${conceptId}" class="obsValue">
+				<input type="text" name="${formFieldName}" id="valueTimeField${conceptId}" value="${initialValue}" size="${empty size ? 10 : size}" onFocus="showTimePicker(this)"/>
+				<c:if test="${empty showFormat || showFormat=='true'}">(<openmrs:timePattern format="jquery"/>)</c:if>
+			</span>
+		</c:when>
+        <c:when test="${c.datatype.dateTime}">
+			<span id="valueDatetimeRow${conceptId}" class="obsValue">
+				<input type="text" name="${formFieldName}" id="valueDatetimeField${conceptId}" value="${initialValue}" size="${empty size ? 15 : size}" onFocus="showDateTimePicker(this)"/>
+				<c:if test="${empty showFormat || showFormat=='true'}">(<openmrs:datePattern/> <openmrs:timePattern format="jquery"/>)</c:if>
 			</span>
 		</c:when>
 		<c:when test="${c.datatype.coded}">
