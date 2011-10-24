@@ -811,40 +811,30 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_REPORT_BUG_URL = "reportProblem.url";
 	
 	public static final String GLOBAL_PROPERTY_ADDRESS_TEMPLATE = "layout.address.format";
-
+	
 	public static final String DEFAULT_ADDRESS_TEMPLATE = "<addressTemplate>\n"
-			+ "    <nameMappings class=\"properties\">\n"
-			+ "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
-			+ "      <property name=\"longitude\" value=\"Location.longitude\"/>\n"
-			+ "      <property name=\"address2\" value=\"Location.address2\"/>\n"
-			+ "      <property name=\"address1\" value=\"Location.address1\"/>\n"
-			+ "      <property name=\"startDate\" value=\"PersonAddress.startDate\"/>\n"
-			+ "      <property name=\"country\" value=\"Location.country\"/>\n"
-			+ "      <property name=\"endDate\" value=\"personAddress.endDate\"/>\n"
-			+ "      <property name=\"stateProvince\" value=\"Location.stateProvince\"/>\n"
-			+ "      <property name=\"latitude\" value=\"Location.latitude\"/>\n"
-			+ "      <property name=\"cityVillage\" value=\"Location.cityVillage\"/>\n"
-			+ "    </nameMappings>\n"
-			+ "    <sizeMappings class=\"properties\">\n"
-			+ "      <property name=\"postalCode\" value=\"10\"/>\n"
-			+ "      <property name=\"longitude\" value=\"10\"/>\n"
-			+ "      <property name=\"address2\" value=\"40\"/>\n"
-			+ "      <property name=\"address1\" value=\"40\"/>\n"
-			+ "      <property name=\"startDate\" value=\"10\"/>\n"
-			+ "      <property name=\"country\" value=\"10\"/>\n"
-			+ "      <property name=\"endDate\" value=\"10\"/>\n"
-			+ "      <property name=\"stateProvince\" value=\"10\"/>\n"
-			+ "      <property name=\"latitude\" value=\"10\"/>\n"
-			+ "      <property name=\"cityVillage\" value=\"10\"/>\n"
-			+ "    </sizeMappings>\n"
-			+ "    <lineByLineFormat>\n"
-			+ "      <string>address1</string>\n"
-			+ "      <string>address2</string>\n"
-			+ "      <string>cityVillage stateProvince country postalCode</string>\n"
-			+ "      <string>latitude longitude</string>\n"
-			+ "      <string>startDate endDate</string>\n"
-			+ "    </lineByLineFormat>\n" + "  </addressTemplate>";
-
+	        + "    <nameMappings class=\"properties\">\n"
+	        + "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
+	        + "      <property name=\"longitude\" value=\"Location.longitude\"/>\n"
+	        + "      <property name=\"address2\" value=\"Location.address2\"/>\n"
+	        + "      <property name=\"address1\" value=\"Location.address1\"/>\n"
+	        + "      <property name=\"startDate\" value=\"PersonAddress.startDate\"/>\n"
+	        + "      <property name=\"country\" value=\"Location.country\"/>\n"
+	        + "      <property name=\"endDate\" value=\"personAddress.endDate\"/>\n"
+	        + "      <property name=\"stateProvince\" value=\"Location.stateProvince\"/>\n"
+	        + "      <property name=\"latitude\" value=\"Location.latitude\"/>\n"
+	        + "      <property name=\"cityVillage\" value=\"Location.cityVillage\"/>\n" + "    </nameMappings>\n"
+	        + "    <sizeMappings class=\"properties\">\n" + "      <property name=\"postalCode\" value=\"10\"/>\n"
+	        + "      <property name=\"longitude\" value=\"10\"/>\n" + "      <property name=\"address2\" value=\"40\"/>\n"
+	        + "      <property name=\"address1\" value=\"40\"/>\n" + "      <property name=\"startDate\" value=\"10\"/>\n"
+	        + "      <property name=\"country\" value=\"10\"/>\n" + "      <property name=\"endDate\" value=\"10\"/>\n"
+	        + "      <property name=\"stateProvince\" value=\"10\"/>\n"
+	        + "      <property name=\"latitude\" value=\"10\"/>\n" + "      <property name=\"cityVillage\" value=\"10\"/>\n"
+	        + "    </sizeMappings>\n" + "    <lineByLineFormat>\n" + "      <string>address1</string>\n"
+	        + "      <string>address2</string>\n" + "      <string>cityVillage stateProvince country postalCode</string>\n"
+	        + "      <string>latitude longitude</string>\n" + "      <string>startDate endDate</string>\n"
+	        + "    </lineByLineFormat>\n" + "  </addressTemplate>";
+	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
 	 * upper and lower case characters. Allowable values are "true", "false", and null
@@ -1116,9 +1106,8 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY,
 		        ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT, "Name of the folder in which to store the modules"));
-		props
-		        .add(new GlobalProperty(GLOBAL_PROPERTY_ADDRESS_TEMPLATE, DEFAULT_ADDRESS_TEMPLATE,
-		                "XML description of address formats"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_ADDRESS_TEMPLATE, DEFAULT_ADDRESS_TEMPLATE,
+		        "XML description of address formats"));
 		props.add(new GlobalProperty("layout.name.format", "short",
 		        "Format in which to display the person names.  Valid values are short, long"));
 		

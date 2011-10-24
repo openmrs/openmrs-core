@@ -56,7 +56,7 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	
 	/**
 	 * Constructor that takes a custom XStream object
-	 * @param xstream
+	 * @param customXstream
 	 * @throws SerializationException
 	 */
 	public SimpleXStreamSerializer(XStream customXstream) throws SerializationException {
@@ -75,23 +75,6 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	}
 	
 	/**
-	 * alias className for class "c", we will use such a form, alias "user" for
-	 * "org.openmrs.User.class". The alias principle is to low the first letter of the simple name
-	 * of class "c" Note: if in module have a few new classes need to be serialize, call this method
-	 * for each new class will automatically alias className for them
-	 *
-	 * @param c - the class need to alias its className
-	 */
-	private void aliasClassName(Class<?> c) {
-		//through Class.getSimpleName(), we get the short name of a class, such as get "User" for class "org.openmrs.User"
-		String simpleName = c.getSimpleName();
-		String firstLetter = simpleName.substring(0, 1);
-		String leftName = simpleName.substring(1);
-		String aliasName = firstLetter.toLowerCase() + leftName;
-		xstream.alias(aliasName, c);
-	}
-	
-	/**
 	 * Expose the xstream object, so that module can config with xstream as need
 	 *
 	 * @return xstream can be configed by module
@@ -104,7 +87,7 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	 * @see OpenmrsSerializer#serialize(java.lang.Object)
 	 */
 	public String serialize(Object o) throws SerializationException {
-		aliasClassName(o.getClass());
+		
 		return xstream.toXML(o);
 	}
 	
@@ -113,14 +96,12 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException {
-		if (clazz != null) {
-			aliasClassName(clazz);
-		}
+		
 		try {
 			return (T) xstream.fromXML(serializedObject);
 		}
 		catch (XStreamException e) {
-			throw new SerializationException("Unable to deserialize class: " + clazz.getSimpleName(), e);
+			throw new SerializationException("Unable to deserialize class: " + clazz.getName(), e);
 		}
 	}
 }
