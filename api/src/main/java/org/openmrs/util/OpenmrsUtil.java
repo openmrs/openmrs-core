@@ -141,6 +141,8 @@ public class OpenmrsUtil {
 	
 	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
 	
+	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<Locale, SimpleDateFormat>();
+	
 	/**
 	 * @param idWithoutCheckdigit
 	 * @return int - the calculated check digit for the given string
@@ -915,9 +917,9 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Gets the date having the last millisecond of a given day. Meaning that the hours, seconds, 
+	 * Gets the date having the last millisecond of a given day. Meaning that the hours, seconds,
 	 * and milliseconds are the latest possible for that day.
-	 * 
+	 *
 	 * @param day the day.
 	 * @return the date with the last millisecond of the day.
 	 */
@@ -935,10 +937,10 @@ public class OpenmrsUtil {
 	/**
 	 * Return a date that is the same day as the passed in date, but the hours and seconds are the
 	 * earliest possible for that day.
-	 * 
+	 *
 	 * @param date date to adjust
 	 * @return a date that is the first possible time in the day
-	 * 
+	 *
 	 * @since 1.9
 	 */
 	public static Date firstSecondOfDay(Date date) {
@@ -1355,6 +1357,63 @@ public class OpenmrsUtil {
 		dateFormatCache.put(locale, sdf);
 		
 		return (SimpleDateFormat) sdf.clone();
+	}
+	
+	/**
+	 * Get the current user's time format Will look similar to "hh:mm a". Depends on user's
+	 * locale.
+	 *
+	 * @return a simple time format
+	 * @should return a pattern with two h characters in it
+	 * @should not allow the returned SimpleDateFormat to be modified
+	 * @since 1.9
+	 */
+	public static SimpleDateFormat getTimeFormat(Locale locale) {
+		if (timeFormatCache.containsKey(locale))
+			return (SimpleDateFormat) timeFormatCache.get(locale).clone();
+		
+		SimpleDateFormat sdf = (SimpleDateFormat) DateFormat.getTimeInstance(DateFormat.SHORT, locale);
+		String pattern = sdf.toPattern();
+		
+		if (!(pattern.contains("hh") || pattern.contains("HH"))) {
+			// otherwise, change the pattern to be a two digit hour
+			pattern = pattern.replaceFirst("h", "hh").replaceFirst("H", "HH");
+			sdf.applyPattern(pattern);
+		}
+		
+		timeFormatCache.put(locale, sdf);
+		
+		return (SimpleDateFormat) sdf.clone();
+	}
+	
+	/**
+	 * Get the current user's datetime format Will look similar to "mm-dd-yyyy hh:mm a". Depends on user's
+	 * locale.
+	 *
+	 * @return a simple date format
+	 * @should return a pattern with four y characters and two h characters in it
+	 * @should not allow the returned SimpleDateFormat to be modified
+	 * @since 1.9
+	 */
+	public static SimpleDateFormat getDateTimeFormat(Locale locale) {
+		SimpleDateFormat dateFormat;
+		SimpleDateFormat timeFormat;
+		if (dateFormatCache.containsKey(locale)) {
+			dateFormat = (SimpleDateFormat) dateFormatCache.get(locale).clone();
+		} else {
+			dateFormat = getDateFormat(locale);
+		}
+		
+		if (timeFormatCache.containsKey(locale)) {
+			timeFormat = (SimpleDateFormat) timeFormatCache.get(locale).clone();
+		} else {
+			timeFormat = getTimeFormat(locale);
+		}
+		
+		String pattern = dateFormat.toPattern() + " " + timeFormat.toPattern();
+		SimpleDateFormat sdf = new SimpleDateFormat();
+		sdf.applyPattern(pattern);
+		return sdf;
 	}
 	
 	/**
@@ -2409,7 +2468,7 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Performs a case insensitive Comparison of two strings taking care of null values
-	 * 
+	 *
 	 * @param s1 the string to compare
 	 * @param s2 the string to compare
 	 * @return

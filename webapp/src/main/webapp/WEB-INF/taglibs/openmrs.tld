@@ -843,6 +843,25 @@
 
 <tag>
 	<description>
+		Gets the time pattern for the current user's locale
+	</description>
+	<name>timePattern</name>
+	<tag-class>org.openmrs.web.taglib.TimePatternTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>localize</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+		<name>format</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
 		Makes an html table of obs that belong to specified concepts/concept-sets
 	</description>
 	<name>obsTable</name>
