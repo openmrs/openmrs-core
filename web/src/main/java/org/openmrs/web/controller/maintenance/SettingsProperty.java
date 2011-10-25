@@ -85,10 +85,7 @@ public class SettingsProperty implements Comparable<SettingsProperty> {
 	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((globalProperty.getProperty() == null) ? 0 : globalProperty.getProperty().hashCode());
-		return result;
+		return globalProperty.hashCode();
 	}
 	
 	/**
@@ -98,17 +95,10 @@ public class SettingsProperty implements Comparable<SettingsProperty> {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof SettingsProperty))
 			return false;
 		SettingsProperty other = (SettingsProperty) obj;
-		if (globalProperty.getProperty() == null) {
-			if (other.globalProperty.getProperty() != null)
-				return false;
-		} else if (!globalProperty.getProperty().equals(other.globalProperty.getProperty()))
-			return false;
-		return true;
+		return compareTo(other) == 0;
 	}
 	
 	/**

@@ -4,16 +4,6 @@
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>
 
-<script type="text/javascript">
-	var $j = jQuery.noConflict();
-	var saveButton;
-	var cancelButton;
-	$j(document).ready(function() {
-		saveButton = $j("#saveButton");
-		cancelButton = $j("#cancelButton");
-	});
-</script>
-
 <h2>
 	<spring:message code="Settings.title" />
 </h2>

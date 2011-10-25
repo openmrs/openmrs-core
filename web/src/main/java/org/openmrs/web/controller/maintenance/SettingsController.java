@@ -39,37 +39,30 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 /**
  * Allows to manage settings.
  */
 @Controller
-@SessionAttributes(value = { SettingsController.Model.SECTIONS })
 public class SettingsController {
 	
 	protected final Logger log = Logger.getLogger(getClass());
 	
-	public static final class Path {
 		
-		public static final String SETTINGS = "/admin/maintenance/settings";
-	}
+	public static final String SETTINGS_PATH = "/admin/maintenance/settings";
 	
-	public static final class Model {
+	public static final String SETTINGS_FORM = "settingsForm";
 		
-		public static final String SETTINGS_FORM = "settingsForm";
-		
-		public static final String SHOW = "show";
-		
-		public static final String SECTIONS = "sections";
-	}
+	public static final String SHOW = "show";
 	
-	@RequestMapping(value = Path.SETTINGS, method = RequestMethod.GET)
+	public static final String SECTIONS = "sections";
+	
+	@RequestMapping(value = SETTINGS_PATH, method = RequestMethod.GET)
 	public void showSettings() {
 	}
 	
-	@RequestMapping(value = Path.SETTINGS, method = RequestMethod.POST)
-	public void updateSettings(@ModelAttribute(Model.SETTINGS_FORM) SettingsForm settingsForm, Errors errors,
+	@RequestMapping(value = SETTINGS_PATH, method = RequestMethod.POST)
+	public void updateSettings(@ModelAttribute(SETTINGS_FORM) SettingsForm settingsForm, Errors errors,
 	        HttpServletRequest request, HttpSession session) {
 		
 		List<GlobalProperty> toSave = new ArrayList<GlobalProperty>();
@@ -118,7 +111,7 @@ public class SettingsController {
 		
 	}
 	
-	@ModelAttribute(Model.SECTIONS)
+	@ModelAttribute(SECTIONS)
 	public List<String> getSections() {
 		SortedSet<String> sortedSections = new TreeSet<String>();
 		List<GlobalProperty> globalProperties = getService().getAllGlobalProperties();
@@ -138,9 +131,9 @@ public class SettingsController {
 		return sections;
 	}
 	
-	@ModelAttribute(Model.SETTINGS_FORM)
-	public SettingsForm getSettingsForm(@RequestParam(value = Model.SHOW, required = false) String show,
-	        @ModelAttribute(Model.SECTIONS) List<String> sections) {
+	@ModelAttribute(SETTINGS_FORM)
+	public SettingsForm getSettingsForm(@RequestParam(value = SHOW, required = false) String show,
+	        @ModelAttribute(SECTIONS) List<String> sections) {
 		SettingsForm settingsForm = new SettingsForm();
 		if (show == null && settingsForm.getSection() == null) {
 			show = SettingsProperty.GENERAL;
