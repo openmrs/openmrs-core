@@ -13,7 +13,6 @@
  */
 package org.openmrs.web.controller.visit;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,15 +47,9 @@ public class VisitListController {
 	
 	protected final Logger log = Logger.getLogger(getClass());
 	
-	public static final class Path {
-		
-		public static final String VISITS = "/admin/visits/datatable";
-	}
+	public static final String VISITS_PATH = "/admin/visits/datatable";
 	
-	public static final class Param {
-		
-		public static final String PATIENT = "patient";
-	}
+	public static final String PATIENT = "patient";
 	
 	/**
 	 * It handles calls from DataTables.
@@ -65,7 +58,7 @@ public class VisitListController {
 	 * @param request
 	 * @return {@link DatatableResponse}
 	 */
-	@RequestMapping(Path.VISITS)
+	@RequestMapping(VISITS_PATH)
 	public @ResponseBody
 	DatatableResponse getVisits(@ModelAttribute Patient patient, HttpServletRequest request) {
 		DatatableRequest datatable = DatatableRequest.parseRequest(request);
@@ -80,8 +73,6 @@ public class VisitListController {
 		PortletControllerUtil.addFormToEditAndViewUrlMaps(model);
 		@SuppressWarnings("unchecked")
 		Map<Form, String> formToViewUrlMap = (Map<Form, String>) model.get("formToViewUrlMap");
-		@SuppressWarnings("unchecked")
-		Map<Form, String> formToEditUrlMap = (Map<Form, String>) model.get("formToEditUrlMap");
 		
 		if (!StringUtils.isBlank(datatable.getsSearch())) {
 			Integer filteredVisitsCount = Context.getEncounterService().getEncountersByVisitsAndPatientCount(patient, false,
@@ -95,53 +86,50 @@ public class VisitListController {
 		    datatable.getsSearch(), datatable.getiDisplayStart(), datatable.getiDisplayLength());
 		
 		response.setsColumns("visitId", "visitActive", "visitType", "visitLocation", "visitFrom", "visitTo",
-		    "visitIndication", "encounterId", "encounterDate", "encounterType", "encounterProviders", "encounterLocation",
-		    "encounterEnterer", "formViewURL", "formEditURL", "firstInVisit", "lastInVisit");
+		    "visitIndication", "firstInVisit", "lastInVisit", "encounterId", "encounterDate", "encounterType",
+		    "encounterProviders", "encounterLocation", "encounterEnterer", "formViewURL");
 		
-		String[] row;
+		Map<String, String> row = new HashMap<String, String>();
 		for (Encounter encounter : encounters) {
-			row = new String[17];
-			Arrays.fill(row, "");
-			
 			if (encounter.getVisit() != null) {
 				Visit visit = encounter.getVisit();
-				row[0] = visit.getId().toString();
-				row[1] = Boolean.toString(isActive(visit.getStartDatetime(), visit.getStopDatetime()));
-				row[2] = visit.getVisitType().getName();
-				row[3] = (visit.getLocation() != null) ? visit.getLocation().getName() : "";
-				row[4] = Context.getDateFormat().format(visit.getStartDatetime());
+				row.put("visitId", visit.getId().toString());
+				row.put("visitActive", Boolean.toString(isActive(visit.getStartDatetime(), visit.getStopDatetime())));
+				row.put("visitType", visit.getVisitType().getName());
+				row.put("visitLocation", (visit.getLocation() != null) ? visit.getLocation().getName() : "");
+				row.put("visitFrom", Context.getDateFormat().format(visit.getStartDatetime()));
 				
 				if (visit.getStopDatetime() != null) {
-					row[5] = Context.getDateFormat().format(visit.getStopDatetime());
+					row.put("visitTo", Context.getDateFormat().format(visit.getStopDatetime()));
 				}
 				
 				if (visit.getIndication() != null && visit.getIndication().getName() != null) {
-					row[6] = visit.getIndication().getName().getName();
+					row.put("visitIndication", visit.getIndication().getName().getName());
 				}
 				
 				Object[] visitEncounters = visit.getEncounters().toArray();
 				if (visitEncounters.length > 0) {
 					if (encounter.equals(visitEncounters[0])) {
-						row[15] = Boolean.TRUE.toString();
+						row.put("firstInVisit", Boolean.TRUE.toString());
 					}
 					if (encounter.equals(visitEncounters[visitEncounters.length - 1])) {
-						row[16] = Boolean.TRUE.toString();
+						row.put("lastInVisit", Boolean.TRUE.toString());
 					}
 				} else {
-					row[15] = Boolean.TRUE.toString();
-					row[16] = Boolean.TRUE.toString();
+					row.put("firstInVisit", Boolean.TRUE.toString());
+					row.put("lastInVisit", Boolean.TRUE.toString());
 				}
 			}
 			
 			if (encounter.getId() != null) { //If it is not mocked encounter
-				row[7] = encounter.getId().toString();
-				row[8] = Context.getDateFormat().format(encounter.getEncounterDatetime());
-				row[9] = encounter.getEncounterType().getName();
-				row[10] = getProviders(encounter);
-				row[11] = (encounter.getLocation() != null) ? encounter.getLocation().getName() : "";
-				row[12] = (encounter.getCreator() != null) ? encounter.getCreator().getPersonName().toString() : "";
-				row[13] = getViewFormURL(request, formToViewUrlMap, encounter);
-				row[14] = getEditFormURL(request, formToEditUrlMap, encounter);
+				row.put("encounterId", encounter.getId().toString());
+				row.put("encounterDate", Context.getDateFormat().format(encounter.getEncounterDatetime()));
+				row.put("encounterType", encounter.getEncounterType().getName());
+				row.put("encounterProviders", getProviders(encounter));
+				row.put("encounterLocation", (encounter.getLocation() != null) ? encounter.getLocation().getName() : "");
+				row.put("encounterEnterer", (encounter.getCreator() != null) ? encounter.getCreator().getPersonName()
+				        .toString() : "");
+				row.put("formViewURL", getViewFormURL(request, formToViewUrlMap, encounter));
 			}
 			
 			response.addRow(row);
@@ -159,16 +147,6 @@ public class VisitListController {
 			        + encounter.getId();
 		}
 		return viewFormURL;
-	}
-	
-	private String getEditFormURL(HttpServletRequest request, Map<Form, String> formToEditUrlMap, Encounter encounter) {
-		String editFormURL = formToEditUrlMap.get(encounter.getForm());
-		if (editFormURL != null) {
-			editFormURL = request.getContextPath() + "/" + editFormURL + "&encounterId=" + encounter.getId();
-		} else {
-			editFormURL = request.getContextPath() + "/admin/encounters/encounter.form?encounterId=" + encounter.getId();
-		}
-		return editFormURL;
 	}
 	
 	private String getProviders(Encounter encounter) {
@@ -192,7 +170,7 @@ public class VisitListController {
 	}
 	
 	@ModelAttribute
-	public Patient getPatient(@RequestParam(Param.PATIENT) Integer patientId) {
+	public Patient getPatient(@RequestParam(PATIENT) Integer patientId) {
 		return Context.getPatientService().getPatient(patientId);
 	}
 	
