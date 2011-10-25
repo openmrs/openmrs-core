@@ -15,6 +15,7 @@ package org.openmrs.web.controller.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class dedicated for DataTables. It is a response that can be translated to JSON.
@@ -149,5 +150,23 @@ public class DatatableResponse {
 		}
 		
 		aaData.add(row);
+	}
+	
+	/**
+	 * Adds the given row to the data. 
+	 * 
+	 * @param row
+	 */
+	public void addRow(Map<String, String> row) {
+		if (sColumns == null) {
+			setsColumns(row.keySet().toArray(new String[0]));
+		}
+		
+		String[] rowed = new String[sColumns.length];
+		for (int i = 0; i < rowed.length; i++) {
+	        rowed[i] = row.get(sColumns[i]);
+        }
+		
+		addRow(rowed);
 	}
 }

@@ -33,24 +33,30 @@
 </style>
 
 <script type="text/javascript">
-	function visitsPortletShowVisitInfoPopup(href, active, type, location, from, to, indication) {
+	function visitsPortletShowVisitInfoPopup(href, active, type, location,
+			from, to, indication) {
 		var popup = $j('#visitsPortletVisitInfoPopup');
 		if (active == 'true') {
-			$j('#visitsPortletType', popup).html('<spring:message code="Visit.active.label" />: ' + type);
+			$j('#visitsPortletType', popup).html(
+					'<spring:message code="Visit.active.label" />: ' + type);
 		} else {
-			$j('#visitsPortletType', popup).html('<spring:message code="Visit" />: ' + type);
+			$j('#visitsPortletType', popup).html(
+					'<spring:message code="Visit" />: ' + type);
 		}
 		$j('#visitsPortletLocation', popup).html(location);
 		$j('#visitsPortletFrom', popup).html(from);
 		$j('#visitsPortletTo', popup).html(to);
 		$j('#visitsPortletIndication', popup).html(indication);
-		
+
 		$j(popup).show();
-		
-		$j(href).mousemove(function (e) {
-			$j('#visitsPortletVisitInfoPopup').css({"left": e.pageX + 10, "top": e.pageY + 20});
+
+		$j(href).mousemove(function(e) {
+			$j('#visitsPortletVisitInfoPopup').css({
+				"left" : e.pageX + 10,
+				"top" : e.pageY + 20
+			});
 		});
-		
+
 		$j(href).mouseleave(function() {
 			$j('#visitsPortletVisitInfoPopup').hide();
 		});
@@ -138,29 +144,27 @@ tr.bottom-encounter-in-visit td:last-child {
 												"bVisible" : false
 											}, {
 												"bVisible" : false
-											}, null, null, null, null, null,
-													null, {
-														"bVisible" : false
-													}, {
-														"bVisible" : false
-													}, {
-														"bVisible" : false
-													}, {
-														"bVisible" : false
-													} ],
+											}, {
+												"bVisible" : false
+											}, {
+												"bVisible" : false
+											}, null, null, null, null, null, null, {
+												"bVisible" : false
+											} ],
 											"fnRowCallback" : function(nRow,
 													aData, iDisplayIndex) {
-												var encounterId = aData[7];
+												var encounterId = aData[9];
 												if (encounterId != '') {
 													//Changes the action column
 													var actions = '';
+													var encounterURL = aData[15];
 
 													var viewImg = '<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" />';
 													actions = actions
-															+ ' <a href="${pageContext.request.contextPath}/admin/encounters/encounterNativeForm.form?encounterId='
-															+ encounterId
-															+ '">' + viewImg
-															+ '</a>';
+															+ ' <a href="'
+															+ encounterURL
+															+ '">'
+															+ viewImg + '</a>';
 
 													$j('td:eq(1)', nRow).html(
 															actions);
@@ -187,8 +191,8 @@ tr.bottom-encounter-in-visit td:last-child {
 													var iDisplayIndex = i;
 													var aoData = oSettings.aoData[oSettings.aiDisplay[iDisplayIndex]];
 													var visitId = aoData._aData[0];
-													var first = aoData._aData[15];
-													var last = aoData._aData[16];
+													var first = aoData._aData[7];
+													var last = aoData._aData[8];
 
 													if (visitId != '') {
 														$j(trs[i])
@@ -298,6 +302,8 @@ tr.bottom-encounter-in-visit td:last-child {
 							<th class="visitFromHeader"></th>
 							<th class="visitToHeader"></th>
 							<th class="visitIndicationHeader"></th>
+							<th class="encounterFirstHeader"></th>
+							<th class="encounterLastHeader"></th>
 							<th class="encounterIdHeader"><spring:message
 									code="general.view" /></th>
 							<th class="encounterDateHeader"><spring:message
@@ -311,9 +317,6 @@ tr.bottom-encounter-in-visit td:last-child {
 							<th class="encounterEntererHeader"><spring:message
 									code="Encounter.enterer" /></th>
 							<th class="encounterViewURLHeader"></th>
-							<th class="encounterEditURLHeader"></th>
-							<th class="encounterFirstHeader"></th>
-							<th class="encounterLastHeader"></th>
 						</tr>
 					</thead>
 					<tbody>
