@@ -932,6 +932,12 @@ public final class OpenmrsConstants {
 	public static final String GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES = "dashboard.encounters.providerDisplayRoles";
 	
 	/**
+	 * Global property name for optional configuration of the maximum number of encounters to display
+	 * on the encounter tab of the patient dashboard
+	 */
+	public static final String GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW = "dashboard.maximumNumberOfEncountersToShow";
+	
+	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
 	 */
 	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/CBC/PKCS5Padding";
@@ -1332,6 +1338,12 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_SEARCH_WIDGET_MAXIMUM_RESULTS, "10000",
 		        "Specifies the maximum number of results to return from a single search in the search widgets"));
 		
+		props
+		        .add(new GlobalProperty(
+		                GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW,
+		                "",
+		                "An integer which, if specified, would determine the maximum number of encounters to display on the encounter tab of the patient dashboard."));
+
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
