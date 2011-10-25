@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -700,19 +701,23 @@ public interface ConceptService extends OpenmrsService {
 	 * Create or update a ConceptDatatype
 	 * 
 	 * @param cd ConceptDatatype to create or update
-	 * @throws APIException
+	 * @throws NotImplementedException
+	 * Depreciated as if OpenMRS 1.9
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPT_DATATYPES })
-	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws APIException;
+	@Deprecated
+	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws NotImplementedException;
 	
 	/**
 	 * Purge a ConceptDatatype. This removes the concept datatype from the database completely.
 	 * 
 	 * @param cd ConceptDatatype to purge
-	 * @throws APIException
+	 * @throws NotImplementedException
+	 * Depreciated as if OpenMRS 1.9
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPT_DATATYPES)
-	public void purgeConceptDatatype(ConceptDatatype cd) throws APIException;
+	@Deprecated
+	public void purgeConceptDatatype(ConceptDatatype cd) throws NotImplementedException;
 	
 	/**
 	 * Return a list of all concept datatypes currently in the database
