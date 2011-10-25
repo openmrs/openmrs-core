@@ -413,7 +413,7 @@ public interface LocationService extends OpenmrsService {
 	 * @since 1.9
 	 */
 	@Transactional(readOnly = true)
-	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
 	public String getAddressTemplate() throws APIException;
 	
 	/**

@@ -49,7 +49,7 @@ public class ConceptTest {
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
 	 * any incompatible names.
-	 * 
+	 *
 	 * @see {@link Concept#getCompatibleNames(Locale)}
 	 */
 	@Test
@@ -73,7 +73,7 @@ public class ConceptTest {
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
 	 * any incompatible names.
-	 * 
+	 *
 	 * @see {@link Concept#getCompatibleNames(Locale)}
 	 */
 	@Test
@@ -88,7 +88,7 @@ public class ConceptTest {
 	/**
 	 * The Concept should unmark the old conceptName as the locale preferred one to enforce the rule
 	 * that a each locale should have only one preferred name per concept
-	 * 
+	 *
 	 * @see {@link Concept#setPreferredName(ConceptName)}
 	 */
 	@Test
@@ -284,6 +284,30 @@ public class ConceptTest {
 	}
 	
 	/**
+	 * @see {@link Concept#getAnswers()}
+	 */
+	@Test
+	@Verifies(value = "not return null if no answers defined", method = "getAnswers()")
+	public void getAnswers_shouldNotReturnNullIfAnswersListIsNull() throws Exception {
+		Concept c = new Concept();
+		c.setAnswers(null);
+		Assert.assertNotNull(c.getAnswers());
+		c.setAnswers(null);
+		Assert.assertNotNull(c.getAnswers(true));
+	}
+	
+	/**
+	 * @see {@link Concept#getAnswers()}
+	 */
+	@Test
+	@Verifies(value = "not return null if answers is null or empty", method = "getAnswers()")
+	public void getAnswers_shouldInitAnswersObject() throws Exception {
+		Concept c = new Concept();
+		c.setAnswers(null); //make sure the list is null
+		Assert.assertEquals(c.getAnswers(), c.getAnswers());
+	}
+	
+	/**
 	 * @see {@link Concept#addAnswer(ConceptAnswer)}
 	 */
 	@Test
@@ -293,6 +317,63 @@ public class ConceptTest {
 		Concept c = new Concept();
 		c.setAnswers(null); // make sure the list is null
 		c.addAnswer(ca);
+	}
+	
+	/**
+	 * @see {@link Concept#getAnswers()}
+	 */
+	@Test
+	@Verifies(value = "should return retired and non-retired answers", method = "addAnswer(ConceptAnswer)")
+	public void getAnswers_shouldReturnRetiredByDefault() throws Exception {
+		ConceptAnswer ca = new ConceptAnswer(new Concept(123));
+		Concept c = new Concept();
+		Assert.assertEquals(0, c.getAnswers().size());
+		
+		ca.getAnswerConcept().setRetired(false);//set test condition explicitly
+		c.addAnswer(ca);
+		
+		ConceptAnswer ca2 = new ConceptAnswer(new Concept(456));
+		ca2.getAnswerConcept().setRetired(true);
+		c.addAnswer(ca2);
+		Assert.assertEquals(2, c.getAnswers().size());
+	}
+	
+	/**
+	 * @see {@link Concept#getAnswers()}
+	 */
+	@Test
+	@Verifies(value = "should not return retired answers if includeRetired is false", method = "getAnswers(Boolean)")
+	public void getAnswers_shouldNotReturnRetiredIfFalse() throws Exception {
+		ConceptAnswer ca = new ConceptAnswer(new Concept(123));
+		Concept c = new Concept();
+		Assert.assertEquals(0, c.getAnswers(false).size());
+		
+		ca.getAnswerConcept().setRetired(false);//set test condition explicitly
+		c.addAnswer(ca);
+		
+		ConceptAnswer ca2 = new ConceptAnswer(new Concept(456));
+		ca2.getAnswerConcept().setRetired(true);
+		c.addAnswer(ca2);
+		Assert.assertEquals(1, c.getAnswers(false).size());
+	}
+	
+	/**
+	 * @see {@link Concept#getAnswers()}
+	 */
+	@Test
+	@Verifies(value = "should return retired answers if includeRetired is true", method = "getAnswers(Boolean)")
+	public void getAnswers_shouldReturnRetiredIfTrue() throws Exception {
+		ConceptAnswer ca = new ConceptAnswer(new Concept(123));
+		Concept c = new Concept();
+		Assert.assertEquals(0, c.getAnswers(true).size());
+		
+		ca.getAnswerConcept().setRetired(false);//set test condition explicitly
+		c.addAnswer(ca);
+		
+		ConceptAnswer ca2 = new ConceptAnswer(new Concept(456));
+		ca2.getAnswerConcept().setRetired(true);
+		c.addAnswer(ca2);
+		Assert.assertEquals(2, c.getAnswers(true).size());
 	}
 	
 	/**
@@ -594,7 +675,7 @@ public class ConceptTest {
 	
 	/**
 	 * @see {@link Concept#getPreferredName(Locale)}
-	 * 
+	 *
 	 */
 	@Test
 	@Verifies(value = "should return the fully specified name if no name is explicitly marked as locale preferred", method = "getPreferredName(Locale)")
