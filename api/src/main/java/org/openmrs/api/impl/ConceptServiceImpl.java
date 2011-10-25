@@ -32,6 +32,7 @@ import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -760,16 +761,20 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#purgeConceptDatatype(org.openmrs.ConceptDatatype)
+	 * Depreciated as of OpenMRS 1.9
 	 */
-	public void purgeConceptDatatype(ConceptDatatype cd) throws APIException {
-		dao.purgeConceptDatatype(cd);
+	@Deprecated
+	public void purgeConceptDatatype(ConceptDatatype cd) {
+		throw new NotImplementedException();
 	}
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConceptDatatype(org.openmrs.ConceptDatatype)
+	 * Depreciated as of OpenMRS 1.9
 	 */
+	@Deprecated
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws APIException {
-		return dao.saveConceptDatatype(cd);
+		throw new NotImplementedException();
 	}
 	
 	/**
