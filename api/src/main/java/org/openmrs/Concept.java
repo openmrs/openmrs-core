@@ -164,12 +164,13 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns all answers (including retired answers).
 	 * @should return retired and non-retired answers
-	 * @should not return null if no answers defined
+	 * @should not return null if answers is null or empty
 	 */
 	@ElementList
 	public Collection<ConceptAnswer> getAnswers() {
-		return (answers != null) ? answers : new HashSet<ConceptAnswer>();
-		
+		if (answers == null)
+			answers = new HashSet<ConceptAnswer>();
+		return answers;
 	}
 	
 	/**
@@ -187,11 +188,12 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	/**
 	 * If <code>includeRetired</code> is true, then the returned object is the actual stored list of
-	 * {@link ConceptAnswer}s (which may be null.)
+	 * {@link ConceptAnswer}s 
 	 * 
 	 * @param includeRetired true/false whether to also include the retired answers
 	 * @return Returns the answers for this Concept
-	 * @should return actual answers object if given includeRetired is true
+	 * @should return the same as getAnswers() if includeRetired is true
+	 * @should not return retired answers if includeRetired is false
 	 */
 	public Collection<ConceptAnswer> getAnswers(boolean includeRetired) {
 		if (!includeRetired) {
@@ -204,7 +206,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 			return newAnswers;
 		} else
-			return answers;
+			return getAnswers();
 	}
 	
 	/**
@@ -229,13 +231,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public void addAnswer(ConceptAnswer conceptAnswer) {
 		if (conceptAnswer != null) {
-			if (getAnswers(true) == null) {
-				answers = new HashSet<ConceptAnswer>();
+			if (!getAnswers().contains(conceptAnswer)) {
 				conceptAnswer.setConcept(this);
-				answers.add(conceptAnswer);
-			} else if (!answers.contains(conceptAnswer)) {
-				conceptAnswer.setConcept(this);
-				answers.add(conceptAnswer);
+				getAnswers().add(conceptAnswer);
 			}
 			
 			if ((conceptAnswer.getSortWeight() == null) || (conceptAnswer.getSortWeight() <= 0)) {
