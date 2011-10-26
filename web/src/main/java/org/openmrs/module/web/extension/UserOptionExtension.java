@@ -13,7 +13,6 @@
  */
 package org.openmrs.module.web.extension;
 
-
 public abstract class UserOptionExtension extends PortletExt {
 	
 	/**

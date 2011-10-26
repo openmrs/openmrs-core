@@ -164,8 +164,8 @@ public class DatatableResponse {
 		
 		String[] rowed = new String[sColumns.length];
 		for (int i = 0; i < rowed.length; i++) {
-	        rowed[i] = row.get(sColumns[i]);
-        }
+			rowed[i] = row.get(sColumns[i]);
+		}
 		
 		addRow(rowed);
 	}

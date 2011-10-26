@@ -1343,7 +1343,7 @@ public final class OpenmrsConstants {
 		                GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW,
 		                "",
 		                "An integer which, if specified, would determine the maximum number of encounters to display on the encounter tab of the patient dashboard."));
-
+		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
