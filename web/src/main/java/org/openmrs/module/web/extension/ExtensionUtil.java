@@ -13,15 +13,20 @@
  */
 package org.openmrs.module.web.extension;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.openmrs.Form;
+import org.openmrs.Person;
 import org.openmrs.module.Extension;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.web.FormEntryContext;
 
 /**
  * Facilitates processing extensions.
@@ -60,5 +65,34 @@ public class ExtensionUtil {
 		}
 		
 		return forms;
+	}
+	
+	/**
+	 * Matches Forms with their respective FormEntryHandlers.
+	 * 
+	 * @param person
+	 * @return the map of FormEntryHandlers keyed by Forms
+	 */
+	public Map<Form, FormEntryHandler> getFormsModuleCanEnter(Person person) {
+		List<Extension> handlers = ModuleFactory.getExtensions("org.openmrs.module.web.extension.FormEntryHandler");
+		
+		if (handlers == null) {
+			return Collections.emptyMap();
+		}
+		
+		Map<Form, FormEntryHandler> formToEntry = new HashMap<Form, FormEntryHandler>();
+		
+		for (Extension ext : handlers) {
+			FormEntryHandler handler = (FormEntryHandler) ext;
+			Collection<Form> toEnter = handler.getFormsModuleCanEnter(new FormEntryContext(person));
+			
+			if (toEnter != null) {
+				for (Form form : toEnter) {
+					formToEntry.put(form, handler);
+				}
+			}
+		}
+		
+		return formToEntry;
 	}
 }
