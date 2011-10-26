@@ -234,37 +234,7 @@
 			</div>
 		</c:if>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="View Visits, View Encounters">
-	
-		<div id="patientHeaderEncounterPopup">
-		<div id="patientHeaderEncounterPopupLoading"><spring:message code="general.loading"/></div>
-		<iframe id="patientHeaderEncounterPopupIframe" width="100%" height="100%" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"></iframe>
-		</div>
-		
-		<script type="text/javascript">
-			$j(document).ready(function() {
-				$j('#patientHeaderEncounterPopup').dialog({
-						title: 'dynamic',
-						autoOpen: false,
-						draggable: false,
-						resizable: false,
-						width: '95%',
-						modal: true,
-						open: function(a, b) { $j('#patientHeaderEncounterPopupLoading').show(); }
-				});
-				
-				$j("#patientHeaderEncounterPopupIframe").load(function() { $j('#patientHeaderEncounterPopupLoading').hide(); });
-			});
-		
-			function loadUrlIntoPatientHeaderEncounterPopup(title, urlToLoad) {
-				$j("#patientHeaderEncounterPopupIframe").attr("src", urlToLoad);
-				$j('#patientHeaderEncounterPopup')
-					.dialog('option', 'title', title)
-					.dialog('option', 'height', $j(window).height() - 50) 
-					.dialog('open');
-			}
-		</script>
-		
+	<openmrs:hasPrivilege privilege="View Visits, View Encounters">	
 		<script type="text/javascript">					
 			function endVisitNow(visitId, patientId) {
 				if (confirm("<spring:message code="Visit.confirm.endNow"/>")) {
@@ -301,17 +271,55 @@
 						<c:if test="${ model.formToViewUrlMap[encounter.form] != null }">
 						<c:url var="viewEncounterUrl" value="${model.formToViewUrlMap[encounter.form]}">
 							<c:param name="encounterId" value="${encounter.encounterId}"/>
-							<c:param name="inPopup" value="true"/>
 						</c:url>
 					</c:if>
-					<a href="javascript:void(0)" onClick="loadUrlIntoPatientHeaderEncounterPopup('<openmrs:format encounter="${encounter}" javaScriptEscape="true"/>', '${viewEncounterUrl}'); return false;">
+					<a href="${viewEncounterUrl}">
 						<openmrs:format encounterType="${encounter.encounterType}" /></a><c:if test="${not status.last}">,</c:if>
 				</c:forEach>
+				
 				<openmrs:hasPrivilege privilege="Add Encounters">
-				<!-- 
-				<input type="button" value="<spring:message code="Visit.addEncounter"/>"
-					onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?visitId=${ visit.visitId }&patientId=${model.patient.patientId}'" />
-				-->
+				
+					<c:if test="${not empty formsModulesCanAddEncounterToVisit} }">
+						<div id="patientHeaderAddEncounterPopup">
+							<ol>
+							<c:forEach items="${formsModulesCanAddEncounterToVisit}" var="form">
+								<c:if test="${not empty formsModuleCanEnter[form]}">
+									<openmrs:hasPrivilege privilege="${formsModuleCanEnter[form].requiredPrivilege}">
+									<c:url var="formUrl" value="${formsModuleCanEnter[form].formEntryUrl}">
+										<c:param name="personId" value="${model.personId}"/>
+										<c:param name="patientId" value="${model.patientId}"/>
+										<c:param name="returnUrl" value="${model.returnUrl}"/>
+										<c:param name="formId" value="${form.formId}"/>
+									</c:url>
+									<li><a href="${formUrl}">${form.name}</a></li>
+									</openmrs:hasPrivilege>
+								</c:if>
+							</c:forEach>
+							</ol>
+						</div>
+						
+						<script type="text/javascript">
+							$j(document).ready(function() {
+								$j('#patientHeaderAddEncounterPopup').dialog({
+										title: '<spring:message code="Visit.addEncounter"/>',
+										autoOpen: false,
+										draggable: false,
+										resizable: false,
+										width: '50%'
+								});
+							});
+							
+							function patientHeaderShowAddEncounterPopup() {
+								$j('#patientHeaderAddEncounterPopup')
+								.dialog('option', 'height', $j(window).height() - 100) 
+								.dialog('open');
+							}
+						</script>
+						
+						<input type="button" value="<spring:message code="Visit.addEncounter"/>"
+							onclick="patientHeaderShowAddEncounterPopup()" />
+					</c:if>
+					
 				</openmrs:hasPrivilege>
 			</div>
 		</c:forEach>
