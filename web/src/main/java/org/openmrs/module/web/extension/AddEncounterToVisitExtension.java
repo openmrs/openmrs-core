@@ -17,7 +17,6 @@ import java.util.Set;
 
 import org.openmrs.Form;
 import org.openmrs.module.Extension;
-import org.openmrs.module.web.FormEntryContext;
 
 /**
  * Indicates that a module can add an encounter to the specific visit if the addToVisitId parameter is
@@ -36,5 +35,5 @@ public abstract class AddEncounterToVisitExtension extends Extension {
 	/**
 	 * @return the forms for which this module can add an encounter to visit
 	 */
-	public abstract Set<Form> getFormsModuleCanAddEncounterToVisit(FormEntryContext context);
+	public abstract Set<Form> getFormsModuleCanAddEncounterToVisit();
 }
