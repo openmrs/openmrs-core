@@ -89,8 +89,9 @@ public class VisitListController {
 		    "visitIndication", "firstInVisit", "lastInVisit", "encounterId", "encounterDate", "encounterType",
 		    "encounterProviders", "encounterLocation", "encounterEnterer", "formViewURL");
 		
-		Map<String, String> row = new HashMap<String, String>();
 		for (Encounter encounter : encounters) {
+			Map<String, String> row = new HashMap<String, String>();
+			
 			if (encounter.getVisit() != null) {
 				Visit visit = encounter.getVisit();
 				row.put("visitId", visit.getId().toString());
