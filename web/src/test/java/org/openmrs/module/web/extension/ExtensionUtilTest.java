@@ -5,12 +5,12 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Form;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
  * Tests {@link ExtensionUtil}.
  */
-public class ExtensionUtilTest extends BaseModuleContextSensitiveTest {
+public class ExtensionUtilTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ExtensionUtil#getFormsModulesCanAddEncounterToVisit()
