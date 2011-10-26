@@ -48,11 +48,10 @@ public class SettingsController {
 	
 	protected final Logger log = Logger.getLogger(getClass());
 	
-		
 	public static final String SETTINGS_PATH = "/admin/maintenance/settings";
 	
 	public static final String SETTINGS_FORM = "settingsForm";
-		
+	
 	public static final String SHOW = "show";
 	
 	public static final String SECTIONS = "sections";
