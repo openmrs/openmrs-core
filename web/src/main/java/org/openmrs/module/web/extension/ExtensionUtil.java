@@ -22,7 +22,6 @@ import java.util.TreeSet;
 import org.openmrs.Form;
 import org.openmrs.module.Extension;
 import org.openmrs.module.ModuleFactory;
-import org.openmrs.module.web.FormEntryContext;
 
 /**
  * Facilitates processing extensions.
@@ -35,7 +34,7 @@ public class ExtensionUtil {
 	 * 
 	 * @return the set of Forms
 	 */
-	public Set<Form> getFormsModulesCanAddEncounterToVisit(FormEntryContext context) {
+	public Set<Form> getFormsModulesCanAddEncounterToVisit() {
 		List<Extension> extensions = ModuleFactory
 		        .getExtensions("org.openmrs.module.web.extension.AddEncounterToVisitExtension");
 		
@@ -54,7 +53,7 @@ public class ExtensionUtil {
 		for (Extension extension : extensions) {
 			AddEncounterToVisitExtension ext = (AddEncounterToVisitExtension) extension;
 			
-			Set<Form> tmpForms = ext.getFormsModuleCanAddEncounterToVisit(context);
+			Set<Form> tmpForms = ext.getFormsModuleCanAddEncounterToVisit();
 			if (tmpForms != null) {
 				forms.addAll(tmpForms);
 			}
