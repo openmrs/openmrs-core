@@ -2100,142 +2100,128 @@
         </modifySql>
     </changeSet>
     <changeSet id="20110915-1258" author="sunbiz">
+    	<validCheckSum>3:4cbaf9e05dc13ab4be0990b808d58521</validCheckSum>
+    	<validCheckSum>3:3cf419ea9657f9a072881cafb2543d77</validCheckSum>
+    	<validCheckSum>3:675a4401e103351759a7160188e41a37</validCheckSum>
         <createTable tableName="visit_attribute_type">
             <column name="visit_attribute_type_id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints primaryKey="true" nullable="false" />
             </column>
-            <column name="name" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
             <column name="description" type="varchar(1024)"/>
-            <column name="datatype" type="varchar(255)"/>
-            <column name="handler_config" type="text"/>
-            <column name="min_occurs" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="max_occurs" type="int"/>
-            <column name="creator" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date_created" type="DATETIME">
-                <constraints nullable="false"/>
-            </column>
+            <column name="datatype" type="varchar(255)" />
+            <column name="datatype_config" type="text" />
+            <column name="preferred_handler" type="varchar(255)" />
+            <column name="handler_config" type="text" />
+            <column name="min_occurs" type="int"><constraints nullable="false" /></column>
+            <column name="max_occurs" type="int"></column>
+            <column name="creator" type="int"><constraints nullable="false"/></column>
+            <column name="date_created" type="datetime"><constraints nullable="false"/></column>
             <column name="changed_by" type="int"/>
-            <column name="date_changed" type="DATETIME"/>
-            <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+            <column name="date_changed" type="datetime" />
+            <column name="retired" type="smallint" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
-            <column name="retired_by" type="int"/>
-            <column name="date_retired" type="datetime"/>
+            <column name="retired_by" type="int(11)" />
+            <column name="date_retired" type="datetime" />
             <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
-            <column name="uuid" type="char(38)">
-                <constraints nullable="false" unique="true"/>
-            </column>
+            <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
         </modifySql>
     </changeSet>
     <changeSet id="20110915-1307" author="sunbiz">
+    	<validCheckSum>3:de5bc0202df468c450abcce105e16cf7</validCheckSum>
+    	<validCheckSum>3:24e1e30a41f9f5d92f337444fb45402a</validCheckSum>
+    	<validCheckSum>3:674f8bd4b16b3a4c879259a8c9912182</validCheckSum>
         <createTable tableName="visit_attribute">
             <column name="visit_attribute_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" />
             </column>
-            <column name="visit_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="attribute_type_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="serialized_value" type="text"/>
-            <column name="creator" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date_created" type="DATETIME">
-                <constraints nullable="false"/>
-            </column>
+            <column name="visit_id" type="int"><constraints nullable="false" /></column>
+            <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+            <column name="value_reference" type="text"><constraints nullable="false" /></column>
+            <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+            <column name="creator" type="int"><constraints nullable="false"/></column>
+            <column name="date_created" type="datetime"><constraints nullable="false"/></column>
             <column name="changed_by" type="int"/>
-            <column name="date_changed" type="DATETIME" />
-            <column name="voided" type="BOOLEAN" defaultValueBoolean="false">
+            <column name="date_changed" type="datetime" />
+            <column name="voided" type="smallint" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
-            <column name="voided_by" type="int" />
-            <column name="date_voided" type="DATETIME" />
+            <column name="voided_by" type="int(11)" />
+            <column name="date_voided" type="datetime" />
             <column name="void_reason" type="varchar(255)" defaultValue="null"/>
-            <column name="uuid" type="char(38)">
-                <constraints nullable="false" unique="true" />
-            </column>
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
         </modifySql>
     </changeSet>
     <changeSet id="20110915-1325" author="sunbiz">
+    	<validCheckSum>3:ed0aac04c46ca9d3de32ba613ef1481c</validCheckSum>
+    	<validCheckSum>3:41fa30c01ec2d1107beccb8126146464</validCheckSum>
+    	<validCheckSum>3:529c09e19fdd6136085b16ce38bd491a</validCheckSum>
         <createTable tableName="location_attribute_type">
             <column name="location_attribute_type_id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="description" type="varchar(1024)"/>
-            <column name="datatype" type="varchar(255)"/>
-            <column name="handler_config" type="text"/>
-            <column name="min_occurs" type="int">
-                <constraints nullable="false" />
-            </column>
-            <column name="max_occurs" type="int"/>
-            <column name="creator" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date_created" type="DATETIME">
-                <constraints nullable="false"/>
-            </column>
-            <column name="changed_by" type="int"/>
-            <column name="date_changed" type="DATETIME"/>
-            <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false"/>
-            </column>
-            <column name="retired_by" type="int"/>
-            <column name="date_retired" type="DATETIME"/>
-            <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
-            <column name="uuid" type="char(38)">
-                <constraints nullable="false" unique="true" />
-            </column>
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="varchar(1024)" />
+			<column name="datatype" type="varchar(255)" />
+            <column name="datatype_config" type="text" />
+            <column name="preferred_handler" type="varchar(255)" />
+            <column name="handler_config" type="text" />
+			<column name="min_occurs" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="max_occurs" type="int"></column>
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int(11)" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" defaultValue="null" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
         </modifySql>
     </changeSet>
     <changeSet id="20110915-1337" author="sunbiz">
+    	<validCheckSum>3:31b244b6b3ba46d0ae7bd436b1b1c7b0</validCheckSum>
+    	<validCheckSum>3:564e414d29bdccd1bf770252ccd11431</validCheckSum>
+    	<validCheckSum>3:00224dcc4a90faabf6e2323decd1bea1</validCheckSum>
         <createTable tableName="location_attribute">
-            <column name="location_attribute_id" type="int" autoIncrement="true">
+        	<column name="location_attribute_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" />
             </column>
-            <column name="location_id" type="int">
-                <constraints nullable="false" />
-            </column>
-            <column name="attribute_type_id" type="int">
-                <constraints nullable="false" />
-            </column>
-            <column name="serialized_value" type="text" />
-            <column name="creator" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date_created" type="DATETIME">
-                <constraints nullable="false"/>
-            </column>
+            <column name="location_id" type="int"><constraints nullable="false" /></column>
+            <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+            <column name="value_reference" type="text"><constraints nullable="false" /></column>
+            <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+            <column name="creator" type="int"><constraints nullable="false"/></column>
+            <column name="date_created" type="datetime"><constraints nullable="false"/></column>
             <column name="changed_by" type="int"/>
-            <column name="date_changed" type="DATETIME" />
-            <column name="voided" type="BOOLEAN" defaultValueBoolean="false">
+            <column name="date_changed" type="datetime" />
+            <column name="voided" type="smallint" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
-            <column name="voided_by" type="int" />
-            <column name="date_voided" type="DATETIME" />
+            <column name="voided_by" type="int(11)" />
+            <column name="date_voided" type="datetime" />
             <column name="void_reason" type="varchar(255)" defaultValue="null"/>
-            <column name="uuid" type="char(38)">
-                <constraints nullable="false" unique="true" />
-            </column>
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
