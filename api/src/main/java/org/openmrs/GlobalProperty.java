@@ -79,11 +79,14 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * Constructor defining key/value/description/customDatatype/datatypeConfig
+	 * 
 	 * @param property
 	 * @param value
 	 * @param description
 	 * @param datatypeClass
 	 * @param datatypeConfig
+	 * 
+	 * @since 1.9
 	 */
 	public GlobalProperty(String property, String value, String description,
 	    Class<? extends CustomDatatype<?>> datatypeClass, String datatypeConfig) {
@@ -227,6 +230,8 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getDescriptor()
+	 * 
+	 * @since 1.9
 	 */
 	@Override
 	public GlobalProperty getDescriptor() {
@@ -235,6 +240,8 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getValueReference()
+	 * 
+	 * @since 1.9
 	 */
 	@Override
 	public String getValueReference() {
@@ -243,6 +250,8 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReference(java.lang.String)
+	 * 
+	 * @since 1.9
 	 */
 	@Override
 	public void setValueReference(String valueToPersist) throws InvalidCustomValueException {
@@ -251,6 +260,8 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getValue()
+	 * 
+	 * @since 1.9
 	 */
 	@Override
 	public Object getValue() throws InvalidCustomValueException {
@@ -259,6 +270,8 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#setValue(java.lang.Object)
+	 * 
+	 * @since 1.9
 	 */
 	@Override
 	public <T> void setValue(T typedValue) throws InvalidCustomValueException {
