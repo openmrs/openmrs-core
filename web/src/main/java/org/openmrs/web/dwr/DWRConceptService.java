@@ -318,11 +318,14 @@ public class DWRConceptService {
 				Field field = null;
 				ConceptName cn = set.getConcept().getName(locale);
 				ConceptDescription description = set.getConcept().getDescription(locale);
-				for (Field f : fs.getFieldsByConcept(set.getConcept())) {
-					if (f.getName().equals(cn.getName()) && f.getDescription().equals(description.getDescription())
-					        && f.isSelectMultiple().equals(false))
-						field = f;
+				if (description != null) {
+					for (Field f : fs.getFieldsByConcept(set.getConcept())) {
+						if (f.getName().equals(cn.getName()) && f.getDescription().equals(description.getDescription())
+						        && f.isSelectMultiple().equals(false))
+							field = f;
+					}
 				}
+				
 				if (field == null)
 					returnList.add(new ConceptListItem(set.getConcept(), cn, locale));
 				else
