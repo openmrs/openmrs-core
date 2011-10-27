@@ -62,7 +62,7 @@
         	<td width="100px"><div class="logo"></div></td>
         	<td>
             	<div class="bar-round">
-        			<div class="bar">OpenMRS Installation Wizard</div>
+        			<div class="bar">$l10n.get("install.header.caption")</div>
         		</div>
             </td>
         </tr>
@@ -71,8 +71,12 @@
 	#if( ! $errors.isEmpty() )
 	<div id="errorMsgs" style="color: red">
 		<ul>
-		#foreach ($error in $errors)
-			<li>${error}</li>
+		#foreach ($error in $errors.entrySet())
+			#if (!$error.getValue()) 
+				<li>$l10n.get($error.getKey())</li>
+			#else
+				<li>$l10n.get($error.getKey()).insert($error.getValue())</li>
+			#end
 		#end
 		</ul>
 	</div>
@@ -80,7 +84,7 @@
 	#end	
 	
 	#if( ! $workLog.isEmpty() )
-	Tasks completed so far:
+	$l10n.get("install.header.tasks")
 	<div>
 		<ul>
 		#foreach ($task in $workLog)

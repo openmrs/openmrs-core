@@ -27,6 +27,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
@@ -74,6 +75,9 @@ import org.openmrs.util.Security;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
+import org.openmrs.web.filter.util.CustomResourseLoader;
+import org.openmrs.web.filter.util.ErrorMessageConstants;
+import org.openmrs.web.filter.util.FilterUtil;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 
@@ -93,7 +97,12 @@ public class InitializationFilter extends StartupFilter {
 	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
 	
 	/**
-	 * The first page of the wizard that asks for simple or advanced installation.
+	 * The very first page of wizard, that asks user for select his preferred language
+	 */
+	private final String CHOOSE_LANG = "chooselang.vm";
+	
+	/**
+	 * The second page of the wizard that asks for simple or advanced installation.
 	 */
 	private final String INSTALL_METHOD = "installmethod.vm";
 	
@@ -116,7 +125,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
-	private final String DEFAULT_PAGE = INSTALL_METHOD;
+	private final String DEFAULT_PAGE = CHOOSE_LANG;
 	
 	/**
 	 * This page asks whether database tables/demo data should be inserted and what the
@@ -204,9 +213,20 @@ public class InitializationFilter extends StartupFilter {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
-		
+		// we need to save current user language in references map since it will be used when template
+		// will be rendered
+		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
+			referenceMap
+			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+		}
 		if (page == null) {
-			// get props and render the first page
+			checkLocaleAttributesForFirstTime(httpRequest);
+			referenceMap
+			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+			httpResponse.setContentType("text/html");
+			renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
+		} else if (INSTALL_METHOD.equals(page)) {
+			// get props and render the second page
 			File runtimeProperties = getRuntimePropertiesFile();
 			
 			if (!runtimeProperties.exists()) {
@@ -250,7 +270,7 @@ public class InitializationFilter extends StartupFilter {
 			if (isInstallationStarted()) {
 				renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 			} else {
-				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
+				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 			}
 		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
 			httpResponse.setContentType("text/json");
@@ -260,7 +280,7 @@ public class InitializationFilter extends StartupFilter {
 				result.put("hasErrors", initJob.hasErrors());
 				if (initJob.hasErrors()) {
 					result.put("errorPage", initJob.getErrorPage());
-					errors.addAll(initJob.getErrors());
+					errors.putAll(initJob.getErrors());
 				}
 				
 				result.put("initializationComplete", isInitializationComplete());
@@ -301,6 +321,12 @@ public class InitializationFilter extends StartupFilter {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
+		// we need to save current user language in references map since it will be used when template
+		// will be rendered
+		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
+			referenceMap
+			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+		}
 		
 		// if any body has already started installation
 		if (isInstallationStarted()) {
@@ -308,12 +334,62 @@ public class InitializationFilter extends StartupFilter {
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 			return;
 		}
-		// TODO make these page names variables.
-		//                   /                SIMPLE_SETUP                    \
-		// 0.INSTALL_METHOD <                                                  > WIZARD_COMPLETE
-		//                   \ 1.DATABASE_SETUP ... 5.IMPLEMENTATION_ID_SETUP /
-		// step zero
-		if (INSTALL_METHOD.equals(page)) {
+		
+		// if any body has already started installation
+		if (isInstallationStarted()) {
+			httpResponse.setContentType("text/html");
+			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
+			return;
+		}
+		if (DEFAULT_PAGE.equals(page)) {
+			// get props and render the first page
+			File runtimeProperties = getRuntimePropertiesFile();
+			
+			if (!runtimeProperties.exists()) {
+				try {
+					runtimeProperties.createNewFile();
+					// reset the error objects in case of refresh
+					wizardModel.canCreate = true;
+					wizardModel.cannotCreateErrorMessage = "";
+				}
+				catch (IOException io) {
+					wizardModel.canCreate = false;
+					wizardModel.cannotCreateErrorMessage = io.getMessage();
+				}
+				
+				// check this before deleting the file again
+				wizardModel.canWrite = runtimeProperties.canWrite();
+				
+				// delete the file again after testing the create/write
+				// so that if the user stops the webapp before finishing
+				// this wizard, they can still get back into it
+				runtimeProperties.delete();
+				
+			} else {
+				wizardModel.canWrite = runtimeProperties.canWrite();
+			}
+			
+			wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
+			
+			checkLocaleAttributes(httpRequest);
+			referenceMap
+			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+			log.info("Locale stored in session is " + httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+			
+			httpResponse.setContentType("text/html");
+			// otherwise do step one of the wizard
+			renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
+		} else if (INSTALL_METHOD.equals(page)) {
+			
+			if ("Back".equals(httpRequest.getParameter("back"))) {
+				referenceMap.put(FilterUtil.REMEMBER_ATTRIBUTE, httpRequest.getSession().getAttribute(
+				    FilterUtil.REMEMBER_ATTRIBUTE) != null);
+				referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(
+				    FilterUtil.LOCALE_ATTRIBUTE));
+				renderTemplate(CHOOSE_LANG, referenceMap, httpResponse);
+				return;
+			}
+			
 			wizardModel.installMethod = httpRequest.getParameter("install_method");
 			if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 				page = SIMPLE_SETUP;
@@ -340,7 +416,7 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
 			
 			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
-			checkForEmptyValue(wizardModel.databaseRootPassword, errors, "Database root password");
+			checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
 			
 			wizardModel.hasCurrentOpenmrsDatabase = false;
 			wizardModel.createTables = true;
@@ -364,9 +440,7 @@ public class InitializationFilter extends StartupFilter {
 				    wizardModel.databaseDriver);
 			}
 			catch (ClassNotFoundException e) {
-				errors.add("The given database driver class was not found. "
-				        + "Please ensure that the database driver jar file is on the class path "
-				        + "(like in the webapp's lib folder)");
+				errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
 				renderTemplate(page, referenceMap, httpResponse);
 				return;
 			}
@@ -384,16 +458,14 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
-			checkForEmptyValue(wizardModel.databaseConnection, errors, "Database connection string");
+			checkForEmptyValue(wizardModel.databaseConnection, errors, ErrorMessageConstants.ERROR_DB_CONN_REQ);
 			
 			wizardModel.databaseDriver = httpRequest.getParameter("database_driver");
-			checkForEmptyValue(wizardModel.databaseConnection, errors, "Database connection string");
+			checkForEmptyValue(wizardModel.databaseConnection, errors, ErrorMessageConstants.ERROR_DB_DRIVER_REQ);
 			
 			loadedDriverString = loadDriver(wizardModel.databaseConnection, wizardModel.databaseDriver);
 			if (!StringUtils.hasText(loadedDriverString)) {
-				errors.add("The given database driver class was not found. "
-				        + "Please ensure that the database driver jar file is on the class path "
-				        + "(like in the webapp's lib folder)");
+				errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
 				renderTemplate(page, referenceMap, httpResponse);
 				return;
 			}
@@ -404,7 +476,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			if ("yes".equals(httpRequest.getParameter("current_openmrs_database"))) {
 				wizardModel.databaseName = httpRequest.getParameter("openmrs_current_database_name");
-				checkForEmptyValue(wizardModel.databaseName, errors, "Current database name");
+				checkForEmptyValue(wizardModel.databaseName, errors, ErrorMessageConstants.ERROR_DB_CURR_NAME_REQ);
 				wizardModel.hasCurrentOpenmrsDatabase = true;
 				// TODO check to see if this is an active database
 				
@@ -415,15 +487,13 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.createTables = true;
 				
 				wizardModel.databaseName = httpRequest.getParameter("openmrs_new_database_name");
-				checkForEmptyValue(wizardModel.databaseName, errors, "New database name");
+				checkForEmptyValue(wizardModel.databaseName, errors, ErrorMessageConstants.ERROR_DB_NEW_NAME_REQ);
 				// TODO create database now to check if its possible?
 				
 				wizardModel.createDatabaseUsername = httpRequest.getParameter("create_database_username");
-				checkForEmptyValue(wizardModel.createDatabaseUsername, errors,
-				    "A user that has 'CREATE DATABASE' privileges");
+				checkForEmptyValue(wizardModel.createDatabaseUsername, errors, ErrorMessageConstants.ERROR_DB_USER_NAME_REQ);
 				wizardModel.createDatabasePassword = httpRequest.getParameter("create_database_password");
-				checkForEmptyValue(wizardModel.createDatabasePassword, errors,
-				    "Password for user with 'CREATE DATABASE' privileges");
+				checkForEmptyValue(wizardModel.createDatabasePassword, errors, ErrorMessageConstants.ERROR_DB_USER_PSWD_REQ);
 			}
 			
 			if (errors.isEmpty()) {
@@ -448,9 +518,11 @@ public class InitializationFilter extends StartupFilter {
 			
 			if ("yes".equals(httpRequest.getParameter("current_database_user"))) {
 				wizardModel.currentDatabaseUsername = httpRequest.getParameter("current_database_username");
-				checkForEmptyValue(wizardModel.currentDatabaseUsername, errors, "Curent user account");
+				checkForEmptyValue(wizardModel.currentDatabaseUsername, errors,
+				    ErrorMessageConstants.ERROR_DB_CUR_USER_NAME_REQ);
 				wizardModel.currentDatabasePassword = httpRequest.getParameter("current_database_password");
-				checkForEmptyValue(wizardModel.currentDatabasePassword, errors, "Current user account password");
+				checkForEmptyValue(wizardModel.currentDatabasePassword, errors,
+				    ErrorMessageConstants.ERROR_DB_CUR_USER_PSWD_REQ);
 				wizardModel.hasCurrentDatabaseUser = true;
 				wizardModel.createDatabaseUser = false;
 			} else {
@@ -458,10 +530,9 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.createDatabaseUser = true;
 				// asked for the root mysql username/password
 				wizardModel.createUserUsername = httpRequest.getParameter("create_user_username");
-				checkForEmptyValue(wizardModel.createUserUsername, errors, "A user that has 'CREATE USER' privileges");
+				checkForEmptyValue(wizardModel.createUserUsername, errors, ErrorMessageConstants.ERROR_DB_USER_NAME_REQ);
 				wizardModel.createUserPassword = httpRequest.getParameter("create_user_password");
-				checkForEmptyValue(wizardModel.createUserPassword, errors,
-				    "Password for user that has 'CREATE USER' privileges");
+				checkForEmptyValue(wizardModel.createUserPassword, errors, ErrorMessageConstants.ERROR_DB_USER_PSWD_REQ);
 			}
 			
 			if (errors.isEmpty()) { // go to next page
@@ -501,14 +572,14 @@ public class InitializationFilter extends StartupFilter {
 			
 			// throw back to admin user if passwords don't match
 			if (!wizardModel.adminUserPassword.equals(adminUserConfirm)) {
-				errors.add("Admin passwords don't match");
+				errors.put(ErrorMessageConstants.ERROR_DB_ADM_PSWDS_MATCH, null);
 				renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				return;
 			}
 			
 			// throw back if the user didn't put in a password
 			if (wizardModel.adminUserPassword.equals("")) {
-				errors.add("An admin password is required");
+				errors.put(ErrorMessageConstants.ERROR_DB_ADM_PSDW_EMPTY, null);
 				renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				return;
 			}
@@ -517,8 +588,7 @@ public class InitializationFilter extends StartupFilter {
 				OpenmrsUtil.validatePassword("admin", wizardModel.adminUserPassword, "admin");
 			}
 			catch (PasswordException p) {
-				errors
-				        .add("The password is not long enough, does not contain both uppercase characters and a number, or matches the username.");
+				errors.put(ErrorMessageConstants.ERROR_DB_ADM_PSDW_WEAK, null);
 				renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				return;
 			}
@@ -547,7 +617,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			// throw back if the user-specified ID is invalid (contains ^ or |).
 			if (wizardModel.implementationId.indexOf('^') != -1 || wizardModel.implementationId.indexOf('|') != -1) {
-				errors.add("Implementation ID cannot contain '^' or '|'");
+				errors.put(ErrorMessageConstants.ERROR_DB_IMPL_ID_REQ, null);
 				renderTemplate(IMPLEMENTATION_ID_SETUP, referenceMap, httpResponse);
 				return;
 			}
@@ -578,11 +648,8 @@ public class InitializationFilter extends StartupFilter {
 				//in the test mode hence passing in null for driver name
 				loadedDriverString = loadDriver(testDatabaseConnection, null);
 				if (!StringUtils.hasText(loadedDriverString)) {
-					page = TESTING_SETUP;
-					errors.add("The given database driver class was not found. "
-					        + "Please ensure that the database driver jar file is on the class path "
-					        + "(like in the webapp's lib folder)");
-					renderTemplate(page, referenceMap, httpResponse);
+					errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
+					renderTemplate(TESTING_SETUP, referenceMap, httpResponse);
 					return;
 				}
 				wizardModel.tasksToExecute.add(WizardTask.CREATE_TEST_INSTALLATION);
@@ -599,6 +666,11 @@ public class InitializationFilter extends StartupFilter {
 					wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
 			}
 			wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
+			
+			if (httpRequest.getSession().getAttribute(FilterUtil.REMEMBER_ATTRIBUTE) != null) {
+				wizardModel.localeToSave = String
+				        .valueOf(httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+			}
 			
 			referenceMap.put("tasksToExecute", wizardModel.tasksToExecute);
 			
@@ -684,6 +756,57 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
+	 * This method should be called after the user has left wizard's first page (i.e. choose
+	 * language). It checks if user has changed any of locale related parameters and makes
+	 * appropriate corrections with filter's model or/and with locale attribute inside user's
+	 * session.
+	 * 
+	 * @param httpRequest the http request object
+	 */
+	private void checkLocaleAttributes(HttpServletRequest httpRequest) {
+		String localeParameter = httpRequest.getParameter(FilterUtil.LOCALE_ATTRIBUTE);
+		Boolean rememberLocale = false;
+		// we need to check if user wants that system will remember his selection of language
+		if (httpRequest.getParameter(FilterUtil.REMEMBER_ATTRIBUTE) != null)
+			rememberLocale = true;
+		if (localeParameter != null) {
+			String storedLocale = null;
+			if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
+				storedLocale = httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE).toString();
+			}
+			// if user has changed locale parameter to new one
+			// or chooses it parameter at first page loading
+			if ((storedLocale == null) || (storedLocale != null && !storedLocale.equals(localeParameter))) {
+				log.info("Stored locale parameter to session " + localeParameter);
+				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
+			}
+			if (rememberLocale) {
+				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
+				httpRequest.getSession().setAttribute(FilterUtil.REMEMBER_ATTRIBUTE, true);
+			} else {
+				// we need to reset it if it was set before
+				httpRequest.getSession().setAttribute(FilterUtil.REMEMBER_ATTRIBUTE, null);
+			}
+		}
+	}
+	
+	/**
+	 * It sets locale parameter for current session when user is making first GET http request to
+	 * application. It retrieves user locale from request object and checks if this locale is
+	 * supported by application. If not, it uses {@link Locale#ENGLISH} by default
+	 * 
+	 * @param httpRequest the http request object
+	 */
+	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
+		Locale locale = httpRequest.getLocale();
+		if (CustomResourseLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
+			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, locale.toString());
+		} else {
+			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, Locale.ENGLISH.toString());
+		}
+	}
+	
+	/**
 	 * Verify the database connection works.
 	 * 
 	 * @param connectionUsername
@@ -701,8 +824,8 @@ public class InitializationFilter extends StartupFilter {
 			
 		}
 		catch (Exception e) {
-			errors.add("User account " + connectionUsername + " does not work. " + e.getMessage()
-			        + " See the error log for more details"); // TODO internationalize this
+			errors.put("User account " + connectionUsername + " does not work. " + e.getMessage()
+			        + " See the error log for more details", null); // TODO internationalize this
 			log.warn("Error while checking the connection user account", e);
 			return false;
 		}
@@ -839,7 +962,7 @@ public class InitializationFilter extends StartupFilter {
 			if (!silent) {
 				// log and add error
 				log.warn("error executing sql: " + sql, sqlex);
-				errors.add("Error executing sql: " + sql + " - " + sqlex.getMessage());
+				errors.put("Error executing sql: " + sql + " - " + sqlex.getMessage(), null);
 			}
 		}
 		catch (InstantiationException e) {
@@ -880,14 +1003,15 @@ public class InitializationFilter extends StartupFilter {
 	 * 
 	 * @param value the string to check
 	 * @param errors the list of errors to append the errorMessage to if value is empty
-	 * @param errorMessage the string error message to append if value is empty
+	 * @param errorMessageCode the string with code of error message translation to append if value
+	 *            is empty
 	 * @return true if the value is non-empty
 	 */
-	private boolean checkForEmptyValue(String value, List<String> errors, String errorMessage) {
+	private boolean checkForEmptyValue(String value, Map<String, Object[]> errors, String errorMessageCode) {
 		if (value != null && !value.equals("")) {
 			return true;
 		}
-		errors.add(errorMessage + " required.");
+		errors.put(errorMessageCode, null);
 		return false;
 	}
 	
@@ -903,7 +1027,7 @@ public class InitializationFilter extends StartupFilter {
 		
 		private String message = "";
 		
-		private List<String> errors = new ArrayList<String>();
+		private Map<String, Object[]> errors = new HashMap<String, Object[]>();
 		
 		private String errorPage = null;
 		
@@ -915,8 +1039,8 @@ public class InitializationFilter extends StartupFilter {
 		
 		private List<WizardTask> executedTasks = new ArrayList<WizardTask>();
 		
-		synchronized public void reportError(String error, String errorPage) {
-			errors.add(error);
+		synchronized public void reportError(String error, String errorPage, Object... params) {
+			errors.put(error, params);
 			this.errorPage = errorPage;
 			erroneous = true;
 		}
@@ -929,7 +1053,7 @@ public class InitializationFilter extends StartupFilter {
 			return errorPage;
 		}
 		
-		synchronized public List<String> getErrors() {
+		synchronized public Map<String, Object[]> getErrors() {
 			return errors;
 		}
 		
@@ -947,7 +1071,6 @@ public class InitializationFilter extends StartupFilter {
 				thread.join();
 			}
 			catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				log.error("Error generated", e);
 			}
 		}
@@ -1038,9 +1161,7 @@ public class InitializationFilter extends StartupFilter {
 							    wizardModel.createDatabasePassword, sql, wizardModel.databaseName);
 							// throw the user back to the main screen if this error occurs
 							if (result < 0) {
-								reportError(
-								    "Unable to create the database. The password might be incorrect or the database is not started.",
-								    DEFAULT_PAGE);
+								reportError(ErrorMessageConstants.ERROR_DB_CREATE_NEW, DEFAULT_PAGE);
 								return;
 							} else {
 								wizardModel.workLog.add("Created database " + wizardModel.databaseName);
@@ -1075,7 +1196,7 @@ public class InitializationFilter extends StartupFilter {
 								wizardModel.workLog.add("Created user " + connectionUsername);
 							} else {
 								// if error occurs stop
-								reportError("Unable to create a database user", DEFAULT_PAGE);
+								reportError(ErrorMessageConstants.ERROR_DB_CREATE_DB_USER, DEFAULT_PAGE);
 								return;
 							}
 							
@@ -1085,7 +1206,7 @@ public class InitializationFilter extends StartupFilter {
 							    wizardModel.createUserPassword, sql, wizardModel.databaseName, connectionUsername);
 							// throw the user back to the main screen if this error occurs
 							if (result < 0) {
-								reportError("Unable to grant privileges on openmrs database to user", DEFAULT_PAGE);
+								reportError(ErrorMessageConstants.ERROR_DB_GRANT_PRIV, DEFAULT_PAGE);
 								return;
 							} else {
 								wizardModel.workLog.add("Granted user " + connectionUsername
@@ -1186,7 +1307,8 @@ public class InitializationFilter extends StartupFilter {
 								
 							}
 							catch (Exception e) {
-								reportError(e.getMessage() + " See the error log for more details", null);
+								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE, e
+								        .getMessage());
 								log.warn("Error while trying to create tables and demo data", e);
 							}
 						}
@@ -1204,7 +1326,8 @@ public class InitializationFilter extends StartupFilter {
 								addExecutedTask(WizardTask.ADD_DEMO_DATA);
 							}
 							catch (Exception e) {
-								reportError(e.getMessage() + " See the error log for more details", null);
+								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE, e
+								        .getMessage());
 								log.warn("Error while trying to add demo data", e);
 							}
 						}
@@ -1216,8 +1339,8 @@ public class InitializationFilter extends StartupFilter {
 							createTestInstallation();
 							if (!errors.isEmpty()) {
 								reportError("Error while trying to Creating installation: "
-								        + StringUtils.collectionToCommaDelimitedString(errors), null);
-								log.warn(StringUtils.collectionToCommaDelimitedString(errors));
+								        + StringUtils.collectionToCommaDelimitedString(errors.values()), null);
+								log.warn(StringUtils.collectionToCommaDelimitedString(errors.values()));
 								return;
 							}
 							wizardModel.workLog.add("Created test installation");
@@ -1234,8 +1357,7 @@ public class InitializationFilter extends StartupFilter {
 							addExecutedTask(WizardTask.UPDATE_TO_LATEST);
 						}
 						catch (Exception e) {
-							reportError(e.getMessage() + " Error while trying to update to the latest database version",
-							    DEFAULT_PAGE);
+							reportError(ErrorMessageConstants.ERROR_DB_UPDATE_TO_LATEST, DEFAULT_PAGE, e.getMessage());
 							log.warn("Error while trying to update to the latest database version", e);
 							return;
 						}
@@ -1260,9 +1382,7 @@ public class InitializationFilter extends StartupFilter {
 						}
 						catch (DatabaseUpdateException updateEx) {
 							log.warn("Error while running the database update file", updateEx);
-							reportError(
-							    updateEx.getMessage() + " There was an error while running the database update file: "
-							            + updateEx.getMessage(), DEFAULT_PAGE);
+							reportError(ErrorMessageConstants.ERROR_DB_UPDATE, DEFAULT_PAGE, updateEx.getMessage());
 							return;
 						}
 						catch (InputRequiredException inputRequiredEx) {
@@ -1271,16 +1391,15 @@ public class InitializationFilter extends StartupFilter {
 							//		with the user's question/answer pairs
 							log
 							        .warn("Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
-							reportError(
-							    "Unable to continue because user input is required for the db updates and we cannot do anything about that right now",
-							    DEFAULT_PAGE);
+							reportError(ErrorMessageConstants.ERROR_INPUT_REQ, DEFAULT_PAGE);
 							return;
 						}
 						catch (MandatoryModuleException mandatoryModEx) {
 							log.warn(
 							    "A mandatory module failed to start. Fix the error or unmark it as mandatory to continue.",
 							    mandatoryModEx);
-							reportError(mandatoryModEx.getMessage(), DEFAULT_PAGE);
+							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE, mandatoryModEx
+							        .getMessage());
 							return;
 						}
 						catch (OpenmrsCoreModuleException coreModEx) {
@@ -1288,7 +1407,7 @@ public class InitializationFilter extends StartupFilter {
 							        .warn(
 							            "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
 							            coreModEx);
-							reportError(coreModEx.getMessage(), DEFAULT_PAGE);
+							reportError(ErrorMessageConstants.ERROR_CORE_MOD_REQ, DEFAULT_PAGE, coreModEx.getMessage());
 							return;
 						}
 						
@@ -1310,7 +1429,7 @@ public class InitializationFilter extends StartupFilter {
 								Context.getAdministrationService().setImplementationId(implId);
 							}
 							catch (Throwable t) {
-								reportError(t.getMessage() + " Implementation ID could not be set.", DEFAULT_PAGE);
+								reportError(ErrorMessageConstants.ERROR_SET_INPL_ID, DEFAULT_PAGE, t.getMessage());
 								log.warn("Implementation ID could not be set.", t);
 								Context.shutdown();
 								WebModuleUtil.shutdownModules(filterConfig.getServletContext());
@@ -1343,7 +1462,7 @@ public class InitializationFilter extends StartupFilter {
 							Context.shutdown();
 							WebModuleUtil.shutdownModules(filterConfig.getServletContext());
 							contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
-							reportError(t.getMessage() + " Unable to complete the startup.", DEFAULT_PAGE);
+							reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, t.getMessage());
 							log.warn("Unable to complete the startup.", t);
 							return;
 						}
@@ -1368,12 +1487,15 @@ public class InitializationFilter extends StartupFilter {
 						Context.closeSession();
 					}
 					catch (IOException e) {
-						reportError(e.getMessage() + " Unable to complete the startup.", DEFAULT_PAGE);
+						reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
 					}
 					finally {
 						if (!hasErrors()) {
 							// set this so that the wizard isn't run again on next page load
 							setInitializationComplete(true);
+							// we should also try to store selected by user language
+							// if user wants to system will do it for him 
+							FilterUtil.storeLocale(wizardModel.localeToSave);
 						}
 						setInstallationStarted(false);
 					}
@@ -1553,16 +1675,16 @@ public class InitializationFilter extends StartupFilter {
 						initJob.setCompletedPercentage(100);
 						
 					} else
-						errors.add("Failed to export data to the test server, see logs for details");
+						errors.put(ErrorMessageConstants.ERROR_UNABLE_COPY_DATA, null);
 				} else
-					errors.add("Failed to create the test database, see logs for details");
+					errors.put(ErrorMessageConstants.ERROR_UNABLE_CREATE_DB, null);
 			} else
-				errors.add("Failed to create a sql dump file, see logs for details");
+				errors.put(ErrorMessageConstants.ERROR_UNABLE_CREATE_DUMP, null);
 			
 		}
 		catch (Exception e) {
 			log.error("Errror while creating a testing environment", e);
-			errors.add("Failed to create a testing environment, please see logs for details");
+			errors.put(ErrorMessageConstants.ERROR_UNABLE_CREATE_ENV, null);
 		}
 	}
 }

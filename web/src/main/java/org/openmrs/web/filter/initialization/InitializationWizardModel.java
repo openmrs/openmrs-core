@@ -197,6 +197,8 @@ public class InitializationWizardModel {
 	 */
 	public List<WizardTask> tasksToExecute;
 	
+	public String localeToSave = "";
+	
 	/**
 	 * Specified by the user when they select the testing install method
 	 */

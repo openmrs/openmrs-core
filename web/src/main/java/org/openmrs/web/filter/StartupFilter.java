@@ -19,8 +19,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -41,11 +42,22 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.CommonsLogLogChute;
+import org.apache.velocity.tools.Scope;
+import org.apache.velocity.tools.ToolContext;
+import org.apache.velocity.tools.ToolManager;
+import org.apache.velocity.tools.config.DefaultKey;
+import org.apache.velocity.tools.config.FactoryConfiguration;
+import org.apache.velocity.tools.config.ToolConfiguration;
+import org.apache.velocity.tools.config.ToolboxConfiguration;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
+import org.openmrs.web.filter.util.FilterUtil;
+import org.openmrs.web.filter.util.LocalizationTool;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.JavaScriptUtils;
 
 /**
@@ -69,7 +81,12 @@ public abstract class StartupFilter implements Filter {
 	/**
 	 * Records errors that will be displayed to the user
 	 */
-	protected List<String> errors = new ArrayList<String>();
+	protected Map<String, Object[]> errors = new HashMap<String, Object[]>();
+	
+	/**
+	 * Used for configuring tools within velocity toolbox
+	 */
+	private ToolContext toolContext = null;
 	
 	/**
 	 * The web.xml file sets this {@link StartupFilter} to be the first filter for all requests.
@@ -190,8 +207,10 @@ public abstract class StartupFilter implements Filter {
 	 */
 	protected void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse)
 	        throws IOException {
-		
-		VelocityContext velocityContext = new VelocityContext();
+		// first we should get velocity tools context for current client request (within
+		// his http session) and merge that tools context with basic velocity context
+		ToolContext toolContext = getToolContext(referenceMap.get(FilterUtil.LOCALE_ATTRIBUTE).toString());
+		VelocityContext velocityContext = new VelocityContext(toolContext);
 		
 		if (referenceMap != null) {
 			for (Map.Entry<String, Object> entry : referenceMap.entrySet()) {
@@ -369,5 +388,53 @@ public abstract class StartupFilter implements Filter {
 			toJSONString(object, sb, escapeJavascript);
 		
 		return sb.toString();
+	}
+	
+	/**
+	 * Gets tool context for specified locale parameter. If context does not exists, it creates new
+	 * context, configured for that locale. Otherwise, it changes locale property of
+	 * {@link LocalizationTool} object, that is being contained in tools context
+	 * 
+	 * @param locale the string with locale parameter for configuring tools context
+	 * @return the tool context object
+	 */
+	public ToolContext getToolContext(String locale) {
+		// If tool context has not been configured yet
+		if (toolContext == null) {
+			// first we are creating manager for tools, factory for configuring tools 
+			// and empty configuration object for velocity tool box
+			ToolManager velocityToolManager = new ToolManager();
+			FactoryConfiguration factoryConfig = new FactoryConfiguration();
+			// since we are using one tool box for all request within wizard
+			// we should propagate toolbox's scope on all application 
+			ToolboxConfiguration toolbox = new ToolboxConfiguration();
+			toolbox.setScope(Scope.APPLICATION);
+			// next we are directly configuring custom localization tool by
+			// setting its class name, locale property etc.
+			ToolConfiguration localizationTool = new ToolConfiguration();
+			localizationTool.setClassname(LocalizationTool.class.getName());
+			localizationTool.setProperty(ToolContext.LOCALE_KEY, LocaleUtility.fromSpecification(locale));
+			localizationTool.setProperty(LocalizationTool.BUNDLES_KEY, "messages");
+			// and finally we are adding just configured tool into toolbox
+			// and creating tool context for this toolbox
+			toolbox.addTool(localizationTool);
+			factoryConfig.addToolbox(toolbox);
+			velocityToolManager.configure(factoryConfig);
+			toolContext = velocityToolManager.createContext();
+			toolContext.setUserCanOverwriteTools(true);
+		} else {
+			// if it already has been configured, we just pull out our custom localization tool 
+			// from tool context, then changing its locale property and putting this tool back to the context
+			// First, we need to obtain the value of default key annotation of our localization tool
+			// class using reflection
+			Annotation annotation = LocalizationTool.class.getAnnotation(DefaultKey.class);
+			DefaultKey defaultKeyAnnotation = (DefaultKey) annotation;
+			String key = defaultKeyAnnotation.value();
+			//
+			LocalizationTool localizationTool = (LocalizationTool) toolContext.get(key);
+			localizationTool.setLocale(LocaleUtility.fromSpecification(locale));
+			toolContext.put(key, localizationTool);
+		}
+		return toolContext;
 	}
 }

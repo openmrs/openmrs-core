@@ -159,13 +159,13 @@
 		#end
        	<table cellpadding="0" cellspacing="0" align="center">
        		<tr valign="middle">
-       			<th class="tasksToExecuteHeader" colspan="4">Tasks to execute</th>
+       			<th class="tasksToExecuteHeader" colspan="4">$l10n.get("install.progress.tasks")</th>
        		</tr>
        		#foreach ($task in $tasksToExecute)
 			<tr valign="middle">
        			<td class="taskItem col_taskImage" valign="middle">&nbsp;<img id="${task}_task_loading" class="taskImage" src="images/loading.gif"/>
        			<img id="${task}_task_checkmark" class="taskImage" src="images/checkmark.png"/></td>
-       			<td class="taskItem col_taskDisplayText">$task.displayText()</td>       			
+       			<td class="taskItem col_taskDisplayText">$l10n.get($task.displayText())</td>       			
        			<td class="taskItem col_progressBar">
        				<div class="progressBarContainer" id="${task}_progressbar"></div>
        			</td>
@@ -177,17 +177,17 @@
 		</table>
 		<br /><br />
 		
-		<a id="output" href="#"><span class="logsDetailsToggle">Show output details</span>
-		<span class="logsDetailsToggle" style="display:none">Hide output details</span></a>
+		<a id="output" href="#"><span class="logsDetailsToggle">$l10n.get("install.progress.detailes.show")</span>
+		<span class="logsDetailsToggle" style="display:none">$l10n.get("install.progress.detailes.hide")</span></a>
 		<br /><br />
 		
 		<div class="logsDetailsToggle" style="display:none">
      		<div id="lastActionMessage">0%</div>
        		<br />
-       		Number of actions completed so far: <span id="actionCounter">0</span>
+       		$l10n.get("install.progress.actions.number") <span id="actionCounter">0</span>
        		<br /><br />
        		
-			Server log file output:
+			$l10n.get("install.progress.server.log")
 	   		<div id="logLines"></div>
 	    </div>
     </div>

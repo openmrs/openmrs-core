@@ -3,25 +3,25 @@
 	#if( $canCreate != true )
 		<br/>
 		<span style="color: red">
-			<b>Error!</b> <br/>
-			A runtime properties file is needed for OpenMRS to start up consistently. <br/>
-			OpenMRS is unable to create this file: ${runtimePropertiesPath}<br/>
-			Because of this error: ${cannotCreateErrorMessage}
+			<b>$l10n.get("install.error.unableCreateRtPropFile")</b> <br/>
+			$l10n.get("install.error.unableCreateRtPropFileNeeded")<br/>
+			$l10n.get("install.error.unableCreateRtPropFileName").insert(${runtimePropertiesPath})<br/>
+			$l10n.get("install.error.unableCreateRtPropFileCause").insert(${cannotCreateErrorMessage})
 			<br/><br/>
-			You must correct this before continuing.
+			$l10n.get("install.error.correct")
 		</span>
 		<br/><br/>
-		<a href="retry">Retry</a>
+		<a href="retry">$l10n.get("install.error.retry")</a>
 	#{else}
 
 		#if( $canWrite != true )
 			<span style="color: red">
-				OpenMRS cannot edit the file: ${runtimePropertiesPath}
+				$l10n.get("install.error.unableEditRtPropFile").insert(${runtimePropertiesPath})
 				<br/><br/>
-				You must correct this before continuing.
+				$l10n.get("install.error.correct")
 			</span>
 			<br/><br/>
-			<a href="retry">Retry</a>
+			<a href="retry">$l10n.get("install.error.retry")</a>
 		#{else}
             <form method="post" autocomplete="off">
                 <input type="hidden" name="page" value="installmethod.vm" />
@@ -29,37 +29,38 @@
                 <div class="content">
                     <table align="center" cellspacing="5" cellpadding="9">
                         <tr>
-                            <td colspan="2"><strong>Which type of installation do you want?</strong></td>
+                            <td colspan="2"><strong>$l10n.get("install.method")</strong></td>
                         </tr>
                         <tr>
-                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_SIMPLE}" #if( $installMethod == $INSTALL_METHOD_SIMPLE )checked="checked"#end/> Simple</td>
-                            <td class="question">Install OpenMRS by creating a new database with the demo data. This is suitable to try out the system on your local machine.
-                                This option requires a MySQL server running on the local machine listening on the address <i>localhost</i>. You will need to provide the password of the MySQL <i>root</i> account.</td>
+                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_SIMPLE}" #if( $installMethod == $INSTALL_METHOD_SIMPLE )checked="checked"#end/>$l10n.get("install.simple")</td>
+                            <td class="question">$l10n.get("install.simple.content")</td>
                         </tr>
                         <tr>
-                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_ADVANCED}" #if( $installMethod == $INSTALL_METHOD_ADVANCED )checked="checked"#end/> Advanced</td>
-                            <td class="question">This option allows you to select the database url, name etc. and customize all the installation settings.
-                                Choose this option when you are installing OpenMRS in a production environment.</td>
+                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_ADVANCED}" #if( $installMethod == $INSTALL_METHOD_ADVANCED )checked="checked"#end/> $l10n.get("install.advanced")</td>
+                            <td class="question">$l10n.get("install.advanced.content")</td>
                         </tr>
                         #*
                         <tr>
-                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_TESTING}" #if( $installMethod == $INSTALL_METHOD_TESTING )checked="checked"#end/> Testing</td>
+                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_TESTING}" #if( $installMethod == $INSTALL_METHOD_TESTING )checked="checked"#end/> $l10n.get("install.testing")</td>
                             <td class="question">
-                            	This option allows you to copy data over from a production database and upgrade/test an OpenMRS version in a safe/separate environment.
-                            	<br><b>NOTE:</b>
+                            	$l10n.get("install.testing.desc")
+                            	<br><b>$l10n.get("install.testing.note"):</b>
                             	<ul>
-                            		<li>MySQL is currently the only supported database for running OpenMRS in test mode.</li>
-                            		<li>Install to a Virtual Machine or different Machine from your production installation to avoid overriding any existing settings.</li>
-                            		<li>Ensure that the database executables for the test server are on the system path</li>
-                            		<li>Ensure that there is an established connection between the test server and the one to copy from data</li>
-                            		<li>This can take several hour or minutes if you have a fairly large database</li>
+					<li>$l10n.get("install.testing.list.supportedServer")</li>
+                            		<li>$l10n.get("install.testing.list.avoidOverriting")</li>
+                            		<li>$l10n.get("install.testing.list.ensurePath")</li>
+                            		<li>$l10n.get("install.testing.list.ensureConnection")</li>
+                            		<li>$l10n.get("install.testing.list.time")</li>
                             	</ul>
                             </td>
                         </tr>
                         *#
                         <tr>
-                            <td colspan="2"><input class="button" type="submit" value="Continue"/></td>
-                        </tr>                        
+					        <td colspan="2" align="center">
+							<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+							<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
+						</td>
+                        </tr>                          
                     </table>
                 </div>
             </form>
