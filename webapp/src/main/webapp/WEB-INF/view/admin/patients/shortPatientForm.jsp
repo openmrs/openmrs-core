@@ -11,6 +11,7 @@
 	var prefIdentifierElementId = null;
 	var numberOfClonedElements = 0;
 	var idTypeLocationRequired = {};
+	var currentIdentifierCount = ${fn:length(patientModel.identifiers)};
 	<c:forEach items="${identifierTypes}" var="idType">
 		idTypeLocationRequired[${idType.patientIdentifierTypeId}] = ${idType.locationBehavior == null || idType.locationBehavior == "REQUIRED"};
 	</c:forEach>
@@ -20,6 +21,7 @@
 		var tbody = document.getElementById('identifiersTbody');
 		var row = document.getElementById('newIdentifierRow');
 		var newrow = row.cloneNode(true);
+		
 		newrow.style.display = "";		
 		newrow.id = 'identifiers[' + index + ']';
 		tbody.appendChild(newrow);
@@ -61,7 +63,12 @@
 				});
 			}
 		}
-			
+
+		currentIdentifierCount++;
+		if(currentIdentifierCount > 1){
+			$j("#identifiersTbody > tr:visible > td:last-child > input.closeButton").show();
+		}
+		
 		numberOfClonedElements++;
 	}
 	
@@ -116,6 +123,11 @@
 		if(checkBoxId && document.getElementById(checkBoxId)){
 			document.getElementById(checkBoxId).checked = true;
 			document.getElementById(checkBoxId).value = true;
+		}
+		
+		currentIdentifierCount --;
+		if(currentIdentifierCount < 2){
+			$j("#identifiersTbody > tr:visible > td:last-child > input.closeButton").hide();
 		}
 	}
 	
@@ -307,7 +319,7 @@
 						<spring:bind path="voided">
 						<input type="hidden" name="_${status.expression}" value=""/>		
 						<input id="identifiers[${varStatus.index}].isVoided" type="checkbox" name="${status.expression}" value="false" style="display:none"/>						
-						<input type="button" name="closeButton" onClick="removeRow(this, 'identifiers[${varStatus.index}].isVoided');" class="closeButton" value='<spring:message code="general.remove"/>'/>
+						<input type="button" name="closeButton" onClick="removeRow(this, 'identifiers[${varStatus.index}].isVoided');" class="closeButton" value='<spring:message code="general.remove"/>' <c:if test="${(varStatus.first && varStatus.last)}">style="display: none;"</c:if> />
 						</spring:bind>
 					</td>
 					</tr>
