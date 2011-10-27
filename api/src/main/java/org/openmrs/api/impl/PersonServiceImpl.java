@@ -40,6 +40,9 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PersonDAO;
+import org.openmrs.person.PersonMergeLog;
+import org.openmrs.person.PersonMergeLogData;
+import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.springframework.util.Assert;
@@ -944,6 +947,70 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	public PersonName getPersonNameByUuid(String uuid) throws APIException {
 		return dao.getPersonNameByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#savePersonMergeLog(PersonMergeLog)
+	 */
+	@Override
+	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws SerializationException, APIException {
+		//verify required fields
+		if (personMergeLog.getPersonMergeLogData() == null)
+			throw new APIException("PersonMergeLog cannot be saved without providing a non-null PersonMergeLogData");
+		if (personMergeLog.getWinner() == null || personMergeLog.getLoser() == null)
+			throw new APIException("Both winner and loser person fields need to be set in order to save a PersonMergeLog");
+		if (Context.getSerializationService().getDefaultSerializer() == null)
+			throw new APIException(
+			        "A default serializer was not found. Cannot proceed without at least one installed serializer");
+		log.debug("Auditing merging of non-preferred person " + personMergeLog.getLoser().getUuid()
+		        + " with preferred person " + personMergeLog.getWinner().getId());
+		//set date created and creator fields if not set. UUID is set by AOP so no need to set it here.
+		if (personMergeLog.getDateCreated() == null)
+			personMergeLog.setDateCreated(new Date());
+		if (personMergeLog.getCreator() == null)
+			personMergeLog.setCreator(Context.getAuthenticatedUser());
+		//populate the mergedData XML from the PersonMergeLogData object
+		String serialized = Context.getSerializationService().getDefaultSerializer().serialize(
+		    personMergeLog.getPersonMergeLogData());
+		personMergeLog.setSerializedMergedData(serialized);
+		log.debug(serialized);
+		//save the bean to the database
+		return dao.savePersonMergeLog(personMergeLog);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getPersonMergeLogByUuid(String, boolean)
+	 */
+	@Override
+	public PersonMergeLog getPersonMergeLogByUuid(String uuid, boolean deserialize) throws SerializationException,
+	        APIException {
+		if (uuid == null)
+			throw new APIException("UUID cannot be null");
+		PersonMergeLog personMergeLog = dao.getPersonMergeLogByUuid(uuid);
+		//deserialize if requested
+		if (deserialize) {
+			PersonMergeLogData data = Context.getSerializationService().getDefaultSerializer().deserialize(
+			    personMergeLog.getSerializedMergedData(), PersonMergeLogData.class);
+			personMergeLog.setPersonMergeLogData(data);
+		}
+		return personMergeLog;
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getAllPersonMergeLogs(boolean)
+	 */
+	@Override
+	public List<PersonMergeLog> getAllPersonMergeLogs(boolean deserialize) throws SerializationException {
+		List<PersonMergeLog> lst = dao.getAllPersonMergeLogs();
+		//deserialize if requested
+		if (deserialize) {
+			for (PersonMergeLog personMergeLog : lst) {
+				PersonMergeLogData data = Context.getSerializationService().getDefaultSerializer().deserialize(
+				    personMergeLog.getSerializedMergedData(), PersonMergeLogData.class);
+				personMergeLog.setPersonMergeLogData(data);
+			}
+		}
+		return lst;
 	}
 	
 	/**

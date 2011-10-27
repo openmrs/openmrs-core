@@ -29,6 +29,8 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PersonDAO;
+import org.openmrs.person.PersonMergeLog;
+import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
@@ -1005,6 +1007,50 @@ public interface PersonService extends OpenmrsService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public Map<Person, List<Person>> getRelationships(RelationshipType relationshipType) throws APIException;
+	
+	/**
+	 * Builds the serialized data from {@link org.openmrs.person.PersonMergeLog#getPersonMergeLogData},
+	 * sets the mergedData String, and the creator and date if null. It then saves the
+	 * <code>PersonMergeLog</code> object to the model.
+	 * 
+	 * @param personMergeLog the <code>PersonMergeLog</code> object to save.
+	 * @return the persisted <code>PersonMergeLog</code> object
+	 * @see org.openmrs.person.PersonMergeLog
+	 * @see org.openmrs.api.handler.OpenmrsObjectSaveHandler
+	 * @should require PersonMergeLogData
+	 * @should require winner
+	 * @should require loser
+	 * @should set date created if null
+	 * @should set creator if null
+	 * @should serialize PersonMergeLogData
+	 * @should save PersonMergeLog
+	 */
+	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws SerializationException, APIException;
+	
+	/**
+	 * Gets a PersonMergeLog object from the model using the UUID identifier. Deserializes the
+	 * 
+	 * @param uuid
+	 * @param deserialize
+	 * @return
+	 * @throws SerializationException
+	 * @throws APIException
+	 * @should require uuid
+	 * @should retrieve personMergeLog without deserializing data
+	 * @should retrieve personMergeLog and deserialize data
+	 */
+	public PersonMergeLog getPersonMergeLogByUuid(String uuid, boolean deserialize) throws SerializationException,
+	        APIException;
+	
+	/**
+	 * Gets all the <code>PersonMergeLog</code> objects from the model
+	 * 
+	 * @return list of PersonMergeLog objects
+	 * @throws SerializationException
+	 * @should retrieve all PersonMergeLogs from the model
+	 * @should retrieve all PersonMergeLogs and deserialize them
+	 */
+	public List<PersonMergeLog> getAllPersonMergeLogs(boolean deserialize) throws SerializationException;
 	
 	/**
 	 * Voids the given PersonAddress, effectively deleting the personAddress, from the end-user's

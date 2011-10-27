@@ -24,6 +24,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.person.PersonMergeLog;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -213,6 +214,31 @@ public interface PersonDAO {
 	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes(java.lang.Boolean)
 	 */
 	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired);
+	
+	/**
+	 * Saves a <code>PersonMergeLog</code> object to the database
+	 * 
+	 * @param personMergeLog the <code>PersonMergeLog</code> object to save
+	 * @return the persisted <code>PersonMergeLog</code> object
+	 */
+	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws DAOException;
+	
+	/**
+	 * Gets a PersonMergeLog object from the model using UUID
+	 * 
+	 * @param uuid the UUID of the PersonMergeLog object to retrieve
+	 * @return the PersonMergeLog object
+	 * @throws DAOException
+	 */
+	public PersonMergeLog getPersonMergeLogByUuid(String uuid) throws DAOException;
+	
+	/**
+	 * Gets all the PersonMergeLog objects in the model
+	 * 
+	 * @return list of PersonMergeLog objects
+	 * @throws DAOException
+	 */
+	public List<PersonMergeLog> getAllPersonMergeLogs() throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PersonService#savePersonName(org.openmrs.PersonName)

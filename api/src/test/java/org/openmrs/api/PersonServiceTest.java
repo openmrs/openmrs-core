@@ -44,6 +44,8 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.person.PersonMergeLog;
+import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
@@ -1256,6 +1258,181 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		PersonAttributeType deletedPersonAttributeType = personService.getPersonAttributeType(1);
 		Assert.assertNull(deletedPersonAttributeType);
+	}
+	
+	/**
+	 * @see PersonService#savePersonMergeLog(PersonMergeLog)
+	 * @verifies require loser
+	 */
+	@Test(expected = APIException.class)
+	public void savePersonMergeLog_shouldRequireLoser() throws Exception {
+		PersonMergeLog personMergeLog = getTestPersonMergeLog();
+		personMergeLog.setLoser(null);
+		Context.getPersonService().savePersonMergeLog(personMergeLog);
+	}
+	
+	/**
+	 * @see PersonService#savePersonMergeLog(PersonMergeLog)
+	 * @verifies require winner
+	 */
+	@Test(expected = APIException.class)
+	public void savePersonMergeLog_shouldRequireWinner() throws Exception {
+		PersonMergeLog personMergeLog = getTestPersonMergeLog();
+		personMergeLog.setWinner(null);
+		Context.getPersonService().savePersonMergeLog(personMergeLog);
+	}
+	
+	/**
+	 * @see PersonService#savePersonMergeLog(PersonMergeLog)
+	 * @verifies require PersonMergeLogData
+	 */
+	@Test(expected = APIException.class)
+	public void savePersonMergeLog_shouldRequirePersonMergeLogData() throws Exception {
+		PersonMergeLog personMergeLog = new PersonMergeLog();
+		personMergeLog.setPersonMergeLogData(null);
+		Context.getPersonService().savePersonMergeLog(personMergeLog);
+	}
+	
+	/**
+	 * @see PersonService#savePersonMergeLog(PersonMergeLog)
+	 * @verifies save PersonMergeLog
+	 */
+	@Test
+	public void savePersonMergeLog_shouldSavePersonMergeLog() throws Exception {
+		PersonMergeLog personMergeLog = getTestPersonMergeLog();
+		try {
+			PersonMergeLog persisted = Context.getPersonService().savePersonMergeLog(personMergeLog);
+			Assert.assertNotNull("patientMergeLogId has not been set which indicates a problem saving the object", persisted
+			        .getPersonMergeLogId());
+		}
+		catch (Exception ex) {
+			Assert.fail("should not fail when all required fields are set. " + ex.getMessage());
+		}
+	}
+	
+	/**
+	 * @see PersonService#savePersonMergeLog(PersonMergeLog)
+	 * @verifies serialize PersonMergeLogData
+	 */
+	@Test
+	public void savePersonMergeLog_shouldSerializePersonMergeLogData() throws Exception {
+		PersonMergeLog personMergeLog = getTestPersonMergeLog();
+		personMergeLog.setSerializedMergedData(null);
+		PersonMergeLog persisted = Context.getPersonService().savePersonMergeLog(personMergeLog);
+		Assert.assertNotNull("PatientMergeLogData has not been serialized", persisted.getSerializedMergedData());
+	}
+	
+	/**
+	 * @see PersonService#savePersonMergeLog(PersonMergeLog)
+	 * @verifies set date created if null
+	 */
+	@Test
+	public void savePersonMergeLog_shouldSetDateCreatedIfNull() throws Exception {
+		PersonMergeLog personMergeLog = getTestPersonMergeLog();
+		personMergeLog.setDateCreated(null);
+		PersonMergeLog persisted = Context.getPersonService().savePersonMergeLog(personMergeLog);
+		Assert.assertNotNull("dateCreated has not been set", persisted.getDateCreated());
+	}
+	
+	/**
+	 * @see PersonService#savePersonMergeLog(PersonMergeLog)
+	 * @verifies set creator if null
+	 */
+	@Test
+	public void savePersonMergeLog_shouldSetCreatorIfNull() throws Exception {
+		PersonMergeLog personMergeLog = getTestPersonMergeLog();
+		personMergeLog.setCreator(null);
+		PersonMergeLog persisted = Context.getPersonService().savePersonMergeLog(personMergeLog);
+		Assert.assertEquals("creator has not been correctly set", Context.getAuthenticatedUser().getUserId(), persisted
+		        .getCreator().getUserId());
+	}
+	
+	private PersonMergeLog getTestPersonMergeLog() {
+		PersonMergeLog personMergeLog = new PersonMergeLog();
+		personMergeLog.setLoser(new Person(1));
+		personMergeLog.setWinner(new Person(2));
+		PersonMergeLogData data = new PersonMergeLogData();
+		data.addCreatedAddress("1");
+		data.addCreatedAttribute("2");
+		data.addCreatedIdentifier("3");
+		data.addCreatedName("4");
+		data.addCreatedOrder("5");
+		data.addCreatedProgram("6");
+		data.addCreatedRelationship("7");
+		data.addMovedEncounter("8");
+		data.addMovedIndependentObservation("9");
+		data.addMovedUser("10");
+		data.addVoidedRelationship("11");
+		data.setPriorCauseOfDeath("test");
+		data.setPriorDateOfBirth(new Date());
+		data.setPriorDateOfBirthEstimated(true);
+		data.setPriorDateOfDeath(new Date());
+		data.setPriorGender("F");
+		personMergeLog.setPersonMergeLogData(data);
+		return personMergeLog;
+	}
+	
+	/**
+	 * @see PersonService#getPersonMergeLogByUuid(String,boolean)
+	 * @verifies require uuid
+	 */
+	@Test(expected = APIException.class)
+	public void getPersonMergeLogByUuid_shouldRequireUuid() throws Exception {
+		Context.getPersonService().getPersonMergeLogByUuid(null, false);
+	}
+	
+	/**
+	 * @see PersonService#getPersonMergeLogByUuid(String,boolean)
+	 * @verifies retrieve personMergeLog and deserialize data
+	 */
+	@Test
+	public void getPersonMergeLogByUuid_shouldRetrievePersonMergeLogAndDeserializeData() throws Exception {
+		PersonMergeLog personMergeLog = getTestPersonMergeLog();
+		int originalHashValue = personMergeLog.getPersonMergeLogData().computeHashValue();
+		PersonMergeLog persisted = Context.getPersonService().savePersonMergeLog(personMergeLog);
+		PersonMergeLog retrieved = Context.getPersonService().getPersonMergeLogByUuid(persisted.getUuid(), true);
+		Assert.assertNotNull("problem retrieving PersonMergeLog by UUID", retrieved);
+		Assert.assertEquals("deserialized data is not identical to original data", originalHashValue, retrieved
+		        .getPersonMergeLogData().computeHashValue());
+	}
+	
+	/**
+	 * @see PersonService#getPersonMergeLogByUuid(String,boolean)
+	 * @verifies retrieve personMergeLog without deserializing data
+	 */
+	@Test
+	public void getPersonMergeLogByUuid_shouldRetrievePersonMergeLogWithoutDeserializingData() throws Exception {
+		PersonMergeLog personMergeLog = getTestPersonMergeLog();
+		PersonMergeLog persisted = Context.getPersonService().savePersonMergeLog(personMergeLog);
+		PersonMergeLog retrieved = Context.getPersonService().getPersonMergeLogByUuid(persisted.getUuid(), false);
+		Assert.assertNotNull("problem retrieving PersonMergeLog by UUID", retrieved);
+		
+	}
+	
+	/**
+	 * @see PersonService#getAllPersonMergeLogs(boolean)
+	 * @verifies retrieve all PersonMergeLogs and deserialize them
+	 */
+	@Test
+	public void getAllPersonMergeLogs_shouldRetrieveAllPersonMergeLogsAndDeserializeThem() throws Exception {
+		PersonMergeLog personMergeLog = getTestPersonMergeLog();
+		Context.getPersonService().savePersonMergeLog(personMergeLog);
+		List<PersonMergeLog> result = Context.getPersonService().getAllPersonMergeLogs(true);
+		Assert.assertEquals("could not retrieve expected number of PersonMergeLog objects", 1, result.size());
+		Assert.assertNotNull("PersonMergeLog at index 0 is null", result.get(0));
+		Assert.assertNotNull("PersonMergeLog data has not been deserialized", result.get(0).getPersonMergeLogData());
+	}
+	
+	/**
+	 * @see PersonService#getAllPersonMergeLogs(boolean)
+	 * @verifies retrieve all PersonMergeLogs from the model
+	 */
+	@Test
+	public void getAllPersonMergeLogs_shouldRetrieveAllPersonMergeLogsFromTheModel() throws Exception {
+		PersonMergeLog personMergeLog = getTestPersonMergeLog();
+		Context.getPersonService().savePersonMergeLog(personMergeLog);
+		List<PersonMergeLog> result = Context.getPersonService().getAllPersonMergeLogs(false);
+		Assert.assertEquals("could not retrieve expected number of PersonMergeLog objects", 1, result.size());
 	}
 	
 	/**

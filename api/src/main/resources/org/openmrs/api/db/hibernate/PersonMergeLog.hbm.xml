@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="org.openmrs.person.PersonMergeLog" table="person_merge_log">
+
+		<id name="PersonMergeLogId" type="java.lang.Integer" column="person_merge_log_id">
+			<generator class="native" />
+		</id>
+
+		<many-to-one name="winner" class="org.openmrs.Person" column="winner_person_id"
+			not-null="true" />
+
+		<many-to-one name="loser" class="org.openmrs.Person" column="loser_person_id"
+			not-null="true" />
+
+		<many-to-one name="creator" class="org.openmrs.User" column="creator"
+			not-null="true" />
+
+		<property name="dateCreated" type="java.util.Date" column="date_created"
+			not-null="true" length="19" />
+
+		<property name="uuid" type="java.lang.String" column="uuid"
+			length="38" unique="true" not-null="true" />
+
+		<property name="serializedMergedData" type="text" column="merged_data"
+			not-null="true" />
+
+	</class>
+
+</hibernate-mapping>

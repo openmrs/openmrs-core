@@ -29,6 +29,8 @@ import org.openmrs.activelist.Problem;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.patient.IdentifierValidator;
+import org.openmrs.person.PersonMergeLogData;
+import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.springframework.transaction.annotation.Transactional;
@@ -654,6 +656,10 @@ public interface PatientService extends OpenmrsService {
 	 * @param preferred The Patient to merge to
 	 * @param notPreferred The Patient to merge from (and then void)
 	 * @throws APIException
+	 * @throws SerializationException
+	 * 
+	 * @see PersonMergeLogData
+	 * 
 	 * @should not merge the same patient to itself
 	 * @should copy nonvoided names to preferred patient
 	 * @should copy nonvoided identifiers to preferred patient
@@ -679,9 +685,25 @@ public interface PatientService extends OpenmrsService {
 	 * @should void non preferred patient
 	 * @should void all relationships for non preferred patient
 	 * @should not void relationships for same type and side with different relatives
+	 * @should audit moved encounters
+	 * @should audit created patient programs
+	 * @should audit voided relationships
+	 * @should audit created relationships
+	 * @should audit moved independent observations
+	 * @should audit created orders
+	 * @should audit created identifiers
+	 * @should audit created names
+	 * @should audit created addresses
+	 * @should audit created attributes
+	 * @should audit moved users
+	 * @should audit prior cause of death
+	 * @should audit prior date of death
+	 * @should audit prior date of birth
+	 * @should audit prior date of birth estimated
+	 * @should audit prior gender
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
-	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException;
+	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException, SerializationException;
 	
 	/**
 	 * Convenience method to join multiple patients' information into one record.
@@ -689,9 +711,10 @@ public interface PatientService extends OpenmrsService {
 	 * @param preferred
 	 * @param notPreferred
 	 * @throws APIException
+	 * @throws SerializationException
 	 * @should merge all non Preferred patients in the the notPreferred list to preferred patient
 	 */
-	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException;
+	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException, SerializationException;
 	
 	/**
 	 * Convenience method to establish that a patient has left the care center. This API call is

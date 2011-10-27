@@ -4101,6 +4101,50 @@
 			referencedTableName="drug" referencedColumnNames="drug_id" />
 	</changeSet>
 
+	<changeSet id="201103011751" author="abbas">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="person_merge_log"/></not>
+		</preConditions>
+		<comment>
+			Create the person_merge_log table
+		</comment>
+		<createTable tableName="person_merge_log">
+			<column name="person_merge_log_id" type="int" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="winner_person_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="loser_person_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			<column name="merged_data" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="person_merge_log_winner"
+			baseTableName="person_merge_log" baseColumnNames="winner_person_id"
+			referencedTableName="person" referencedColumnNames="person_id"
+			/>
+		<addForeignKeyConstraint constraintName="person_merge_log_loser"
+			baseTableName="person_merge_log" baseColumnNames="loser_person_id"
+			referencedTableName="person" referencedColumnNames="person_id"
+			/>	
+		<addForeignKeyConstraint constraintName="person_merge_log_creator"
+			baseTableName="person_merge_log" baseColumnNames="creator"
+			referencedTableName="users" referencedColumnNames="user_id"
+			/>
+    </changeSet>
+    
 	<changeSet id="20110329-2317" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="role_privilege" />
