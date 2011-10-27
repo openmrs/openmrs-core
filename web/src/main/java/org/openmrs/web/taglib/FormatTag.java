@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,6 +27,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
@@ -39,6 +42,7 @@ import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
+import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.util.StringUtils;
@@ -62,6 +66,10 @@ public class FormatTag extends TagSupport {
 	private Integer conceptId;
 	
 	private Concept concept;
+	
+	private String withConceptNameType;
+	
+	private String withConceptNameTag;
 	
 	private Obs obsValue;
 	
@@ -216,12 +224,39 @@ public class FormatTag extends TagSupport {
 	}
 	
 	/**
-	 * Formats a Concept and prints it to sb
+	 * Formats a Concept and prints it to sb, respecting conceptNameType and conceptNameTag if they are
+	 * specified and a match is found. (This will always prints something.)
 	 * 
 	 * @param sb
 	 * @param concept
 	 */
 	protected void printConcept(StringBuilder sb, Concept concept) {
+		Locale loc = Context.getLocale();
+		
+		if (withConceptNameType != null || withConceptNameTag != null) {
+			ConceptNameType lookForNameType = null;
+			
+			if (withConceptNameType != null) {
+				lookForNameType = ConceptNameType.valueOf(withConceptNameType);
+			}
+			
+			ConceptNameTag lookForNameTag = null;
+			if (withConceptNameTag != null)
+				lookForNameTag = Context.getConceptService().getConceptNameTagByName(withConceptNameTag);
+			
+			ConceptName name = concept.getName(loc, lookForNameType, lookForNameTag);
+			if (name != null) {
+				sb.append(name.getName());
+				return;
+			}
+		}
+		
+		ConceptName name = concept.getPreferredName(loc);
+		if (name != null) {
+			sb.append(name.getName());
+			return;
+		}
+		
 		sb.append(concept.getDisplayString());
 	}
 	
@@ -418,6 +453,8 @@ public class FormatTag extends TagSupport {
 		var = null;
 		conceptId = null;
 		concept = null;
+		withConceptNameType = null;
+		withConceptNameTag = null;
 		obsValue = null;
 		userId = null;
 		user = null;
@@ -673,4 +710,33 @@ public class FormatTag extends TagSupport {
 	public void setEncounterProviders(Map<EncounterRole, Set<Provider>> encounterProviders) {
 		this.encounterProviders = encounterProviders;
 	}
+	
+	/**
+	 * @return the withConceptNameType
+	 */
+	public String getWithConceptNameType() {
+		return withConceptNameType;
+	}
+	
+	/**
+	 * @param withConceptNameType the withConceptNameType to set
+	 */
+	public void setWithConceptNameType(String withConceptNameType) {
+		this.withConceptNameType = withConceptNameType;
+	}
+	
+	/**
+	 * @return the withConceptNameTag
+	 */
+	public String getWithConceptNameTag() {
+		return withConceptNameTag;
+	}
+	
+	/**
+	 * @param withConceptNameTag the withConceptNameTag to set
+	 */
+	public void setWithConceptNameTag(String withConceptNameTag) {
+		this.withConceptNameTag = withConceptNameTag;
+	}
+	
 }
