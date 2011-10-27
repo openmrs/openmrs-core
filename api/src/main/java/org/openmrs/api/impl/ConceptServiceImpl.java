@@ -247,7 +247,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		if (errors.hasErrors())
-			throw new APIException("Validation errors found");
+			throw new APIException("Validation errors found: " + errors.getAllErrors());
 		
 		//Set a preferred name for each locale for those where it isn't yet specified
 		for (Locale locale : LocaleUtility.getLocalesInOrder()) {
