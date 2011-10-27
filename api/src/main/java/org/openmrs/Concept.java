@@ -609,8 +609,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * matches will be returned.
 	 **/
 	public ConceptName getName(Locale locale, ConceptNameType ofType, ConceptNameTag havingTag) {
-		ConceptName cName = null;
-		
 		Collection<ConceptName> namesInLocale = getNames(locale);
 		if (!namesInLocale.isEmpty()) {
 			List<ConceptName> matches = new ArrayList<ConceptName>();
