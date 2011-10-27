@@ -1188,6 +1188,20 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
+		<description>when formatting a concept, tries to print a name of the given type</description>
+		<name>withConceptNameType</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<description>when formatting a concept, tries to print a name with the given tag</description>
+		<name>withConceptNameTag</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
 		<name>obsValue</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
