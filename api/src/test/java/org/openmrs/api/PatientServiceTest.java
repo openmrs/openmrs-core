@@ -19,11 +19,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.openmrs.test.TestUtil.*;
+import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -40,9 +42,12 @@ import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
+import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientProgram;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -55,6 +60,8 @@ import org.openmrs.activelist.Problem;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.patient.IdentifierValidator;
+import org.openmrs.person.PersonMergeLog;
+import org.openmrs.serialization.SerializationException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
@@ -537,7 +544,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should not merge patient with itself", method = "mergePatients(Patient,Patient)")
-	public void mergePatients_shouldNotMergePatientWithItself() {
+	public void mergePatients_shouldNotMergePatientWithItself() throws Exception {
 		Context.getPatientService().mergePatients(new Patient(2), new Patient(2));
 	}
 	
@@ -2321,6 +2328,427 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		List<Relationship> rels = personService.getRelationshipsByPerson(notPreferred);
 		assertTrue("there should not be any relationships for non preferred", rels.isEmpty());
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit created addresses
+	 */
+	@Test
+	public void mergePatients_shouldAuditCreatedAddresses() throws Exception {
+		
+		//retrieve preferred patient
+		Patient preferred = patientService.getPatient(999);
+		
+		//retrieve notPreferredPatient and save it with a new address
+		Patient notPreferred = patientService.getPatient(2);
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("another address123");
+		address.setAddress2("another address234");
+		address.setCityVillage("another city");
+		address.setCountry("another country");
+		notPreferred.addAddress(address);
+		patientService.savePatient(notPreferred);
+		
+		//merge the two patients and retrieve the audit object
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		
+		//find the UUID of the address that was added by the merge
+		String addedAddressUuid = null;
+		preferred = patientService.getPatient(999);
+		for (PersonAddress a : preferred.getAddresses()) {
+			if (a.getAddress1().equals(address.getAddress1())) {
+				addedAddressUuid = a.getUuid();
+			}
+		}
+		Assert
+		        .assertNotNull("expected new address was not found in the preferred patient after the merge",
+		            addedAddressUuid);
+		Assert.assertTrue("person address creation not audited", isValueInList(addedAddressUuid, audit
+		        .getPersonMergeLogData().getCreatedAddresses()));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit created attributes
+	 */
+	@Test
+	public void mergePatients_shouldAuditCreatedAttributes() throws Exception {
+		//retrieve preferred patient
+		Patient preferred = patientService.getPatient(999);
+		
+		//retrieve notPreferredPatient and save it with a new attribute
+		Patient notPreferred = patientService.getPatient(2);
+		PersonAttribute attribute = new PersonAttribute(2);
+		attribute.setValue("5089");
+		attribute.setAttributeType(personService.getPersonAttributeType(1));
+		notPreferred.addAttribute(attribute);
+		patientService.savePatient(notPreferred);
+		
+		//merge the two patients and retrieve the audit object
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		
+		//find the UUID of the attribute that was added by the merge
+		String addedAttributeUuid = null;
+		preferred = patientService.getPatient(999);
+		for (PersonAttribute a : preferred.getAttributes()) {
+			if (a.getValue().equals(attribute.getValue())) {
+				addedAttributeUuid = a.getUuid();
+			}
+		}
+		Assert.assertNotNull("expected new attribute was not found in the preferred patient after the merge",
+		    addedAttributeUuid);
+		Assert.assertTrue("person attribute creation not audited", isValueInList(addedAttributeUuid, audit
+		        .getPersonMergeLogData().getCreatedAttributes()));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit created identifiers
+	 */
+	@Test
+	public void mergePatients_shouldAuditCreatedIdentifiers() throws Exception {
+		//retrieve preferred patient
+		Patient preferred = patientService.getPatient(999);
+		
+		//retrieve notPreferredPatient and save it with a new identifier
+		Patient notPreferred = patientService.getPatient(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier();
+		patientIdentifier.setIdentifier("123-0");
+		patientIdentifier.setIdentifierType(patientService.getPatientIdentifierType(1));
+		patientIdentifier.setLocation(new Location(1));
+		notPreferred.addIdentifier(patientIdentifier);
+		patientService.savePatient(notPreferred);
+		
+		//merge the two patients and retrieve the audit object
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		
+		//find the UUID of the identifier that was added by the merge
+		String addedIdentifierUuid = null;
+		preferred = patientService.getPatient(999);
+		for (PatientIdentifier id : preferred.getIdentifiers()) {
+			if (id.getIdentifier().equals(patientIdentifier.getIdentifier())) {
+				addedIdentifierUuid = id.getUuid();
+			}
+		}
+		Assert.assertNotNull("expected new identifier was not found in the preferred patient after the merge",
+		    addedIdentifierUuid);
+		Assert.assertTrue("person identifier creation not audited", isValueInList(addedIdentifierUuid, audit
+		        .getPersonMergeLogData().getCreatedIdentifiers()));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit created names
+	 */
+	@Test
+	public void mergePatients_shouldAuditCreatedNames() throws Exception {
+		//retrieve preferred patient
+		Patient preferred = patientService.getPatient(999);
+		
+		//retrieve notPreferredPatient and save it with an added name
+		Patient notPreferred = patientService.getPatient(2);
+		PersonName name = new PersonName("first1234", "middle", "last1234");
+		notPreferred.addName(name);
+		patientService.savePatient(notPreferred);
+		
+		//merge the two patients and retrieve the audit object
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		
+		//find the UUID of the name that was added by the merge
+		String addedNameUuid = null;
+		preferred = patientService.getPatient(999);
+		for (PersonName n : preferred.getNames()) {
+			if (n.getFullName().equals(name.getFullName())) {
+				addedNameUuid = n.getUuid();
+			}
+		}
+		Assert.assertNotNull("expected new name was not found in the preferred patient after the merge", addedNameUuid);
+		Assert.assertTrue("person name creation not audited", isValueInList(addedNameUuid, audit.getPersonMergeLogData()
+		        .getCreatedNames()));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit created orders
+	 */
+	@Test
+	public void mergePatients_shouldAuditCreatedOrders() throws Exception {
+		
+		//retrieve patients
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(2);
+		
+		//retrieve order for notPreferred patient
+		Order order = Context.getOrderService().getOrdersByPatient(notPreferred).get(0);
+		
+		//merge the two patients and retrieve the audit object
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		
+		//find the UUID of the order that was created for preferred patient as a result of the merge
+		String addedOrderUuid = null;
+		List<Order> orders = Context.getOrderService().getOrdersByPatient(preferred);
+		for (Order o : orders) {
+			if (o.getInstructions().equals(order.getInstructions())) {
+				addedOrderUuid = o.getUuid();
+			}
+		}
+		Assert.assertNotNull("expected new order was not found for the preferred patient after the merge", addedOrderUuid);
+		Assert.assertTrue("order creation not audited", isValueInList(addedOrderUuid, audit.getPersonMergeLogData()
+		        .getCreatedOrders()));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit created patient programs
+	 */
+	@Test
+	public void mergePatients_shouldAuditCreatedPatientPrograms() throws Exception {
+		//retrieve preferred  and notPreferredPatient patient
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(2);
+		
+		//retrieve program for notProferred patient
+		PatientProgram program = Context.getProgramWorkflowService().getPatientPrograms(notPreferred, null, null, null,
+		    null, null, false).get(0);
+		
+		//merge the two patients and retrieve the audit object
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		
+		//find the UUID of the program to which the preferred patient was enrolled as a result of the merge
+		String enrolledProgramUuid = null;
+		List<PatientProgram> programs = Context.getProgramWorkflowService().getPatientPrograms(preferred, null, null, null,
+		    null, null, false);
+		for (PatientProgram p : programs) {
+			if (p.getDateCreated().equals(program.getDateCreated())) {
+				enrolledProgramUuid = p.getUuid();
+			}
+		}
+		Assert.assertNotNull("expected enrolled program was not found for the preferred patient after the merge",
+		    enrolledProgramUuid);
+		Assert.assertTrue("program enrollment not audited", isValueInList(enrolledProgramUuid, audit.getPersonMergeLogData()
+		        .getCreatedPrograms()));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit created relationships
+	 */
+	@Test
+	public void mergePatients_shouldAuditCreatedRelationships() throws Exception {
+		//create relationships and retrieve preferred  and notPreferredPatient patient
+		executeDataSet(PATIENT_RELATIONSHIPS_XML);
+		Patient preferred = patientService.getPatient(7);
+		Patient notPreferred = patientService.getPatient(2);
+		
+		//merge the two patients and retrieve the audit object
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		
+		//find the UUID of the created relationship as a result of the merge
+		//note: since patient 2 is related to patient 1. patient 7 should now be related to patient 1
+		String createdRelationshipUuid = null;
+		List<Relationship> relationships = personService.getRelationshipsByPerson(preferred);
+		for (Relationship r : relationships) {
+			if (r.getPersonB().getId().equals(1) || r.getPersonA().getId().equals(1)) {
+				createdRelationshipUuid = r.getUuid();
+			}
+		}
+		Assert.assertNotNull("expected relationship was not found for the preferred patient after the merge",
+		    createdRelationshipUuid);
+		Assert.assertTrue("relationship creation not audited", isValueInList(createdRelationshipUuid, audit
+		        .getPersonMergeLogData().getCreatedRelationships()));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit voided relationships
+	 */
+	@Test
+	public void mergePatients_shouldAuditVoidedRelationships() throws Exception {
+		//create relationships and retrieve preferred and notPreferredPatient patient
+		executeDataSet(PATIENT_RELATIONSHIPS_XML);
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(2);
+		
+		//merge the two patients and retrieve the audit object
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		
+		Assert.assertTrue("relationship voiding not audited", isValueInList(personService.getRelationship(4).getUuid(),
+		    audit.getPersonMergeLogData().getVoidedRelationships()));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit moved encounters
+	 */
+	@Test
+	public void mergePatients_shouldAuditMovedEncounters() throws Exception {
+		//retrieve patients
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		
+		//merge the two patients and retrieve the audit object
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		
+		Assert.assertTrue("encounter creation not audited", isValueInList(Context.getEncounterService().getEncounter(3)
+		        .getUuid(), audit.getPersonMergeLogData().getMovedEncounters()));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit moved independent observations
+	 */
+	@Test
+	public void mergePatients_shouldAuditMovedIndependentObservations() throws Exception {
+		//retrieve patients
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		
+		//get an observation for notPreferred and make it independent from any encounter
+		Obs obs = Context.getObsService().getObs(7);
+		obs.setEncounter(null);
+		obs.setComment("this observation is for testing the merge");
+		Context.getObsService().saveObs(obs, "");
+		
+		//merge the two patients and retrieve the audit object
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		String uuid = null;
+		List<Obs> observations = Context.getObsService().getObservationsByPerson(preferred);
+		for (Obs o : observations) {
+			if (obs.getComment().equals(o.getComment())) {
+				uuid = o.getUuid();
+			}
+		}
+		Assert.assertTrue("moving of independent observation was not audited", isValueInList(uuid, audit
+		        .getPersonMergeLogData().getMovedIndependentObservations()));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit moved users
+	 */
+	@Test
+	public void mergePatients_shouldAuditMovedUsers() throws Exception {
+		//retrieve patients
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		
+		User user = Context.getUserService().getUser(501);
+		user.setPerson(notPreferred);
+		Context.getUserService().saveUser(user, null);
+		
+		//merge the two patients and retrieve the audit object
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		
+		Assert.assertTrue("user association change not audited", isValueInList(Context.getUserService().getUser(501)
+		        .getUuid(), audit.getPersonMergeLogData().getMovedUsers()));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit prior cause of death
+	 */
+	@Test
+	public void mergePatients_shouldAuditPriorCauseOfDeath() throws Exception {
+		//retrieve preferred patient and set a cause of death
+		Patient preferred = patientService.getPatient(999);
+		preferred.setCauseOfDeath(Context.getConceptService().getConcept(3));
+		preferred.setDeathDate(new Date());
+		preferred.setDead(true);
+		patientService.savePatient(preferred);
+		//merge with not preferred
+		Patient notPreferred = patientService.getPatient(7);
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		Assert.assertEquals("prior cause of death was not audited", Context.getConceptService().getConcept(3).getUuid(),
+		    audit.getPersonMergeLogData().getPriorCauseOfDeath());
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit prior date of birth
+	 */
+	@Test
+	public void mergePatients_shouldAuditPriorDateOfBirth() throws Exception {
+		//retrieve preferred patient and set a date of birth
+		GregorianCalendar cDate = new GregorianCalendar();
+		cDate.setTime(new Date());
+		//milliseconds are not serialized into the database. they will be ignored in the test
+		cDate.set(Calendar.MILLISECOND, 0);
+		Patient preferred = patientService.getPatient(999);
+		preferred.setBirthdate(cDate.getTime());
+		patientService.savePatient(preferred);
+		Patient notPreferred = patientService.getPatient(7);
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		Assert.assertEquals("prior date of birth was not audited", cDate.getTime(), audit.getPersonMergeLogData()
+		        .getPriorDateOfBirth());
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit prior date of birth estimated
+	 */
+	@Test
+	public void mergePatients_shouldAuditPriorDateOfBirthEstimated() throws Exception {
+		//retrieve preferred patient and set a date of birth
+		GregorianCalendar cDate = new GregorianCalendar();
+		cDate.setTime(new Date());
+		Patient preferred = patientService.getPatient(999);
+		preferred.setBirthdate(cDate.getTime());
+		preferred.setBirthdateEstimated(true);
+		patientService.savePatient(preferred);
+		Patient notPreferred = patientService.getPatient(7);
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		Assert
+		        .assertTrue("prior date of birth was not audited", audit.getPersonMergeLogData()
+		                .isPriorDateOfBirthEstimated());
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit prior date of death
+	 */
+	@Test
+	public void mergePatients_shouldAuditPriorDateOfDeath() throws Exception {
+		//retrieve preferred patient and set a date of birth
+		GregorianCalendar cDate = new GregorianCalendar();
+		cDate.setTime(new Date());
+		//milliseconds are not serialized into the database. they will be ignored in the test
+		cDate.set(Calendar.MILLISECOND, 0);
+		Patient preferred = patientService.getPatient(999);
+		preferred.setDeathDate(cDate.getTime());
+		preferred.setDead(true);
+		patientService.savePatient(preferred);
+		Patient notPreferred = patientService.getPatient(7);
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		Assert.assertEquals("prior date of birth was not audited", cDate.getTime(), audit.getPersonMergeLogData()
+		        .getPriorDateOfDeath());
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit prior gender
+	 */
+	@Test
+	public void mergePatients_shouldAuditPriorGender() throws Exception {
+		//retrieve preferred patient and set a cause of death
+		Patient preferred = patientService.getPatient(999);
+		preferred.setGender("M");
+		patientService.savePatient(preferred);
+		//merge with not preferred
+		Patient notPreferred = patientService.getPatient(7);
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		Assert.assertEquals("prior cause of death was not audited", "M", audit.getPersonMergeLogData().getPriorGender());
+	}
+	
+	private PersonMergeLog mergeAndRetrieveAudit(Patient preferred, Patient notPreferred) throws SerializationException {
+		patientService.mergePatients(preferred, notPreferred);
+		List<PersonMergeLog> result = personService.getAllPersonMergeLogs(true);
+		Assert.assertTrue("person merge was not audited", result.size() > 0);
+		return result.get(0);
+	}
+	
+	private boolean isValueInList(String value, List<String> list) {
+		return (list != null && list.contains(value));
 	}
 	
 	/**
