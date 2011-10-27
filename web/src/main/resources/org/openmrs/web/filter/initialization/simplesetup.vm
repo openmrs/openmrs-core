@@ -6,37 +6,36 @@
 		<div class="content">
             <table align="center" cellspacing="5" cellpadding="9">
 			  <tr>
-                    <td colspan="2"><strong>Simple Installation</strong></td>
+                    <td colspan="2"><strong>$l10n.get("install.simple.caption")</strong></td>
 			  </tr>
                 <tr>
-                    <td class="question">Provide the password of the 'root' account of MySQL server running on the localhost.
-                        <br />(Empty MySQL passwords are not allowed here. If you don't have a MySQL password set for the root user, please set one.)</td>
+                    <td class="question">$l10n.get("install.simple.passwdinfo")
+                        <br />$l10n.get("install.simple.empty")</td>
                 </tr>
                 <tr>
-                    <td class="yes">Password &nbsp; <input type="password" name="database_root_password" value="${databaseRootPassword}" /></td>
+                    <td class="yes">$l10n.get("install.simple.passwd") &nbsp; <input type="password" name="database_root_password" value="${databaseRootPassword}" onKeyPress="return submitenter(this,event);" /></td>
                 </tr>
                 <tr>
-                    <td class="question">Default OpenMRS administrator username/password. Change this password after login in.<b>(Remember this password.)</b></td>
+                    <td class="question">$l10n.get("install.simple.defpasswd") </b></td>
                 </tr>
                 <tr>
                     <td class="yes">admin/${ADMIN_DEFAULT_PASSWORD}</td>
                 </tr>
                 <tr>
-                    <td class="question">Do you want to also add demo data to your database - ${databaseName}?</td>
+                    <td class="question">$l10n.get("install.simple.addDemoData") - ${databaseName}?</td>
                 </tr>
                 <tr>
-                    <td class="yes">Yes: <input type="radio" name="add_demo_data" value="yes" #if( $addDemoData == true )checked="checked"#end/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    No: <input type="radio" name="add_demo_data" value="no" #if( $addDemoData == false )checked="checked"#end/></td>
+                    <td class="yes">$l10n.get("general.yes"): <input type="radio" name="add_demo_data" value="yes" #if( $addDemoData == true )checked="checked"#end/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    $l10n.get("general.no"): <input type="radio" name="add_demo_data" value="no" #if( $addDemoData == false )checked="checked"#end/></td>
                 </tr>
                 <tr>
-                    <td>
-                        <input type="submit" style="display: none"/> <!-- the first submit button that will be used when the user pushed the "enter" key in the form -->
-                        <input class="button" name="back" type="submit" value="Back"/> &nbsp; &nbsp;
-                        <input class="button" type="submit" value="Continue"/>
+                    <td colspan="2" align="center">
+						<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+						<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
                     </td>
                 </tr>
 			</table>
 		</div>
 	</form>
-
+	
 #parse($footerTemplate)

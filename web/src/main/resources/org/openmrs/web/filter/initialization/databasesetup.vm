@@ -6,52 +6,51 @@
 		<div class="content">
             <table align="center" cellspacing="5" cellpadding="9">
 			  <tr>
-                    <td colspan="2"><strong>Step 1 of 5</strong></td>
+                    <td colspan="2"><strong>$l10n.get("install.advanced.dbsetup")</strong></td>
 			  </tr>
 			  <tr>
-                    <td colspan="2" class="question">Please specify how to connect to your currently installed database server:</td>
+                    <td colspan="2" class="question">$l10n.get("install.advanced.dbsetup.capt")</td>
                 </tr>
 			     		<tr>
-                    <td colspan="2" >Database Connection: &nbsp;<input type="text" name="database_connection" size="45" value="${databaseConnection}" /> <span style="font-size:12px;">(Advanced use only. @DBNAME@ will automatically be replaced by this wizard with your chosen database name)</span></td>
+                    <td colspan="2" >$l10n.get("install.advanced.dbsetup.conn") &nbsp;<input type="text" name="database_connection" size="45" value="${databaseConnection}" onKeyPress="return submitenter(this,event);"  /> <span style="font-size:12px;">$l10n.get("install.advanced.dbsetup.rep")</span></td>
 			     		</tr>
 			     		<tr>
-                    <td colspan="2" >Database Driver: &nbsp;<input type="text" name="database_driver" size="45" value="${databaseDriver}" /> <span style="font-size:12px;">( Optional* Specify your database driver name)</span></td>
+                    <td colspan="2" >$l10n.get("install.advanced.dbsetup.driver") &nbsp;<input type="text" name="database_driver" size="45" value="${databaseDriver}" onKeyPress="return submitenter(this,event);"  /> <span style="font-size:12px;">$l10n.get("install.advanced.dbsetup.driver.opt") </span></td>
 			     		</tr>
 			     		<tr>
-                    <td colspan="2" class="question">Do you currently have an OpenMRS database installed that you would like to connect to?</td>
+                    <td colspan="2" class="question">$l10n.get("install.advanced.dbsetup.instDb") </td>
 			     		</tr>
                 <tr>
-                    <td rowspan="2"  valign="top" class="yes">Yes
+                    <td rowspan="2"  valign="top" class="yes">$l10n.get("general.yes") 
                         <input type="radio" name="current_openmrs_database" value="yes" #if( $hasCurrentOpenmrsDatabase == true )checked="checked"#end/></td>
-                    <td class="yes">If yes, what is the name of this database?</td>
+                    <td class="yes">$l10n.get("install.advanced.dbsetup.instDb.name") </td>
 			  </tr>
                 <tr>
-                    <td>Database Name: &nbsp;<input type="text" name="openmrs_current_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'yes')"/></td>
+                    <td>$l10n.get("install.db.name"): &nbsp;<input type="text" name="openmrs_current_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'yes')" onKeyPress="return submitenter(this,event);" /></td>
                 </tr>
                 <tr>
-                    <td rowspan="5"  valign="top" class="no">No
+                    <td rowspan="5"  valign="top" class="no">$l10n.get("general.no") 
                         <input type="radio" name="current_openmrs_database" value="no" #if( $hasCurrentOpenmrsDatabase == false )checked="checked"#end/></td>
-                    <td class="no">If no, what would you like to name this database? (alphanumeric characters only)</td>
+                    <td class="no">$l10n.get("install.advanced.dbsetup.instDb.new")</td>
                 </tr>
                 <tr>
-                    <td>Database Name: &nbsp;<input type="text" name="openmrs_new_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'no')"/></td>
+                    <td>$l10n.get("install.db.name"): &nbsp;<input type="text" name="openmrs_new_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'no')" onKeyPress="return submitenter(this,event);" /></td>
                 </tr>
                 <tr>
-                    <td class="no"> A user that has "CREATE DATABASE" privileges must be specified here so that this wizard can create the new database. <br />(Empty MySQL passwords are not allowed here. If you don't have a MySQL password set for the given user, please set one.)</td>
+                    <td class="no"> $l10n.get("install.advanced.dbsetup.instDb.user")</td>
                 </tr>
                 <tr>
-                    <td>Username &nbsp;
-                    <input type="text" name="create_database_username" value="${createDatabaseUsername}" onfocus="clickRadio('current_openmrs_database', 'no')"/></td>
+                    <td> $l10n.get("install.advanced.dbsetup.instDb.userName") &nbsp;
+                    <input type="text" name="create_database_username" value="${createDatabaseUsername}" onfocus="clickRadio('current_openmrs_database', 'no')" onKeyPress="return submitenter(this,event);" /></td>
                 </tr>
                 <tr>
-                    <td>Password &nbsp;
-                    <input type="password" name="create_database_password" value="${createDatabasePassword}" onfocus="clickRadio('current_openmrs_database', 'no')"/></td>
+                    <td>$l10n.get("install.simple.passwd") &nbsp;
+                    <input type="password" name="create_database_password" value="${createDatabasePassword}" onfocus="clickRadio('current_openmrs_database', 'no')" onKeyPress="return submitenter(this,event);" /></td>
                 </tr>
                 <tr>
-                    <td colspan="2">
-                        <input type="submit" style="display: none"/> <!-- the first submit button that will be used when the user pushed the "enter" key in the form -->
-                        <input class="button" name="back" type="submit" value="Back"/> &nbsp; &nbsp;
-                        <input class="button" type="submit" value="Continue"/>
+                    <td colspan="2" align="center">
+			<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+			<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
                     </td>
                 </tr>
 			</table>

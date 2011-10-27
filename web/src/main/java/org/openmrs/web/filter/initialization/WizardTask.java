@@ -19,13 +19,13 @@ package org.openmrs.web.filter.initialization;
  */
 public enum WizardTask {
 	
-	CREATE_SCHEMA("Create database"), CREATE_DB_USER("Create database user"),
+	CREATE_SCHEMA("install.progress.tasks.create.schema"), CREATE_DB_USER("install.progress.tasks.create.user"),
 
-	CREATE_TABLES("Create OpenMRS tables"), ADD_CORE_DATA("Add OpenMRS core data"),
+	CREATE_TABLES("install.progress.tasks.create.tables"), ADD_CORE_DATA("install.progress.tasks.add.coreData"),
 
-	ADD_DEMO_DATA("Add OpenMRS demo data"), UPDATE_TO_LATEST("Update the database"),
+	ADD_DEMO_DATA("install.progress.tasks.add.demoData"), UPDATE_TO_LATEST("install.progress.tasks.update"),
 
-	CREATE_TEST_INSTALLATION("Create test installation");
+	CREATE_TEST_INSTALLATION("install.progress.tasks.test");
 	
 	private final String displayText;
 	

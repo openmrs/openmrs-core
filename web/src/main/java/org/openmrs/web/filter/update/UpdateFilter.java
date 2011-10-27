@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
@@ -46,6 +47,7 @@ import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
@@ -54,6 +56,9 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.Listener;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.initialization.InitializationFilter;
+import org.openmrs.web.filter.util.CustomResourseLoader;
+import org.openmrs.web.filter.util.ErrorMessageConstants;
+import org.openmrs.web.filter.util.FilterUtil;
 import org.springframework.web.context.ContextLoader;
 
 /**
@@ -113,7 +118,13 @@ public class UpdateFilter extends StartupFilter {
 	        ServletException {
 		
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
-		
+		checkLocaleAttributesForFirstTime(httpRequest);
+		// we need to save current user language in references map since it will be used when template
+		// will be rendered
+		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
+			referenceMap
+			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+		}
 		// do step one of the wizard
 		renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 	}
@@ -130,6 +141,9 @@ public class UpdateFilter extends StartupFilter {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
+		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null)
+			referenceMap
+			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 		
 		// step one
 		if (DEFAULT_PAGE.equals(page)) {
@@ -144,6 +158,13 @@ public class UpdateFilter extends StartupFilter {
 				authenticatedSuccessfully = true;
 				//Set variable to tell us whether updates are already in progress
 				referenceMap.put("isDatabaseUpdateInProgress", isDatabaseUpdateInProgress);
+				
+				// it is need to configure velocity tool box for using user's preferred locale
+				// so we should store it for further using when configuring velocity tool context
+				String localeParameter = FilterUtil.restoreLocale(username);
+				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
+				referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
+				
 				renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
 			} else {
 				// if not authenticated, show main page again
@@ -155,8 +176,7 @@ public class UpdateFilter extends StartupFilter {
 					log.error("Unable to sleep", e);
 					throw new ServletException("Got interrupted while trying to sleep thread", e);
 				}
-				errors.add("Unable to authenticate as a User with the " + RoleConstants.SUPERUSER
-				        + " role. Invalid username or password");
+				errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
 				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 			}
 		} // step two
@@ -190,7 +210,7 @@ public class UpdateFilter extends StartupFilter {
 			if (updateJob != null) {
 				result.put("hasErrors", updateJob.hasErrors());
 				if (updateJob.hasErrors()) {
-					errors.addAll(updateJob.getErrors());
+					errors.putAll(updateJob.getErrors());
 				}
 				
 				if (updateJob.hasWarnings() && updateJob.getExecutingChangesetId() == null) {
@@ -227,6 +247,29 @@ public class UpdateFilter extends StartupFilter {
 			
 			String jsonText = toJSONString(result, true);
 			httpResponse.getWriter().write(jsonText);
+		}
+	}
+	
+	/**
+	 * It sets locale attribute for current session when user is making first GET http request
+	 * to application. It retrieves user locale from request object and checks if this locale is
+	 * supported by application. If not, it tries to load system default locale. If it's not specified it 
+	 * uses {@link Locale#ENGLISH} by default
+	 * 
+	 * @param httpRequest the http request object
+	 */
+	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
+		Locale locale = httpRequest.getLocale();
+		String systemDefaultLocale = FilterUtil.readSystemDefaultLocale(null);
+		if (CustomResourseLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
+			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, locale.toString());
+			log.info("Used client's locale " + locale.toString());
+		} else if (StringUtils.isNotBlank(systemDefaultLocale)) {
+			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, systemDefaultLocale);
+			log.info("Used system default locale " + systemDefaultLocale);
+		} else {
+			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, Locale.ENGLISH.toString());
+			log.info("Used default locale " + Locale.ENGLISH.toString());
 		}
 	}
 	
@@ -337,7 +380,7 @@ public class UpdateFilter extends StartupFilter {
 		return false;
 	}
 	
-	/**
+	/**``
 	 * Do everything to get openmrs going.
 	 * 
 	 * @param servletContext the servletContext from the filterconfig
@@ -452,7 +495,7 @@ public class UpdateFilter extends StartupFilter {
 		
 		private List<String> changesetIds = new ArrayList<String>();
 		
-		private List<String> errors = new ArrayList<String>();
+		private Map<String, Object[]> errors = new HashMap<String, Object[]>();
 		
 		private String message = null;
 		
@@ -462,14 +505,14 @@ public class UpdateFilter extends StartupFilter {
 		
 		private List<String> updateWarnings = new LinkedList<String>();
 		
-		synchronized public void reportError(String error) {
-			List<String> errors = new ArrayList<String>();
-			errors.add(error);
+		synchronized public void reportError(String error, Object... params) {
+			Map<String, Object[]> errors = new HashMap<String, Object[]>();
+			errors.put(error, params);
 			reportErrors(errors);
 		}
 		
-		synchronized public void reportErrors(List<String> errs) {
-			errors.addAll(errs);
+		synchronized public void reportErrors(Map<String, Object[]> errs) {
+			errors.putAll(errs);
 			erroneous = true;
 		}
 		
@@ -477,7 +520,7 @@ public class UpdateFilter extends StartupFilter {
 			return erroneous;
 		}
 		
-		synchronized public List<String> getErrors() {
+		synchronized public Map<String, Object[]> getErrors() {
 			return errors;
 		}
 		
@@ -489,12 +532,12 @@ public class UpdateFilter extends StartupFilter {
 			thread.start();
 		}
 		
+		@SuppressWarnings("unused")
 		public void waitForCompletion() {
 			try {
 				thread.join();
 			}
 			catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				log.error("Error generated", e);
 			}
 		}
@@ -587,15 +630,16 @@ public class UpdateFilter extends StartupFilter {
 							// the user would be stepped through the questions returned here.
 							log.error("Not implemented", inputRequired);
 							model.updateChanges();
-							reportError("Input during database updates is not yet implemented. "
-							        + inputRequired.getMessage());
+							reportError(ErrorMessageConstants.UPDATE_ERROR_INPUT_NOT_IMPLEMENTED, inputRequired.getMessage());
 							return;
 						}
 						catch (DatabaseUpdateException e) {
 							log.error("Unable to update the database", e);
-							List<String> errors = new ArrayList<String>();
-							errors.add("Unable to update the database.  See server error logs for the full stacktrace.");
-							errors.addAll(Arrays.asList(e.getMessage().split("\n")));
+							Map<String, Object[]> errors = new HashMap<String, Object[]>();
+							errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE, null);
+							for (String message : Arrays.asList(e.getMessage().split("\n"))) {
+								errors.put(message, null);
+							}
 							model.updateChanges();
 							reportErrors(errors);
 							return;
@@ -607,8 +651,7 @@ public class UpdateFilter extends StartupFilter {
 						}
 						catch (Throwable t) {
 							log.error("Unable to complete the startup.", t);
-							reportError("Unable to complete the startup.  See the server error log for the complete stacktrace."
-							        + t.getMessage());
+							reportError(ErrorMessageConstants.UPDATE_ERROR_COMPLETE_STARTUP, t.getMessage());
 							return;
 						}
 						
