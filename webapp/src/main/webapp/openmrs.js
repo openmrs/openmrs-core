@@ -422,9 +422,9 @@ function DatePicker(dateFormat, id, opts) {
  * @param timeFormat :String time format to use (ex: hh:mm )
  * @param id :Element the html element (when id is not present)
  *           :String the id of the text box to use as the datetime picker
- * @param opts :Map additional options for the jquery datetime picker widget (included are ampm,separator, gotoCurrent)
+ * @param opts :Map additional options for the jquery datetime picker widget (included are ampm, separator, gotoCurrent)
  */
-function DateTimePicker(dateFormat,timeFormat, id, opts) {
+function DateTimePicker(dateFormat, timeFormat, id, opts) {
 	var jq;
 	if(typeof id == 'string') {
 		id = escapeJquerySelector(id);
@@ -439,9 +439,8 @@ function DateTimePicker(dateFormat,timeFormat, id, opts) {
  	}
  	setOptions(opts, 'dateFormat', dateFormat.replace("yyyy", "yy"));//have to do the replace here because the datetimepicker only required 'yy' for 4-number year
  	setOptions(opts, 'separator', " ");
-    if( timeFormat.search(/a/) != -1){
+    if( timeFormat.search(/t/i) != -1){
         setOptions(opts, 'ampm', true);
-        setOptions(opts, 'timeFormat', timeFormat.replace("a", "tt"));//have to do the replace here because the datetimepicker only required 'tt' for am/pm
     }
 	setOptions(opts, 'appendText', "(" + dateFormat+opts.separator+timeFormat+ ")");
  	setOptions(opts, 'gotoCurrent', true);
@@ -477,9 +476,8 @@ function TimePicker(timeFormat, id, opts) {
  	if(opts == null) {
  		opts = {};
  	}
- 	if( timeFormat.search(/a/) != -1){
+ 	if( timeFormat.search(/t/i) != -1){
         setOptions(opts, 'ampm', true);
-        setOptions(opts, 'timeFormat', timeFormat.replace("a", "tt"));//have to do the replace here because the datetimepicker only required 'tt' for am/pm
     }
  	setOptions(opts, 'appendText', "(" +timeFormat+ ")");
  	setOptions(opts, 'gotoCurrent', true);

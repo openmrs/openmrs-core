@@ -230,7 +230,7 @@
 		<c:if test="${empty model.activeVisits}">
 			<div id="patientVisitsSubheader" class="box" style="margin-top: 2px">
 				<input type="button" value="<spring:message code="Visit.start"/>"
-					onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?patientId=${model.patient.patientId}'" />
+					onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?patientId=${model.patient.patientId}&startNow=true'" />
 			</div>
 		</c:if>
 	</openmrs:hasPrivilege>

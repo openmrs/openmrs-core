@@ -35,6 +35,7 @@ import org.openmrs.validator.EncounterValidator;
 import org.openmrs.validator.VisitValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -44,6 +45,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -65,11 +68,21 @@ public class VisitFormController {
 	
 	private static final String VISIT_END_URL = "/admin/visits/visitEnd";
 	
+	/*
+	@InitBinder
+	public void initBinder(WebDataBinder wdb) {
+		wdb.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateTimeFormat(), true, 10));
+	}
+	*/
+
 	/**
 	 * Processes requests to display the form
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = VISIT_FORM_URL)
-	public String showForm(@ModelAttribute("visit") Visit visit, ModelMap model) {
+	public String showForm(@ModelAttribute("visit") Visit visit,
+	        @RequestParam(required = false, value = "startNow") Boolean startNow, ModelMap model) {
+		if (startNow != null && startNow && visit.getStartDatetime() == null)
+			visit.setStartDatetime(new Date());
 		addEncounterAndObservationCounts(visit, model);
 		return VISIT_FORM;
 	}
