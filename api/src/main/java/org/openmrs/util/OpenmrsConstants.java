@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.customdatatype.datatype.Boolean;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.module.ModuleConstants;
@@ -1317,7 +1318,7 @@ public final class OpenmrsConstants {
 		                "Set to true to enable the Visits feature. This will replace the 'Encounters' tab with a 'Visits' tab on the dashboard.",
 		                Boolean.class, null));
 		
-		props.add(new GlobalProperty(GP_VISIT_ASSIGNMENT_HANDLER, "",
+		props.add(new GlobalProperty(GP_VISIT_ASSIGNMENT_HANDLER, ExistingVisitAssignmentHandler.class.getName(),
 		        "Set to the name of the class responsible for assigning encounters to visits."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_APPLICATION_NAME, "OpenMRS",
