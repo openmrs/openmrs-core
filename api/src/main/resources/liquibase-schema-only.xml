@@ -2100,9 +2100,6 @@
         </modifySql>
     </changeSet>
     <changeSet id="20110915-1258" author="sunbiz">
-    	<validCheckSum>3:4cbaf9e05dc13ab4be0990b808d58521</validCheckSum>
-    	<validCheckSum>3:3cf419ea9657f9a072881cafb2543d77</validCheckSum>
-    	<validCheckSum>3:675a4401e103351759a7160188e41a37</validCheckSum>
         <createTable tableName="visit_attribute_type">
             <column name="visit_attribute_type_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" />
@@ -2119,7 +2116,7 @@
             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="datetime" />
-            <column name="retired" type="smallint" defaultValueNumeric="0">
+            <column name="retired" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="int(11)" />
@@ -2132,9 +2129,6 @@
         </modifySql>
     </changeSet>
     <changeSet id="20110915-1307" author="sunbiz">
-    	<validCheckSum>3:de5bc0202df468c450abcce105e16cf7</validCheckSum>
-    	<validCheckSum>3:24e1e30a41f9f5d92f337444fb45402a</validCheckSum>
-    	<validCheckSum>3:674f8bd4b16b3a4c879259a8c9912182</validCheckSum>
         <createTable tableName="visit_attribute">
             <column name="visit_attribute_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" />
@@ -2147,7 +2141,7 @@
             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="datetime" />
-            <column name="voided" type="smallint" defaultValueNumeric="0">
+            <column name="voided" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="int(11)" />
@@ -2159,9 +2153,6 @@
         </modifySql>
     </changeSet>
     <changeSet id="20110915-1325" author="sunbiz">
-    	<validCheckSum>3:ed0aac04c46ca9d3de32ba613ef1481c</validCheckSum>
-    	<validCheckSum>3:41fa30c01ec2d1107beccb8126146464</validCheckSum>
-    	<validCheckSum>3:529c09e19fdd6136085b16ce38bd491a</validCheckSum>
         <createTable tableName="location_attribute_type">
             <column name="location_attribute_type_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false" />
@@ -2186,7 +2177,7 @@
 			</column>
 			<column name="changed_by" type="int" />
 			<column name="date_changed" type="datetime" />
-			<column name="retired" type="smallint" defaultValueNumeric="0">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
 				<constraints nullable="false" />
 			</column>
 			<column name="retired_by" type="int(11)" />
@@ -2201,9 +2192,6 @@
         </modifySql>
     </changeSet>
     <changeSet id="20110915-1337" author="sunbiz">
-    	<validCheckSum>3:31b244b6b3ba46d0ae7bd436b1b1c7b0</validCheckSum>
-    	<validCheckSum>3:564e414d29bdccd1bf770252ccd11431</validCheckSum>
-    	<validCheckSum>3:00224dcc4a90faabf6e2323decd1bea1</validCheckSum>
         <createTable tableName="location_attribute">
         	<column name="location_attribute_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" />
@@ -2216,7 +2204,7 @@
             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="datetime" />
-            <column name="voided" type="smallint" defaultValueNumeric="0">
+            <column name="voided" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="int(11)" />
