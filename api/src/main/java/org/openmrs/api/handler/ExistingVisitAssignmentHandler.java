@@ -73,6 +73,11 @@ public class ExistingVisitAssignmentHandler extends BaseEncounterVisitHandler {
 				continue;
 			}
 			
+			//skip visits which ended before the encounter date
+			if (visit.getStopDatetime() != null && visit.getStopDatetime().before(encounterDate)) {
+				continue;
+			}
+			
 			if (visit.getLocation() == null || Location.isInHierarchy(encounter.getLocation(), visit.getLocation())) {
 				encounter.setVisit(visit);
 				return;
