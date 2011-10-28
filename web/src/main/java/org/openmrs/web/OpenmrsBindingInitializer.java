@@ -14,6 +14,7 @@
 package org.openmrs.web;
 
 import java.text.NumberFormat;
+import java.util.Date;
 
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
@@ -58,6 +59,7 @@ import org.openmrs.propertyeditor.ConceptNumericEditor;
 import org.openmrs.propertyeditor.ConceptReferenceTermEditor;
 import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.propertyeditor.DataExportReportObjectEditor;
+import org.openmrs.propertyeditor.DateOrDatetimeEditor;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
 import org.openmrs.propertyeditor.FormEditor;
@@ -84,7 +86,6 @@ import org.openmrs.propertyeditor.VisitTypeEditor;
 import org.openmrs.report.ReportSchemaXml;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.reporting.report.ReportDefinition;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
@@ -134,7 +135,7 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(User.class, new UserEditor());
 		wdb.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, NumberFormat
 		        .getInstance(Context.getLocale()), true));
-		wdb.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
+		wdb.registerCustomEditor(Date.class, new DateOrDatetimeEditor());
 		wdb.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
 		wdb.registerCustomEditor(ConceptMapType.class, new ConceptMapTypeEditor());
 		wdb.registerCustomEditor(ConceptSource.class, new ConceptSourceEditor());

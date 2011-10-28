@@ -11,7 +11,7 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js"/>
 
 <script type="text/javascript">
@@ -174,7 +174,7 @@ $j(document).ready( function() {
 			<th><spring:message code="Visit.startDatetime"/><span class="required"> *</span></th>
 			<td>
 				<spring:bind path="startDatetime">			
-				<input type="text" name="${status.expression}" size="10" value="${status.value}" onClick="showCalendar(this)" />
+				<input type="text" name="${status.expression}" size="20" value="${status.value}" onClick="showDateTimePicker(this)" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 				</spring:bind>
 			</td>
@@ -183,7 +183,7 @@ $j(document).ready( function() {
 			<th><spring:message code="Visit.stopDatetime"/></th>
 			<td>
 				<spring:bind path="stopDatetime">			
-				<input type="text" name="${status.expression}" size="10" value="${status.value}" onClick="showCalendar(this)" />
+				<input type="text" name="${status.expression}" size="20" value="${status.value}" onClick="showDateTimePicker(this)" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 				</spring:bind>
 			</td>
