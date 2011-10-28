@@ -856,7 +856,7 @@ public class ORUR01Handler implements Application {
 	 * @should return a mapped Concept if given a valid mapping
 	 */
 	protected Concept getConcept(String hl7ConceptId, String codingSystem, String uid) throws HL7Exception {
-		if (HL7Constants.HL7_LOCAL_CONCEPT.equals(codingSystem)) {
+		if (codingSystem == null || HL7Constants.HL7_LOCAL_CONCEPT.equals(codingSystem)) {
 			// the concept is local
 			try {
 				Integer conceptId = new Integer(hl7ConceptId);
