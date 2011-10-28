@@ -953,9 +953,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#mapConceptProposalToConcept(org.openmrs.ConceptProposal,
-	 *      org.openmrs.Concept)
+	 *      org.openmrs.Concept, java.util.locale)
 	 */
-	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException {
+	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept, Locale locale) throws APIException {
 		
 		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
 			cp.rejectConceptProposal();
@@ -976,10 +976,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			String finalText = cp.getFinalText();
 			ConceptName conceptName = new ConceptName(finalText, null);
 			conceptName.setConcept(mappedConcept);
-			
+			conceptName.setLocale(locale == null ? Context.getLocale() : locale);
 			conceptName.setDateCreated(new Date());
 			conceptName.setCreator(Context.getAuthenticatedUser());
-			
 			mappedConcept.addName(conceptName);
 			mappedConcept.setChangedBy(Context.getAuthenticatedUser());
 			mappedConcept.setDateChanged(new Date());
@@ -1002,6 +1001,14 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		return mappedConcept;
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#mapConceptProposalToConcept(org.openmrs.ConceptProposal,
+	 *      org.openmrs.Concept)
+	 */
+	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException {
+		return mapConceptProposalToConcept(cp, mappedConcept, null);
 	}
 	
 	/**
