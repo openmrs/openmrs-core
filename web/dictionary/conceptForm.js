@@ -237,7 +237,7 @@ function cloneElement(id, initialSizeOfClonedSiblings, inputNamePrefix) {
 	}
 	clone.id = "";
 	elementToClone.parentNode.insertBefore(clone, elementToClone);
-	clone.style.display = "";
+	clone.style.display = "block";
 	
 }
 
