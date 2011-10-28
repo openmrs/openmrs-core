@@ -1335,7 +1335,7 @@ public final class OpenmrsConstants {
 		                "",
 		                "A comma-separated list of encounter roles (by name or id). Providers with these roles in an encounter will be displayed on the encounter tab of the patient dashboard."));
 		
-		props.add(new GlobalProperty(GP_SEARCH_WIDGET_MAXIMUM_RESULTS, "10000",
+		props.add(new GlobalProperty(GP_SEARCH_WIDGET_MAXIMUM_RESULTS, "2000",
 		        "Specifies the maximum number of results to return from a single search in the search widgets"));
 		
 		props
