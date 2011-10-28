@@ -984,6 +984,21 @@ public interface ConceptService extends OpenmrsService {
 	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException;
 	
 	/**
+	 * Maps a concept proposal to a concept
+	 * 
+	 * @param cp
+	 * @param mappedConcept
+	 * @param locale of concept proposal
+	 * @return the mappedConcept
+	 * @throws APIException
+	 * @should not require mapped concept on reject action
+	 * @should allow rejecting proposals
+	 * @should throw APIException when mapping to null concept
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
+	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept, Locale locale) throws APIException;
+	
+	/**
 	 * @deprecated use {@link ConceptProposal#rejectConceptProposal()}
 	 */
 	@Deprecated
