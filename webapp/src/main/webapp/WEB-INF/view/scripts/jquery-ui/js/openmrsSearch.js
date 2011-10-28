@@ -202,7 +202,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    
 		    if(o.showIncludeVoided) {
 		    	var tmp = div.find("#includeVoided");
-			    tmp.before("<label for='includeVoided'>" + o.includeVoidedLabel + "</label>");
+			    tmp.after("<label for='includeVoided'>" + o.includeVoidedLabel + "</label>");
 		    	tmp.show();
 		    	
 		    	//when the user checks/unchecks the includeVoided checkbox, trigger a search
@@ -230,7 +230,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    
 		    if(o.showIncludeVerbose) {
 		    	var tmp = div.find("#includeVerbose");
-		    	tmp.before("<label for='includeVerbose'>" + o.includeVerboseLabel + "</label>");
+		    	tmp.after("<label for='includeVerbose'>" + o.includeVerboseLabel + "</label>");
 		    	tmp.show();
 		    	
 		    	//when the user checks/unchecks the includeVerbose checkbox, show/hide the verbose rows
