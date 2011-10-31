@@ -1514,4 +1514,28 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		names.add(new ConceptName(2453));
 		Assert.assertEquals(0, Context.getObsService().getObservationCount(names, true).intValue());
 	}
+	
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 * @verifies link original and updated obs
+	 */
+	@Test
+	@Verifies(value = "should link original and updated obs", method = "saveObs(Obs,String)")
+	public void saveObs_shouldLinkOriginalAndUpdatedObs() throws Exception {
+		// build
+		int obsId = 7;
+		ObsService obsService = Context.getObsService();
+		Obs obs = obsService.getObs(obsId);
+		
+		// operate
+		// change something on the obs and save it again
+		obs.setComment("A new comment");
+		Obs obsSaved = obsService.saveObs(obs, "Testing linkage");
+		obs = obsService.getObs(obsId);
+		
+		// check
+		assertNotNull(obsSaved);
+		assertNotNull(obs);
+		assertEquals(obs, obsSaved.getPreviousVersion());
+	}
 }

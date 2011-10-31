@@ -289,18 +289,9 @@ public class EncounterFormController extends SimpleFormController {
 			String reason = "";
 			for (Obs o : encounter.getObsAtTopLevel(true)) {
 				
-				// only the voided obs have been edited
-				if (o.isVoided()) {
-					// assumes format of: ".* (new obsId: \d*)"
-					reason = o.getVoidReason();
-					int start = reason.lastIndexOf(" ") + 1;
-					int end = reason.length() - 1;
-					try {
-						reason = reason.substring(start, end);
-						editedObs.add(Integer.valueOf(reason));
-					}
-					catch (Exception e) {}
-				}
+				// only edited obs has previous version
+				if (o.hasPreviousVersion())
+					editedObs.add(o.getObsId());
 				
 				// get the formfield for this obs
 				FormField ff = fs.getFormField(form, o.getConcept(), obsMapToReturn.keySet(), false);

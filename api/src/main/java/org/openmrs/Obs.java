@@ -113,6 +113,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	protected Encounter encounter;
 	
+	private Obs previousVersion;
+	
 	/** default constructor */
 	public Obs() {
 	}
@@ -1086,6 +1088,18 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	public void setId(Integer id) {
 		setObsId(id);
 		
+	}
+	
+	public Obs getPreviousVersion() {
+		return previousVersion;
+	}
+	
+	public void setPreviousVersion(Obs previousVersion) {
+		this.previousVersion = previousVersion;
+	}
+	
+	public Boolean hasPreviousVersion() {
+		return getPreviousVersion() != null;
 	}
 	
 }
