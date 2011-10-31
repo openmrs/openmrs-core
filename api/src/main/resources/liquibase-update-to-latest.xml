@@ -6003,6 +6003,41 @@
             <column name="template" type="text"/>
         </addColumn>
 	</changeSet>
+	
+	<changeSet id="20110326-1" author="Knoll_Frank">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="obs" columnName="previous_version"/></not>
+		</preConditions>
+		<comment>
+			Add obs.previous_version column (TRUNK-420)
+		</comment>
+		
+		<addColumn tableName="obs">
+			<column name="previous_version" type="int" />
+		</addColumn>
+		
+		<addForeignKeyConstraint constraintName="previous_version"
+			baseTableName="obs" baseColumnNames="previous_version"
+			referencedTableName="obs" referencedColumnNames="obs_id"
+			/>
+	</changeSet>
 
+	<changeSet id="20110326-2" author="Knoll_Frank">
+		<preConditions>
+			<columnExists tableName="obs" columnName="previous_version"/>
+		</preConditions>
+		<comment>
+			Fix all the old void_reason content and add in the new previous_version to the matching obs row (POTENTIALLY VERY SLOW FOR LARGE OBS TABLES)
+		</comment>
+		
+		<sql>
+			UPDATE obs,
+					(SELECT obs_id AS previous_version,
+							REVERSE(SUBSTRING(REVERSE(SUBSTRING_INDEX(void_reason, ' ', -1)), 2)) AS new_obs
+							FROM obs) AS TMP_TAB
+					SET obs.previous_version = TMP_TAB.previous_version
+					WHERE obs.obs_id = TMP_TAB.new_obs;
+		</sql>
+	</changeSet>
 </databaseChangeLog>
 
