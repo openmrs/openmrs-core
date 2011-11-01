@@ -151,7 +151,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	var inSerialMode = Boolean(gp.searchRunInSerialMode);
 	var MAXIMUM_NUMBER_OF_RESULTS = gp.maximumResults;
 	if(!Number(MAXIMUM_NUMBER_OF_RESULTS))
-		MAXIMUM_NUMBER_OF_RESULTS = 10000;
+		MAXIMUM_NUMBER_OF_RESULTS = 2000;
 	$j.widget("ui.openmrsSearch", {
 		plugins: {},
 		options: {

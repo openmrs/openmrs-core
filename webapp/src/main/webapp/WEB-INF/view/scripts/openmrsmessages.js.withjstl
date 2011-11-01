@@ -89,7 +89,7 @@ omsgs.userListingHeaders=new Array();
 gp.maxSearchResults=<openmrs:globalProperty key="searchWidget.batchSize" defaultValue="200"/>;
 gp.searchRunInSerialMode=<openmrs:globalProperty key="searchWidget.runInSerialMode" defaultValue="false"/>;
 gp.searchDelay=<openmrs:globalProperty key="searchWidget.searchDelayInterval" defaultValue="400"/>;
-gp.maximumResults=<openmrs:globalProperty key="searchWidget.maximumResults" defaultValue="10000"/>;
+gp.maximumResults=<openmrs:globalProperty key="searchWidget.maximumResults" defaultValue="2000"/>;
 
 /* General Labels and text to be used on SEARCH WIDGET */
 omsgs.encounterType="<spring:message code="Encounter.type" javaScriptEscape="true" />";
