@@ -761,7 +761,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#purgeConceptDatatype(org.openmrs.ConceptDatatype)
-	 * Depreciated as of OpenMRS 1.9
+	 *      Depreciated as of OpenMRS 1.9
 	 */
 	@Deprecated
 	public void purgeConceptDatatype(ConceptDatatype cd) {
@@ -770,7 +770,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConceptDatatype(org.openmrs.ConceptDatatype)
-	 * Depreciated as of OpenMRS 1.9
+	 *      Depreciated as of OpenMRS 1.9
 	 */
 	@Deprecated
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws APIException {
@@ -1941,7 +1941,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		new ConceptMapTypeValidator().validate(conceptMapType, errors);
 		if (errors.hasErrors()) {
 			//see trunk https://tickets.openmrs.org/browse/TRUNK-2393
-			throw new APIException(Context.getMessageSourceService().getMessage("error.failed.validation"));
+			throw new APIException(Context.getMessageSourceService().getMessage("error.failed.validation") + ": "
+			        + errors.toString());
 		}
 		conceptMapType.setName(conceptMapType.getName().trim());
 		if (conceptMapType.getDescription() != null)
@@ -2052,7 +2053,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		new ConceptReferenceTermValidator().validate(conceptReferenceTerm, errors);
 		if (errors.hasErrors()) {
 			//see trunk https://tickets.openmrs.org/browse/TRUNK-2393
-			throw new APIException(Context.getMessageSourceService().getMessage("error.failed.validation"));
+			throw new APIException(Context.getMessageSourceService().getMessage(
+			    "error.failed.validation" + ": " + errors.toString()));
 		}
 		
 		return dao.saveConceptReferenceTerm(conceptReferenceTerm);
