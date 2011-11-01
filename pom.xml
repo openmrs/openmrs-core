@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
@@ -28,9 +27,9 @@
 	</organization>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs/trunk/</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs/trunk/</developerConnection>
-		<url>http://svn.openmrs.org/openmrs/trunk/</url>
+		<connection>scm:svn:http://svn.openmrs.org/openmrs/branches/1.9.x</connection>
+		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs/branches/1.9.x</developerConnection>
+		<url>http://svn.openmrs.org/openmrs/branches/1.9.x</url>
 	</scm>
 
 	<modules>
@@ -709,11 +708,11 @@
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active
 						development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
-					<header>&lt;a href=&quot;http://www.openmrs.org&quot;
+					<header>&lt;a href="http://www.openmrs.org"
 						target=_top&gt;&lt;img
-						src=&quot;resources/openmrs-logo-small.gif&quot;
+						src="resources/openmrs-logo-small.gif"
 						border=0/&gt;&lt;/a&gt;</header>
-					<footer>&lt;a href=&quot;http://www.openmrs.org&quot;
+					<footer>&lt;a href="http://www.openmrs.org"
 						target=_top&gt;${project.name}&lt;/a&gt;</footer>
 					<taglet>org.openmrs.tools.doclet.ShouldTaglet</taglet>
 					<tagletArtifact>
