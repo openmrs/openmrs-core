@@ -63,15 +63,15 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfAllFieldsAreCorreect() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setName("Zodiac");
-        type.setDescription("Zodiac Description");
+		type.setDescription("Zodiac Description");
 		
 		Errors errors = new BindException(type, "patObj");
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
 	}
-
-    /**
+	
+	/**
 	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
 	 */
 	@Test
@@ -79,10 +79,10 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfDescriptionIsNull() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setName("Zodiac");
-
+		
 		Errors errors = new BindException(type, "patObj");
 		new PersonAttributeTypeValidator().validate(type, errors);
-
+		
 		Assert.assertTrue(errors.hasFieldErrors("description"));
 	}
 }
