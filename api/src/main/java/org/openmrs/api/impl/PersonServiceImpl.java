@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -519,7 +520,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getRelationshipsByPerson(org.openmrs.Person, java.util.Date)
+	 * @see org.openmrs.api.PersonService#getRelationshipsByPerson(org.openmrs.Person,
+	 *      java.util.Date)
 	 */
 	public List<Relationship> getRelationshipsByPerson(Person p, Date effectiveDate) throws APIException {
 		
@@ -655,6 +657,11 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType)
 	 */
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException {
+		if (StringUtils.isBlank(relationshipType.getDescription())) {
+			throw new APIException(Context.getMessageSourceService().getMessage("error.required",
+			    new Object[] { Context.getMessageSourceService().getMessage("general.description") }, Context.getLocale()));
+		}
+		
 		return dao.saveRelationshipType(relationshipType);
 	}
 	

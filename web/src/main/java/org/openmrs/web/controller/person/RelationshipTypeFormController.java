@@ -69,6 +69,10 @@ public class RelationshipTypeFormController extends SimpleFormController {
 		if (type.getbIsToA() == null || type.getbIsToA().equals(""))
 			errors.rejectValue("bIsToA", "RelationshipType.bIsToA.required");
 		
+		if (!StringUtils.hasText(type.getDescription()))
+			errors.rejectValue("description", "error.required", new Object[] { Context.getMessageSourceService().getMessage(
+			    "general.description") }, null);
+		
 		return super.processFormSubmission(request, response, type, errors);
 	}
 	
