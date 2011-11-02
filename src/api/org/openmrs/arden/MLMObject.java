@@ -161,8 +161,8 @@ public class MLMObject {
 	
 	public void WriteAction(Writer w) throws Exception {
 		try {
-			w.append("\tpublic void initAction() {\n");
-			w.append("\t\tthis.actions = new ArrayList<String>();\n");
+			w.append("\tpublic ArrayList<String> initAction() {\n");
+			w.append("\t\tArrayList<String> actions = new ArrayList<String>();\n");
 			
 			int pos = 1;
 			for (Action action : this.actions) {
@@ -174,10 +174,11 @@ public class MLMObject {
 				pos++;
 			}
 			
+			w.append("\n\n\t\treturn actions;\n");
 			w.append("\t}\n\n"); // End of this function
 			w.flush();
 			
-			w.append("private String substituteString(String variable,String outStr){\n");
+			w.append("private String substituteString(String variable,String outStr, HashMap<String, String> userVarMap, HashMap<String, Result> resultLookup){\n");
 			w.append("//see if the variable is in the user map\n");
 			w.append("String value = userVarMap.get(variable);\n");
 			w.append("if (value != null)\n");
@@ -215,7 +216,7 @@ public class MLMObject {
 			w.append("return outStr;\n");
 			w.append("}\n");
 			
-			w.append("public String doAction(String inStr)\n");
+			w.append("public String doAction(String inStr, HashMap<String, String> userVarMap, HashMap<String, Result> resultLookup)\n");
 			w.append("{\n");
 			w.append("int startindex = -1;\n");
 			w.append("int endindex = -1;\n");
@@ -230,7 +231,7 @@ public class MLMObject {
 			w.append("}else if(endindex == -1){\n");
 			w.append("endindex = index-1;\n");
 			w.append("String variable = inStr.substring(startindex, endindex).trim();\n");
-			w.append("outStr = substituteString(variable,outStr);\n");
+			w.append("outStr = substituteString(variable,outStr,userVarMap,resultLookup);\n");
 			
 			w.append("startindex = -1;\n");
 			w.append("endindex = -1;\n");
@@ -270,13 +271,13 @@ public class MLMObject {
 			w.append("\t\tString actionStr = \"\";\n");
 			w.append("\t\tPatientService patientService = Context.getPatientService();\n");
 			w.append("\t\tPatient patient = patientService.getPatient(patientId);\n");
-			w.append("\t\tresultLookup = new HashMap <String, Result>();\n");
+			w.append("\t\tHashMap<String, Result> resultLookup = new HashMap <String, Result>();\n");
 			w.append("\t\tBoolean ageOK = null;\n\t\ttry {\n");
 			
 			w.append("\t\t\tRuleProvider ruleProvider = (RuleProvider)parameters.get(\"ruleProvider\");\n");
-			w.append("\t\t\tthis.patient=patient;\n");
-			w.append("\t\t\tuserVarMap = new HashMap <String, String>();\n");
-			w.append("\t\t\tfirstname = patient.getPersonName().getGivenName();\n");
+
+			w.append("\t\t\tHashMap<String, String> userVarMap = new HashMap <String, String>();\n");
+			w.append("\t\t\tString firstname = patient.getPersonName().getGivenName();\n");
 			w.append("\t\t\tuserVarMap.put(\"firstname\", toProperCase(firstname));\n");
 			w.append("\t\t\tString lastName = patient.getFamilyName();\n");
 			w.append("\t\t\tuserVarMap.put(\"lastName\", lastName);\n");
@@ -290,7 +291,7 @@ public class MLMObject {
 			w.append("\t\t\t\tuserVarMap.put(\"hisher\",\"her\");\n");
 			w.append("\t\t\t}\n");
 			
-			w.append("\t\t\tinitAction();\n");
+			w.append("\t\t\tArrayList<String> actions = initAction();\n");
 			/***************************************************************************************
 			 * Do the LogicCriteria here
 			 */
@@ -316,7 +317,7 @@ public class MLMObject {
 			
 			/** ******************************************************************************************** */
 			
-			w.append("\n\n\t\t\tif(evaluate_logic(parameters, context, ruleProvider)){\n");
+			w.append("\n\n\t\t\tif(evaluate_logic(parameters, context, ruleProvider, patient, userVarMap, resultLookup)){\n");
 			w.append("\t\t\t\tResult ruleResult = new Result();\n");
 			
 			/*******************
@@ -380,7 +381,7 @@ public class MLMObject {
 			**************/
 			
 			w.append("\t\t\t\tfor(String currAction:actions){\n");
-			w.append("\t\t\t\t\tcurrAction = doAction(currAction);\n");
+			w.append("\t\t\t\t\tcurrAction = doAction(currAction, userVarMap, resultLookup);\n");
 			w.append("\t\t\t\t\truleResult.add(new Result(currAction));\n");
 			w.append("\t\t\t\t}\n");
 			
@@ -408,7 +409,7 @@ public class MLMObject {
 			}
 			/** *************************************************************************************************************************** */
 			
-			w.append("\tprivate boolean evaluate_logic(Map<String, Object> parameters, LogicContext context, RuleProvider ruleProvider) throws LogicException {\n\n");
+			w.append("\tprivate boolean evaluate_logic(Map<String, Object> parameters, LogicContext context, RuleProvider ruleProvider, Patient patient, HashMap<String, String> userVarMap, HashMap<String, Result> resultLookup) throws LogicException {\n\n");
 			evalListBySection = evaluateList.get("logic");
 			if (evalListBySection == null) {
 				evalListBySection = new LinkedList<MLMEvaluateElement>();

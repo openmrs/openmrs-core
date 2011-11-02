@@ -177,10 +177,6 @@ public class ArdenServiceImpl implements ArdenService {
 		     
 		     String classname = ardObj.getClassName();
 		     w.write("public class " + classname + " implements Rule, DssRule{\n\n"); // Start of class
-		     w.write("\tprivate Patient patient;\n\tprivate String firstname;\n");
-		     w.write("\tprivate ArrayList<String> actions;\n");
-		     w.write("\tprivate HashMap<String, String> userVarMap;\n\n");
-		     w.write("\tprivate HashMap <String, Result> resultLookup;\n\n");
 		     
 			w.write("\tprivate Log log = LogFactory.getLog(this.getClass());\n\n");
 		     
@@ -434,7 +430,15 @@ public class ArdenServiceImpl implements ArdenService {
 			w.write("if(key == null){\n");
 			w.write("return false;\n");
 			w.write("}\n");
-			w.write("String keyString = key.toString();\n");
+			w.write("String keyString = \"\";\n");
+			w.write("if(key.getDatatype() == Result.Datatype.CODED) {\n");
+			w.write("\tConcept keyConcept = key.toConcept();\n");
+			w.write("\tif(keyConcept != null) {\n");
+			w.write("\t\tkeyString = ((ConceptName) keyConcept.getNames().toArray()[0]).getName();\n");
+			w.write("\t}\n");
+			w.write("} else {\n");
+			w.write("\tkeyString = key.toString();\n");
+			w.write("}\n");
 			w.write("for(Result element:lst){\n");
 			w.write("Concept concept = element.toConcept();\n");
 			w.write("if(concept == null){\n");
