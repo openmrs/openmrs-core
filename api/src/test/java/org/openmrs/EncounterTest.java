@@ -17,9 +17,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -27,17 +30,30 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.openmrs.api.EncounterService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * This class tests the all of the {@link Encounter} non-trivial object methods.
  * 
  * @see Encounter
  */
-public class EncounterTest extends BaseContextSensitiveTest {
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Context.class)
+public class EncounterTest {
+	
+	@Before
+	public void before() {
+		mockStatic(Context.class);
+		when(Context.getAuthenticatedUser()).thenReturn(new User());
+	}
 	
 	/**
 	 * @see {@link Encounter#toString()}
@@ -1119,19 +1135,28 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	public void setProvider_shouldSetExistingProviderForUnknownRole() throws Exception {
 		//given
 		Encounter encounter = new Encounter();
+		EncounterRole unknownRole = new EncounterRole();
+		Person person = new Person();
+		Provider provider = new Provider();
+		provider.setPerson(person);
+		List<Provider> providers = new ArrayList<Provider>();
+		providers.add(provider);
 		
-		Person person = Context.getPersonService().getPerson(1);
-		Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(person);
+		EncounterService encounterService = mock(EncounterService.class);
+		when(encounterService.getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).thenReturn(unknownRole);
 		
-		EncounterRole role = Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID);
-		Assert.assertNotNull("Unknown role", role);
+		ProviderService providerService = mock(ProviderService.class);
+		when(providerService.getProvidersByPerson(person)).thenReturn(providers);
+		
+		when(Context.getEncounterService()).thenReturn(encounterService);
+		when(Context.getProviderService()).thenReturn(providerService);
 		
 		//when
 		encounter.setProvider(person);
 		
 		//then
-		Assert.assertEquals(1, encounter.getProvidersByRole(role).size());
-		Assert.assertTrue(encounter.getProvidersByRole(role).contains(providers.iterator().next()));
+		assertEquals(1, encounter.getProvidersByRoles().size());
+		assertEquals(1, encounter.getProvidersByRole(unknownRole).size());
+		assertEquals(provider, encounter.getProvidersByRole(unknownRole).iterator().next());
 	}
-	
 }
