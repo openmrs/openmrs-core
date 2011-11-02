@@ -31,6 +31,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PersonDAO;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.serialization.SerializationException;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
@@ -880,6 +881,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws APIException
 	 * @should create new object when relationship type id is null
 	 * @should update existing object when relationship type id is not null
+	 * @should fail if the description is not specified
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException;
@@ -1009,9 +1011,10 @@ public interface PersonService extends OpenmrsService {
 	public Map<Person, List<Person>> getRelationships(RelationshipType relationshipType) throws APIException;
 	
 	/**
-	 * Builds the serialized data from {@link org.openmrs.person.PersonMergeLog#getPersonMergeLogData},
-	 * sets the mergedData String, and the creator and date if null. It then saves the
-	 * <code>PersonMergeLog</code> object to the model.
+	 * Builds the serialized data from
+	 * {@link org.openmrs.person.PersonMergeLog#getPersonMergeLogData}, sets the mergedData String,
+	 * and the creator and date if null. It then saves the <code>PersonMergeLog</code> object to the
+	 * model.
 	 * 
 	 * @param personMergeLog the <code>PersonMergeLog</code> object to save.
 	 * @return the persisted <code>PersonMergeLog</code> object
