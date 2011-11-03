@@ -936,7 +936,7 @@ public final class OpenmrsConstants {
 	 * Global property name for optional configuration of the maximum number of encounters to display
 	 * on the encounter tab of the patient dashboard
 	 */
-	public static final String GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW = "dashboard.maximumNumberOfEncountersToShow";
+	public static final String GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW = "dashboard.encounters.maximumNumberToShow";
 	
 	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
