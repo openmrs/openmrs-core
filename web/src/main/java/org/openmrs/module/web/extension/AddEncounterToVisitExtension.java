@@ -15,12 +15,12 @@ package org.openmrs.module.web.extension;
 
 import java.util.Set;
 
-import org.openmrs.Form;
 import org.openmrs.module.Extension;
+import org.openmrs.module.web.extension.provider.Link;
 
 /**
- * Indicates that a module can add an encounter to the specific visit if the addToVisitId parameter is
- * given.
+ * Indicates that a module can add an encounter to a visit. It must accept <b>patientId</b> and
+ * <b>visitId</b> URL parameters. It may accept an optional <b>returnUrl</b> parameter.
  */
 public abstract class AddEncounterToVisitExtension extends Extension {
 	
@@ -35,5 +35,5 @@ public abstract class AddEncounterToVisitExtension extends Extension {
 	/**
 	 * @return the forms for which this module can add an encounter to visit
 	 */
-	public abstract Set<Form> getFormsModuleCanAddEncounterToVisit();
+	public abstract Set<Link> getAddEncounterToVisitLinks();
 }

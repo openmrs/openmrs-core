@@ -13,20 +13,15 @@
  */
 package org.openmrs.module.web.extension;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.openmrs.Form;
-import org.openmrs.Person;
 import org.openmrs.module.Extension;
 import org.openmrs.module.ModuleFactory;
-import org.openmrs.module.web.FormEntryContext;
+import org.openmrs.module.web.extension.provider.Link;
 
 /**
  * Facilitates processing extensions.
@@ -35,11 +30,13 @@ public class ExtensionUtil {
 	
 	/**
 	 * Searches for all modules implementing {@link AddEncounterToVisitExtension} and returns the
-	 * set of supported forms.
+	 * set of links.
 	 * 
-	 * @return the set of Forms
+	 * @return the set of Links
+	 * @should return empty set if there is no AddEncounterToVisitExtension
+	 * @should return links if there are AddEncounterToVisitExtensions
 	 */
-	public Set<Form> getFormsModulesCanAddEncounterToVisit() {
+	public Set<Link> getAllAddEncounterToVisitLinks() {
 		List<Extension> extensions = ModuleFactory
 		        .getExtensions("org.openmrs.module.web.extension.AddEncounterToVisitExtension");
 		
@@ -47,52 +44,23 @@ public class ExtensionUtil {
 			return Collections.emptySet();
 		}
 		
-		Set<Form> forms = new TreeSet<Form>(new Comparator<Form>() {
+		Set<Link> links = new TreeSet<Link>(new Comparator<Link>() {
 			
 			@Override
-			public int compare(Form o1, Form o2) {
-				return o1.getName().compareTo(o2.getName());
+			public int compare(Link o1, Link o2) {
+				return o1.getLabel().compareTo(o2.getLabel());
 			}
 		});
 		
 		for (Extension extension : extensions) {
 			AddEncounterToVisitExtension ext = (AddEncounterToVisitExtension) extension;
 			
-			Set<Form> tmpForms = ext.getFormsModuleCanAddEncounterToVisit();
-			if (tmpForms != null) {
-				forms.addAll(tmpForms);
+			Set<Link> tmpLinks = ext.getAddEncounterToVisitLinks();
+			if (tmpLinks != null) {
+				links.addAll(tmpLinks);
 			}
 		}
 		
-		return forms;
-	}
-	
-	/**
-	 * Matches Forms with their respective FormEntryHandlers.
-	 * 
-	 * @param person
-	 * @return the map of FormEntryHandlers keyed by Forms
-	 */
-	public Map<Form, FormEntryHandler> getFormsModuleCanEnter(Person person) {
-		List<Extension> handlers = ModuleFactory.getExtensions("org.openmrs.module.web.extension.FormEntryHandler");
-		
-		if (handlers == null) {
-			return Collections.emptyMap();
-		}
-		
-		Map<Form, FormEntryHandler> formToEntry = new HashMap<Form, FormEntryHandler>();
-		
-		for (Extension ext : handlers) {
-			FormEntryHandler handler = (FormEntryHandler) ext;
-			Collection<Form> toEnter = handler.getFormsModuleCanEnter(new FormEntryContext(person));
-			
-			if (toEnter != null) {
-				for (Form form : toEnter) {
-					formToEntry.put(form, handler);
-				}
-			}
-		}
-		
-		return formToEntry;
+		return links;
 	}
 }
