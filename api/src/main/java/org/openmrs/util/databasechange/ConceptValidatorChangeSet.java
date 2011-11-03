@@ -248,7 +248,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					logMessages.add("The name '" + entry.getKey() + "' was found multiple times for the concept with id '"
 					        + conceptId + "' in locale '" + conceptNameLocale.getDisplayName() + "'");
 					
-					ConceptName chosenName = null;
+					/*ConceptName chosenName = null;
 					List<ConceptName> voidedNames = new ArrayList<ConceptName>();
 					for (ConceptName duplicate : entry.getValue()) {
 						//The first name found should be retained and void the rest of the duplicates
@@ -262,7 +262,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 							        + " has been voided because it is a duplicate name for concept with id " + conceptId
 							        + " in locale '" + conceptNameLocale.getDisplayName() + "'");
 						}
-					}
+					}*/
 				}
 				
 				//if this locale has no preferred name found, set one
