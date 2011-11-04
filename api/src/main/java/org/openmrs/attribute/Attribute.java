@@ -25,26 +25,26 @@ import org.openmrs.customdatatype.SingleCustomValue;
  * table in a less generic system. 
  * For example Visit has VisitAttributes (which implements Attribute<Visit>) that are defined by
  * VisitAttributeTypes.
- * @param <D> the AttributeType for this Attribute
- * @param <OwningType> the type this attribute can belong to
+ * @param <AT> the AttributeType for this Attribute
+ * @param <OT> the type this attribute can belong to
  * @see AttributeType
  * @see Customizable
  * @see AttributeHandler
  * @since 1.9
  */
-public interface Attribute<AT extends AttributeType, OwningType extends Customizable<?>> extends OpenmrsData, SingleCustomValue<AT> {
+public interface Attribute<AT extends AttributeType, OT extends Customizable<?>> extends OpenmrsData, SingleCustomValue<AT> {
 	
 	/**
 	 * @return the owner that this attribute belongs to
 	 */
-	OwningType getOwner();
+	OT getOwner();
 	
 	/**
 	 * Sets the owner of this attribute
 	 * 
 	 * @param owner
 	 */
-	void setOwner(OwningType owner);
+	void setOwner(OT owner);
 	
 	/**
 	 * @return the AttributeType that controls this attribute's behavior
