@@ -968,29 +968,30 @@ public final class OpenmrsConstants {
 		        "Indicates whether or not the 'health center' attribute is shown when viewing/searching for patients",
 		        BooleanDatatype.class, null));
 		props.add(new GlobalProperty("use_patient_attribute.mothersName", "false",
-		        "Indicates whether or not mother's name is able to be added/viewed for a patient", BooleanDatatype.class, null));
+		        "Indicates whether or not mother's name is able to be added/viewed for a patient", BooleanDatatype.class,
+		        null));
 		
 		props.add(new GlobalProperty("new_patient_form.showRelationships", "false",
-		        "true/false whether or not to show the relationship editor on the addPatient.htm screen", BooleanDatatype.class,
-		        null));
+		        "true/false whether or not to show the relationship editor on the addPatient.htm screen",
+		        BooleanDatatype.class, null));
 		
 		props.add(new GlobalProperty("dashboard.overview.showConcepts", "",
 		        "Comma delimited list of concepts ids to show on the patient dashboard overview tab"));
-		props.add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true",
-		        "true/false whether or not to show empty fields on the 'View Encounter' window", BooleanDatatype.class, null));
+		props
+		        .add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true",
+		                "true/false whether or not to show empty fields on the 'View Encounter' window",
+		                BooleanDatatype.class, null));
 		props
 		        .add(new GlobalProperty(
 		                "dashboard.encounters.usePages",
 		                "smart",
 		                "true/false/smart on how to show the pages on the 'View Encounter' window.  'smart' means that if > 50% of the fields have page numbers defined, show data in pages"));
-		props
-		        .add(new GlobalProperty("dashboard.encounters.showViewLink", "true",
-		                "true/false whether or not to show the 'View Encounter' link on the patient dashboard",
-		                BooleanDatatype.class, null));
-		props
-		        .add(new GlobalProperty("dashboard.encounters.showEditLink", "true",
-		                "true/false whether or not to show the 'Edit Encounter' link on the patient dashboard",
-		                BooleanDatatype.class, null));
+		props.add(new GlobalProperty("dashboard.encounters.showViewLink", "true",
+		        "true/false whether or not to show the 'View Encounter' link on the patient dashboard",
+		        BooleanDatatype.class, null));
+		props.add(new GlobalProperty("dashboard.encounters.showEditLink", "true",
+		        "true/false whether or not to show the 'Edit Encounter' link on the patient dashboard",
+		        BooleanDatatype.class, null));
 		props
 		        .add(new GlobalProperty(
 		                "dashboard.header.programs_to_show",
@@ -1261,8 +1262,10 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_NON_DIGIT, "true",
 		        "Configure whether passwords must contain at least one non-digit", BooleanDatatype.class, null));
 		
-		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",
-		        "Configure whether passwords must contain both upper and lower case characters", BooleanDatatype.class, null));
+		props
+		        .add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",
+		                "Configure whether passwords must contain both upper and lower case characters",
+		                BooleanDatatype.class, null));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
 		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",
