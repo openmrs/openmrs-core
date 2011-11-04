@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
  * Handler for the boolean custom datatype
  */
 @Component
-public class BooleanFieldGenDatatypeHandler implements FieldGenDatatypeHandler<org.openmrs.customdatatype.datatype.Boolean, java.lang.Boolean> {
+public class BooleanFieldGenDatatypeHandler implements FieldGenDatatypeHandler<org.openmrs.customdatatype.datatype.BooleanDatatype, java.lang.Boolean> {
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#setHandlerConfiguration(java.lang.String)
@@ -42,7 +42,7 @@ public class BooleanFieldGenDatatypeHandler implements FieldGenDatatypeHandler<o
 	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#render(org.openmrs.customdatatype.CustomDatatype, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String render(org.openmrs.customdatatype.datatype.Boolean datatype, String referenceString, String view) {
+	public String render(org.openmrs.customdatatype.datatype.BooleanDatatype datatype, String referenceString, String view) {
 		return referenceString;
 	}
 	
@@ -71,7 +71,7 @@ public class BooleanFieldGenDatatypeHandler implements FieldGenDatatypeHandler<o
 	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getValue(org.openmrs.customdatatype.CustomDatatype, javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Boolean getValue(org.openmrs.customdatatype.datatype.Boolean datatype, HttpServletRequest request,
+	public Boolean getValue(org.openmrs.customdatatype.datatype.BooleanDatatype datatype, HttpServletRequest request,
 	        String formFieldName) throws InvalidCustomValueException {
 		String result = request.getParameter(formFieldName);
 		if (StringUtils.isBlank(result))

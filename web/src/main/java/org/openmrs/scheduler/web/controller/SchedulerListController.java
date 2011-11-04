@@ -125,10 +125,11 @@ public class SchedulerListController extends SimpleFormController {
 				catch (APIException e) {
 					log.warn("Error processing schedulerlistcontroller task", e);
 					error.append(msa.getMessage("Scheduler.taskList.error", args));
-				} catch (SchedulerException ex) {
-                    log.error("Error processing schedulerlistcontroller task", ex);
-                    error.append(msa.getMessage("Scheduler.taskList.error", args));
-                }
+				}
+				catch (SchedulerException ex) {
+					log.error("Error processing schedulerlistcontroller task", ex);
+					error.append(msa.getMessage("Scheduler.taskList.error", args));
+				}
 			}
 		}
 		

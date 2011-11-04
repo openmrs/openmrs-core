@@ -37,7 +37,7 @@ import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.context.Context;
-import org.openmrs.customdatatype.datatype.FreeText;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -350,7 +350,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		int size = service.getAllProviderAttributeTypes().size();
 		ProviderAttributeType providerAttributeType = new ProviderAttributeType();
 		providerAttributeType.setName("new");
-		providerAttributeType.setDatatypeClassname(FreeText.class.getName());
+		providerAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
 		providerAttributeType = service.saveProviderAttributeType(providerAttributeType);
 		assertEquals(size + 1, service.getAllProviderAttributeTypes().size());
 		assertNotNull(providerAttributeType.getId());

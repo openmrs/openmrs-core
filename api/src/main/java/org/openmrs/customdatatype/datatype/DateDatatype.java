@@ -14,6 +14,7 @@
 package org.openmrs.customdatatype.datatype;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.customdatatype.CustomDatatype;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Component;
  * @since 1.9
  */
 @Component
-public class Date implements CustomDatatype<java.util.Date> {
+public class DateDatatype implements CustomDatatype<Date> {
 	
 	final static String dateFormat = "yyyy-MM-dd";
 	
@@ -42,7 +43,7 @@ public class Date implements CustomDatatype<java.util.Date> {
 	 * @should convert a date into a ymd string representation
 	 */
 	@Override
-	public String toReferenceString(java.util.Date typedValue) throws InvalidCustomValueException {
+	public String toReferenceString(Date typedValue) throws InvalidCustomValueException {
 		return new SimpleDateFormat(dateFormat).format(typedValue);
 	}
 	
@@ -51,7 +52,7 @@ public class Date implements CustomDatatype<java.util.Date> {
 	 * @should reconstruct a date serialized by this handler
 	 */
 	@Override
-	public java.util.Date fromReferenceString(String persistedValue) throws InvalidCustomValueException {
+	public Date fromReferenceString(String persistedValue) throws InvalidCustomValueException {
 		if (StringUtils.isBlank(persistedValue))
 			return null;
 		try {
@@ -82,7 +83,7 @@ public class Date implements CustomDatatype<java.util.Date> {
 	 * @see org.openmrs.customdatatype.CustomDatatype#validate(java.lang.Object)
 	 */
 	@Override
-	public void validate(java.util.Date typedValue) throws InvalidCustomValueException {
+	public void validate(Date typedValue) throws InvalidCustomValueException {
 		// pass
 	}
 	

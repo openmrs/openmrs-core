@@ -13,50 +13,54 @@
  */
 package org.openmrs.customdatatype.datatype;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.regex.Pattern;
+
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.springframework.stereotype.Component;
 
 /**
- * Datatype for boolean, represented by java.lang.Boolean.
+ * Datatype for a java.lang.String that is validated against a regular expression
  * @since 1.9
  */
 @Component
-public class Boolean implements CustomDatatype<java.lang.Boolean> {
+public class RegexValidatedTextDatatype implements CustomDatatype<String> {
+	
+	private Pattern pattern;
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#setConfiguration(java.lang.String)
 	 */
 	@Override
-	public void setConfiguration(String config) {
-		// not used
+	public void setConfiguration(String regex) {
+		pattern = Pattern.compile(regex);
 	}
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#toReferenceString(java.lang.Object)
+	 * @should fail if the string does not match the regex
 	 */
 	@Override
-	public String toReferenceString(java.lang.Boolean typedValue) throws InvalidCustomValueException {
-		return typedValue.toString();
+	public String toReferenceString(String typedValue) throws InvalidCustomValueException {
+		validate(typedValue);
+		return typedValue;
 	}
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#fromReferenceString(java.lang.String)
 	 */
 	@Override
-	public java.lang.Boolean fromReferenceString(String persistedValue) throws InvalidCustomValueException {
-		if (StringUtils.isEmpty(persistedValue))
-			return null;
-		return java.lang.Boolean.valueOf(persistedValue);
+	public String fromReferenceString(String persistedValue) throws InvalidCustomValueException {
+		validate(persistedValue);
+		return persistedValue;
 	}
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#render(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String render(String referenceString, String view) {
-		return referenceString;
+	public String render(String persistedValue, String view) {
+		return persistedValue;
 	}
 	
 	/**
@@ -64,17 +68,18 @@ public class Boolean implements CustomDatatype<java.lang.Boolean> {
 	 */
 	@Override
 	public void validateReferenceString(String persistedValue) throws InvalidCustomValueException {
-		if (!(persistedValue == null || "".equals(persistedValue) || "true".equals(persistedValue) || "false"
-		        .equals(persistedValue)))
-			throw new InvalidCustomValueException("Must be \"true\" or \"false\"");
+		validate(persistedValue);
 	}
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#validate(java.lang.Object)
+	 * @should accept a string that matches the regex
+	 * @should fail if the string does not match the regex
 	 */
 	@Override
-	public void validate(java.lang.Boolean typedValue) throws InvalidCustomValueException {
-		// any java.lang.Boolean is legal
+	public void validate(String typedValue) throws InvalidCustomValueException {
+		if (!pattern.matcher(typedValue).matches())
+			throw new InvalidCustomValueException("Doesn't match regex");
 	}
 	
 }

@@ -66,7 +66,7 @@ public @interface Handler {
 	/**
 	 * Provides a means for specifying the relative order of this Handler against another Handler of
 	 * the same type. For example, if two handlers are registered as capable of handling a
-	 * {@link Date} class, and one handler had an order of 100 and the other had an order of 50, the
+	 * {@link DateDatatype} class, and one handler had an order of 100 and the other had an order of 50, the
 	 * consuming code could utilize this information to determine which handler is preferred. By
 	 * convention, the handler with the lowest order generally gains precedence.
 	 * 
