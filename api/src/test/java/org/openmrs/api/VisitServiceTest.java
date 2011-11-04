@@ -37,7 +37,7 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
-import org.openmrs.customdatatype.datatype.FreeText;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -641,7 +641,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(3, service.getAllVisitAttributeTypes().size());
 		VisitAttributeType vat = new VisitAttributeType();
 		vat.setName("Another one");
-		vat.setDatatypeClassname(FreeText.class.getName());
+		vat.setDatatypeClassname(FreeTextDatatype.class.getName());
 		service.saveVisitAttributeType(vat);
 		Assert.assertNotNull(vat.getId());
 		Assert.assertEquals(4, service.getAllVisitAttributeTypes().size());

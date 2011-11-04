@@ -18,11 +18,11 @@ import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.springframework.stereotype.Component;
 
 /**
- * Free-text datatype, represented by a plain String.
+ * Free-text datatype, represented by a plain java.lang.String.
  * @since 1.9
  */
 @Component
-public class FreeText implements CustomDatatype<String> {
+public class FreeTextDatatype implements CustomDatatype<String> {
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#toReferenceString(java.lang.Object)

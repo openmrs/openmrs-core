@@ -8,15 +8,15 @@ import org.junit.Test;
 
 public class DateTest {
 	
-	Date datatype;
+	DateDatatype datatype;
 	
 	@Before
 	public void before() {
-		datatype = new Date();
+		datatype = new DateDatatype();
 	}
 	
 	/**
-	 * @see Date#fromReferenceString(String)
+	 * @see DateDatatype#fromReferenceString(String)
 	 * @verifies reconstruct a date serialized by this handler
 	 */
 	@Test
@@ -26,7 +26,7 @@ public class DateTest {
 	}
 	
 	/**
-	 * @see Date#toReferenceString(Date)
+	 * @see DateDatatype#toReferenceString(DateDatatype)
 	 * @verifies convert a date into a ymd string representation
 	 */
 	@Test

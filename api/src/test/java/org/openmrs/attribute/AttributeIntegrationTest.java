@@ -18,7 +18,7 @@ public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 	public void shouldTestAttributeHandler() throws Exception {
 		Visit visit = new Visit();
 		VisitAttributeType paymentDateAttrType = new VisitAttributeType();
-		paymentDateAttrType.setDatatypeClassname(org.openmrs.customdatatype.datatype.Date.class.getName());
+		paymentDateAttrType.setDatatypeClassname(org.openmrs.customdatatype.datatype.DateDatatype.class.getName());
 		
 		VisitAttribute legalDate = new VisitAttribute();
 		legalDate.setAttributeType(paymentDateAttrType);
