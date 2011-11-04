@@ -19,6 +19,7 @@ import org.openmrs.attribute.BaseAttribute;
 /**
  * A value for a user-defined {@link VisitAttributeType} that is stored on a {@link Visit}.
  * @see Attribute
+ * @since 1.9
  */
 public class VisitAttribute extends BaseAttribute<VisitAttributeType, Visit> implements Attribute<VisitAttributeType, Visit> {
 	

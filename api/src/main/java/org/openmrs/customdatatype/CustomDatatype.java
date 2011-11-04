@@ -42,12 +42,12 @@ public interface CustomDatatype<T> {
 	
 	/**
 	 * Converts a reference string to its typed value. This may be expensive.
-	 * @param persistedValue
+	 * @param referenceString
 	 * @return converts a previously-serialized value back to its original type
 	 * @throws InvalidCustomValueException if the persisted value is illegal (perhaps because datatype configuration
 	 * was changed since this value was persisted)
 	 */
-	T fromReferenceString(String persistedValue) throws InvalidCustomValueException;
+	T fromReferenceString(String referenceString) throws InvalidCustomValueException;
 	
 	/**
 	 * TODO where are well-known view constants?
@@ -59,11 +59,11 @@ public interface CustomDatatype<T> {
 	
 	/**
 	 * Validates the given persisted value to see if it is a legal value for the given handler. (Implementations may
-	 * implement this simply as validate(fromPersistentString(persistedValue)).
+	 * implement this simply as validate(fromReferenceString(referenceString)).
 	 * 
-	 * @param typedValue
+	 * @param referenceString
 	 */
-	void validateReferenceString(String persistedValue) throws InvalidCustomValueException;
+	void validateReferenceString(String referenceString) throws InvalidCustomValueException;
 	
 	/**
 	 * Validates the given value to see if it is a legal value for the given handler. (For example the RegexValidatedText
