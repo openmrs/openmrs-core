@@ -64,7 +64,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes(org.openmrs.customdatatype.CustomValueDescriptor)
 	 */
 	@Override
-	public java.util.List<A> getActiveAttributes(CustomValueDescriptor ofType) {
+	public List<A> getActiveAttributes(CustomValueDescriptor ofType) {
 		List<A> ret = new ArrayList<A>();
 		if (getAttributes() != null)
 			for (A attr : getAttributes())

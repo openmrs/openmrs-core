@@ -29,7 +29,7 @@ public class FreeText implements CustomDatatype<String> {
 	 */
 	@Override
 	public String toReferenceString(String typedValue) throws InvalidCustomValueException {
-		return (String) typedValue;
+		return typedValue;
 	}
 	
 	/**
