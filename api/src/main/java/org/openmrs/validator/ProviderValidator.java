@@ -120,8 +120,8 @@ public class ProviderValidator implements Validator {
 					if (numFound < providerAttributeType.getMinOccurs()) {
 						// report an error
 						if (providerAttributeType.getMinOccurs() == 1)
-							errors.rejectValue("activeAttributes", "error.required",
-							    new Object[] { providerAttributeType.getName() }, null);
+							errors.rejectValue("activeAttributes", "error.required", new Object[] { providerAttributeType
+							        .getName() }, null);
 						else
 							errors.rejectValue("activeAttributes", "attribute.error.minOccurs", new Object[] {
 							        providerAttributeType.getName(), providerAttributeType.getMinOccurs() }, null);
