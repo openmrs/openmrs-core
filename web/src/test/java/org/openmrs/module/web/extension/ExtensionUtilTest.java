@@ -35,10 +35,8 @@ public class ExtensionUtilTest {
 		mockStatic(ModuleFactory.class);
 		when(ModuleFactory.getExtensions("org.openmrs.module.web.extension.AddEncounterToVisitExtension")).thenReturn(null);
 		
-		ExtensionUtil util = new ExtensionUtil();
-		
 		//when
-		Set<Link> links = util.getAllAddEncounterToVisitLinks();
+		Set<Link> links = ExtensionUtil.getAllAddEncounterToVisitLinks();
 		
 		//then
 		assertNotNull(links);
@@ -78,10 +76,8 @@ public class ExtensionUtilTest {
 		when(ModuleFactory.getExtensions("org.openmrs.module.web.extension.AddEncounterToVisitExtension")).thenReturn(
 		    extensions);
 		
-		ExtensionUtil util = new ExtensionUtil();
-		
 		//when
-		Set<Link> allAddEncounterToVisitLinks = util.getAllAddEncounterToVisitLinks();
+		Set<Link> allAddEncounterToVisitLinks = ExtensionUtil.getAllAddEncounterToVisitLinks();
 		
 		//then
 		assertTrue(allAddEncounterToVisitLinks.contains(link1));

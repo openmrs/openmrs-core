@@ -28,6 +28,10 @@ import org.openmrs.module.web.extension.provider.Link;
  */
 public class ExtensionUtil {
 	
+	private ExtensionUtil() {
+		
+	}
+	
 	/**
 	 * Searches for all modules implementing {@link AddEncounterToVisitExtension} and returns the
 	 * set of links.
@@ -36,7 +40,7 @@ public class ExtensionUtil {
 	 * @should return empty set if there is no AddEncounterToVisitExtension
 	 * @should return links if there are AddEncounterToVisitExtensions
 	 */
-	public Set<Link> getAllAddEncounterToVisitLinks() {
+	public static Set<Link> getAllAddEncounterToVisitLinks() {
 		List<Extension> extensions = ModuleFactory
 		        .getExtensions("org.openmrs.module.web.extension.AddEncounterToVisitExtension");
 		
