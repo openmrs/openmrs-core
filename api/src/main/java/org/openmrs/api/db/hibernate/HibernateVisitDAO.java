@@ -167,7 +167,7 @@ public class HibernateVisitDAO implements VisitDAO {
 		// active visits have null end date, so it doesn't make sense to search against it if include inactive is set to false
 		if (!includeInactive) {
 			// the user only asked for currently active visits, so stop time needs to be null or after right now
-			criteria.add(Restrictions.or(Restrictions.isNull("stopDatetime"), Restrictions.ge("stopDatetime", new Date())));
+			criteria.add(Restrictions.or(Restrictions.isNull("stopDatetime"), Restrictions.gt("stopDatetime", new Date())));
 		} else {
 			if (minEndDatetime != null)
 				criteria.add(Restrictions.ge("stopDatetime", minEndDatetime));

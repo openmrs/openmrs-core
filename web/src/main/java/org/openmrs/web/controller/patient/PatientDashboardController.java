@@ -129,9 +129,7 @@ public class PatientDashboardController {
 		map.put("emptyAddress", new PersonAddress());
 		map.put("causeOfDeathOther", causeOfDeathOther);
 		
-		ExtensionUtil extensionUtil = new ExtensionUtil();
-		
-		Set<Link> links = extensionUtil.getAllAddEncounterToVisitLinks();
+		Set<Link> links = ExtensionUtil.getAllAddEncounterToVisitLinks();
 		map.put("allAddEncounterToVisitLinks", links);
 		
 		return "patientDashboardForm";

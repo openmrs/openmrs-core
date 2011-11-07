@@ -133,7 +133,7 @@ public class SchedulerListController extends SimpleFormController {
 			}
 		} else {
 			error.append(msa.getMessage("Scheduler.taskList.requireTask"));
- 		}
+		}
 		
 		view = getSuccessView();
 		
