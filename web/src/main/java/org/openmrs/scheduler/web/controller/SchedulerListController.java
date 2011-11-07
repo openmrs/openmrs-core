@@ -131,7 +131,9 @@ public class SchedulerListController extends SimpleFormController {
 					error.append(msa.getMessage("Scheduler.taskList.error", args));
 				}
 			}
-		}
+		} else {
+			error.append(msa.getMessage("Scheduler.taskList.requireTask"));
+ 		}
 		
 		view = getSuccessView();
 		
