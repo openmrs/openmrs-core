@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -99,5 +100,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order = Context.getOrderService().getOrderByUuid(uuid);
 		
 		Assert.assertEquals(discontinuedReasonNonCoded, order.getDiscontinuedReasonNonCoded());
+	}
+
+	@Test
+	public void voidDrugSet_shouldNotVoidThePatient() throws Exception {
+		Patient p = Context.getPatientService().getPatient(2);
+		Assert.assertFalse(p.isVoided());
+		Context.getOrderService().voidDrugSet(p, "1", "Reason", OrderService.SHOW_ALL);
+		Assert.assertFalse(p.isVoided());
 	}
 }
