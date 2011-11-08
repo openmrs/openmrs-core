@@ -54,7 +54,7 @@ public class SqlDiffFileParser {
 		if (module == null)
 			throw new ModuleException("Module cannot be null");
 		
-		SortedMap<String, String> map = new TreeMap<String, String>();
+		SortedMap<String, String> map = new TreeMap<String, String>(new VersionComparator());
 		
 		InputStream diffStream = null;
 		
