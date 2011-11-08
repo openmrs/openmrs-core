@@ -101,7 +101,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	@SuppressWarnings("unchecked")
 	public void before(Method method, Object[] args, Object target) throws Throwable {
 		String methodName = method.getName();
-
+		
 		// skip out early if there are no arguments
 		if (args == null || args.length == 0)
 			return;
@@ -147,9 +147,9 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			}
 			
 		} else {
-			// fail early if the method name is not like retirePatient or voidConcept when dealing 
+			// fail early if the method name is not like retirePatient or retireConcept when dealing 
 			// with Patients or Concepts as the first argument
-			if (!method.getName().endsWith(mainArgument.getClass().getSimpleName()))
+			if (!methodNameEndsWithClassName(method, mainArgument.getClass()))
 				return;
 			
 			if (methodName.startsWith("void")) {
@@ -171,10 +171,36 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			} else if (methodName.startsWith("unretire")) {
 				Retireable retirable = (Retireable) args[0];
 				Date originalDateRetired = retirable.getDateRetired();
-				recursivelyHandle(UnretireHandler.class, retirable, Context.getAuthenticatedUser(), originalDateRetired, null,
-				    null);
+				recursivelyHandle(UnretireHandler.class, retirable, Context.getAuthenticatedUser(), originalDateRetired,
+				    null, null);
 			}
 		}
+	}
+	
+	/**
+	 * Convenience method to change the given method to make sure it ends with
+	 * the given class name. <br/>
+	 * This will recurse to the super class to check that as well.
+	 * 
+	 * @param method
+	 *            the method name (like savePatient, voidEncounter,
+	 *            retireConcept)
+	 * @param mainArgumentClass
+	 *            class to compare
+	 * @return true if method's name ends with the mainArgumentClasses simple
+	 *         name
+	 */
+	private boolean methodNameEndsWithClassName(Method method, Class mainArgumentClass) {
+		if (method.getName().endsWith(mainArgumentClass.getSimpleName()))
+			return true;
+		else {
+			mainArgumentClass = mainArgumentClass.getSuperclass();
+			// stop recursing if no super class
+			if (mainArgumentClass != null)
+				return methodNameEndsWithClassName(method, mainArgumentClass);
+		}
+		
+		return false;
 	}
 	
 	/**
