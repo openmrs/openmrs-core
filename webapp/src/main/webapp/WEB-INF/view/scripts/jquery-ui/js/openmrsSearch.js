@@ -823,6 +823,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		
 		_doPageUp: function() {
 			this._table.fnPageChange('previous');
+			if(this._isHighlightedRowOnVisiblePage())
+				return;
 			//update the highlight to go to last row on previous page
 			this._highlightRowOnPageFlip();
 		},
@@ -850,11 +852,17 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		
 		_doKeyHome: function() {
 			this._table.fnPageChange('first');
+			if(this._isHighlightedRowOnVisiblePage())
+				return;
+			
 			this._highlightRowOnPageFlip();
 		},
 		
 		_doKeyEnd: function() {
 			this._table.fnPageChange('last');
+			if(this._isHighlightedRowOnVisiblePage())
+				return;
+			
 			this._highlightRowOnPageFlip();
 		},
 		
