@@ -244,4 +244,9 @@ public class InitializationWizardModel {
 	 * can access from the review page
 	 */
 	public static final String TEST_DATABASE_NAME = "openmrs_test";
+	
+	/**
+	 * The url to the production system
+	 */
+	public String productionUrl = "";
 }

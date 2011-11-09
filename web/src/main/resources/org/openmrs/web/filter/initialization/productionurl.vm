@@ -1,0 +1,32 @@
+#parse($headerTemplate)
+
+<form method="post" autocomplete="off">
+			
+	<div class="content" style="text-align:center">
+		<table align="center" cellspacing="5" cellpadding="9">
+			<tr>
+				<th valign="top">$l10n.get("install.testing.productionUrl"):</th>
+				<td>
+					<input type="text" name="productionUrl" size="60" value="${productionUrl}"/><br/>
+					<i><small>$l10n.get("install.testing.productionUrl.example")</small></i>
+				</td>
+			</tr>
+			<tr><td colspan="2" height="40px"></td></tr>
+            <tr>
+                <td colspan="2" align="center">
+                	<input type="image" src="images/back_button.png" value="Back" name="backer" style="margin-right: 20px"/>
+                	<input type="image" src="images/forward_button.png" name="continue"/>
+                </td>
+            </tr>
+		</table>
+	</div>
+	
+	<input type="hidden" name="page" value="productionurl.vm" /> 
+	
+</form>
+
+<script type="text/javascript">
+	document.forms[0].elements[0].focus();
+</script>
+
+#parse($footerTemplate)
