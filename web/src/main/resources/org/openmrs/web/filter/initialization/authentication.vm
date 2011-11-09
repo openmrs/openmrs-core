@@ -1,0 +1,34 @@
+#parse($headerTemplate)
+<form method="post" autocomplete="off">
+	
+	<div class="content" style="text-align:center">
+		<span><b>$l10n.get("install.testing.enterUserNameAndPassword")</b></span>
+		<br/><br/>
+		<table align="center" cellspacing="5" cellpadding="9">
+			<tr>
+                <td>$l10n.get("User.username"):</td>
+                <td><input type="text" name="username"/></td>
+            </tr>
+            <tr>
+                <td>$l10n.get("User.password"):</td>
+                <td><input type="password" name="password"/></td>
+            </tr>
+            <tr><td colspan="2" height="40px"></td></tr>
+            <tr>
+                <td colspan="2" align="center">
+                	<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+                	<input type="image" src="images/forward_button.png" name="continue"/>
+                </td>
+            </tr>
+		</table>
+	</div>
+	
+	<input type="hidden" name="page" value="authentication.vm" /> 
+	
+</form>
+
+<script type="text/javascript">
+	document.forms[0].elements[0].focus();
+</script>
+
+#parse($footerTemplate)

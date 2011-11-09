@@ -249,4 +249,14 @@ public class InitializationWizardModel {
 	 * The url to the production system
 	 */
 	public String productionUrl = "";
+	
+	/**
+	 * The username to use to authenticate to the production system
+	 */
+	public String productionUsername = "";
+	
+	/**
+	 * The password to use to authenticate to the production system
+	 */
+	public String productionPassword = "";
 }
