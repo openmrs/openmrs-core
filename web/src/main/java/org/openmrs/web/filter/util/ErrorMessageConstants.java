@@ -59,6 +59,8 @@ public class ErrorMessageConstants {
 	
 	public static final String ERROR_DB_CONNECTION_FAIL = "install.error.unableConnect";
 	
+	public static final String ERROR_DB_IMPORT_TEST_DATA = "install.error.unableImportTestData";
+	
 	public static final String ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA = "install.error.unableCreateTablesOrAddDemoData";
 	
 	public static final String ERROR_DB_UPDATE_TO_LATEST = "install.error.unableUpdateToLatest";

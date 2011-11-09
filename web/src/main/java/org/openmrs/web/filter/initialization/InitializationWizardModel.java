@@ -149,6 +149,11 @@ public class InitializationWizardModel {
 	public Boolean createDatabaseUser = Boolean.FALSE;
 	
 	/**
+	 * Enables importing test data from the production server
+	 */
+	public Boolean importTestData = Boolean.FALSE;
+	
+	/**
 	 * Does the user want to add the demo data to the database?
 	 */
 	public Boolean addDemoData = Boolean.FALSE;
