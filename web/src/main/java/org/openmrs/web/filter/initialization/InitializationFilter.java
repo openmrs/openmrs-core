@@ -197,6 +197,11 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	private File testModulesZipFile = null;
 	
+	/**
+	 * The login page when the testing install option is selected
+	 */
+	public static final String TESTING_AUTHENTICATION_PAGE = "authentication.vm";
+	
 	synchronized protected void setInitializationComplete(boolean initializationComplete) {
 		InitializationFilter.initializationComplete = initializationComplete;
 	}
@@ -699,7 +704,7 @@ public class InitializationFilter extends StartupFilter {
 					String testModuleSeTargetResourcePath = wizardModel.productionUrl.endsWith("/") ? settingsPageSuffix
 					        : "/" + settingsPageSuffix;
 					if (TestInstallUtil.testConnection(wizardModel.productionUrl.concat(testModuleSeTargetResourcePath))) {
-						page = WIZARD_COMPLETE;
+						page = TESTING_AUTHENTICATION_PAGE;
 					} else {
 						errors.put("install.testing.noTestingModule", null);
 					}
@@ -707,6 +712,22 @@ public class InitializationFilter extends StartupFilter {
 					errors.put("install.testing.invalidProductionUrl", new Object[] { wizardModel.productionUrl });
 				}
 			}
+			
+			renderTemplate(page, referenceMap, httpResponse);
+			return;
+		} else if (TESTING_AUTHENTICATION_PAGE.equals(page)) {
+			if ("Back".equals(httpRequest.getParameter("back"))) {
+				renderTemplate(TESTING_PRODUCTION_URL_PAGE, referenceMap, httpResponse);
+				return;
+			}
+			
+			//Authenticate to production server
+			wizardModel.productionUsername = httpRequest.getParameter("username");
+			wizardModel.productionPassword = httpRequest.getParameter("password");
+			checkForEmptyValue(wizardModel.productionUsername, errors, "install.testing.username.required");
+			checkForEmptyValue(wizardModel.productionPassword, errors, "install.testing.password.required");
+			if (errors.isEmpty())
+				page = WIZARD_COMPLETE;
 			
 			renderTemplate(page, referenceMap, httpResponse);
 			return;
