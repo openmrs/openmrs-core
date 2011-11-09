@@ -19,6 +19,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -294,4 +297,30 @@ public class TestInstallUtil {
 		return successfullyAdded;
 	}
 	
+	/**
+	 * Tests the connection to the specified URL
+	 * 
+	 * @param urlString the url to test
+	 * @return true if a connection a established otherwise false
+	 */
+	protected static boolean testConnection(String urlString) {
+		try {
+			HttpURLConnection urlConnect = (HttpURLConnection) new URL(urlString).openConnection();
+			//wait for 15sec
+			urlConnect.setConnectTimeout(15000);
+			urlConnect.setUseCaches(false);
+			//trying to retrieve data from the source. If there
+			//is no connection, this line will fail
+			urlConnect.getContent();
+			return true;
+		}
+		catch (UnknownHostException e) {
+			log.error("Error generated:", e);
+		}
+		catch (IOException e) {
+			log.error("Error generated:", e);
+		}
+		
+		return false;
+	}
 }

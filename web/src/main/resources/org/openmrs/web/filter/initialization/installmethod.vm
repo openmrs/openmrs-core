@@ -39,14 +39,13 @@
                             <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_ADVANCED}" #if( $installMethod == $INSTALL_METHOD_ADVANCED )checked="checked"#end/> $l10n.get("install.advanced")</td>
                             <td class="question">$l10n.get("install.advanced.content")</td>
                         </tr>
-                        #*
                         <tr>
                             <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_TESTING}" #if( $installMethod == $INSTALL_METHOD_TESTING )checked="checked"#end/> $l10n.get("install.testing")</td>
                             <td class="question">
                             	$l10n.get("install.testing.desc")
                             	<br><b>$l10n.get("install.testing.note"):</b>
                             	<ul>
-					<li>$l10n.get("install.testing.list.supportedServer")</li>
+									<li>$l10n.get("install.testing.list.supportedServer")</li>
                             		<li>$l10n.get("install.testing.list.avoidOverriting")</li>
                             		<li>$l10n.get("install.testing.list.ensurePath")</li>
                             		<li>$l10n.get("install.testing.list.ensureConnection")</li>
@@ -54,7 +53,6 @@
                             	</ul>
                             </td>
                         </tr>
-                        *#
                         <tr>
 					        <td colspan="2" align="center">
 							<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>

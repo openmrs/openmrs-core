@@ -118,9 +118,9 @@ public class InitializationFilter extends StartupFilter {
 	private final String DATABASE_SETUP = "databasesetup.vm";
 	
 	/**
-	 * The Test installation setup page.
+	 * The page from where the user specifies the url to a production system
 	 */
-	private final String TESTING_SETUP = "testingsetup.vm";
+	private final String TESTING_PRODUCTION_URL_PAGE = "productionurl.vm";
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
@@ -394,7 +394,7 @@ public class InitializationFilter extends StartupFilter {
 			if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 				page = SIMPLE_SETUP;
 			} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-				page = TESTING_SETUP;
+				page = TESTING_PRODUCTION_URL_PAGE;
 			} else {
 				page = DATABASE_SETUP;
 			}
@@ -633,7 +633,7 @@ public class InitializationFilter extends StartupFilter {
 				if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 					page = SIMPLE_SETUP;
 				} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-					page = TESTING_SETUP;
+					page = TESTING_PRODUCTION_URL_PAGE;
 				} else {
 					page = IMPLEMENTATION_ID_SETUP;
 				}
@@ -649,7 +649,7 @@ public class InitializationFilter extends StartupFilter {
 				loadedDriverString = loadDriver(testDatabaseConnection, null);
 				if (!StringUtils.hasText(loadedDriverString)) {
 					errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
-					renderTemplate(TESTING_SETUP, referenceMap, httpResponse);
+					renderTemplate(TESTING_PRODUCTION_URL_PAGE, referenceMap, httpResponse);
 					return;
 				}
 				wizardModel.tasksToExecute.add(WizardTask.CREATE_TEST_INSTALLATION);
@@ -683,59 +683,35 @@ public class InitializationFilter extends StartupFilter {
 			referenceMap.put("isInstallationStarted", isInstallationStarted());
 			
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
-		} else if (TESTING_SETUP.equals(page)) {
+		} else if (TESTING_PRODUCTION_URL_PAGE.equals(page)) {
 			if ("Back".equals(httpRequest.getParameter("back"))) {
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				return;
 			}
-			
-			//Get the connection credentials to the existing database
-			wizardModel.currentDatabaseHost = httpRequest.getParameter("currentDatabaseIpAddress");
-			checkForEmptyValue(wizardModel.currentDatabaseHost, errors, "Current database Host Name/IP Address");
-			
-			wizardModel.currentDatabasePort = httpRequest.getParameter("currentDatabasePort");
-			checkForEmptyValue(wizardModel.currentDatabasePort, errors, "Current database connection Port");
-			
-			wizardModel.currentDatabaseName = httpRequest.getParameter("currentDatabaseName");
-			checkForEmptyValue(wizardModel.currentDatabaseName, errors, "Current database name");
-			
-			wizardModel.currentDatabaseUsername = httpRequest.getParameter("currentDatabaseUsername");
-			checkForEmptyValue(wizardModel.currentDatabaseUsername, errors, "A database user with ALL privileges");
-			
-			wizardModel.currentDatabasePassword = httpRequest.getParameter("currentDatabasePassword");
-			checkForEmptyValue(wizardModel.currentDatabasePassword, errors, "Password for database user with ALL privileges");
-			
-			//Get the test connection credentials
-			wizardModel.testDatabaseHost = httpRequest.getParameter("test_database_host");
-			checkForEmptyValue(wizardModel.testDatabaseHost, errors, "Test Connection Host Name/IP Address");
-			
-			wizardModel.testDatabasePort = httpRequest.getParameter("test_database_port");
-			checkForEmptyValue(wizardModel.testDatabasePort, errors, "Test Connection Port");
-			
-			wizardModel.testDatabaseUsername = httpRequest.getParameter("test_database_username");
-			checkForEmptyValue(wizardModel.testDatabaseUsername, errors, "Test Database Username");
-			
-			wizardModel.testDatabasePassword = httpRequest.getParameter("test_database_password");
-			checkForEmptyValue(wizardModel.testDatabasePassword, errors, "Test Database Password");
-			
-			if (!errors.isEmpty()) {
-				renderTemplate(page, referenceMap, httpResponse);
-				return;
+			//Check if the production system is running
+			wizardModel.productionUrl = httpRequest.getParameter("productionUrl");
+			checkForEmptyValue(wizardModel.productionUrl, errors, "install.testing.production.url.required");
+			if (errors.isEmpty()) {
+				if (TestInstallUtil.testConnection(wizardModel.productionUrl)) {
+					//Check if the test module is installed by connecting to its setting page
+					//TODO Fix the URL after the settings page and module id are determined
+					String settingsPageSuffix = "module/testingmodulehelper/settings.htm";
+					String testModuleSeTargetResourcePath = wizardModel.productionUrl.endsWith("/") ? settingsPageSuffix
+					        : "/" + settingsPageSuffix;
+					if (TestInstallUtil.testConnection(wizardModel.productionUrl.concat(testModuleSeTargetResourcePath))) {
+						page = WIZARD_COMPLETE;
+					} else {
+						errors.put("install.testing.noTestingModule", null);
+					}
+				} else {
+					errors.put("install.testing.invalidProductionUrl", new Object[] { wizardModel.productionUrl });
+				}
 			}
-			
-			String addModules = httpRequest.getParameter("addModules");
-			if (OpenmrsUtil.nullSafeEquals(addModules, "true"))
-				wizardModel.addModules = true;
-			else {
-				wizardModel.addModules = false;
-				testModulesZipFile = null;
-			}
-			
-			page = WIZARD_COMPLETE;
 			
 			renderTemplate(page, referenceMap, httpResponse);
 			return;
 		} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
+			
 			httpResponse.setContentType("text/html");
 			httpResponse.setHeader("Cache-Control", "no-cache");
 			PrintWriter pw = httpResponse.getWriter();
