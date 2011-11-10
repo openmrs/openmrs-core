@@ -14,8 +14,8 @@
 package org.openmrs.web.filter.util;
 
 /**
- * This class contains all constants that describes names of properties, which are used as keys, when
- * showing localized error messages on pages of install and databtase wizard
+ * This class contains all constants that describes names of properties, which are used as keys,
+ * when showing localized error messages on pages of install and databtase wizard
  */
 public class ErrorMessageConstants {
 	
@@ -92,4 +92,6 @@ public class ErrorMessageConstants {
 	public static final String UPDATE_ERROR_UNABLE = "update.error.unableUpdate";
 	
 	public static final String UPDATE_ERROR_UNABLE_AUTHENTICATE = "update.error.unableAuthenticate";
+	
+	public static final String ERROR_DB_UNABLE_TO_ADD_MODULES = "install.error.failedToAddModules";
 }

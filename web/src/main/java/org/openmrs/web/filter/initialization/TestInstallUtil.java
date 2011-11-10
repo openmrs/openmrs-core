@@ -21,16 +21,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Enumeration;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -242,42 +243,37 @@ public class TestInstallUtil {
 	}
 	
 	/**
-	 * Extracts .omod files from the specified zip file and copies them to the module repository of
-	 * the test application data directory
+	 * Extracts .omod files from the specified {@link ZipInputStream} and copies them to the module
+	 * repository of the test application data directory, the method always clauses the zipInputStream
+	 * before returning
 	 * 
-	 * @param moduleFileItems the uploaded file times for the uploading modules to be added to the
-	 *            testing environment
+	 * @param in the {@link InputStream} for the zip file
 	 */
-	@SuppressWarnings("rawtypes")
-	protected static boolean addZippedTestModules(File testModulesZipFile) {
-		Enumeration entries;
-		ZipFile zipFile = null;
+	protected static boolean addZippedTestModules(ZipInputStream in) {
 		boolean successfullyAdded = true;
-		
+		ZipInputStream zipIn = in;
+		BufferedOutputStream out = null;
 		try {
 			File moduleRepository = OpenmrsUtil
 			        .getDirectoryInApplicationDataDirectory(ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
-			zipFile = new ZipFile(testModulesZipFile);
-			entries = zipFile.entries();
-			while (entries.hasMoreElements()) {
-				ZipEntry entry = (ZipEntry) entries.nextElement();
-				if (entry.isDirectory()) {
-					log.debug("Skipping directory: " + entry.getName());
-					continue;
-				}
-				
+			ZipEntry entry = zipIn.getNextEntry();
+			while (entry != null) {
 				String fileName = entry.getName();
 				if (fileName.endsWith(".omod")) {
 					//Convert the names of .omod files located in nested directories so that they get
 					//created under the module repo directory when being copied
 					if (fileName.contains(System.getProperty("file.separator")))
 						fileName = new File(entry.getName()).getName();
-					
-					log.info("Extracting module file: " + fileName);
-					OpenmrsUtil.copyFile(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(
-					        new File(moduleRepository, fileName))));
-				} else
-					log.debug("Ignoring file that is not a .omod '" + fileName);
+					if (log.isDebugEnabled())
+						log.debug("Extracting module file: " + fileName);
+					out = new BufferedOutputStream(new FileOutputStream(new File(moduleRepository, fileName)));
+					IOUtils.copy(zipIn, out);
+				} else {
+					if (log.isDebugEnabled())
+						log.debug("Ignoring file that is not a .omod '" + fileName);
+				}
+				
+				entry = zipIn.getNextEntry();
 			}
 		}
 		catch (IOException e) {
@@ -285,13 +281,11 @@ public class TestInstallUtil {
 			successfullyAdded = false;
 		}
 		finally {
-			if (zipFile != null) {
-				try {
-					zipFile.close();
-				}
-				catch (IOException e) {
-					log.error("Failed to close zip file: ", e);
-				}
+			if (zipIn != null) {
+				IOUtils.closeQuietly(zipIn);
+			}
+			if (out != null) {
+				IOUtils.closeQuietly(out);
 			}
 		}
 		
@@ -323,5 +317,18 @@ public class TestInstallUtil {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * @param urlString
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	protected static InputStream getResourceInputStream(String urlString) throws MalformedURLException, IOException {
+		HttpURLConnection urlConnection = (HttpURLConnection) new URL(urlString).openConnection();
+		urlConnection.setConnectTimeout(15000);
+		urlConnection.setUseCaches(false);
+		return urlConnection.getInputStream();
 	}
 }

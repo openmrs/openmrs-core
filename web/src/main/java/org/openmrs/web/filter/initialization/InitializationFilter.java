@@ -19,8 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -1272,17 +1270,25 @@ public class InitializationFilter extends StartupFilter {
 								setExecutingTask(WizardTask.IMPORT_TEST_DATA);
 								setCompletedPercentage(0);
 								
-								HttpURLConnection urlConnection = (HttpURLConnection) new URL(wizardModel.productionUrl
-								        + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form").openConnection();
-								urlConnection.setConnectTimeout(5000);
-								urlConnection.setUseCaches(false);
-								importTestDataSet(urlConnection.getInputStream(), connectionUsername, connectionPassword);
+								importTestDataSet(TestInstallUtil.getResourceInputStream(wizardModel.productionUrl
+								        + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form"), connectionUsername,
+								    connectionPassword);
+								
+								setMessage("Importing installed modules...");
+								
+								if (!TestInstallUtil.addZippedTestModules(new ZipInputStream(TestInstallUtil
+								        .getResourceInputStream(wizardModel.productionUrl + RELEASE_TESTING_MODULE_PATH
+								                + "getModules.htm")))) {
+									reportError("install.error.failedToAddModules", DEFAULT_PAGE, new Object[] {});
+									log.warn("Failed to add  modules");
+								}
 								
 								wizardModel.workLog.add("Imported test data");
 								addExecutedTask(WizardTask.IMPORT_TEST_DATA);
 							}
 							catch (Exception e) {
-								reportError(ErrorMessageConstants.ERROR_DB_IMPORT_TEST_DATA, DEFAULT_PAGE, e.getMessage());
+								reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE, e
+								        .getMessage());
 								log.warn("Error while trying to import test data", e);
 							}
 						}
