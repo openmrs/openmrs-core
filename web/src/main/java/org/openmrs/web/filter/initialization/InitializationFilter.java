@@ -19,7 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Connection;
@@ -47,14 +46,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import liquibase.changelog.ChangeSet;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.RequestContext;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Appender;
@@ -195,16 +186,6 @@ public class InitializationFilter extends StartupFilter {
 	private static boolean initializationComplete = false;
 	
 	/**
-	 * The connection url to the test database
-	 */
-	private String testDatabaseConnection = "jdbc:mysql://@HOST@:@PORT@/@DBNAME@?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
-	
-	/**
-	 * To be set when the user uploads a zip file containing module files to used for testing
-	 */
-	private File testModulesZipFile = null;
-	
-	/**
 	 * The login page when the testing install option is selected
 	 */
 	public static final String TESTING_AUTHENTICATION_SETUP = "authentication.vm";
@@ -221,7 +202,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	    ServletException {
+	        ServletException {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
@@ -329,7 +310,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	    ServletException {
+	        ServletException {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
@@ -394,10 +375,10 @@ public class InitializationFilter extends StartupFilter {
 		} else if (INSTALL_METHOD.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				referenceMap.put(FilterUtil.REMEMBER_ATTRIBUTE,
-				    httpRequest.getSession().getAttribute(FilterUtil.REMEMBER_ATTRIBUTE) != null);
-				referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE,
-				    httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+				referenceMap.put(FilterUtil.REMEMBER_ATTRIBUTE, httpRequest.getSession().getAttribute(
+				    FilterUtil.REMEMBER_ATTRIBUTE) != null);
+				referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(
+				    FilterUtil.LOCALE_ATTRIBUTE));
 				renderTemplate(CHOOSE_LANG, referenceMap, httpResponse);
 				return;
 			}
@@ -407,6 +388,7 @@ public class InitializationFilter extends StartupFilter {
 				page = SIMPLE_SETUP;
 			} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 				page = TESTING_PRODUCTION_URL_SETUP;
+				wizardModel.databaseName = InitializationWizardModel.DEFAULT_TEST_DATABASE_NAME;
 			} else {
 				page = DATABASE_SETUP;
 			}
@@ -552,7 +534,8 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			if (errors.isEmpty()) { // go to next page
-				page = OTHER_RUNTIME_PROPS;
+				page = InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod) ? WIZARD_COMPLETE
+				        : OTHER_RUNTIME_PROPS;
 			}
 			
 			renderTemplate(page, referenceMap, httpResponse);
@@ -660,15 +643,20 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.tasksToExecute.add(WizardTask.CREATE_SCHEMA);
 			if (wizardModel.createDatabaseUser)
 				wizardModel.tasksToExecute.add(WizardTask.CREATE_DB_USER);
-			if (wizardModel.importTestData)
+			
+			if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
+				wizardModel.importTestData = true;
+				wizardModel.createTables = false;
+				wizardModel.addDemoData = false;
 				wizardModel.tasksToExecute.add(WizardTask.IMPORT_TEST_DATA);
-			if (wizardModel.createTables) {
-				wizardModel.tasksToExecute.add(WizardTask.CREATE_TABLES);
-				wizardModel.tasksToExecute.add(WizardTask.ADD_CORE_DATA);
+			} else {
+				if (wizardModel.createTables) {
+					wizardModel.tasksToExecute.add(WizardTask.CREATE_TABLES);
+					wizardModel.tasksToExecute.add(WizardTask.ADD_CORE_DATA);
+				}
+				if (wizardModel.addDemoData)
+					wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
 			}
-			if (wizardModel.addDemoData)
-				wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
-			//			}
 			wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
 			
 			if (httpRequest.getSession().getAttribute(FilterUtil.REMEMBER_ATTRIBUTE) != null) {
@@ -725,8 +713,6 @@ public class InitializationFilter extends StartupFilter {
 			checkForEmptyValue(wizardModel.productionPassword, errors, "install.testing.password.required");
 			if (errors.isEmpty())
 				page = DATABASE_SETUP;
-			
-			wizardModel.importTestData = true;
 			
 			renderTemplate(page, referenceMap, httpResponse);
 			return;
@@ -1243,10 +1229,10 @@ public class InitializationFilter extends StartupFilter {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
 						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
 						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
-						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY,
-						    Base64.encode(Security.generateNewInitVector()));
-						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY,
-						    Base64.encode(Security.generateNewSecretKey()));
+						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY, Base64.encode(Security
+						        .generateNewInitVector()));
+						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY, Base64.encode(Security
+						        .generateNewSecretKey()));
 						
 						Properties properties = Context.getRuntimeProperties();
 						properties.putAll(runtimeProperties);
@@ -1320,8 +1306,8 @@ public class InitializationFilter extends StartupFilter {
 								
 							}
 							catch (Exception e) {
-								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE,
-								    e.getMessage());
+								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE, e
+								        .getMessage());
 								log.warn("Error while trying to create tables and demo data", e);
 							}
 						}
@@ -1339,8 +1325,8 @@ public class InitializationFilter extends StartupFilter {
 								addExecutedTask(WizardTask.ADD_DEMO_DATA);
 							}
 							catch (Exception e) {
-								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE,
-								    e.getMessage());
+								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE, e
+								        .getMessage());
 								log.warn("Error while trying to add demo data", e);
 							}
 						}
@@ -1387,7 +1373,8 @@ public class InitializationFilter extends StartupFilter {
 							// TODO display a page looping over the required input and ask the user for each.
 							// 		When done and the user and put in their say, call DatabaseUpdater.update(Map);
 							//		with the user's question/answer pairs
-							log.warn("Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
+							log
+							        .warn("Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
 							reportError(ErrorMessageConstants.ERROR_INPUT_REQ, DEFAULT_PAGE);
 							return;
 						}
@@ -1395,14 +1382,15 @@ public class InitializationFilter extends StartupFilter {
 							log.warn(
 							    "A mandatory module failed to start. Fix the error or unmark it as mandatory to continue.",
 							    mandatoryModEx);
-							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE,
-							    mandatoryModEx.getMessage());
+							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE, mandatoryModEx
+							        .getMessage());
 							return;
 						}
 						catch (OpenmrsCoreModuleException coreModEx) {
-							log.warn(
-							    "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
-							    coreModEx);
+							log
+							        .warn(
+							            "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
+							            coreModEx);
 							reportError(ErrorMessageConstants.ERROR_CORE_MOD_REQ, DEFAULT_PAGE, coreModEx.getMessage());
 							return;
 						}
@@ -1563,58 +1551,6 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
-	 * Convenience method that gets the uploaded file from the specified http request and writes it
-	 * to a temporary directory
-	 * 
-	 * @param httpRequest
-	 * @return An error message in case an error was encountered otherwise null
-	 */
-	@SuppressWarnings("unchecked")
-	private String uploadFile(HttpServletRequest httpRequest) {
-		RequestContext requestContext = new ServletRequestContext(httpRequest);
-		if (!ServletFileUpload.isMultipartContent(requestContext))
-			return "The request is not a valid multipart/form-data upload request";
-		
-		FileItemFactory factory = new DiskFileItemFactory();
-		ServletFileUpload upload = new ServletFileUpload(factory);
-		InputStream uploadedStream = null;
-		
-		try {
-			List<FileItem> items = upload.parseRequest(requestContext);
-			if (CollectionUtils.isNotEmpty(items)) {
-				FileItem item = items.get(0);
-				String fileName = item.getName();
-				
-				if (StringUtils.hasText(fileName)) {
-					uploadedStream = item.getInputStream();
-					testModulesZipFile = new File(System.getProperty("java.io.tmpdir"), fileName);
-					OpenmrsUtil.copyFile(uploadedStream, new FileOutputStream(testModulesZipFile));
-				} else
-					return "Please attach a file to upload!";
-			}
-		}
-		catch (FileUploadException ex) {
-			log.error("Error while uploading file: ", ex);
-			return "An error occured while uploading the file";
-		}
-		catch (IOException e) {
-			log.error("Error while uploading file: ", e);
-			return "An error occured while uploading the file";
-		}
-		finally {
-			if (uploadedStream != null)
-				try {
-					uploadedStream.close();
-				}
-				catch (IOException e) {
-					log.error("Error: ", e);
-				}
-		}
-		
-		return null;
-	}
-	
-	/**
 	 * Convenience method that loads the database driver
 	 * 
 	 * @param connection the database connection string
@@ -1634,53 +1570,5 @@ public class InitializationFilter extends StartupFilter {
 		}
 		
 		return loadedDriverString;
-	}
-	
-	/**
-	 * Utility methods that creates a test installation by mirroring the existing installation
-	 */
-	private void createTestInstallation() {
-		try {
-			if (TestInstallUtil.createSqlDump(wizardModel.currentDatabaseHost, wizardModel.currentDatabasePort,
-			    wizardModel.currentDatabaseName, wizardModel.currentDatabaseUsername, wizardModel.currentDatabasePassword)) {
-				initJob.setCompletedPercentage(26);
-				
-				String replacedDatabaseConnection = testDatabaseConnection.replace("@HOST@", wizardModel.testDatabaseHost)
-				        .replace("@PORT@", wizardModel.testDatabasePort);
-				
-				int value = TestInstallUtil.createTestDatabase(replacedDatabaseConnection.replace("@DBNAME@", ""),
-				    InitializationWizardModel.TEST_DATABASE_NAME, loadDriver(testDatabaseConnection, null),
-				    wizardModel.testDatabaseUsername, wizardModel.testDatabasePassword);
-				initJob.setCompletedPercentage(27);
-				
-				if (value > -1) {
-					if (TestInstallUtil.addTestData(wizardModel.testDatabaseHost, wizardModel.testDatabasePort,
-					    InitializationWizardModel.TEST_DATABASE_NAME, wizardModel.testDatabaseUsername,
-					    wizardModel.testDatabasePassword)) {
-						initJob.setCompletedPercentage(97);
-						wizardModel.databaseConnection = replacedDatabaseConnection;
-						wizardModel.databaseName = InitializationWizardModel.TEST_DATABASE_NAME;
-						
-						if (wizardModel.addModules && testModulesZipFile != null) {
-							log.info("Adding modules...");
-							wizardModel.addModules = true;
-							TestInstallUtil.addZippedTestModules(testModulesZipFile);
-						} else
-							log.info("Ignoring modules...");
-						
-						initJob.setCompletedPercentage(100);
-						
-					} else
-						errors.put(ErrorMessageConstants.ERROR_UNABLE_COPY_DATA, null);
-				} else
-					errors.put(ErrorMessageConstants.ERROR_UNABLE_CREATE_DB, null);
-			} else
-				errors.put(ErrorMessageConstants.ERROR_UNABLE_CREATE_DUMP, null);
-			
-		}
-		catch (Exception e) {
-			log.error("Errror while creating a testing environment", e);
-			errors.put(ErrorMessageConstants.ERROR_UNABLE_CREATE_ENV, null);
-		}
 	}
 }

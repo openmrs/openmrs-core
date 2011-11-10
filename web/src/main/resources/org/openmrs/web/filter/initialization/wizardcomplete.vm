@@ -7,37 +7,36 @@
             	<tr>
                     <td colspan="2"><strong>$l10n.get("install.complete.review")</strong></td>
                 </tr>
-                #if($installMethod != $INSTALL_METHOD_TESTING)
                 <tr>
                     <td colspan="2">$l10n.get("install.complete.info")
                     </td>
                 </tr>
-
                 <tr>
                     <td colspan="2" class="question">$l10n.get("install.complete.db")</td>
                 </tr>
                 <tr>
-                    <td>$l10n.get("install.complete.db.connection")</td>
+                    <th class="label">$l10n.get("install.complete.db.connection")</th>
                     <td>${databaseConnection}</td>
                 </tr>
                 <tr>
-                    <td>$l10n.get("install.db.name")</td>
+                    <th class="label">$l10n.get("install.db.name")</th>
                     <td>${databaseName}</td>
                 </tr>
+                #if($installMethod != $INSTALL_METHOD_TESTING)
                 <tr>
-                    <td>$l10n.get("install.complete.db.create")</td>
+                    <th class="label">$l10n.get("install.complete.db.create")</th>
                     <td>#if( $hasCurrentOpenmrsDatabase == false ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
                 </tr>
                 <tr>
-                    <td>$l10n.get("install.complete.db.userAccount")</td>
+                    <th class="label">$l10n.get("install.complete.db.userAccount")</th>
                     <td>#if( $createDatabaseUser == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
                 </tr>
                 <tr>
-                    <td>$l10n.get("install.complete.db.tables")</td>
+                    <th class="label">$l10n.get("install.complete.db.tables")</th>
                     <td>#if( $createTables == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
                 </tr>
                 <tr>
-                    <td>$l10n.get("install.complete.db.demo")</td>
+                    <th class="label">$l10n.get("install.complete.db.demo")</th>
                     <td>#if( $addDemoData == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
                 </tr>
 
@@ -45,89 +44,50 @@
                     <td colspan="2" class="question">$l10n.get("install.complete.impl")</td>
                 </tr>
                 <tr>
-                    <td>$l10n.get("install.complete.impl.name")</td>
+                    <th class="label">$l10n.get("install.complete.impl.name")</th>
                     <td>${implementationIdName}</td>
                 </tr>
                 <tr>
-                    <td>$l10n.get("install.complete.impl.id")</td>
+                    <th class="label">$l10n.get("install.complete.impl.id")</th>
                     <td>${implementationId}</td>
                 </tr>
                 <tr>
-                    <td>$l10n.get("install.complete.impl.pass")</td>
+                    <th class="label">$l10n.get("install.complete.impl.pass")</th>
                     <td>${implementationIdPassPhrase}</td>
                 </tr>
                 <tr>
-                    <td>$l10n.get("install.complete.impl.desc")</td>
+                    <th class="label">$l10n.get("install.complete.impl.desc")</th>
                     <td>${implementationIdDescription}</td>
                 </tr>
-
                 <tr>
                     <td colspan="2" class="question">$l10n.get("install.complete.rp")</td>
                 </tr>
                 <tr>
-                    <td>$l10n.get("install.complete.rp.mod")</td>
+                    <th class="label">$l10n.get("install.complete.rp.mod")</th>
                     <td>#if( $moduleWebAdmin == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
                 </tr>
                 <tr>
-                    <td>$l10n.get("install.complete.rp.up")</td>
+                    <th class="label">$l10n.get("install.complete.rp.up")</th>
                     <td>#if( $autoUpdateDatabase == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
-                </tr>                
-				#else
-                <tr>
-                    <td colspan="2">$l10n.get("install.complete.db")
-                    </td>
                 </tr>
-                <tr>
-        			<td colspan="2" class="question">$l10n.get("install.complete.test.settings"):</td>
-              	</tr>
-			    <tr>
-                    <td>$l10n.get("install.test.curr.conn.host")</td>
-                    <td>${currentDatabaseHost}</td>
-                </tr>
-                <tr>
-                    <td>$l10n.get("install.test.curr.conn.port")</td>
-                    <td>${currentDatabasePort}</td>
-                </tr>
-                <tr">
-                    <td>$l10n.get("install.test.curr.conn.dbname")</td>
-                    <td>${currentDatabaseName}</td>
-                </tr>
-                <tr>
-                    <td>$l10n.get("install.test.curr.conn.dbuser")</td>
-                    <td>${currentDatabaseUsername}</td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="question">
-                    	Test database server settings:
-                    </td>
-                </tr>
-                <tr>
-                    <td>$l10n.get("install.test.conn.host")</td>
-                    <td>${testDatabaseHost}</td>
-                </tr>
-                <tr>
-                    <td>$l10n.get("install.test.conn.port")</td>
-                    <td>${testDatabasePort}</td>
-                </tr>
-                <tr>
-                    <td>$l10n.get("install.test.conn.dbuser")</td>
-                    <td>${testDatabaseUsername}</td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="question">$l10n.get("install.complete.test.details"):</td>
-                </tr>
-                <tr>
-                    <td>$l10n.get("install.complete.test.dbname")</td>
-                    <td>${TEST_DATABASE_NAME}</td>
-                </tr>
-                <tr>
-                	<td>$l10n.get("install.complete.test.addModules") </td><td>#if($addModules == true) $l10n.get("general.yes") #else $l10n.get("general.no")#end</td>
-              	</tr>
                 #end
                 <tr>
-                    <td>$l10n.get("install.complete.rp.path")</td>
+                    <th class="label">$l10n.get("install.complete.rp.path")</th>
                     <td>${runtimePropertiesPath}</td>
                 </tr>
+                #if($installMethod == $INSTALL_METHOD_TESTING)
+                <tr>
+                    <td colspan="2" class="question">$l10n.get("install.complete.settings")</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.testing.productionUrl")</th>
+                    <td>${productionUrl}</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.testing.production.username")</th>
+                    <td>${productionUsername}</td>
+                </tr>
+                #end
                 <tr>
                 	<td colspan="2" align="center">
 						<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
