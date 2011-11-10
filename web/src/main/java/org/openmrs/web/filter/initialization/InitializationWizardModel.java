@@ -205,50 +205,9 @@ public class InitializationWizardModel {
 	public String localeToSave = "";
 	
 	/**
-	 * Specified by the user when they select the testing install method
+	 * Default test database name to use unless user specifies another in the wizard
 	 */
-	public String currentDatabaseHost = "";
-	
-	/**
-	 * Specified by the user when they select the testing install method
-	 */
-	public String currentDatabasePort = "3306";
-	
-	/**
-	 * Specified by the user when they select the testing install method
-	 */
-	public String currentDatabaseName = "openmrs";
-	
-	/**
-	 * Specified by the user when they select the testing install method
-	 */
-	public String testDatabaseHost = "127.0.0.1";
-	
-	/**
-	 * Specified by the user when they select the testing install method
-	 */
-	public String testDatabasePort = "3306";
-	
-	/**
-	 * Specified by the user when they select the testing install method
-	 */
-	public String testDatabaseUsername = "root";
-	
-	/**
-	 * Specified by the user when they select the testing install method
-	 */
-	public String testDatabasePassword = "";
-	
-	/**
-	 * Specified by the user when they add modules to be installed for testing
-	 */
-	public Boolean addModules = Boolean.FALSE;
-	
-	/**
-	 * This is actually note meant to be specified by the user, it is only in the model so that we
-	 * can access from the review page
-	 */
-	public static final String TEST_DATABASE_NAME = "openmrs_test";
+	public static final String DEFAULT_TEST_DATABASE_NAME = "testing";
 	
 	/**
 	 * The url to the production system

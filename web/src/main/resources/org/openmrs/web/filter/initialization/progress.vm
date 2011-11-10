@@ -131,7 +131,7 @@
 			width:30px; text-align: center;
 		}
 		.col_taskDisplayText{
-			width:215px; text-align:left; border-right:2px solid #ECF3F7;
+			width:215px; text-align:left; border-right:2px solid #ECF3F7; white-space:nowrap;
 		}
 		.col_progressBar{
 			width:340px; text-align:left; padding-left:7px;

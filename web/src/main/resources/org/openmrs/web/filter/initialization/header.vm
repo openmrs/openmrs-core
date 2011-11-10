@@ -53,6 +53,10 @@
             -webkit-border-radius: 15px;
             background-color: #E9E4CC;
         }
+        .label{
+            text-align:left;
+            white-space:nowrap;
+        }
     </style>
 </head>
 <body style="background:#ecf3f7">
