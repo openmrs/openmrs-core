@@ -646,10 +646,8 @@ public class InitializationFilter extends StartupFilter {
 			
 			if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 				wizardModel.importTestData = true;
-				wizardModel.createTables = true;
+				wizardModel.createTables = false;
 				wizardModel.addDemoData = false;
-				wizardModel.tasksToExecute.add(WizardTask.CREATE_TABLES);
-				wizardModel.tasksToExecute.add(WizardTask.ADD_CORE_DATA);
 				wizardModel.tasksToExecute.add(WizardTask.IMPORT_TEST_DATA);
 			} else {
 				if (wizardModel.createTables) {
