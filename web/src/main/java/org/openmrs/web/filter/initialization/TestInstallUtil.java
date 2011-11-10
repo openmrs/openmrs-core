@@ -59,7 +59,7 @@ public class TestInstallUtil {
 	 * @return
 	 */
 	protected static int createTestDatabase(String connectionUrl, String databaseName, String databaseDriver, String user,
-	        String pwd) {
+	                                        String pwd) {
 		Connection connection = null;
 		Statement statement = null;
 		
@@ -119,12 +119,13 @@ public class TestInstallUtil {
 	 * @param pwd
 	 * @return
 	 */
-	protected static boolean addTestData(String host, String port, String databaseName, String user, String pwd) {
+	protected static boolean addTestData(String host, int port, String databaseName, String user, String pwd,
+	                                     String filePath) {
 		Process proc = null;
 		BufferedReader br = null;
 		String errorMsg = null;
 		String[] command = new String[] { "mysql", "--host=" + host, "--port=" + port, "--user=" + user,
-		        "--password=" + pwd, "--database=" + databaseName, "-e", "source " + SQL_DUMP_FILE.getAbsolutePath() };
+		        "--password=" + pwd, "--database=" + databaseName, "-e", "source " + filePath };
 		
 		try {
 			proc = Runtime.getRuntime().exec(command);
