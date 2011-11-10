@@ -1279,7 +1279,7 @@ public class InitializationFilter extends StartupFilter {
 								if (!TestInstallUtil.addZippedTestModules(new ZipInputStream(TestInstallUtil
 								        .getResourceInputStream(wizardModel.productionUrl + RELEASE_TESTING_MODULE_PATH
 								                + "getModules.htm")))) {
-									reportError("install.error.failedToAddModules", DEFAULT_PAGE, new Object[] {});
+									reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE, new Object[] {});
 									log.warn("Failed to add  modules");
 								}
 								
@@ -1287,7 +1287,7 @@ public class InitializationFilter extends StartupFilter {
 								addExecutedTask(WizardTask.IMPORT_TEST_DATA);
 							}
 							catch (Exception e) {
-								reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE, e
+								reportError(ErrorMessageConstants.ERROR_DB_IMPORT_TEST_DATA, DEFAULT_PAGE, e
 								        .getMessage());
 								log.warn("Error while trying to import test data", e);
 							}
