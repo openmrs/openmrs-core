@@ -27,9 +27,9 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.CustomChangeException;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
-
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
@@ -132,7 +132,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			int conceptId = getInt(connection, "SELECT MAX(concept_id) FROM concept");
 			conceptId++;
 			updateStatement = connection
-			        .prepareStatement("INSERT INTO concept (concept_id, short_name, description, datatype_id, class_id, is_set, creator, date_created, uuid) VALUES (?, '', '', 4, 11, FALSE, 1, NOW(), ?)");
+			        .prepareStatement("INSERT INTO concept (concept_id, short_name, description, datatype_id, class_id, retired, is_set, creator, date_created, uuid) VALUES (?, '', '', 4, 11, FALSE, FALSE, 1, NOW(), ?)");
 			updateStatement.setInt(1, conceptId);
 			updateStatement.setString(2, UUID.randomUUID().toString());
 			updateStatement.executeUpdate();
