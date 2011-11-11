@@ -24,10 +24,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -46,69 +42,6 @@ public class TestInstallUtil {
 	
 	private static final Log log = LogFactory.getLog(TestInstallUtil.class);
 	
-	private static final File SQL_DUMP_FILE = new File(System.getProperty("java.io.tmpdir"), "sqldump.sql");
-	
-	/**
-	 * Creates a new database for testing
-	 * 
-	 * @param connectionUrl
-	 * @param databaseName
-	 * @param databaseDriver
-	 * @param user
-	 * @param pwd
-	 * @return
-	 */
-	protected static int createTestDatabase(String connectionUrl, String databaseName, String databaseDriver, String user,
-	                                        String pwd) {
-		Connection connection = null;
-		Statement statement = null;
-		
-		try {
-			Class.forName(databaseDriver).newInstance();
-			
-			connection = DriverManager.getConnection(connectionUrl, user, pwd);
-			statement = connection.createStatement();
-			String createDBsql = "create database if not exists `" + databaseName + "` default character set utf8";
-			if (!connectionUrl.contains("mysql"))
-				createDBsql = createDBsql.replaceAll("`", "\"");
-			
-			return statement.executeUpdate(createDBsql);
-		}
-		catch (InstantiationException e) {
-			log.error("error:", e);
-		}
-		catch (IllegalAccessException e) {
-			log.error("error:", e);
-		}
-		catch (ClassNotFoundException e) {
-			log.error("error:", e);
-		}
-		catch (SQLException sqlEx) {
-			log.error("Failed to create a test database:", sqlEx);
-		}
-		finally {
-			if (statement != null) {
-				try {
-					statement.close();
-				}
-				catch (SQLException e) {
-					log.warn("Error while closing sql statemnt: ", e);
-				}
-			}
-			
-			if (connection != null) {
-				try {
-					connection.close();
-				}
-				catch (SQLException e) {
-					log.warn("Error while closing connection: ", e);
-				}
-			}
-		}
-		
-		return -1;
-	}
-	
 	/**
 	 * Adds data to the test database from a sql dump file
 	 * 
@@ -119,8 +52,7 @@ public class TestInstallUtil {
 	 * @param pwd
 	 * @return
 	 */
-	protected static boolean addTestData(String host, int port, String databaseName, String user, String pwd,
-	                                     String filePath) {
+	protected static boolean addTestData(String host, int port, String databaseName, String user, String pwd, String filePath) {
 		Process proc = null;
 		BufferedReader br = null;
 		String errorMsg = null;
@@ -177,76 +109,9 @@ public class TestInstallUtil {
 	}
 	
 	/**
-	 * Creates a sql dump from the database matching the specified credentials
-	 * 
-	 * @param host
-	 * @param port
-	 * @param databaseName
-	 * @param user
-	 * @param pwd
-	 * @return
-	 */
-	protected static boolean createSqlDump(String host, String port, String databaseName, String user, String pwd) {
-		Process proc = null;
-		BufferedReader br = null;
-		String errorMsg = null;
-		String[] command = new String[] { "mysqldump", "--host=" + host, "--port=" + port, "--user=" + user,
-		        "--password=" + pwd, "--result-file=" + SQL_DUMP_FILE.getAbsolutePath(), "--skip-extended-insert",
-		        "--skip-quick", "--skip-comments", "--skip-add-drop-table", "--default-character-set=utf8", databaseName };
-		try {
-			proc = Runtime.getRuntime().exec(command);
-			try {
-				br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-				String line;
-				StringBuffer sb = new StringBuffer();
-				while ((line = br.readLine()) != null) {
-					sb.append(line);
-					sb.append(System.getProperty("line.separator"));
-				}
-				errorMsg = sb.toString();
-			}
-			catch (IOException e) {
-				log.error("error", e);
-			}
-			finally {
-				if (br != null) {
-					try {
-						br.close();
-					}
-					catch (Exception e) {
-						log.error("error: ", e);
-					}
-				}
-			}
-			
-			//print out the error messages from the process
-			if (StringUtils.isNotBlank(errorMsg))
-				log.error(errorMsg);
-			
-			if (proc.waitFor() == 0) {
-				if (log.isDebugEnabled())
-					log.debug("The sql dump file was created successfully");
-				
-				return true;
-			}
-			
-			log.error("The process terminated abnormally while creating the sql dump");
-			
-		}
-		catch (IOException e) {
-			log.error("Failed to create the sql dump", e);
-		}
-		catch (InterruptedException e) {
-			log.error("The back up was interrupted while creating the sql dump", e);
-		}
-		
-		return false;
-	}
-	
-	/**
 	 * Extracts .omod files from the specified {@link ZipInputStream} and copies them to the module
-	 * repository of the test application data directory, the method always clauses the zipInputStream
-	 * before returning
+	 * repository of the test application data directory, the method always closes the
+	 * zipInputStream before returning
 	 * 
 	 * @param in the {@link InputStream} for the zip file
 	 */

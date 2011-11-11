@@ -36,11 +36,11 @@
                             <td class="question">$l10n.get("install.simple.content")</td>
                         </tr>
                         <tr>
-                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_ADVANCED}" #if( $installMethod == $INSTALL_METHOD_ADVANCED )checked="checked"#end/> $l10n.get("install.advanced")</td>
+                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_ADVANCED}" #if( $installMethod == $INSTALL_METHOD_ADVANCED )checked="checked"#end/>$l10n.get("install.advanced")</td>
                             <td class="question">$l10n.get("install.advanced.content")</td>
                         </tr>
                         <tr>
-                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_TESTING}" #if( $installMethod == $INSTALL_METHOD_TESTING )checked="checked"#end/> $l10n.get("install.testing")</td>
+                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_TESTING}" #if( $installMethod == $INSTALL_METHOD_TESTING )checked="checked"#end/>$l10n.get("install.testing")</td>
                             <td class="question">
                             	$l10n.get("install.testing.desc")
                             	<br><b>$l10n.get("install.testing.note"):</b>
