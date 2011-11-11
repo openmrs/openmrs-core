@@ -5,7 +5,7 @@
 		<!-- TODO list off all collected properties here -->
 		 	<table cellpadding="9" align="center" cellspacing="5" >
             	<tr>
-                    <td colspan="2"><strong>$l10n.get("install.complete.review")</strong></td>
+                    <td colspan="2"><h3>$l10n.get("install.complete.review")</h3></td>
                 </tr>
                 <tr>
                     <td colspan="2">$l10n.get("install.complete.info")

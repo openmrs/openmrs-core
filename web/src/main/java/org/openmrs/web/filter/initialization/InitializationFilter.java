@@ -17,9 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -202,7 +200,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	    ServletException {
+	        ServletException {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
@@ -310,7 +308,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	    ServletException {
+	        ServletException {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
@@ -375,10 +373,10 @@ public class InitializationFilter extends StartupFilter {
 		} else if (INSTALL_METHOD.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				referenceMap.put(FilterUtil.REMEMBER_ATTRIBUTE,
-				    httpRequest.getSession().getAttribute(FilterUtil.REMEMBER_ATTRIBUTE) != null);
-				referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE,
-				    httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+				referenceMap.put(FilterUtil.REMEMBER_ATTRIBUTE, httpRequest.getSession().getAttribute(
+				    FilterUtil.REMEMBER_ATTRIBUTE) != null);
+				referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(
+				    FilterUtil.LOCALE_ATTRIBUTE));
 				renderTemplate(CHOOSE_LANG, referenceMap, httpResponse);
 				return;
 			}
@@ -882,7 +880,7 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	private void importTestDataSet(InputStream in, String connectionUrl, String connectionUsername, String connectionPassword)
-	    throws IOException {
+	        throws IOException {
 		File tempFile = null;
 		FileOutputStream fileOut = null;
 		try {
@@ -1237,10 +1235,10 @@ public class InitializationFilter extends StartupFilter {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
 						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
 						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
-						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY,
-						    Base64.encode(Security.generateNewInitVector()));
-						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY,
-						    Base64.encode(Security.generateNewSecretKey()));
+						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY, Base64.encode(Security
+						        .generateNewInitVector()));
+						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY, Base64.encode(Security
+						        .generateNewSecretKey()));
 						
 						Properties properties = Context.getRuntimeProperties();
 						properties.putAll(runtimeProperties);
@@ -1293,8 +1291,8 @@ public class InitializationFilter extends StartupFilter {
 								
 							}
 							catch (Exception e) {
-								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE,
-								    e.getMessage());
+								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE, e
+								        .getMessage());
 								log.warn("Error while trying to create tables and demo data", e);
 							}
 						}
@@ -1305,12 +1303,9 @@ public class InitializationFilter extends StartupFilter {
 								setExecutingTask(WizardTask.IMPORT_TEST_DATA);
 								setCompletedPercentage(0);
 								
-								HttpURLConnection urlConnection = (HttpURLConnection) new URL(wizardModel.productionUrl
-								        + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form").openConnection();
-								urlConnection.setConnectTimeout(5000);
-								urlConnection.setUseCaches(false);
-								importTestDataSet(urlConnection.getInputStream(), finalDatabaseConnectionString,
-								    connectionUsername, connectionPassword);
+								importTestDataSet(TestInstallUtil.getResourceInputStream(wizardModel.productionUrl
+								        + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form"),
+								    finalDatabaseConnectionString, connectionUsername, connectionPassword);
 								
 								setMessage("Importing installed modules...");
 								
@@ -1319,7 +1314,7 @@ public class InitializationFilter extends StartupFilter {
 								                + "getModules.htm")))) {
 									reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE,
 									    new Object[] {});
-									log.warn("Failed to add  modules");
+									log.warn("Failed to add modules");
 								}
 								
 								wizardModel.workLog.add("Imported test data");
@@ -1345,8 +1340,8 @@ public class InitializationFilter extends StartupFilter {
 								addExecutedTask(WizardTask.ADD_DEMO_DATA);
 							}
 							catch (Exception e) {
-								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE,
-								    e.getMessage());
+								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE, e
+								        .getMessage());
 								log.warn("Error while trying to add demo data", e);
 							}
 						}
@@ -1393,7 +1388,8 @@ public class InitializationFilter extends StartupFilter {
 							// TODO display a page looping over the required input and ask the user for each.
 							// 		When done and the user and put in their say, call DatabaseUpdater.update(Map);
 							//		with the user's question/answer pairs
-							log.warn("Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
+							log
+							        .warn("Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
 							reportError(ErrorMessageConstants.ERROR_INPUT_REQ, DEFAULT_PAGE);
 							return;
 						}
@@ -1401,14 +1397,15 @@ public class InitializationFilter extends StartupFilter {
 							log.warn(
 							    "A mandatory module failed to start. Fix the error or unmark it as mandatory to continue.",
 							    mandatoryModEx);
-							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE,
-							    mandatoryModEx.getMessage());
+							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE, mandatoryModEx
+							        .getMessage());
 							return;
 						}
 						catch (OpenmrsCoreModuleException coreModEx) {
-							log.warn(
-							    "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
-							    coreModEx);
+							log
+							        .warn(
+							            "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
+							            coreModEx);
 							reportError(ErrorMessageConstants.ERROR_CORE_MOD_REQ, DEFAULT_PAGE, coreModEx.getMessage());
 							return;
 						}
