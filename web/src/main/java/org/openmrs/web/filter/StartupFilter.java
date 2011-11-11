@@ -49,6 +49,7 @@ import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.config.FactoryConfiguration;
 import org.apache.velocity.tools.config.ToolConfiguration;
 import org.apache.velocity.tools.config.ToolboxConfiguration;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
@@ -57,7 +58,6 @@ import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.openmrs.web.filter.util.LocalizationTool;
-import org.springframework.util.StringUtils;
 import org.springframework.web.util.JavaScriptUtils;
 
 /**
@@ -209,7 +209,8 @@ public abstract class StartupFilter implements Filter {
 	        throws IOException {
 		// first we should get velocity tools context for current client request (within
 		// his http session) and merge that tools context with basic velocity context
-		ToolContext toolContext = getToolContext(referenceMap.get(FilterUtil.LOCALE_ATTRIBUTE).toString());
+		Object locale = referenceMap.get(FilterUtil.LOCALE_ATTRIBUTE);
+		ToolContext toolContext = getToolContext(locale != null ? locale.toString() : Context.getLocale().toString());
 		VelocityContext velocityContext = new VelocityContext(toolContext);
 		
 		if (referenceMap != null) {
