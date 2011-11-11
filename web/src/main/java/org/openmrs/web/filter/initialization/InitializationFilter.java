@@ -1309,9 +1309,9 @@ public class InitializationFilter extends StartupFilter {
 								
 								setMessage("Importing installed modules...");
 								
-								if (!TestInstallUtil.addZippedTestModules(new ZipInputStream(TestInstallUtil
+								if (!TestInstallUtil.addZippedTestModules(TestInstallUtil
 								        .getResourceInputStream(wizardModel.productionUrl + RELEASE_TESTING_MODULE_PATH
-								                + "getModules.htm")))) {
+								                + "getModules.htm"))) {
 									reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE,
 									    new Object[] {});
 									log.warn("Failed to add modules");

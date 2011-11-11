@@ -24,8 +24,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -109,49 +110,69 @@ public class TestInstallUtil {
 	}
 	
 	/**
-	 * Extracts .omod files from the specified {@link ZipInputStream} and copies them to the module
-	 * repository of the test application data directory, the method always closes the
-	 * zipInputStream before returning
+	 * Extracts .omod files from the specified {@link InputStream} and copies them to the module
+	 * repository of the test application data directory, the method always closes the InputStream
+	 * before returning
 	 * 
 	 * @param in the {@link InputStream} for the zip file
 	 */
-	protected static boolean addZippedTestModules(ZipInputStream in) {
+	@SuppressWarnings("rawtypes")
+	protected static boolean addZippedTestModules(InputStream in) {
+		ZipFile zipFile = null;
+		FileOutputStream out = null;
+		File tempFile = null;
 		boolean successfullyAdded = true;
-		ZipInputStream zipIn = in;
-		BufferedOutputStream out = null;
+		
 		try {
 			File moduleRepository = OpenmrsUtil
 			        .getDirectoryInApplicationDataDirectory(ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
-			ZipEntry entry = zipIn.getNextEntry();
-			while (entry != null) {
+			tempFile = File.createTempFile("modules", null);
+			out = new FileOutputStream(tempFile);
+			IOUtils.copy(in, out);
+			zipFile = new ZipFile(tempFile);
+			Enumeration entries = zipFile.entries();
+			while (entries.hasMoreElements()) {
+				ZipEntry entry = (ZipEntry) entries.nextElement();
+				if (entry.isDirectory()) {
+					if (log.isDebugEnabled())
+						log.debug("Skipping directory: " + entry.getName());
+					continue;
+				}
+				
 				String fileName = entry.getName();
 				if (fileName.endsWith(".omod")) {
 					//Convert the names of .omod files located in nested directories so that they get
 					//created under the module repo directory when being copied
 					if (fileName.contains(System.getProperty("file.separator")))
 						fileName = new File(entry.getName()).getName();
+					
 					if (log.isDebugEnabled())
 						log.debug("Extracting module file: " + fileName);
-					out = new BufferedOutputStream(new FileOutputStream(new File(moduleRepository, fileName)));
-					IOUtils.copy(zipIn, out);
+					OpenmrsUtil.copyFile(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(
+					        new File(moduleRepository, fileName))));
 				} else {
 					if (log.isDebugEnabled())
 						log.debug("Ignoring file that is not a .omod '" + fileName);
 				}
-				
-				entry = zipIn.getNextEntry();
 			}
 		}
 		catch (IOException e) {
-			log.error("An error occured while copying modules to the test server:", e);
+			log.error("An error occured while copying modules to the test system:", e);
 			successfullyAdded = false;
 		}
 		finally {
-			if (zipIn != null) {
-				IOUtils.closeQuietly(zipIn);
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
+			if (zipFile != null) {
+				try {
+					zipFile.close();
+				}
+				catch (IOException e) {
+					log.error("Failed to close zip file: ", e);
+				}
 			}
-			if (out != null) {
-				IOUtils.closeQuietly(out);
+			if (tempFile != null) {
+				tempFile.deleteOnExit();
 			}
 		}
 		
