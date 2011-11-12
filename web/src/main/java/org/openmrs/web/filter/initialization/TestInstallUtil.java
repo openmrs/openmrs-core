@@ -20,10 +20,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -32,6 +34,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xerces.impl.dv.util.Base64;
+import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.APIException;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -207,15 +212,39 @@ public class TestInstallUtil {
 	}
 	
 	/**
-	 * @param urlString
+	 * @param url
+	 * @param openmrsUsername
+	 * @param openmrsPassword
 	 * @return
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	protected static InputStream getResourceInputStream(String urlString) throws MalformedURLException, IOException {
+	protected static InputStream getResourceInputStream(String urlString, String openmrsUsername, String openmrsPassword)
+	        throws MalformedURLException, IOException, APIException {
+		
 		HttpURLConnection urlConnection = (HttpURLConnection) new URL(urlString).openConnection();
+		urlConnection.setRequestMethod("POST");
 		urlConnection.setConnectTimeout(15000);
 		urlConnection.setUseCaches(false);
+		urlConnection.setDoOutput(true);
+		
+		String requestParams = "username=" + new String(Base64.encode(openmrsUsername.getBytes(Charset.forName("UTF-8"))))
+		        + "&password=" + new String(Base64.encode(openmrsPassword.getBytes(Charset.forName("UTF-8"))));
+		
+		OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream());
+		out.write(requestParams);
+		out.flush();
+		out.close();
+		
+		if (log.isInfoEnabled())
+			log.info("Http response message:" + urlConnection.getResponseMessage() + ", Code:"
+			        + urlConnection.getResponseCode());
+		
+		if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
+			throw new APIAuthenticationException("Invalid username or password");
+		else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR)
+			throw new APIException("An error occurred on the production server");
+		
 		return urlConnection.getInputStream();
 	}
 }

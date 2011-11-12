@@ -50,6 +50,8 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.ImplementationId;
+import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.APIException;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
@@ -1303,18 +1305,31 @@ public class InitializationFilter extends StartupFilter {
 								setExecutingTask(WizardTask.IMPORT_TEST_DATA);
 								setCompletedPercentage(0);
 								
-								importTestDataSet(TestInstallUtil.getResourceInputStream(wizardModel.productionUrl
-								        + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form"),
-								    finalDatabaseConnectionString, connectionUsername, connectionPassword);
-								
-								setMessage("Importing installed modules...");
-								
-								if (!TestInstallUtil.addZippedTestModules(TestInstallUtil
-								        .getResourceInputStream(wizardModel.productionUrl + RELEASE_TESTING_MODULE_PATH
-								                + "getModules.htm"))) {
-									reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE,
-									    new Object[] {});
-									log.warn("Failed to add modules");
+								try {
+									importTestDataSet(TestInstallUtil.getResourceInputStream(wizardModel.productionUrl
+									        + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form",
+									    wizardModel.productionUsername, wizardModel.productionPassword),
+									    finalDatabaseConnectionString, connectionUsername, connectionPassword);
+									
+									setMessage("Importing installed modules...");
+									
+									if (!TestInstallUtil.addZippedTestModules(TestInstallUtil.getResourceInputStream(
+									    wizardModel.productionUrl + RELEASE_TESTING_MODULE_PATH + "getModules.htm",
+									    wizardModel.productionUsername, wizardModel.productionPassword))) {
+										reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE, "");
+										log.warn("Failed to add modules");
+									}
+								}
+								catch (APIAuthenticationException e) {
+									log.warn("Unable to authenticate as a User with the System Developer role");
+									reportError(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE,
+									    TESTING_AUTHENTICATION_SETUP, "");
+									return;
+								}
+								catch (APIException e) {
+									log.warn("An error occured on the remote server");
+									reportError(ErrorMessageConstants.ERROR_REMOTE_SERVER, DEFAULT_PAGE, "");
+									return;
 								}
 								
 								wizardModel.workLog.add("Imported test data");
