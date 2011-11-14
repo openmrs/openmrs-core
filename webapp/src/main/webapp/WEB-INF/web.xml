@@ -352,8 +352,13 @@
 	
 	<error-page>
 		<exception-type>java.lang.Exception</exception-type>
-		<location>/WEB-INF/view/uncaughtException.jsp</location>
+		<location>/uncaughtException</location>
 	</error-page>
+	
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>/uncaughtException</url-pattern>
+	</servlet-mapping>
 	
 	<error-page>
 		<exception-type>org.openmrs.api.APIAuthenticationException</exception-type>
