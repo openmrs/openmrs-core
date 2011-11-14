@@ -223,4 +223,14 @@ public class InitializationWizardModel {
 	 * The password to use to authenticate to the production system
 	 */
 	public String productionPassword = "";
+	
+	/**
+	 * The current step. e.g Step 1 of ...
+	 */
+	public Integer currentStepNumber = 1;
+	
+	/**
+	 * The total number of steps. e.g Step ... of 5
+	 */
+	public Integer numberOfSteps = 1;
 }

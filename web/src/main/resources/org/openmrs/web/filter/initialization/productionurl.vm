@@ -5,6 +5,9 @@
 	<div class="content" style="text-align:center">
 		<table align="center" cellspacing="5" cellpadding="9">
 			<tr>
+                <td colspan="2" align="center"><strong>$l10n.get("install.step").insert(${currentStepNumber}).insert(${numberOfSteps})</strong></td>
+			</tr>
+			<tr>
 				<th valign="top">$l10n.get("install.testing.productionUrl"):</th>
 				<td>
 					<input type="text" name="productionUrl" size="60" value="${productionUrl}"/><br/>

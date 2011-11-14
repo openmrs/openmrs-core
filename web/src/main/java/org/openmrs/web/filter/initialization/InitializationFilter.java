@@ -388,9 +388,13 @@ public class InitializationFilter extends StartupFilter {
 				page = SIMPLE_SETUP;
 			} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 				page = TESTING_PRODUCTION_URL_SETUP;
+				wizardModel.currentStepNumber = 1;
+				wizardModel.numberOfSteps = 4;
 				wizardModel.databaseName = InitializationWizardModel.DEFAULT_TEST_DATABASE_NAME;
 			} else {
 				page = DATABASE_SETUP;
+				wizardModel.currentStepNumber = 1;
+				wizardModel.numberOfSteps = 5;
 			}
 			renderTemplate(page, referenceMap, httpResponse);
 			
@@ -496,6 +500,10 @@ public class InitializationFilter extends StartupFilter {
 			
 			if (errors.isEmpty()) {
 				page = DATABASE_TABLES_AND_USER;
+				
+				if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
+					wizardModel.currentStepNumber = 4;
+				}
 			}
 			
 			renderTemplate(page, referenceMap, httpResponse);
@@ -690,6 +698,7 @@ public class InitializationFilter extends StartupFilter {
 					if (TestInstallUtil.testConnection(wizardModel.productionUrl.concat(RELEASE_TESTING_MODULE_PATH
 					        + "settings.htm"))) {
 						page = TESTING_AUTHENTICATION_SETUP;
+						wizardModel.currentStepNumber = 2;
 					} else {
 						errors.put("install.testing.noTestingModule", null);
 					}
@@ -711,8 +720,10 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.productionPassword = httpRequest.getParameter("password");
 			checkForEmptyValue(wizardModel.productionUsername, errors, "install.testing.username.required");
 			checkForEmptyValue(wizardModel.productionPassword, errors, "install.testing.password.required");
-			if (errors.isEmpty())
+			if (errors.isEmpty()) {
 				page = DATABASE_SETUP;
+				wizardModel.currentStepNumber = 3;
+			}
 			
 			renderTemplate(page, referenceMap, httpResponse);
 			return;

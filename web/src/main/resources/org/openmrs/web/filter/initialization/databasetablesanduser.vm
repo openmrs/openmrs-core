@@ -21,6 +21,10 @@
 					<td>$l10n.get("general.yes"): <input type="radio" name="add_demo_data" value="yes" #if( $addDemoData == true )checked="checked"#end/></td>
 					<td>$l10n.get("general.no"): <input type="radio" name="add_demo_data" value="no" #if( $addDemoData == false )checked="checked"#end/></td>
 				</tr>
+				#else
+					<tr>
+	                	<td colspan="2" align="center"><strong>$l10n.get("install.step").insert(${currentStepNumber}).insert(${numberOfSteps})</strong></td>
+					</tr>
 				#end
 				<tr>
 					<td colspan="2" class="question">$l10n.get("install.advanced.dbtables.user").insert(${databaseName})</td>
