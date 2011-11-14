@@ -350,31 +350,6 @@
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 	
-	<error-page>
-		<exception-type>java.lang.Exception</exception-type>
-		<location>/uncaughtException</location>
-	</error-page>
-	
-	<servlet-mapping>
- 		<servlet-name>openmrs</servlet-name>
- 		<url-pattern>/uncaughtException</url-pattern>
-	</servlet-mapping>
-	
-	<error-page>
-		<exception-type>org.openmrs.api.APIAuthenticationException</exception-type>
-		<location>/login.htm</location>
-	</error-page>
-
-	<error-page>
-		<exception-type>org.springframework.web.HttpSessionRequiredException</exception-type>
-		<location>/login.htm</location>
-	</error-page>
-	
-	<error-page>
-		<error-code>404</error-code>
-		<location>/missing.htm</location>
-	</error-page>
-	
 	<servlet>
 		<servlet-name>openmrs</servlet-name>
 		<servlet-class>org.openmrs.web.DispatcherServlet</servlet-class>
@@ -504,5 +479,30 @@
 			<taglib-location>/WEB-INF/taglibs/response.tld</taglib-location>
 		</taglib>
 	</jsp-config>
+	
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/uncaughtException</location>
+	</error-page>
+	
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>/uncaughtException</url-pattern>
+	</servlet-mapping>
+	
+	<error-page>
+		<exception-type>org.openmrs.api.APIAuthenticationException</exception-type>
+		<location>/login.htm</location>
+	</error-page>
+
+	<error-page>
+		<exception-type>org.springframework.web.HttpSessionRequiredException</exception-type>
+		<location>/login.htm</location>
+	</error-page>
+	
+	<error-page>
+		<error-code>404</error-code>
+		<location>/missing.htm</location>
+	</error-page>
 
 </web-app>
