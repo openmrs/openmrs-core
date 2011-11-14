@@ -2,6 +2,8 @@
 <form method="post" autocomplete="off">
 	
 	<div class="content" style="text-align:center">
+        <span><b>$l10n.get("install.step").insert(${currentStepNumber}).insert(${numberOfSteps})</b></span>
+		<br/><br/>
 		<span><b>$l10n.get("install.testing.enterUserNameAndPassword")</b></span>
 		<br/><br/>
 		<table align="center" cellspacing="5" cellpadding="9">
