@@ -17,7 +17,7 @@
 			<tr><td colspan="2" height="40px"></td></tr>
             <tr>
                 <td colspan="2" align="center">
-                	<input type="image" src="images/back_button.png" value="Back" name="backer" style="margin-right: 20px"/>
+                	<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
                 	<input type="image" src="images/forward_button.png" name="continue"/>
                 </td>
             </tr>
