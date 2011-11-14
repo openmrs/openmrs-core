@@ -451,8 +451,9 @@ public class InitializationFilter extends StartupFilter {
 		} // step one
 		else if (DATABASE_SETUP.equals(page)) {
 			if ("Back".equals(httpRequest.getParameter("back"))) {
+				wizardModel.currentStepNumber -= 1;
 				if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-					page = TESTING_AUTHENTICATION_SETUP;
+					renderTemplate(TESTING_AUTHENTICATION_SETUP, referenceMap, httpResponse);
 				} else {
 					renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				}
@@ -503,6 +504,8 @@ public class InitializationFilter extends StartupFilter {
 				
 				if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 					wizardModel.currentStepNumber = 4;
+				} else {
+					wizardModel.currentStepNumber = 2;
 				}
 			}
 			
@@ -512,6 +515,7 @@ public class InitializationFilter extends StartupFilter {
 		else if (DATABASE_TABLES_AND_USER.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
+				wizardModel.currentStepNumber -= 1;
 				renderTemplate(DATABASE_SETUP, referenceMap, httpResponse);
 				return;
 			}
@@ -637,8 +641,11 @@ public class InitializationFilter extends StartupFilter {
 		} else if (WIZARD_COMPLETE.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
+				
 				if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 					page = SIMPLE_SETUP;
+				} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
+					page = DATABASE_TABLES_AND_USER;
 				} else {
 					page = IMPLEMENTATION_ID_SETUP;
 				}
@@ -685,6 +692,7 @@ public class InitializationFilter extends StartupFilter {
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (TESTING_PRODUCTION_URL_SETUP.equals(page)) {
 			if ("Back".equals(httpRequest.getParameter("back"))) {
+				wizardModel.currentStepNumber -= 1;
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				return;
 			}
@@ -711,6 +719,7 @@ public class InitializationFilter extends StartupFilter {
 			return;
 		} else if (TESTING_AUTHENTICATION_SETUP.equals(page)) {
 			if ("Back".equals(httpRequest.getParameter("back"))) {
+				wizardModel.currentStepNumber -= 1;
 				renderTemplate(TESTING_PRODUCTION_URL_SETUP, referenceMap, httpResponse);
 				return;
 			}
