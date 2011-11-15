@@ -949,6 +949,11 @@ public class InitializationFilter extends StartupFilter {
 			fileOut.close();
 			zipIn.close();
 			
+			//Cater for the stand-alone connection url with has :mxj:
+			if (connectionUrl.contains(":mxj:")) {
+				connectionUrl = connectionUrl.replace(":mxj:", ":");
+			}
+			
 			URI uri = URI.create(connectionUrl.substring(5));
 			String host = uri.getHost();
 			int port = uri.getPort();
