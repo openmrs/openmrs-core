@@ -645,7 +645,7 @@ public class InitializationFilter extends StartupFilter {
 				if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 					page = SIMPLE_SETUP;
 				} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-					page = DATABASE_TABLES_AND_USER;
+					page = TESTING_AUTHENTICATION_SETUP;
 				} else {
 					page = IMPLEMENTATION_ID_SETUP;
 				}
@@ -663,6 +663,18 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.importTestData = true;
 				wizardModel.createTables = false;
 				wizardModel.addDemoData = false;
+				//if we have a runtime properties file
+				if (skipDatabaseSetupPage()) {
+					wizardModel.hasCurrentOpenmrsDatabase = false;
+					wizardModel.hasCurrentDatabaseUser = true;
+					wizardModel.createDatabaseUser = false;
+					Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
+					wizardModel.currentDatabaseUsername = props.getProperty("connection.username");
+					wizardModel.currentDatabasePassword = props.getProperty("connection.password");
+					wizardModel.createDatabaseUsername = wizardModel.currentDatabaseUsername;
+					wizardModel.createDatabasePassword = wizardModel.currentDatabasePassword;
+				}
+				
 				wizardModel.tasksToExecute.add(WizardTask.IMPORT_TEST_DATA);
 			} else {
 				if (wizardModel.createTables) {
@@ -730,8 +742,24 @@ public class InitializationFilter extends StartupFilter {
 			checkForEmptyValue(wizardModel.productionUsername, errors, "install.testing.username.required");
 			checkForEmptyValue(wizardModel.productionPassword, errors, "install.testing.password.required");
 			if (errors.isEmpty()) {
-				page = DATABASE_SETUP;
-				wizardModel.currentStepNumber = 3;
+				//If we have a runtime properties file, get the database setup details from it
+				if (skipDatabaseSetupPage()) {
+					Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
+					wizardModel.databaseConnection = props.getProperty("connection.url");
+					loadedDriverString = loadDriver(wizardModel.databaseConnection, wizardModel.databaseDriver);
+					if (!StringUtils.hasText(loadedDriverString)) {
+						page = TESTING_AUTHENTICATION_SETUP;
+						errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
+						renderTemplate(page, referenceMap, httpResponse);
+						return;
+					}
+					
+					wizardModel.databaseName = InitializationWizardModel.DEFAULT_DATABASE_NAME;
+					page = WIZARD_COMPLETE;
+				} else {
+					page = DATABASE_SETUP;
+					wizardModel.currentStepNumber = 3;
+				}
 			}
 			
 			renderTemplate(page, referenceMap, httpResponse);
@@ -1620,5 +1648,18 @@ public class InitializationFilter extends StartupFilter {
 		}
 		
 		return loadedDriverString;
+	}
+	
+	/**
+	 * Utility method that checks if there is a runtime properties file containing database connection
+	 * credentials
+	 * 
+	 * @return
+	 */
+	private static boolean skipDatabaseSetupPage() {
+		Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
+		return (props != null && StringUtils.hasText(props.getProperty("connection.url"))
+		        && StringUtils.hasText(props.getProperty("connection.username")) && StringUtils.hasText(props
+		        .getProperty("connection.password")));
 	}
 }

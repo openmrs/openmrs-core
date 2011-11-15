@@ -42,6 +42,17 @@ public class InitializationWizardModel {
 	public static final String ADMIN_DEFAULT_PASSWORD = "Admin123";
 	
 	/**
+	 * Default test database name to use unless user specifies another in the wizard
+	 */
+	public static final String DEFAULT_TEST_DATABASE_NAME = "testing";
+	
+	/**
+	 * Default database name to use unless user specifies another in the wizard or they are creating
+	 * a test installation
+	 */
+	public static final String DEFAULT_DATABASE_NAME = "openmrs";
+	
+	/**
 	 * Records completed tasks and are displayed at the top of the page upon error
 	 */
 	public List<String> workLog = new ArrayList<String>();
@@ -88,7 +99,7 @@ public class InitializationWizardModel {
 	/**
 	 * Filled out by the user on the databasesetup.vm page
 	 */
-	public String databaseName = "openmrs";
+	public String databaseName = DEFAULT_DATABASE_NAME;
 	
 	/**
 	 * Filled out by user on the databasesetup.vm page Looks like:
@@ -203,11 +214,6 @@ public class InitializationWizardModel {
 	public List<WizardTask> tasksToExecute;
 	
 	public String localeToSave = "";
-	
-	/**
-	 * Default test database name to use unless user specifies another in the wizard
-	 */
-	public static final String DEFAULT_TEST_DATABASE_NAME = "testing";
 	
 	/**
 	 * The url to the production system
