@@ -10,7 +10,7 @@
 			<tr>
 				<th valign="top">$l10n.get("install.testing.productionUrl"):</th>
 				<td>
-					<input type="text" name="productionUrl" size="60" value="${productionUrl}"/><br/>
+					<input type="text" name="productionUrl" size="60" value="${productionUrl}" onKeyPress="return submitenter(this,event);" /><br/>
 					<i><small>$l10n.get("install.testing.productionUrl.example")</small></i>
 				</td>
 			</tr>
