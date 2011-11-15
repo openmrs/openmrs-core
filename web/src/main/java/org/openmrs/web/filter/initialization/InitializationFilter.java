@@ -389,7 +389,7 @@ public class InitializationFilter extends StartupFilter {
 			} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 				page = TESTING_PRODUCTION_URL_SETUP;
 				wizardModel.currentStepNumber = 1;
-				wizardModel.numberOfSteps = 4;
+				wizardModel.numberOfSteps = skipDatabaseSetupPage() ? 2 : 4;
 				wizardModel.databaseName = InitializationWizardModel.DEFAULT_TEST_DATABASE_NAME;
 			} else {
 				page = DATABASE_SETUP;
@@ -645,7 +645,11 @@ public class InitializationFilter extends StartupFilter {
 				if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 					page = SIMPLE_SETUP;
 				} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-					page = DATABASE_TABLES_AND_USER;
+					if (skipDatabaseSetupPage()) {
+						page = TESTING_AUTHENTICATION_SETUP;
+					} else {
+						page = DATABASE_TABLES_AND_USER;
+					}
 				} else {
 					page = IMPLEMENTATION_ID_SETUP;
 				}
