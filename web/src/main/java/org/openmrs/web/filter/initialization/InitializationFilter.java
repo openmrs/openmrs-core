@@ -645,7 +645,7 @@ public class InitializationFilter extends StartupFilter {
 				if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 					page = SIMPLE_SETUP;
 				} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-					page = TESTING_AUTHENTICATION_SETUP;
+					page = DATABASE_TABLES_AND_USER;
 				} else {
 					page = IMPLEMENTATION_ID_SETUP;
 				}
