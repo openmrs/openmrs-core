@@ -65,6 +65,15 @@ public class TestInstallUtil {
 		String[] command = new String[] { "mysql", "--host=" + host, "--port=" + port, "--user=" + user,
 		        "--password=" + pwd, "--database=" + databaseName, "-e", "source " + filePath };
 		
+		//For stand-alone, use explicit path to the mysql executable.
+		String runDirectory = System.getProperties().getProperty("user.dir");
+		File file = new File(runDirectory + File.separatorChar + "database" + File.separatorChar + "bin"
+		        + File.separatorChar + "mysql");
+		
+		if (file.exists()) {
+			command[0] = file.getAbsolutePath();
+		}
+		
 		try {
 			proc = Runtime.getRuntime().exec(command);
 			try {
