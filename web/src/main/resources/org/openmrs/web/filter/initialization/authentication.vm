@@ -9,11 +9,11 @@
 		<table align="center" cellspacing="5" cellpadding="9">
 			<tr>
                 <td>$l10n.get("User.username"):</td>
-                <td><input type="text" name="username"/></td>
+                <td><input type="text" name="username" onKeyPress="return submitenter(this,event);" /></td>
             </tr>
             <tr>
                 <td>$l10n.get("User.password"):</td>
-                <td><input type="password" name="password"/></td>
+                <td><input type="password" name="password" onKeyPress="return submitenter(this,event);" /></td>
             </tr>
             <tr><td colspan="2" height="40px"></td></tr>
             <tr>
