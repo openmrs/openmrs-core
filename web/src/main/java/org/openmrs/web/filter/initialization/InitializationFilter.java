@@ -374,7 +374,7 @@ public class InitializationFilter extends StartupFilter {
 			renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 		} else if (INSTALL_METHOD.equals(page)) {
 			
-			if ("Back".equals(httpRequest.getParameter("back"))) {
+			if (goBack(httpRequest)) {
 				referenceMap.put(FilterUtil.REMEMBER_ATTRIBUTE, httpRequest.getSession().getAttribute(
 				    FilterUtil.REMEMBER_ATTRIBUTE) != null);
 				referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(
@@ -400,7 +400,7 @@ public class InitializationFilter extends StartupFilter {
 			
 		} // simple method
 		else if (SIMPLE_SETUP.equals(page)) {
-			if ("Back".equals(httpRequest.getParameter("back"))) {
+			if (goBack(httpRequest)) {
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				return;
 			}
@@ -450,7 +450,7 @@ public class InitializationFilter extends StartupFilter {
 			
 		} // step one
 		else if (DATABASE_SETUP.equals(page)) {
-			if ("Back".equals(httpRequest.getParameter("back"))) {
+			if (goBack(httpRequest)) {
 				wizardModel.currentStepNumber -= 1;
 				if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 					renderTemplate(TESTING_AUTHENTICATION_SETUP, referenceMap, httpResponse);
@@ -514,7 +514,7 @@ public class InitializationFilter extends StartupFilter {
 		} // step two
 		else if (DATABASE_TABLES_AND_USER.equals(page)) {
 			
-			if ("Back".equals(httpRequest.getParameter("back"))) {
+			if (goBack(httpRequest)) {
 				wizardModel.currentStepNumber -= 1;
 				renderTemplate(DATABASE_SETUP, referenceMap, httpResponse);
 				return;
@@ -554,7 +554,7 @@ public class InitializationFilter extends StartupFilter {
 		} // step three
 		else if (OTHER_RUNTIME_PROPS.equals(page)) {
 			
-			if ("Back".equals(httpRequest.getParameter("back"))) {
+			if (goBack(httpRequest)) {
 				renderTemplate(DATABASE_TABLES_AND_USER, referenceMap, httpResponse);
 				return;
 			}
@@ -573,7 +573,7 @@ public class InitializationFilter extends StartupFilter {
 		} // optional step four
 		else if (ADMIN_USER_SETUP.equals(page)) {
 			
-			if ("Back".equals(httpRequest.getParameter("back"))) {
+			if (goBack(httpRequest)) {
 				renderTemplate(OTHER_RUNTIME_PROPS, referenceMap, httpResponse);
 				return;
 			}
@@ -613,7 +613,7 @@ public class InitializationFilter extends StartupFilter {
 		} // optional step five
 		else if (IMPLEMENTATION_ID_SETUP.equals(page)) {
 			
-			if ("Back".equals(httpRequest.getParameter("back"))) {
+			if (goBack(httpRequest)) {
 				if (wizardModel.createTables)
 					renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				else
@@ -640,7 +640,7 @@ public class InitializationFilter extends StartupFilter {
 			renderTemplate(page, referenceMap, httpResponse);
 		} else if (WIZARD_COMPLETE.equals(page)) {
 			
-			if ("Back".equals(httpRequest.getParameter("back"))) {
+			if (goBack(httpRequest)) {
 				
 				if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 					page = SIMPLE_SETUP;
@@ -707,7 +707,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (TESTING_PRODUCTION_URL_SETUP.equals(page)) {
-			if ("Back".equals(httpRequest.getParameter("back"))) {
+			if (goBack(httpRequest)) {
 				wizardModel.currentStepNumber -= 1;
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				return;
@@ -734,7 +734,7 @@ public class InitializationFilter extends StartupFilter {
 			renderTemplate(page, referenceMap, httpResponse);
 			return;
 		} else if (TESTING_AUTHENTICATION_SETUP.equals(page)) {
-			if ("Back".equals(httpRequest.getParameter("back"))) {
+			if (goBack(httpRequest)) {
 				wizardModel.currentStepNumber -= 1;
 				renderTemplate(TESTING_PRODUCTION_URL_SETUP, referenceMap, httpResponse);
 				return;
@@ -1660,8 +1660,8 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
-	 * Utility method that checks if there is a runtime properties file containing database connection
-	 * credentials
+	 * Utility method that checks if there is a runtime properties file containing database
+	 * connection credentials
 	 * 
 	 * @return
 	 */
@@ -1670,5 +1670,16 @@ public class InitializationFilter extends StartupFilter {
 		return (props != null && StringUtils.hasText(props.getProperty("connection.url"))
 		        && StringUtils.hasText(props.getProperty("connection.username")) && StringUtils.hasText(props
 		        .getProperty("connection.password")));
+	}
+	
+	/**
+	 * Utility methods that checks if the user clicked the back image
+	 * 
+	 * @param httpRequest
+	 * @return
+	 */
+	private static boolean goBack(HttpServletRequest httpRequest) {
+		return "Back".equals(httpRequest.getParameter("back"))
+		        || (httpRequest.getParameter("back.x") != null && httpRequest.getParameter("back.y") != null);
 	}
 }
