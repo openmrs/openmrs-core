@@ -117,7 +117,6 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		// not updating the primary argument. eg: ConceptService.updateConceptWord(Concept)
 		if (methodName.startsWith("save") || methodName.startsWith("create")) {
 			
-			
 			// if the first argument is an OpenmrsObject, handle it now
 			Reflect reflect = new Reflect(OpenmrsObject.class);
 			
@@ -146,7 +145,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				
 			}
 			
-		} else { 
+		} else {
 			// fail early if the method name is not like retirePatient or retireConcept when dealing
 			// with Patients or Concepts as the first argument
 			if (!methodNameEndsWithClassName(method, mainArgument.getClass()))
@@ -160,7 +159,8 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			} else if (methodName.startsWith("unvoid")) {
 				Voidable voidable = (Voidable) args[0];
 				Date originalDateVoided = voidable.getDateVoided();
-				recursivelyHandle(UnvoidHandler.class, voidable, Context.getAuthenticatedUser(), originalDateVoided, null, null);
+				recursivelyHandle(UnvoidHandler.class, voidable, Context.getAuthenticatedUser(), originalDateVoided, null,
+				    null);
 				
 			} else if (methodName.startsWith("retire")) {
 				Retireable retirable = (Retireable) args[0];
@@ -170,8 +170,8 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			} else if (methodName.startsWith("unretire")) {
 				Retireable retirable = (Retireable) args[0];
 				Date originalDateRetired = retirable.getDateRetired();
-				recursivelyHandle(UnretireHandler.class, retirable, Context.getAuthenticatedUser(), originalDateRetired, null,
-				    null);
+				recursivelyHandle(UnretireHandler.class, retirable, Context.getAuthenticatedUser(), originalDateRetired,
+				    null, null);
 				
 			}
 		}
