@@ -360,6 +360,15 @@ public class InitializationFilter extends StartupFilter {
 				
 			} else {
 				wizardModel.canWrite = runtimeProperties.canWrite();
+				
+				wizardModel.databaseConnection = Context.getRuntimeProperties().getProperty("connection.url",
+				    wizardModel.databaseConnection);
+				
+				wizardModel.currentDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
+				    wizardModel.currentDatabaseUsername);
+				
+				wizardModel.currentDatabasePassword = Context.getRuntimeProperties().getProperty("connection.password",
+				    wizardModel.currentDatabasePassword);
 			}
 			
 			wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
