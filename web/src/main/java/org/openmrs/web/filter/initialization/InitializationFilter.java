@@ -57,6 +57,7 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
+import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.SchedulerUtil;
@@ -1404,9 +1405,23 @@ public class InitializationFilter extends StartupFilter {
 									setMessage("Importing installed modules...");
 									
 									parameterMap.remove("s");//not needed to get module files
+									
+									File moduleRepository = OpenmrsUtil
+									        .getDirectoryInApplicationDataDirectory(ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
+									
+									//Use the app data directory defined in the runtime props file if any
+									String appDataDirectory = Context.getRuntimeProperties().getProperty(
+									    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY);
+									if (StringUtils.hasText(appDataDirectory)) {
+										moduleRepository = new File(appDataDirectory,
+										        ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
+										if (!moduleRepository.isDirectory())
+											moduleRepository.mkdirs();
+									}
+									
 									if (!TestInstallUtil.addZippedTestModules(TestInstallUtil.getResourceInputStream(
 									    wizardModel.productionUrl + RELEASE_TESTING_MODULE_PATH + "getModules.htm",
-									    parameterMap))) {
+									    parameterMap), moduleRepository)) {
 										reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE, "");
 										log.warn("Failed to add modules");
 									}

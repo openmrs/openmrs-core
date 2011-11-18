@@ -46,7 +46,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
-import org.openmrs.module.ModuleConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -142,17 +141,16 @@ public class TestInstallUtil {
 	 * before returning
 	 * 
 	 * @param in the {@link InputStream} for the zip file
+	 * @param moduleRepository the directory where to copy to the module files
 	 */
 	@SuppressWarnings("rawtypes")
-	protected static boolean addZippedTestModules(InputStream in) {
+	protected static boolean addZippedTestModules(InputStream in, File moduleRepository) {
 		ZipFile zipFile = null;
 		FileOutputStream out = null;
 		File tempFile = null;
 		boolean successfullyAdded = true;
 		
 		try {
-			File moduleRepository = OpenmrsUtil
-			        .getDirectoryInApplicationDataDirectory(ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
 			tempFile = File.createTempFile("modules", null);
 			out = new FileOutputStream(tempFile);
 			IOUtils.copy(in, out);
