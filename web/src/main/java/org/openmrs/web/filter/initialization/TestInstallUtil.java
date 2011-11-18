@@ -26,9 +26,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.util.Enumeration;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -47,6 +56,10 @@ import org.openmrs.util.OpenmrsUtil;
 public class TestInstallUtil {
 	
 	private static final Log log = LogFactory.getLog(TestInstallUtil.class);
+	
+	private static final String ALGORITHM = "PBEWithMD5AndDES";
+	
+	private static final String TRANSFORMATION = ALGORITHM + "/CBC/PKCS5Padding";
 	
 	/**
 	 * Adds data to the test database from a sql dump file
@@ -186,7 +199,7 @@ public class TestInstallUtil {
 				}
 			}
 			if (tempFile != null) {
-				tempFile.deleteOnExit();
+				tempFile.delete();
 			}
 		}
 		
@@ -228,7 +241,7 @@ public class TestInstallUtil {
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	protected static InputStream getResourceInputStream(String urlString, String openmrsUsername, String openmrsPassword)
+	protected static InputStream getResourceInputStream(String urlString, Map<String, String> parameterMap)
 	        throws MalformedURLException, IOException, APIException {
 		
 		HttpURLConnection urlConnection = (HttpURLConnection) new URL(urlString).openConnection();
@@ -237,8 +250,15 @@ public class TestInstallUtil {
 		urlConnection.setUseCaches(false);
 		urlConnection.setDoOutput(true);
 		
-		String requestParams = "username=" + new String(Base64.encode(openmrsUsername.getBytes(Charset.forName("UTF-8"))))
-		        + "&password=" + new String(Base64.encode(openmrsPassword.getBytes(Charset.forName("UTF-8"))));
+		String requestParams = "";
+		if (parameterMap != null) {
+			boolean isFirst = true;
+			for (Entry<String, String> entry : parameterMap.entrySet()) {
+				requestParams += ((!isFirst ? "&" : "") + entry.getKey() + "=" + entry.getValue());
+				if (isFirst)
+					isFirst = false;
+			}
+		}
 		
 		OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream());
 		out.write(requestParams);
@@ -255,5 +275,31 @@ public class TestInstallUtil {
 			throw new APIException("An error occurred on the production server");
 		
 		return urlConnection.getInputStream();
+	}
+	
+	/**
+	 * Decrypts the specified Base64 string
+	 * 
+	 * @param text the Base64 string to decrypt
+	 * @param salt the salt use when decrypting the string
+	 * @param secretToken the secret token to use when decrypting the string
+	 * @return the decrypted string
+	 * @throws APIException
+	 */
+	public static String decrypt(String text, byte[] salt, String secretToken) throws APIException {
+		try {
+			PBEKeySpec keySpec = new PBEKeySpec(secretToken.toCharArray());
+			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
+			SecretKey secretKey = keyFactory.generateSecret(keySpec);
+			PBEParameterSpec parameterSpec = new PBEParameterSpec(salt, 20);
+			
+			Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+			cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
+			
+			return new String(cipher.doFinal(Base64.decode(text)), Charset.forName("UTF-8"));
+		}
+		catch (GeneralSecurityException e) {
+			throw new APIException("Failed to decrypt string:", e);
+		}
 	}
 }
