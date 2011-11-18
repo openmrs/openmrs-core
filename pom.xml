@@ -27,9 +27,9 @@
 	</organization>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs/tags/openmrs-1.8.3</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs/tags/openmrs-1.8.3</developerConnection>
-		<url>http://svn.openmrs.org/openmrs/tags/openmrs-1.8.3</url>
+		<connection>scm:svn:http://svn.openmrs.org/openmrs/branches/1.8.x/</connection>
+		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs/branches/1.8.x/</developerConnection>
+		<url>http://svn.openmrs.org/openmrs/branches/1.8.x/</url>
 	</scm>
 
 	<modules>
