@@ -1419,6 +1419,9 @@ public class InitializationFilter extends StartupFilter {
 											moduleRepository.mkdirs();
 									}
 									
+									//delete all previously added modules in case of prior test installations
+									FileUtils.cleanDirectory(moduleRepository);
+									
 									if (!TestInstallUtil.addZippedTestModules(TestInstallUtil.getResourceInputStream(
 									    wizardModel.productionUrl + RELEASE_TESTING_MODULE_PATH + "getModules.htm",
 									    parameterMap), moduleRepository)) {
