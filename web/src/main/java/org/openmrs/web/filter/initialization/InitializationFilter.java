@@ -18,8 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.charset.Charset;
-import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -54,6 +52,7 @@ import org.apache.log4j.Logger;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.APIException;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
@@ -205,7 +204,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	        ServletException {
+	    ServletException {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
@@ -313,7 +312,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	        ServletException {
+	    ServletException {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
@@ -387,10 +386,10 @@ public class InitializationFilter extends StartupFilter {
 		} else if (INSTALL_METHOD.equals(page)) {
 			
 			if (goBack(httpRequest)) {
-				referenceMap.put(FilterUtil.REMEMBER_ATTRIBUTE, httpRequest.getSession().getAttribute(
-				    FilterUtil.REMEMBER_ATTRIBUTE) != null);
-				referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(
-				    FilterUtil.LOCALE_ATTRIBUTE));
+				referenceMap.put(FilterUtil.REMEMBER_ATTRIBUTE,
+				    httpRequest.getSession().getAttribute(FilterUtil.REMEMBER_ATTRIBUTE) != null);
+				referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE,
+				    httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 				renderTemplate(CHOOSE_LANG, referenceMap, httpResponse);
 				return;
 			}
@@ -945,11 +944,10 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 	
-	private void importTestDataSet(InputStream in, String connectionUrl, String connectionUsername,
-	        String connectionPassword, String openmrsUsername, String openmrsPassword, byte[] salt) throws IOException {
+	private void importTestDataSet(InputStream in, String connectionUrl, String connectionUsername, String connectionPassword)
+	    throws IOException {
 		File tempFile = null;
 		FileOutputStream fileOut = null;
-		File decryptedTempFile = null;
 		try {
 			ZipInputStream zipIn = new ZipInputStream(in);
 			zipIn.getNextEntry();
@@ -958,15 +956,9 @@ public class InitializationFilter extends StartupFilter {
 			fileOut = new FileOutputStream(tempFile);
 			
 			IOUtils.copy(zipIn, fileOut);
+			
 			fileOut.close();
 			zipIn.close();
-			
-			//Get the contained sqldump file and decrypt its contents to a new temp file
-			decryptedTempFile = File.createTempFile("decTestDataSet", "dump");
-			String encryptedContents = FileUtils.readFileToString(tempFile, "UTF-8");
-			
-			String decryptedText = TestInstallUtil.decrypt(encryptedContents, salt, openmrsUsername + ":" + openmrsPassword);
-			FileUtils.writeStringToFile(decryptedTempFile, decryptedText, "UTF-8");
 			
 			//Cater for the stand-alone connection url with has :mxj:
 			if (connectionUrl.contains(":mxj:")) {
@@ -978,15 +970,11 @@ public class InitializationFilter extends StartupFilter {
 			int port = uri.getPort();
 			
 			TestInstallUtil.addTestData(host, port, wizardModel.databaseName, connectionUsername, connectionPassword,
-			    decryptedTempFile.getAbsolutePath());
+			    tempFile.getAbsolutePath());
 		}
 		finally {
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(fileOut);
-			
-			if (decryptedTempFile != null) {
-				decryptedTempFile.delete();
-			}
 			
 			if (tempFile != null) {
 				tempFile.delete();
@@ -1317,10 +1305,10 @@ public class InitializationFilter extends StartupFilter {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
 						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
 						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
-						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY, Base64.encode(Security
-						        .generateNewInitVector()));
-						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY, Base64.encode(Security
-						        .generateNewSecretKey()));
+						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY,
+						    Base64.encode(Security.generateNewInitVector()));
+						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY,
+						    Base64.encode(Security.generateNewSecretKey()));
 						
 						Properties properties = Context.getRuntimeProperties();
 						properties.putAll(runtimeProperties);
@@ -1373,8 +1361,8 @@ public class InitializationFilter extends StartupFilter {
 								
 							}
 							catch (Exception e) {
-								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE, e
-								        .getMessage());
+								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE,
+								    e.getMessage());
 								log.warn("Error while trying to create tables and demo data", e);
 							}
 						}
@@ -1386,25 +1374,13 @@ public class InitializationFilter extends StartupFilter {
 								setCompletedPercentage(0);
 								
 								try {
-									byte[] saltBytes = new byte[8];
-									new SecureRandom().nextBytes(saltBytes);
-									String salt = Base64.encode(saltBytes);
-									
-									Map<String, String> parameterMap = new HashMap<String, String>();
-									parameterMap.put("u", Base64.encode(wizardModel.productionUsername.getBytes(Charset
-									        .forName("UTF-8"))));
-									parameterMap.put("p", Base64.encode(wizardModel.productionPassword.getBytes(Charset
-									        .forName("UTF-8"))));
-									parameterMap.put("s", salt);
-									
 									importTestDataSet(TestInstallUtil.getResourceInputStream(wizardModel.productionUrl
-									        + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form", parameterMap),
-									    finalDatabaseConnectionString, connectionUsername, connectionPassword,
-									    wizardModel.productionUsername, wizardModel.productionPassword, saltBytes);
+									        + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form",
+									    wizardModel.productionUsername, wizardModel.productionPassword),
+									    finalDatabaseConnectionString, connectionUsername, connectionPassword);
 									
 									setMessage("Importing installed modules...");
 									
-									parameterMap.remove("s");//not needed to get module files
 									
 									File moduleRepository = OpenmrsUtil
 									        .getDirectoryInApplicationDataDirectory(ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
@@ -1424,7 +1400,7 @@ public class InitializationFilter extends StartupFilter {
 									
 									if (!TestInstallUtil.addZippedTestModules(TestInstallUtil.getResourceInputStream(
 									    wizardModel.productionUrl + RELEASE_TESTING_MODULE_PATH + "getModules.htm",
-									    parameterMap), moduleRepository)) {
+									    wizardModel.productionUsername, wizardModel.productionPassword), moduleRepository)) {
 										reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE, "");
 										log.warn("Failed to add modules");
 									}
@@ -1435,13 +1411,18 @@ public class InitializationFilter extends StartupFilter {
 									    TESTING_AUTHENTICATION_SETUP, "");
 									return;
 								}
+								catch (APIException e) {
+									log.warn("An error occured on the remote server");
+									reportError(ErrorMessageConstants.ERROR_REMOTE_SERVER, DEFAULT_PAGE, "");
+									return;
+								}
 								
 								wizardModel.workLog.add("Imported test data");
 								addExecutedTask(WizardTask.IMPORT_TEST_DATA);
 							}
 							catch (Exception e) {
-								log.warn("Error occurred while trying to import test data", e);
 								reportError(ErrorMessageConstants.ERROR_DB_IMPORT_TEST_DATA, DEFAULT_PAGE, e.getMessage());
+								log.warn("Error while trying to import test data", e);
 								return;
 							}
 						}
@@ -1459,8 +1440,8 @@ public class InitializationFilter extends StartupFilter {
 								addExecutedTask(WizardTask.ADD_DEMO_DATA);
 							}
 							catch (Exception e) {
-								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE, e
-								        .getMessage());
+								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE,
+								    e.getMessage());
 								log.warn("Error while trying to add demo data", e);
 							}
 						}
@@ -1507,8 +1488,7 @@ public class InitializationFilter extends StartupFilter {
 							// TODO display a page looping over the required input and ask the user for each.
 							// 		When done and the user and put in their say, call DatabaseUpdater.update(Map);
 							//		with the user's question/answer pairs
-							log
-							        .warn("Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
+							log.warn("Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
 							reportError(ErrorMessageConstants.ERROR_INPUT_REQ, DEFAULT_PAGE);
 							return;
 						}
@@ -1516,15 +1496,14 @@ public class InitializationFilter extends StartupFilter {
 							log.warn(
 							    "A mandatory module failed to start. Fix the error or unmark it as mandatory to continue.",
 							    mandatoryModEx);
-							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE, mandatoryModEx
-							        .getMessage());
+							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE,
+							    mandatoryModEx.getMessage());
 							return;
 						}
 						catch (OpenmrsCoreModuleException coreModEx) {
-							log
-							        .warn(
-							            "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
-							            coreModEx);
+							log.warn(
+							    "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
+							    coreModEx);
 							reportError(ErrorMessageConstants.ERROR_CORE_MOD_REQ, DEFAULT_PAGE, coreModEx.getMessage());
 							return;
 						}
