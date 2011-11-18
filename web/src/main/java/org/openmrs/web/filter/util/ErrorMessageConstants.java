@@ -94,6 +94,4 @@ public class ErrorMessageConstants {
 	public static final String UPDATE_ERROR_UNABLE_AUTHENTICATE = "update.error.unableAuthenticate";
 	
 	public static final String ERROR_DB_UNABLE_TO_ADD_MODULES = "install.error.failedToAddModules";
-	
-	public static final String ERROR_REMOTE_SERVER = "install.error.remoteServer";
 }
