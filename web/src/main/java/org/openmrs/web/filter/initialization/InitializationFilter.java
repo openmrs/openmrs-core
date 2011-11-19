@@ -700,11 +700,6 @@ public class InitializationFilter extends StartupFilter {
 			}
 			wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
 			
-			if (httpRequest.getSession().getAttribute(FilterUtil.REMEMBER_ATTRIBUTE) != null) {
-				wizardModel.localeToSave = String
-				        .valueOf(httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
-			}
-			
 			referenceMap.put("tasksToExecute", wizardModel.tasksToExecute);
 			
 			//if no one has run any installation
@@ -809,9 +804,11 @@ public class InitializationFilter extends StartupFilter {
 			if (rememberLocale) {
 				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
 				httpRequest.getSession().setAttribute(FilterUtil.REMEMBER_ATTRIBUTE, true);
+				wizardModel.localeToSave = localeParameter;
 			} else {
 				// we need to reset it if it was set before
 				httpRequest.getSession().setAttribute(FilterUtil.REMEMBER_ATTRIBUTE, null);
+				wizardModel.localeToSave = null;
 			}
 		}
 	}

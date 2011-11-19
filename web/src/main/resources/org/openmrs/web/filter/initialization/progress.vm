@@ -7,7 +7,7 @@
 			jQuery.get("${setupPageUrl}", {page: "progress.vm.ajaxRequest"} , function(data) {
 				if(data){
 					if(data.initializationComplete) {
-						window.location="index.htm";
+						window.location="index.htm#if($localeToSave)?lang=$localeToSave#end";
 						return;
 					}
 				

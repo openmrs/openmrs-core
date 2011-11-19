@@ -71,6 +71,12 @@
                     <td>#if( $autoUpdateDatabase == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
                 </tr>
                 #end
+                #if($localeToSave)
+                <tr>
+                    <th class="label">$l10n.get("LocalesAndThemes.locale")</th>
+                    <td>${localeToSave}</td>
+                </tr>
+                #end
                 <tr>
                     <th class="label">$l10n.get("install.complete.rp.path")</th>
                     <td>${runtimePropertiesPath}</td>
