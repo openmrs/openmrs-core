@@ -235,8 +235,8 @@ public class TestInstallUtil {
 		urlConnection.setUseCaches(false);
 		urlConnection.setDoOutput(true);
 		
-		String requestParams = "username=" + new String(Base64.encode(openmrsUsername.getBytes(Charset.forName("UTF-8"))))
-		        + "&password=" + new String(Base64.encode(openmrsPassword.getBytes(Charset.forName("UTF-8"))));
+		String requestParams = "username=" + Base64.encode(openmrsUsername.getBytes(Charset.forName("UTF-8")))
+		        + "&password=" + Base64.encode(openmrsPassword.getBytes(Charset.forName("UTF-8")));
 		
 		OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream());
 		out.write(requestParams);
@@ -250,7 +250,7 @@ public class TestInstallUtil {
 		if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
 			throw new APIAuthenticationException("Invalid username or password");
 		else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR)
-			throw new APIException("An error occurred on the production server");
+			throw new APIException("An error occurred on the remote server");
 		
 		return urlConnection.getInputStream();
 	}
