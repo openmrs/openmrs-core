@@ -115,9 +115,9 @@ public class InitializationFilter extends StartupFilter {
 	private final String DATABASE_SETUP = "databasesetup.vm";
 	
 	/**
-	 * The page from where the user specifies the url to a production system
+	 * The page from where the user specifies the url to a remote system
 	 */
-	private final String TESTING_PRODUCTION_URL_SETUP = "productionurl.vm";
+	private final String TESTING_REMOTE_URL_SETUP = "remoteurl.vm";
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
@@ -397,7 +397,7 @@ public class InitializationFilter extends StartupFilter {
 			if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 				page = SIMPLE_SETUP;
 			} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-				page = TESTING_PRODUCTION_URL_SETUP;
+				page = TESTING_REMOTE_URL_SETUP;
 				wizardModel.currentStepNumber = 1;
 				wizardModel.numberOfSteps = skipDatabaseSetupPage() ? 2 : 4;
 				wizardModel.databaseName = InitializationWizardModel.DEFAULT_TEST_DATABASE_NAME;
@@ -711,20 +711,20 @@ public class InitializationFilter extends StartupFilter {
 			referenceMap.put("isInstallationStarted", isInstallationStarted());
 			
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
-		} else if (TESTING_PRODUCTION_URL_SETUP.equals(page)) {
+		} else if (TESTING_REMOTE_URL_SETUP.equals(page)) {
 			if (goBack(httpRequest)) {
 				wizardModel.currentStepNumber -= 1;
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				return;
 			}
 			
-			wizardModel.productionUrl = httpRequest.getParameter("productionUrl");
-			checkForEmptyValue(wizardModel.productionUrl, errors, "install.testing.production.url.required");
+			wizardModel.remoteUrl = httpRequest.getParameter("remoteUrl");
+			checkForEmptyValue(wizardModel.remoteUrl, errors, "install.testing.remote.url.required");
 			if (errors.isEmpty()) {
-				//Check if the production system is running
-				if (TestInstallUtil.testConnection(wizardModel.productionUrl)) {
+				//Check if the remote system is running
+				if (TestInstallUtil.testConnection(wizardModel.remoteUrl)) {
 					//Check if the test module is installed by connecting to its setting page
-					if (TestInstallUtil.testConnection(wizardModel.productionUrl.concat(RELEASE_TESTING_MODULE_PATH
+					if (TestInstallUtil.testConnection(wizardModel.remoteUrl.concat(RELEASE_TESTING_MODULE_PATH
 					        + "settings.htm"))) {
 						page = TESTING_AUTHENTICATION_SETUP;
 						wizardModel.currentStepNumber = 2;
@@ -732,7 +732,7 @@ public class InitializationFilter extends StartupFilter {
 						errors.put("install.testing.noTestingModule", null);
 					}
 				} else {
-					errors.put("install.testing.invalidProductionUrl", new Object[] { wizardModel.productionUrl });
+					errors.put("install.testing.invalidProductionUrl", new Object[] { wizardModel.remoteUrl });
 				}
 			}
 			
@@ -741,15 +741,15 @@ public class InitializationFilter extends StartupFilter {
 		} else if (TESTING_AUTHENTICATION_SETUP.equals(page)) {
 			if (goBack(httpRequest)) {
 				wizardModel.currentStepNumber -= 1;
-				renderTemplate(TESTING_PRODUCTION_URL_SETUP, referenceMap, httpResponse);
+				renderTemplate(TESTING_REMOTE_URL_SETUP, referenceMap, httpResponse);
 				return;
 			}
 			
-			//Authenticate to production server
-			wizardModel.productionUsername = httpRequest.getParameter("username");
-			wizardModel.productionPassword = httpRequest.getParameter("password");
-			checkForEmptyValue(wizardModel.productionUsername, errors, "install.testing.username.required");
-			checkForEmptyValue(wizardModel.productionPassword, errors, "install.testing.password.required");
+			//Authenticate to remote server
+			wizardModel.remoteUsername = httpRequest.getParameter("username");
+			wizardModel.remotePassword = httpRequest.getParameter("password");
+			checkForEmptyValue(wizardModel.remoteUsername, errors, "install.testing.username.required");
+			checkForEmptyValue(wizardModel.remotePassword, errors, "install.testing.password.required");
 			if (errors.isEmpty()) {
 				//If we have a runtime properties file, get the database setup details from it
 				if (skipDatabaseSetupPage()) {
@@ -1370,9 +1370,9 @@ public class InitializationFilter extends StartupFilter {
 								setCompletedPercentage(0);
 								
 								try {
-									importTestDataSet(TestInstallUtil.getResourceInputStream(wizardModel.productionUrl
+									importTestDataSet(TestInstallUtil.getResourceInputStream(wizardModel.remoteUrl
 									        + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form",
-									    wizardModel.productionUsername, wizardModel.productionPassword),
+									    wizardModel.remoteUsername, wizardModel.remotePassword),
 									    finalDatabaseConnectionString, connectionUsername, connectionPassword);
 									
 									setMessage("Importing installed modules...");
@@ -1394,8 +1394,8 @@ public class InitializationFilter extends StartupFilter {
 									FileUtils.cleanDirectory(moduleRepository);
 									
 									if (!TestInstallUtil.addZippedTestModules(TestInstallUtil.getResourceInputStream(
-									    wizardModel.productionUrl + RELEASE_TESTING_MODULE_PATH + "getModules.htm",
-									    wizardModel.productionUsername, wizardModel.productionPassword), moduleRepository)) {
+									    wizardModel.remoteUrl + RELEASE_TESTING_MODULE_PATH + "getModules.htm",
+									    wizardModel.remoteUsername, wizardModel.remotePassword), moduleRepository)) {
 										reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE, "");
 										log.warn("Failed to add modules");
 									}

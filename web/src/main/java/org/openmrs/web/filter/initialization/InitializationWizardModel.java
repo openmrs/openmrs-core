@@ -160,7 +160,7 @@ public class InitializationWizardModel {
 	public Boolean createDatabaseUser = Boolean.FALSE;
 	
 	/**
-	 * Enables importing test data from the production server
+	 * Enables importing test data from the remote server
 	 */
 	public Boolean importTestData = Boolean.FALSE;
 	
@@ -216,19 +216,19 @@ public class InitializationWizardModel {
 	public String localeToSave = "";
 	
 	/**
-	 * The url to the production system
+	 * The url to the remote system
 	 */
-	public String productionUrl = "";
+	public String remoteUrl = "";
 	
 	/**
-	 * The username to use to authenticate to the production system
+	 * The username to use to authenticate to the remote system
 	 */
-	public String productionUsername = "";
+	public String remoteUsername = "";
 	
 	/**
-	 * The password to use to authenticate to the production system
+	 * The password to use to authenticate to the remote system
 	 */
-	public String productionPassword = "";
+	public String remotePassword = "";
 	
 	/**
 	 * The current step. e.g Step 1 of ...

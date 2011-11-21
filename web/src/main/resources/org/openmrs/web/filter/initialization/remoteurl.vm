@@ -8,10 +8,10 @@
                 <td colspan="2" align="center"><strong>$l10n.get("install.step").insert(${currentStepNumber}).insert(${numberOfSteps})</strong></td>
 			</tr>
 			<tr>
-				<th valign="top">$l10n.get("install.testing.productionUrl"):</th>
+				<th valign="top">$l10n.get("install.testing.remoteUrl"):</th>
 				<td>
-					<input type="text" name="productionUrl" size="60" value="${productionUrl}" onKeyPress="return submitenter(this,event);" /><br/>
-					<i><small>$l10n.get("install.testing.productionUrl.example")</small></i>
+					<input type="text" name="remoteUrl" size="60" value="${remoteUrl}" onKeyPress="return submitenter(this,event);" /><br/>
+					<i><small>$l10n.get("install.testing.remoteUrl.example")</small></i>
 				</td>
 			</tr>
 			<tr><td colspan="2" height="40px"></td></tr>
@@ -24,7 +24,7 @@
 		</table>
 	</div>
 	
-	<input type="hidden" name="page" value="productionurl.vm" /> 
+	<input type="hidden" name="page" value="remoteurl.vm" /> 
 	
 </form>
 
