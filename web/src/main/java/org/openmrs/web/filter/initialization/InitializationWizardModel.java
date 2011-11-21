@@ -42,11 +42,6 @@ public class InitializationWizardModel {
 	public static final String ADMIN_DEFAULT_PASSWORD = "Admin123";
 	
 	/**
-	 * Default test database name to use unless user specifies another in the wizard
-	 */
-	public static final String DEFAULT_TEST_DATABASE_NAME = "testing";
-	
-	/**
 	 * Default database name to use unless user specifies another in the wizard or they are creating
 	 * a test installation
 	 */
