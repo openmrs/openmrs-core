@@ -86,12 +86,12 @@
                     <td colspan="2" class="question">$l10n.get("install.complete.settings")</td>
                 </tr>
                 <tr>
-                    <th class="label">$l10n.get("install.testing.productionUrl")</th>
-                    <td>${productionUrl}</td>
+                    <th class="label">$l10n.get("install.testing.remoteUrl")</th>
+                    <td>${remoteUrl}</td>
                 </tr>
                 <tr>
-                    <th class="label">$l10n.get("install.testing.production.username")</th>
-                    <td>${productionUsername}</td>
+                    <th class="label">$l10n.get("install.testing.remote.username")</th>
+                    <td>${remoteUsername}</td>
                 </tr>
                 #end
                 <tr>
