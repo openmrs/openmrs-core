@@ -400,7 +400,6 @@ public class InitializationFilter extends StartupFilter {
 				page = TESTING_REMOTE_URL_SETUP;
 				wizardModel.currentStepNumber = 1;
 				wizardModel.numberOfSteps = skipDatabaseSetupPage() ? 2 : 4;
-				wizardModel.databaseName = InitializationWizardModel.DEFAULT_TEST_DATABASE_NAME;
 			} else {
 				page = DATABASE_SETUP;
 				wizardModel.currentStepNumber = 1;
