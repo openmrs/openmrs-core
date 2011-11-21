@@ -573,9 +573,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
 		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
-		searchCriteria.addOrder(Order.desc("cw1.weight"));
 		List<ConceptWord> conceptWords = new Vector<ConceptWord>();
 		if (searchCriteria != null) {
+			searchCriteria.addOrder(Order.desc("cw1.weight"));
 			if (start != null)
 				searchCriteria.setFirstResult(start);
 			if (size != null && size > 0)

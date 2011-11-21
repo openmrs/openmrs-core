@@ -264,6 +264,7 @@ public class DWRConceptService {
 	 * @return list of {@link ConceptListItem} or {@link ConceptDrugListItem} answers that match the
 	 *         query
 	 * @throws Exception if given conceptId is not found
+	 * @should not fail if the specified concept has no answers (regression test for TRUNK-2807)
 	 */
 	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts)
 	        throws Exception {
