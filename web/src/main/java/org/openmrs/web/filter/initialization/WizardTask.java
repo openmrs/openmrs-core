@@ -25,7 +25,7 @@ public enum WizardTask {
 
 	ADD_DEMO_DATA("install.progress.tasks.add.demoData"), UPDATE_TO_LATEST("install.progress.tasks.update"),
 
-	IMPORT_TEST_DATA("install.progress.tasks.test");
+	IMPORT_TEST_DATA("install.progress.tasks.test"), ADD_MODULES("install.progress.tasks.addModules");
 	
 	private final String displayText;
 	

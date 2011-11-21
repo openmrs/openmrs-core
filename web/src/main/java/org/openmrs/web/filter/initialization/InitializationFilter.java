@@ -690,6 +690,7 @@ public class InitializationFilter extends StartupFilter {
 				}
 				
 				wizardModel.tasksToExecute.add(WizardTask.IMPORT_TEST_DATA);
+				wizardModel.tasksToExecute.add(WizardTask.ADD_MODULES);
 			} else {
 				if (wizardModel.createTables) {
 					wizardModel.tasksToExecute.add(WizardTask.CREATE_TABLES);
@@ -1370,13 +1371,36 @@ public class InitializationFilter extends StartupFilter {
 								setCompletedPercentage(0);
 								
 								try {
-									importTestDataSet(TestInstallUtil.getResourceInputStream(wizardModel.remoteUrl
+									InputStream inData = TestInstallUtil.getResourceInputStream(wizardModel.remoteUrl
 									        + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form",
-									    wizardModel.remoteUsername, wizardModel.remotePassword),
-									    finalDatabaseConnectionString, connectionUsername, connectionPassword);
+									    wizardModel.remoteUsername, wizardModel.remotePassword);
+									if (inData == null) {
+										reportError(ErrorMessageConstants.ERROR_DB_IMPORT_TEST_DATA, DEFAULT_PAGE, "");
+										return;
+									}
 									
-									setMessage("Importing installed modules...");
+									setCompletedPercentage(40);
+									setMessage("Loading imported test data...");
+									importTestDataSet(inData, finalDatabaseConnectionString, connectionUsername,
+									    connectionPassword);
+									wizardModel.workLog.add("Imported test data");
+									addExecutedTask(WizardTask.IMPORT_TEST_DATA);
 									
+									//reset the progress for the next task
+									setCompletedPercentage(0);
+									setMessage("Importing modules from remote server...");
+									setExecutingTask(WizardTask.ADD_MODULES);
+									
+									InputStream inModules = TestInstallUtil.getResourceInputStream(wizardModel.remoteUrl
+									        + RELEASE_TESTING_MODULE_PATH + "getModules.htm", wizardModel.remoteUsername,
+									    wizardModel.remotePassword);
+									if (inModules == null) {
+										reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_FETCH_MODULES, DEFAULT_PAGE, "");
+										return;
+									}
+									
+									setCompletedPercentage(90);
+									setMessage("Adding imported modules...");
 									File moduleRepository = OpenmrsUtil
 									        .getDirectoryInApplicationDataDirectory(ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
 									
@@ -1393,11 +1417,12 @@ public class InitializationFilter extends StartupFilter {
 									//delete all previously added modules in case of prior test installations
 									FileUtils.cleanDirectory(moduleRepository);
 									
-									if (!TestInstallUtil.addZippedTestModules(TestInstallUtil.getResourceInputStream(
-									    wizardModel.remoteUrl + RELEASE_TESTING_MODULE_PATH + "getModules.htm",
-									    wizardModel.remoteUsername, wizardModel.remotePassword), moduleRepository)) {
+									if (!TestInstallUtil.addZippedTestModules(inModules, moduleRepository)) {
 										reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE, "");
-										log.warn("Failed to add modules");
+										return;
+									} else {
+										wizardModel.workLog.add("Added Modules");
+										addExecutedTask(WizardTask.ADD_MODULES);
 									}
 								}
 								catch (APIAuthenticationException e) {
@@ -1406,9 +1431,6 @@ public class InitializationFilter extends StartupFilter {
 									    TESTING_AUTHENTICATION_SETUP, "");
 									return;
 								}
-								
-								wizardModel.workLog.add("Imported test data");
-								addExecutedTask(WizardTask.IMPORT_TEST_DATA);
 							}
 							catch (Exception e) {
 								reportError(ErrorMessageConstants.ERROR_DB_IMPORT_TEST_DATA, DEFAULT_PAGE, e.getMessage());
