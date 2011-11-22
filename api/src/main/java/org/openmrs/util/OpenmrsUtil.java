@@ -2381,8 +2381,17 @@ public class OpenmrsUtil {
 	 * @since 1.8
 	 */
 	public static Properties getRuntimeProperties(String applicationName) {
+		if (applicationName == null)
+			applicationName = "openmrs";
 		
-		String pathName = getRuntimePropertiesFilePathName(applicationName);
+		String pathName = "";
+		
+		if ("true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"))) {
+			log.info("In functional testing mode. Ignoring the existing runtime properties file");
+			pathName = applicationName + "-test-runtime.properties";
+		} else {
+			getRuntimePropertiesFilePathName(applicationName);
+		}
 		
 		FileInputStream propertyStream = null;
 		try {
