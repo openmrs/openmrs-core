@@ -80,6 +80,8 @@ public class VisitFormController {
 	        @RequestParam(required = false, value = "startNow") Boolean startNow, ModelMap model) {
 		if (startNow != null && startNow && visit.getStartDatetime() == null)
 			visit.setStartDatetime(new Date());
+		if (visit.getVisitId() != null)
+			model.addAttribute("canPurgeVisit", Context.getEncounterService().getEncountersByVisit(visit, true).size() == 0);
 		addEncounterAndObservationCounts(visit, model);
 		return VISIT_FORM;
 	}
