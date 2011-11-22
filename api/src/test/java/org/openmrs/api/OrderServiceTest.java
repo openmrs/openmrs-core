@@ -101,7 +101,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(discontinuedReasonNonCoded, order.getDiscontinuedReasonNonCoded());
 	}
-
+	
 	@Test
 	public void voidDrugSet_shouldNotVoidThePatient() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
