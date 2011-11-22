@@ -321,8 +321,8 @@ public class DWRConceptService {
 				ConceptDescription description = set.getConcept().getDescription(locale);
 				if (description != null) {
 					for (Field f : fs.getFieldsByConcept(set.getConcept())) {
-						if (OpenmrsUtil.nullSafeEquals(f.getName(), cn.getName()) 
-								&& OpenmrsUtil.nullSafeEquals(f.getDescription(), description.getDescription())
+						if (OpenmrsUtil.nullSafeEquals(f.getName(), cn.getName())
+						        && OpenmrsUtil.nullSafeEquals(f.getDescription(), description.getDescription())
 						        && f.isSelectMultiple().equals(false)) {
 							field = f;
 						}
