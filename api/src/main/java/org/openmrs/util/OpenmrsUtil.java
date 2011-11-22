@@ -2390,7 +2390,7 @@ public class OpenmrsUtil {
 			log.info("In functional testing mode. Ignoring the existing runtime properties file");
 			pathName = applicationName + "-test-runtime.properties";
 		} else {
-			getRuntimePropertiesFilePathName(applicationName);
+			pathName = getRuntimePropertiesFilePathName(applicationName);
 		}
 		
 		FileInputStream propertyStream = null;
