@@ -1,0 +1,350 @@
+.hidden {display:none;}
+
+.even {background-color:white;}
+
+.odd {background-color:#f2f2f2;}
+
+tr {border-bottom:1px solid #ccc;}
+
+.storyNameColumn {width:100%;}
+
+#header {
+margin: 0 auto 0 auto;
+margin-left: 30px;
+margin-bottom: 40px;
+}
+
+body {
+margin: 0;
+font-family: Verdana, sans-serif;
+font-size: 0.84em;
+color: #555;
+text-align: left;
+padding: 0 0 10px 0;
+background-color: #fff;
+}
+
+h2 {
+background-color: #ffcd13;
+margin-top:3em;
+margin-bottom: 10px;
+padding: 5px 10px;
+font-size: 120%;
+}
+
+body,td,select,input,li {
+font-size: 13px;
+}
+
+b {
+color: #333;
+}
+
+a {color:inherit;}
+
+.logo {
+float: right;
+margin-right: 30px;
+}
+
+.clear {
+clear: both;
+}
+
+.left {
+text-align: left;
+margin-left: 10px;
+}
+
+.right {
+text-align: right;
+margin-right: 10px;
+}
+
+.reports {
+margin: 10px;
+text-align: left;
+}
+
+.reports h2 {
+opacity: 0.85;
+}
+
+table {
+border-collapse: collapse;
+}
+
+.stories {
+border: 1px solid #000;
+}
+
+.scenarios {
+border: 1px solid #000;
+}
+
+.steps {
+border: 1px solid #000;
+}
+
+.totals {
+border-top: 1px solid #000;
+padding-top: 10px;
+font-weight: bold;
+}
+
+.reports table {
+border: solid;
+}
+
+.topHeader th {
+border-bottom: 1px solid #000;
+}
+
+.topHeader th, .totals td{
+background-color:#eee;
+}
+
+.reports table th {
+text-align: center;
+font-weight: bold;
+padding: 2px;
+border-right:1px solid #000;
+}
+
+.reports table td {
+text-align: center;
+padding: 2px;
+}
+
+.reports table td.story {
+text-align: left;
+padding: 2px;
+}
+
+.lane {
+border-left: 1px solid #000;
+}
+
+.maps {
+margin-left: 30px;
+margin-top: 30px;
+text-align: left;
+}
+
+.maps h2 {
+opacity: 0.85;
+}
+
+.maps table {
+border: solid;
+}
+
+.maps table th {
+text-align: center;
+font-weight: bold;
+padding: 10px;
+}
+
+.maps table td {
+text-align: center;
+padding: 5px;
+}
+
+.maps table td.name {
+text-align: left;
+padding: 5px;
+}
+
+.views {
+margin-left: 30px;
+margin-top: 30px;
+text-align: left;
+}
+
+.views h2 {
+opacity: 0.85;
+}
+
+.views table {
+border: solid;
+}
+
+.views table th {
+text-align: center;
+font-weight: bold;
+padding: 10px;
+}
+
+.views table td {
+text-align: center;
+padding: 5px;
+}
+
+.views table td.name {
+text-align: left;
+padding: 5px;
+}
+
+.story {
+text-align: left;
+margin-left: 10px;
+}
+
+.story h2 {
+background-color: #fff;
+border-color: #ffcd13;
+}
+
+.meta {
+text-align: left;
+color: purple;
+margin-bottom: 10px;
+}
+
+.filter {
+text-align: left;
+color: red;
+margin-left: 10px;
+margin-bottom: 10px;
+}
+
+.keyword {
+margin-left: 10px;
+}
+
+.property {
+margin-left: 10px;
+}
+
+.narrative {
+text-align: left;
+color: blue;
+}
+
+.element {
+padding-left: 10px;
+}
+
+span.inOrderTo,span.asA,span.iWantTo {
+font-weight: bold;
+}
+
+.givenStories, .path {
+font-weight: bolder;
+font-size: 16px;
+opacity: 0.85;
+margin-bottom: 10px;
+padding: 5px 10px;
+}
+
+.scenario {
+text-align: left;
+padding-left: 1px;
+}
+
+.step {
+color: black;
+padding-left: 10px;
+}
+
+.successful {
+color: green;
+}
+
+.ignorable {
+color: blue;
+}
+
+.pending {
+color: olive;
+}
+
+.notPerformed {
+color: brown;
+}
+
+.failed {
+color: red;
+}
+
+.dryRun {
+border: solid;
+color: amber;
+background-color: yellow;
+margin-left: 12px;
+padding: 10px;
+font-size: 20px;
+text-align: center;
+text-weight: bold;
+}
+
+.parameter {
+color: purple;
+padding-left: 0px;
+text-weight: bold;
+}
+
+.keyword {
+text-weight: bold;
+}
+
+.examples {
+margin-left: 10px;
+padding-bottom: 20px;
+}
+
+.examples h3 {
+opacity: 0.85;
+}
+
+.examples table {
+border: solid;
+margin-top: 12px;
+margin-left: 12px;
+}
+
+.examples table th, td {
+text-align: center;
+padding-left: 5px;
+padding-right: 5px;
+border-left: 1px solid;
+}
+
+.examples table th {
+font-weight: bold;
+}
+
+.outcomes table {
+border: solid;
+margin-top: 12px;
+margin-left: 12px;
+}
+
+.outcomes table th {
+text-align: center;
+font-weight: bold;
+}
+
+.outcomes table tr.notVerified {
+color: red;
+}
+
+.outcomes table tr.verified {
+color: green;
+}
+
+.outcomes table td {
+text-align: center;
+}
+
+.outcomes {
+padding-bottom: 20px;
+}
+
+pre.failure {
+padding-left: 10px;
+color: red;
+}
+
+.screenshot {width:320px;}
+.screenshotHolder {margin: 2em 0; text-align:center; padding:8px; background-color:#eee; width:400px;}
