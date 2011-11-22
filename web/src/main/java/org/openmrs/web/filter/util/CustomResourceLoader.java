@@ -34,9 +34,9 @@ import org.openmrs.util.LocaleUtility;
 /**
  * This class is responsible for loading messages resources from file system
  */
-public class CustomResourseLoader {
+public class CustomResourceLoader {
 	
-	private static final Log log = LogFactory.getLog(CustomResourseLoader.class);
+	private static final Log log = LogFactory.getLog(CustomResourceLoader.class);
 	
 	/** */
 	public static final String PREFIX = "messages";
@@ -52,12 +52,12 @@ public class CustomResourseLoader {
 	
 	private URL resourceURL = null;
 	
-	private static CustomResourseLoader instance = null;
+	private static CustomResourceLoader instance = null;
 	
 	/**
 	 * default constructor that initializes inner map of resources
 	 */
-	private CustomResourseLoader(HttpServletRequest httpRequest) {
+	private CustomResourceLoader(HttpServletRequest httpRequest) {
 		this.resources = new HashMap<Locale, ResourceBundle>();
 		this.availablelocales = new HashSet<Locale>();
 		String basePath = null;
@@ -79,11 +79,11 @@ public class CustomResourseLoader {
 	 * @param basedir <b>(optional)</b> the absolute path to directory, that contains resources to
 	 *            be loaded. If this isn't specified then <code>${CONTEXT-ROOT}/WEB-INF/</code> will
 	 *            be used
-	 * @return the singleton instance of {@link CustomResourseLoader}
+	 * @return the singleton instance of {@link CustomResourceLoader}
 	 */
-	public static CustomResourseLoader getInstance(HttpServletRequest httpRequest) {
+	public static CustomResourceLoader getInstance(HttpServletRequest httpRequest) {
 		if (instance == null) {
-			instance = new CustomResourseLoader(httpRequest);
+			instance = new CustomResourceLoader(httpRequest);
 		}
 		return instance;
 	}
