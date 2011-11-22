@@ -336,7 +336,8 @@ $j(document).ready( function() {
 		</td>
 		<td>
 			<openmrs:hasPrivilege privilege="Purge Visits">
-			<input type="button" value='<spring:message code="general.purge"/>' onclick="javascript:$j('#purge-dialog').dialog('open')" />
+			<input type="button" value='<spring:message code="general.purge"/>' onclick="javascript:$j('#purge-dialog').dialog('open')" 
+				<c:if test="${!canPurgeVisit}"> disabled="disabled" title="<spring:message code="Visit.cannotPurgeVisitWithEncounters"/>"</c:if> />
 			<div id="purge-dialog" title="<spring:message code="Visit.confirm.purge"/>">
 				<form:form action="purgeVisit.htm" method="post" modelAttribute="visit">
 				<c:if test="${param.visitId != null}">
