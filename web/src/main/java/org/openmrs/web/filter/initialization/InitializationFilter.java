@@ -72,7 +72,7 @@ import org.openmrs.util.Security;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
-import org.openmrs.web.filter.util.CustomResourseLoader;
+import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.springframework.util.StringUtils;
@@ -822,7 +822,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
 		Locale locale = httpRequest.getLocale();
-		if (CustomResourseLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
+		if (CustomResourceLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
 			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, locale.toString());
 		} else {
 			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, Locale.ENGLISH.toString());

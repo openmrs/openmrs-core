@@ -56,7 +56,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.Listener;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.initialization.InitializationFilter;
-import org.openmrs.web.filter.util.CustomResourseLoader;
+import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.springframework.web.context.ContextLoader;
@@ -261,7 +261,7 @@ public class UpdateFilter extends StartupFilter {
 	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
 		Locale locale = httpRequest.getLocale();
 		String systemDefaultLocale = FilterUtil.readSystemDefaultLocale(null);
-		if (CustomResourseLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
+		if (CustomResourceLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
 			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, locale.toString());
 			log.info("Used client's locale " + locale.toString());
 		} else if (StringUtils.isNotBlank(systemDefaultLocale)) {
