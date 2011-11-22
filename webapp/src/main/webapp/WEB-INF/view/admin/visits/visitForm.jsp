@@ -279,10 +279,11 @@ $j(document).ready( function() {
 		</c:if>
 		</c:if>
 		<tr>
-			<td colspan="2">
-				<table cellpadding="0" cellspacing="20" align="center">
+			<td colspan="2"><br/>
+				<table cellpadding="0" cellspacing="0" align="left">
        				<tr>
        					<td><input type="submit" value='<spring:message code="general.save" />' /></td>
+       					<td width="15px"></td>
        					<td>
        						<c:set var="cancelUrl" value="${pageContext.request.contextPath}/admin" scope="page"></c:set>
        						<c:if test="${not empty param.patientId}">
@@ -300,7 +301,7 @@ $j(document).ready( function() {
 
 <c:if test="${visit.visitId != null}">
 <br/>
-<table cellpadding="3" cellspacing="3" style="float: right">
+<table cellpadding="3" cellspacing="3" align="left">
 	<tr>
 		<td>
 			<openmrs:hasPrivilege privilege="Delete Visits">
