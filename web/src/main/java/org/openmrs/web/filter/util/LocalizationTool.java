@@ -49,6 +49,6 @@ public class LocalizationTool extends ResourceTool {
 		if (baseName == null || locale == null) {
 			return null;
 		}
-		return CustomResourseLoader.getInstance(null).getResourceBundle(locale);
+		return CustomResourceLoader.getInstance(null).getResourceBundle(locale);
 	}
 }
