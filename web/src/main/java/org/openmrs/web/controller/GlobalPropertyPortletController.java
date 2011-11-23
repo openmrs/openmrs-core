@@ -58,6 +58,8 @@ public class GlobalPropertyPortletController extends PortletController {
 			if (excludePrefix != null) {
 				prefixes = excludePrefix.split(";");
 			}
+			//unique identifier for this portlet in case there are multiple on the same page
+			model.put("portletId", System.currentTimeMillis());
 			
 			List<GlobalProperty> properties = new ArrayList<GlobalProperty>();
 			for (GlobalProperty p : Context.getAdministrationService().getAllGlobalProperties()) {
