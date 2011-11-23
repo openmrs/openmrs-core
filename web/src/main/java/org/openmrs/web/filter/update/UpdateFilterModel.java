@@ -42,11 +42,23 @@ public class UpdateFilterModel {
 	
 	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
 	
+	public Boolean updateRequired = false;
+	
 	/**
 	 * Default constructor that sets up some of the properties
 	 */
 	public UpdateFilterModel() {
 		updateChanges();
+		
+		try {
+			if (changes != null && changes.size() > 0)
+				updateRequired = true;
+			else
+				updateRequired = DatabaseUpdater.updatesRequired();
+		}
+		catch (Exception e) {
+			// do nothing
+		}
 	}
 	
 	/**
@@ -58,6 +70,11 @@ public class UpdateFilterModel {
 		
 		try {
 			changes = DatabaseUpdater.getUnrunDatabaseChanges();
+			
+			// not sure why this is necessary...
+			if (changes == null && DatabaseUpdater.isLocked()) {
+				changes = DatabaseUpdater.getUnrunDatabaseChanges();
+			}
 		}
 		catch (Exception e) {
 			log.error("Unable to get the database changes", e);
