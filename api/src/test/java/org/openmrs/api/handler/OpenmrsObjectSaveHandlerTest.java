@@ -18,6 +18,8 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.BaseOpenmrsObject;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptSource;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -68,6 +70,19 @@ public class OpenmrsObjectSaveHandlerTest {
 		SomeClass obj = new SomeClass(null, " ");
 		new OpenmrsObjectSaveHandler().handle(obj, null, null, null);
 		Assert.assertNotNull(obj.getDescription());
+	}
+	
+	/**
+	 * @see {@link OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)}
+	 */
+	@Test
+	@Verifies(value = "trim strings without AllowLeadingOrTrailingWhitespace annotation", method = "handle(OpenmrsObject,User,Date,String)")
+	public void handle_shouldTrimStringsWithoutAllowLeadingOrTrailingWhitespaceAnnotation() {
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term.setCode(" code ");
+		term.setConceptSource(new ConceptSource(1));
+		new OpenmrsObjectSaveHandler().handle(term, null, null, null);
+		Assert.assertEquals("code", term.getCode());
 	}
 	
 	public class SomeClass extends BaseOpenmrsObject {
