@@ -104,7 +104,7 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		
 		assertNotNull("The schema xml was not saved correctly, none found in the db", reportSchemaXmlFromDB);
 		
-		assertEquals(xml.toString(), reportSchemaXmlFromDB.getXml());
+		assertEquals(xml.toString().trim(), reportSchemaXmlFromDB.getXml().trim());
 		
 		assertEquals(new Integer(1), reportSchemaXmlFromDB.getReportSchemaId());
 		
@@ -176,7 +176,7 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		
 		//assertTrue("The saved object and the actual object are not calling themselves equal", reportSchemaXml.equals(reportSchemaXmlFromDB));
 		
-		assertEquals(xml.toString(), reportSchemaXmlFromDB.getXml());
+		assertEquals(xml.toString().trim(), reportSchemaXmlFromDB.getXml().trim());
 		
 		// Create a slightly different xml.
 		StringBuilder xml2 = new StringBuilder();
@@ -233,7 +233,7 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		ReportSchemaXml reportSchemaXmlUpdateFromDB = rs.getReportSchemaXml(reportSchemaXmlFromDB.getReportSchemaId());
 		
 		// Were the [name, description, and] xml really updated?
-		assertEquals(xml2.toString(), reportSchemaXmlUpdateFromDB.getXml());
+		assertEquals(xml2.toString().trim(), reportSchemaXmlUpdateFromDB.getXml().trim());
 		assertEquals(newName, reportSchemaXmlUpdateFromDB.getName());
 		assertEquals(newDescription, reportSchemaXmlUpdateFromDB.getDescription());
 	}
