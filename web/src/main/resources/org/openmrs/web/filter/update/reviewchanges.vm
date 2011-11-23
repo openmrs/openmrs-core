@@ -120,7 +120,6 @@
 					#end
 				</td>
 			</tr>
-			#if($isDatabaseUpdateInProgress != true)
 			<tr>
 				<td>
 					<table>
@@ -144,7 +143,6 @@
 					</table>
 				</td>
 			</tr>
-			#end
 			#if( $updateJobStarted != true && $isDatabaseUpdateInProgress != true )
 				<tr>
 					<td colspan="2" align="center"><input type="image" src="images/forward_button.png" name="continue"/></td>
