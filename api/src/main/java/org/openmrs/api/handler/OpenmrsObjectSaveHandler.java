@@ -88,6 +88,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 					continue;
 				}
 				
+				Object valueBeforeTrim = value;
 				if (property.getWriteMethod().getAnnotation(AllowLeadingOrTrailingWhitespace.class) == null) {
 					value = ((String) value).trim();
 				}
@@ -98,6 +99,10 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 					if (!(openmrsObject instanceof Voidable && ((Voidable) openmrsObject).isVoided())) {
 						PropertyUtils.setProperty(openmrsObject, property.getName(), null);
 					}
+				}
+				else if (!valueBeforeTrim.equals(value)) {
+					//Save the non empty trimmed value.
+					PropertyUtils.setProperty(openmrsObject, property.getName(), value);
 				}
 			}
 			catch (InvocationTargetException ex) {
