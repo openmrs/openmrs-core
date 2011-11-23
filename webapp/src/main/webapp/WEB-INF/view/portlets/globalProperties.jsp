@@ -41,27 +41,27 @@
 							<c:out value="${prop.propertyValue}"></c:out>
 						</c:when>
 						<c:otherwise>	
-							<input type="text" size="80" id="gp_${ind}" onKeyUp="showDiv('gp_${ind}_actions')"/>		
+							<input type="text" size="80" id="gp_${ind}-${model.portletId}" onKeyUp="showDiv('gp_${ind}-${model.portletId}_actions')"/>		
 						</c:otherwise>
 					</c:choose>
                 </td>
 				<td style="width: 10em">
-					<span id="gp_${ind}_actions" style="display: none">
+					<span id="gp_${ind}-${model.portletId}_actions" style="display: none">
 						<input type="button" value="<spring:message code="general.save"/>"
 							onClick='
-								hideDiv("gp_${ind}_actions");
-								showDiv("gp_${ind}_saving");
-								DWRAdministrationService.setGlobalProperty("${prop.property}", dwr.util.getValue("gp_${ind}"),
-									function() { hideDiv("gp_${ind}_saving") });
+								hideDiv("gp_${ind}-${model.portletId}_actions");
+								showDiv("gp_${ind}-${model.portletId}_saving");
+								DWRAdministrationService.setGlobalProperty("${prop.property}", dwr.util.getValue("gp_${ind}-${model.portletId}"),
+									function() { hideDiv("gp_${ind}-${model.portletId}_saving") });
 							'
 						/>
 						<input type="button" value="<spring:message code="general.cancel"/>"
 							onClick='
-								hideDiv("gp_${ind}_actions");
-								dwr.util.setValue("gp_${ind}", "${prop.propertyValue}");
+								hideDiv("gp_${ind}-${model.portletId}_actions");
+								dwr.util.setValue("gp_${ind}-${model.portletId}", "${prop.propertyValue}");
 						'/>
 					</span>
-					<span id="gp_${ind}_saving" style="display: none; background-color: #e0e0e0">
+					<span id="gp_${ind}-${model.portletId}_saving" style="display: none; background-color: #e0e0e0">
 						<spring:message code="general.saving" arguments="..."/>
 					</span>
 				</td>
@@ -76,7 +76,7 @@
 			</c:if>
 			<script type="text/javascript">
 				var gpVal = "<spring:message text="${prop.propertyValue}" javaScriptEscape="true"/>";
-				dwr.util.setValue('gp_${ind}', gpVal);
+				dwr.util.setValue('gp_${ind}-${model.portletId}', gpVal);
 			</script>
 		</c:forEach>
 	</table>
