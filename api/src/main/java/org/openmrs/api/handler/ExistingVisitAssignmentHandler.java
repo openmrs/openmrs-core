@@ -47,6 +47,7 @@ public class ExistingVisitAssignmentHandler extends BaseEncounterVisitHandler {
 	 * @see org.openmrs.api.handler.EncounterVisitHandler#beforeCreateEncounter(org.openmrs.Encounter)
 	 * @should assign existing visit if match found
 	 * @should not assign visit if no match found
+	 * @should not assign visit which stopped before encounter date
 	 */
 	@Override
 	public void beforeCreateEncounter(Encounter encounter) {
