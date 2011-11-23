@@ -61,7 +61,9 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 		if (openmrsObject.getUuid() == null)
 			openmrsObject.setUuid(UUID.randomUUID().toString());
 		
-		//Set all empty string properties to null
+		//Set all empty string properties, that do not have the AllowEmptyStrings annotation, to null.
+		//And also trim leading and trailing white space for properties that do not have the
+		//AllowLeadingOrTrailingWhitespace annotation.
 		PropertyDescriptor[] properties = PropertyUtils.getPropertyDescriptors(openmrsObject);
 		for (PropertyDescriptor property : properties) {
 			
@@ -75,11 +77,8 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 				continue;
 			}
 			
+			//We are dealing with only strings
 			if (!property.getPropertyType().equals(String.class)) {
-				continue;
-			}
-			
-			if (property.getWriteMethod().getAnnotation(AllowEmptyStrings.class) != null) {
 				continue;
 			}
 			
@@ -92,17 +91,23 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 				Object valueBeforeTrim = value;
 				if (property.getWriteMethod().getAnnotation(AllowLeadingOrTrailingWhitespace.class) == null) {
 					value = ((String) value).trim();
-				}
-				
-				if ("".equals(value)) {
 					
+					//If we have actually trimmed any space, set the trimmed value.
+				    if (!valueBeforeTrim.equals(value)) {
+						PropertyUtils.setProperty(openmrsObject, property.getName(), value);
+				    }
+				}
+			    
+			    //Check if user is interested in setting empty strings to null
+			    if (property.getWriteMethod().getAnnotation(AllowEmptyStrings.class) != null) {
+					continue;
+				}
+			   
+				if ("".equals(value)) {	
 					//Set to null only if object is not already voided
 					if (!(openmrsObject instanceof Voidable && ((Voidable) openmrsObject).isVoided())) {
 						PropertyUtils.setProperty(openmrsObject, property.getName(), null);
 					}
-				} else if (!valueBeforeTrim.equals(value)) {
-					//Save the non empty trimmed value.
-					PropertyUtils.setProperty(openmrsObject, property.getName(), value);
 				}
 			}
 			catch (InvocationTargetException ex) {
