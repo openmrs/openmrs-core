@@ -42,6 +42,13 @@
 			},
             placeholder:'<spring:message code="Person.search.placeholder" javaScriptEscape="true"/>' 
 		});
+		
+		//Clear hidden value on losing focus with no valid entry
+		$j("#${displayFieldId}").autocomplete().blur(function(event, ui) {
+			if (!event.target.value) {
+				jquerySelectEscaped('${formFieldId}').val('');
+			}
+		});
 
 		// get the name of the person that they passed in the id for
 		<c:if test="${not empty initialValue}">
