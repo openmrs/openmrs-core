@@ -1058,6 +1058,17 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
+	 * @see org.openmrs.api.PersonService#unretireRelationshipType(org.openmrs.RelationshipType)
+	 */
+	public RelationshipType unretireRelationshipType(RelationshipType relationshipType) {
+		relationshipType.setRetired(false);
+		relationshipType.setRetiredBy(null);
+		relationshipType.setDateRetired(null);
+		relationshipType.setRetireReason(null);
+		return saveRelationshipType(relationshipType);
+	}
+	
+	/**
 	 * @see org.openmrs.api.PersonService#voidPersonAddress(org.openmrs.PersonAddress, String)
 	 */
 	public PersonAddress voidPersonAddress(PersonAddress personAddress, String voidReason) {
@@ -1077,5 +1088,4 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public PersonAddress savePersonAddress(PersonAddress personAddress) {
 		return dao.savePersonAddress(personAddress);
 	}
-	
 }
