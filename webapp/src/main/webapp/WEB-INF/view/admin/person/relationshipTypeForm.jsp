@@ -86,6 +86,19 @@
 
 <br/>
 
+<c:if test="${relationshipType.retired && not empty relationshipType.relationshipTypeId}">
+	<form id="unretire" method="post">
+		<fieldset>
+			<h4><spring:message code="RelationshipType.unretireRelationshipType"/></h4>
+			<input type="submit"
+			value='<spring:message code="RelationshipType.unretireRelationshipType"/>'
+			name="unretire" />
+		</fieldset>
+	</form>
+</c:if>
+
+<br/>
+
 <c:if test="${not empty relationshipType.relationshipTypeId}">
 	<openmrs:hasPrivilege privilege="Purge Relationship Types">
 		<form id="purge" method="post" onsubmit="return confirmPurge()">

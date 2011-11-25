@@ -199,6 +199,14 @@ public interface PersonService extends OpenmrsService {
 	public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException;
 	
 	/**
+	 * Unretire a Person Relationship Type
+	 * 
+	 * @param relationshipType, retiredReason
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
+	public RelationshipType unretireRelationshipType(RelationshipType relationshipType);
+	
+	/**
 	 * @deprecated {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
 	@Deprecated
