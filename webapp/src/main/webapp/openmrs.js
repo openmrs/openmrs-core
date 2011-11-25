@@ -438,6 +438,7 @@ function DateTimePicker(dateFormat, timeFormat, id, opts) {
  		opts = {};
  	}
  	setOptions(opts, 'dateFormat', dateFormat.replace("yyyy", "yy"));//have to do the replace here because the datetimepicker only required 'yy' for 4-number year
+ 	setOptions(opts, 'timeFormat', timeFormat);
  	setOptions(opts, 'separator', " ");
     if( timeFormat.search(/t/i) != -1){
         setOptions(opts, 'ampm', true);
@@ -476,6 +477,7 @@ function TimePicker(timeFormat, id, opts) {
  	if(opts == null) {
  		opts = {};
  	}
+ 	setOptions(opts, 'timeFormat', timeFormat);
  	if( timeFormat.search(/t/i) != -1){
         setOptions(opts, 'ampm', true);
     }

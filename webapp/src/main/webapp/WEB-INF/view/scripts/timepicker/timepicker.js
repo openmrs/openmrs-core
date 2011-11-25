@@ -8,9 +8,11 @@ function showTimePicker(obj) {
         id = obj.id;
     }
     var opts = { appendText: " " };
+    
     var dp = new TimePicker(jsTimeFormat, id, opts);
-	jQuery.timepicker.setDefaults(jQuery.timepicker.regional[jsLocale]);
-
+    
+    jQuery.timepicker.setDefaults(jQuery.timepicker.regional[jsLocale]);
+    
 	obj.onclick = null;
 	dp.show();
 	return false;
@@ -26,10 +28,12 @@ function showDateTimePicker(obj) {
         id = obj.id;
     }
     var opts = { appendText: " " };
+    
     var dp = new DateTimePicker(jsDateFormat, jsTimeFormat, id, opts);
-	jQuery.datepicker.setDefaults(jQuery.datepicker.regional[jsLocale]);
+	
+    jQuery.datepicker.setDefaults(jQuery.datepicker.regional[jsLocale]);
     jQuery.timepicker.setDefaults(jQuery.timepicker.regional[jsLocale]);
-
+    
 	obj.onclick = null;
 	dp.show();
 	return false;
