@@ -112,8 +112,12 @@ public class SchedulerListController extends SimpleFormController {
 					}
 					
 					if (action.equals(msa.getMessage("Scheduler.taskList.delete"))) {
-						schedulerService.deleteTask(Integer.valueOf(taskId));
-						success.append(msa.getMessage("Scheduler.taskList.deleted", args));
+						if (!task.getStarted()) {
+							schedulerService.deleteTask(Integer.valueOf(taskId));
+							success.append(msa.getMessage("Scheduler.taskList.deleted", args));
+						} else {
+							error.append(msa.getMessage("Scheduler.taskList.deleteNotAllowed", args));
+						}
 					} else if (action.equals(msa.getMessage("Scheduler.taskList.stop"))) {
 						schedulerService.shutdownTask(task);
 						success.append(msa.getMessage("Scheduler.taskList.stopped", args));
