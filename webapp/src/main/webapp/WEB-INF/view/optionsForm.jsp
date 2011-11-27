@@ -59,10 +59,20 @@ function init() {
 	if (hash.length > 1) {
 		var autoSelect = hash.substring(1, hash.length);
 		for(i=0;i<sections.length;i++) {
-			if (sections[i].text == autoSelect)
-				uncoversection(sections[i].secid + "_link");
+			if (sections[i].text == autoSelect){
+                uncoversection(sections[i].secid + "_link");
+            }
 		}
 	}
+
+    //If a section has errors, then it should be selected.
+    for(i=0;i<sections.length;i++){
+        if(sections[i].error){
+           uncoversection(sections[i].secid + "_link");
+           break;
+        }
+    }
+
 }
 
 function uncoversection(secid) {
