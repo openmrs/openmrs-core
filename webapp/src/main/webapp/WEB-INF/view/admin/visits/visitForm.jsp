@@ -84,6 +84,7 @@ $j(document).ready( function() {
 	}
 </style>
 
+<div style="overflow: auto;">
 <spring:hasBindErrors name="visit">
 	<spring:message code="fix.error"/>
 	<div class="error">
@@ -365,5 +366,5 @@ $j(document).ready( function() {
 	</tr>
 </table>
 </c:if>
-
+</div>
 <%@ include file="/WEB-INF/template/footer.jsp" %>
