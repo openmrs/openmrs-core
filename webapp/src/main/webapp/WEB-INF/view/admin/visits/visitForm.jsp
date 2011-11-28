@@ -301,7 +301,7 @@ $j(document).ready( function() {
 
 <c:if test="${visit.visitId != null}">
 <br/>
-<table cellpadding="3" cellspacing="3" align="left">
+<table cellpadding="3" cellspacing="3" style="float: right;">
 	<tr>
 		<td>
 			<openmrs:hasPrivilege privilege="Delete Visits">
