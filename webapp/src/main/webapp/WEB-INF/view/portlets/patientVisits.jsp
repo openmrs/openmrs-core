@@ -285,9 +285,10 @@ tr.bottom-encounter-in-visit td:last-child {
 														}
 
 														lastVisitId = visitId;
-													} else {
-														$j('td:eq(0)', trs[i])
-																.html('');
+													} else if(visitId == '') {
+														$j('td:eq(0)', trs[i]).html('<spring:message code="general.none" />');
+													} else{
+														$j('td:eq(0)', trs[i]).html('');
 													}
 												}
 											}
