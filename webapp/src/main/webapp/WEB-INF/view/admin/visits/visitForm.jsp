@@ -23,7 +23,7 @@ function addEncounter() {
 	var index = originalEncountersCount+numberOfClonedElements;
 	var row = document.getElementById('newEncounterRow');
 	var newrow = row.cloneNode(true);
-	$j(newrow).show();	
+	$j(newrow).show();
 	newrow.id = '';
 	var inputs = newrow.getElementsByTagName("input");
 	for (var i = 0; i < inputs.length; i++) {
@@ -57,7 +57,7 @@ $j(document).ready( function() {
 		height:'auto',
 		modal: true
 	});
-	
+
 	$j("#purge-dialog").dialog({
 		autoOpen: false,
 		resizable: false,
@@ -65,7 +65,7 @@ $j(document).ready( function() {
 		height:'auto',
 		modal: true
 	});
-	
+
 	$j("#purge-dialog").addClass("visit-dialog-content");
 });
 
@@ -78,7 +78,7 @@ $j(document).ready( function() {
 	TD.removeButtonColumn{
 		background-color: #FFFFFF
 	}
-	
+
 	div.visit-dialog-content{
 		text-align: center
 	}
@@ -115,7 +115,7 @@ $j(document).ready( function() {
 			<spring:message code="Visit.voidedMessage"/>
 			<c:if test="${visit.voidedBy.personName != null}"> <spring:message code="general.byPerson"/> ${visit.voidedBy.personName}</c:if>
 			<c:if test="${visit.dateVoided != null}"> <spring:message code="general.onDate"/> <openmrs:formatDate date="${visit.dateVoided}" type="long" /></c:if>
-			<c:if test="${visit.voidReason!=''}"> - ${visit.voidReason}</c:if> 
+			<c:if test="${visit.voidReason!=''}"> - ${visit.voidReason}</c:if>
 		 	<input type="submit" value='<spring:message code="general.restore" />' />
 		</div>
 	</div>
@@ -123,7 +123,7 @@ $j(document).ready( function() {
 <br/>
 </c:if>
 </openmrs:hasPrivilege>
-	
+
 <form:form method="post" action="visit.form" modelAttribute="visit">
 	<c:if test="${visit.patient.patientId != null}">
 	<a href="<openmrs:contextPath/>/patientDashboard.form?patientId=${visit.patient.patientId}">
@@ -173,18 +173,18 @@ $j(document).ready( function() {
 		<tr>
 			<th><spring:message code="Visit.startDatetime"/><span class="required"> *</span></th>
 			<td>
-				<spring:bind path="startDatetime">			
+				<spring:bind path="startDatetime">
 				<input type="text" name="${status.expression}" size="20" value="${status.value}" onClick="showDateTimePicker(this)" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
 		<tr>
 			<th><spring:message code="Visit.stopDatetime"/></th>
 			<td>
-				<spring:bind path="stopDatetime">			
+				<spring:bind path="stopDatetime">
 				<input type="text" name="${status.expression}" size="20" value="${status.value}" onClick="showDateTimePicker(this)" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
@@ -248,7 +248,8 @@ $j(document).ready( function() {
 					</c:forEach>
 					<tr id="newEncounterRow" style="display:none;">
 						<td colspan="4">
-							<input type="text" id="visitEncounters[x]-display" size="30" />
+							<%-- make sure the text field is wide enough to show the placeholder message --%>
+							<input type="text" id="visitEncounters[x]-display" size="62" />
 							<input type="hidden" id="visitEncounters[x]" name="encounterIds" />
 						</td>
 						<td class="removeButtonColumn">
@@ -353,7 +354,7 @@ $j(document).ready( function() {
 				<table cellpadding="3" cellspacing="30" align="center">
 					<tr>
 						<td>
-							<input type="submit" value='<spring:message code="general.yes"/>' /> &nbsp; <input type="button" value="<spring:message code="general.no"/>" 
+							<input type="submit" value='<spring:message code="general.yes"/>' /> &nbsp; <input type="button" value="<spring:message code="general.no"/>"
 							onclick="javascript:$j('#purge-dialog').dialog('close')" />
 						</td>
 					</tr>
