@@ -182,7 +182,8 @@ public class VisitFormController {
 				for (Encounter encounter : encountersToSave)
 					es.saveEncounter(encounter);
 				
-				return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
+				return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId() + "&patientId="
+				        + visit.getPatient().getPatientId();
 			}
 			catch (APIException e) {
 				log.warn("Error while saving visit(s)", e);
@@ -216,7 +217,8 @@ public class VisitFormController {
 				log.debug("Voided visit with id: " + visit.getId());
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 			    Context.getMessageSourceService().getMessage("Visit.voided"), WebRequest.SCOPE_SESSION);
-			return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
+			return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId() + "&patientId="
+			        + visit.getPatient().getPatientId();
 		}
 		catch (APIException e) {
 			log.warn("Error occurred while attempting to void visit", e);
@@ -246,7 +248,8 @@ public class VisitFormController {
 				log.debug("Unvoided visit with id: " + visit.getId());
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "Visit.unvoided"), WebRequest.SCOPE_SESSION);
-			return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
+			return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId() + "&patientId="
+			        + visit.getPatient().getPatientId();
 		}
 		catch (APIException e) {
 			log.warn("Error occurred while attempting to unvoid visit", e);
@@ -285,7 +288,8 @@ public class VisitFormController {
 			    "Visit.purge.error"), WebRequest.SCOPE_SESSION);
 		}
 		//there was an exception thrown
-		return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
+		return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId() + "&patientId="
+		        + visit.getPatient().getPatientId();
 	}
 	
 	@ModelAttribute("visitTypes")
