@@ -132,6 +132,9 @@ tr.bottom-encounter-in-visit td:last-child {
 											"bServerSide" : true,
 											"sAjaxSource" : "${pageContext.request.contextPath}/admin/visits/datatable.list?patient=${model.patient.patientId}",
 											"bLengthChange" : false,
+											"oLanguage": {
+												"sInfo": ""//hack to hide the text but keep the element to maintain the UI
+											},
 											"aoColumns" : [ {
 												"bVisible" : false
 											}, {
@@ -180,6 +183,22 @@ tr.bottom-encounter-in-visit td:last-child {
 												if (oSettings.aiDisplay.length == 0) {
 													return;
 												}
+
+												sInfoElement = document.getElementById('patientVisitsTable_info');
+												pageCount = Math.ceil(oSettings._iRecordsTotal/oSettings._iDisplayLength);
+												currentPage = Math.ceil(oSettings._iDisplayStart/oSettings._iDisplayLength) + 1;
+												pageInfoElement = document.getElementById('pageInfo');
+												if(!pageInfoElement){
+													pageInfoElement = document.createElement('div');
+													pageInfoElement.id = 'pageInfo';
+													$j(pageInfoElement).css('float','left');
+													//vertically position the element just like 'sInfo'
+													$j(pageInfoElement).css('padding-top', $j(sInfoElement).css('padding-top'));
+												}
+												
+												pageInfoElement.innerHTML = '<b><spring:message code="patientDashboard.visits.showing.pages"/>'.
+													replace('{0}', currentPage).replace('{1}', pageCount)+'</b>';
+												sInfoElement.parentNode.insertBefore(pageInfoElement, sInfoElement);
 
 												var trs = $j('#patientVisitsTable tbody tr');
 												var colspan = trs[0]
