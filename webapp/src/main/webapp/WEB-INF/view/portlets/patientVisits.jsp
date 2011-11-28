@@ -132,7 +132,6 @@ tr.bottom-encounter-in-visit td:last-child {
 											"bServerSide" : true,
 											"sAjaxSource" : "${pageContext.request.contextPath}/admin/visits/datatable.list?patient=${model.patient.patientId}",
 											"bLengthChange" : false,
-											iDisplayLength:2,
 											"oLanguage": {
 												"sInfo": ""//hack to hide the text but keep the element to maintain the UI
 											},
