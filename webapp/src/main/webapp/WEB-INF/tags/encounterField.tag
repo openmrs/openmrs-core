@@ -51,6 +51,7 @@
 			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
 			DWREncounterService.getEncounter("${initialValue}", function(enc) {
 				jquerySelectEscaped("${displayFieldId}").val(enc.location + " - " + enc.encounterDateString);
+				jquerySelectEscaped("${displayFieldId}").autocomplete("option", "initialValue", enc.location + " - " + enc.encounterDateString);
 				<c:if test="${not empty callback}">
 					${callback}(enc.encounterId);
 				</c:if>

@@ -50,6 +50,7 @@
 			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
 			DWRPatientService.getPatient("${initialValue}", function(patient) {
 				jquerySelectEscaped("${displayNameInputId}").val(patient.personName);
+				jquerySelectEscaped("${displayNameInputId}").autocomplete("option", "initialValue", patient.personName);
 				<c:if test="${not empty callback}">
 					${callback}("${formFieldName}", patient, true);
 				</c:if>
