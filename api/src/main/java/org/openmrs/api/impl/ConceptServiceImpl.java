@@ -770,7 +770,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConceptDatatype(org.openmrs.ConceptDatatype)
-	 * @deprecated as of 1.9 because users should never delete datatypes, it could harm data and other code expecting them to be here
+	 * @deprecated as of 1.9 because users should never change datatypes, it could harm data and other code expecting them to be here
 	 */
 	@Deprecated
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws APIException {
