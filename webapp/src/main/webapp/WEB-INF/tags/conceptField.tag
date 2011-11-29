@@ -48,6 +48,13 @@
 				func${escapedFormFieldId}AutoCompleteOnSelect(ui.item.object, ui.item);
 			}
 		});
+		
+		//Clear hidden value on losing focus with no valid entry
+		$j("#${displayNameInputId}").autocomplete().blur(function(event, ui) {
+			if (!event.target.value) {
+				jquerySelectEscaped('${formFieldId}').val('');
+			}
+		});
 
 		<c:if test="${not empty initialValue}">
 			// fetch the concept object they passed the value in of and do the normal "select" stuff
