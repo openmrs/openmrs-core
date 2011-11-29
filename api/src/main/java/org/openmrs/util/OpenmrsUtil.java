@@ -1398,17 +1398,9 @@ public class OpenmrsUtil {
 	public static SimpleDateFormat getDateTimeFormat(Locale locale) {
 		SimpleDateFormat dateFormat;
 		SimpleDateFormat timeFormat;
-		if (dateFormatCache.containsKey(locale)) {
-			dateFormat = (SimpleDateFormat) dateFormatCache.get(locale).clone();
-		} else {
-			dateFormat = getDateFormat(locale);
-		}
 		
-		if (timeFormatCache.containsKey(locale)) {
-			timeFormat = (SimpleDateFormat) timeFormatCache.get(locale).clone();
-		} else {
-			timeFormat = getTimeFormat(locale);
-		}
+		dateFormat = getDateFormat(locale);
+		timeFormat = getTimeFormat(locale);
 		
 		String pattern = dateFormat.toPattern() + " " + timeFormat.toPattern();
 		SimpleDateFormat sdf = new SimpleDateFormat();

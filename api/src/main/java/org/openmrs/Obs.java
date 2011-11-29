@@ -712,6 +712,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @return the value of this obs as a Date. Note that this uses a java.util.Date, so it includes a time component, that should be ignored.
+	 * @since 1.9
 	 */
 	public Date getValueDate() {
 		return valueDatetime;
@@ -719,6 +720,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @param valueDate The date value to set.
+	 * @since 1.9
 	 */
 	public void setValueDate(Date valueDate) {
 		this.valueDatetime = valueDate;
@@ -726,6 +728,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @return the time value of this obs. Note that this uses a java.util.Date, so it includes a date component, that should be ignored.
+	 * @since 1.9
 	 */
 	public Date getValueTime() {
 		return valueDatetime;
@@ -733,6 +736,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @param valueTime the time value to set
+	 * @since 1.9
 	 */
 	public void setValueTime(Date valueTime) {
 		this.valueDatetime = valueTime;
