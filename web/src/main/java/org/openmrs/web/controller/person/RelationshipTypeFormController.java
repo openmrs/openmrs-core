@@ -128,6 +128,12 @@ public class RelationshipTypeFormController extends SimpleFormController {
 					return showForm(request, response, errors);
 				}
 			}
+			// if the user unretiring relationship type
+			else if (request.getParameter("unretire") != null) {
+				ps.unretireRelationshipType(relationshipType);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "RelationshipType.unretiredSuccessfully");
+				view = getSuccessView();
+			}
 			
 		}
 		
