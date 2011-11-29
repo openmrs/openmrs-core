@@ -308,8 +308,8 @@ $j(document).ready( function() {
 		<td>
 			<openmrs:hasPrivilege privilege="Delete Visits">
 			<c:if test="${visit.voided == false }">
-			<input type="submit" value='<spring:message code="general.delete"/>' onclick="javascript:$j('#delete-dialog').dialog('open')"/>
-			<div id="delete-dialog" title="<spring:message code="general.delete"/> <spring:message code="Visit"/>">
+			<input type="submit" value='<spring:message code="general.void"/>' onclick="javascript:$j('#delete-dialog').dialog('open')"/>
+			<div id="delete-dialog" title="<spring:message code="general.void"/> <spring:message code="Visit"/>">
 			<form:form action="voidVisit.htm" method="post" modelAttribute="visit">
 			<c:if test="${param.visitId != null}">
 				<input type="hidden" name="visitId" value="${param.visitId}"/>
@@ -328,7 +328,7 @@ $j(document).ready( function() {
 				<tr height="20"></tr>
 				<tr>
 					<td colspan="2" style="text-align: center">
-						<input type="submit" value="<spring:message code="general.delete"/>" /> &nbsp; <input type="button" value="<spring:message code="general.cancel"/>" 
+						<input type="submit" value="<spring:message code="general.void"/>" /> &nbsp; <input type="button" value="<spring:message code="general.cancel"/>" 
 						onclick="javascript:$j('#delete-dialog').dialog('close')" /></td>
 				</tr>
 			</table>
