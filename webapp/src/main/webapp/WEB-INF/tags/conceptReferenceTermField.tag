@@ -45,6 +45,7 @@
 			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
 			DWRConceptService.getConceptReferenceTerm("${initialValue}", function(conceptReferenceTerm) {
 				jquerySelectEscaped("${displayNameInputId}").val(conceptReferenceTerm.code);
+				jquerySelectEscaped("${displayNameInputId}").autocomplete("option", "initialValue", conceptReferenceTerm.code);
 				<c:if test="${not empty callback}">
 					${callback}("${formFieldName}", conceptReferenceTerm);
 				</c:if>

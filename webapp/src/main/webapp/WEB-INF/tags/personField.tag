@@ -55,6 +55,7 @@
 			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
 			DWRPersonService.getPerson("${initialValue}", function(person) {
 				jquerySelectEscaped("${displayFieldId}").val(person.personName);
+				jquerySelectEscaped("${displayFieldId}").autocomplete("option", "initialValue", person.personName);
 				<c:if test="${not empty callback}">
 					${callback}("${formFieldName}", person);
 				</c:if>
