@@ -702,7 +702,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param cd ConceptDatatype to create or update
 	 * @throws NotImplementedException
-	 * Depreciated as if OpenMRS 1.9
+	 * @deprecated as of 1.9 because users should never change datatypes, it could harm data and other code expecting them to be here
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPT_DATATYPES })
 	@Deprecated
@@ -713,7 +713,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param cd ConceptDatatype to purge
 	 * @throws NotImplementedException
-	 * Depreciated as if OpenMRS 1.9
+	 * @deprecated as of 1.9 because users should never delete datatypes, it could harm data and other code expecting them to be here
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPT_DATATYPES)
 	@Deprecated
