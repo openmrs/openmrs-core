@@ -202,6 +202,7 @@ public interface PersonService extends OpenmrsService {
 	 * Unretire a Person Relationship Type
 	 * 
 	 * @param relationshipType, retiredReason
+	 * @Since 1.9
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public RelationshipType unretireRelationshipType(RelationshipType relationshipType);
