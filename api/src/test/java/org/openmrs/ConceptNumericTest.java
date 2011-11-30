@@ -21,7 +21,7 @@ import org.openmrs.test.Verifies;
  * Tests the {@link ConceptNumeric} object
  */
 public class ConceptNumericTest {
-
+	
 	/**
 	 * Regression test for TRUNK-82 (old TRAC-1511)
 	 * 
