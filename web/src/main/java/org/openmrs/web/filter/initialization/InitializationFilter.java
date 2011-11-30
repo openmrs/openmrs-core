@@ -865,12 +865,21 @@ public class InitializationFilter extends StartupFilter {
 		String pathName = OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME);
 		if (pathName != null) {
 			file = new File(pathName);
-		} else
-			file = new File(OpenmrsUtil.getApplicationDataDirectory(), WebConstants.WEBAPP_NAME + "-runtime.properties");
+		} else {
+			file = new File(OpenmrsUtil.getApplicationDataDirectory(), getRuntimePropertiesFileName());
+		}
 		
 		log.debug("Using file: " + file.getAbsolutePath());
 		
 		return file;
+	}
+	
+	private String getRuntimePropertiesFileName() {
+		String fileName = OpenmrsUtil.getFileNameInTestMode();
+		if (fileName == null) {
+			fileName = WebConstants.WEBAPP_NAME + "-runtime.properties";
+		}
+		return fileName;
 	}
 	
 	/**

@@ -8,8 +8,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs-release-test</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>release-test</name>
+	<name>openmrs-release-test</name>
+    <description>Jbehave release testing infrastructure to test trunk.
+        This infrastructure is reused across all the modules.
+    </description>
 	<dependencies>
 		<dependency>
 			<groupId>org.jbehave.web</groupId>
@@ -17,17 +19,43 @@
 			<version>3.4.1</version>
 			<scope>compile</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.8</version>
 			<scope>runtime</scope>
 		</dependency>
-
 	</dependencies>
 
-
+    <build>
+        <plugins>
+                        <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.openmrs.web</groupId>
+                                    <artifactId>openmrs-webapp</artifactId>
+                                    <version>${openMRSVersion}</version>
+                                    <type>war</type>
+                                    <outputDirectory>target/${openMRSVersion}/webapp</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 	<profiles>
 		<profile>
 			<id>smoke-test-without-server</id>
@@ -123,14 +151,16 @@
 						<version>6.1.10</version>
 
 						<configuration>
-							<webAppSourceDirectory>${project.parent.basedir}/webapp/src/main/webapp
-			                    </webAppSourceDirectory>
-							<webApp>${project.parent.basedir}/webapp/target/openmrs.war</webApp>
-							<contextPath>/openmrs</contextPath>
+                            <webApp>${basedir}/target/${openMRSVersion}/webapp</webApp>
+                            <contextPath>/${webapp.name}</contextPath>
 							<systemProperties>
 								<systemProperty>
 									<name>FUNCTIONAL_TEST_MODE</name>
 									<value>true</value>
+								</systemProperty>
+                                <systemProperty>
+									<name>OPENMRS_VERSION</name>
+									<value>${openMRSVersion}</value>
 								</systemProperty>
 							</systemProperties>
 
@@ -179,10 +209,8 @@
 						<version>6.1.10</version>
 
 						<configuration>
-							<webAppSourceDirectory>../webapp/src/main/webapp
-			                    </webAppSourceDirectory>
-							<webApp>../webapp/target/openmrs.war</webApp>
-							<contextPath>/openmrs</contextPath>
+                            <webApp>${basedir}/target/${openMRSVersion}/webapp</webApp>
+                            <contextPath>/${webapp.name}</contextPath>
 						</configuration>
 
 						<executions>
@@ -238,6 +266,8 @@
 	</profiles>
 	<properties>
 		<webapp.name>openmrs</webapp.name>
+        <openMRSVersion>${parent.version}</openMRSVersion>
+        <test>*</test>
 	</properties>
 
 </project>

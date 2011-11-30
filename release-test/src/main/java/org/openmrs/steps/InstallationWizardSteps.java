@@ -44,11 +44,20 @@ public class InstallationWizardSteps extends Steps {
     }
 
     @When("Continue")
-    @Alias("I Continue")
     public void clickOnContinueButton() {
-        clickOn(button().with(attribute("value", equalTo("Continue"))));
+        clickOn(button().with(attribute("value", equalTo("continue"))));
     }
 
+    @When("I select English as the language I prefer")
+    public void selectLanguage(){
+        selectAValueInDropDownByXpath("//select[@id=\'locale\']").selectByValue("en");
+    }
+
+    @When("click on Continue")
+    @Alias("I Continue")
+    public void clickOnContinueButtonByName(){
+         clickOn(imageButton().with(attribute("name", equalTo("continue"))));
+    }
     @Then("take me to $step of the installation wizard")
     public void verifyStep(String step) {
         waitFor(div().with(text(containsString(step))));
@@ -64,10 +73,10 @@ public class InstallationWizardSteps extends Steps {
     public void enterConnectionUrl(String databaseNameProp, String userProp, String passwordProp, String portProp) {
     	
     	String database = System.getProperty(databaseNameProp, "openmrs");
-    	String user = System.getProperty(userProp, "openmrs");
-    	String password = System.getProperty(passwordProp, "test");
+    	String user = System.getProperty(userProp, "root");
+    	String password = System.getProperty(passwordProp, "password");
     	String port = System.getProperty(portProp, "3306");
-    	
+
         type("jdbc:mysql:mxj://localhost:" + port + "/@DBNAME@?"
                 + "autoReconnect=true&sessionVariables=storage_engine=InnoDB"
                 + "&useUnicode=true&characterEncoding=UTF-8&server.initialize-user=true"
@@ -95,8 +104,8 @@ public class InstallationWizardSteps extends Steps {
     @When("I mention username and password for the user with CREATE USER privileges as stored in system properties as $userProp and $passwordProp")
     public void enterUserName(String userProp, String passwordProp) {
     	
-    	String user = System.getProperty(userProp, "openmrs");
-    	String password = System.getProperty(passwordProp, "test");
+    	String user = System.getProperty(userProp, "root");
+    	String password = System.getProperty(passwordProp, "password");
     	
         clickOn(radioButton().with(
                 attribute("name", equalTo("create_tables"))).with(attribute("value", equalTo("yes"))));

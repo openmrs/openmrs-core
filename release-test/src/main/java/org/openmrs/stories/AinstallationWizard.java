@@ -22,7 +22,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-@Ignore
+
 public class AinstallationWizard extends Story {
     @Override
     public List<Steps> includeSteps()  {
