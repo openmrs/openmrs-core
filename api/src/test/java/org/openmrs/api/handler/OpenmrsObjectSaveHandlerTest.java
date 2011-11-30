@@ -85,6 +85,17 @@ public class OpenmrsObjectSaveHandlerTest {
 		Assert.assertEquals("code", term.getCode());
 	}
 	
+	/**
+	 * @see {@link OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)}
+	 */
+	@Test
+	@Verifies(value = "trim empty strings for AllowEmptyStrings annotation", method = "handle(OpenmrsObject,User,Date,String)")
+	public void handle_shouldTrimEmptyStringsForAllowEmptyStringsAnnotation() {
+		SomeClass obj = new SomeClass(" name ");
+		new OpenmrsObjectSaveHandler().handle(obj, null, null, null);
+		Assert.assertEquals("name", obj.getName());
+	}
+	
 	public class SomeClass extends BaseOpenmrsObject {
 		
 		private Integer id;
