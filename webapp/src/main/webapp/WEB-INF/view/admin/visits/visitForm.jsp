@@ -320,7 +320,7 @@ $j(document).ready( function() {
 			<p><spring:message code="Visit.delete.info" arguments="${encounterCount}, ${observationCount}"/></p>
 			<table cellpadding="3" cellspacing="3" align="center">
 				<tr>
-					<th><spring:message code="general.reason"/></th>
+					<th><spring:message code="Visit.optionalReason"/></th>
 					<td>
 						<input type="text" name="voidReason" size="40" />
 					</td>
