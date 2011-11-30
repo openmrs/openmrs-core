@@ -304,4 +304,17 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		return dao.getVisitAttributeByUuid(uuid);
 	}
 	
+	/**
+	 * @see org.openmrs.api.VisitService#stopNextActiveVisit(Visit, List)
+	 */
+	@Override
+	public Visit stopNextActiveVisit(Visit previousVisit, List<VisitType> visitTypesToStop) {
+		Visit nextVisit = dao.getNextVisitToClose(previousVisit, visitTypesToStop);
+		if (nextVisit != null) {
+			nextVisit.setStopDatetime(new Date());
+			return dao.saveVisit(nextVisit);
+		}
+		
+		return null;
+	}
 }
