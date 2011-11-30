@@ -14,7 +14,6 @@
 package org.openmrs.api.context;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +28,6 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 
 import org.aopalliance.aop.Advice;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
