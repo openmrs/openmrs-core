@@ -6,8 +6,9 @@
 *
 * http://github.com/scottgonzalez/jquery-ui-extensions
 * 
-* Modified like 24 to have separate matcher calls
-* Added line 30 to set the value of the text box like jq does for us
+* Modified like 25 to have separate matcher calls
+* Added line 31 to set the value of the text box like jq does for us
+* Modified line 35 to prevent clearing initial value on losing focus
 */
 (function( jQuery ) {
 
