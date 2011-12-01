@@ -199,7 +199,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		Concept savedC = Context.getConceptService().saveConcept(c);
 		Assert.assertNotNull(savedC);
 		Assert.assertTrue(savedC.getConceptId() > 0);
-}
+	}
 	
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
