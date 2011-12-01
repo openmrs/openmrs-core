@@ -1328,7 +1328,7 @@ public final class OpenmrsConstants {
 		                "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
 		
 		props.add(new GlobalProperty(GP_ENABLE_CONCEPT_MAP_TYPE_MANAGEMENT, "false",
-		        "Enable or disables management of concept map types", BooleanDatatype.class, null));
+		        "Enables or disables management of concept map types", BooleanDatatype.class, null));
 		
 		props
 		        .add(new GlobalProperty(
