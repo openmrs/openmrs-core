@@ -456,7 +456,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @see #getGlobalProperty(String, String)
 	 * @should not fail with null propertyName
 	 * @should get property value given valid property name
-	 * @should get property in case sensitive way
+	 * @should get property in case insensitive way
 	 */
 	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName) throws APIException;
@@ -595,7 +595,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws APIException
 	 * @should create global property in database
 	 * @should overwrite global property if exists
-	 * @should allow different properties to have the same string with different case
+	 * @should not allow different properties to have the same string with different case
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException;

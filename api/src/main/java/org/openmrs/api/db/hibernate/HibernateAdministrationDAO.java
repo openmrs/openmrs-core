@@ -251,7 +251,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 */
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
-		GlobalProperty gp = (GlobalProperty) criteria.add(Restrictions.eq("property", propertyName)).uniqueResult();
+		GlobalProperty gp = (GlobalProperty) criteria.add(Restrictions.eq("property", propertyName).ignoreCase())
+		        .uniqueResult();
 		
 		// if no gp exists, hibernate returns a null value
 		
@@ -280,7 +281,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix) {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).add(
-		    Restrictions.like("property", prefix, MatchMode.START)).list();
+		    Restrictions.ilike("property", prefix, MatchMode.START)).list();
 	}
 	
 	/**
@@ -289,7 +290,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix) {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).add(
-		    Restrictions.like("property", suffix, MatchMode.END)).list();
+		    Restrictions.ilike("property", suffix, MatchMode.END)).list();
 	}
 	
 	/**
@@ -303,8 +304,16 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 * @see org.openmrs.api.db.AdministrationDAO#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(gp);
-		return gp;
+		GlobalProperty gpObject = getGlobalPropertyObject(gp.getProperty());
+		if (gpObject != null) {
+			gpObject.setPropertyValue(gp.getPropertyValue());
+			gpObject.setDescription(gp.getDescription());
+			sessionFactory.getCurrentSession().update(gpObject);
+			return gpObject;
+		} else {
+			sessionFactory.getCurrentSession().save(gp);
+			return gp;
+		}
 	}
 	
 	/**

@@ -519,8 +519,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link AdministrationService#getGlobalProperty(String)}
 	 */
 	@Test
-	@Verifies(value = "should get property in case sensitive way", method = "getGlobalProperty(String)")
-	public void getGlobalProperty_shouldGetPropertyInCaseSensitiveWay() throws Exception {
+	@Verifies(value = "should get property in case insensitive way", method = "getGlobalProperty(String)")
+	public void getGlobalProperty_shouldGetPropertyInCaseInsensitiveWay() throws Exception {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
 		// sanity check
@@ -528,27 +528,30 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("anothervalue", orig);
 		
 		// try to get a global property with invalid case
-		String noprop = adminService.getGlobalProperty("ANOTher-global-property", "boo");
-		Assert.assertEquals("boo", noprop);
+		String noprop = adminService.getGlobalProperty("ANOTher-global-property");
+		Assert.assertEquals(orig, noprop);
 	}
 	
 	/**
 	 * @see {@link AdministrationService#saveGlobalProperty(GlobalProperty)}
 	 */
 	@Test
-	@Verifies(value = "should allow different properties to have the same string with different case", method = "saveGlobalProperty(GlobalProperty)")
-	public void saveGlobalProperty_shouldAllowDifferentPropertiesToHaveTheSameStringWithDifferentCase() throws Exception {
+	@Verifies(value = "should not allow different properties to have the same string with different case", method = "saveGlobalProperty(GlobalProperty)")
+	public void saveGlobalProperty_shouldNotAllowDifferentPropertiesToHaveTheSameStringWithDifferentCase() throws Exception {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
 		// sanity check
 		String orig = adminService.getGlobalProperty("another-global-property");
 		Assert.assertEquals("anothervalue", orig);
 		
-		// should match current gp
+		// should match current gp and update
 		GlobalProperty gp = new GlobalProperty("ANOTher-global-property", "somethingelse");
 		adminService.saveGlobalProperty(gp);
 		String prop = adminService.getGlobalProperty("ANOTher-global-property", "boo");
 		Assert.assertEquals("somethingelse", prop);
+		
+		orig = adminService.getGlobalProperty("another-global-property");
+		Assert.assertEquals("somethingelse", orig);
 	}
 	
 	/**
@@ -566,7 +569,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		// make sure that we now have two properties
 		props = adminService.getAllGlobalProperties();
-		Assert.assertEquals(originalSize + 2, props.size());
+		Assert.assertEquals(originalSize + 1, props.size());
+		
+		Assert.assertTrue(props.contains(adminService.getGlobalPropertyObject("a.property.KEY")));
 	}
 	
 	/**
@@ -583,7 +588,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		adminService.saveGlobalProperties(props);
 		int afterSaveSize = adminService.getAllGlobalProperties().size();
 		
-		Assert.assertEquals(originalSize + 2, afterSaveSize);
+		Assert.assertEquals(originalSize + 1, afterSaveSize);
 		
 		adminService.purgeGlobalProperties(props);
 		int afterPurgeSize = adminService.getAllGlobalProperties().size();
