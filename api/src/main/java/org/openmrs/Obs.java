@@ -174,9 +174,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		newObs.setValueComplex(obsToCopy.getValueComplex());
 		newObs.setComplexData(obsToCopy.getComplexData());
 		
-		//Copy list of all members, including voided, and put them in respective groups
-		if (obsToCopy.getGroupMembers() != null)
-			for (Obs member : obsToCopy.getGroupMembers()) {
+		// Copy list of all members, including voided, and put them in respective groups
+		if (obsToCopy.hasGroupMembers(true))
+			for (Obs member : obsToCopy.getGroupMembers(true)) {
 				// if the obs hasn't been saved yet, no need to duplicate it
 				if (member.getObsId() == null)
 					newObs.addGroupMember(member);
@@ -333,8 +333,10 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method that checks for nullity and length of the (@link #getGroupMembers())
-	 * method. Does not check voided-Obs.
+	 * Convenience method that checks for if this obs has 1 or more group members (either voided or non-voided)
+	 * Note this method differs from hasGroupMembers(), as that method excludes voided obs; logic is that
+	 * while a obs that has only voided group members should be seen as "having no group members" it
+	 * still should be considered an "obs grouping"
 	 * <p>
 	 * NOTE: This method could also be called "isObsGroup" for a little less confusion on names.
 	 * However, jstl in a web layer (or any psuedo-getter) access isn't good with both an
@@ -343,11 +345,10 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * boolean of whether this obs is a parent and has members. ${obs.obsGroup} returns the parent
 	 * object to this obs if this obs is a group member of some other group.
 	 * 
-	 * @return true if this is the parent group of other non-voided obs
-	 * @should ignore voided Obs
+	 * @return true if this is the parent group of other obs
 	 */
 	public boolean isObsGrouping() {
-		return hasGroupMembers(false);
+		return hasGroupMembers(true);
 	}
 	
 	/**
@@ -356,6 +357,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * {@link #hasGroupMembers(boolean)} with value true.
 	 * 
 	 * @return true if this is the parent group of other obs
+	 * @should not include voided obs
 	 */
 	public boolean hasGroupMembers() {
 		return hasGroupMembers(false);
