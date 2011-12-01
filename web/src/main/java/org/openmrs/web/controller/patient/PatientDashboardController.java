@@ -15,7 +15,6 @@ package org.openmrs.web.controller.patient;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -23,7 +22,6 @@ import javax.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.Form;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -32,7 +30,7 @@ import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.web.extension.ExtensionUtil;
-import org.openmrs.module.web.extension.FormEntryHandler;
+import org.openmrs.module.web.extension.provider.Link;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -131,13 +129,8 @@ public class PatientDashboardController {
 		map.put("emptyAddress", new PersonAddress());
 		map.put("causeOfDeathOther", causeOfDeathOther);
 		
-		ExtensionUtil extensionUtil = new ExtensionUtil();
-		
-		Set<Form> forms = extensionUtil.getFormsModulesCanAddEncounterToVisit();
-		map.put("formsModulesCanAddEncounterToVisit", forms);
-		
-		Map<Form, FormEntryHandler> formsModuleCanEnter = extensionUtil.getFormsModuleCanEnter(patient);
-		map.put("formsModuleCanEnter", formsModuleCanEnter);
+		Set<Link> links = ExtensionUtil.getAllAddEncounterToVisitLinks();
+		map.put("allAddEncounterToVisitLinks", links);
 		
 		return "patientDashboardForm";
 	}

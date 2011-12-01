@@ -279,28 +279,24 @@
 				
 				<openmrs:hasPrivilege privilege="Add Encounters">
 				
-					<c:if test="${not empty formsModulesCanAddEncounterToVisit} }">
-						<div id="patientHeaderAddEncounterPopup">
-							<ol>
-							<c:forEach items="${formsModulesCanAddEncounterToVisit}" var="form">
-								<c:if test="${not empty formsModuleCanEnter[form]}">
-									<openmrs:hasPrivilege privilege="${formsModuleCanEnter[form].requiredPrivilege}">
-									<c:url var="formUrl" value="${formsModuleCanEnter[form].formEntryUrl}">
-										<c:param name="personId" value="${model.personId}"/>
-										<c:param name="patientId" value="${model.patientId}"/>
-										<c:param name="returnUrl" value="${model.returnUrl}"/>
-										<c:param name="formId" value="${form.formId}"/>
-									</c:url>
-									<li><a href="${formUrl}">${form.name}</a></li>
-									</openmrs:hasPrivilege>
-								</c:if>
+					<c:if test="${not empty allAddEncounterToVisitLinks}">
+						<div id="patientHeaderAddEncounterToVisit${visit.visitId}Popup">
+							<openmrs:format visitType="${ visit.visitType }" var="visitType"/>
+							<spring:message code="Visit.addEncounterToVisit" arguments="${visitType}"/>
+							<c:forEach items="${allAddEncounterToVisitLinks}" var="link">
+								<c:url var="linkUrl" value="${link.url}">
+									<c:param name="patientId" value="${model.patientId}"/>
+									<c:param name="returnUrl" value="${model.returnUrl}"/>
+									<c:param name="visitId" value="${visit.visitId}"/>
+								</c:url>
+								<p><a href="${linkUrl}">${link.label}</a></p>
 							</c:forEach>
-							</ol>
+							
 						</div>
 						
 						<script type="text/javascript">
 							$j(document).ready(function() {
-								$j('#patientHeaderAddEncounterPopup').dialog({
+								$j('#patientHeaderAddEncounterToVisit${visit.visitId}Popup').dialog({
 										title: '<spring:message code="Visit.addEncounter"/>',
 										autoOpen: false,
 										draggable: false,
@@ -309,15 +305,15 @@
 								});
 							});
 							
-							function patientHeaderShowAddEncounterPopup() {
-								$j('#patientHeaderAddEncounterPopup')
+							function patientHeaderShowAddEncounterToVisit${visit.visitId}Popup() {
+								$j('#patientHeaderAddEncounterToVisit${visit.visitId}Popup')
 								.dialog('option', 'height', $j(window).height() - 100) 
 								.dialog('open');
 							}
 						</script>
 						
 						<input type="button" value="<spring:message code="Visit.addEncounter"/>"
-							onclick="patientHeaderShowAddEncounterPopup()" />
+							onclick="patientHeaderShowAddEncounterToVisit${visit.visitId}Popup()" />
 					</c:if>
 					
 				</openmrs:hasPrivilege>
