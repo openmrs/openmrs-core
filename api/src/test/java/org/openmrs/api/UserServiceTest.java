@@ -494,7 +494,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		
 		List<Role> roles = Context.getUserService().getAllRoles();
-		Assert.assertEquals(5, roles.size());
+		Assert.assertEquals(6, roles.size());
 	}
 	
 	/**
@@ -732,7 +732,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getUsersByRole_shouldFetchUsersAssignedGivenRole() throws Exception {
 		executeDataSet(XML_FILENAME);
 		
-		Assert.assertEquals(1, Context.getUserService().getUsersByRole(new Role("Some Role")).size());
+		Assert.assertEquals(2, Context.getUserService().getUsersByRole(new Role("Some Role")).size());
 	}
 	
 	/**
@@ -1112,4 +1112,18 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(2, Context.getUserService().getUsers("", roles, true).size());
 	}
+	
+	/**
+	 * @see {@link UserService#getUsers(String, List, boolean, Integer, Integer)}
+	 */
+	@Test
+	@Verifies(value = "return users whose roles inherit requested roles", method = "getUsers(String,List,boolean,Integer,Integer)")
+	public void getUsers_shouldReturnUsersWhoseRolesInheritRequestedRoles() throws Exception {
+		executeDataSet(XML_FILENAME);
+		
+		List<Role> roles = new ArrayList<Role>();
+		roles.add(Context.getUserService().getRole("Parent"));
+		Assert.assertEquals(3, Context.getUserService().getUsers(null, roles, true, null, null).size());
+	}
+	
 }

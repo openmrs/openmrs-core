@@ -2495,4 +2495,3 @@ public class OpenmrsUtil {
 		return s1.equalsIgnoreCase(s2);
 	}
 }
-
