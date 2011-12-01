@@ -1460,7 +1460,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link EncounterService#getCountOfEncounters(String,null)}
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "should get the correct count of unique encounters", method = "getCountOfEncounters(String,null)")
 	public void getCountOfEncounters_shouldGetTheCorrectCountOfUniqueEncounters() throws Exception {
 		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
