@@ -499,40 +499,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
-	 */
-	@Test
-	@Verifies(value = "should cascade creator and dateCreated to orders", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldCascadeCreatorAndDateCreatedToOrders() throws Exception {
-		EncounterService encounterService = Context.getEncounterService();
-		
-		// the encounter to save without a dateCreated
-		Encounter encounter = buildEncounter();
-		
-		// create and add an order to this encounter
-		Order order = new Order();
-		order.setConcept(new Concept(1));
-		order.setPatient(new Patient(2));
-		encounter.addOrder(order);
-		
-		// make sure the logged in user isn't the user we're testing with
-		assertNotSame(encounter.getCreator(), Context.getAuthenticatedUser());
-		
-		encounterService.saveEncounter(encounter);
-		
-		// make sure the order date created and creator are the same as what we
-		// set
-		Order createdOrder = Context.getOrderService().getOrder(order.getOrderId());
-		assertNotNull(encounter.getDateCreated());
-		assertNotNull(createdOrder.getDateCreated());
-		assertEquals(encounter.getDateCreated(), createdOrder.getDateCreated());
-		
-		assertNotNull(encounter.getCreator());
-		assertNotNull(createdOrder.getCreator());
-		assertEquals(encounter.getCreator(), createdOrder.getCreator());
-	}
-	
-	/**
 	 * @see {@link EncounterService#getEncountersByPatient(Patient)}
 	 */
 	@Test
@@ -1640,11 +1606,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounter.addProvider(role, provider2);
 		
 		EncounterService es = Context.getEncounterService();
-		encounter = es.saveEncounter(encounter);
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
 		
 		//when
+		encounter = Context.getEncounterService().getEncounter(encounter.getEncounterId());
 		encounter.setProvider(role, provider);
-		encounter = es.saveEncounter(encounter);
+		es.saveEncounter(encounter);
 		Context.flushSession();
 		Context.clearSession();
 		
