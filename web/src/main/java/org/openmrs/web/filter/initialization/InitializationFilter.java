@@ -1731,4 +1731,3 @@ public class InitializationFilter extends StartupFilter {
 		        || (httpRequest.getParameter("back.x") != null && httpRequest.getParameter("back.y") != null);
 	}
 }
-

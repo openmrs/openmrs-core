@@ -30,11 +30,19 @@
 			<key>
 				<column name="child_role" />
 			</key>
-			<many-to-many class="Role" >
-				<column name="parent_role" />
-			</many-to-many>
+			<many-to-many class="Role" column="parent_role" />
 		</set>
 
+		<!-- bi-directional many-to-many association to Role to create childRoles-->
+		<set name="childRoles" cascade="none" lazy="false"
+			table="role_role">
+			<cache usage="read-write"/>
+			<key>
+				<column name="parent_role" />
+			</key>
+			<many-to-many class="Role" column="child_role" />
+		</set>
+                
 		<!-- bi-directional many-to-many association to Privilege -->
 		<set name="privileges" cascade="" lazy="false"
 			table="role_privilege">
@@ -42,9 +50,7 @@
 			<key>
 				<column name="role" />
 			</key>
-			<many-to-many class="Privilege" >
-				<column name="privilege" />
-			</many-to-many>
+			<many-to-many class="Privilege" column="privilege" />
 		</set>
 
 	</class>
