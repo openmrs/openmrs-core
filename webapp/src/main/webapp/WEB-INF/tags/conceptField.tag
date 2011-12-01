@@ -80,8 +80,10 @@
 		jquerySelectEscaped('${formFieldId}').val(concept.conceptId);
 
 		// if called with initialValue, show the name ourselves
-		if (!item)
+		if (!item) {
 			jquerySelectEscaped('${displayNameInputId}').val(concept.name);
+			jquerySelectEscaped('${displayNameInputId}').autocomplete("option", "initialValue", concept.name);
+		}
 
 		<c:if test="${not empty showOther}">
 			// if showOther is the concept that is selected, show a text field so user can enter that "other" data
