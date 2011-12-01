@@ -71,7 +71,7 @@
 			<column name="creator" />
 		</many-to-one>
 		<!-- bi-directional one-to-many association to EncounterProvider -->
-		<set name="encounterProviders" inverse="true" cascade="all,delete-orphan" order-by="provider_id" access="field">
+		<set name="encounterProviders" inverse="true" cascade="all-delete-orphan" order-by="provider_id" access="field">
 			<key column="encounter_id" />
 			<one-to-many class="EncounterProvider" />
 		</set>

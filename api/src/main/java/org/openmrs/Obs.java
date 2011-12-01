@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.handler.AuditableSaveHandler;
 import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
 import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.obs.ComplexData;
@@ -194,7 +193,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @see SaveHandler
 	 * @see OpenmrsObjectSaveHandler
-	 * @see AuditableSaveHandler
 	 * @deprecated no longer needed. Replaced by handlers.
 	 */
 	@Deprecated
@@ -367,7 +365,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * Convenience method that checks for nullity and length to determine if this obs has group
 	 * members. The parameter specifies if this method whether or not voided obs should be
 	 * considered.
-	 *
+	 * 
 	 * @param includeVoided determines if Voided members should be considered as group members.
 	 * @return true if this is the parent group of other Obs
 	 * @should return true if this obs has group members based on parameter
@@ -397,7 +395,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * Get the group members of this obs group, if this obs is a group. This method will either
 	 * return all group members, or only non-voided group members, depending on if the argument is
 	 * set to be true or false respectively.
-	 *
+	 * 
 	 * @param includeVoided
 	 * @return the set of group members in this obs group
 	 * @should Get all group members if passed true, and non-voided if passed false
@@ -711,7 +709,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return the value of this obs as a Date. Note that this uses a java.util.Date, so it includes a time component, that should be ignored.
+	 * @return the value of this obs as a Date. Note that this uses a java.util.Date, so it includes
+	 *         a time component, that should be ignored.
 	 * @since 1.9
 	 */
 	public Date getValueDate() {
@@ -727,7 +726,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return the time value of this obs. Note that this uses a java.util.Date, so it includes a date component, that should be ignored.
+	 * @return the time value of this obs. Note that this uses a java.util.Date, so it includes a
+	 *         date component, that should be ignored.
 	 * @since 1.9
 	 */
 	public Date getValueTime() {
@@ -844,7 +844,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * Set the ComplexData for this Obs. The ComplexData is stored in the file system or elsewhere,
 	 * but is not persisted to the database. <br/>
-	 * <br/> {@link ComplexObsHandler}s that are registered to {@link ConceptComplex}s will persist the
+	 * <br/>
+	 * {@link ComplexObsHandler}s that are registered to {@link ConceptComplex}s will persist the
 	 * {@link ComplexData#getData()} object to the correct place for the given concept.
 	 * 
 	 * @param complexData
@@ -861,7 +862,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * This will be null unless you call:
 	 * 
 	 * <pre>
-	 *    Obs obsWithComplexData = Context.getObsService().getComplexObs(obsId, OpenmrsConstants.RAW_VIEW);
+	 * 
+	 * Obs obsWithComplexData = Context.getObsService().getComplexObs(obsId, OpenmrsConstants.RAW_VIEW);
 	 * </pre>
 	 * 
 	 * @return the complex data for this obs (if its a complex obs)
@@ -1013,7 +1015,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Sets the value for the obs from a string depending on the datatype of the question concept
-	 *
+	 * 
 	 * @param s the string to coerce to a boolean
 	 * @should set value as boolean if the datatype of the question concept is boolean
 	 * @should fail if the value of the string is null
