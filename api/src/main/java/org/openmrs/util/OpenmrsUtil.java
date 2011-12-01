@@ -86,7 +86,6 @@ import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
-import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
@@ -2428,7 +2427,7 @@ public class OpenmrsUtil {
 			applicationName = "openmrs";
 		
 		String defaultFileName = applicationName + "-runtime.properties";
-		String fileNameInTestMode = getFileNameInTestMode();
+		String fileNameInTestMode = getRuntimePropertiesFileNameInTestMode();
 		
 		// first look in the current directory (that java was started from)
 		String pathName = fileNameInTestMode != null ? fileNameInTestMode : defaultFileName;
@@ -2468,7 +2467,7 @@ public class OpenmrsUtil {
 		return null;
 	}
 	
-	public static String getFileNameInTestMode() {
+	public static String getRuntimePropertiesFileNameInTestMode() {
 		String filename = null;
 		if ("true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"))) {
 			log.info("In functional testing mode. Ignoring the existing runtime properties file");
@@ -2496,3 +2495,4 @@ public class OpenmrsUtil {
 		return s1.equalsIgnoreCase(s2);
 	}
 }
+

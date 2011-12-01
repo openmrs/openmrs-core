@@ -875,7 +875,7 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	private String getRuntimePropertiesFileName() {
-		String fileName = OpenmrsUtil.getFileNameInTestMode();
+		String fileName = OpenmrsUtil.getRuntimePropertiesFileNameInTestMode();
 		if (fileName == null) {
 			fileName = WebConstants.WEBAPP_NAME + "-runtime.properties";
 		}
@@ -1731,3 +1731,4 @@ public class InitializationFilter extends StartupFilter {
 		        || (httpRequest.getParameter("back.x") != null && httpRequest.getParameter("back.y") != null);
 	}
 }
+
