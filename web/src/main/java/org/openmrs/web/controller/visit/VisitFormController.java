@@ -35,7 +35,6 @@ import org.openmrs.validator.EncounterValidator;
 import org.openmrs.validator.VisitValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -45,8 +44,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -105,8 +102,7 @@ public class VisitFormController {
 	
 	@RequestMapping(value = VISIT_END_URL)
 	public String endVisitNow(@ModelAttribute("visit") Visit visit, HttpSession session) {
-		Date now = new Date();
-		visit.setStopDatetime(new Date(now.getTime() - 1000));
+		visit.setStopDatetime(new Date());
 		Context.getVisitService().saveVisit(visit);
 		session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Visit.ended");
 		session.setAttribute(WebConstants.OPENMRS_MSG_ARGS, new String[] { visit.getVisitType().getName() });
