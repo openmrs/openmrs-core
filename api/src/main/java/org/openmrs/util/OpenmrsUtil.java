@@ -2428,10 +2428,10 @@ public class OpenmrsUtil {
 			applicationName = "openmrs";
 		
 		String defaultFileName = applicationName + "-runtime.properties";
-        String fileNameInTestMode = getFileNameInTestMode();
+		String fileNameInTestMode = getFileNameInTestMode();
 		
 		// first look in the current directory (that java was started from)
-        String pathName = fileNameInTestMode != null ? fileNameInTestMode : defaultFileName;
+		String pathName = fileNameInTestMode != null ? fileNameInTestMode : defaultFileName;
 		log.debug("Attempting to look for properties file in current directory: " + pathName);
 		if (new File(pathName).exists()) {
 			return pathName;
@@ -2467,8 +2467,8 @@ public class OpenmrsUtil {
 		
 		return null;
 	}
-
- 	public static String getFileNameInTestMode() {
+	
+	public static String getFileNameInTestMode() {
 		String filename = null;
 		if ("true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"))) {
 			log.info("In functional testing mode. Ignoring the existing runtime properties file");
@@ -2476,7 +2476,7 @@ public class OpenmrsUtil {
 		}
 		return filename;
 	}
-
+	
 	/**
 	 * Performs a case insensitive Comparison of two strings taking care of null values
 	 *
