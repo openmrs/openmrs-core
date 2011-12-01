@@ -755,6 +755,7 @@
 	<bean id="encounterValidator" class="org.openmrs.validator.EncounterValidator" />
 	<bean id="locationAttributeTypeValidator" class="org.openmrs.validator.LocationAttributeTypeValidator" />
 	<bean id="providerValidator" class="org.openmrs.validator.ProviderValidator" />
+	<bean id="patientProgramValidator" class="org.openmrs.validator.PatientProgramValidator" />
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 	
