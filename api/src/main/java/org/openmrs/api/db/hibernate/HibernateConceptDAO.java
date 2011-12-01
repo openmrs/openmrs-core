@@ -1488,7 +1488,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			}
 		}
 		
-		searchCriteria.setProjection(Projections.rowCount());
+		searchCriteria.setProjection(Projections.countDistinct("drug.drugId"));
 		
 		return (Integer) searchCriteria.uniqueResult();
 	}
