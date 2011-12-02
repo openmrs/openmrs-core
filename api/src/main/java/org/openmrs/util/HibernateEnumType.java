@@ -23,6 +23,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
+import org.hibernate.type.TypeFactory;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
 
@@ -30,6 +31,8 @@ import org.hibernate.usertype.UserType;
  * This is intended to be a temporary utility class until enums are handled properly in Hibernate:
  * http://community.jboss.org/wiki/Java5EnumUserType
  * http://docs.jboss.org/hibernate/stable/core/reference/en/html_single/#inheritance
+ * 
+ * @since 1.7
  */
 public class HibernateEnumType implements UserType, ParameterizedType {
 	
