@@ -1417,4 +1417,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(3, allEncounters.get(7).size());
 	}
 	
+	/**
+	 * @see {@link EncounterService#getCountOfEncounters(String,null)}
+	 */
+	@Test
+	@Verifies(value = "should should get the correct count of unique encounters", method = "getCountOfEncounters(String,null)")
+	public void getCountOfEncounters_shouldShouldGetTheCorrectCountOfUniqueEncounters() throws Exception {
+		executeDataSet("org/openmrs/api/include/EncounterServiceTest-pagingWithUniqueEncounters.xml");
+		Assert.assertEquals(4, Context.getEncounterService().getCountOfEncounters("qwerty", true).intValue());
+	}
+	
 }

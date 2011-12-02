@@ -618,6 +618,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param query patient name or identifier
 	 * @param includeVoided Specifies whether voided encounters should be included
 	 * @return the number of encounters matching the given search phrase
+	 * @should should get the correct count of unique encounters
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
