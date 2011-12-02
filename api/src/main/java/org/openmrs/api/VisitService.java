@@ -26,6 +26,7 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -363,13 +364,10 @@ public interface VisitService extends OpenmrsService {
 	VisitAttribute getVisitAttributeByUuid(String uuid);
 	
 	/**
-	 * Stops the next active visit which matches any of the specified visit type(s), the method
-	 * returns the stopped visit if any otherwise null.
+	 * Stops all active visits which match any of the visit types specified by the
+	 * {@link OpenmrsConstants#GP_VISIT_TYPES_TO_AUTO_CLOSE} global property
 	 * 
-	 * @param previousVisit the last stopped visit
-	 * @param visitTypesToStop the visit types to match against
-	 * @return the stopped visit if any
-	 * @should close the next unvoided active visit matching the specified arguments
+	 * @should close all unvoided active visit matching the specified visit types
 	 */
-	public Visit stopNextActiveVisit(Visit previousVisit, List<VisitType> visitTypesToStop);
+	public void stopVisits();
 }

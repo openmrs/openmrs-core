@@ -31,7 +31,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	
 	protected static final String VISITS_WITH_DATES_XML = "org/openmrs/api/include/VisitServiceTest-otherVisits.xml";
 	
-	protected static final String VISITS_INCLUDE_VISITS_TO_AUTO_CLOSE_XML = "org/openmrs/api/include/VisitDaoTest-includeVisitsAndTypeToAutoClose.xml";
+	protected static final String VISITS_INCLUDE_VISITS_TO_AUTO_CLOSE_XML = "org/openmrs/api/include/VisitServiceTest-includeVisitsAndTypeToAutoClose.xml";
 	
 	private VisitDAO dao = null;
 	
@@ -69,14 +69,14 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitDAO#getNextVisitToClose(Visit,Collection<QVisitType;>)}
+	 * @see {@link VisitDAO#getNextVisit(Visit,Collection<VisitType>)}
 	 */
 	@Test
-	@Verifies(value = "should return the next unvoided active visit matching the specified types", method = "getNextVisitToClose(Visit,Collection<QVisitType;>)")
-	public void getNextVisitToClose_shouldReturnTheNextUnvoidedActiveVisitMatchingTheSpecifiedTypes() throws Exception {
+	@Verifies(value = "should return the next unvoided active visit matching the specified types", method = "getNextVisit(Visit,Collection<QVisitType;>)")
+	public void getNextVisit_shouldReturnTheNextUnvoidedActiveVisitMatchingTheSpecifiedTypes() throws Exception {
 		executeDataSet(VISITS_INCLUDE_VISITS_TO_AUTO_CLOSE_XML);
 		ArrayList<VisitType> visitTypes = new ArrayList<VisitType>();
 		visitTypes.add(dao.getVisitType(4));
-		Assert.assertEquals(104, dao.getNextVisitToClose(dao.getVisit(1), visitTypes).getVisitId().intValue());
+		Assert.assertEquals(104, dao.getNextVisit(dao.getVisit(1), visitTypes).getVisitId().intValue());
 	}
 }

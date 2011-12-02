@@ -24,6 +24,8 @@ public class VisitEncounterHandlerForm {
 	
 	private boolean enableVisits;
 	
+	private boolean closeVisitsTaskStarted;
+	
 	/**
 	 * @return the visitEncounterHandler
 	 */
@@ -52,4 +54,17 @@ public class VisitEncounterHandlerForm {
 		this.enableVisits = enableVisits;
 	}
 	
+	/**
+	 * @return the closeVisitsTaskStarted
+	 */
+	public boolean getCloseVisitsTaskStarted() {
+		return closeVisitsTaskStarted;
+	}
+	
+	/**
+	 * @param closeVisitsTaskStarted the closeVisitsTaskStarted to set
+	 */
+	public void setCloseVisitsTaskStarted(boolean closeVisitsTaskStarted) {
+		this.closeVisitsTaskStarted = closeVisitsTaskStarted;
+	}
 }

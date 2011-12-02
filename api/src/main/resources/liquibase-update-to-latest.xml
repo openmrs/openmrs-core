@@ -6045,18 +6045,18 @@
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				SELECT COUNT(*) FROM scheduler_task_config
-				WHERE schedulable_class = 'org.openmrs.scheduler.tasks.AutoCloseOpenVisitsTask'
-				And name = 'Auto Close Open Visits Task'
+				WHERE schedulable_class = 'org.openmrs.scheduler.tasks.AutoCloseVisitsTask'
+				And name = 'Auto Close Visits Task'
 			</sqlCheck>
 		</preConditions>
-		<comment>Inserting Auto Close Open Visits Task into 'schedule_task_config' table</comment>
+		<comment>Inserting Auto Close Visits Task into 'schedule_task_config' table</comment>
 		<insert tableName="scheduler_task_config">
-			<column name="name" value="Auto Close Open Visits Task" />
-			<column name="description" value="Stops all active visits that match the visit type(s) specified by the value of the global property 'autoCloseOpenVisits.visitType'" />
-			<column name="schedulable_class" value="org.openmrs.scheduler.tasks.AutoCloseOpenVisitsTask" />
+			<column name="name" value="Auto Close Visits Task" />
+			<column name="description" value="Stops all active visits that match the visit type(s) specified by the value of the global property 'autoCloseVisits.visitType'" />
+			<column name="schedulable_class" value="org.openmrs.scheduler.tasks.AutoCloseVisitsTask" />
 			<column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss" />
 			<column name="start_time" valueDate="2011-11-28T23:59:59" />
-			<column name="repeat_interval" valueDate="86400" />
+			<column name="repeat_interval" value="86400" />
 			<column name="date_created" valueDate="CURRENT_TIMESTAMP" />
 			<column name="created_by" value="1" />
 			<column name="uuid" value="8c17b376-1a2b-11e1-a51a-00248140a5eb" />
