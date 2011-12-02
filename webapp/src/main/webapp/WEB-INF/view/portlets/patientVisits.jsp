@@ -174,7 +174,7 @@ tr.bottom-encounter-in-visit td:last-child {
 												} else {
 													$j('td:eq(2)', nRow)
 															.html(
-																	'<i><spring:message code="patientDashboard.visits.noEncounters" /></i>');
+																	'<i><spring:message code="Encounter.noEncounters" /></i>');
 												}
 												return nRow;
 											},
