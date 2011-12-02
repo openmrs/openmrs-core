@@ -232,7 +232,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided) {
-		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided);
+		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, true);
 		
 		if (start != null)
 			criteria.setFirstResult(start);
@@ -305,7 +305,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public Integer getCountOfEncounters(String query, boolean includeVoided) {
-		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided);
+		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, false);
 		
 		criteria.setProjection(Projections.countDistinct("enc.encounterId"));
 		return (Integer) criteria.uniqueResult();
@@ -317,9 +317,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * 
 	 * @param query patient name or identifier
 	 * @param includeVoided Specifies whether voided encounters should be included
-	 * @return
+	 * @param orderByNames specifies whether the encounters should be ordered by person names
+	 * @return Criteria
 	 */
-	private Criteria createEncounterByQueryCriteria(String query, boolean includeVoided) {
+	private Criteria createEncounterByQueryCriteria(String query, boolean includeVoided, boolean orderByNames) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class, "enc");
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("voided", false));
@@ -334,7 +335,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			name = query;
 		}
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-		    new ArrayList<PatientIdentifierType>(), false, true);
+		    new ArrayList<PatientIdentifierType>(), false, orderByNames);
 		return criteria;
 	}
 }
