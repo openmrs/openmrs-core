@@ -813,7 +813,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_ADDRESS_TEMPLATE = "layout.address.format";
 	
-	public static final String DEFAULT_ADDRESS_TEMPLATE = "<addressTemplate>\n"
+	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
 	        + "    <nameMappings class=\"properties\">\n"
 	        + "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
 	        + "      <property name=\"longitude\" value=\"Location.longitude\"/>\n"
@@ -834,7 +834,7 @@ public final class OpenmrsConstants {
 	        + "    </sizeMappings>\n" + "    <lineByLineFormat>\n" + "      <string>address1</string>\n"
 	        + "      <string>address2</string>\n" + "      <string>cityVillage stateProvince country postalCode</string>\n"
 	        + "      <string>latitude longitude</string>\n" + "      <string>startDate endDate</string>\n"
-	        + "    </lineByLineFormat>\n" + "  </addressTemplate>";
+	        + "    </lineByLineFormat>\n" + "  </org.openmrs.layout.web.address.AddressTemplate>";
 	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
