@@ -22,6 +22,8 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
+import org.openmrs.scheduler.SchedulerException;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
@@ -67,9 +69,13 @@ public class VisitEncounterHandlerFormController {
 		String visitEncounterHandler = administrationService.getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER);
 		String enableVisits = administrationService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENABLE_VISITS,
 		    Boolean.FALSE.toString());
+		TaskDefinition closeVisitsTask = Context.getSchedulerService().getTaskByName(
+		    OpenmrsConstants.AUTO_CLOSE_VISITS_TASK_NAME);
 		
 		VisitEncounterHandlerForm form = new VisitEncounterHandlerForm();
 		form.setEnableVisits(Boolean.valueOf(enableVisits));
+		if (closeVisitsTask != null)
+			form.setCloseVisitsTaskStarted(closeVisitsTask.getStarted());
 		for (EncounterVisitHandler visitHandler : getEncounterVisitHandlers()) {
 			if (visitHandler.getClass().getName().equals(visitEncounterHandler)) {
 				form.setVisitEncounterHandler(visitHandler.getClass().getName());
@@ -99,6 +105,22 @@ public class VisitEncounterHandlerFormController {
 		} else {
 			form.setVisitEncounterHandler(administrationService
 			        .getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER));
+		}
+		
+		TaskDefinition closeVisitsTask = Context.getSchedulerService().getTaskByName(
+		    OpenmrsConstants.AUTO_CLOSE_VISITS_TASK_NAME);
+		if (closeVisitsTask != null) {
+			try {
+				if (form.getCloseVisitsTaskStarted() && !closeVisitsTask.getStarted())
+					Context.getSchedulerService().scheduleTask(closeVisitsTask);
+				else if (!form.getCloseVisitsTaskStarted() && closeVisitsTask.getStarted())
+					Context.getSchedulerService().shutdownTask(closeVisitsTask);
+			}
+			catch (SchedulerException e) {
+				errors.rejectValue("closeVisitsTaskStarted",
+				    (form.getCloseVisitsTaskStarted()) ? "Visit.configure.closeVisitsTask.failedToStart"
+				            : "Visit.configure.closeVisitsTask.failedToStop");
+			}
 		}
 		
 		request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Encounter.visits.configuration.savedSuccessfully");

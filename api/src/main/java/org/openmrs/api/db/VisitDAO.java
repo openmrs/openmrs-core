@@ -145,13 +145,13 @@ public interface VisitDAO {
 	VisitAttribute getVisitAttributeByUuid(String uuid);
 	
 	/**
-	 * Gets the next active visit to be stopped which matches the specified arguments
+	 * Gets the next active visit which matches the specified visit types
 	 * 
-	 * @param previousVisit the last closed visit
-	 * @param visitTypesToStop a collection of visit types to match against
+	 * @param previousVisit the visit that precedes the one we are fetching
+	 * @param visitTypes a collection of visit types to match against
 	 * @return a {@link Visit}
 	 * @should return the next unvoided active visit matching the specified types
 	 */
-	public Visit getNextVisitToClose(Visit previousVisit, Collection<VisitType> visitTypesToStop);
+	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes);
 	
 }

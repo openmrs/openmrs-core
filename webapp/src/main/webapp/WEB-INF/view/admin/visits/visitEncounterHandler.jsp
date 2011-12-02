@@ -44,6 +44,12 @@
 			<form:checkbox path="enableVisits" id="enableVisits" />
 			<form:errors path="enableVisits" cssClass="error" />
 		</p>
+		
+		<p>
+			<b><spring:message code="Visit.configure.startCloseVisitsTask" /></b>
+			<form:checkbox path="closeVisitsTaskStarted" />
+			<form:errors path="closeVisitsTaskStarted" cssClass="error" />
+		</p>
 
 		<p>
 			<b><spring:message code="Encounter.visits.handler.choose" />
