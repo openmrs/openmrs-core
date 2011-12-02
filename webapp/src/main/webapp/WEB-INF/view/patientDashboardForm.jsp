@@ -36,7 +36,7 @@
 	//initTabs
 	$j(document).ready(function() {
 		var c = getTabCookie();
-		if (c == null) {
+		if (c == null || (!document.getElementById(c))) {
 			var tabs = document.getElementById("patientTabs").getElementsByTagName("a");
 			if (tabs.length && tabs[0].id)
 				c = tabs[0].id;
