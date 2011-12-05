@@ -766,7 +766,13 @@ public class DatabaseUpdater {
 		try {
 			Liquibase liquibase = getLiquibase(null, null);
 			database = liquibase.getDatabase();
-			return LockService.getInstance(database).listLocks().length > 0;
+			Boolean locked = LockService.getInstance(database).listLocks().length > 0;
+			// if there is a db lock but there are no db changes we undo the lock 
+			if (locked && DatabaseUpdater.getUnrunDatabaseChanges().size() == 0) {
+			  DatabaseUpdater.releaseDatabaseLock();
+			  locked = Boolean.FALSE;
+			}
+			return locked;
 		}
 		catch (Exception e) {
 			return false;
