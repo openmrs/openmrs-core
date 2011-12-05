@@ -23,9 +23,9 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
-import org.hibernate.type.TypeFactory;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
+import org.openmrs.api.context.Context;
 
 /**
  * This is intended to be a temporary utility class until enums are handled properly in Hibernate:
@@ -47,7 +47,7 @@ public class HibernateEnumType implements UserType, ParameterizedType {
 		}
 		
 		try {
-			this.clazz = Class.forName(enumClassName);
+			this.clazz = Context.loadClass(enumClassName);
 		}
 		catch (ClassNotFoundException e) {
 			throw new MappingException("enumClass " + enumClassName + " not found", e);
