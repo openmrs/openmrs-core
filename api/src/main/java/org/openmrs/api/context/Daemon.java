@@ -113,7 +113,7 @@ public class Daemon {
 				
 				try {
 					Context.openSession();
-					task.execute();
+					TimerSchedulerTask.execute(task);
 				}
 				catch (Throwable t) {
 					exceptionThrown = t;

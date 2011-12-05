@@ -48,11 +48,6 @@ public class TimerSchedulerTask extends TimerTask {
 	public void run() {
 		try {
 			Daemon.executeScheduledTask(task);
-			
-			if (!Context.isSessionOpen()) {
-				Context.openSession();
-			}
-			saveLastExecutionTime();
 		}
 		catch (Throwable t) {
 			// Fix #862: IllegalStateException: Timer already cancelled.
@@ -61,17 +56,12 @@ public class TimerSchedulerTask extends TimerTask {
 			    "FATAL ERROR: Task [" + task.getClass() + "] failed due to exception [" + t.getClass().getName() + "]", t);
 			SchedulerUtil.sendSchedulerError(t);
 		}
-		finally {
-			if (Context.isSessionOpen()) {
-				Context.closeSession();
-			}
-		}
 	}
 	
 	/**
 	 * Save the last execution time in the TaskDefinition
 	 */
-	private void saveLastExecutionTime() {
+	private static void saveLastExecutionTime(Task task) {
 		TaskDefinition taskDefinition = null;
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
@@ -107,4 +97,11 @@ public class TimerSchedulerTask extends TimerTask {
 		task.shutdown();
 	}
 	
+	/**
+	 * Executes the given task.
+	 */
+	public static void execute(Task task) {
+		saveLastExecutionTime(task);
+		task.execute();
+	}
 }
