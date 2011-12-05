@@ -2,10 +2,19 @@
 
 <openmrs:require privilege="Edit Patients" otherwise="/login.htm" redirect="/admin/patients/mergePatients.form"/>
 
+<c:choose>
+<c:when test="${modalMode}">
+<%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
+</c:when>
+<c:otherwise>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
+</c:otherwise>
+</c:choose>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+
+<c:if test="${empty msg}">
 
 <script type="text/javascript">
 var dupSize=0;
@@ -737,10 +746,20 @@ function generateMergeList(){
 		<input type="submit" name="action" value='<spring:message code="Patient.merge"/>' onclick="return generateMergeList();" >
 		<input type="hidden" id="pref" name="preferred" value=""/>
 		<input type="hidden" id="nonPref" name="nonPreferred" value=""/>
+		<input type="hidden" name="modalMode" value='${modalMode}' />
 		<input type="hidden" name="redirectURL" value='<request:header name="referer" />' />
 	</c:if>
 </form>
 
 <br/>
 
+</c:if>
+
+<c:choose>
+<c:when test="${modalMode}">
+<%@ include file="/WEB-INF/template/footerMinimal.jsp" %>
+</c:when>
+<c:otherwise>
 <%@ include file="/WEB-INF/template/footer.jsp" %>
+</c:otherwise>
+</c:choose>
