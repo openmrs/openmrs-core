@@ -235,6 +235,34 @@ public class Daemon {
 	}
 	
 	/**
+	 * Executes the given runnable in a new thread that is authenticated as the daemon user.
+	 * 
+	 * @param runnable an object implementing the {@link Runnable} interface.
+	 * @return the newly spawned {@link Thread}
+	 * @since 1.9
+	 */
+	public static Thread runInDaemonThread(final Runnable runnable) {
+		
+		DaemonThread thread = new DaemonThread() {
+			
+			@Override
+			public void run() {
+				isDaemonThread.set(true);
+				try {
+					Context.openSession();
+					runnable.run();
+				}
+				finally {
+					Context.closeSession();
+				}
+			}
+		};
+		
+		thread.start();
+		return thread;
+	}
+	
+	/**
 	 * Thread class used by the {@link Daemon#startModule(Module)} and
 	 * {@link Daemon#executeScheduledTask(Task)} methods so that the returned object and the
 	 * exception thrown can be returned to calling class
