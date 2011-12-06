@@ -283,7 +283,7 @@ public class Context {
 		if (log.isDebugEnabled())
 			log.debug("Authenticating with username: " + username);
 		
-		if (Daemon.isDaemonUser()) {
+		if (Daemon.isDaemonThread()) {
 			log.error("Authentication attempted while operating on a "
 			        + "daemon thread, authenticating is not necessary or allowed");
 			return;
@@ -301,7 +301,7 @@ public class Context {
 	 * @should get fresh values from the database
 	 */
 	public static void refreshAuthenticatedUser() {
-		if (Daemon.isDaemonUser())
+		if (Daemon.isDaemonThread())
 			return;
 		
 		if (log.isDebugEnabled())
@@ -597,7 +597,7 @@ public class Context {
 	 * @return "active" user who has been authenticated, otherwise <code>null</code>
 	 */
 	public static User getAuthenticatedUser() {
-		if (Daemon.isDaemonUser())
+		if (Daemon.isDaemonThread())
 			return contextDAO.getUserByUuid(Daemon.DAEMON_USER_UUID);
 		
 		return getUserContext().getAuthenticatedUser();
@@ -645,7 +645,7 @@ public class Context {
 	public static boolean hasPrivilege(String privilege) {
 		
 		// the daemon threads have access to all things
-		if (Daemon.isDaemonUser()) {
+		if (Daemon.isDaemonThread()) {
 			return true;
 		}
 		
