@@ -20,17 +20,26 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
+
 /**
  * Annotation used to indicate that a method allows empty strings.
  * 
  * <pre>
- *      &#64;AllowEmptyStrings
- *      public void setName(String name);
+ * &#064;AllowEmptyStrings
+ * public void setName(String name);
  * </pre>
  * 
+ * Note: This should be annotated on the setter methods.<br/>
+ * <br/>
+ * If this annotation is not present the the property will be set to null by the
+ * {@link OpenmrsObjectSaveHandler} if the value is an empty string.  
+ * 
  * @since 1.9
+ * @see AllowLeadingOrTrailingWhitespace
+ * @see OpenmrsObjectSaveHandler
  */
-@Target( { ElementType.METHOD })
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
