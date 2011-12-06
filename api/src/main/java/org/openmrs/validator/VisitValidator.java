@@ -21,6 +21,7 @@ import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
@@ -109,6 +110,21 @@ public class VisitValidator implements Validator {
 					break;
 				}
 			}
+		}
+		
+		// validate all non-voided attributes for their values (we already checked minOccurs and maxOccurs for the types)
+		boolean errorsInAttributes = false;
+		for (VisitAttribute va : visit.getActiveAttributes()) {
+			try {
+				ValidateUtil.validate(va);
+			}
+			catch (APIException ex) {
+				errorsInAttributes = true;
+				break;
+			}
+		}
+		if (errorsInAttributes) {
+			errors.rejectValue("attributes", "Customizable.error.inAttributes");
 		}
 	}
 	

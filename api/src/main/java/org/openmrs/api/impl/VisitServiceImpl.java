@@ -37,9 +37,6 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
-import org.openmrs.validator.VisitValidator;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 
 /**
  * Default implementation of the {@link VisitService}. This class should not be used on its own. The
@@ -155,11 +152,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		else
 			Context.requirePrivilege(PrivilegeConstants.EDIT_VISITS);
 		
-		Errors errors = new BindException(visit, "visit");
-		new VisitValidator().validate(visit, errors);
-		if (errors.hasErrors())
-			throw new APIException("Validation errors found. " + errors);
-		
+		CustomDatatypeUtil.saveAttributesIfNecessary(visit);
 		return dao.saveVisit(visit);
 	}
 	

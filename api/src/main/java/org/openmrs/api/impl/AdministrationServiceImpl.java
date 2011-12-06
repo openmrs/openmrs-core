@@ -58,6 +58,8 @@ import org.openmrs.api.EventListeners;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
@@ -775,9 +777,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException {
-		
 		// only try to save it if the global property has a key
 		if (gp.getProperty() != null && gp.getProperty().length() > 0) {
+			CustomDatatypeUtil.saveIfDirty(gp);
 			dao.saveGlobalProperty(gp);
 			notifyGlobalPropertyChange(gp);
 			return gp;
@@ -1211,5 +1213,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
 		return dao.getMaximumPropertyLength(aClass, fieldName);
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#validateInManualFlushMode(java.lang.Object)
+	 */
+	@Override
+	public void validateInManualFlushMode(Object object) {
+		dao.validateInManualFlushMode(object);
 	}
 }

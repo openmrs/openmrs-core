@@ -579,7 +579,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		String stringValue = null;
 		Concept codedValue = null;
 		Date dateValue = null;
-		Boolean booleanValue = null;
 		String valueSql = null;
 		if (value != null) {
 			if (concept == null) {
@@ -619,11 +618,18 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				}
 				valueSql = "o.value_datetime";
 			} else if (concept.getDatatype().isBoolean()) {
-				if (value instanceof Boolean)
-					booleanValue = (Boolean) value;
-				else
-					booleanValue = Boolean.valueOf(value.toString());
-				valueSql = "o.value_numeric";
+				if (value instanceof Concept) {
+					codedValue = (Concept) value;
+				} else {
+					boolean asBoolean = false;
+					if (value instanceof Boolean)
+						asBoolean = ((Boolean) value).booleanValue();
+					else
+						asBoolean = Boolean.valueOf(value.toString());
+					codedValue = asBoolean ? Context.getConceptService().getTrueConcept() : Context.getConceptService()
+					        .getFalseConcept();
+				}
+				valueSql = "o.value_coded";
 			}
 		}
 		
@@ -699,8 +705,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				query.setString("value", stringValue);
 			else if (dateValue != null)
 				query.setDate("value", dateValue);
-			else if (booleanValue != null)
-				query.setDouble("value", booleanValue ? 1.0 : 0.0);
 			else
 				throw new IllegalArgumentException(
 				        "useValue is true, but numeric, coded, string, boolean, and date values are all null");
@@ -1236,7 +1240,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		List<String> columns = new Vector<String>();
 		
 		if (abbrev.equals("BIT"))
-			columns.add("valueNumeric");
+			columns.add("valueCoded");
 		else if (abbrev.equals("CWE")) {
 			columns.add("valueDrug");
 			columns.add("valueCoded");

@@ -14,8 +14,7 @@
 package org.openmrs.customdatatype.datatype;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.customdatatype.CustomDatatype;
-import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.customdatatype.SerializingCustomDatatype;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,58 +22,26 @@ import org.springframework.stereotype.Component;
  * @since 1.9
  */
 @Component
-public class BooleanDatatype implements CustomDatatype<Boolean> {
+public class BooleanDatatype extends SerializingCustomDatatype<Boolean> {
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#setConfiguration(java.lang.String)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
 	 */
 	@Override
-	public void setConfiguration(String config) {
-		// not used
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#toReferenceString(java.lang.Object)
-	 */
-	@Override
-	public String toReferenceString(Boolean typedValue) throws InvalidCustomValueException {
+	public String serialize(Boolean typedValue) {
+		if (typedValue == null)
+			return null;
 		return typedValue.toString();
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#fromReferenceString(java.lang.String)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
 	 */
 	@Override
-	public Boolean fromReferenceString(String persistedValue) throws InvalidCustomValueException {
-		if (StringUtils.isEmpty(persistedValue))
+	public Boolean deserialize(String serializedValue) {
+		if (StringUtils.isEmpty(serializedValue))
 			return null;
-		return Boolean.valueOf(persistedValue);
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#render(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public String render(String referenceString, String view) {
-		return referenceString;
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#validateReferenceString(java.lang.String)
-	 */
-	@Override
-	public void validateReferenceString(String persistedValue) throws InvalidCustomValueException {
-		if (!(persistedValue == null || "".equals(persistedValue) || "true".equals(persistedValue) || "false"
-		        .equals(persistedValue)))
-			throw new InvalidCustomValueException("Must be \"true\" or \"false\"");
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#validate(java.lang.Object)
-	 */
-	@Override
-	public void validate(Boolean typedValue) throws InvalidCustomValueException {
-		// any java.lang.Boolean is legal
+		return Boolean.valueOf(serializedValue);
 	}
 	
 }

@@ -30,7 +30,7 @@ import org.openmrs.customdatatype.Customizable;
  */
 public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpenmrsData implements Customizable<A> {
 	
-	private Set<A> attributes;
+	private Set<A> attributes = new LinkedHashSet<A>();
 	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
@@ -93,6 +93,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	 * 
 	 * @param attribute
 	 */
+	@SuppressWarnings("unchecked")
 	public void setAttribute(A attribute) {
 		if (getAttributes() == null) {
 			addAttribute(attribute);
@@ -101,7 +102,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 		
 		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
 			A existing = getActiveAttributes(attribute.getAttributeType()).get(0);
-			if (existing.getValueReference().equals(attribute.getValueReference())) {
+			if (existing.getValue().equals(attribute.getValue())) {
 				// do nothing, since the value is already as-specified
 			} else {
 				if (existing.getId() != null)

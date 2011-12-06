@@ -25,6 +25,7 @@ import org.openmrs.util.HandlerUtil;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 
@@ -95,6 +96,9 @@ public class ValidateUtil {
 			for (Object objerr : errors.getAllErrors()) {
 				ObjectError error = (ObjectError) objerr;
 				String message = Context.getMessageSourceService().getMessage(error.getCode());
+				if (error instanceof FieldError) {
+					message = ((FieldError) error).getField() + ": " + message;
+				}
 				uniqueErrorMessages.add(message);
 			}
 			

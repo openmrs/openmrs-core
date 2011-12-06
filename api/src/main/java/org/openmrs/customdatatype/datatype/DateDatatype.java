@@ -17,8 +17,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.customdatatype.SerializingCustomDatatype;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,65 +27,41 @@ import org.springframework.stereotype.Component;
  * @since 1.9
  */
 @Component
-public class DateDatatype implements CustomDatatype<Date> {
+public class DateDatatype extends SerializingCustomDatatype<Date> {
 	
 	final static String dateFormat = "yyyy-MM-dd";
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#setConfiguration(java.lang.String)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#doRender(java.lang.Object, java.lang.String)
 	 */
 	@Override
-	public void setConfiguration(String config) {
-		// not used
+	public String doRender(Date typedValue, String view) {
+		return Context.getDateFormat().format(typedValue);
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#toReferenceString(java.lang.Object)
-	 * @should convert a date into a ymd string representation
-	 */
-	@Override
-	public String toReferenceString(Date typedValue) throws InvalidCustomValueException {
-		return new SimpleDateFormat(dateFormat).format(typedValue);
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#fromReferenceString(java.lang.String)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
 	 * @should reconstruct a date serialized by this handler
 	 */
 	@Override
-	public Date fromReferenceString(String persistedValue) throws InvalidCustomValueException {
-		if (StringUtils.isBlank(persistedValue))
+	public Date deserialize(String serializedValue) {
+		if (StringUtils.isBlank(serializedValue))
 			return null;
 		try {
-			return new SimpleDateFormat(dateFormat).parse(persistedValue);
+			return new SimpleDateFormat(dateFormat).parse(serializedValue);
 		}
 		catch (Exception ex) {
-			throw new InvalidCustomValueException("Invalid date: " + persistedValue);
+			throw new InvalidCustomValueException("Invalid date: " + serializedValue);
 		}
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#render(java.lang.String, java.lang.String)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
+	 * @should convert a date into a ymd string representation
 	 */
 	@Override
-	public String render(String persistedValue, String view) {
-		return persistedValue;
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#validateReferenceString(java.lang.String)
-	 */
-	@Override
-	public void validateReferenceString(String persistedValue) throws InvalidCustomValueException {
-		validate(fromReferenceString(persistedValue));
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#validate(java.lang.Object)
-	 */
-	@Override
-	public void validate(Date typedValue) throws InvalidCustomValueException {
-		// pass
+	public String serialize(Date typedValue) {
+		return new SimpleDateFormat(dateFormat).format(typedValue);
 	}
 	
 }
