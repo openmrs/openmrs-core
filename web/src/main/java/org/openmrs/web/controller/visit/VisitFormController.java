@@ -182,8 +182,7 @@ public class VisitFormController {
 				for (Encounter encounter : encountersToSave)
 					es.saveEncounter(encounter);
 				
-				return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId() + "&patientId="
-				        + visit.getPatient().getPatientId();
+				return "redirect:" + "/patientDashboard.form?patientId=" + visit.getPatient().getPatientId();
 			}
 			catch (APIException e) {
 				log.warn("Error while saving visit(s)", e);
