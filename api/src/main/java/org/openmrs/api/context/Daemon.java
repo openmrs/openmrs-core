@@ -34,8 +34,6 @@ public class Daemon {
 	 */
 	protected static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
 	
-	private static final ThreadLocal<Boolean> isDaemonUser = new ThreadLocal<Boolean>();
-	
 	private static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
 	
 	/**
@@ -188,33 +186,6 @@ public class Daemon {
 			return false;
 		else
 			return b.booleanValue();
-	}
-	
-	/**
-	 * @return true if the current thread is running as a daemon user that
-	 *         has all privileges
-	 * @see Context#hasPrivilege(String)
-	 */
-	public static boolean isDaemonUser() {
-		if (isDaemonThread()) {
-			return true;
-		}
-		
-		Boolean b = isDaemonUser.get();
-		if (b == null)
-			return false;
-		else
-			return b.booleanValue();
-	}
-	
-	/**
-	 * Sets the current thread to run as or not run as a daemon user that has all privileges
-	 * 
-	 * @param runninAsDaemonUser set to true if the current thread should run as 
-	 * a daemon user, else set to false
-	 */
-	public static void setRunningAsDaemonUser(boolean runninAsDaemonUser) {
-		isDaemonUser.set(runninAsDaemonUser);
 	}
 	
 	/**
