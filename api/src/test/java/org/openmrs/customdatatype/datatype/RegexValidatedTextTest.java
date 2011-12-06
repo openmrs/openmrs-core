@@ -33,11 +33,11 @@ public class RegexValidatedTextTest {
 	}
 	
 	/**
-	 * @see RegexValidatedTextDatatype#toReferenceString(String)
+	 * @see RegexValidatedTextDatatype#save(String, String))
 	 * @verifies fail if the string does not match the regex
 	 */
 	@Test(expected = InvalidCustomValueException.class)
 	public void toPersistentString_shouldFailIfTheStringDoesNotMatchTheRegex() throws Exception {
-		datatype.toReferenceString("spaces not allowed");
+		datatype.save("spaces not allowed", null);
 	}
 }

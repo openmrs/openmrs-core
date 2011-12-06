@@ -13,63 +13,30 @@
  */
 package org.openmrs.customdatatype.datatype;
 
-import org.openmrs.customdatatype.CustomDatatype;
-import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.customdatatype.SerializingCustomDatatype;
 import org.springframework.stereotype.Component;
 
 /**
- * Free-text datatype, represented by a plain java.lang.String.
+ * Free-text datatype, represented by a plain String.
  * @since 1.9
  */
 @Component
-public class FreeTextDatatype implements CustomDatatype<String> {
+public class FreeTextDatatype extends SerializingCustomDatatype<String> {
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#toReferenceString(java.lang.Object)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
 	 */
 	@Override
-	public String toReferenceString(String typedValue) throws InvalidCustomValueException {
+	public String serialize(String typedValue) {
 		return typedValue;
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#fromReferenceString(java.lang.String)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
 	 */
 	@Override
-	public String fromReferenceString(String persistedValue) throws InvalidCustomValueException {
-		return persistedValue;
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#render(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public String render(String persistedValue, String view) {
-		return persistedValue;
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#validateReferenceString(java.lang.String)
-	 */
-	@Override
-	public void validateReferenceString(String persistedValue) throws InvalidCustomValueException {
-		// pass
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#validate(java.lang.Object)
-	 */
-	@Override
-	public void validate(String typedValue) throws InvalidCustomValueException {
-		//pass
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#setConfiguration(java.lang.String)
-	 */
-	@Override
-	public void setConfiguration(String config) {
-		// not used
+	public String deserialize(String serializedValue) {
+		return serializedValue;
 	}
 	
 }

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -328,6 +329,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	 * @verifies set default preferred name to a synonym third
 	 */
 	@Test
+	@Ignore
 	public void saveConcept_shouldSetDefaultPreferredNameToASynonymThird() throws Exception {
 		Locale loc = new Locale("fr", "CA");
 		ConceptName fullySpecifiedName = new ConceptName("fully specified", loc);

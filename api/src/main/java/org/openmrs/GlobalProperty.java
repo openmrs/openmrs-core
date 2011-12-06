@@ -29,6 +29,11 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	private String propertyValue = "";
 	
+	private transient Object typedValue;
+	
+	// if true, indicates that setValue has been called, and we need to invoke CustomDatatype's save
+	private boolean dirty = false;
+	
 	private String description = "";
 	
 	private String datatypeClassname;
@@ -249,12 +254,12 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReference(java.lang.String)
+	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReferenceInternal(java.lang.String)
 	 * 
 	 * @since 1.9
 	 */
 	@Override
-	public void setValueReference(String valueToPersist) throws InvalidCustomValueException {
+	public void setValueReferenceInternal(String valueToPersist) throws InvalidCustomValueException {
 		setPropertyValue(valueToPersist);
 	}
 	
@@ -265,7 +270,9 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	 */
 	@Override
 	public Object getValue() throws InvalidCustomValueException {
-		return CustomDatatypeUtil.getDatatype(this).fromReferenceString(getValueReference());
+		if (typedValue == null)
+			typedValue = CustomDatatypeUtil.getDatatype(this).fromReferenceString(getValueReference());
+		return typedValue;
 	}
 	
 	/**
@@ -275,9 +282,16 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	 */
 	@Override
 	public <T> void setValue(T typedValue) throws InvalidCustomValueException {
-		@SuppressWarnings("unchecked")
-		CustomDatatype<T> datatype = (CustomDatatype<T>) CustomDatatypeUtil.getDatatype(this);
-		datatype.validate(typedValue);
-		setValueReference(datatype.toReferenceString(typedValue));
+		this.typedValue = typedValue;
+		dirty = true;
 	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.SingleCustomValue#isDirty()
+	 */
+	@Override
+	public boolean isDirty() {
+		return dirty;
+	}
+	
 }

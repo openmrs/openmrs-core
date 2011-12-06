@@ -37,6 +37,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -1186,6 +1187,8 @@ public class DataExportFunctions {
 			return ((EncounterType) o).getName();
 		else if (o instanceof Date)
 			return formatDate(null, (Date) o);
+		else if (o instanceof Obs)
+			return ((Obs) o).getValueAsString(Context.getLocale());
 		else
 			return o.toString();
 	}

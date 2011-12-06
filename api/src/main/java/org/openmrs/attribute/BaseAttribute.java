@@ -14,10 +14,10 @@
 package org.openmrs.attribute;
 
 import org.openmrs.BaseOpenmrsData;
-import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.customdatatype.NotYetPersistedException;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -27,13 +27,20 @@ import org.openmrs.util.OpenmrsUtil;
  * @param <OwningType>
  * @since 1.9
  */
+@SuppressWarnings("rawtypes")
 public abstract class BaseAttribute<AT extends AttributeType, OwningType extends Customizable<?>> extends BaseOpenmrsData implements Attribute<AT, OwningType>, Comparable<Attribute> {
 	
 	private OwningType owner;
 	
 	private AT attributeType;
 	
-	private String persistedValue;
+	// value pulled from the database
+	private String valueReference;
+	
+	// temporarily holds a typed value, either when getValue() is called the first time (causing valueReference to be converted) or when setValue has been called, but this attribute has not yet been committed to persistent storage
+	private transient Object value;
+	
+	private transient boolean dirty = false;
 	
 	/**
 	 * @see org.openmrs.attribute.Attribute#getOwner()
@@ -78,15 +85,18 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	 */
 	@Override
 	public String getValueReference() {
-		return persistedValue;
+		if (valueReference == null)
+			throw new NotYetPersistedException();
+		else
+			return valueReference;
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReference(java.lang.String)
+	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReferenceInternal(java.lang.String)
 	 */
 	@Override
-	public void setValueReference(String valueToPersist) throws InvalidCustomValueException {
-		this.persistedValue = valueToPersist;
+	public void setValueReferenceInternal(String valueReference) throws InvalidCustomValueException {
+		this.valueReference = valueReference;
 	}
 	
 	/**
@@ -94,7 +104,9 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	 */
 	@Override
 	public Object getValue() throws InvalidCustomValueException {
-		return CustomDatatypeUtil.getDatatype(getAttributeType()).fromReferenceString(getValueReference());
+		if (value == null)
+			value = CustomDatatypeUtil.getDatatype(getAttributeType()).fromReferenceString(getValueReference());
+		return value;
 	}
 	
 	/**
@@ -102,9 +114,15 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	 */
 	@Override
 	public <T> void setValue(T typedValue) throws InvalidCustomValueException {
-		CustomDatatype<T> datatype = (CustomDatatype<T>) CustomDatatypeUtil.getDatatype(getAttributeType());
-		datatype.validate(typedValue);
-		setValueReference(datatype.toReferenceString(typedValue));
+		dirty = true;
+		value = typedValue;
+	}
+	
+	/**
+	 * @return the dirty
+	 */
+	public boolean isDirty() {
+		return dirty;
 	}
 	
 	/**
