@@ -29,6 +29,8 @@ import java.util.WeakHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerException;
@@ -422,20 +424,29 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	public OpenmrsMemento saveToMemento() {
 		
 		Set<TaskDefinition> tasks = new HashSet<TaskDefinition>();
-		
-		for (TaskDefinition task : getScheduledTasks()) {
-			tasks.add(task);
-			try {
-				shutdownTask(task);
-			}
-			catch (SchedulerException e) {
-				// just swallow exceptions
-				log.debug("Failed to stop task while saving memento " + task.getName(), e);
-			}
-		}
-		
 		TimerSchedulerMemento memento = new TimerSchedulerMemento(tasks);
-		memento.saveErrorTasks();
+		
+		try {
+			if (Context.getAuthenticatedUser() == null) {
+				Daemon.setRunningAsDaemonUser(true);
+			}
+			
+			for (TaskDefinition task : getScheduledTasks()) {
+				tasks.add(task);
+				try {
+					shutdownTask(task);
+				}
+				catch (SchedulerException e) {
+					// just swallow exceptions
+					log.debug("Failed to stop task while saving memento " + task.getName(), e);
+				}
+			}
+			
+			memento.saveErrorTasks();
+		}
+		finally {
+			Daemon.setRunningAsDaemonUser(false);
+		}
 		
 		return memento;
 	}
