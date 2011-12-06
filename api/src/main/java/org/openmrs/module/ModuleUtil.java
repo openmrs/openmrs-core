@@ -45,6 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
@@ -752,8 +753,21 @@ public class ModuleUtil {
 				log.warn("Unable to call willRefreshContext() method in the module's activator", t);
 			}
 		}
+
+		Thread daemonThread = Daemon.runInDaemonThread(new Runnable() {
+		    public void run() {
+		    	OpenmrsClassLoader.saveState();
+		    }
+		});
 		
-		OpenmrsClassLoader.saveState();
+		//Wait for daemon thread to finish saving state.
+		try{
+			daemonThread.join();
+		}
+		catch(InterruptedException ex){
+			log.warn("Daemon thread interrupted while saving the current state", ex);
+		}
+		
 		ServiceContext.destroyInstance();
 		
 		try {
