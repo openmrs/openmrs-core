@@ -99,6 +99,18 @@ function CreateCallback(options) {
 	
 	/**
 	 * Additional options:
+	 * none (yet)
+	 */
+	this.drugCallback = function() { var thisObject = this; return function(q, response) {
+		if (jQuery.trim(q).length == 0)
+			return response(false);
+		
+		thisObject.searchCounter += 1;
+		DWRConceptService.findDrugs(q, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayDrugObject));
+	}}
+
+	/**
+	 * Additional options:
 	 * showAnswersFor: a concept id. if non-null the search space is restricted to the answers to the given concept id
 	 */
 	this.conceptAnswersCallback = function() { var thisObject = this; return function(q, response) {
@@ -234,6 +246,25 @@ function CreateCallback(options) {
 		return { label: textShown, value: value, object: item};
 	}; };
 	
+	// a 'private' method
+	// This is what maps each ConceptDrugListItem returned object to a name in the dropdown
+	this.displayDrugObject = function(origQuery) { return function(item) {
+		// dwr sometimes puts strings into the results, just display those
+		if (typeof item == 'string')
+			return { label: item, value: "" };
+		
+		// add a space so the term highlighter below thinks the first word is a word
+		var textShown = " " + item.fullName;
+		
+		// highlight each search term in the results
+		textShown = highlightWords(textShown, origQuery);
+		
+		var value = item.fullName;
+		textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
+		
+		return { label: textShown, value: value, object: item};
+	}; };
+
 	// a 'private' method
 	// This is what maps each EncounterListItem returned object to a name in the dropdown
 	this.displayEncounter = function(origQuery) { return function(enc) {
