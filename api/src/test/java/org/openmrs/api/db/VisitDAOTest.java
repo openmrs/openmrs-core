@@ -14,6 +14,7 @@
 package org.openmrs.api.db;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -69,14 +70,17 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitDAO#getNextVisit(Visit,Collection<VisitType>)}
+	 * @see {@link VisitDAO#getNextVisit(Visit,Collection<VisitType>,Date)}
 	 */
 	@Test
-	@Verifies(value = "should return the next unvoided active visit matching the specified types", method = "getNextVisit(Visit,Collection<QVisitType;>)")
-	public void getNextVisit_shouldReturnTheNextUnvoidedActiveVisitMatchingTheSpecifiedTypes() throws Exception {
+	@Verifies(value = "should return the next unvoided active visit matching the specified types and startDate", method = "getNextVisit(Visit,Collection<VisitType>,Date)")
+	public void getNextVisit_shouldReturnTheNextUnvoidedActiveVisitMatchingTheSpecifiedTypesAndStartDate() throws Exception {
 		executeDataSet(VISITS_INCLUDE_VISITS_TO_AUTO_CLOSE_XML);
 		ArrayList<VisitType> visitTypes = new ArrayList<VisitType>();
 		visitTypes.add(dao.getVisitType(4));
-		Assert.assertEquals(104, dao.getNextVisit(dao.getVisit(1), visitTypes).getVisitId().intValue());
+		Calendar cal = Calendar.getInstance();
+		cal.set(2005, 0, 4, 23, 59, 59);
+		cal.set(Calendar.MILLISECOND, 999);
+		Assert.assertEquals(105, dao.getNextVisit(dao.getVisit(1), visitTypes, cal.getTime()).getVisitId().intValue());
 	}
 }

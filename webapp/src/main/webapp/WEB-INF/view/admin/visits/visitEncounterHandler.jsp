@@ -50,6 +50,12 @@
 			<form:checkbox path="closeVisitsTaskStarted" />
 			<form:errors path="closeVisitsTaskStarted" cssClass="error" />
 		</p>
+		
+		<p>
+			<b style="vertical-align: top"><spring:message code="Visit.configure.visitTypesToClose" /></b>
+			<form:select path="visitTypesToClose" multiple="true" items="${visitTypes}" itemLabel="name" />
+			<form:errors path="visitTypesToClose" cssClass="error" />
+		</p>
 
 		<p>
 			<b><spring:message code="Encounter.visits.handler.choose" />

@@ -28,7 +28,6 @@ import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This service contains methods relating to visits.
@@ -348,10 +347,13 @@ public interface VisitService extends OpenmrsService {
 	VisitAttribute getVisitAttributeByUuid(String uuid);
 	
 	/**
-	 * Stops all active visits which match any of the visit types specified by the
-	 * {@link OpenmrsConstants#GP_VISIT_TYPES_TO_AUTO_CLOSE} global property
+	 * Stops all active visits started before or on the specified date which match any of the visit
+	 * types specified by the {@link OpenmrsConstants#GP_VISIT_TYPES_TO_AUTO_CLOSE} global property.
+	 * If startDatetime is null, the default will be end of the current day.
 	 * 
+	 * @param maximumStartDate Visits started on or before this date time value will get stopped
 	 * @should close all unvoided active visit matching the specified visit types
 	 */
-	public void stopVisits();
+	@Authorized(PrivilegeConstants.EDIT_VISITS)
+	public void stopVisits(Date maximumStartDate);
 }

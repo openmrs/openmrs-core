@@ -35,6 +35,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.VisitDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
 
@@ -302,13 +303,16 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	}
 	
 	/**
-	 * @see org.openmrs.api.VisitService#stopVisits()
+	 * @see org.openmrs.api.VisitService#stopVisits(Date)
 	 */
 	@Override
-	public void stopVisits() {
+	public void stopVisits(Date maximumStartDate) {
 		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
 		VisitService vs = Context.getVisitService();
 		if (StringUtils.isNotBlank(gpValue)) {
+			if (maximumStartDate == null)
+				maximumStartDate = OpenmrsUtil.getEndOfDay(new Date());
+			
 			List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
 			String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");
 			for (int i = 0; i < visitTypeNames.length; i++) {
@@ -325,7 +329,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 			if (visitTypesToStop.size() > 0) {
 				int counter = 0;
 				Date stopDate = new Date();
-				Visit nextVisit = dao.getNextVisit(new Visit(0), visitTypesToStop);
+				Visit nextVisit = dao.getNextVisit(null, visitTypesToStop, maximumStartDate);
 				while (nextVisit != null) {
 					nextVisit.setStopDatetime(stopDate);
 					dao.saveVisit(nextVisit);
@@ -336,7 +340,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 						counter = 0;
 					}
 					
-					nextVisit = dao.getNextVisit(nextVisit, visitTypesToStop);
+					nextVisit = dao.getNextVisit(nextVisit, visitTypesToStop, maximumStartDate);
 				}
 			}
 		}
