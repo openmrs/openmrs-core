@@ -125,6 +125,7 @@ $j(document).ready( function() {
 </c:if>
 </openmrs:hasPrivilege>
 
+
 <form:form method="post" action="visit.form" modelAttribute="visit">
 	<c:if test="${visit.patient.patientId != null}">
 	<a href="<openmrs:contextPath/>/patientDashboard.form?patientId=${visit.patient.patientId}">
@@ -138,6 +139,10 @@ $j(document).ready( function() {
 	</c:if>
 	<br/><br/>
 	</c:if>
+	
+<b class="boxHeader"><spring:message code="Visit.details"/></b>
+<div class="box">
+
 	<table class="left-aligned-th" cellpadding="3" cellspacing="3">
 		<tr>
 			<th>
@@ -224,8 +229,13 @@ $j(document).ready( function() {
 		<c:forEach var="attrType" items="${ attributeTypes }">
 			<openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ visit }" formFieldNamePrefix="attribute.${ attrType.id }"/>
 		</c:forEach>
+</table>	
+</div>
+
+<b class="boxHeader"><spring:message code="Visit.encounters"/></b>
+<div class="box">
+<table class="left-aligned-th" cellpadding="3" cellspacing="3">	
 		<tr>
-			<th valign="top"><spring:message code="Visit.encounters" /></th>
 			<td valign="top">
 				<table id="encountersTable" cellpadding="3" cellspacing="3">
 					<tr>
@@ -259,9 +269,12 @@ $j(document).ready( function() {
 					</tr>
 				</table>
 				<input type="button" value='<spring:message code="Visit.addEncounter"/>' class="smallButton" onclick='addEncounter()' />
-				<br /><br />
 			</td>
 		</tr>
+</table>	
+</div>
+
+<table class="left-aligned-th" cellpadding="3" cellspacing="3">
 		<c:if test="${visit.visitId != null}">
 		<c:if test="${visit.creator != null}">
 		<tr>
