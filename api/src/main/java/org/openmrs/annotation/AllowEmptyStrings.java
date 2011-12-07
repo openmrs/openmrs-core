@@ -39,7 +39,7 @@ import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
  * @see AllowLeadingOrTrailingWhitespace
  * @see OpenmrsObjectSaveHandler
  */
-@Target({ ElementType.METHOD })
+@Target( { ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
