@@ -161,7 +161,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	private static final String PROGRESS_VM_AJAXREQUEST = "progress.vm.ajaxRequest";
 	
-	public static final String RELEASE_TESTING_MODULE_PATH = "/module/testing/";
+	public static final String RELEASE_TESTING_MODULE_PATH = "/module/releasetestinghelper/";
 	
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All
