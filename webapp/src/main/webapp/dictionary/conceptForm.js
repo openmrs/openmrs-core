@@ -29,8 +29,8 @@ dojo.addOnLoad( function() {
 });
 
 function selectConcept(nameList, idList, conceptList, widget) {
-	var nameListBox = $(nameList);
-	var idListBox = $(idList);
+	var nameListBox = document.getElementById(nameList);
+	var idListBox = document.getElementById(idList);
 	
 	var options = nameListBox.options;
 	for (i=0; i<conceptList.length; i++)
@@ -38,7 +38,6 @@ function selectConcept(nameList, idList, conceptList, widget) {
 		
 	copyIds(nameListBox.id, idListBox.id, ' ');
 }
-
 
 function removeItem(nameList, idList, delim)
 {
@@ -125,11 +124,11 @@ function copyIds(from, to, delimiter)
 
 function addOption(obj, options) {
 	var objId = obj.conceptId;
-	var objName = obj.name + ' ('+objId+')';
+	var objName =  (obj.drugId != null ? obj.fullName : obj.name) + ' ('+objId+')';
 	
 	if (obj.drugId != null) //if obj is actually a drug object
 		objId = objId + "^" + obj.drugId;
-		
+	
 	if (isAddable(objId, options)==true) {
 		var opt = new Option(objName, objId);
 		opt.selected = true;
