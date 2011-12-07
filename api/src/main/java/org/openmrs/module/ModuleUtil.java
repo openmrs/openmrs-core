@@ -753,18 +753,19 @@ public class ModuleUtil {
 				log.warn("Unable to call willRefreshContext() method in the module's activator", t);
 			}
 		}
-
+		
 		Thread daemonThread = Daemon.runInDaemonThread(new Runnable() {
-		    public void run() {
-		    	OpenmrsClassLoader.saveState();
-		    }
+			
+			public void run() {
+				OpenmrsClassLoader.saveState();
+			}
 		});
 		
 		//Wait for daemon thread to finish saving state.
-		try{
+		try {
 			daemonThread.join();
 		}
-		catch(InterruptedException ex){
+		catch (InterruptedException ex) {
 			log.warn("Daemon thread interrupted while saving the current state", ex);
 		}
 		
