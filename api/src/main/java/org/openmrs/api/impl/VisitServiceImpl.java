@@ -37,7 +37,6 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.validator.ValidateUtil;
 
 /**
  * Default implementation of the {@link VisitService}. This class should not be used on its own. The
@@ -94,7 +93,6 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#saveVisitType(org.openmrs.VisitType)
 	 */
 	public VisitType saveVisitType(VisitType visitType) throws APIException {
-		ValidateUtil.validate(visitType);
 		return getVisitDAO().saveVisitType(visitType);
 	}
 	
