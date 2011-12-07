@@ -12,7 +12,7 @@
 </c:otherwise>
 </c:choose>
 
-<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRVisitService.js"/>
 <openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js"/>
 <openmrs:htmlInclude file="/dwr/interface/DWRProviderService.js" />
@@ -254,9 +254,9 @@
 			<th><spring:message code="Encounter.datetime"/></th>
 			<td>
 				<spring:bind path="encounter.encounterDatetime">			
-					<input type="text" name="${status.expression}" size="10" 
-						   value="${status.value}" onfocus="showCalendar(this)" />
-				   (<spring:message code="general.format"/>: <openmrs:datePattern />)
+					<input type="text" name="${status.expression}" size="20" 
+						   value="${status.value}" onfocus="showDateTimePicker(this)" />
+				   (<spring:message code="general.format"/>: <openmrs:dateTimePattern />)
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 				</spring:bind>
 			</td>
