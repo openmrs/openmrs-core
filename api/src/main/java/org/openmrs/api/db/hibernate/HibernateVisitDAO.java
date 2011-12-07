@@ -263,13 +263,16 @@ public class HibernateVisitDAO implements VisitDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.VisitDAO#getNextVisit(Visit, Collection)
+	 * @see org.openmrs.api.db.VisitDAO#getNextVisit(Visit, Collection, Date)
 	 */
 	@Override
-	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes) {
+	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes, Date maximumStartDate) {
 		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
-		criteria.add(Restrictions.eq("voided", false)).add(Restrictions.gt("visitId", previousVisit.getVisitId())).addOrder(
+		criteria.add(Restrictions.eq("voided", false)).add(
+		    Restrictions.gt("visitId", (previousVisit != null) ? previousVisit.getVisitId() : 0)).addOrder(
 		    Order.asc("visitId")).add(Restrictions.isNull("stopDatetime")).setMaxResults(1);
+		if (maximumStartDate != null)
+			criteria.add(Restrictions.le("startDatetime", maximumStartDate));
 		
 		if (CollectionUtils.isNotEmpty(visitTypes))
 			criteria.add(Restrictions.in("visitType", visitTypes));

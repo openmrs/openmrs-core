@@ -13,13 +13,19 @@
  */
 package org.openmrs.web.controller.visit;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.GlobalProperty;
+import org.openmrs.VisitType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.scheduler.SchedulerException;
@@ -57,9 +63,17 @@ public class VisitEncounterHandlerFormController {
 	@Qualifier("adminService")
 	private AdministrationService administrationService;
 	
+	@Autowired
+	private VisitService visitService;
+	
 	@ModelAttribute(VISIT_ENCOUNTER_HANDLERS)
 	public Collection<EncounterVisitHandler> getEncounterVisitHandlers() {
 		return encounterService.getEncounterVisitHandlers();
+	}
+	
+	@ModelAttribute("visitTypes")
+	public List<VisitType> getVisitTypes() {
+		return visitService.getAllVisitTypes();
 	}
 	
 	@RequestMapping(value = MANAGE_VISIT_ENCOUNTER_HANDLERS_PATH, method = RequestMethod.GET)
@@ -81,6 +95,23 @@ public class VisitEncounterHandlerFormController {
 				form.setVisitEncounterHandler(visitHandler.getClass().getName());
 				break;
 			}
+		}
+		
+		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
+		if (StringUtils.isNotBlank(gpValue)) {
+			List<VisitType> visitTypes = new ArrayList<VisitType>();
+			String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");
+			for (int i = 0; i < visitTypeNames.length; i++) {
+				String currName = visitTypeNames[i];
+				visitTypeNames[i] = currName.trim().toLowerCase();
+			}
+			
+			List<VisitType> allVisitTypes = visitService.getAllVisitTypes();
+			for (VisitType visitType : allVisitTypes) {
+				if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase()))
+					visitTypes.add(visitType);
+			}
+			form.setVisitTypesToClose(visitTypes);
 		}
 		
 		model.addAttribute(VISIT_ENCOUNTER_HANDLER_FORM, form);
@@ -106,6 +137,24 @@ public class VisitEncounterHandlerFormController {
 			form.setVisitEncounterHandler(administrationService
 			        .getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER));
 		}
+		
+		String visitTypeNames = "";
+		boolean isFirst = true;
+		for (VisitType vt : form.getVisitTypesToClose()) {
+			if (isFirst) {
+				visitTypeNames += vt.getName();
+				isFirst = false;
+				continue;
+			}
+			visitTypeNames += "," + vt.getName();
+		}
+		//save the GP for visit types to close
+		GlobalProperty gpVisitTypesToClose = administrationService
+		        .getGlobalPropertyObject(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
+		if (gpVisitTypesToClose == null)
+			gpVisitTypesToClose = new GlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
+		gpVisitTypesToClose.setPropertyValue(visitTypeNames);
+		administrationService.saveGlobalProperty(gpVisitTypesToClose);
 		
 		TaskDefinition closeVisitsTask = Context.getSchedulerService().getTaskByName(
 		    OpenmrsConstants.AUTO_CLOSE_VISITS_TASK_NAME);

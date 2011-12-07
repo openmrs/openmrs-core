@@ -32,7 +32,6 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
@@ -820,7 +819,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue("There should be some active visits for this test to be valid", activeVisitCount > 0);
 		
 		//close any unvoided open visits
-		service.stopVisits();
+		service.stopVisits(null);
 		
 		activeVisitCount = Context.getAdministrationService().executeSQL(openVisitsQuery, true).size();
 		

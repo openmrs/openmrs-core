@@ -149,9 +149,10 @@ public interface VisitDAO {
 	 * 
 	 * @param previousVisit the visit that precedes the one we are fetching
 	 * @param visitTypes a collection of visit types to match against
+	 * @param maximumStartDate the next visit should have been created before or at this date time
 	 * @return a {@link Visit}
-	 * @should return the next unvoided active visit matching the specified types
+	 * @should return the next unvoided active visit matching the specified types and startDate
 	 */
-	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes);
+	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes, Date maximumStartDate);
 	
 }

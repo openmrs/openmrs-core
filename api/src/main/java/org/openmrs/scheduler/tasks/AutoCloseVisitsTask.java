@@ -13,10 +13,13 @@
  */
 package org.openmrs.scheduler.tasks;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * A scheduled task that automatically closes all unvoided active visits that match the visit
@@ -40,7 +43,7 @@ public class AutoCloseVisitsTask extends AbstractTask {
 			
 			startExecuting();
 			try {
-				Context.getVisitService().stopVisits();
+				Context.getVisitService().stopVisits(OpenmrsUtil.getEndOfDay(new Date()));
 			}
 			catch (Exception e) {
 				log.error("Error while auto closing visits:", e);
