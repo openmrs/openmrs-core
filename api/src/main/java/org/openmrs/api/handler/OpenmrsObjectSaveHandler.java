@@ -94,17 +94,17 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 					value = ((String) value).trim();
 					
 					//If we have actually trimmed any space, set the trimmed value.
-				    if (!valueBeforeTrim.equals(value)) {
+					if (!valueBeforeTrim.equals(value)) {
 						PropertyUtils.setProperty(openmrsObject, property.getName(), value);
-				    }
+					}
 				}
-			    
-			    //Check if user is interested in setting empty strings to null
-			    if (property.getWriteMethod().getAnnotation(AllowEmptyStrings.class) != null) {
+				
+				//Check if user is interested in setting empty strings to null
+				if (property.getWriteMethod().getAnnotation(AllowEmptyStrings.class) != null) {
 					continue;
 				}
-			   
-				if ("".equals(value)) {	
+				
+				if ("".equals(value)) {
 					//Set to null only if object is not already voided
 					if (!(openmrsObject instanceof Voidable && ((Voidable) openmrsObject).isVoided())) {
 						PropertyUtils.setProperty(openmrsObject, property.getName(), null);
