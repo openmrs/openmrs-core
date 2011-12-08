@@ -340,20 +340,14 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ContextDAO#authenticate(String,String)} test = should throw 
-	 *           APIException if username is white space
+	 * @verifies {@link ContextDAO#authenticate(String,String)} test = should throw a
+	 *           ContextAuthenticationException if username is white space
 	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should throw a APIException if username is white space", method = "authenticate(String,String)")
+	@Test(expected = ContextAuthenticationException.class)
+	@Verifies(value = "should throw a ContextAuthenticationException if username is white space", method = "authenticate(String,String)")
 	public void authenticate_shouldThrowAPIExceptionIfUsernameIsWhiteSpace() throws Exception {
-		//update a user with a username that is an empty string for this test
-		UserService us = Context.getUserService();
-		
-		User u = us.getUser(1);
-		u.setUsername("   ");
-		u.getPerson().setGender("M");
-		
-		us.saveUser(u, "Openmr5xy");
+		// it would be illegal to save this user (with a whitespace username) but we can get it in the db via xml
+		User u = Context.getUserService().getUser(507);
 		dao.authenticate("  ", "password");
 	}
 	
