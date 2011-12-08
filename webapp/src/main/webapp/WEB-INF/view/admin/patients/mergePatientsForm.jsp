@@ -360,7 +360,6 @@ function generateMergeList(){
 					nonPreferred.value = nonPreferred.value+patients[i].value+",";
 				}else preferred.value = patients[i].value;
 			}
-			return true;
 		}else{
 			var preferred = document.getElementById('pref');
 			var nonPreferred = document.getElementById('nonPref');
@@ -374,8 +373,25 @@ function generateMergeList(){
 				return false;
 			}
 		}
+		
+		<c:if test="${modalMode}">
+		var patientsFound = $j("#patientsFound table", parent.document);
+		if (patientsFound != null) {
+			$j("tr", patientsFound).each(function(i, tr) {
+				var patientId = $j("input[name='patientId']", tr);
+				var mergeList = nonPreferred.value.split(",");
+				mergeList.push(preferred.value);
+				if ($j.inArray(patientId.val(), mergeList) > -1) {
+					$j(patientId).attr("disabled", true);
+					$j("td", tr).css("text-decoration", "line-through");
+				}
+			});
+		}
+		</c:if>
+		
+		return true;
 
-	}else return false;
+	} else return false;
 }
 
 </script>
