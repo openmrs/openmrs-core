@@ -74,6 +74,9 @@ public class VisitListController {
 		@SuppressWarnings("unchecked")
 		Map<Form, String> formToViewUrlMap = (Map<Form, String>) model.get("formToViewUrlMap");
 		
+		@SuppressWarnings("unchecked")
+		Map<Form, String> formToEditUrlMap = (Map<Form, String>) model.get("formToEditUrlMap");
+		
 		if (!StringUtils.isBlank(datatable.getsSearch())) {
 			Integer filteredVisitsCount = Context.getEncounterService().getEncountersByVisitsAndPatientCount(patient, false,
 			    datatable.getsSearch());
@@ -130,7 +133,7 @@ public class VisitListController {
 				row.put("encounterLocation", (encounter.getLocation() != null) ? encounter.getLocation().getName() : "");
 				row.put("encounterEnterer", (encounter.getCreator() != null) ? encounter.getCreator().getPersonName()
 				        .toString() : "");
-				row.put("formViewURL", getViewFormURL(request, formToViewUrlMap, encounter));
+				row.put("formViewURL", getViewFormURL(request, formToViewUrlMap, formToEditUrlMap, encounter));
 			}
 			
 			response.addRow(row);
@@ -139,12 +142,16 @@ public class VisitListController {
 		return response;
 	}
 	
-	private String getViewFormURL(HttpServletRequest request, Map<Form, String> formToViewUrlMap, Encounter encounter) {
+	private String getViewFormURL(HttpServletRequest request, Map<Form, String> formToViewUrlMap,
+	                              Map<Form, String> formToEditUrlMap, Encounter encounter) {
 		String viewFormURL = formToViewUrlMap.get(encounter.getForm());
+		if (viewFormURL == null) {
+			viewFormURL =  formToEditUrlMap.get(encounter.getForm());
+		}
 		if (viewFormURL != null) {
 			viewFormURL = request.getContextPath() + "/" + viewFormURL + "?encounterId=" + encounter.getId();
 		} else {
-			viewFormURL = request.getContextPath() + "/admin/encounters/encounterDisplay.list?encounterId="
+			viewFormURL = request.getContextPath() + "/admin/encounters/encounter.form?encounterId="
 			        + encounter.getId();
 		}
 		return viewFormURL;
