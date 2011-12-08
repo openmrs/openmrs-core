@@ -101,7 +101,7 @@ public class TimerSchedulerTask extends TimerTask {
 	 * Executes the given task.
 	 */
 	public static void execute(Task task) {
-		saveLastExecutionTime(task);
 		task.execute();
+		saveLastExecutionTime(task);
 	}
 }
