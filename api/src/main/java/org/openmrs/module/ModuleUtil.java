@@ -754,21 +754,7 @@ public class ModuleUtil {
 			}
 		}
 		
-		Thread daemonThread = Daemon.runInDaemonThread(new Runnable() {
-			
-			public void run() {
-				OpenmrsClassLoader.saveState();
-			}
-		});
-		
-		//Wait for daemon thread to finish saving state.
-		try {
-			daemonThread.join();
-		}
-		catch (InterruptedException ex) {
-			log.warn("Daemon thread interrupted while saving the current state", ex);
-		}
-		
+		OpenmrsClassLoader.saveState();
 		ServiceContext.destroyInstance();
 		
 		try {
