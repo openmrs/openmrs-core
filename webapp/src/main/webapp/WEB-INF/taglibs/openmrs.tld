@@ -843,6 +843,20 @@
 
 <tag>
 	<description>
+		Gets the datetime pattern for the current user's locale
+	</description>
+	<name>dateTimePattern</name>
+	<tag-class>org.openmrs.web.taglib.DateTimePatternTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>localize</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
 		Gets the time pattern for the current user's locale
 	</description>
 	<name>timePattern</name>
