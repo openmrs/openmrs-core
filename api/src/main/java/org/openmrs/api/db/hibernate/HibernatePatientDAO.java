@@ -18,12 +18,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +39,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 
@@ -150,7 +151,13 @@ public class HibernatePatientDAO implements PatientDAO {
 				        .prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
 				
 				ps.setInt(1, patient.getPatientId());
+				if (patient.getCreator() == null) { //If not yet persisted
+					patient.setCreator(Context.getAuthenticatedUser());
+				}
 				ps.setInt(2, patient.getCreator().getUserId());
+				if (patient.getDateCreated() == null) { //If not yet persisted
+					patient.setDateCreated(new java.sql.Date(new Date().getTime()));
+				}
 				ps.setDate(3, new java.sql.Date(patient.getDateCreated().getTime()));
 				
 				ps.executeUpdate();
