@@ -63,6 +63,7 @@ public class ConceptValidator implements Validator {
 	 * @should fail if there is a duplicate unretired fully specified name in the same locale
 	 * @should fail if any names in the same locale for this concept are similar
 	 * @should pass if the concept with a duplicate name is retired
+	 * @should pass if the concept being validated is retired and has a duplicate name
 	 * @should fail if any name is an empty string
 	 * @should fail if the object parameter is null
 	 * @should pass if the concept is being updated with no name change
@@ -155,27 +156,33 @@ public class ConceptValidator implements Validator {
 						errors.reject("Concept.error.multipleShortNames");
 					}
 				}
-				if (nameInLocale.isLocalePreferred() || nameInLocale.isFullySpecifiedName()) {
-					List<Concept> conceptsWithPossibleDuplicateNames = Context.getConceptService().getConceptsByName(
-					    nameInLocale.getName());
-					if (conceptsWithPossibleDuplicateNames.size() > 0) {
-						for (Concept concept : conceptsWithPossibleDuplicateNames) {
-							//skip past the concept being edited and retired ones
-							if (concept.isRetired()
-							        || (conceptToValidate.getConceptId() != null && conceptToValidate.getConceptId().equals(
-							            concept.getConceptId())))
-								continue;
-							//should be a unique name amongst all preferred and fully specified names in its locale system wide
-							if ((concept.getFullySpecifiedName(conceptNameLocale) != null && concept.getFullySpecifiedName(
-							    conceptNameLocale).getName().equalsIgnoreCase(nameInLocale.getName()))
-							        || (concept.getPreferredName(conceptNameLocale) != null && concept.getPreferredName(
-							            conceptNameLocale).getName().equalsIgnoreCase(nameInLocale.getName()))) {
-								throw new DuplicateConceptNameException("'" + nameInLocale.getName()
-								        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "'");
+				
+				//find duplicate names for a non-retired concept
+				if (!conceptToValidate.isRetired()) {
+					if (nameInLocale.isLocalePreferred() || nameInLocale.isFullySpecifiedName()) {
+						List<Concept> conceptsWithPossibleDuplicateNames = Context.getConceptService().getConceptsByName(
+						    nameInLocale.getName());
+						if (conceptsWithPossibleDuplicateNames.size() > 0) {
+							for (Concept concept : conceptsWithPossibleDuplicateNames) {
+								//skip past the concept being edited and retired ones
+								if (concept.isRetired()
+								        || (conceptToValidate.getConceptId() != null && conceptToValidate.getConceptId()
+								                .equals(concept.getConceptId())))
+									continue;
+								//should be a unique name amongst all preferred and fully specified names in its locale system wide
+								if ((concept.getFullySpecifiedName(conceptNameLocale) != null && concept
+								        .getFullySpecifiedName(conceptNameLocale).getName().equalsIgnoreCase(
+								            nameInLocale.getName()))
+								        || (concept.getPreferredName(conceptNameLocale) != null && concept.getPreferredName(
+								            conceptNameLocale).getName().equalsIgnoreCase(nameInLocale.getName()))) {
+									throw new DuplicateConceptNameException("'" + nameInLocale.getName()
+									        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "'");
+								}
 							}
 						}
 					}
 				}
+				
 				//
 				if (errors.hasErrors()) {
 					log.debug("Concept name '" + nameInLocale.getName() + "' for locale '" + conceptNameLocale
