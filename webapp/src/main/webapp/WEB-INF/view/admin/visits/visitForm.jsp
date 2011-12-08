@@ -14,6 +14,9 @@
 <openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js"/>
 
+<c:set var="canDelete" value="${ false }"/>
+<c:set var="canPurge" value="${ false }"/>
+
 <script type="text/javascript">
 
 var numberOfClonedElements = 0;
@@ -58,6 +61,10 @@ $j(document).ready( function() {
 		modal: true
 	});
 
+	$j('#close-delete-dialog').click(function() {
+		$j('#delete-dialog').dialog('close')
+	});
+
 	$j("#purge-dialog").dialog({
 		autoOpen: false,
 		resizable: false,
@@ -84,7 +91,6 @@ $j(document).ready( function() {
 	}
 </style>
 
-<div style="overflow: auto;">
 <spring:hasBindErrors name="visit">
 	<spring:message code="fix.error"/>
 	<div class="error">
@@ -102,29 +108,22 @@ $j(document).ready( function() {
 	</c:choose>
 </h2>
 
-<openmrs:hasPrivilege privilege="Delete Visits">
 <c:if test="${visit.visitId != null && visit.voided}">
-<form:form action="unvoidVisit.htm" method="post" modelAttribute="visit">
-	<c:if test="${param.visitId != null}">
-		<input type="hidden" name="visitId" value="${param.visitId}"/>
-	</c:if>
-	<c:if test="${param.patientId != null}">
-		<input type="hidden" name="patientId" value="${param.patientId}"/>
-	</c:if>
-	<div class="voidedMessage">
-		<div>
-			<spring:message code="Visit.voidedMessage"/>
-			<c:if test="${visit.voidedBy.personName != null}"> <spring:message code="general.byPerson"/> ${visit.voidedBy.personName}</c:if>
-			<c:if test="${visit.dateVoided != null}"> <spring:message code="general.onDate"/> <openmrs:formatDate date="${visit.dateVoided}" type="long" /></c:if>
-			<c:if test="${visit.voidReason!=''}"> - ${visit.voidReason}</c:if>
-		 	<input type="submit" value='<spring:message code="general.restore" />' />
+	<form:form action="unvoidVisit.htm" method="post" modelAttribute="visit">
+		<input type="hidden" name="visitId" value="${visit.visitId}"/>
+		<input type="hidden" name="patientId" value="${visit.patient.patientId}"/>
+		<div class="voidedMessage">
+			<div>
+				<spring:message code="Visit.voidedMessage"/>
+				<c:if test="${visit.voidedBy.personName != null}"> <spring:message code="general.byPerson"/> <openmrs:format user="${visit.voidedBy}"/></c:if>
+				<c:if test="${visit.dateVoided != null}"> <spring:message code="general.onDate"/> <openmrs:formatDate date="${visit.dateVoided}" type="long" /></c:if>
+				<c:if test="${visit.voidReason!=''}"> - ${visit.voidReason}</c:if>
+			 	<input type="submit" value='<spring:message code="general.restore" />' />
+			</div>
 		</div>
-	</div>
-</form:form>
-<br/>
+	</form:form>
+	<br/>
 </c:if>
-</openmrs:hasPrivilege>
-
 
 <form:form method="post" action="visit.form" modelAttribute="visit">
 	<c:if test="${visit.patient.patientId != null}">
@@ -142,6 +141,23 @@ $j(document).ready( function() {
 	
 <b class="boxHeader"><spring:message code="Visit.details"/></b>
 <div class="box">
+
+	<c:if test="${visit.visitId != null}">
+		<div style="float: right">
+			<openmrs:hasPrivilege privilege="Delete Visits">
+				<c:if test="${visit.voided == false}">
+					<c:set var="canDelete" value="${ true }"/>
+					<input type="button" value='<spring:message code="general.void"/>' onclick="javascript:$j('#delete-dialog').dialog('open')"/>
+				</c:if>
+			</openmrs:hasPrivilege>
+		
+			<openmrs:hasPrivilege privilege="Purge Visits">
+				<c:set var="canPurge" value="${ true }"/>
+				<input type="button" value='<spring:message code="general.purge"/>' onclick="javascript:$j('#purge-dialog').dialog('open')" 
+				<c:if test="${!canPurgeVisit}"> disabled="disabled" title="<spring:message code="Visit.cannotPurgeVisitWithEncounters"/>"</c:if> />
+			</openmrs:hasPrivilege>
+		</div>
+	</c:if>
 
 	<table class="left-aligned-th" cellpadding="3" cellspacing="3">
 		<tr>
@@ -229,52 +245,6 @@ $j(document).ready( function() {
 		<c:forEach var="attrType" items="${ attributeTypes }">
 			<openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ visit }" formFieldNamePrefix="attribute.${ attrType.id }"/>
 		</c:forEach>
-</table>	
-</div>
-
-<b class="boxHeader"><spring:message code="Visit.encounters"/></b>
-<div class="box">
-<table class="left-aligned-th" cellpadding="3" cellspacing="3">	
-		<tr>
-			<td valign="top">
-				<table id="encountersTable" cellpadding="3" cellspacing="3">
-					<tr>
-						<th><spring:message code="Encounter.datetime"/></th>
-						<th><spring:message code="Encounter.type"/></th>
-						<th><spring:message code="Encounter.location"/></th>
-						<th><spring:message code="Encounter.provider"/></th>
-						<th></th>
-					</tr>
-					<c:forEach items="${visitEncounters}" var="enc" varStatus="encStatus">
-					<tr id="encounter-${enc.encounterId}" style='background-color: whitesmoke'>
-						<td><openmrs:formatDate date="${enc.encounterDatetime}" type="small" /></td>
-						<td><openmrs:format encounterType="${enc.encounterType}" /></td>
-						<td><openmrs:format location="${enc.location}" /></td>
-						<td><openmrs:format person="${enc.provider}" /></td>
-						<td class="removeButtonColumn">
-							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onclick="removeEncounter(this)" />
-							<input type="hidden" name="encounterIds" value="${enc.encounterId}" />
-						</td>
-					</tr>
-					</c:forEach>
-					<tr id="newEncounterRow" style="display:none;">
-						<td colspan="4">
-							<%-- make sure the text field is wide enough to show the placeholder message --%>
-							<input type="text" id="visitEncounters[x]-display" size="62" />
-							<input type="hidden" id="visitEncounters[x]" name="encounterIds" />
-						</td>
-						<td class="removeButtonColumn">
-							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onclick="removeEncounter(this)" />
-						</td>
-					</tr>
-				</table>
-				<input type="button" value='<spring:message code="Visit.addEncounter"/>' class="smallButton" onclick='addEncounter()' />
-			</td>
-		</tr>
-</table>	
-</div>
-
-<table class="left-aligned-th" cellpadding="3" cellspacing="3">
 		<c:if test="${visit.visitId != null}">
 		<c:if test="${visit.creator != null}">
 		<tr>
@@ -293,43 +263,63 @@ $j(document).ready( function() {
 		</tr>
 		</c:if>
 		</c:if>
+</table>	
+</div>
+
+<br/>
+
+<b class="boxHeader"><spring:message code="Visit.encounters"/></b>
+<div class="box">
+	<table id="encountersTable" cellpadding="3" cellspacing="3">
 		<tr>
-			<td colspan="2"><br/>
-				<table cellpadding="0" cellspacing="0" align="left">
-       				<tr>
-       					<td><input type="submit" value='<spring:message code="general.save" />' /></td>
-       					<td width="15px"></td>
-       					<td>
-       						<c:set var="cancelUrl" value="${pageContext.request.contextPath}/admin" scope="page"></c:set>
-       						<c:if test="${not empty param.patientId}">
-       						<c:set var="cancelUrl" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${param.patientId}" />
-       						</c:if>
-       						<input type="button" value='<spring:message code="general.cancel" />' onclick='javascript:window.location="${cancelUrl}"' />
-       					</td>
-       				</tr>
-    				</table>
+			<th><spring:message code="Encounter.datetime"/></th>
+			<th><spring:message code="Encounter.type"/></th>
+			<th><spring:message code="Encounter.location"/></th>
+			<th><spring:message code="Encounter.provider"/></th>
+			<th></th>
+		</tr>
+		<c:forEach items="${visitEncounters}" var="enc" varStatus="encStatus">
+		<tr id="encounter-${enc.encounterId}" style='background-color: whitesmoke'>
+			<td><openmrs:formatDate date="${enc.encounterDatetime}" type="small" /></td>
+			<td><openmrs:format encounterType="${enc.encounterType}" /></td>
+			<td><openmrs:format location="${enc.location}" /></td>
+			<td><openmrs:format person="${enc.provider}" /></td>
+			<td class="removeButtonColumn">
+				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onclick="removeEncounter(this)" />
+				<input type="hidden" name="encounterIds" value="${enc.encounterId}" />
+			</td>
+		</tr>
+		</c:forEach>
+		<tr id="newEncounterRow" style="display:none;">
+			<td colspan="4">
+				<%-- make sure the text field is wide enough to show the placeholder message --%>
+				<input type="text" id="visitEncounters[x]-display" size="62" />
+				<input type="hidden" id="visitEncounters[x]" name="encounterIds" />
+			</td>
+			<td class="removeButtonColumn">
+				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onclick="removeEncounter(this)" />
 			</td>
 		</tr>
 	</table>
+	<input type="button" value='<spring:message code="Visit.addEncounter"/>' class="smallButton" onclick='addEncounter()' />
+</div>
+
+<br/>
+
+<input type="submit" value='<spring:message code="general.save" />' /></td>
+<c:set var="cancelUrl" value="${pageContext.request.contextPath}/admin" scope="page"></c:set>
+<c:if test="${not empty param.patientId}">
+	<c:set var="cancelUrl" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${param.patientId}" />
+</c:if>
+<input type="button" style="margin-left: 15px" value='<spring:message code="general.cancel" />' onclick='javascript:window.location="${cancelUrl}"' />
+
 </form:form>
 
-
-<c:if test="${visit.visitId != null}">
-<br/>
-<table cellpadding="3" cellspacing="3" style="float: right;">
-	<tr>
-		<td>
-			<openmrs:hasPrivilege privilege="Delete Visits">
-			<c:if test="${visit.voided == false }">
-			<input type="submit" value='<spring:message code="general.void"/>' onclick="javascript:$j('#delete-dialog').dialog('open')"/>
-			<div id="delete-dialog" title="<spring:message code="general.void"/> <spring:message code="Visit"/>">
-			<form:form action="voidVisit.htm" method="post" modelAttribute="visit">
-			<c:if test="${param.visitId != null}">
-				<input type="hidden" name="visitId" value="${param.visitId}"/>
-			</c:if>
-			<c:if test="${param.patientId != null}">
-				<input type="hidden" name="patientId" value="${param.patientId}"/>
-			</c:if>
+<c:if test="${ canDelete }">
+	<div id="delete-dialog" title="<spring:message code="general.void"/> <spring:message code="Visit"/>">
+		<form action="voidVisit.htm" method="post">
+			<input type="hidden" name="visitId" value="${visit.visitId}"/>
+			<input type="hidden" name="patientId" value="${visit.patient.patientId}"/>
 			<p><spring:message code="Visit.delete.info" arguments="${encounterCount}, ${observationCount}"/></p>
 			<table cellpadding="3" cellspacing="3" align="center">
 				<tr>
@@ -341,44 +331,38 @@ $j(document).ready( function() {
 				<tr height="20"></tr>
 				<tr>
 					<td colspan="2" style="text-align: center">
-						<input type="submit" value="<spring:message code="general.void"/>" /> &nbsp; <input type="button" value="<spring:message code="general.cancel"/>" 
-						onclick="javascript:$j('#delete-dialog').dialog('close')" /></td>
+						<input type="submit" value="<spring:message code="general.void"/>" />
+						&nbsp;
+						<input id="close-delete-dialog" type="button" value="<spring:message code="general.cancel"/>" /> 
+					</td>
 				</tr>
 			</table>
-			</form:form>
-			</div>
-			</c:if>
-			</openmrs:hasPrivilege>
-		</td>
-		<td>
-			<openmrs:hasPrivilege privilege="Purge Visits">
-			<input type="button" value='<spring:message code="general.purge"/>' onclick="javascript:$j('#purge-dialog').dialog('open')" 
-				<c:if test="${!canPurgeVisit}"> disabled="disabled" title="<spring:message code="Visit.cannotPurgeVisitWithEncounters"/>"</c:if> />
-			<div id="purge-dialog" title="<spring:message code="Visit.confirm.purge"/>">
-				<form:form action="purgeVisit.htm" method="post" modelAttribute="visit">
-				<c:if test="${param.visitId != null}">
-					<input type="hidden" name="visitId" value="${param.visitId}"/>
-				</c:if>
-				<c:if test="${param.patientId != null}">
-					<input type="hidden" name="patientId" value="${param.patientId}"/>
-				</c:if>
-				<br/>
-				<spring:message code="Visit.confirm.purgeMessage"/>
-				<br/>
-				<table cellpadding="3" cellspacing="30" align="center">
-					<tr>
-						<td>
-							<input type="submit" value='<spring:message code="general.yes"/>' /> &nbsp; <input type="button" value="<spring:message code="general.no"/>"
-							onclick="javascript:$j('#purge-dialog').dialog('close')" />
-						</td>
-					</tr>
-				</table>
-				</form:form>
-			</div>
-			</openmrs:hasPrivilege>
-		</td>
-	</tr>
-</table>
+		</form>
+	</div>
 </c:if>
-</div>
+
+<c:if test="${ canPurge }">
+	<div id="purge-dialog" title="<spring:message code="Visit.confirm.purge"/>">
+		<form:form action="purgeVisit.htm" method="post" modelAttribute="visit">
+			<c:if test="${param.visitId != null}">
+				<input type="hidden" name="visitId" value="${param.visitId}"/>
+			</c:if>
+			<c:if test="${param.patientId != null}">
+				<input type="hidden" name="patientId" value="${param.patientId}"/>
+			</c:if>
+			<br/>
+			<spring:message code="Visit.confirm.purgeMessage"/>
+			<br/>
+			<table cellpadding="3" cellspacing="30" align="center">
+				<tr>
+					<td>
+						<input type="submit" value='<spring:message code="general.yes"/>' /> &nbsp; <input type="button" value="<spring:message code="general.no"/>"
+						onclick="javascript:$j('#purge-dialog').dialog('close')" />
+					</td>
+				</tr>
+			</table>
+		</form:form>
+	</div>
+</c:if>
+
 <%@ include file="/WEB-INF/template/footer.jsp" %>
