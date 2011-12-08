@@ -141,12 +141,19 @@ Parameters
 									</td>
 									<td class="encounterView" align="center">
 										<c:if test="${showViewLink}">
-											<c:set var="viewEncounterUrl" value="${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=${enc.encounterId}"/>
-											<c:if test="${ model.formToViewUrlMap[enc.form] != null }">
-												<c:url var="viewEncounterUrl" value="${model.formToViewUrlMap[enc.form]}">
-													<c:param name="encounterId" value="${enc.encounterId}"/>
-												</c:url>
-											</c:if>
+											<c:set var="viewEncounterUrl" value="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${enc.encounterId}"/>
+											<c:choose>
+												<c:when test="${ model.formToViewUrlMap[enc.form] != null }">
+													<c:url var="viewEncounterUrl" value="${model.formToViewUrlMap[enc.form]}">
+														<c:param name="encounterId" value="${enc.encounterId}"/>
+													</c:url>
+												</c:when>
+												<c:when test="${ model.formToEditUrlMap[enc.form] != null }">
+													<c:url var="viewEncounterUrl" value="${model.formToEditUrlMap[enc.form]}">
+														<c:param name="encounterId" value="${enc.encounterId}"/>
+													</c:url>
+												</c:when>
+											</c:choose>
 											<a href="${viewEncounterUrl}">
 												<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" border="0" />
 											</a>
