@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
+import org.openmrs.validator.EncounterValidator;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Location;
@@ -52,12 +53,14 @@ import org.openmrs.propertyeditor.VisitEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.EncounterValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -151,6 +154,8 @@ public class EncounterFormController extends SimpleFormController {
 						}
 					}
 				}
+				
+				ValidationUtils.invokeValidator(new EncounterValidator(), encounter, errors);
 			}
 		}
 		finally {
