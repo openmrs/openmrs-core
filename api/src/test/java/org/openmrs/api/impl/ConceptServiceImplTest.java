@@ -329,7 +329,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	 * @verifies set default preferred name to a synonym third
 	 */
 	@Test
-	@Ignore
+	@Ignore // un-ignore as part of TRUNK-2664 
 	public void saveConcept_shouldSetDefaultPreferredNameToASynonymThird() throws Exception {
 		Locale loc = new Locale("fr", "CA");
 		ConceptName fullySpecifiedName = new ConceptName("fully specified", loc);
