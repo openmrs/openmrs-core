@@ -380,7 +380,6 @@ function generateMergeList(){
 			$j("tr", patientsFound).each(function(i, tr) {
 				var patientId = $j("input[name='patientId']", tr);
 				var mergeList = nonPreferred.value.split(",");
-				mergeList.push(preferred.value);
 				if ($j.inArray(patientId.val(), mergeList) > -1) {
 					$j(patientId).attr("disabled", true);
 					$j("td", tr).css("text-decoration", "line-through");
