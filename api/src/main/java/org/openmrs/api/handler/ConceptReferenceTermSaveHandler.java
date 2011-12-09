@@ -15,24 +15,17 @@ package org.openmrs.api.handler;
 
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
-import org.openmrs.api.APIException;
 
 /**
  * This class deals with {@link ConceptReferenceTerm} objects when they are saved via a save* method
  * in an Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
  * class. <br/>
- * This class does the following:
- * <ul>
- * <li>Sets a custom uuid by concatenating the code to the hl7Code of the concept source the term
- * belongs to</li>
- * <li>Sets the termA field for all {@link ConceptReferenceTermMap}s</li>
- * </ul>
+ * It sets the termA field for all {@link ConceptReferenceTermMap}s</li>
  * 
  * @see RequiredDataHandler
  * @see SaveHandler
@@ -43,41 +36,13 @@ import org.openmrs.api.APIException;
 public class ConceptReferenceTermSaveHandler implements SaveHandler<ConceptReferenceTerm> {
 	
 	/**
-	 * This removes white space characters from the beginning and end of all strings
+	 * Sets the concept reference term as the term A for all the {@link ConceptReferenceTermMap}s
+	 * added to it.
 	 * 
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 */
 	public void handle(ConceptReferenceTerm conceptReferenceTerm, User currentUser, Date currentDate, String other) {
-		
-		if (conceptReferenceTerm.getName() != null) {
-			conceptReferenceTerm.setName(conceptReferenceTerm.getName().trim());
-		}
-		if (conceptReferenceTerm.getCode() != null) {
-			conceptReferenceTerm.setCode(conceptReferenceTerm.getCode().trim());
-		}
-		
-		if (conceptReferenceTerm.getDescription() != null) {
-			//set value to null if we have a blank description
-			if (conceptReferenceTerm.getDescription().trim().length() == 0)
-				conceptReferenceTerm.setDescription(null);
-			else
-				conceptReferenceTerm.setDescription(conceptReferenceTerm.getDescription().trim());
-		}
-		if (conceptReferenceTerm.getVersion() != null) {
-			if (conceptReferenceTerm.getVersion().trim().length() == 0)
-				conceptReferenceTerm.setVersion(null);
-			else
-				conceptReferenceTerm.setVersion(conceptReferenceTerm.getVersion().trim());
-		}
-		
-		if (StringUtils.isBlank(conceptReferenceTerm.getConceptSource().getHl7Code()))
-			throw new APIException("ConceptSource.hl7Code.required");
-		
-		//always update the uuid just in case source and code have been edited
-		conceptReferenceTerm.setUuid(conceptReferenceTerm.getConceptSource().getHl7Code().concat("-").concat(
-		    conceptReferenceTerm.getCode()));
-		
 		if (conceptReferenceTerm.getConceptReferenceTermMaps() != null) {
 			for (ConceptReferenceTermMap map : conceptReferenceTerm.getConceptReferenceTermMaps())
 				map.setTermA(conceptReferenceTerm);
