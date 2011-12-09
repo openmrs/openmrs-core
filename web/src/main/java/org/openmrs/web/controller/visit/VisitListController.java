@@ -143,16 +143,15 @@ public class VisitListController {
 	}
 	
 	private String getViewFormURL(HttpServletRequest request, Map<Form, String> formToViewUrlMap,
-	                              Map<Form, String> formToEditUrlMap, Encounter encounter) {
+	        Map<Form, String> formToEditUrlMap, Encounter encounter) {
 		String viewFormURL = formToViewUrlMap.get(encounter.getForm());
 		if (viewFormURL == null) {
-			viewFormURL =  formToEditUrlMap.get(encounter.getForm());
+			viewFormURL = formToEditUrlMap.get(encounter.getForm());
 		}
 		if (viewFormURL != null) {
 			viewFormURL = request.getContextPath() + "/" + viewFormURL + "?encounterId=" + encounter.getId();
 		} else {
-			viewFormURL = request.getContextPath() + "/admin/encounters/encounter.form?encounterId="
-			        + encounter.getId();
+			viewFormURL = request.getContextPath() + "/admin/encounters/encounter.form?encounterId=" + encounter.getId();
 		}
 		return viewFormURL;
 	}
