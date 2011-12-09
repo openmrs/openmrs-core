@@ -5296,31 +5296,20 @@
 			baseTableName="concept_reference_term_map" baseColumnNames="changed_by" />
 	</changeSet>
 		
-	<changeSet id="20110301-1030k" author="wyclif">
+	<changeSet id="20110301-1030k" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_map</sqlCheck></not>
 				<dbms type="mysql" />
 			</and>
 		</preConditions>
-		<comment>Creating concept reference terms from existing rows in the concept_map table(For MySQL)</comment>
+		<comment>Creating concept reference terms from existing rows in the concept_map table</comment>
 		<sql>
 			INSERT INTO concept_reference_term (concept_reference_term_id, concept_source_id, code, description, creator, date_created, uuid) 
-			SELECT cm.concept_map_id, cm.source, cm.source_code, cm.comment, cm.creator, cm.date_created, CONCAT(crs.hl7_code, "-",cm.source_code) 
+			SELECT cm.concept_map_id, cm.source, cm.source_code, cm.comment, cm.creator, cm.date_created, UUID() 
 			FROM concept_reference_map cm, concept_reference_source crs
 			WHERE cm.source = crs.concept_source_id
 		</sql>
-	</changeSet>
-	
-	<changeSet id="20110301-1030l" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<and>
-				<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_map</sqlCheck></not>
-				<not><dbms type="mysql" /></not>				
-			</and>
-		</preConditions>
-		<comment>Creating concept reference terms from existing rows in the concept_map table(For all databases except MySQL)</comment>
-		<customChange class="org.openmrs.util.databasechange.ConceptReferenceTermChangeSet"/>
 	</changeSet>
 
 	<changeSet id="20110301-1030m" author="wyclif">
