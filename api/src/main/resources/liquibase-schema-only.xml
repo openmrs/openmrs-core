@@ -2315,6 +2315,95 @@
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
         </modifySql>
     </changeSet>
+    <changeSet id="20110426-11701-create-provider-table" author="dkayiwa">
+ 		<preConditions onFail="MARK_RAN">
+ 			<not>
+ 				<tableExists tableName="provider" />
+ 			</not>
+ 		</preConditions>
+ 		<comment>
+ 			Create provider table
+ 		</comment>
+ 		<createTable tableName="provider">
+ 			<column name="provider_id" type="int" autoIncrement="true">
+ 				<constraints primaryKey="true" nullable="false" />
+ 			</column>
+ 			<column name="person_id" type="int">
+ 				<constraints nullable="true" />
+ 			</column>
+ 			<column name="name" type="varchar(255)"></column>
+ 			<column name="identifier" type="varchar(255)"><constraints nullable="false" /></column>
+ 			<column name="creator" type="int">
+ 				<constraints nullable="false" />
+ 			</column>
+ 			<column name="date_created" type="datetime">
+ 				<constraints nullable="false" />
+ 			</column>
+ 			<column name="changed_by" type="int" />
+ 			<column name="date_changed" type="datetime" />
+ 			<column name="retired" type="tinyint" defaultValueNumeric="0">
+ 				<constraints nullable="false" />
+ 			</column>
+ 			<column name="retired_by" type="int(11)" />
+ 			<column name="date_retired" type="datetime" />
+ 			<column name="retire_reason" type="varchar(255)" defaultValue="null" />
+ 			<column name="uuid" type="char(38)">
+ 				<constraints nullable="false" unique="true" />
+ 			</column>
+ 		</createTable>
+ 		<addForeignKeyConstraint constraintName="provider_changed_by_fk"
+ 			baseTableName="provider" baseColumnNames="changed_by"
+ 			referencedTableName="users" referencedColumnNames="user_id" />
+ 		<addForeignKeyConstraint constraintName="provider_person_id_fk"
+ 			baseTableName="provider" baseColumnNames="person_id"
+ 			referencedTableName="person" referencedColumnNames="person_id" />
+ 
+ 		<addForeignKeyConstraint constraintName="provider_retired_by_fk"
+ 			baseTableName="provider" baseColumnNames="retired_by"
+ 			referencedTableName="users" referencedColumnNames="user_id" />
+ 		<addForeignKeyConstraint constraintName="provider_creator_fk"
+ 			baseTableName="provider" baseColumnNames="creator"
+ 			referencedTableName="users" referencedColumnNames="user_id" />
+ 		<modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+         </modifySql>
+ 	</changeSet>
+    <changeSet id="20110705-2311-create-encounter-role-table" author="dkayiwa">
+         <preConditions onFail="MARK_RAN">
+             <not><tableExists tableName="encounter_role"/></not>
+         </preConditions>
+         <comment>Creating encounter_role table</comment>
+         <createTable tableName="encounter_role">
+             <column name="encounter_role_id" type="int" autoIncrement="true">
+                 <constraints primaryKey="true" nullable="false" />
+             </column>
+             <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
+             <column name="description" type="varchar(1024)"/>
+             <column name="creator" type="int"><constraints nullable="false"/></column>
+             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+             <column name="changed_by" type="int"/>
+             <column name="date_changed" type="datetime" />
+             <column name="retired" type="smallint" defaultValueNumeric="0">
+                 <constraints nullable="false"/>
+             </column>
+             <column name="retired_by" type="int(11)" />
+             <column name="date_retired" type="datetime" />
+             <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+             <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+         </createTable>
+         <addForeignKeyConstraint constraintName="encounter_role_creator_fk"
+             baseTableName="encounter_role" baseColumnNames="creator" referencedTableName="users"
+             referencedColumnNames="user_id" />
+         <addForeignKeyConstraint constraintName="encounter_role_changed_by_fk"
+             baseTableName="encounter_role" baseColumnNames="changed_by" referencedTableName="users"
+             referencedColumnNames="user_id" />
+         <addForeignKeyConstraint constraintName="encounter_role_retired_by_fk"
+             baseTableName="encounter_role" baseColumnNames="retired_by" referencedTableName="users"
+             referencedColumnNames="user_id" />
+         <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+         </modifySql>
+     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-73">
         <addPrimaryKey columnNames="cohort_id, patient_id" tableName="cohort_member"/>
     </changeSet>
