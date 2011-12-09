@@ -43,7 +43,7 @@ public class AutoCloseVisitsTask extends AbstractTask {
 			
 			startExecuting();
 			try {
-				Context.getVisitService().stopVisits(OpenmrsUtil.getEndOfDay(new Date()));
+				Context.getVisitService().stopVisits(new Date());
 			}
 			catch (Exception e) {
 				log.error("Error while auto closing visits:", e);

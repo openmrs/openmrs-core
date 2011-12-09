@@ -35,7 +35,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.VisitDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
@@ -309,7 +308,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		VisitService vs = Context.getVisitService();
 		if (StringUtils.isNotBlank(gpValue)) {
 			if (maximumStartDate == null)
-				maximumStartDate = OpenmrsUtil.getEndOfDay(new Date());
+				maximumStartDate = new Date();
 			
 			List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
 			String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");

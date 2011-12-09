@@ -2492,21 +2492,4 @@ public class OpenmrsUtil {
 		
 		return s1.equalsIgnoreCase(s2);
 	}
-	
-	/**
-	 * Returns the passed date set to the last millisecond before midnight
-	 * 
-	 * @param date for which to return the end of day
-	 * @return {@link Date}
-	 * @since 1.9
-	 */
-	public static Date getEndOfDay(Date date) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
-		c.set(Calendar.HOUR_OF_DAY, 23);
-		c.set(Calendar.MINUTE, 59);
-		c.set(Calendar.SECOND, 59);
-		c.set(Calendar.MILLISECOND, 999);
-		return c.getTime();
-	}
 }
