@@ -326,14 +326,16 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
-	 * @verifies set default preferred name to a synonym third
+	 * @verifies set default preferred name to a synonym second
 	 */
 	@Test
-	@Ignore
 	// un-ignore as part of TRUNK-2664 
-	public void saveConcept_shouldSetDefaultPreferredNameToASynonymThird() throws Exception {
+	public void saveConcept_shouldSetDefaultPreferredNameToASynonymSecond() throws Exception {
 		Locale loc = new Locale("fr", "CA");
-		ConceptName fullySpecifiedName = new ConceptName("fully specified", loc);
+		Locale otherLocale = new Locale("en", "US");
+		//Create a fully specified name, but for another locale
+		//so the Concept passes validation
+		ConceptName fullySpecifiedName = new ConceptName("fully specified", otherLocale);
 		fullySpecifiedName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED); //be explicit for test case
 		ConceptName shortName = new ConceptName("short name", loc);
 		shortName.setConceptNameType(ConceptNameType.SHORT); //be explicit for test case
@@ -345,6 +347,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		Concept c = new Concept();
 		java.util.HashSet<ConceptName> allNames = new java.util.HashSet<ConceptName>(4);
 		allNames.add(indexTerm);
+		allNames.add(fullySpecifiedName);
 		allNames.add(synonym);
 		c.setNames(allNames);
 		
@@ -361,6 +364,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull("there's a preferred name", c.getPreferredName(loc));
 		Assert.assertTrue("name was explicitly marked preferred", c.getPreferredName(loc).isPreferred());
 		Assert.assertEquals("name matches", c.getPreferredName(loc).getName(), synonym.getName());
+		Assert.assertEquals("fully specified name unchanged", c.getPreferredName(otherLocale).getName(), fullySpecifiedName.getName());
+
 	}
 	
 }
