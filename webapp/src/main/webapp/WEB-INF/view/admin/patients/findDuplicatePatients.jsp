@@ -132,11 +132,38 @@
 
 <br /><br />
 
-<form action="mergePatients.form" id="patientsFound">
+<div id="mergePatientPopup">
+	<div id="mergePatientPopupLoading"><spring:message code="general.loading"/></div>
+	<iframe id="mergePatientPopupIframe" name="mergePatientPopupIframe" width="100%" height="100%" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"></iframe>
+</div>
+<script type="text/javascript">
+	$j(document).ready(function() {
+		$j('#mergePatientPopup').dialog({
+				title: '<spring:message code="Patient.merge.title"/>',
+				autoOpen: false,
+				draggable: false,
+				resizable: false,
+				width: '95%',
+				modal: true,
+				open: function(a, b) { $j('#mergePatientPopupLoading').show(); }
+		});
+		$j("#mergePatientPopupIframe").load(function() { $j('#mergePatientPopupLoading').hide(); });
+	});
+
+	function showMergePatientPopup() {
+		$j('#mergePatientPopup')
+			.dialog('option', 'height', $j(window).height() - 50) 
+			.dialog('open');
+		return true;
+	}
+</script>
+
+<form action="mergePatients.form" id="patientsFound" target="mergePatientPopupIframe">
     <span id="patientListSize"></span> <spring:message code="Patient.returned"/>.
     <span id="patientsSelect"><spring:message code="Patient.merge.select"/>
 	<div dojoType="PatientSearch" widgetId="pSearch" inputId="searchNode" tableHeight="1000"></div>
-	<input type="submit" value='<spring:message code="general.continue"/>'/>
+	<input type="hidden" name="modalMode" value="true"/>
+	<input type="submit" value='<spring:message code="general.continue"/>' onclick="showMergePatientPopup();"/>
     </span>
 </form>
 
