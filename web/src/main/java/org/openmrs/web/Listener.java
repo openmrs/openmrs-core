@@ -37,6 +37,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.Module;
@@ -48,8 +49,9 @@ import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsSecurityManager;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
@@ -145,7 +147,7 @@ public final class Listener extends ContextLoaderListener {
 				copyCustomizationIntoWebapp(servletContext, props);
 				
 				super.contextInitialized(event);
-				startOpenmrs(event.getServletContext());
+				WebDaemon.startOpenmrs(event.getServletContext());
 			}
 			
 		}
@@ -177,6 +179,13 @@ public final class Listener extends ContextLoaderListener {
 	 * @throws ServletException
 	 */
 	public static void startOpenmrs(ServletContext servletContext) throws ServletException {
+		
+		//Ensure that we are being called from WebDaemon
+		//TODO this did not work because callerClass was org.openmrs.web.WebDaemon$1 instead of org.openmrs.web.WebDaemon
+		/*Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
+		if (!WebDaemon.class.isAssignableFrom(callerClass))
+			throw new APIException("This method can only be called from the WebDaemon class, not " + callerClass.getName());*/
+		
 		// start openmrs
 		try {
 			Context.openSession();

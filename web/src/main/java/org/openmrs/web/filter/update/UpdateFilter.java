@@ -54,6 +54,7 @@ import org.openmrs.util.Security;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.Listener;
+import org.openmrs.web.WebDaemon;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.util.CustomResourceLoader;
@@ -394,7 +395,7 @@ public class UpdateFilter extends StartupFilter {
 		contextLoader.initWebApplicationContext(servletContext);
 		
 		try {
-			Listener.startOpenmrs(servletContext);
+			WebDaemon.startOpenmrs(servletContext);
 		}
 		catch (ServletException servletException) {
 			contextLoader.closeWebApplicationContext(servletContext);

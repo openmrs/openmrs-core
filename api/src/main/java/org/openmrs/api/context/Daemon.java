@@ -34,7 +34,7 @@ public class Daemon {
 	 */
 	protected static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
 	
-	private static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
+	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
 	
 	/**
 	 * This method should not be called directly. The {@link ModuleFactory#startModule(Module)}
@@ -239,7 +239,7 @@ public class Daemon {
 	 * {@link Daemon#executeScheduledTask(Task)} methods so that the returned object and the
 	 * exception thrown can be returned to calling class
 	 */
-	private static class DaemonThread extends Thread {
+	protected static class DaemonThread extends Thread {
 		
 		/**
 		 * The object returned from the method called in {@link #run()}
@@ -250,5 +250,14 @@ public class Daemon {
 		 * The exception thrown (if any) by the method called in {@link #run()}
 		 */
 		protected Throwable exceptionThrown = null;
+		
+		/**
+		 * Gets the exception thrown (if any) by the method called in {@link #run()}
+		 * 
+		 * @return the thrown exception (if any).
+		 */
+		public Throwable getExceptionThrown() {
+			return exceptionThrown;
+		}
 	}
 }
