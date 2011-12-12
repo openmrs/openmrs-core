@@ -364,8 +364,9 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull("there's a preferred name", c.getPreferredName(loc));
 		Assert.assertTrue("name was explicitly marked preferred", c.getPreferredName(loc).isPreferred());
 		Assert.assertEquals("name matches", c.getPreferredName(loc).getName(), synonym.getName());
-		Assert.assertEquals("fully specified name unchanged", c.getPreferredName(otherLocale).getName(), fullySpecifiedName.getName());
-
+		Assert.assertEquals("fully specified name unchanged", c.getPreferredName(otherLocale).getName(), fullySpecifiedName
+		        .getName());
+		
 	}
 	
 }
