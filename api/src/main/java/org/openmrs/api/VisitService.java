@@ -28,6 +28,7 @@ import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This service contains methods relating to visits.
