@@ -5296,7 +5296,7 @@
 			baseTableName="concept_reference_term_map" baseColumnNames="changed_by" />
 	</changeSet>
 		
-	<changeSet id="20111211-1030k" author="wyclif" dbms="mysql">
+	<changeSet id="2011121-1030k" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_map</sqlCheck></not>
