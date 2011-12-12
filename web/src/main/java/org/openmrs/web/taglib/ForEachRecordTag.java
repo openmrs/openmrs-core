@@ -109,7 +109,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 			List<Role> roles = Context.getUserService().getAllRoles();
 			records = roles.iterator();
 		} else if (name.equals("conceptMapType")) {
-			List<ConceptMapType> mapTypes = Context.getConceptService().getAllConceptMapTypes();
+			List<ConceptMapType> mapTypes = Context.getConceptService().getActiveConceptMapTypes();
 			records = mapTypes.iterator();
 		} else if (name.equals("civilStatus")) {
 			ConceptService cs = Context.getConceptService();

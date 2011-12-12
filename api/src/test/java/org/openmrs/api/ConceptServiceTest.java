@@ -1683,8 +1683,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should return all the concept map types excluding hidden ones", method = "getAllConceptMapTypes()")
-	public void getAllConceptMapTypes_shouldReturnAllTheConceptMapTypesExcludingHiddenOnes() throws Exception {
-		Assert.assertEquals(6, Context.getConceptService().getAllConceptMapTypes().size());
+	public void getActiveConceptMapTypes_shouldReturnAllTheConceptMapTypesExcludingHiddenOnes() throws Exception {
+		Assert.assertEquals(6, Context.getConceptService().getActiveConceptMapTypes().size());
 	}
 	
 	/**
@@ -1745,6 +1745,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		mapType.setName("random name");
 		mapType.setDescription("random description");
 		ConceptMapType editedMapType = Context.getConceptService().saveConceptMapType(mapType);
+		Context.flushSession();
 		Assert.assertEquals("random name", editedMapType.getName());
 		Assert.assertEquals("random description", editedMapType.getDescription());
 		//date changed and changed by should have been updated
@@ -1818,9 +1819,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should return only the concept reference terms from the given concept source", method = "getConceptReferenceTermsBySource(ConceptSource)")
-	public void getConceptReferenceTermsBySource_shouldReturnOnlyTheConceptReferenceTermsFromTheGivenConceptSource()
+	public void getConceptReferenceTerms_shouldReturnOnlyTheConceptReferenceTermsFromTheGivenConceptSource()
 	        throws Exception {
-		Assert.assertEquals(9, Context.getConceptService().getConceptReferenceTermsBySource(new ConceptSource(1)).size());
+		Assert.assertEquals(9, conceptService.getConceptReferenceTerms(null, conceptService.getConceptSource(1), 0, null,
+		    true).size());
 	}
 	
 	/**
@@ -1888,6 +1890,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		term.setConceptSource(conceptSource2);
 		
 		ConceptReferenceTerm editedTerm = Context.getConceptService().saveConceptReferenceTerm(term);
+		Context.flushSession();
 		Assert.assertEquals("new name", editedTerm.getName());
 		Assert.assertEquals("new code", editedTerm.getCode());
 		Assert.assertEquals("new descr", editedTerm.getDescription());
