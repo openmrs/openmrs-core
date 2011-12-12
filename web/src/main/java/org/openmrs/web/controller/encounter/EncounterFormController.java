@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
+import org.openmrs.validator.EncounterValidator;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Location;
@@ -151,6 +152,8 @@ public class EncounterFormController extends SimpleFormController {
 						}
 					}
 				}
+				
+				ValidationUtils.invokeValidator(new EncounterValidator(), encounter, errors);
 			}
 		}
 		finally {
