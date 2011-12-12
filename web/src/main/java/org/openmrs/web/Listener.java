@@ -185,7 +185,7 @@ public final class Listener extends ContextLoaderListener {
 		/*Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
 		if (!WebDaemon.class.isAssignableFrom(callerClass))
 			throw new APIException("This method can only be called from the WebDaemon class, not " + callerClass.getName());*/
-		
+
 		// start openmrs
 		try {
 			Context.openSession();
