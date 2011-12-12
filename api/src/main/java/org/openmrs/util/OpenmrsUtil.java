@@ -919,7 +919,7 @@ public class OpenmrsUtil {
 	/**
 	 * Gets the date having the last millisecond of a given day. Meaning that the hours, seconds,
 	 * and milliseconds are the latest possible for that day.
-	 *
+	 * 
 	 * @param day the day.
 	 * @return the date with the last millisecond of the day.
 	 */
@@ -937,10 +937,9 @@ public class OpenmrsUtil {
 	/**
 	 * Return a date that is the same day as the passed in date, but the hours and seconds are the
 	 * earliest possible for that day.
-	 *
+	 * 
 	 * @param date date to adjust
 	 * @return a date that is the first possible time in the day
-	 *
 	 * @since 1.9
 	 */
 	public static Date firstSecondOfDay(Date date) {
@@ -1360,9 +1359,8 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Get the current user's time format Will look similar to "hh:mm a". Depends on user's
-	 * locale.
-	 *
+	 * Get the current user's time format Will look similar to "hh:mm a". Depends on user's locale.
+	 * 
 	 * @return a simple time format
 	 * @should return a pattern with two h characters in it
 	 * @should not allow the returned SimpleDateFormat to be modified
@@ -1387,9 +1385,9 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Get the current user's datetime format Will look similar to "mm-dd-yyyy hh:mm a". Depends on user's
-	 * locale.
-	 *
+	 * Get the current user's datetime format Will look similar to "mm-dd-yyyy hh:mm a". Depends on
+	 * user's locale.
+	 * 
 	 * @return a simple date format
 	 * @should return a pattern with four y characters and two h characters in it
 	 * @should not allow the returned SimpleDateFormat to be modified
@@ -2460,7 +2458,7 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Performs a case insensitive Comparison of two strings taking care of null values
-	 *
+	 * 
 	 * @param s1 the string to compare
 	 * @param s2 the string to compare
 	 * @return

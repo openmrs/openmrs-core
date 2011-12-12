@@ -26,8 +26,8 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This service contains methods relating to visits.
@@ -169,7 +169,8 @@ public interface VisitService extends OpenmrsService {
 	 * @should pass if no validation errors are found
 	 * @should be able to add an attribute to a visit
 	 * @should void an attribute if max occurs is 1 and same attribute type already exists
-	 * @should save a visit though changedBy and dateCreated are not set for VisitAttribute explicitly
+	 * @should save a visit though changedBy and dateCreated are not set for VisitAttribute
+	 *         explicitly
 	 */
 	@Authorized( { PrivilegeConstants.ADD_VISITS, PrivilegeConstants.EDIT_VISITS })
 	public Visit saveVisit(Visit visit) throws APIException;
@@ -213,25 +214,16 @@ public interface VisitService extends OpenmrsService {
 	/**
 	 * Gets the visits matching the specified arguments
 	 * 
-	 * @param visitTypes
-	 *            a list of visit types to match against
-	 * @param locations
-	 *            a list of locations to match against
-	 * @param indications
-	 *            a list of indication concepts to match against
-	 * @param minStartDatetime
-	 *            the minimum visit start date to match against
-	 * @param maxStartDatetime
-	 *            the maximum visit start date to match against
-	 * @param minEndDatetime
-	 *            the minimum visit end date to match against
-	 * @param maxEndDatetime
-	 *            the maximum visit end date to match against
-	 * @param includeInactive
-	 *            if false, the min/maxEndDatetime parameters are ignored and
-	 *            only open visits are returned
-	 * @param includeVoided
-	 *            specifies if voided visits should also be returned
+	 * @param visitTypes a list of visit types to match against
+	 * @param locations a list of locations to match against
+	 * @param indications a list of indication concepts to match against
+	 * @param minStartDatetime the minimum visit start date to match against
+	 * @param maxStartDatetime the maximum visit start date to match against
+	 * @param minEndDatetime the minimum visit end date to match against
+	 * @param maxEndDatetime the maximum visit end date to match against
+	 * @param includeInactive if false, the min/maxEndDatetime parameters are ignored and only open
+	 *            visits are returned
+	 * @param includeVoided specifies if voided visits should also be returned
 	 * @return a list of visits
 	 * @see #getActiveVisitsByPatient(Patient)
 	 * @throws APIException
@@ -266,7 +258,7 @@ public interface VisitService extends OpenmrsService {
 	
 	/**
 	 * Convenience method that delegates to getVisitsByPatient(patient, false, false)
-	 *
+	 * 
 	 * @param patient the patient whose visits to get
 	 * @return a list of visits
 	 * @throws APIException
@@ -370,4 +362,14 @@ public interface VisitService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
 	VisitAttribute getVisitAttributeByUuid(String uuid);
 	
+	/**
+	 * Stops all active visits started before or on the specified date which match any of the visit
+	 * types specified by the {@link OpenmrsConstants#GP_VISIT_TYPES_TO_AUTO_CLOSE} global property.
+	 * If startDatetime is null, the default will be end of the current day.
+	 * 
+	 * @param maximumStartDate Visits started on or before this date time value will get stopped
+	 * @should close all unvoided active visit matching the specified visit types
+	 */
+	@Authorized(PrivilegeConstants.EDIT_VISITS)
+	public void stopVisits(Date maximumStartDate);
 }
