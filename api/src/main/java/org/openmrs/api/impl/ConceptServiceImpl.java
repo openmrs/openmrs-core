@@ -71,8 +71,6 @@ import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.validator.ConceptMapTypeValidator;
-import org.openmrs.validator.ConceptReferenceTermValidator;
 import org.openmrs.validator.ConceptValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.util.StringUtils;
@@ -761,7 +759,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#purgeConceptDatatype(org.openmrs.ConceptDatatype)
-	 * @deprecated as of 1.9 because users should never delete datatypes, it could harm data and other code expecting them to be here
+	 * @deprecated as of 1.9 because users should never delete datatypes, it could harm data and
+	 *             other code expecting them to be here
 	 */
 	@Deprecated
 	public void purgeConceptDatatype(ConceptDatatype cd) {
@@ -770,7 +769,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConceptDatatype(org.openmrs.ConceptDatatype)
-	 * @deprecated as of 1.9 because users should never change datatypes, it could harm data and other code expecting them to be here
+	 * @deprecated as of 1.9 because users should never change datatypes, it could harm data and
+	 *             other code expecting them to be here
 	 */
 	@Deprecated
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws APIException {
@@ -1893,10 +1893,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see ConceptService#getAllConceptMapTypes()
+	 * @see ConceptService#getActiveConceptMapTypes()
 	 */
 	@Override
-	public List<ConceptMapType> getAllConceptMapTypes() throws APIException {
+	public List<ConceptMapType> getActiveConceptMapTypes() throws APIException {
 		return getConceptMapTypes(true, false);
 	}
 	
@@ -1937,16 +1937,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public ConceptMapType saveConceptMapType(ConceptMapType conceptMapType) throws APIException {
-		Errors errors = new BindException(conceptMapType, "conceptMapType");
-		new ConceptMapTypeValidator().validate(conceptMapType, errors);
-		if (errors.hasErrors()) {
-			//see trunk https://tickets.openmrs.org/browse/TRUNK-2393
-			throw new APIException(Context.getMessageSourceService().getMessage("error.failed.validation"));
-		}
-		conceptMapType.setName(conceptMapType.getName().trim());
-		if (conceptMapType.getDescription() != null)
-			conceptMapType.setDescription(conceptMapType.getDescription().trim());
-		
 		return dao.saveConceptMapType(conceptMapType);
 	}
 	
@@ -2013,14 +2003,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptReferenceTermsBySource(ConceptSource)
-	 */
-	@Override
-	public List<ConceptReferenceTerm> getConceptReferenceTermsBySource(ConceptSource conceptSource) throws APIException {
-		return dao.getConceptReferenceTermsBySource(conceptSource);
-	}
-	
-	/**
 	 * @see org.openmrs.api.ConceptService#getConceptReferenceTermByName(java.lang.String,
 	 *      org.openmrs.ConceptSource)
 	 */
@@ -2048,13 +2030,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public ConceptReferenceTerm saveConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws APIException {
-		Errors errors = new BindException(conceptReferenceTerm, "conceptReferenceTerm");
-		new ConceptReferenceTermValidator().validate(conceptReferenceTerm, errors);
-		if (errors.hasErrors()) {
-			//see trunk https://tickets.openmrs.org/browse/TRUNK-2393
-			throw new APIException(Context.getMessageSourceService().getMessage("error.failed.validation"));
-		}
-		
 		return dao.saveConceptReferenceTerm(conceptReferenceTerm);
 	}
 	
@@ -2095,6 +2070,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	public List<ConceptReferenceTerm> getConceptReferenceTerms(String query, ConceptSource conceptSource, Integer start,
 	        Integer length, boolean includeRetired) throws APIException {
+		if (length == null)
+			length = 10000;
 		return dao.getConceptReferenceTerms(query, conceptSource, start, length, includeRetired);
 	}
 	

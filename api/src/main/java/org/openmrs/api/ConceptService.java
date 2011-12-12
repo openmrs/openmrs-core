@@ -1682,7 +1682,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
-	public List<ConceptMapType> getAllConceptMapTypes() throws APIException;
+	public List<ConceptMapType> getActiveConceptMapTypes() throws APIException;
 	
 	/**
 	 * Returns a list of concept map types currently in the database including or excluding retired
@@ -1853,19 +1853,6 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptReferenceTerm getConceptReferenceTermByUuid(String uuid) throws APIException;
 	
 	/**
-	 * Gets all the un retired concept reference terms belonging to the specified concept source
-	 * 
-	 * @param conceptSource the concept source to match against
-	 * @return a list of concept reference term objects
-	 * @since 1.9
-	 * @throws APIException
-	 * @should return only the concept reference terms from the given concept source
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
-	public List<ConceptReferenceTerm> getConceptReferenceTermsBySource(ConceptSource conceptSource) throws APIException;
-	
-	/**
 	 * Gets a concept reference term with the specified name from the specified concept source
 	 * ignoring all retired ones
 	 * 
@@ -1957,6 +1944,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.9
 	 * @throws APIException
 	 * @should return unique terms with a code or name containing the search phrase
+	 * @should return only the concept reference terms from the given concept source
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS })

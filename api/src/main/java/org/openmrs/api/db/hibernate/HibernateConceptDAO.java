@@ -1851,9 +1851,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 			searchCriteria.add(Restrictions.eq("conceptSource", conceptSource));
 		if (!includeRetired)
 			searchCriteria.add(Restrictions.eq("retired", false));
-		
-		searchCriteria.add(Restrictions.or(Restrictions.ilike("name", query, MatchMode.ANYWHERE), Restrictions.ilike("code",
-		    query, MatchMode.ANYWHERE)));
+		if (query != null)
+			searchCriteria.add(Restrictions.or(Restrictions.ilike("name", query, MatchMode.ANYWHERE), Restrictions.ilike(
+			    "code", query, MatchMode.ANYWHERE)));
 		return searchCriteria;
 	}
 	
