@@ -19,8 +19,10 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -57,44 +59,14 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should pass if the start and end dates for any patient state are both null", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheStartAndEndDatesForAnyPatientStateAreBothNull() throws Exception {
-		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
-		PatientState patientSate = program.getStates().iterator().next();
-		Assert.assertNotNull(patientSate);
-		patientSate.setStartDate(null);
-		Assert.assertNull(patientSate.getEndDate());
-		ValidateUtil.validate(program);
-	}
-	
-	/**
-	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should pass if the start and end dates for any patient state are equal", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheStartAndEndDatesForAnyPatientStateAreEqual() throws Exception {
-		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
-		PatientState patientSate = program.getStates().iterator().next();
-		Assert.assertNotNull(patientSate);
-		Date date = new Date();
-		patientSate.setStartDate(date);
-		patientSate.setEndDate(date);
-		ValidateUtil.validate(program);
-	}
-	
-	/**
-	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
-	 */
-	@Test
 	@Verifies(value = "should fail if any patient state has an end date before its start date", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfAnyPatientStateHasAnEndDateBeforeItsStartDate() throws Exception {
 		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
-		PatientState patientSate = program.getStates().iterator().next();
-		Assert.assertNotNull(patientSate);
+		PatientState patientState = program.getStates().iterator().next();
 		Calendar c = Calendar.getInstance();
-		patientSate.setStartDate(c.getTime());
+		patientState.setStartDate(c.getTime());
 		c.set(1970, 2, 1);//set to an old date
-		patientSate.setEndDate(c.getTime());
+		patientState.setEndDate(c.getTime());
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
@@ -110,13 +82,179 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
 		Set<PatientState> states = program.getStates();
 		Assert.assertNotNull(states);
-		PatientState patientSate = states.iterator().next();
-		Assert.assertNotNull(patientSate);
-		PatientState duplicate = patientSate.copy();
+		PatientState patientState = states.iterator().next();
+		PatientState duplicate = patientState.copy();
 		states.add(duplicate);
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
 		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if any patient state has a null work flow state", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAnyPatientStateHasANullWorkFlowState() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		PatientState patientState = program.getStates().iterator().next();
+		patientState.setState(null);
+		
+		BindException errors = new BindException(program, "");
+		new PatientProgramValidator().validate(program, errors);
+		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if the program property is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfTheProgramPropertyIsNull() throws Exception {
+		PatientProgram program = new PatientProgram();
+		program.setPatient(new Patient());
+		
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if any patient states have the same start dates in the same work flow", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAnyPatientStatesHaveTheSameStartDatesInTheSameWorkFlow() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		PatientState patientState = program.getStates().iterator().next();
+		//add a new state by moving the patient to a another one
+		ProgramWorkflowState nextState = patientState.getState().getProgramWorkflow().getState(4);
+		patientState.getPatientProgram().transitionToState(nextState, patientState.getStartDate());
+		
+		BindException errors = new BindException(program, "");
+		new PatientProgramValidator().validate(program, errors);
+		Assert.assertEquals(true, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if any patient states overlap each other in the same work flow", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAnyPatientStatesOverlapEachOtherInTheSameWorkFlow() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		//Addition of new states to this program in the test data can make this test useless, so catch it her
+		Assert.assertEquals(1, program.getStates().size());
+		PatientState patientState1 = program.getStates().iterator().next();
+		
+		//Add a state that comes after patientState1
+		PatientState patientState2 = new PatientState();
+		patientState2.setStartDate(new Date());
+		patientState2.setState(Context.getProgramWorkflowService().getWorkflowByUuid("84f0effa-dd73-46cb-b931-7cd6be6c5f81")
+		        .getState(1));
+		//guarantees that startDate of patientState2 is atleast 10ms earlier
+		Thread.sleep(10);
+		patientState1.setEndDate(new Date());
+		
+		program.getStates().add(patientState2);
+		
+		BindException errors = new BindException(program, "");
+		new PatientProgramValidator().validate(program, errors);
+		Assert.assertEquals(true, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if the start date for any patient state is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfTheStartDateForAnyPatientStateIsNull() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		PatientState patientState = program.getStates().iterator().next();
+		patientState.setStartDate(null);
+		
+		BindException errors = new BindException(program, "");
+		new PatientProgramValidator().validate(program, errors);
+		Assert.assertEquals(true, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass for a valid program", method = "validate(Object,Errors)")
+	public void validate_shouldPassForAValidProgram() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		PatientState patientState = program.getStates().iterator().next();
+		patientState.getPatientProgram().transitionToState(patientState.getState().getProgramWorkflow().getState(4),
+		    new Date());
+		ValidateUtil.validate(program);
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if a patient program has duplicate states in the same work flow", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAPatientProgramHasDuplicateStatesInTheSameWorkFlow() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		Set<PatientState> states = program.getStates();
+		Assert.assertNotNull(states);
+		PatientState patientState = states.iterator().next();
+		PatientState duplicate = patientState.copy();
+		states.add(duplicate);
+		
+		BindException errors = new BindException(program, "");
+		new PatientProgramValidator().validate(program, errors);
+		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if a patientState has an invalid work flow state", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAPatientStateHasAnInvalidWorkFlowState() throws Exception {
+		executeDataSet("org/openmrs/api/include/ProgramWorkflowServiceTest-otherProgramWorkflows.xml");
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		PatientState patientState = program.getStates().iterator().next();
+		patientState.setState(Context.getProgramWorkflowService().getStateByUuid("31c82d66-245c-11e1-9cf0-00248140a5eb"));
+		
+		BindException errors = new BindException(program, "");
+		new PatientProgramValidator().validate(program, errors);
+		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if a patient is in multiple states in the same work flow", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAPatientIsInMultipleStatesInTheSameWorkFlow() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		PatientState patientState = program.getStates().iterator().next();
+		patientState.getPatientProgram().transitionToState(patientState.getState().getProgramWorkflow().getState(4),
+		    new Date());
+		//make the closed state active
+		patientState.setEndDate(null);
+		BindException errors = new BindException(program, "");
+		new PatientProgramValidator().validate(program, errors);
+		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass if a patient is in multiple states in different work flows", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfAPatientIsInMultipleStatesInDifferentWorkFlows() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		
+		//Add another state to another work flow
+		PatientState patientState2 = new PatientState();
+		patientState2.setStartDate(new Date());
+		patientState2.setState(Context.getProgramWorkflowService().getWorkflowByUuid("c66c8713-7df4-40de-96f6-dc4cce3432da")
+		        .getState(5));
+		program.getStates().add(patientState2);
+		
+		ValidateUtil.validate(program);
 	}
 }
