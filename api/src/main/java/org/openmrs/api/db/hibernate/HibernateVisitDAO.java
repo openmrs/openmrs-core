@@ -35,7 +35,6 @@ import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.VisitDAO;
-import org.openmrs.attribute.AttributeType;
 
 /**
  * Hibernate specific visit related functions This class should not be used directly. All calls
@@ -139,7 +138,9 @@ public class HibernateVisitDAO implements VisitDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.VisitDAO#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Date, java.util.Date, java.util.Date, java.util.Date, java.util.Map, boolean, boolean)
+	 * @see org.openmrs.api.db.VisitDAO#getVisits(java.util.Collection, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection, java.util.Date, java.util.Date,
+	 *      java.util.Date, java.util.Date, java.util.Map, boolean, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -243,4 +244,21 @@ public class HibernateVisitDAO implements VisitDAO {
 		        .uniqueResult();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getNextVisit(Visit, Collection, Date)
+	 */
+	@Override
+	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes, Date maximumStartDate) {
+		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
+		criteria.add(Restrictions.eq("voided", false)).add(
+		    Restrictions.gt("visitId", (previousVisit != null) ? previousVisit.getVisitId() : 0)).addOrder(
+		    Order.asc("visitId")).add(Restrictions.isNull("stopDatetime")).setMaxResults(1);
+		if (maximumStartDate != null)
+			criteria.add(Restrictions.le("startDatetime", maximumStartDate));
+		
+		if (CollectionUtils.isNotEmpty(visitTypes))
+			criteria.add(Restrictions.in("visitType", visitTypes));
+		
+		return (Visit) criteria.uniqueResult();
+	}
 }

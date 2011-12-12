@@ -933,8 +933,8 @@ public final class OpenmrsConstants {
 	public static final String GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES = "dashboard.encounters.providerDisplayRoles";
 	
 	/**
-	 * Global property name for optional configuration of the maximum number of encounters to display
-	 * on the encounter tab of the patient dashboard
+	 * Global property name for optional configuration of the maximum number of encounters to
+	 * display on the encounter tab of the patient dashboard
 	 */
 	public static final String GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW = "dashboard.maximumNumberOfEncountersToShow";
 	
@@ -952,6 +952,16 @@ public final class OpenmrsConstants {
 	public static final String ENCRYPTION_KEY_RUNTIME_PROPERTY = "encryption.key";
 	
 	public static final String ENCRYPTION_KEY_DEFAULT = "dTfyELRrAICGDwzjHDjuhw==";
+	
+	/**
+	 * Global property name for the visit type(s) to automatically close
+	 */
+	public static final String GP_VISIT_TYPES_TO_AUTO_CLOSE = "autoCloseVisits.visitType";
+	
+	/**
+	 * The name of the scheduled task that automatically stops the active visits
+	 */
+	public static final String AUTO_CLOSE_VISITS_TASK_NAME = "Auto Close Visits Task";
 	
 	public static final String GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT = "conceptIndexUpdateTask.lastConceptUpdated";
 	
@@ -1344,6 +1354,9 @@ public final class OpenmrsConstants {
 		                GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW,
 		                "",
 		                "An integer which, if specified, would determine the maximum number of encounters to display on the encounter tab of the patient dashboard."));
+		
+		props.add(new GlobalProperty(GP_VISIT_TYPES_TO_AUTO_CLOSE, "",
+		        "comma-separated list of the visit type(s) to automatically close"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

@@ -13,6 +13,10 @@
  */
 package org.openmrs.web.form.visit;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openmrs.VisitType;
 import org.openmrs.web.controller.visit.VisitEncounterHandlerFormController;
 
 /**
@@ -23,6 +27,10 @@ public class VisitEncounterHandlerForm {
 	private String visitEncounterHandler;
 	
 	private boolean enableVisits;
+	
+	private boolean closeVisitsTaskStarted;
+	
+	private List<VisitType> visitTypesToClose;
 	
 	/**
 	 * @return the visitEncounterHandler
@@ -52,4 +60,33 @@ public class VisitEncounterHandlerForm {
 		this.enableVisits = enableVisits;
 	}
 	
+	/**
+	 * @return the closeVisitsTaskStarted
+	 */
+	public boolean getCloseVisitsTaskStarted() {
+		return closeVisitsTaskStarted;
+	}
+	
+	/**
+	 * @param closeVisitsTaskStarted the closeVisitsTaskStarted to set
+	 */
+	public void setCloseVisitsTaskStarted(boolean closeVisitsTaskStarted) {
+		this.closeVisitsTaskStarted = closeVisitsTaskStarted;
+	}
+	
+	/**
+	 * @return the visitTypesToClose
+	 */
+	public List<VisitType> getVisitTypesToClose() {
+		if (visitTypesToClose == null)
+			visitTypesToClose = new ArrayList<VisitType>();
+		return visitTypesToClose;
+	}
+	
+	/**
+	 * @param visitTypesToClose the visitTypesToClose to set
+	 */
+	public void setVisitTypesToClose(List<VisitType> visitTypesToClose) {
+		this.visitTypesToClose = visitTypesToClose;
+	}
 }

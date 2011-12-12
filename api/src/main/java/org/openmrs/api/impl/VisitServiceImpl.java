@@ -13,12 +13,15 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -31,6 +34,7 @@ import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.VisitDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
 import org.openmrs.validator.VisitValidator;
@@ -304,4 +308,47 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		return dao.getVisitAttributeByUuid(uuid);
 	}
 	
+	/**
+	 * @see org.openmrs.api.VisitService#stopVisits(Date)
+	 */
+	@Override
+	public void stopVisits(Date maximumStartDate) {
+		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
+		VisitService vs = Context.getVisitService();
+		if (StringUtils.isNotBlank(gpValue)) {
+			if (maximumStartDate == null)
+				maximumStartDate = new Date();
+			
+			List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
+			String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");
+			for (int i = 0; i < visitTypeNames.length; i++) {
+				String currName = visitTypeNames[i];
+				visitTypeNames[i] = currName.trim().toLowerCase();
+			}
+			
+			List<VisitType> allVisitTypes = vs.getAllVisitTypes();
+			for (VisitType visitType : allVisitTypes) {
+				if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase()))
+					visitTypesToStop.add(visitType);
+			}
+			
+			if (visitTypesToStop.size() > 0) {
+				int counter = 0;
+				Date stopDate = new Date();
+				Visit nextVisit = dao.getNextVisit(null, visitTypesToStop, maximumStartDate);
+				while (nextVisit != null) {
+					nextVisit.setStopDatetime(stopDate);
+					dao.saveVisit(nextVisit);
+					if (counter++ > 50) {
+						//ensure changes are persisted to DB before reclaiming memory
+						Context.flushSession();
+						Context.clearSession();
+						counter = 0;
+					}
+					
+					nextVisit = dao.getNextVisit(nextVisit, visitTypesToStop, maximumStartDate);
+				}
+			}
+		}
+	}
 }

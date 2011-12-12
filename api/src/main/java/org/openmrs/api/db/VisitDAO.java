@@ -27,7 +27,6 @@ import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
-import org.openmrs.attribute.AttributeType;
 
 /**
  * Database access functions for visits.
@@ -93,7 +92,6 @@ public interface VisitDAO {
 	/**
 	 * Gets the visits matching the specified arguments
 	 * 
-	 *
 	 * @param visitTypes a list of visit types to match against
 	 * @param patients a list of patients to match against
 	 * @param locations a list of locations to match against
@@ -145,5 +143,16 @@ public interface VisitDAO {
 	 * @see VisitService#getVisitAttributeByUuid(String)
 	 */
 	VisitAttribute getVisitAttributeByUuid(String uuid);
+	
+	/**
+	 * Gets the next active visit which matches the specified visit types
+	 * 
+	 * @param previousVisit the visit that precedes the one we are fetching
+	 * @param visitTypes a collection of visit types to match against
+	 * @param maximumStartDate the next visit should have been created before or at this date time
+	 * @return a {@link Visit}
+	 * @should return the next unvoided active visit matching the specified types and startDate
+	 */
+	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes, Date maximumStartDate);
 	
 }
