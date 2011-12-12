@@ -4011,5 +4011,13 @@
 			<where>role='Anonymous' AND privilege='View Observations'</where>
 		</delete>
 	</changeSet>
+	
+	<changeSet id="20111209-1400-deleting-non-existing-roles-from-role-role-table" author="raff">
+		<comment>Deleting non-existing roles from the role_role table</comment>
+		<sql>
+			DELETE FROM role_role WHERE parent_role NOT IN (SELECT role FROM role) 
+				OR child_role NOT IN (SELECT role FROM role);
+		</sql>
+	</changeSet>
 
 </databaseChangeLog>
