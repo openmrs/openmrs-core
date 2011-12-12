@@ -79,7 +79,7 @@
 		<many-to-one name="voidedBy" class="User">
 			<column name="voided_by" />
 		</many-to-one>
-		<many-to-one name="visit" class="Visit">
+		<many-to-one name="visit" class="Visit" cascade="save-update">
 			<column name="visit_id" />
 		</many-to-one>
 

@@ -20,8 +20,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -811,5 +813,29 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		//all active unvoided visits should have been closed
 		Assert.assertTrue("Not all active unvoided vists were closed", activeVisitCount == 0);
+	}
+	
+	/**
+	 * @see {@link VisitService#saveVisit(Visit)}
+	 */
+	@Test
+	@Verifies(value = "should save new visit with encounters successfully", method = "saveVisit(Visit)")
+	public void saveVisit_shouldSaveNewVisitWithEncountersSuccessfully() throws Exception {
+		VisitService vs = Context.getVisitService();
+		Integer originalSize = vs.getAllVisits().size();
+		Visit visit = new Visit(new Patient(2), new VisitType(1), new Date());
+		
+		Set<Encounter> encounters = new HashSet<Encounter>();
+		encounters.add(Context.getEncounterService().getEncounter(1));
+		visit.setEncounters(encounters);
+		
+		visit = vs.saveVisit(visit);
+		
+		Assert.assertNotNull(visit.getId());
+		Assert.assertNotNull(visit.getUuid());
+		Assert.assertNotNull(visit.getCreator());
+		Assert.assertNotNull(visit.getDateCreated());
+		Assert.assertEquals(originalSize + 1, vs.getAllVisits().size());
+		Assert.assertTrue(visit.getEncounters().size() == 1);
 	}
 }
