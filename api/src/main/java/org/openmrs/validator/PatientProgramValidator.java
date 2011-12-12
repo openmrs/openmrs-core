@@ -130,7 +130,7 @@ public class PatientProgramValidator implements Validator {
 						continue;
 					
 					if (OpenmrsUtil.compareWithNullAsLatest(patientState.getEndDate(), patientState.getStartDate()) < 0) {
-						errors.reject("PatientState.error.endDateCannotBeBeforeEndDate");
+						errors.reject("PatientState.error.endDateCannotBeBeforeStartDate");
 						return;
 					} else if (statesAndStartDates.contains(patientState.getState().getId() + ""
 					        + patientState.getStartDate())) {

@@ -33,7 +33,6 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.validator.ValidateUtil;
 
 public class DWRProgramWorkflowService {
 	
@@ -125,16 +124,12 @@ public class DWRProgramWorkflowService {
 	 * Updates enrollment date, completion date, and location for a PatientProgram. Compares @param
 	 * enrollmentDateYmd with {@link PatientProgram#getDateEnrolled()} compares @param
 	 * completionDateYmd with {@link PatientProgram#getDateCompleted()}, compares @param locationId
-	 * with {@link PatientProgram#getLocation()}, compares @param outcomeId with
-	 * {@link org.openmrs.PatientProgram#getOutcome()}. At least one of these comparisons must
-	 * indicate a change in order to update the PatientProgram. In other words, if neither the @param
-	 * enrollmentDateYmd, the @param completionDateYmd, or the @param locationId or the @param
-	 * outcomeId match with the persisted object, then the PatientProgram will not be updated.
-	 * <p>
-	 * Also, if the enrollment date comes after the completion date, the PatientProgram will not be
-	 * updated.
-	 * </p>
-	 * 
+	 * with {@link PatientProgram#getLocation()}, compares @param outcomeId with {@link org.openmrs.PatientProgram#getOutcome()}.
+	 * At least one of these comparisons must indicate a change in order to update the PatientProgram. In other words, if neither the @param
+	 * enrollmentDateYmd, the @param completionDateYmd, or the @param locationId or the @param outcomeId
+	 * match with the persisted object, then the PatientProgram will not be updated.
+	 * <p>Also, if the enrollment date comes after the completion date, the PatientProgram will not be updated.</p>
+	 *
 	 * @param patientProgramId
 	 * @param enrollmentDateYmd
 	 * @param completionDateYmd
@@ -191,7 +186,6 @@ public class DWRProgramWorkflowService {
 			pp.setDateCompleted(dateCompleted);
 			pp.setLocation(loc);
 			pp.setOutcome(outcomeConcept);
-			ValidateUtil.validate(pp);
 			Context.getProgramWorkflowService().savePatientProgram(pp);
 		}
 	}
@@ -224,7 +218,6 @@ public class DWRProgramWorkflowService {
 		if (onDateDMY != null && onDateDMY.length() > 0)
 			onDate = ymdDf.parse(onDateDMY);
 		pp.transitionToState(st, onDate);
-		ValidateUtil.validate(pp);
 		s.savePatientProgram(pp);
 	}
 	
@@ -233,7 +226,6 @@ public class DWRProgramWorkflowService {
 		PatientProgram pp = s.getPatientProgram(patientProgramId);
 		ProgramWorkflow wf = s.getWorkflow(programWorkflowId);
 		pp.voidLastState(wf, Context.getAuthenticatedUser(), new Date(), voidReason);
-		ValidateUtil.validate(pp);
 		Context.getProgramWorkflowService().savePatientProgram(pp);
 	}
 }
