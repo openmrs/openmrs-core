@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
+import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
@@ -185,24 +186,33 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object,Errors)
 	 * @verifies reject a provider if it has fewer than min occurs of an attribute
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void validate_shouldRejectAProviderIfItHasFewerThanMinOccursOfAnAttribute() throws Exception {
 		executeDataSet(PROVIDER_ATTRIBUTE_TYPES_XML);
+		ProviderAttributeType attributeType = providerService.getProviderAttributeType(1);
+		attributeType.setMinOccurs(2);
+		attributeType.setMaxOccurs(3);
+		providerService.saveProviderAttributeType(attributeType);
+		
 		provider.addAttribute(makeAttribute("one"));
-		ValidateUtil.validate(provider);
+		Errors errors = new BindException(provider, "provider");
+		new ProviderValidator().validate(provider, errors);
+		Assert.assertTrue(errors.hasFieldErrors("activeAttributes"));
 	}
 	
 	/**
 	 * @see ProviderValidator#validate(Object,Errors)
 	 * @verifies reject a Provider if it has more than max occurs of an attribute
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void validate_shouldRejectAProviderIfItHasMoreThanMaxOccursOfAnAttribute() throws Exception {
+		executeDataSet(PROVIDER_ATTRIBUTE_TYPES_XML);
 		provider.addAttribute(makeAttribute("one"));
 		provider.addAttribute(makeAttribute("two"));
 		provider.addAttribute(makeAttribute("three"));
 		provider.addAttribute(makeAttribute("four"));
-		ValidateUtil.validate(provider);
+		new ProviderValidator().validate(provider, errors);
+		Assert.assertTrue(errors.hasFieldErrors("activeAttributes"));
 	}
 	
 	private ProviderAttribute makeAttribute(String serializedValue) {
