@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -668,7 +669,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				pStmt.setBoolean(4, conceptName.isVoided());
 				pStmt.setDate(5, conceptName.isVoided() ? new Date(System.currentTimeMillis()) : null);
 				pStmt.setString(6, conceptName.getVoidReason());
-				pStmt.setInt(7, (conceptName.isVoided() && userId != null) ? userId : null);
+				// "Not all databases allow for a non-typed Null to be sent to the backend", so we can't use setInt
+				pStmt.setObject(7, (conceptName.isVoided() && userId != null) ? userId : null, Types.INTEGER);
 				pStmt.setInt(8, conceptName.getConceptNameId());
 				
 				pStmt.addBatch();
