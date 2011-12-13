@@ -127,8 +127,8 @@ public class ConfigureVisitsFormController {
 			return;
 		}
 		
-		GlobalProperty gpEnableVisits = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENABLE_VISITS,
-		        Boolean.toString(form.isEnableVisits()));
+		GlobalProperty gpEnableVisits = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENABLE_VISITS, Boolean
+		        .toString(form.isEnableVisits()));
 		administrationService.saveGlobalProperty(gpEnableVisits);
 		if (form.isEnableVisits()) {
 			String type = form.getVisitEncounterHandler();
