@@ -22,6 +22,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Common validator for all types of Attribute Types
+ * @since 1.9
  */
 @Handler(supports = { Attribute.class }, order = 50)
 public class BaseAttributeValidator implements Validator {
