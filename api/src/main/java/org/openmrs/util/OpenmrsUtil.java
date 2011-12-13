@@ -2492,4 +2492,21 @@ public class OpenmrsUtil {
 		
 		return s1.equalsIgnoreCase(s2);
 	}
+	
+	/**
+	 * This method converts the given Long value to an Integer. If the Long
+	 * value will not fit in an Integer an exception is thrown
+	 * 
+	 * @param longValue
+	 *            the value to convert
+	 * @return the long value in integer form.
+	 * @throws IllegalArgumentException
+	 *             if the long value does not fit into an integer
+	 */
+	public static Integer convertToInteger(Long longValue) {
+		if (longValue < Integer.MIN_VALUE || longValue > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException(longValue + " cannot be cast to Integer without changing its value.");
+		}
+		return longValue.intValue();
+	}
 }

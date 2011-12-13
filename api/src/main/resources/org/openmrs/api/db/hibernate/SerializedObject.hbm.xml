@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">  
 <hibernate-mapping package="org.openmrs.api">
 
 <class name="org.openmrs.api.db.SerializedObject" table="serialized_object">
@@ -19,7 +18,7 @@
     <property name="type" type="string" column="type" not-null="true" length="255" />
     <property name="subtype" type="string" column="subtype" not-null="true" length="255" />
     <property name="serializationClass" type="class"  column="serialization_class" not-null="true" length="255" /> 
-	<property name="serializedData" type="text" column="serialized_data" length="16777215"/> 
+	<property name="serializedData" type="materialized_clob" column="serialized_data" length="16777215"/> 
 	<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
     <property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
 	<property name="retired" type="boolean" column="retired" not-null="true" />

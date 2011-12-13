@@ -26,7 +26,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
-import org.openmrs.attribute.AttributeType;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.validator.ProviderValidator;
 import org.springframework.validation.BindException;
@@ -126,7 +125,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 * @see org.openmrs.api.ProviderService#getCountOfProviders(java.lang.String)
 	 */
 	@Override
-	public Integer getCountOfProviders(String query) {
+	public Long getCountOfProviders(String query) {
 		return dao.getCountOfProviders(query);
 	}
 	

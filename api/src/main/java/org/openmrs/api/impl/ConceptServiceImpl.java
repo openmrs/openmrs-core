@@ -70,6 +70,7 @@ import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ConceptMapTypeValidator;
 import org.openmrs.validator.ConceptReferenceTermValidator;
 import org.openmrs.validator.ConceptValidator;
@@ -1877,8 +1878,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			requireDatatypes = new Vector<ConceptDatatype>();
 		if (excludeDatatypes == null)
 			excludeDatatypes = new Vector<ConceptDatatype>();
-		return dao.getCountOfConceptWords(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
-		    excludeDatatypes, answersToConcept, true);
+		return OpenmrsUtil.convertToInteger(dao.getCountOfConceptWords(phrase, locales, includeRetired, requireClasses,
+		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept, true));
 	}
 	
 	/**
@@ -1886,7 +1887,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired) throws APIException {
-		return dao.getCountOfDrugs(drugName, concept, searchOnPhrase, searchDrugConceptNames, includeRetired);
+		return OpenmrsUtil.convertToInteger(dao.getCountOfDrugs(drugName, concept, searchOnPhrase, searchDrugConceptNames,
+		    includeRetired));
 	}
 	
 	/**
