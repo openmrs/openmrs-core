@@ -33,7 +33,8 @@ import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.form.visit.VisitEncounterHandlerForm;
+import org.openmrs.web.form.visit.ConfigureVisitsForm;
+import org.openmrs.web.form.visit.ConfigureVisitsFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -44,15 +45,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
- * This class controls the visitEncounterHandler.form jsp page. See
- * /web/WEB-INF/view/admin/visits/visitEncounterHandler.jsp
+ * This class controls the configureVisits.form jsp page. See
+ * /web/WEB-INF/view/admin/visits/configureVisits.jsp
  */
 @Controller
-public class VisitEncounterHandlerFormController {
+public class ConfigureVisitsFormController {
 	
-	public static final String MANAGE_VISIT_ENCOUNTER_HANDLERS_PATH = "/admin/visits/visitEncounterHandler";
+	public static final String CONFIGURE_VISITS_PATH = "/admin/visits/configureVisits";
 	
-	public static final String VISIT_ENCOUNTER_HANDLER_FORM = "visitEncounterHandlerForm";
+	public static final String VISIT_ENCOUNTER_HANDLER_FORM = "configureVisitsForm";
 	
 	public static final String VISIT_ENCOUNTER_HANDLERS = "visitEncounterHandlers";
 	
@@ -76,7 +77,7 @@ public class VisitEncounterHandlerFormController {
 		return visitService.getAllVisitTypes();
 	}
 	
-	@RequestMapping(value = MANAGE_VISIT_ENCOUNTER_HANDLERS_PATH, method = RequestMethod.GET)
+	@RequestMapping(value = CONFIGURE_VISITS_PATH, method = RequestMethod.GET)
 	public void manageEncounterVisitHandlers(Model model) {
 		Context.requirePrivilege(PrivilegeConstants.CONFIGURE_VISITS);
 		
@@ -86,7 +87,7 @@ public class VisitEncounterHandlerFormController {
 		TaskDefinition closeVisitsTask = Context.getSchedulerService().getTaskByName(
 		    OpenmrsConstants.AUTO_CLOSE_VISITS_TASK_NAME);
 		
-		VisitEncounterHandlerForm form = new VisitEncounterHandlerForm();
+		ConfigureVisitsForm form = new ConfigureVisitsForm();
 		form.setEnableVisits(Boolean.valueOf(enableVisits));
 		if (closeVisitsTask != null)
 			form.setCloseVisitsTaskStarted(closeVisitsTask.getStarted());
@@ -117,11 +118,11 @@ public class VisitEncounterHandlerFormController {
 		model.addAttribute(VISIT_ENCOUNTER_HANDLER_FORM, form);
 	}
 	
-	@RequestMapping(value = MANAGE_VISIT_ENCOUNTER_HANDLERS_PATH, method = RequestMethod.POST)
-	public void manageEncounterVisitHandlers(@ModelAttribute(VISIT_ENCOUNTER_HANDLER_FORM) VisitEncounterHandlerForm form,
+	@RequestMapping(value = CONFIGURE_VISITS_PATH, method = RequestMethod.POST)
+	public void manageEncounterVisitHandlers(@ModelAttribute(VISIT_ENCOUNTER_HANDLER_FORM) ConfigureVisitsForm form,
 	        Errors errors, HttpServletRequest request) {
 		Context.requirePrivilege(PrivilegeConstants.CONFIGURE_VISITS);
-		
+		new ConfigureVisitsFormValidator().validate(form, errors);
 		if (errors.hasErrors()) {
 			return;
 		}

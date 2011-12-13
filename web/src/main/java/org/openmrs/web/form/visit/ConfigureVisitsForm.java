@@ -17,12 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmrs.VisitType;
-import org.openmrs.web.controller.visit.VisitEncounterHandlerFormController;
+import org.openmrs.web.controller.visit.ConfigureVisitsFormController;
 
 /**
- * Form used by {@link VisitEncounterHandlerFormController}.
+ * Form used by {@link ConfigureVisitsFormController}.
  */
-public class VisitEncounterHandlerForm {
+public class ConfigureVisitsForm {
 	
 	private String visitEncounterHandler;
 	
