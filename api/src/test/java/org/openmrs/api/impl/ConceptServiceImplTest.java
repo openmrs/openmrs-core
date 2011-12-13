@@ -293,6 +293,9 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
 	 * @verifies set default preferred name to fully specified first
+	 * If Concept.getPreferredName(locale) returns null, saveConcept chooses one.
+	 * The default first choice is the fully specified name in the locale.
+	 * The default second choice is a synonym in the locale.
 	 */
 	@Test
 	public void saveConcept_shouldSetDefaultPreferredNameToFullySpecifiedFirst() throws Exception {
@@ -327,9 +330,11 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
 	 * @verifies set default preferred name to a synonym second
+	 * If Concept.getPreferredName(locale) returns null, saveConcept chooses one.
+	 * The default first choice is the fully specified name in the locale.
+	 * The default second choice is a synonym in the locale.
 	 */
 	@Test
-	// un-ignore as part of TRUNK-2664 
 	public void saveConcept_shouldSetDefaultPreferredNameToASynonymSecond() throws Exception {
 		Locale loc = new Locale("fr", "CA");
 		Locale otherLocale = new Locale("en", "US");
