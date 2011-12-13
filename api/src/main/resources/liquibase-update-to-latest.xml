@@ -6074,9 +6074,10 @@
  			values ( '', false, false, 1, '2011-12-12', false, 'B4F30A1B-5EB9-11DF-A648-37A07F9C90FB');
  				
  			insert into person_name (preferred, person_id, given_name, family_name, creator, date_created, voided, uuid)
- 			select true, max(person_id), 'daemon', 'daemon', 1, '2011-12-12', false, 'C4F30A1B-5EB9-11DF-A648-37A07F9C90FB'  from person;
+ 			select true, person_id, 'daemon', 'daemon', 1, '2011-12-12', false, 'C4F30A1B-5EB9-11DF-A648-37A07F9C90FB'  
+ 			from person where uuid = 'B4F30A1B-5EB9-11DF-A648-37A07F9C90FB';
  			
- 			update users set person_id = (select max(person_id) from person) 
+ 			update users set person_id = (select person_id from person where uuid = 'B4F30A1B-5EB9-11DF-A648-37A07F9C90FB') 
  			where person_id IS NULL AND uuid = 'A4F30A1B-5EB9-11DF-A648-37A07F9C90FB';
          </sql>
  	</changeSet>
