@@ -176,6 +176,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConcept(org.openmrs.Concept)
+	 * @should return the concept with new conceptID if creating new concept
+	 * @should return the concept with same conceptID if updating existing concept
+	 * @should leave preferred name preferred if set
+	 * @should set default preferred name to fully specified first
+	 * @should not set default preferred name to short or index terms
 	 */
 	public Concept saveConcept(Concept concept) throws APIException {
 		
@@ -242,22 +247,41 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			}
 		}
 		
+		//Ensure if there's a name for a locale that at least one suitable name is marked preferred in that locale
+		//Order of preference is:
+		// 1) any name that concept.getPreferredName returns
+		// 2) fully specified name
+		// 3) any synonym
+		// short name and index terms are never preferred.
+		
+		Set<Locale> checkedLocales = new HashSet<Locale>();
+		for (ConceptName n : concept.getNames()) {
+			Locale locale = n.getLocale();
+			if (checkedLocales.contains(locale))
+				continue; //we've already checked this locale
+				
+			//getPreferredName(locale) returns any name marked preferred,
+			//or the fullySpecifiedName even if not marked preferred
+			ConceptName possiblePreferredName = concept.getPreferredName(locale);
+			
+				if (possiblePreferredName != null)
+				; //do nothing yet, but stick around to setLocalePreferred(true)
+			else if (concept.getFullySpecifiedName(locale) != null)
+				possiblePreferredName = concept.getFullySpecifiedName(locale);
+				else if (!CollectionUtils.isEmpty(concept.getSynonyms(locale)))
+					concept.getSynonyms(locale).iterator().next().setLocalePreferred(true);
+			//index terms are never used as preferred name
+			
+			if (possiblePreferredName != null) { //there may have been none
+				possiblePreferredName.setLocalePreferred(true);
+			}
+			checkedLocales.add(locale);
+		}
+		
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		if (errors.hasErrors())
 			throw new APIException("Validation errors found: " + errors.getAllErrors());
-		
-		//Set a preferred name for each locale for those where it isn't yet specified
-		for (Locale locale : LocaleUtility.getLocalesInOrder()) {
-			ConceptName possiblePreferredName = concept.getPreferredName(locale);
-			if (possiblePreferredName == null || !possiblePreferredName.isLocalePreferred()) {
-				if (possiblePreferredName != null)
-					possiblePreferredName.setLocalePreferred(true);
-				//set the first synonym as the preferred name if it has any
-				else if (!CollectionUtils.isEmpty(concept.getSynonyms(locale)))
-					concept.getSynonyms(locale).iterator().next().setLocalePreferred(true);
-			}
-		}
 		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
