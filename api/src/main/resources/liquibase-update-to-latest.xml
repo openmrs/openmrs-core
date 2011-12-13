@@ -6051,6 +6051,7 @@
 			<column name="uuid" value="8c17b376-1a2b-11e1-a51a-00248140a5eb" />
 		</insert>
 	</changeSet>
+	
 	<changeSet id="20111209-1400-deleting-non-existing-roles-from-role-role-table" author="raff">
 		<comment>Deleting non-existing roles from the role_role table</comment>
 		<sql>
@@ -6059,6 +6060,27 @@
 		</sql>
 	</changeSet>
 
+	 <changeSet id="20100111-0111-associating-daemon-user-with-person" author="dkayiwa">
+     	<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					select count(*) from users where person_id IS NULL AND uuid = 'A4F30A1B-5EB9-11DF-A648-37A07F9C90FB'
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Associating daemon user with a person</comment>
+ 		<sql>	
+ 			insert into person (gender, birthdate_estimated, dead, creator, date_created, voided, uuid)
+ 			values ( '', false, false, 1, '2011-12-12', false, 'B4F30A1B-5EB9-11DF-A648-37A07F9C90FB');
+ 				
+ 			insert into person_name (preferred, person_id, given_name, family_name, creator, date_created, voided, uuid)
+ 			select true, person_id, 'daemon', 'daemon', 1, '2011-12-12', false, 'C4F30A1B-5EB9-11DF-A648-37A07F9C90FB'  
+ 			from person where uuid = 'B4F30A1B-5EB9-11DF-A648-37A07F9C90FB';
+ 			
+ 			update users set person_id = (select person_id from person where uuid = 'B4F30A1B-5EB9-11DF-A648-37A07F9C90FB') 
+ 			where person_id IS NULL AND uuid = 'A4F30A1B-5EB9-11DF-A648-37A07F9C90FB';
+         </sql>
+ 	</changeSet>
 	
 </databaseChangeLog>
 
