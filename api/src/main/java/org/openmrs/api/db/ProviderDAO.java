@@ -79,7 +79,7 @@ public interface ProviderDAO {
 	 * @param name
 	 * @return Count of providers satisfying the given query
 	 */
-	public Integer getCountOfProviders(String name);
+	public Long getCountOfProviders(String name);
 	
 	/**
 	 * @see ProviderService#getAllProviderAttributeTypes(boolean)

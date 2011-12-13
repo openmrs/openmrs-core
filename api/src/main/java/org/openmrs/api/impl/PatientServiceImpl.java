@@ -67,6 +67,7 @@ import org.openmrs.person.PersonMergeLog;
 import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 
@@ -1440,10 +1441,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// if there is a number in the query string
 		if (query.matches(".*\\d+.*")) {
 			log.debug("[Identifier search] Query: " + query);
-			return dao.getCountOfPatients(null, query, emptyList, false);
+			return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false));
 		} else {
 			// there is no number in the string, search on name
-			return dao.getCountOfPatients(query, null, emptyList, false);
+			return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query, null, emptyList, false));
 		}
 	}
 	

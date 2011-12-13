@@ -47,6 +47,10 @@ import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.validator.ValidateUtil;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
 /**
  * Hibernate specific database methods for the AdministrationService
@@ -55,7 +59,7 @@ import org.openmrs.validator.ValidateUtil;
  * @see org.openmrs.api.db.AdministrationDAO
  * @see org.openmrs.api.AdministrationService
  */
-public class HibernateAdministrationDAO implements AdministrationDAO {
+public class HibernateAdministrationDAO implements AdministrationDAO, ApplicationContextAware {
 	
 	protected Log log = LogFactory.getLog(getClass());
 	
@@ -65,6 +69,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	private SessionFactory sessionFactory;
 	
 	private Configuration configuration;
+	
+	private ApplicationContext applicationContext;
 	
 	public HibernateAdministrationDAO() {
 	}
@@ -335,10 +341,15 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	@Override
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
 		if (configuration == null) {
-			configuration = new Configuration().configure();
+			LocalSessionFactoryBean sessionFactoryBean = (LocalSessionFactoryBean) applicationContext
+			        .getBean("&sessionFactory");
+			configuration = sessionFactoryBean.getConfiguration();
 		}
 		
 		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName());
+		if (persistentClass == null)
+			log.error("Uh oh, couldn't find a class in the hibernate configuration named: " + aClass.getName());
+		
 		return persistentClass.getTable().getColumn(new Column(fieldName)).getLength();
 	}
 	
@@ -355,5 +366,10 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		finally {
 			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
 		}
+	}
+	
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 }

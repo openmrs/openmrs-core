@@ -52,7 +52,6 @@ import org.openmrs.validator.EncounterValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ObjectError;
 
 /**
  * Default implementation of the {@link EncounterService}
@@ -109,20 +108,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 		
 		Errors errors = new BindException(encounter, "encounter");
+		
+		// TODO: remove this now that we are doing auto validation in the SaveHandler?
 		new EncounterValidator().validate(encounter, errors);
-		if (errors.hasErrors()) {
-			StringBuilder sb = new StringBuilder(Context.getMessageSourceService().getMessage("error.foundValidationErrors")
-			        + ": [");
-			boolean isFirst = true;
-			for (ObjectError error : errors.getAllErrors()) {
-				if (isFirst) {
-					sb.append(Context.getMessageSourceService().getMessage(error.getCode()));
-					isFirst = false;
-				} else
-					sb.append(", ").append(Context.getMessageSourceService().getMessage(error.getCode()));
-			}
-			throw new APIException(sb.toString() + "]");
-		}
+		if (errors.hasErrors())
+			throw new APIException(Context.getMessageSourceService().getMessage("error.foundValidationErrors"));
 		
 		boolean isNewEncounter = false;
 		Date newDate = encounter.getEncounterDatetime();
@@ -651,7 +641,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public Integer getCountOfEncounters(String query, boolean includeVoided) {
-		return dao.getCountOfEncounters(query, includeVoided);
+		return OpenmrsUtil.convertToInteger(dao.getCountOfEncounters(query, includeVoided));
 	}
 	
 	/**

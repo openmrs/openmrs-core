@@ -145,7 +145,7 @@ public interface LocationDAO {
 	/**
 	 * @see org.openmrs.api.LocationService#getCountOfLocations(String, Boolean)
 	 */
-	public Integer getCountOfLocations(String nameFragment, Boolean includeRetired);
+	public Long getCountOfLocations(String nameFragment, Boolean includeRetired);
 	
 	/**
 	 * @see LocationService#getRootLocations(boolean)

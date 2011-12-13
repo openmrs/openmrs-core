@@ -42,6 +42,7 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
@@ -316,8 +317,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, boolean includeVoidedObs) throws APIException {
-		return dao.getObservationCount(whom, encounters, questions, answers, personTypes, locations, obsGroupId, fromDate,
-		    toDate, null, includeVoidedObs);
+		return OpenmrsUtil.convertToInteger(dao.getObservationCount(whom, encounters, questions, answers, personTypes,
+		    locations, obsGroupId, fromDate, toDate, null, includeVoidedObs));
 	}
 	
 	/**
@@ -813,7 +814,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Override
 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided) {
-		return dao.getObservationCount(null, null, null, null, null, null, null, null, null, conceptNames, true);
+		return OpenmrsUtil.convertToInteger(dao.getObservationCount(null, null, null, null, null, null, null, null, null,
+		    conceptNames, true));
 	}
 	
 	/**
