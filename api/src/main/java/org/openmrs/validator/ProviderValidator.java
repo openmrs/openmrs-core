@@ -32,7 +32,7 @@ import org.springframework.validation.Validator;
  * @since 1.9
  */
 @Handler(supports = { Provider.class }, order = 50)
-public class ProviderValidator implements Validator {
+public class ProviderValidator extends BaseCustomizableValidator implements Validator {
 	
 	private static final Log log = LogFactory.getLog(ProviderValidator.class);
 	
@@ -105,35 +105,7 @@ public class ProviderValidator implements Validator {
 			errors.rejectValue("retireReason", "Provider.error.retireReason.required");
 		}
 		
-		validateForMinAndMaxOccurs(errors, provider);
+		super.validateAttributes(provider, errors, Context.getProviderService().getAllProviderAttributeTypes());
 	}
 	
-	private void validateForMinAndMaxOccurs(Errors errors, Provider provider) {
-		for (ProviderAttributeType providerAttributeType : Context.getProviderService().getAllProviderAttributeTypes()) {
-			if (providerAttributeType.getMinOccurs() > 0 || providerAttributeType.getMaxOccurs() != null) {
-				int numFound = 0;
-				for (ProviderAttribute providerAttribute : provider.getActiveAttributes()) {
-					if (providerAttribute.getAttributeType().equals(providerAttributeType))
-						++numFound;
-				}
-				if (providerAttributeType.getMinOccurs() > 0) {
-					if (numFound < providerAttributeType.getMinOccurs()) {
-						// report an error
-						if (providerAttributeType.getMinOccurs() == 1)
-							errors.rejectValue("activeAttributes", "error.required", new Object[] { providerAttributeType
-							        .getName() }, null);
-						else
-							errors.rejectValue("activeAttributes", "attribute.error.minOccurs", new Object[] {
-							        providerAttributeType.getName(), providerAttributeType.getMinOccurs() }, null);
-					}
-				}
-				if (providerAttributeType.getMaxOccurs() != null) {
-					if (numFound > providerAttributeType.getMaxOccurs()) {
-						errors.rejectValue("activeAttributes", "attribute.error.maxOccurs", new Object[] {
-						        providerAttributeType.getName(), providerAttributeType.getMaxOccurs() }, null);
-					}
-				}
-			}
-		}
-	}
 }
