@@ -2,7 +2,7 @@
 
 <openmrs:require privilege="Configure Visits"
 	otherwise="/login.htm"
-	redirect="/admin/visits/visitEncounterHandler.form" />
+	redirect="/admin/visits/configureVisits.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>
@@ -29,7 +29,7 @@
 	<spring:message code="Visit.configure" />
 </h2>
 
-<spring:hasBindErrors name="visitEncounterHandlerForm">
+<spring:hasBindErrors name="configureVisitsForm">
 	<spring:message code="fix.error" />
 	<br />
 </spring:hasBindErrors>
@@ -37,7 +37,7 @@
 <b class="boxHeader"><spring:message
 		code="Visit.configure" /> </b>
 <div class="box">
-	<form:form method="post" commandName="visitEncounterHandlerForm">
+	<form:form method="post" commandName="configureVisitsForm">
 		<p>
 			<b><spring:message code="Encounter.visits.enable" />
 			</b>

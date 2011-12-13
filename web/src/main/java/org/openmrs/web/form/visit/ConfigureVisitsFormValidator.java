@@ -18,18 +18,18 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Validates {@link VisitEncounterHandlerForm}
+ * Validates {@link ConfigureVisitsForm}
  */
-public class VisitEncounterHandlerFormValidator implements Validator {
+public class ConfigureVisitsFormValidator implements Validator {
 	
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return VisitEncounterHandlerForm.class.isAssignableFrom(clazz);
+		return ConfigureVisitsForm.class.isAssignableFrom(clazz);
 	}
 	
 	@Override
 	public void validate(Object target, Errors errors) {
-		VisitEncounterHandlerForm form = (VisitEncounterHandlerForm) target;
+		ConfigureVisitsForm form = (ConfigureVisitsForm) target;
 		
 		if (form.isEnableVisits()) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "visitEncounterHandler",
