@@ -2372,9 +2372,7 @@ public class OpenmrsUtil {
 	public static Properties getRuntimeProperties(String applicationName) {
 		if (applicationName == null)
 			applicationName = "openmrs";
-		
 		String pathName = "";
-		
 		if ("true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"))) {
 			log.info("In functional testing mode. Ignoring the existing runtime properties file");
 			pathName = applicationName + "-test-runtime.properties";
@@ -2411,6 +2409,15 @@ public class OpenmrsUtil {
 		}
 	}
 	
+	/**
+	 * Checks whether the system is running in test mode
+	 * @return boolean
+	 */
+
+	public static boolean isTestMode() {
+		return "true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"));
+	}
+
 	/**
 	 * Gets the full path and name of the runtime properties file.
 	 * 
@@ -2467,13 +2474,21 @@ public class OpenmrsUtil {
 	
 	public static String getRuntimePropertiesFileNameInTestMode() {
 		String filename = null;
-		if ("true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"))) {
+		if (isTestMode()) {
 			log.info("In functional testing mode. Ignoring the existing runtime properties file");
-			filename = System.getProperty("OPENMRS_VERSION", "openmrs") + "-test-runtime.properties";
+			filename = getOpenMRSVersionInTestMode() + "-test-runtime.properties";
 		}
 		return filename;
 	}
 	
+	/**
+	 * Gets OpenMRS version name under test mode.
+	 * @return String openmrs version number
+	 */
+	public static String getOpenMRSVersionInTestMode() {
+		return System.getProperty("OPENMRS_VERSION", "openmrs");
+	}
+
 	/**
 	 * Performs a case insensitive Comparison of two strings taking care of null values
 	 * 
@@ -2510,3 +2525,4 @@ public class OpenmrsUtil {
 		return longValue.intValue();
 	}
 }
+
