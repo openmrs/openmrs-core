@@ -6081,6 +6081,18 @@
  			where person_id IS NULL AND uuid = 'A4F30A1B-5EB9-11DF-A648-37A07F9C90FB';
          </sql>
  	</changeSet>
+ 	
+ 	<changeSet id="20111214-1500-setting-super-user-gender" author="raff">
+     	<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				select count(*) from person where person_id = 1 and gender is null;
+			</sqlCheck>
+		</preConditions>
+		<comment>Setting super user gender</comment>
+ 		<sql>	
+ 			update person set gender = 'M' where person_id = 1;
+ 		</sql>
+ 	</changeSet>
 	
 </databaseChangeLog>
 
