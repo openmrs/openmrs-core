@@ -821,7 +821,7 @@ public class InitializationFilter extends StartupFilter {
 		File runtimeProperties = getRuntimePropertiesFile();
 		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
 		if (httpRequest.getParameter("database_user_name") != null)
-			wizardModel.createDatabaseUsername = httpRequest.getParameter("databaseUsername");
+			wizardModel.createDatabaseUsername = httpRequest.getParameter("database_user_name");
 		checkLocaleAttributes(httpRequest);
 		createSimpleSetup(httpRequest.getParameter("database_root_password"), "yes");
 		try {

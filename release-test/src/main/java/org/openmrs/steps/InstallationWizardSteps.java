@@ -72,12 +72,12 @@ public class InstallationWizardSteps extends Steps {
     @When("I enter a database url and mention the database name, username, password, and port as stored in system properties as $databaseNameProp, $userProp, $passwordProp, and $portProp")
     public void enterConnectionUrl(String databaseNameProp, String userProp, String passwordProp, String portProp) {
     	
-    	String database = System.getProperty(databaseNameProp, "openmrs");
+    	String database = System.getProperty(databaseNameProp, "openmrs-test");
     	String user = System.getProperty(userProp, "root");
     	String password = System.getProperty(passwordProp, "password");
     	String port = System.getProperty(portProp, "3306");
 
-        type("jdbc:mysql:mxj://localhost:" + port + "/@DBNAME@?"
+        type("jdbc:mysql://localhost:" + port + "/@DBNAME@?"
                 + "autoReconnect=true&sessionVariables=storage_engine=InnoDB"
                 + "&useUnicode=true&characterEncoding=UTF-8&server.initialize-user=true"
                 + "&createDatabaseIfNotExist=true&server.basedir=target/database&server.datadir=target/database/data"

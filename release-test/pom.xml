@@ -211,6 +211,16 @@
 						<configuration>
                             <webApp>${basedir}/target/${openMRSVersion}/webapp</webApp>
                             <contextPath>/${webapp.name}</contextPath>
+                            <systemProperties>
+								<systemProperty>
+									<name>FUNCTIONAL_TEST_MODE</name>
+									<value>true</value>
+								</systemProperty>
+                                <systemProperty>
+									<name>OPENMRS_VERSION</name>
+									<value>${openMRSVersion}</value>
+								</systemProperty>
+							</systemProperties>
 						</configuration>
 
 						<executions>
