@@ -113,7 +113,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 (function($j) {
 	var openmrsSearch_div = 
 	'<span>'+
-		'<span style="white-space: nowrap">'+
+		'<span>'+
 			'<table cellspacing="0" width="100%">'+
 				'<tr>'+
 					'<td align="left">'+
@@ -437,6 +437,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				    					if(self.curRowSelection != null){
 				    						currNode = self._table.fnGetNodes()[self.curRowSelection];
 				    						self._unHighlightRow(currNode);
+				    						self._unHighlightVerboseRow(currNode.nextSibling);
 				    					}
 				    					self.hoverRowSelection = i;
 				    					$j(this.previousSibling).addClass('row_highlight');
@@ -923,7 +924,22 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	    _unHighlightRow: function(row){
 	    	$j(row).removeClass("row_highlight");
 			if(this.options.showIncludeVerbose)
-				$j($j(row).next()).removeClass('row_highlight');
+				this._unHighlightVerboseRow(row.nextSibling);
+	    },
+	    
+	    /**
+	     * Unhighlights the specified verbose row
+	     * @param vRow the verbose row to be unhighlighted
+	     */
+	    _unHighlightVerboseRow: function(vRow){
+	    	if(vRow){
+	    		//the verbose row inherits its bg color from the actual data row
+	    		//so we need to do the same if the class is not present
+	    		if($j(vRow).hasClass('row_highlight'))
+	    			$j(vRow).removeClass('row_highlight');
+	    		else
+	    			$j(vRow).css('background-color', $j(vRow.previousSibling).css('background-color'));
+			}
 	    },
 	    
 	    /* Returnss true if the row highlight is on the current visible page */
