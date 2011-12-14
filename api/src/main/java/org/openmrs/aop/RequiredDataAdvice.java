@@ -37,6 +37,7 @@ import org.openmrs.api.handler.UnvoidHandler;
 import org.openmrs.api.handler.VoidHandler;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.Reflect;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.util.StringUtils;
 
@@ -128,6 +129,8 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				if (args.length > 1 && args[1] instanceof String)
 					other = (String) args[1];
 				
+				Context.getAdministrationService().validateInManualFlushMode(mainArgument);
+				
 				recursivelyHandle(SaveHandler.class, (OpenmrsObject) mainArgument, other);
 			}
 			// if the first argument is a list of openmrs objects, handle them all now
@@ -141,11 +144,12 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) mainArgument;
 				
 				for (OpenmrsObject object : openmrsObjects) {
+					Context.getAdministrationService().validateInManualFlushMode(mainArgument);
+					
 					recursivelyHandle(SaveHandler.class, object, other);
 				}
 				
 			}
-			
 		} else {
 			// fail early if the method name is not like retirePatient or retireConcept when dealing 
 			// with Patients or Concepts as the first argument

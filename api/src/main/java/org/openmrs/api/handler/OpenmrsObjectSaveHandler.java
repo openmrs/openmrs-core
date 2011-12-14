@@ -72,9 +72,9 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 				continue;
 			}
 			
-			//For instance Patient has no setter methods for familyName, middleName and givenName
-			//yet it has getters for these properties and is why we loop through them.
-			if (property.getWriteMethod() == null) {
+			// Ignore properties that don't have a getter (e.g. GlobalProperty.valueReferenceInternal) or
+			// don't have a setter (e.g. Patient.familyName)
+			if (property.getWriteMethod() == null || property.getReadMethod() == null) {
 				continue;
 			}
 			

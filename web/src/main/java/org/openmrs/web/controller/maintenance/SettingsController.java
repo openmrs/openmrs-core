@@ -76,7 +76,7 @@ public class SettingsController {
 						try {
 							Object value = WebAttributeUtil.getValue(request, dt, handler, "settings[" + i
 							        + "].globalProperty.propertyValue");
-							property.getGlobalProperty().setPropertyValue(dt.toReferenceString(value));
+							property.getGlobalProperty().setValue(value);
 						}
 						catch (Exception ex) {
 							String originalValue = request.getParameter("originalValue[" + i + "]");

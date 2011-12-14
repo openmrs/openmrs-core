@@ -256,7 +256,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 			obs.setPerson(new Person(8));
 			obs.setConcept(Context.getConceptService().getConcept(18));
 			obs.setObsDatetime(ymd.parse("2007-01-01"));
-			obs.setValueNumeric(1.0);
+			obs.setValueBoolean(true);
 			obs.setLocation(new Location(1));
 			Context.getObsService().saveObs(obs, null);
 		}
@@ -265,7 +265,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 			obs.setPerson(new Person(8));
 			obs.setConcept(Context.getConceptService().getConcept(18));
 			obs.setObsDatetime(ymd.parse("2008-01-01"));
-			obs.setValueNumeric(0.0);
+			obs.setValueBoolean(false);
 			obs.setLocation(new Location(1));
 			Context.getObsService().saveObs(obs, null);
 		}

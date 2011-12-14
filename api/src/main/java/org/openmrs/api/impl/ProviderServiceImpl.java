@@ -101,12 +101,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 */
 	@Override
 	public Provider saveProvider(Provider provider) {
-		//remove this validation when TRUNK-2393 is done
-		Errors errors = new BindException(provider, "provider");
-		new ProviderValidator().validate(provider, errors);
-		if (errors.hasErrors())
-			throw new APIException(Context.getMessageSourceService().getMessage("error.foundValidationErrors"));
-		
+		CustomDatatypeUtil.saveAttributesIfNecessary(provider);
 		return dao.saveProvider(provider);
 	}
 	

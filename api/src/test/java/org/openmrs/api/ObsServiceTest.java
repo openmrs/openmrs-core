@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +125,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGP.setLocation(new Location(1));
 		oGP.setObsDatetime(new Date());
 		oGP.setPerson(new Patient(2));
-		oGP.setValueText("grandparent obs value text");
+		//oGP.setValueText("grandparent obs value text");
 		
 		oGP.addGroupMember(oParent);
 		
@@ -148,7 +149,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGGP.setCreator(Context.getAuthenticatedUser());
 		oGGP.setLocation(new Location(1));
 		oGGP.setObsDatetime(new Date());
-		oGGP.setValueText("great grandparent value text");
+		//oGGP.setValueText("great grandparent value text");
 		oGGP.setPerson(new Patient(2));
 		
 		oGGP.addGroupMember(oGP);
@@ -160,7 +161,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGGGP.setCreator(Context.getAuthenticatedUser());
 		oGGGP.setLocation(new Location(1));
 		oGGGP.setObsDatetime(new Date());
-		oGGGP.setValueText("great great grandparent value text");
+		//oGGGP.setValueText("great great grandparent value text");
 		oGGGP.setPerson(new Patient(2));
 		
 		oGGGP.addGroupMember(oGGP);
@@ -243,6 +244,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		//first, just create an Obs, and void it, and verify:
 		Obs oVoidTest = new Obs();
 		oVoidTest.setConcept(cs.getConcept(1));
+		oVoidTest.setValueNumeric(50d);
 		oVoidTest.setDateCreated(new Date());
 		oVoidTest.setCreator(Context.getAuthenticatedUser());
 		oVoidTest.setLocation(new Location(1));
@@ -764,9 +766,14 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, null, Collections.singletonList(new Concept(7)), null, null,
 		    null, null, null, null, null, false);
 		
-		Assert.assertEquals(1, obss.size());
-		
-		Assert.assertEquals(11, obss.get(0).getObsId().intValue());
+		// obs 11 in INITIAL_OBS_XML and obs 13 in standardTestDataset
+		Assert.assertEquals(2, obss.size());
+		Set<Integer> ids = new HashSet<Integer>();
+		for (Obs o : obss) {
+			ids.add(o.getObsId());
+		}
+		Assert.assertTrue(ids.contains(11));
+		Assert.assertTrue(ids.contains(13));
 	}
 	
 	/**
@@ -782,7 +789,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, Collections.singletonList(new Concept(7)), null,
 		    null, null, null, null, false);
 		
-		Assert.assertEquals(1, count.intValue());
+		Assert.assertEquals(2, count.intValue());
 		
 	}
 	
@@ -1210,7 +1217,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService obsService = Context.getObsService();
 		
 		Order order = null;
-		Concept concept = new Concept(3);
+		Concept concept = Context.getConceptService().getConcept(3);
 		Patient patient = new Patient(2);
 		Encounter encounter = new Encounter(3);
 		Date datetime = new Date();
@@ -1265,11 +1272,12 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should create very basic obs and add new obsId", method = "saveObs(Obs,String)")
 	public void saveObs_shouldCreateVeryBasicObsAndAddNewObsId() throws Exception {
 		Obs o = new Obs();
-		o.setConcept(new Concept(3));
+		o.setConcept(Context.getConceptService().getConcept(3));
 		o.setPerson(new Patient(2));
 		o.setEncounter(new Encounter(3));
 		o.setObsDatetime(new Date());
 		o.setLocation(new Location(1));
+		o.setValueNumeric(50d);
 		
 		Obs oSaved = Context.getObsService().saveObs(o, null);
 		
@@ -1364,11 +1372,12 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should set creator and dateCreated on new obs", method = "saveObs(Obs,String)")
 	public void saveObs_shouldSetCreatorAndDateCreatedOnNewObs() throws Exception {
 		Obs o = new Obs();
-		o.setConcept(new Concept(3));
+		o.setConcept(Context.getConceptService().getConcept(3));
 		o.setPerson(new Patient(2));
 		o.setEncounter(new Encounter(3));
 		o.setObsDatetime(new Date());
 		o.setLocation(new Location(1));
+		o.setValueNumeric(50d);
 		
 		Context.getObsService().saveObs(o, null);
 		assertNotNull(o.getDateCreated());
@@ -1384,13 +1393,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService obsService = Context.getObsService();
 		
 		Obs parentObs = new Obs();
-		parentObs.setConcept(new Concept(3));
+		parentObs.setConcept(Context.getConceptService().getConcept(3));
 		parentObs.setObsDatetime(new Date());
 		parentObs.setPerson(new Patient(2));
 		parentObs.setLocation(new Location(1));
 		
 		Obs groupMember = new Obs();
-		groupMember.setConcept(new Concept(3));
+		groupMember.setConcept(Context.getConceptService().getConcept(3));
 		groupMember.setValueNumeric(1.0);
 		groupMember.setObsDatetime(new Date());
 		groupMember.setPerson(new Patient(2));
@@ -1415,12 +1424,14 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		// a obs with child groups
 		Obs parentObs = obsService.getObs(2);
+		parentObs.setValueNumeric(null);
 		
 		Obs groupMember = new Obs();
-		groupMember.setConcept(new Concept(3));
+		groupMember.setConcept(Context.getConceptService().getConcept(3));
 		groupMember.setObsDatetime(new Date());
 		groupMember.setPerson(new Patient(2));
 		groupMember.setLocation(new Location(2));
+		groupMember.setValueNumeric(50d);
 		parentObs.addGroupMember(groupMember);
 		assertNotNull(groupMember.getObsGroup());
 		
@@ -1442,7 +1453,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void getObservationCount_shouldIncludeVoidedObservationsUsingTheSpecifiedConceptNamesAsAnswers() throws Exception {
 		ObsService os = Context.getObsService();
 		Obs o = new Obs();
-		o.setConcept(new Concept(3));
+		o.setConcept(Context.getConceptService().getConcept(3));
 		o.setPerson(new Patient(2));
 		o.setEncounter(new Encounter(3));
 		o.setObsDatetime(new Date());
@@ -1452,7 +1463,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		os.saveObs(o, null);
 		
 		Obs o2 = new Obs();
-		o2.setConcept(new Concept(3));
+		o2.setConcept(Context.getConceptService().getConcept(3));
 		o2.setPerson(new Patient(2));
 		o2.setEncounter(new Encounter(3));
 		o2.setObsDatetime(new Date());
@@ -1477,7 +1488,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	        throws Exception {
 		ObsService os = Context.getObsService();
 		Obs o = new Obs();
-		o.setConcept(new Concept(3));
+		o.setConcept(Context.getConceptService().getConcept(3));
 		o.setPerson(new Patient(2));
 		o.setEncounter(new Encounter(3));
 		o.setObsDatetime(new Date());
@@ -1487,7 +1498,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		os.saveObs(o, null);
 		
 		Obs o2 = new Obs();
-		o2.setConcept(new Concept(3));
+		o2.setConcept(Context.getConceptService().getConcept(3));
 		o2.setPerson(new Patient(2));
 		o2.setEncounter(new Encounter(3));
 		o2.setObsDatetime(new Date());

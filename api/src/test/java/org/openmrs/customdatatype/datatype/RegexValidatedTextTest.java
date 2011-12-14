@@ -6,16 +6,16 @@ import org.openmrs.customdatatype.InvalidCustomValueException;
 
 public class RegexValidatedTextTest {
 	
-	RegexValidatedText datatype;
+	RegexValidatedTextDatatype datatype;
 	
 	@Before
 	public void before() {
-		datatype = new RegexValidatedText();
+		datatype = new RegexValidatedTextDatatype();
 		datatype.setConfiguration("[a-z]+");
 	}
 	
 	/**
-	 * @see RegexValidatedText#validate(String)
+	 * @see RegexValidatedTextDatatype#validate(String)
 	 * @verifies accept a string that matches the regex
 	 */
 	@Test
@@ -24,7 +24,7 @@ public class RegexValidatedTextTest {
 	}
 	
 	/**
-	 * @see RegexValidatedText#validate(String)
+	 * @see RegexValidatedTextDatatype#validate(String)
 	 * @verifies fail if the string does not match the regex
 	 */
 	@Test(expected = InvalidCustomValueException.class)
@@ -33,11 +33,11 @@ public class RegexValidatedTextTest {
 	}
 	
 	/**
-	 * @see RegexValidatedText#toReferenceString(String)
+	 * @see RegexValidatedTextDatatype#save(String, String))
 	 * @verifies fail if the string does not match the regex
 	 */
 	@Test(expected = InvalidCustomValueException.class)
 	public void toPersistentString_shouldFailIfTheStringDoesNotMatchTheRegex() throws Exception {
-		datatype.toReferenceString("spaces not allowed");
+		datatype.save("spaces not allowed", null);
 	}
 }

@@ -26,6 +26,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LocationDAO;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.util.StringUtils;
 
@@ -77,6 +78,8 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 				}
 			}
 		}
+		
+		CustomDatatypeUtil.saveAttributesIfNecessary(location);
 		
 		return dao.saveLocation(location);
 	}

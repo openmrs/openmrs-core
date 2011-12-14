@@ -62,7 +62,7 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	        throws Exception {
 		ProviderAttribute providerAttribute = new ProviderAttribute();
 		providerAttribute.setAttributeType(providerAttributeType);
-		providerAttribute.setValueReference(value.toString());
+		providerAttribute.setValueReferenceInternal(value.toString());
 		return providerAttribute;
 	}
 }

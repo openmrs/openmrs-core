@@ -18,15 +18,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.EncounterType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
@@ -354,7 +357,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return all global properties in the database", method = "getAllGlobalProperties()")
 	public void getAllGlobalProperties_shouldReturnAllGlobalPropertiesInTheDatabase() throws Exception {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
-		Assert.assertEquals(10, Context.getAdministrationService().getAllGlobalProperties().size());
+		Assert.assertEquals(12, Context.getAdministrationService().getAllGlobalProperties().size());
 	}
 	
 	/**
@@ -426,9 +429,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		AdministrationService as = Context.getAdministrationService();
 		
-		Assert.assertEquals(10, as.getAllGlobalProperties().size());
+		Assert.assertEquals(12, as.getAllGlobalProperties().size());
 		as.purgeGlobalProperty(as.getGlobalPropertyObject("a_valid_gp_key"));
-		Assert.assertEquals(9, as.getAllGlobalProperties().size());
+		Assert.assertEquals(11, as.getAllGlobalProperties().size());
 	}
 	
 	/**
@@ -594,5 +597,41 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		int afterPurgeSize = adminService.getAllGlobalProperties().size();
 		
 		Assert.assertEquals(originalSize, afterPurgeSize);
+	}
+	
+	/**
+	 * @see AdministrationService#saveGlobalProperty(GlobalProperty)
+	 * @verifies save a global property whose typed value is handled by a custom datatype
+	 */
+	@Test
+	public void saveGlobalProperty_shouldSaveAGlobalPropertyWhoseTypedValueIsHandledByACustomDatatype() throws Exception {
+		GlobalProperty gp = new GlobalProperty();
+		gp.setProperty("What time is it?");
+		gp.setDatatypeClassname(DateDatatype.class.getName());
+		gp.setValue(new Date());
+		adminService.saveGlobalProperty(gp);
+		Assert.assertNotNull(gp.getValueReference());
+	}
+	
+	/**
+	 * @see AdministrationService#validateInManualFlushMode(Object)
+	 * @verifies fail for an invalid object
+	 */
+	@Test
+	public void validateInManualFlushMode_shouldFailForAnInvalidObject() throws Exception {
+		EncounterType et = new EncounterType();
+		et.setName("An Encounter Type");
+		et.setDescription("Blah");
+		adminService.validateInManualFlushMode(et);
+		// if we get here without an exception, we pass
+	}
+	
+	/**
+	 * @see AdministrationService#validateInManualFlushMode(Object)
+	 * @verifies pass for a valid object
+	 */
+	@Test(expected = APIException.class)
+	public void validateInManualFlushMode_shouldPassForAValidObject() throws Exception {
+		adminService.validateInManualFlushMode(new EncounterType());
 	}
 }

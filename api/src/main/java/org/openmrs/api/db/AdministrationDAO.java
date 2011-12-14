@@ -146,4 +146,9 @@ public interface AdministrationDAO {
 	 * @see org.openmrs.api.AdministrationService#getMaximumPropertyLength(Class, String)
 	 */
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#validateInManualFlushMode(Object)
+	 */
+	public void validateInManualFlushMode(Object object);
 }

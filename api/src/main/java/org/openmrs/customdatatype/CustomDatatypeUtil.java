@@ -22,8 +22,10 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.serialization.SerializationException;
 
@@ -123,7 +125,15 @@ public class CustomDatatypeUtil {
 			serializedAttributeValues = new HashMap<T, String>();
 			for (Map.Entry<T, U> e : datatypeValues.entrySet()) {
 				T vat = e.getKey();
-				serializedAttributeValues.put(vat, ((CustomDatatype<U>) getDatatype(vat)).toReferenceString(e.getValue()));
+				CustomDatatype<U> customDatatype = (CustomDatatype<U>) getDatatype(vat);
+				String valueReference;
+				try {
+					valueReference = customDatatype.getReferenceStringForValue(e.getValue());
+				}
+				catch (UnsupportedOperationException ex) {
+					throw new APIException("Cannot search for attributes with custom datatype: " + customDatatype.getClass());
+				}
+				serializedAttributeValues.put(vat, valueReference);
 			}
 		}
 		return serializedAttributeValues;
@@ -160,4 +170,58 @@ public class CustomDatatypeUtil {
 		return handlerClasses.contains(handler.getClass());
 	}
 	
+	/**
+	 * To be called by service save methods for customizable implementations.
+	 * Iterates over all attributes and calls save on the {@link ConceptDatatype} for any dirty ones.
+	 * 
+	 * @param customizable
+	 */
+	public static void saveAttributesIfNecessary(Customizable<?> customizable) {
+		// TODO decide whether we can move this into a SingleCustomValueSaveHandler instead of leaving it here to be called by each Customizable service's save method
+		for (Attribute attr : customizable.getAttributes()) {
+			saveIfDirty(attr);
+		}
+	}
+	
+	/**
+	 * Calls the save method on value's {@link ConceptDatatype} if necessary
+	 * 
+	 * @param value
+	 */
+	public static void saveIfDirty(SingleCustomValue<?> value) {
+		if (value.isDirty()) {
+			CustomDatatype datatype = CustomDatatypeUtil.getDatatype(value.getDescriptor());
+			if (value.getValue() == null)
+				throw new InvalidCustomValueException(value.getClass() + " with type=" + value.getDescriptor()
+				        + " cannot be null");
+			String existingValueReference = null;
+			try {
+				existingValueReference = value.getValueReference();
+			}
+			catch (NotYetPersistedException ex) {
+				// this is expected
+			}
+			String newValueReference = datatype.save(value.getValue(), existingValueReference);
+			value.setValueReferenceInternal(newValueReference);
+		}
+		
+	}
+	
+	/**
+	 * Validates a {@link SingleCustomValue}
+	 * 
+	 * @param value
+	 * @return true is value is valid, according to its configured datatype
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T, D extends CustomValueDescriptor> boolean validate(SingleCustomValue<D> value) {
+		try {
+			CustomDatatype<T> datatype = (CustomDatatype<T>) getDatatype(value.getDescriptor());
+			datatype.validate((T) value.getValue());
+			return true;
+		}
+		catch (Exception ex) {
+			return false;
+		}
+	}
 }

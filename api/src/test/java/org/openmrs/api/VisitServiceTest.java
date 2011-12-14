@@ -40,7 +40,7 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
-import org.openmrs.customdatatype.datatype.FreeText;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
@@ -72,7 +72,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	@Verifies(value = "should get correct visit type", method = "getVisitType(Integer)")
-	public void getVisitType_shouldGetCorrentVisitType() throws Exception {
+	public void getVisitType_shouldGetCorrectVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitType(1);
 		Assert.assertNotNull(visitType);
 		Assert.assertEquals("Initial HIV Clinic Visit", visitType.getName());
@@ -273,7 +273,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		VisitAttribute visitAttribute = new VisitAttribute();
 		VisitAttributeType attributeType = Context.getVisitService().getVisitAttributeType(1);
 		attributeType.setName("visit type");
-		visitAttribute.setValueReference("first visit");
+		visitAttribute.setValue(new Date());
 		visitAttribute.setAttributeType(attributeType);
 		return visitAttribute;
 	}
@@ -287,8 +287,8 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
 		VisitService vs = Context.getVisitService();
 		Visit visit = new Visit(new Patient(2), new VisitType(3), new Date());
-		visit.setAttribute(createVisitAttribute("first Visit"));
-		visit.setAttribute(createVisitAttribute("first Visit"));
+		visit.setAttribute(createVisitAttribute(new Date()));
+		visit.setAttribute(createVisitAttribute(new Date(System.currentTimeMillis() - 1000000)));
 		Assert.assertEquals(1, visit.getAttributes().size());
 		visit = vs.saveVisit(visit);
 		Assert.assertNotNull(visit.getId());
@@ -298,15 +298,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(firstAttribute.getVoided());
 	}
 	
-	private VisitAttribute createVisitAttribute(String serializedValue) {
-		UserService us = Context.getUserService();
-		User user = us.getUserByUsername("admin");
+	private VisitAttribute createVisitAttribute(Object typedValue) {
 		VisitAttribute visitAttribute = new VisitAttribute();
 		VisitAttributeType attributeType = Context.getVisitService().getVisitAttributeType(1);
 		attributeType.setName("visit type");
-		visitAttribute.setValueReference(serializedValue);
-		visitAttribute.setCreator(user);
-		visitAttribute.setDateCreated(new Date());
+		visitAttribute.setValue(typedValue);
 		visitAttribute.setAttributeType(attributeType);
 		return visitAttribute;
 	}
@@ -321,11 +317,13 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(visit.getLocation());//this is the field we are editing
 		Assert.assertNull(visit.getChangedBy());
 		Assert.assertNull(visit.getDateChanged());
-		visit.setLocation(new Location(1));
+		visit.setLocation(Context.getLocationService().getLocation(1));
 		visit = Context.getVisitService().saveVisit(visit);
 		
+		Context.flushSession();
 		Assert.assertNotNull(visit.getChangedBy());
 		Assert.assertNotNull(visit.getDateChanged());
+		Assert.assertEquals(Integer.valueOf(1), visit.getLocation().getLocationId());
 	}
 	
 	/**
@@ -645,7 +643,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(3, service.getAllVisitAttributeTypes().size());
 		VisitAttributeType vat = new VisitAttributeType();
 		vat.setName("Another one");
-		vat.setDatatypeClassname(FreeText.class.getName());
+		vat.setDatatypeClassname(FreeTextDatatype.class.getName());
 		service.saveVisitAttributeType(vat);
 		Assert.assertNotNull(vat.getId());
 		Assert.assertEquals(4, service.getAllVisitAttributeTypes().size());
@@ -782,13 +780,29 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveVisit_shouldBeAbleToAddAnAttributeToAVisit() throws Exception {
+		Date now = new Date();
 		Visit visit = service.getVisit(1);
 		VisitAttributeType attrType = service.getVisitAttributeType(1);
 		VisitAttribute attr = new VisitAttribute();
 		attr.setAttributeType(attrType);
-		attr.setValue(new Date());
+		attr.setValue(now);
 		visit.addAttribute(attr);
 		service.saveVisit(visit);
+		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd").format(now), attr.getValueReference());
+	}
+	
+	@Test
+	public void shouldVoidASimpleAttribute() throws Exception {
+		executeDataSet(VISITS_ATTRIBUTES_XML);
+		Visit visit = service.getVisit(1);
+		VisitAttributeType attrType = service.getVisitAttributeType(1);
+		List<VisitAttribute> attributes = visit.getActiveAttributes(attrType);
+		Assert.assertTrue(attributes.size() > 0);
+		VisitAttribute attribute = attributes.get(0);
+		attribute.setVoided(true);
+		service.saveVisit(visit);
+		Assert.assertNotNull(attribute.getVoidedBy());
+		Assert.assertNotNull(attribute.getDateVoided());
 	}
 	
 	/**

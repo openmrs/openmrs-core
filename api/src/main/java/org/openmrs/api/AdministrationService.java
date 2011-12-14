@@ -41,6 +41,9 @@ import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.ValidateUtil;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -580,7 +583,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * Use
 	 * 
 	 * <pre>
-	 * purgeGlobalProperty(new GlobalProperty(propertyName, propertyValue));
+	 * saveGlobalProperty(new GlobalProperty(propertyName, propertyValue));
 	 * </pre>
 	 * 
 	 * @deprecated use #saveGlobalProperty(GlobalProperty)
@@ -596,6 +599,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should create global property in database
 	 * @should overwrite global property if exists
 	 * @should not allow different properties to have the same string with different case
+	 * @should save a global property whose typed value is handled by a custom datatype
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException;
@@ -711,10 +715,20 @@ public interface AdministrationService extends OpenmrsService {
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue) throws APIException;
 	
 	/**
-	 *
 	 * @param aClass class of object getting length for
 	 * @param fieldName name of the field to get the length for
 	 * @return the max field length of a property
 	 */
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
+	
+	/**
+	 * Performs validation in manual flush mode to prevent any premature flushes.
+	 * <p>
+	 * Calls {@link ValidateUtil#validate(Object)} on the given object.
+	 * 
+	 * @param object
+	 * @should pass for a valid object
+	 * @should fail for an invalid object
+	 */
+	public void validateInManualFlushMode(Object object);
 }
