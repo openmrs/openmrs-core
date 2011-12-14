@@ -65,16 +65,7 @@
 
 <style>
 div.visit {
-	border: 1px solid #1aac9b;
-	border-radius: 10px;
-	padding: 5px;
-	background-color: #e0e0f0;
-	color: #000000;
 	white-space: nowrap;
-}
-
-a.visitLink {
-	text-decoration: none;
 }
 
 tr.encounter-in-visit td {
@@ -276,7 +267,7 @@ tr.bottom-encounter-in-visit td:last-child {
 																	+ visitId
 																	+ '&patientId=${model.patient.patientId}" onmouseover="'
 																	+ method
-																	+ '" class="visitLink">'
+																	+ '">'
 																	+ visit
 																	+ '</a>';
 															$j('td:eq(0)',
