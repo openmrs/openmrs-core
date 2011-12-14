@@ -128,7 +128,8 @@ public abstract class StartupFilter implements Filter {
 				                + servletPath + "' instead.");
 			}
 			// for anything but /initialsetup
-			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)) {
+			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)
+			        && !httpRequest.getServletPath().equals("/" + "AUTO_RUN_OPENMRS")) {
 				// send the user to the setup page
 				httpResponse.sendRedirect("/" + WebConstants.WEBAPP_NAME + "/" + WebConstants.SETUP_PAGE_URL);
 			} else {

@@ -162,7 +162,7 @@ public class InitializationFilter extends StartupFilter {
 	private static final String PROGRESS_VM_AJAXREQUEST = "progress.vm.ajaxRequest";
 	
 	public static final String RELEASE_TESTING_MODULE_PATH = "/module/releasetestinghelper/";
-	
+
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All
 	 * attributes on this object are made available to all templates via reflection in the
@@ -207,6 +207,10 @@ public class InitializationFilter extends StartupFilter {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
+		if (httpRequest.getServletPath().equals("/" + "AUTO_RUN_OPENMRS")) {
+			autoRunOpenMRS(httpRequest);
+			return;
+		}
 		// we need to save current user language in references map since it will be used when template
 		// will be rendered
 		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
@@ -321,14 +325,7 @@ public class InitializationFilter extends StartupFilter {
 			referenceMap
 			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 		}
-		
-		// if any body has already started installation
-		if (isInstallationStarted()) {
-			httpResponse.setContentType("text/html");
-			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
-			return;
-		}
-		
+
 		// if any body has already started installation
 		if (isInstallationStarted()) {
 			httpResponse.setContentType("text/html");
@@ -338,7 +335,6 @@ public class InitializationFilter extends StartupFilter {
 		if (DEFAULT_PAGE.equals(page)) {
 			// get props and render the first page
 			File runtimeProperties = getRuntimePropertiesFile();
-			
 			if (!runtimeProperties.exists()) {
 				try {
 					runtimeProperties.createNewFile();
@@ -350,7 +346,6 @@ public class InitializationFilter extends StartupFilter {
 					wizardModel.canCreate = false;
 					wizardModel.cannotCreateErrorMessage = io.getMessage();
 				}
-				
 				// check this before deleting the file again
 				wizardModel.canWrite = runtimeProperties.canWrite();
 				
@@ -358,7 +353,6 @@ public class InitializationFilter extends StartupFilter {
 				// so that if the user stops the webapp before finishing
 				// this wizard, they can still get back into it
 				runtimeProperties.delete();
-				
 			} else {
 				wizardModel.canWrite = runtimeProperties.canWrite();
 				
@@ -378,12 +372,11 @@ public class InitializationFilter extends StartupFilter {
 			referenceMap
 			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 			log.info("Locale stored in session is " + httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
-			
+
 			httpResponse.setContentType("text/html");
 			// otherwise do step one of the wizard
 			renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 		} else if (INSTALL_METHOD.equals(page)) {
-			
 			if (goBack(httpRequest)) {
 				referenceMap.put(FilterUtil.REMEMBER_ATTRIBUTE, httpRequest.getSession().getAttribute(
 				    FilterUtil.REMEMBER_ATTRIBUTE) != null);
@@ -392,7 +385,6 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(CHOOSE_LANG, referenceMap, httpResponse);
 				return;
 			}
-			
 			wizardModel.installMethod = httpRequest.getParameter("install_method");
 			if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 				page = SIMPLE_SETUP;
@@ -406,14 +398,12 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.numberOfSteps = 5;
 			}
 			renderTemplate(page, referenceMap, httpResponse);
-			
 		} // simple method
 		else if (SIMPLE_SETUP.equals(page)) {
 			if (goBack(httpRequest)) {
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				return;
 			}
-			
 			wizardModel.databaseConnection = Context.getRuntimeProperties().getProperty("connection.url",
 			    wizardModel.databaseConnection);
 			
@@ -442,6 +432,9 @@ public class InitializationFilter extends StartupFilter {
 			
 			wizardModel.adminUserPassword = InitializationWizardModel.ADMIN_DEFAULT_PASSWORD;
 			
+			createSimpleSetup(httpRequest.getParameter("database_root_password"), httpRequest
+				        .getParameter("add_demo_data"));
+				
 			try {
 				loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection,
 				    wizardModel.databaseDriver);
@@ -451,12 +444,11 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(page, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			if (errors.isEmpty()) {
 				page = WIZARD_COMPLETE;
 			}
 			renderTemplate(page, referenceMap, httpResponse);
-			
 		} // step one
 		else if (DATABASE_SETUP.equals(page)) {
 			if (goBack(httpRequest)) {
@@ -468,7 +460,7 @@ public class InitializationFilter extends StartupFilter {
 				}
 				return;
 			}
-			
+
 			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
 			checkForEmptyValue(wizardModel.databaseConnection, errors, ErrorMessageConstants.ERROR_DB_CONN_REQ);
 			
@@ -481,7 +473,7 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(page, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			//TODO make each bit of page logic a (unit testable) method
 			
 			// asked the user for their desired database name
@@ -491,50 +483,50 @@ public class InitializationFilter extends StartupFilter {
 				checkForEmptyValue(wizardModel.databaseName, errors, ErrorMessageConstants.ERROR_DB_CURR_NAME_REQ);
 				wizardModel.hasCurrentOpenmrsDatabase = true;
 				// TODO check to see if this is an active database
-				
+
 			} else {
 				// mark this wizard as a "to create database" (done at the end)
 				wizardModel.hasCurrentOpenmrsDatabase = false;
-				
+
 				wizardModel.createTables = true;
-				
+
 				wizardModel.databaseName = httpRequest.getParameter("openmrs_new_database_name");
 				checkForEmptyValue(wizardModel.databaseName, errors, ErrorMessageConstants.ERROR_DB_NEW_NAME_REQ);
 				// TODO create database now to check if its possible?
-				
+
 				wizardModel.createDatabaseUsername = httpRequest.getParameter("create_database_username");
 				checkForEmptyValue(wizardModel.createDatabaseUsername, errors, ErrorMessageConstants.ERROR_DB_USER_NAME_REQ);
 				wizardModel.createDatabasePassword = httpRequest.getParameter("create_database_password");
 				checkForEmptyValue(wizardModel.createDatabasePassword, errors, ErrorMessageConstants.ERROR_DB_USER_PSWD_REQ);
 			}
-			
+
 			if (errors.isEmpty()) {
 				page = DATABASE_TABLES_AND_USER;
-				
+
 				if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 					wizardModel.currentStepNumber = 4;
 				} else {
 					wizardModel.currentStepNumber = 2;
 				}
 			}
-			
+
 			renderTemplate(page, referenceMap, httpResponse);
-			
+
 		} // step two
 		else if (DATABASE_TABLES_AND_USER.equals(page)) {
-			
+
 			if (goBack(httpRequest)) {
 				wizardModel.currentStepNumber -= 1;
 				renderTemplate(DATABASE_SETUP, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			if (wizardModel.hasCurrentOpenmrsDatabase) {
 				wizardModel.createTables = "yes".equals(httpRequest.getParameter("create_tables"));
 			}
-			
+
 			wizardModel.addDemoData = "yes".equals(httpRequest.getParameter("add_demo_data"));
-			
+
 			if ("yes".equals(httpRequest.getParameter("current_database_user"))) {
 				wizardModel.currentDatabaseUsername = httpRequest.getParameter("current_database_username");
 				checkForEmptyValue(wizardModel.currentDatabaseUsername, errors,
@@ -553,57 +545,57 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.createUserPassword = httpRequest.getParameter("create_user_password");
 				checkForEmptyValue(wizardModel.createUserPassword, errors, ErrorMessageConstants.ERROR_DB_USER_PSWD_REQ);
 			}
-			
+
 			if (errors.isEmpty()) { // go to next page
 				page = InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod) ? WIZARD_COMPLETE
 				        : OTHER_RUNTIME_PROPS;
 			}
-			
+
 			renderTemplate(page, referenceMap, httpResponse);
 		} // step three
 		else if (OTHER_RUNTIME_PROPS.equals(page)) {
-			
+
 			if (goBack(httpRequest)) {
 				renderTemplate(DATABASE_TABLES_AND_USER, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			wizardModel.moduleWebAdmin = "yes".equals(httpRequest.getParameter("module_web_admin"));
 			wizardModel.autoUpdateDatabase = "yes".equals(httpRequest.getParameter("auto_update_database"));
-			
+
 			if (wizardModel.createTables) { // go to next page if they are creating tables
 				page = ADMIN_USER_SETUP;
 			} else { // skip a page
 				page = IMPLEMENTATION_ID_SETUP;
 			}
-			
+
 			renderTemplate(page, referenceMap, httpResponse);
-			
+
 		} // optional step four
 		else if (ADMIN_USER_SETUP.equals(page)) {
-			
+
 			if (goBack(httpRequest)) {
 				renderTemplate(OTHER_RUNTIME_PROPS, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			wizardModel.adminUserPassword = httpRequest.getParameter("new_admin_password");
 			String adminUserConfirm = httpRequest.getParameter("new_admin_password_confirm");
-			
+
 			// throw back to admin user if passwords don't match
 			if (!wizardModel.adminUserPassword.equals(adminUserConfirm)) {
 				errors.put(ErrorMessageConstants.ERROR_DB_ADM_PSWDS_MATCH, null);
 				renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			// throw back if the user didn't put in a password
 			if (wizardModel.adminUserPassword.equals("")) {
 				errors.put(ErrorMessageConstants.ERROR_DB_ADM_PSDW_EMPTY, null);
 				renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			try {
 				OpenmrsUtil.validatePassword("admin", wizardModel.adminUserPassword, "admin");
 			}
@@ -612,16 +604,16 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			if (errors.isEmpty()) { // go to next page
 				page = IMPLEMENTATION_ID_SETUP;
 			}
-			
+
 			renderTemplate(page, referenceMap, httpResponse);
-			
+
 		} // optional step five
 		else if (IMPLEMENTATION_ID_SETUP.equals(page)) {
-			
+
 			if (goBack(httpRequest)) {
 				if (wizardModel.createTables)
 					renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
@@ -629,28 +621,28 @@ public class InitializationFilter extends StartupFilter {
 					renderTemplate(OTHER_RUNTIME_PROPS, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			wizardModel.implementationIdName = httpRequest.getParameter("implementation_name");
 			wizardModel.implementationId = httpRequest.getParameter("implementation_id");
 			wizardModel.implementationIdPassPhrase = httpRequest.getParameter("pass_phrase");
 			wizardModel.implementationIdDescription = httpRequest.getParameter("description");
-			
+
 			// throw back if the user-specified ID is invalid (contains ^ or |).
 			if (wizardModel.implementationId.indexOf('^') != -1 || wizardModel.implementationId.indexOf('|') != -1) {
 				errors.put(ErrorMessageConstants.ERROR_DB_IMPL_ID_REQ, null);
 				renderTemplate(IMPLEMENTATION_ID_SETUP, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			if (errors.isEmpty()) { // go to next page
 				page = WIZARD_COMPLETE;
 			}
-			
+
 			renderTemplate(page, referenceMap, httpResponse);
 		} else if (WIZARD_COMPLETE.equals(page)) {
-			
+
 			if (goBack(httpRequest)) {
-				
+
 				if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 					page = SIMPLE_SETUP;
 				} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
@@ -665,51 +657,36 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(page, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			wizardModel.tasksToExecute = new ArrayList<WizardTask>();
-			if (!wizardModel.hasCurrentOpenmrsDatabase)
-				wizardModel.tasksToExecute.add(WizardTask.CREATE_SCHEMA);
-			if (wizardModel.createDatabaseUser)
-				wizardModel.tasksToExecute.add(WizardTask.CREATE_DB_USER);
-			
-			if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-				wizardModel.importTestData = true;
-				wizardModel.createTables = false;
-				wizardModel.addDemoData = false;
-				//if we have a runtime properties file
-				if (skipDatabaseSetupPage()) {
-					wizardModel.hasCurrentOpenmrsDatabase = false;
-					wizardModel.hasCurrentDatabaseUser = true;
-					wizardModel.createDatabaseUser = false;
-					Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
-					wizardModel.currentDatabaseUsername = props.getProperty("connection.username");
-					wizardModel.currentDatabasePassword = props.getProperty("connection.password");
-					wizardModel.createDatabaseUsername = wizardModel.currentDatabaseUsername;
-					wizardModel.createDatabasePassword = wizardModel.currentDatabasePassword;
+				createDatabaseTask();
+				if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
+					wizardModel.importTestData = true;
+					wizardModel.createTables = false;
+					wizardModel.addDemoData = false;
+					//if we have a runtime properties file
+					if (skipDatabaseSetupPage()) {
+						wizardModel.hasCurrentOpenmrsDatabase = false;
+						wizardModel.hasCurrentDatabaseUser = true;
+						wizardModel.createDatabaseUser = false;
+						Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
+						wizardModel.currentDatabaseUsername = props.getProperty("connection.username");
+						wizardModel.currentDatabasePassword = props.getProperty("connection.password");
+						wizardModel.createDatabaseUsername = wizardModel.currentDatabaseUsername;
+						wizardModel.createDatabasePassword = wizardModel.currentDatabasePassword;
+					}
+					
+					wizardModel.tasksToExecute.add(WizardTask.IMPORT_TEST_DATA);
+					wizardModel.tasksToExecute.add(WizardTask.ADD_MODULES);
+				} else {
+					createTablesTask();
+					createDemoDataTask();
 				}
+				wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
 				
-				wizardModel.tasksToExecute.add(WizardTask.IMPORT_TEST_DATA);
-				wizardModel.tasksToExecute.add(WizardTask.ADD_MODULES);
-			} else {
-				if (wizardModel.createTables) {
-					wizardModel.tasksToExecute.add(WizardTask.CREATE_TABLES);
-					wizardModel.tasksToExecute.add(WizardTask.ADD_CORE_DATA);
-				}
-				if (wizardModel.addDemoData)
-					wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
-			}
-			wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
-			
-			referenceMap.put("tasksToExecute", wizardModel.tasksToExecute);
-			
-			//if no one has run any installation
-			if (!isInstallationStarted()) {
-				initJob = new InitializationCompletion();
-				setInstallationStarted(true);
-				initJob.start();
-			}
-			referenceMap.put("isInstallationStarted", isInstallationStarted());
-			
+				referenceMap.put("tasksToExecute", wizardModel.tasksToExecute);
+				startInstallation();
+				referenceMap.put("isInstallationStarted", isInstallationStarted());
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (TESTING_REMOTE_URL_SETUP.equals(page)) {
 			if (goBack(httpRequest)) {
@@ -717,7 +694,7 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			wizardModel.remoteUrl = httpRequest.getParameter("remoteUrl");
 			checkForEmptyValue(wizardModel.remoteUrl, errors, "install.testing.remote.url.required");
 			if (errors.isEmpty()) {
@@ -735,7 +712,7 @@ public class InitializationFilter extends StartupFilter {
 					errors.put("install.testing.invalidProductionUrl", new Object[] { wizardModel.remoteUrl });
 				}
 			}
-			
+
 			renderTemplate(page, referenceMap, httpResponse);
 			return;
 		} else if (TESTING_AUTHENTICATION_SETUP.equals(page)) {
@@ -744,7 +721,7 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(TESTING_REMOTE_URL_SETUP, referenceMap, httpResponse);
 				return;
 			}
-			
+
 			//Authenticate to remote server
 			wizardModel.remoteUsername = httpRequest.getParameter("username");
 			wizardModel.remotePassword = httpRequest.getParameter("password");
@@ -762,7 +739,7 @@ public class InitializationFilter extends StartupFilter {
 						renderTemplate(page, referenceMap, httpResponse);
 						return;
 					}
-					
+
 					wizardModel.databaseName = InitializationWizardModel.DEFAULT_DATABASE_NAME;
 					page = WIZARD_COMPLETE;
 				} else {
@@ -770,10 +747,89 @@ public class InitializationFilter extends StartupFilter {
 					wizardModel.currentStepNumber = 3;
 				}
 			}
-			
+
 			renderTemplate(page, referenceMap, httpResponse);
 			return;
 		}
+	}
+
+	private void startInstallation() {
+		//if no one has run any installation
+		if (!isInstallationStarted()) {
+			initJob = new InitializationCompletion();
+			setInstallationStarted(true);
+			initJob.start();
+		}
+	}
+	
+	private void createDemoDataTask() {
+		if (wizardModel.addDemoData)
+			wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
+	}
+	
+	private void createTablesTask() {
+		if (wizardModel.createTables) {
+			wizardModel.tasksToExecute.add(WizardTask.CREATE_TABLES);
+			wizardModel.tasksToExecute.add(WizardTask.ADD_CORE_DATA);
+		}
+	}
+	
+	private void createDatabaseTask() {
+		if (!wizardModel.hasCurrentOpenmrsDatabase)
+			wizardModel.tasksToExecute.add(WizardTask.CREATE_SCHEMA);
+		if (wizardModel.createDatabaseUser)
+			wizardModel.tasksToExecute.add(WizardTask.CREATE_DB_USER);
+	}
+	
+	private void createSimpleSetup(String databaseRootPassword, String addDemoData) {
+		wizardModel.databaseConnection = Context.getRuntimeProperties().getProperty("connection.url",
+		    wizardModel.databaseConnection);
+		
+		wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
+		    wizardModel.createDatabaseUsername);
+		
+		wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
+		
+		wizardModel.databaseRootPassword = databaseRootPassword;
+		checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
+		
+		wizardModel.hasCurrentOpenmrsDatabase = false;
+		wizardModel.createTables = true;
+		// default wizardModel.databaseName is openmrs
+		// default wizardModel.createDatabaseUsername is root
+		wizardModel.createDatabasePassword = wizardModel.databaseRootPassword;
+		wizardModel.addDemoData = "yes".equals(addDemoData);
+		
+		wizardModel.hasCurrentDatabaseUser = false;
+		wizardModel.createDatabaseUser = true;
+		// default wizardModel.createUserUsername is root
+		wizardModel.createUserPassword = wizardModel.databaseRootPassword;
+		
+		wizardModel.moduleWebAdmin = true;
+		wizardModel.autoUpdateDatabase = false;
+		
+		wizardModel.adminUserPassword = InitializationWizardModel.ADMIN_DEFAULT_PASSWORD;
+	}
+	
+	private void autoRunOpenMRS(HttpServletRequest httpRequest) {
+		File runtimeProperties = getRuntimePropertiesFile();
+		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
+		wizardModel.createDatabaseUsername = "root";
+		checkLocaleAttributes(httpRequest);
+		createSimpleSetup("password", "yes");
+		try {
+			loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection, wizardModel.databaseDriver);
+		}
+		catch (ClassNotFoundException e) {
+			errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
+			return;
+		}
+		wizardModel.tasksToExecute = new ArrayList<WizardTask>();
+		createDatabaseTask();
+		createTablesTask();
+		createDemoDataTask();
+		wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
+		startInstallation();
 	}
 	
 	/**
