@@ -72,6 +72,8 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @should fail if an identifier for an existing provider is changed to a duplicate value
 	 * @should reject a duplicate identifier for a new provider
 	 * @should pass if the provider we are validating has a duplicate identifier and is retired
+	 * @should fail for a duplicate identifier if the existing provider is retired
+	 * @should fail if the provider we are validating has a duplicate identifier and is retired
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled())
