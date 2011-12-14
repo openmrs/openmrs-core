@@ -294,13 +294,12 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Creates several relationships. Tests that a relationship is returned only when the effective date
-	 * is as follows:
-	 * - for relationships with both a start date and an end date, the effective date falls between the start and
-	 * end dates;
-	 * - for relationships with only a start date, the effective date falls after the start date;
-	 * - for relationships with only an end date, the effective date falls before the end date;
-	 * - relationship with neither a start nor end date are always returned.
+	 * Creates several relationships. Tests that a relationship is returned only when the effective
+	 * date is as follows: - for relationships with both a start date and an end date, the effective
+	 * date falls between the start and end dates; - for relationships with only a start date, the
+	 * effective date falls after the start date; - for relationships with only an end date, the
+	 * effective date falls before the end date; - relationship with neither a start nor end date
+	 * are always returned.
 	 * 
 	 * @see {@link PersonService#getRelationshipsByPerson(Person,Date)}
 	 */
@@ -532,7 +531,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getAllPersonAttributeTypes()}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return all person attribute types including retired", method = "getAllPersonAttributeTypes()")
@@ -556,7 +554,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getAllPersonAttributeTypes(null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return all person attribute types excluding retired when include retired is false", method = "getAllPersonAttributeTypes(null)")
@@ -581,7 +578,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getAllPersonAttributeTypes(null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return all person attribute types including retired when include retired is true", method = "getAllPersonAttributeTypes(null)")
@@ -607,7 +603,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getAllRelationships()}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return all unvoided relationships", method = "getAllRelationships()")
@@ -632,7 +627,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getAllRelationships(null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return all relationship including voided when include voided equals true", method = "getAllRelationships(null)")
@@ -657,7 +651,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getAllRelationships(null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return all relationship excluding voided when include voided equals false", method = "getAllRelationships(null)")
@@ -683,7 +676,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getAllRelationshipTypes()}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return all relationship types", method = "getAllRelationshipTypes()")
@@ -696,7 +688,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPerson(Integer)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null when no person has the given id", method = "getPerson(Integer)")
@@ -707,7 +698,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAttribute(Integer)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null when given id does not exist", method = "getPersonAttribute(Integer)")
@@ -718,7 +708,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAttribute(Integer)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return person attribute when given id does exist", method = "getPersonAttribute(Integer)")
@@ -731,7 +720,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAttributeType(Integer)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null when no person attribute with the given id exist", method = "getPersonAttributeType(Integer)")
@@ -742,7 +730,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAttributeTypeByName(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return person attribute type when name matches given type name", method = "getPersonAttributeTypeByName(String)")
@@ -753,7 +740,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAttributeTypeByName(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null when no person attribute type match given type name", method = "getPersonAttributeTypeByName(String)")
@@ -764,7 +750,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAttributeTypes(String,String,Integer,Boolean)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return person attribute types matching given parameters", method = "getPersonAttributeTypes(String,String,Integer,Boolean)")
@@ -787,7 +772,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAttributeTypes(String,String,Integer,Boolean)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return empty list when no person attribute types match given parameters", method = "getPersonAttributeTypes(String,String,Integer,Boolean)")
@@ -803,7 +787,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationship(Integer)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return relationship with given id", method = "getRelationship(Integer)")
@@ -814,7 +797,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationship(Integer)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null when relationship with given id does not exist", method = "getRelationship(Integer)")
@@ -825,7 +807,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipMap(RelationshipType)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return empty map when no relationship has the matching relationship type", method = "getRelationshipMap(RelationshipType)")
@@ -842,7 +823,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships matching the given from person", method = "getRelationships(Person,Person,RelationshipType)")
@@ -857,7 +837,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships matching the given to person", method = "getRelationships(Person,Person,RelationshipType)")
@@ -872,7 +851,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships matching the given rel type", method = "getRelationships(Person,Person,RelationshipType)")
@@ -887,7 +865,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships matching the given from person", method = "getRelationships(Person,Person,RelationshipType,Date)")
@@ -902,7 +879,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships matching the given to person", method = "getRelationships(Person,Person,RelationshipType,Date)")
@@ -917,7 +893,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships matching the given rel type", method = "getRelationships(Person,Person,RelationshipType,Date)")
@@ -932,7 +907,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return empty list when no relationship matching given parameters exist", method = "getRelationships(Person,Person,RelationshipType,Date)")
@@ -950,7 +924,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships that were active during effectiveDate", method = "getRelationships(Person,Person,RelationshipType,Date)")
@@ -988,7 +961,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date,Date)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships matching the given from person", method = "getRelationships(Person,Person,RelationshipType,Date,Date)")
@@ -1003,7 +975,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date,Date)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships matching the given to person", method = "getRelationships(Person,Person,RelationshipType,Date,Date)")
@@ -1018,7 +989,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date,Date)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships matching the given rel type", method = "getRelationships(Person,Person,RelationshipType,Date,Date)")
@@ -1034,7 +1004,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date,Date)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return empty list when no relationship matching given parameters exist", method = "getRelationships(Person,Person,RelationshipType,Date,Date)")
@@ -1052,7 +1021,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date,Date)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships that were active during the specified date range", method = "getRelationships(Person,Person,RelationshipType,Date,Date)")
@@ -1091,7 +1059,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipsByPerson(Person)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships associated with the given person", method = "getRelationshipsByPerson(Person)")
@@ -1106,7 +1073,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipsByPerson(Person)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch unvoided relationships only", method = "getRelationshipsByPerson(Person)")
@@ -1124,7 +1090,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipsByPerson(Person)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch relationships associated with the given person", method = "getRelationshipsByPerson(Person, Date)")
@@ -1139,7 +1104,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipsByPerson(Person)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch unvoided relationships only", method = "getRelationshipsByPerson(Person, Date)")
@@ -1157,7 +1121,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipType(Integer)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return relationship type with the given relationship type id", method = "getRelationshipType(Integer)")
@@ -1170,7 +1133,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipType(Integer)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null when no relationship type matches given relationship type id", method = "getRelationshipType(Integer)")
@@ -1181,7 +1143,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipTypeByName(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null when no relationship type match the given name", method = "getRelationshipTypeByName(String)")
@@ -1192,7 +1153,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipTypes(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return empty list when no relationship type match the search string", method = "getRelationshipTypes(String)")
@@ -1203,8 +1163,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonService#getRelationshipTypes(String,Boolean)}
-	 * TODO Needs to test "preferred" 
+	 * @see {@link PersonService#getRelationshipTypes(String,Boolean)} TODO Needs to test
+	 *      "preferred"
 	 */
 	@Test
 	@Verifies(value = "should return list of preferred relationship type matching given name", method = "getRelationshipTypes(String,Boolean)")
@@ -1217,7 +1177,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipTypes(String,Boolean)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return empty list when no preferred relationship type match the given name", method = "getRelationshipTypes(String,Boolean)")
@@ -1230,7 +1189,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#purgePerson(Person)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should delete person from the database", method = "purgePerson(Person)")
@@ -1246,7 +1204,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#purgePersonAttributeType(PersonAttributeType)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should delete person attribute type from database", method = "purgePersonAttributeType(PersonAttributeType)")
@@ -1437,7 +1394,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#purgeRelationship(Relationship)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should delete relationship from the database", method = "purgeRelationship(Relationship)")
@@ -1453,7 +1409,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#purgeRelationshipType(RelationshipType)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should delete relationship type from the database", method = "purgeRelationshipType(RelationshipType)")
@@ -1469,7 +1424,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#savePerson(Person)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should create new object when person id is null", method = "savePerson(Person)")
@@ -1488,7 +1442,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#savePerson(Person)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should update existing object when person id is not null", method = "savePerson(Person)")
@@ -1502,7 +1455,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#saveRelationship(Relationship)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should create new object when relationship id is null", method = "saveRelationship(Relationship)")
@@ -1520,7 +1472,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#saveRelationship(Relationship)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should update existing object when relationship id is not null", method = "saveRelationship(Relationship)")
@@ -1537,7 +1488,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#saveRelationshipType(RelationshipType)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should create new object when relationship type id is null", method = "saveRelationshipType(RelationshipType)")
@@ -1553,7 +1503,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#saveRelationshipType(RelationshipType)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should update existing object when relationship type id is not null", method = "saveRelationshipType(RelationshipType)")
@@ -1567,10 +1516,9 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonService#unvoidPerson(Person)}
-	 * TODO NullPointerException during RequiredDataAdvice.before()
-	 * TODO Should we be able to unvoid an already not voided record?  This test assumes yes. 
-	 * 
+	 * @see {@link PersonService#unvoidPerson(Person)} TODO NullPointerException during
+	 *      RequiredDataAdvice.before() TODO Should we be able to unvoid an already not voided
+	 *      record? This test assumes yes.
 	 */
 	@Test
 	@Ignore
@@ -1592,7 +1540,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#unvoidRelationship(Relationship)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should unvoid voided relationship", method = "unvoidRelationship(Relationship)")
@@ -1616,7 +1563,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#voidPerson(Person,String)}
-	 * 
 	 */
 	@Test
 	@Ignore
@@ -1636,7 +1582,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#voidRelationship(Relationship,String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should void relationship with the given reason", method = "voidRelationship(Relationship,String)")
@@ -1654,7 +1599,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAddressByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getPersonAddressByUuid(String)")
@@ -1666,7 +1610,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAddressByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getPersonAddressByUuid(String)")
@@ -1676,7 +1619,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAttributeByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getPersonAttributeByUuid(String)")
@@ -1688,7 +1630,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAttributeByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getPersonAttributeByUuid(String)")
@@ -1698,7 +1639,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAttributeTypeByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getPersonAttributeTypeByUuid(String)")
@@ -1710,7 +1650,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonAttributeTypeByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getPersonAttributeTypeByUuid(String)")
@@ -1720,7 +1659,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getPersonByUuid(String)")
@@ -1732,7 +1670,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getPersonByUuid(String)")
@@ -1742,7 +1679,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonNameByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getPersonNameByUuid(String)")
@@ -1754,7 +1690,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getPersonNameByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getPersonNameByUuid(String)")
@@ -1778,7 +1713,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getRelationshipByUuid(String)")
@@ -1790,7 +1724,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getRelationshipByUuid(String)")
@@ -1800,7 +1733,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipTypeByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getRelationshipTypeByUuid(String)")
@@ -1812,7 +1744,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonService#getRelationshipTypeByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getRelationshipTypeByUuid(String)")
@@ -2017,6 +1948,18 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		//then
 		Assert.assertTrue(person.isVoided());
+	}
+	
+	/**
+	 * @see {@link PersonService#saveRelationshipType(RelationshipType)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should fail if the description is not specified", method = "saveRelationshipType(RelationshipType)")
+	public void saveRelationshipType_shouldFailIfTheDescriptionIsNotSpecified() throws Exception {
+		RelationshipType relationshipType = new RelationshipType();
+		relationshipType.setaIsToB("Sister");
+		relationshipType.setbIsToA("Brother");
+		personService.saveRelationshipType(relationshipType);
 	}
 	
 }
