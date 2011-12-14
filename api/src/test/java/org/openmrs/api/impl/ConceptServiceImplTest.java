@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -335,9 +334,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	 * The default second choice is a synonym in the locale.
 	 */
 	@Test
-	@Ignore
-	// un-ignore as part of TRUNK-2664 
-	public void saveConcept_shouldSetDefaultPreferredNameToASynonymThird() throws Exception {
+	public void saveConcept_shouldSetDefaultPreferredNameToASynonymSecond() throws Exception {
 		Locale loc = new Locale("fr", "CA");
 		Locale otherLocale = new Locale("en", "US");
 		//Create a fully specified name, but for another locale
