@@ -27,6 +27,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
@@ -45,10 +46,11 @@ import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.validator.ValidateUtil;
 
 /**
  * Hibernate specific database methods for the AdministrationService
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.db.AdministrationDAO
  * @see org.openmrs.api.AdministrationService
@@ -69,7 +71,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	
 	/**
 	 * Set session factory
-	 *
+	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -338,5 +340,20 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		
 		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName());
 		return persistentClass.getTable().getColumn(new Column(fieldName)).getLength();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#validateInManualFlushMode(java.lang.Object)
+	 */
+	@Override
+	public void validateInManualFlushMode(Object object) {
+		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getFlushMode();
+		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+		try {
+			ValidateUtil.validate(object);
+		}
+		finally {
+			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
+		}
 	}
 }

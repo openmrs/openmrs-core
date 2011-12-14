@@ -14,11 +14,13 @@
 package org.openmrs.validator;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Visit;
@@ -88,10 +90,10 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		return visit;
 	}
 	
-	private VisitAttribute makeAttribute(String serializedValue) {
+	private VisitAttribute makeAttribute(Object typedValue) {
 		VisitAttribute attr = new VisitAttribute();
 		attr.setAttributeType(service.getVisitAttributeType(1));
-		attr.setValueReference(serializedValue);
+		attr.setValue(typedValue);
 		return attr;
 	}
 	
@@ -199,5 +201,24 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		Assert.assertEquals(true, errors.hasFieldErrors("stopDatetime"));
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 * @verifies fail if an attribute is bad
+	 */
+	@Test
+	// This test will throw org.hibernate.PropertyValueException: not-null property references a null or transient value: org.openmrs.VisitAttribute.valueReference
+	// This is a general problem, i.e. that validators on Customizable can't really be called unless you set Hibernate's flushMode to MANUAL.  
+	// Once we figure it out, this test can be un-Ignored
+	@Ignore
+	public void validate_shouldFailIfAnAttributeIsBad() throws Exception {
+		Visit visit = service.getVisit(1);
+		visit.addAttribute(makeAttribute(new Date()));
+		visit.addAttribute(makeAttribute("not a date"));
+		Collection<VisitAttribute> activeAttributes = visit.getActiveAttributes();
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("attributes"));
 	}
 }

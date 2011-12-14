@@ -43,7 +43,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		u.setPerson(new Person());
 		u.getPerson().setGender("M");
 		
-		String wildcards[] = new String[] { "%", "_" };
+		String wildcards[] = new String[] { "_" }; // we used to also test %, but UserValidator actually doesn't allow that in usernames. TODO: remove the loop
 		//for each of the wildcards in the array, insert a user with a username or names
 		//with the wildcards and carry out a search for that user
 		for (String wildcard : wildcards) {

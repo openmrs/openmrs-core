@@ -1072,8 +1072,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(concept);
 		
 		ObsService obsService = Context.getObsService();
-		obsService.saveObs(new Obs(new Person(1), concept, new Date(), new Location(1)),
-		    "Creating a new observation with a concept");
+		Obs obs = new Obs(new Person(1), concept, new Date(), new Location(1));
+		obs.setValueCoded(Context.getConceptService().getConcept(7));
+		obsService.saveObs(obs, "Creating a new observation with a concept");
 		
 		ConceptDatatype newDatatype = conceptService.getConceptDatatypeByName("Text");
 		concept.setDatatype(newDatatype);
@@ -1095,8 +1096,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(concept);
 		
 		ObsService obsService = Context.getObsService();
-		obsService.saveObs(new Obs(new Person(1), concept, new Date(), new Location(1)),
-		    "Creating a new observation with a concept");
+		Obs obs = new Obs(new Person(1), concept, new Date(), new Location(1));
+		obs.setValueCoded(Context.getConceptService().getConcept(7));
+		obsService.saveObs(obs, "Creating a new observation with a concept");
 		
 		conceptService.saveConcept(concept);
 	}
@@ -1260,7 +1262,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail if any of the conceptNames of the concept is being used by an obs", method = "purgeConcept(Concept)")
 	public void purgeConcept_shouldFailIfAnyOfTheConceptNamesOfTheConceptIsBeingUsedByAnObs() throws Exception {
 		Obs o = new Obs();
-		o.setConcept(new Concept(3));
+		o.setConcept(Context.getConceptService().getConcept(3));
 		o.setPerson(new Patient(2));
 		o.setEncounter(new Encounter(3));
 		o.setObsDatetime(new Date());

@@ -15,8 +15,8 @@ package org.openmrs.customdatatype.datatype;
 
 import java.util.regex.Pattern;
 
-import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.customdatatype.SerializingCustomDatatype;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
  * @since 1.9
  */
 @Component
-public class RegexValidatedText implements CustomDatatype<String> {
+public class RegexValidatedTextDatatype extends SerializingCustomDatatype<String> {
 	
 	private Pattern pattern;
 	
@@ -37,38 +37,20 @@ public class RegexValidatedText implements CustomDatatype<String> {
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#toReferenceString(java.lang.Object)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
 	 * @should fail if the string does not match the regex
 	 */
 	@Override
-	public String toReferenceString(String typedValue) throws InvalidCustomValueException {
-		validate(typedValue);
+	public String serialize(String typedValue) {
 		return typedValue;
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#fromReferenceString(java.lang.String)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
 	 */
 	@Override
-	public String fromReferenceString(String persistedValue) throws InvalidCustomValueException {
-		validate(persistedValue);
-		return persistedValue;
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#render(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public String render(String persistedValue, String view) {
-		return persistedValue;
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#validateReferenceString(java.lang.String)
-	 */
-	@Override
-	public void validateReferenceString(String persistedValue) throws InvalidCustomValueException {
-		validate(persistedValue);
+	public String deserialize(String serializedValue) {
+		return serializedValue;
 	}
 	
 	/**

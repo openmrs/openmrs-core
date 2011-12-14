@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.InvalidCustomValueException;
-import org.openmrs.customdatatype.datatype.Date;
+import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
  * @since 1.9
  */
 @Component
-public class DateFieldGenDatatypeHandler implements FieldGenDatatypeHandler<Date, java.util.Date> {
+public class DateFieldGenDatatypeHandler implements FieldGenDatatypeHandler<DateDatatype, java.util.Date> {
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#setHandlerConfiguration(java.lang.String)
@@ -43,7 +43,7 @@ public class DateFieldGenDatatypeHandler implements FieldGenDatatypeHandler<Date
 	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#render(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String render(Date datatype, String persistedValue, String view) {
+	public String render(DateDatatype datatype, String persistedValue, String view) {
 		return Context.getDateFormat().format(datatype.fromReferenceString(persistedValue));
 	}
 	
@@ -67,7 +67,7 @@ public class DateFieldGenDatatypeHandler implements FieldGenDatatypeHandler<Date
 	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getValue(org.openmrs.customdatatype.CustomDatatype, javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public java.util.Date getValue(org.openmrs.customdatatype.datatype.Date datatype, HttpServletRequest request,
+	public java.util.Date getValue(org.openmrs.customdatatype.datatype.DateDatatype datatype, HttpServletRequest request,
 	        String formFieldName) throws InvalidCustomValueException {
 		String stringVal = request.getParameter(formFieldName);
 		if (StringUtils.isBlank(stringVal)) {

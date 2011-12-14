@@ -18,8 +18,6 @@ import java.util.List;
 
 import org.openmrs.Encounter;
 import org.openmrs.Visit;
-import org.openmrs.VisitAttribute;
-import org.openmrs.VisitAttributeType;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -32,7 +30,7 @@ import org.springframework.validation.Validator;
  * @since 1.9
  */
 @Handler(supports = { Visit.class }, order = 50)
-public class VisitValidator implements Validator {
+public class VisitValidator extends BaseCustomizableValidator implements Validator {
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -54,6 +52,7 @@ public class VisitValidator implements Validator {
 	 * @should fail if the endDatetime is before the startDatetime
 	 * @should fail if the startDatetime is after any encounter
 	 * @should fail if the stopDatetime is before any encounter
+	 * @should fail if an attribute is bad
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -64,32 +63,6 @@ public class VisitValidator implements Validator {
 		if (visit.getStartDatetime() != null
 		        && OpenmrsUtil.compareWithNullAsLatest(visit.getStartDatetime(), visit.getStopDatetime()) > 0) {
 			errors.rejectValue("stopDatetime", "Visit.error.endDateBeforeStartDate");
-		}
-		
-		for (VisitAttributeType vat : Context.getVisitService().getAllVisitAttributeTypes()) {
-			if (vat.getMinOccurs() > 0 || vat.getMaxOccurs() != null) {
-				int numFound = 0;
-				for (VisitAttribute attr : visit.getActiveAttributes()) {
-					if (attr.getAttributeType().equals(vat))
-						++numFound;
-				}
-				if (vat.getMinOccurs() > 0) {
-					if (numFound < vat.getMinOccurs()) {
-						// report an error
-						if (vat.getMinOccurs() == 1)
-							errors.rejectValue("activeAttributes", "error.required", new Object[] { vat.getName() }, null);
-						else
-							errors.rejectValue("activeAttributes", "attribute.error.minOccurs", new Object[] {
-							        vat.getName(), vat.getMinOccurs() }, null);
-					}
-				}
-				if (vat.getMaxOccurs() != null) {
-					if (numFound > vat.getMaxOccurs()) {
-						errors.rejectValue("activeAttributes", "attribute.error.maxOccurs", new Object[] { vat.getName(),
-						        vat.getMaxOccurs() }, null);
-					}
-				}
-			}
 		}
 		
 		//If this is not a new visit, validate based on its existing encounters.
@@ -110,6 +83,9 @@ public class VisitValidator implements Validator {
 				}
 			}
 		}
+		
+		// check attributes
+		super.validateAttributes(visit, errors, Context.getVisitService().getAllVisitAttributeTypes());
 	}
 	
 }

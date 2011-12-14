@@ -134,6 +134,42 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	        boolean setNullOnly) {
 		int index = Arrays.asList(propertyNames).indexOf(propertyToSet);
 		
+		// HACK! When I apply the patch for TRUNK-2588, and then I try to start OpenMRS for the first time during the init wizard
+		// I get something like this:
+		/*
+		java.lang.NullPointerException
+		at org.openmrs.api.db.hibernate.AuditableInterceptor.setValue(AuditableInterceptor.java:140)
+		at org.openmrs.api.db.hibernate.AuditableInterceptor.onFlushDirty(AuditableInterceptor.java:83)
+		at org.openmrs.api.db.hibernate.ChainingInterceptor.onFlushDirty(ChainingInterceptor.java:77)
+		at org.hibernate.event.def.DefaultFlushEntityEventListener.invokeInterceptor(DefaultFlushEntityEventListener.java:331)
+		at org.hibernate.event.def.DefaultFlushEntityEventListener.handleInterception(DefaultFlushEntityEventListener.java:308)
+		at org.hibernate.event.def.DefaultFlushEntityEventListener.scheduleUpdate(DefaultFlushEntityEventListener.java:248)
+		at org.hibernate.event.def.DefaultFlushEntityEventListener.onFlushEntity(DefaultFlushEntityEventListener.java:128)
+		at org.hibernate.event.def.AbstractFlushingEventListener.flushEntities(AbstractFlushingEventListener.java:196)
+		at org.hibernate.event.def.AbstractFlushingEventListener.flushEverythingToExecutions(AbstractFlushingEventListener.java:76)
+		at org.hibernate.event.def.DefaultFlushEventListener.onFlush(DefaultFlushEventListener.java:26)
+		at org.hibernate.impl.SessionImpl.flush(SessionImpl.java:1000)
+		at org.hibernate.impl.SessionImpl.managedFlush(SessionImpl.java:338)
+		at org.hibernate.transaction.JDBCTransaction.commit(JDBCTransaction.java:106)
+		at org.springframework.orm.hibernate3.HibernateTransactionManager.doCommit(HibernateTransactionManager.java:656)
+		at org.springframework.transaction.support.AbstractPlatformTransactionManager.processCommit(AbstractPlatformTransactionManager.java:754)
+		at org.springframework.transaction.support.AbstractPlatformTransactionManager.commit(AbstractPlatformTransactionManager.java:723)
+		at org.springframework.transaction.interceptor.TransactionAspectSupport.commitTransactionAfterReturning(TransactionAspectSupport.java:393)
+		at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:120)
+		at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:172)
+		at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:202)
+		at $Proxy65.saveToMemento(Unknown Source)
+		at org.openmrs.util.OpenmrsClassLoader.saveState(OpenmrsClassLoader.java:444)
+		at org.openmrs.module.ModuleUtil.refreshApplicationContext(ModuleUtil.java:756)
+		at org.openmrs.module.web.WebModuleUtil.refreshWAC(WebModuleUtil.java:825)
+		at org.openmrs.web.Listener.performWebStartOfModules(Listener.java:565)
+		at org.openmrs.web.filter.initialization.InitializationFilter$InitializationCompletion$1.run(InitializationFilter.java:1575)
+		at java.lang.Thread.run(Thread.java:680)
+		 */
+		if (value == null)
+			return false;
+		// END HACK
+		
 		if (index >= 0) {
 			if (currentState[index] == null || !setNullOnly) {
 				if (!value.equals(currentState[index])) {

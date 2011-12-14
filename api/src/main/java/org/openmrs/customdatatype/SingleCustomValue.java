@@ -38,18 +38,19 @@ public interface SingleCustomValue<D extends CustomValueDescriptor> {
 	
 	/**
 	 * @return the value persisted in a database in a varchar column. Not necessarily human-readable.
+	 * @throws NotYetPersistedException if valueReference hasn't been set by the CustomDatatype yet
 	 */
-	String getValueReference();
+	String getValueReference() throws NotYetPersistedException;
 	
 	/**
-	 * Directly set the String value that should be persisted in the database
+	 * Directly set the String value that OpenMRS should persist in the database
 	 * in a varchar column. Implementations should validate this value and throw an
 	 * {@link InvalidCustomValueException} if it's invalid, rather than setting it blindly. 
-	 * If you are coding against the OpenMRS API, you probably want to use {@link #setValue(Object)}
-	 * instead of this method.
+	 * If you are coding against the OpenMRS API, you should use {@link #setValue(Object)}
+	 * instead.
 	 * @param valueToPersist
 	 */
-	void setValueReference(String valueToPersist) throws InvalidCustomValueException;
+	void setValueReferenceInternal(String valueToPersist) throws InvalidCustomValueException;
 	
 	/**
 	 * Convenience method to get the typed version of the serializedValue. (This will result in a call
@@ -65,5 +66,10 @@ public interface SingleCustomValue<D extends CustomValueDescriptor> {
 	 * @throws InvalidCustomValueException
 	 */
 	<T> void setValue(T typedValue) throws InvalidCustomValueException;
+	
+	/**
+	 * @return whether or not setValue has been called (thus {@link CustomDatatype#save(Object, String)} needs to be called
+	 */
+	boolean isDirty();
 	
 }

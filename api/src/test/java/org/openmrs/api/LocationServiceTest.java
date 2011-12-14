@@ -33,7 +33,7 @@ import org.openmrs.Location;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
-import org.openmrs.customdatatype.datatype.FreeText;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
@@ -140,16 +140,19 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		// First, create a new Location
 		Location location = new Location();
 		location.setName("parent");
+		location.setDescription("is the parent");
 		ls.saveLocation(location);
 		
 		// Now add a child location to it
 		Location childA = new Location();
 		childA.setName("level A child");
+		childA.setDescription("is a child");
 		location.addChildLocation(childA);
 		
 		// Add a new child location to the first child location
 		Location childB = new Location();
 		childB.setName("level B child");
+		childB.setDescription("is a child");
 		childA.addChildLocation(childB);
 		
 		ls.saveLocation(location);
@@ -587,6 +590,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		// First, create a new Location
 		Location location = new Location();
 		location.setName("name");
+		location.setDescription("is a location");
 		ls.saveLocation(location);
 		
 		// Create a tag
@@ -623,6 +627,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		// First, create a new Location
 		Location location = new Location();
 		location.setName("name");
+		location.setDescription("is a location");
 		
 		// Add a transient tag with an existing name
 		location.addTag(new LocationTag("General Hospital", null));
@@ -1074,7 +1079,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(2, Context.getLocationService().getAllLocationAttributeTypes().size());
 		LocationAttributeType lat = new LocationAttributeType();
 		lat.setName("Another one");
-		lat.setDatatypeClassname(FreeText.class.getName());
+		lat.setDatatypeClassname(FreeTextDatatype.class.getName());
 		Context.getLocationService().saveLocationAttributeType(lat);
 		Assert.assertNotNull(lat.getId());
 		Assert.assertEquals(3, Context.getLocationService().getAllLocationAttributeTypes().size());

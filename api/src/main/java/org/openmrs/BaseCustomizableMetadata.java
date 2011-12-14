@@ -30,7 +30,7 @@ import org.openmrs.customdatatype.Customizable;
  */
 public abstract class BaseCustomizableMetadata<A extends Attribute> extends BaseOpenmrsMetadata implements Customizable<A> {
 	
-	private Set<A> attributes;
+	private Set<A> attributes = new LinkedHashSet<A>();
 	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
