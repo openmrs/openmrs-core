@@ -6085,7 +6085,7 @@
  	<changeSet id="20111214-1500-setting-super-user-gender" author="raff">
      	<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="1">
-				select count(*) from person where person_id = 1 and gender is null;
+				select count(*) from person where person_id = 1 and (gender is null or gender = '');
 			</sqlCheck>
 		</preConditions>
 		<comment>Setting super user gender</comment>
