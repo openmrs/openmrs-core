@@ -250,11 +250,11 @@
 							visitType="${ visit.visitType }" /></a></strong>
 				<c:if test="${ not empty visit.location }">
 					<spring:message code="general.atLocation" />
-					<strong><openmrs:format location="${ visit.location }" /></strong></c:if>,
-				<spring:message code="Visit.from" />
+					<strong><openmrs:format location="${ visit.location }" /></strong></c:if>
+				<spring:message code="general.fromDate" />
 				<openmrs:formatDate date="${ visit.startDatetime }" />
 				<c:if test="${not empty visit.stopDatetime }">
-					<spring:message code="Visit.to" />
+					<spring:message code="general.toDate" />
 					<openmrs:formatDate date="${ visit.stopDatetime }" />
 				</c:if>
 				<openmrs:hasPrivilege privilege="Edit Visits">
@@ -267,12 +267,19 @@
 					<i><spring:message code="Encounter.noEncounters" /></i>
 				</c:if>
 				<c:forEach var="encounter" items="${visit.encounters}" varStatus="status">
-					<c:set var="viewEncounterUrl" value="${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=${encounter.encounterId}"/>
-						<c:if test="${ model.formToViewUrlMap[encounter.form] != null }">
-						<c:url var="viewEncounterUrl" value="${model.formToViewUrlMap[encounter.form]}">
-							<c:param name="encounterId" value="${encounter.encounterId}"/>
-						</c:url>
-					</c:if>
+					<c:set var="viewEncounterUrl" value="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}"/>
+					<c:choose>
+						<c:when test="${ model.formToViewUrlMap[encounter.form] != null }">
+							<c:url var="viewEncounterUrl" value="${model.formToViewUrlMap[encounter.form]}">
+								<c:param name="encounterId" value="${encounter.encounterId}"/>
+							</c:url>
+						</c:when>
+						<c:when test="${ model.formToEditUrlMap[encounter.form] != null }">
+							<c:url var="viewEncounterUrl" value="${model.formToEditUrlMap[encounter.form]}">
+								<c:param name="encounterId" value="${encounter.encounterId}"/>
+							</c:url>
+						</c:when>
+					</c:choose>
 					<a href="${viewEncounterUrl}">
 						<openmrs:format encounterType="${encounter.encounterType}" /></a><c:if test="${not status.last}">,</c:if>
 				</c:forEach>
