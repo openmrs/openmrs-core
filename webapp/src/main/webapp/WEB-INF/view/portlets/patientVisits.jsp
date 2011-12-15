@@ -11,63 +11,12 @@
 	href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css"
 	type="text/css" rel="stylesheet" />
 
-<div id="visitsPortletVisitInfoPopup">
-	<b><span id="visitsPortletType"></span></b><br /> @ <span
-		id="visitsPortletLocation"></span><br />
-	<spring:message code="Visit.from" />
-	: <span id="visitsPortletFrom"></span><br />
-	<spring:message code="Visit.to" />
-	: <span id="visitsPortletTo"></span><br />
-	<spring:message code="Visit.indication" />
-	: <span id="visitsPortletIndication"></span>
-</div>
-
 <style>
-#visitsPortletVisitInfoPopup {
-	border: 1px solid #1aac9b;
-	background: #ffffff;
-	padding: 5px 5px 5px 5px;
-	display: none;
-	position: absolute;
-}
-</style>
-
-<script type="text/javascript">
-	function visitsPortletShowVisitInfoPopup(href, active, type, location,
-			from, to, indication) {
-		var popup = $j('#visitsPortletVisitInfoPopup');
-		if (active == 'true') {
-			$j('#visitsPortletType', popup).html(
-					'<spring:message code="Visit.active.label" />: ' + type);
-		} else {
-			$j('#visitsPortletType', popup).html(
-					'<spring:message code="Visit" />: ' + type);
-		}
-		$j('#visitsPortletLocation', popup).html(location);
-		$j('#visitsPortletFrom', popup).html(from);
-		$j('#visitsPortletTo', popup).html(to);
-		$j('#visitsPortletIndication', popup).html(indication);
-
-		$j(popup).show();
-
-		$j(href).mousemove(function(e) {
-			$j('#visitsPortletVisitInfoPopup').css({
-				"left" : e.pageX + 10,
-				"top" : e.pageY + 20
-			});
-		});
-
-		$j(href).mouseleave(function() {
-			$j('#visitsPortletVisitInfoPopup').hide();
-		});
-	}
-</script>
-
-<style>
-div.visit {
+.dimmedDates {
+	font-size: small;
+	color: grey;
 	white-space: nowrap;
 }
-
 tr.encounter-in-visit td {
 	border-width: 0px;
 	border-color: #1aac9b;
@@ -244,32 +193,16 @@ tr.bottom-encounter-in-visit td:last-child {
 															var to = aoData._aData[5];
 															var indication = visitsPortletEscapeHtml(aoData._aData[6]);
 
-															var method = "visitsPortletShowVisitInfoPopup(this, '"
-																	+ active
-																	+ "', '"
-																	+ type
-																	+ "', '"
-																	+ location
-																	+ "', '"
-																	+ from
-																	+ "', '"
-																	+ to
-																	+ "', '"
-																	+ indication
-																	+ "')";
-															var editImg = ' <img src="${pageContext.request.contextPath}/images/info.gif" />';
-															var visit = type
-																	+ editImg;
-															visit = '<div class="visit">'
-																	+ visit
-																	+ ' </div>';
 															visit = '<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId='
 																	+ visitId
-																	+ '&patientId=${model.patient.patientId}" onmouseover="'
-																	+ method
-																	+ '">'
-																	+ visit
-																	+ '</a>';
+																	+ '&patientId=${model.patient.patientId}">'
+																	+ type
+																	+ '</a><br/><span class="dimmedDates"><spring:message code="general.fromDate" /> '
+																	+ from;
+															if (to != '') {
+																visit = visit + ' <spring:message code="general.toDate" /> ' + to;
+															}
+															visit = visit + '</span>';
 															$j('td:eq(0)',
 																	trs[i])
 																	.html(visit);
