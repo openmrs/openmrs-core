@@ -66,6 +66,8 @@ public class ProgramValidator implements Validator {
 				if (program.getName().equals(p.getName()) && !program.getProgramId().equals(p.getProgramId())) {
 					errors.rejectValue("name", "general.error.nameAlreadyInUse");
 					break;
+				} else {
+					Context.evictFromSession(program);
 				}
 			}
 			
