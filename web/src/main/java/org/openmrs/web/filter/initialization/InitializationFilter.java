@@ -923,7 +923,7 @@ public class InitializationFilter extends StartupFilter {
 		if (pathName != null) {
 			file = new File(pathName);
 		} else
-			file = new File(OpenmrsUtil.getApplicationDataDirectory(), WebConstants.WEBAPP_NAME + "-runtime.properties");
+			file = new File(OpenmrsUtil.getApplicationDataDirectory(), getRuntimePropertiesFileName());
 		
 		log.debug("Using file: " + file.getAbsolutePath());
 		
