@@ -206,12 +206,14 @@ public class DatabaseUpdater {
 		log.debug("Setting up liquibase object to run changelog: " + changeLogFile);
 		Liquibase liquibase = getLiquibase(changeLogFile, cl);
 		int numChangeSetsToRun = liquibase.listUnrunChangeSets(contexts).size();
-		Database database = liquibase.getDatabase();
-		
-		LockService lockHandler = LockService.getInstance(database);
-		lockHandler.waitForLock();
+		Database database = null;
+		LockService lockHandler = null;
 		
 		try {
+			database = liquibase.getDatabase();
+			lockHandler = LockService.getInstance(database);
+			lockHandler.waitForLock();
+			
 			ResourceAccessor openmrsFO = new ClassLoaderFileOpener(cl);
 			ResourceAccessor fsFO = new FileSystemResourceAccessor();
 			
@@ -230,8 +232,8 @@ public class DatabaseUpdater {
 			try {
 				lockHandler.releaseLock();
 			}
-			catch (LockException e) {
-				log.error("Could not release lock", e);
+			catch (Throwable t) {
+				log.error("Could not release lock", t);
 			}
 			try {
 				database.getConnection().close();
@@ -253,38 +255,19 @@ public class DatabaseUpdater {
 	public static boolean updatesRequired() throws Exception {
 		log.debug("checking for updates");
 		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges();
-		Database database = null;
-		try {
-			
-			Liquibase liquibase = getLiquibase(null, null);
-			database = liquibase.getDatabase();
-			
-			// if the db is locked, it means there was a crash
-			// or someone is executing db updates right now. either way
-			// returning true here stops the openmrs startup and shows
-			// the user the maintenance wizard for updates
-			if (isLocked()) {
-				// if there is a db lock but there are no db changes we undo the
-				// lock
-				if (changesets.size() == 0) {
-					DatabaseUpdater.releaseDatabaseLock();
-					return false;
-				} else {
-					return true;
-				}
-			}
+		
+		// if the db is locked, it means there was a crash
+		// or someone is executing db updates right now. either way
+		// returning true here stops the openmrs startup and shows
+		// the user the maintenance wizard for updates
+		if (isLocked() && changesets.size() == 0) {
+			// if there is a db lock but there are no db changes we undo the
+			// lock
+			DatabaseUpdater.releaseDatabaseLock();
+			log.debug("db lock found and released automatically");
+			return false;
 		}
-		catch (Exception e) {
-			// do nothing
-		}
-		finally {
-			try {
-				database.getConnection().close();
-			}
-			catch (Throwable t) {
-				// pass
-			}
-		}
+		
 		return changesets.size() > 0;
 	}
 	
@@ -759,6 +742,14 @@ public class DatabaseUpdater {
 		catch (Exception e) {
 			throw new LockException(e);
 		}
+		finally {
+			try {
+				database.getConnection().close();
+			}
+			catch (Throwable t) {
+				// pass
+			}
+		}
 	}
 	
 	/**
@@ -772,16 +763,18 @@ public class DatabaseUpdater {
 		try {
 			Liquibase liquibase = getLiquibase(null, null);
 			database = liquibase.getDatabase();
-			Boolean locked = LockService.getInstance(database).listLocks().length > 0;
-			// if there is a db lock but there are no db changes we undo the lock 
-			if (locked && DatabaseUpdater.getUnrunDatabaseChanges().size() == 0) {
-				DatabaseUpdater.releaseDatabaseLock();
-				locked = Boolean.FALSE;
-			}
-			return locked;
+			return LockService.getInstance(database).listLocks().length > 0;
 		}
 		catch (Exception e) {
 			return false;
+		}
+		finally {
+			try {
+				database.getConnection().close();
+			}
+			catch (Throwable t) {
+				// pass
+			}
 		}
 	}
 }
