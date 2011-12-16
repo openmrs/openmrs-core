@@ -49,6 +49,7 @@ import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.config.FactoryConfiguration;
 import org.apache.velocity.tools.config.ToolConfiguration;
 import org.apache.velocity.tools.config.ToolboxConfiguration;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
@@ -71,6 +72,8 @@ public abstract class StartupFilter implements Filter {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected static VelocityEngine velocityEngine = null;
+
+    public static final String AUTO_RUN_OPENMRS = "auto_run_openmrs";
 	
 	/**
 	 * Set by the {@link #init(FilterConfig)} method so that we have access to the current
@@ -128,7 +131,8 @@ public abstract class StartupFilter implements Filter {
 				                + servletPath + "' instead.");
 			}
 			// for anything but /initialsetup
-			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)) {
+			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)
+			        && !httpRequest.getServletPath().equals("/" + AUTO_RUN_OPENMRS)) {
 				// send the user to the setup page
 				httpResponse.sendRedirect("/" + WebConstants.WEBAPP_NAME + "/" + WebConstants.SETUP_PAGE_URL);
 			} else {
