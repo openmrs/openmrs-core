@@ -29,6 +29,7 @@ import java.util.WeakHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerException;
@@ -377,8 +378,18 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * Save a task in the database.
 	 * 
 	 * @param task the <code>TaskDefinition</code> to save
+	 * @deprecated use saveTaskDefinition which follows correct naming standard
 	 */
 	public void saveTask(TaskDefinition task) {
+		Context.getSchedulerService().saveTaskDefinition(task);
+	}
+	
+	/**
+	 * Save a task in the database.
+	 *
+	 * @param task the <code>TaskDefinition</code> to save
+	 */
+	public void saveTaskDefinition(TaskDefinition task) {
 		if (task.getId() != null) {
 			getSchedulerDAO().updateTask(task);
 		} else {

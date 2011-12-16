@@ -37,7 +37,6 @@ import org.openmrs.api.handler.UnvoidHandler;
 import org.openmrs.api.handler.VoidHandler;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.Reflect;
-import org.openmrs.validator.ValidateUtil;
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.util.StringUtils;
 
@@ -123,6 +122,10 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			Reflect reflect = new Reflect(OpenmrsObject.class);
 			
 			if (reflect.isSuperClass(mainArgument)) {
+				// fail early if the method name is not like saveXyz(Xyz)
+				if (!methodNameEndsWithClassName(method, mainArgument.getClass()))
+					return;
+				
 				// if a second argument exists, pass that to the save handler as well
 				// (with current code, it means we're either in an obs save or a user save)				
 				String other = null;
@@ -135,6 +138,10 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			}
 			// if the first argument is a list of openmrs objects, handle them all now
 			else if (Reflect.isCollection(mainArgument) && isOpenmrsObjectCollection(mainArgument)) {
+				// ideally we would fail early if the method name is not like savePluralOfXyz(Collection<Xyz>)
+				// but this only occurs once in the API (AdministrationService.saveGlobalProperties
+				// so it is not worth handling this case
+				
 				// if a second argument exists, pass that to the save handler as well
 				// (with current code, it means we're either in an obs save or a user save)				
 				String other = null;
@@ -151,7 +158,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				
 			}
 		} else {
-			// fail early if the method name is not like retirePatient or retireConcept when dealing 
+			// fail early if the method name is not like retirePatient or retireConcept when dealing
 			// with Patients or Concepts as the first argument
 			if (!methodNameEndsWithClassName(method, mainArgument.getClass()))
 				return;

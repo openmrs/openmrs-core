@@ -530,8 +530,7 @@ public interface AdministrationService extends OpenmrsService {
 	public List<GlobalProperty> getGlobalProperties();
 	
 	/**
-	 * Save the given list of global properties to the database overwriting all values with the
-	 * given values.
+	 * Save the given list of global properties to the database.
 	 * 
 	 * @param props list of GlobalProperty objects to save
 	 * @return the saved global properties
