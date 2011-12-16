@@ -372,6 +372,20 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(1);
 		assertTrue(possibleOutcomes.isEmpty());
 	}
+
+	/**
+     * @see ProgramWorkflowService#saveProgram(Program)
+     * @verifies update detached program
+     */
+    @Test
+    public void saveProgram_shouldUpdateDetachedProgram() throws Exception {
+		Program program = Context.getProgramWorkflowService().getProgramByUuid("eae98b4c-e195-403b-b34a-82d94103b2c0");
+		program.setDescription("new description");
+		Context.evictFromSession(program);
+		
+		program = Context.getProgramWorkflowService().saveProgram(program);
+		Assert.assertEquals("new description", program.getDescription());
+    }
 	
 	//	/**
 	//	 * This method should be uncommented when you want to examine the actual hibernate

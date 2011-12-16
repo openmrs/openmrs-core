@@ -69,6 +69,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should save program successfully
 	 * @should save workflows associated with program
 	 * @should save states associated with program
+	 * @should update detached program
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program saveProgram(Program program) throws APIException;
