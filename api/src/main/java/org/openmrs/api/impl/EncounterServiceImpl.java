@@ -109,11 +109,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		Errors errors = new BindException(encounter, "encounter");
 		
-		// TODO: remove this now that we are doing auto validation in the SaveHandler?
-		new EncounterValidator().validate(encounter, errors);
-		if (errors.hasErrors())
-			throw new APIException(Context.getMessageSourceService().getMessage("error.foundValidationErrors"));
-		
 		boolean isNewEncounter = false;
 		Date newDate = encounter.getEncounterDatetime();
 		Date originalDate = null;

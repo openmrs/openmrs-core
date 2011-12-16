@@ -155,7 +155,7 @@ public interface ProviderService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
-	public Long getCountOfProviders(String query);
+	public Integer getCountOfProviders(String query);
 	
 	/**
 	 * Gets all provider attribute types including retired provider attribute types. This method
