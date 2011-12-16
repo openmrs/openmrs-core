@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import liquibase.changelog.ChangeSet;
+import liquibase.exception.LockException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,14 +46,13 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
-import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebDaemon;
 import org.openmrs.web.filter.StartupFilter;
@@ -103,10 +103,17 @@ public class UpdateFilter extends StartupFilter {
 	private UpdateFilterCompletion updateJob;
 	
 	/**
-	 * Variable set to true as soon as the update begins and set to false when the process ends This
-	 * thread should only be accesses thorugh the sychronized method.
+	 * Variable set to true as soon as the update begins and set to false when the process ends.
+	 * This thread should only be accesses through the synchronized method.
 	 */
 	private static boolean isDatabaseUpdateInProgress = false;
+	
+	/**
+	 * Variable set to true when the db lock is released. It's needed to prevent repeatedly
+	 * releasing this lock by other threads. This var should only be accessed through
+	 * the synchronized method.
+	 */
+	private static Boolean lockReleased = false;
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
@@ -157,10 +164,37 @@ public class UpdateFilter extends StartupFilter {
 				log.debug("Authentication successful.  Redirecting to 'reviewupdates' page.");
 				// set a variable so we know that the user started here
 				authenticatedSuccessfully = true;
+				
 				//Set variable to tell us whether updates are already in progress
 				referenceMap.put("isDatabaseUpdateInProgress", isDatabaseUpdateInProgress);
 				
-				// it is need to configure velocity tool box for using user's preferred locale
+				// if another super user has already launched database update
+				// allow current super user to review update progress
+				if (isDatabaseUpdateInProgress) {
+					referenceMap.put("updateJobStarted", true);
+					httpResponse.setContentType("text/html");
+					renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
+					return;
+				}
+				
+				// we will only get here if the db update is NOT running. 
+				// so if we find a db lock, we should release it because
+				// it was leftover from a previous db update crash
+				
+				if (!isLockReleased() && DatabaseUpdater.isLocked()) {
+					// first we trying to release db lock if it exists
+					try {
+						DatabaseUpdater.releaseDatabaseLock();
+						setLockReleased(true);
+					}
+					catch (LockException e) {
+						// do nothing
+					}
+					// if lock was released successfully we need to get unrun changes
+					model.updateChanges();
+				}
+				
+				// need to configure velocity tool box for using user's preferred locale
 				// so we should store it for further using when configuring velocity tool context
 				String localeParameter = FilterUtil.restoreLocale(username);
 				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
@@ -180,7 +214,8 @@ public class UpdateFilter extends StartupFilter {
 				errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
 				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 			}
-		} // step two
+		}
+		// step two of wizard in case if there were some warnings
 		else if (REVIEW_CHANGES.equals(page)) {
 			
 			if (!authenticatedSuccessfully) {
@@ -195,10 +230,16 @@ public class UpdateFilter extends StartupFilter {
 				updateJob = new UpdateFilterCompletion();
 				updateJob.start();
 				
+				// allows current user see progress of running update
+				// and also will hide the "Run Updates" button
+				
 				referenceMap.put("updateJobStarted", true);
 			} else {
 				referenceMap.put("isDatabaseUpdateInProgress", true);
-				referenceMap.put("updateJobStarted", false);
+				// as well we need to allow current user to
+				// see progress of already started updates
+				// and also will hide the "Run Updates" button
+				referenceMap.put("updateJobStarted", true);
 			}
 			
 			renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
@@ -419,11 +460,16 @@ public class UpdateFilter extends StartupFilter {
 			 * so no need to reset Context's RuntimeProperties again, because of Listener.contextInitialized has set it.
 			 */
 			try {
-				if (model.changes == null)
+				// this pings the DatabaseUpdater.updatesRequired which also
+				// considers a db lock to be a 'required update'
+				if (model.updateRequired)
+					updatesRequired = true;
+				else if (model.changes == null)
 					updatesRequired = false;
 				else {
-					log.debug("Setting updates required to " + (model.changes.size() > 0)
-					        + " because of the size of unrun changes");
+					if (log.isDebugEnabled())
+						log.debug("Setting updates required to " + (model.changes.size() > 0)
+						        + " because of the size of unrun changes");
 					updatesRequired = model.changes.size() > 0;
 				}
 			}
@@ -474,6 +520,19 @@ public class UpdateFilter extends StartupFilter {
 	 */
 	protected static synchronized void setUpdatesRequired(boolean updatesRequired) {
 		UpdateFilter.updatesRequired = updatesRequired;
+	}
+	
+	/**
+	 * Indicates if database lock was released. It will also used to prevent releasing
+	 * existing lock of liquibasechangeloglock table by another user, when he also tries
+	 * to run database update when another user is currently running it
+	 */
+	public static Boolean isLockReleased() {
+		return lockReleased;
+	}
+	
+	public static synchronized void setLockReleased(Boolean lockReleased) {
+		UpdateFilter.lockReleased = lockReleased;
 	}
 	
 	/**
