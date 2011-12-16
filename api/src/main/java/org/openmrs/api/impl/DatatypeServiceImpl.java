@@ -30,6 +30,7 @@ import org.openmrs.customdatatype.CustomDatatypeHandler;
 
 /**
  * Standard implementation of {@link DatatypeService}
+ * @since 1.9
  */
 public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeService {
 	
