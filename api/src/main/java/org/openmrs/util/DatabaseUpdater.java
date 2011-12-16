@@ -255,10 +255,10 @@ public class DatabaseUpdater {
 		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges();
 		Database database = null;
 		try {
-
+			
 			Liquibase liquibase = getLiquibase(null, null);
 			database = liquibase.getDatabase();
-
+			
 			// if the db is locked, it means there was a crash
 			// or someone is executing db updates right now. either way
 			// returning true here stops the openmrs startup and shows
@@ -273,12 +273,15 @@ public class DatabaseUpdater {
 					return true;
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			// do nothing
-		} finally {
+		}
+		finally {
 			try {
 				database.getConnection().close();
-			} catch (Throwable t) {
+			}
+			catch (Throwable t) {
 				// pass
 			}
 		}
