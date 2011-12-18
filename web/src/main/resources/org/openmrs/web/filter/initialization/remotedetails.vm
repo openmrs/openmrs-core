@@ -8,12 +8,20 @@
                 <td colspan="2" align="center"><strong>$l10n.get("install.step").insert(${currentStepNumber}).insert(${numberOfSteps})</strong></td>
 			</tr>
 			<tr>
-				<th valign="top">$l10n.get("install.testing.remoteUrl"):</th>
+				<th valign="top" align="right">$l10n.get("install.testing.remoteUrl"):</th>
 				<td>
 					<input type="text" name="remoteUrl" size="60" value="${remoteUrl}" onKeyPress="return submitenter(this,event);" /><br/>
 					<i><small>$l10n.get("install.testing.remoteUrl.example")</small></i>
 				</td>
 			</tr>
+			<tr>
+                <th align="right">$l10n.get("User.username"):</th>
+                <td><input type="text" name="username" value="${remoteUsername}" onKeyPress="return submitenter(this,event);" /></td>
+            </tr>
+            <tr>
+                <th align="right">$l10n.get("User.password"):</th>
+                <td><input type="password" name="password" onKeyPress="return submitenter(this,event);" /></td>
+            </tr>
 			<tr><td colspan="2" height="40px"></td></tr>
             <tr>
                 <td colspan="2" align="center">
@@ -24,7 +32,7 @@
 		</table>
 	</div>
 	
-	<input type="hidden" name="page" value="remoteurl.vm" /> 
+	<input type="hidden" name="page" value="remotedetails.vm" /> 
 	
 </form>
 

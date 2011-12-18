@@ -54,6 +54,7 @@ import org.openmrs.ImplementationId;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.OpenmrsCoreModuleException;
@@ -115,9 +116,9 @@ public class InitializationFilter extends StartupFilter {
 	private final String DATABASE_SETUP = "databasesetup.vm";
 	
 	/**
-	 * The page from where the user specifies the url to a remote system
+	 * The page from where the user specifies the url to a remote system, username and password
 	 */
-	private final String TESTING_REMOTE_URL_SETUP = "remoteurl.vm";
+	private final String TESTING_REMOTE_DETAILS_SETUP = "remotedetails.vm";
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
@@ -185,11 +186,6 @@ public class InitializationFilter extends StartupFilter {
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
 	private static boolean initializationComplete = false;
-	
-	/**
-	 * The login page when the testing install option is selected
-	 */
-	public static final String TESTING_AUTHENTICATION_SETUP = "authentication.vm";
 	
 	synchronized protected void setInitializationComplete(boolean initializationComplete) {
 		InitializationFilter.initializationComplete = initializationComplete;
@@ -325,7 +321,7 @@ public class InitializationFilter extends StartupFilter {
 			referenceMap
 			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 		}
-
+		
 		// if any body has already started installation
 		if (isInstallationStarted()) {
 			httpResponse.setContentType("text/html");
@@ -372,7 +368,7 @@ public class InitializationFilter extends StartupFilter {
 			referenceMap
 			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 			log.info("Locale stored in session is " + httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
-
+			
 			httpResponse.setContentType("text/html");
 			// otherwise do step one of the wizard
 			renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
@@ -389,9 +385,9 @@ public class InitializationFilter extends StartupFilter {
 			if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 				page = SIMPLE_SETUP;
 			} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-				page = TESTING_REMOTE_URL_SETUP;
+				page = TESTING_REMOTE_DETAILS_SETUP;
 				wizardModel.currentStepNumber = 1;
-				wizardModel.numberOfSteps = skipDatabaseSetupPage() ? 2 : 4;
+				wizardModel.numberOfSteps = skipDatabaseSetupPage() ? 1 : 3;
 			} else {
 				page = DATABASE_SETUP;
 				wizardModel.currentStepNumber = 1;
@@ -453,7 +449,7 @@ public class InitializationFilter extends StartupFilter {
 			if (goBack(httpRequest)) {
 				wizardModel.currentStepNumber -= 1;
 				if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-					renderTemplate(TESTING_AUTHENTICATION_SETUP, referenceMap, httpResponse);
+					renderTemplate(TESTING_REMOTE_DETAILS_SETUP, referenceMap, httpResponse);
 				} else {
 					renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				}
@@ -503,7 +499,7 @@ public class InitializationFilter extends StartupFilter {
 				page = DATABASE_TABLES_AND_USER;
 				
 				if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-					wizardModel.currentStepNumber = 4;
+					wizardModel.currentStepNumber = 3;
 				} else {
 					wizardModel.currentStepNumber = 2;
 				}
@@ -646,7 +642,7 @@ public class InitializationFilter extends StartupFilter {
 					page = SIMPLE_SETUP;
 				} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 					if (skipDatabaseSetupPage()) {
-						page = TESTING_AUTHENTICATION_SETUP;
+						page = TESTING_REMOTE_DETAILS_SETUP;
 					} else {
 						page = DATABASE_TABLES_AND_USER;
 					}
@@ -687,7 +683,7 @@ public class InitializationFilter extends StartupFilter {
 			startInstallation();
 			referenceMap.put("isInstallationStarted", isInstallationStarted());
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
-		} else if (TESTING_REMOTE_URL_SETUP.equals(page)) {
+		} else if (TESTING_REMOTE_DETAILS_SETUP.equals(page)) {
 			if (goBack(httpRequest)) {
 				wizardModel.currentStepNumber -= 1;
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
@@ -702,48 +698,54 @@ public class InitializationFilter extends StartupFilter {
 					//Check if the test module is installed by connecting to its setting page
 					if (TestInstallUtil.testConnection(wizardModel.remoteUrl.concat(RELEASE_TESTING_MODULE_PATH
 					        + "settings.htm"))) {
-						page = TESTING_AUTHENTICATION_SETUP;
-						wizardModel.currentStepNumber = 2;
+						
+						wizardModel.remoteUsername = httpRequest.getParameter("username");
+						wizardModel.remotePassword = httpRequest.getParameter("password");
+						checkForEmptyValue(wizardModel.remoteUsername, errors, "install.testing.username.required");
+						checkForEmptyValue(wizardModel.remotePassword, errors, "install.testing.password.required");
+						
+						//check if the username and password are valid
+						try {
+							TestInstallUtil.getResourceInputStream(wizardModel.remoteUrl + RELEASE_TESTING_MODULE_PATH
+							        + "verifycredentials.htm", wizardModel.remoteUsername, wizardModel.remotePassword);
+						}
+						catch (APIAuthenticationException e) {
+							log.warn("Unable to authenticate as a User with the System Developer role");
+							errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
+						}
+						catch (ContextAuthenticationException e) {
+							log.warn("User has been locked out by the remote system");
+							errors.put("install.lockedout", null);
+						}
+						
+						if (errors.isEmpty()) {
+							//If we have a runtime properties file, get the database setup details from it
+							if (skipDatabaseSetupPage()) {
+								Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
+								wizardModel.databaseConnection = props.getProperty("connection.url");
+								loadedDriverString = loadDriver(wizardModel.databaseConnection, wizardModel.databaseDriver);
+								if (!StringUtils.hasText(loadedDriverString)) {
+									page = TESTING_REMOTE_DETAILS_SETUP;
+									errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
+									renderTemplate(page, referenceMap, httpResponse);
+									return;
+								}
+								
+								wizardModel.databaseName = InitializationWizardModel.DEFAULT_DATABASE_NAME;
+								page = WIZARD_COMPLETE;
+							} else {
+								page = DATABASE_SETUP;
+								wizardModel.currentStepNumber = 2;
+							}
+						} else {
+							renderTemplate(page, referenceMap, httpResponse);
+							return;
+						}
 					} else {
 						errors.put("install.testing.noTestingModule", null);
 					}
 				} else {
 					errors.put("install.testing.invalidProductionUrl", new Object[] { wizardModel.remoteUrl });
-				}
-			}
-			
-			renderTemplate(page, referenceMap, httpResponse);
-			return;
-		} else if (TESTING_AUTHENTICATION_SETUP.equals(page)) {
-			if (goBack(httpRequest)) {
-				wizardModel.currentStepNumber -= 1;
-				renderTemplate(TESTING_REMOTE_URL_SETUP, referenceMap, httpResponse);
-				return;
-			}
-			
-			//Authenticate to remote server
-			wizardModel.remoteUsername = httpRequest.getParameter("username");
-			wizardModel.remotePassword = httpRequest.getParameter("password");
-			checkForEmptyValue(wizardModel.remoteUsername, errors, "install.testing.username.required");
-			checkForEmptyValue(wizardModel.remotePassword, errors, "install.testing.password.required");
-			if (errors.isEmpty()) {
-				//If we have a runtime properties file, get the database setup details from it
-				if (skipDatabaseSetupPage()) {
-					Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
-					wizardModel.databaseConnection = props.getProperty("connection.url");
-					loadedDriverString = loadDriver(wizardModel.databaseConnection, wizardModel.databaseDriver);
-					if (!StringUtils.hasText(loadedDriverString)) {
-						page = TESTING_AUTHENTICATION_SETUP;
-						errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
-						renderTemplate(page, referenceMap, httpResponse);
-						return;
-					}
-					
-					wizardModel.databaseName = InitializationWizardModel.DEFAULT_DATABASE_NAME;
-					page = WIZARD_COMPLETE;
-				} else {
-					page = DATABASE_SETUP;
-					wizardModel.currentStepNumber = 3;
 				}
 			}
 			
@@ -1499,7 +1501,7 @@ public class InitializationFilter extends StartupFilter {
 								catch (APIAuthenticationException e) {
 									log.warn("Unable to authenticate as a User with the System Developer role");
 									reportError(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE,
-									    TESTING_AUTHENTICATION_SETUP, "");
+									    TESTING_REMOTE_DETAILS_SETUP, "");
 									return;
 								}
 							}
