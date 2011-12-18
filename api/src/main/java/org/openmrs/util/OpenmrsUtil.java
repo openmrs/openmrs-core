@@ -2413,11 +2413,11 @@ public class OpenmrsUtil {
 	 * Checks whether the system is running in test mode
 	 * @return boolean
 	 */
-
+	
 	public static boolean isTestMode() {
 		return "true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"));
 	}
-
+	
 	/**
 	 * Gets the full path and name of the runtime properties file.
 	 * 
@@ -2488,7 +2488,7 @@ public class OpenmrsUtil {
 	public static String getOpenMRSVersionInTestMode() {
 		return System.getProperty("OPENMRS_VERSION", "openmrs");
 	}
-
+	
 	/**
 	 * Performs a case insensitive Comparison of two strings taking care of null values
 	 * 
@@ -2525,4 +2525,3 @@ public class OpenmrsUtil {
 		return longValue.intValue();
 	}
 }
-
