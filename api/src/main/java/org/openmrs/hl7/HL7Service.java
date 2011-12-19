@@ -24,6 +24,7 @@ import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.hl7.db.HL7DAO;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 import ca.uhn.hl7v2.HL7Exception;
@@ -168,6 +169,18 @@ public interface HL7Service extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public HL7InQueue getHL7InQueue(Integer hl7InQueueId) throws APIException;
+	
+	/**
+	 * Get the hl7 queue item with the given uuid
+	 * 
+	 * @param uuid
+	 * @return the HL7InQueue or <code>null</code>
+	 * @throws APIException
+	 * @since 1.9
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.PRIV_VIEW_HL7_IN_QUEUE)
+	public HL7InQueue getHL7InQueueByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Return a list of all hl7 in queues in the database
@@ -331,6 +344,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @since Version 1.7
 	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public HL7InArchive getHL7InArchiveByUuid(String uuid) throws APIException;
 	
 	/**
@@ -425,6 +440,18 @@ public interface HL7Service extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_EXCEPTION)
 	public HL7InError getHL7InError(Integer hl7InErrorId) throws APIException;
+	
+	/**
+	 * Get the error item with the given uuid
+	 * 
+	 * @param uuid
+	 * @return the HL7InError or <code>null</code>
+	 * @throws APIException
+	 * @sine 1.9
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.PRIV_VIEW_HL7_IN_EXCEPTION)
+	public HL7InError getHL7InErrorByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get all <code>HL7InError</code> items from the database
@@ -637,5 +664,18 @@ public interface HL7Service extends OpenmrsService {
 	 * @param archive
 	 */
 	public void loadHL7InArchiveData(HL7InArchive archive) throws APIException;
+	
+	/**
+	 * Get {@link HL7QueueItem} with the given uuid.
+	 * <p>
+	 * It calls {@link #getHL7InQueueByUuid(String)}, {@link #getHL7InArchiveByUuid(String)} and
+	 * {@link #getHL7InErrorByUuid(String)} consecutively and returns the first non-null result.
+	 * 
+	 * @param uuid
+	 * @return the queue item or <code>null</code>
+	 * @throws APIException
+	 * @sine 1.9
+	 */
+	public HL7QueueItem getHl7QueueItemByUuid(String uuid) throws APIException;
 	
 }

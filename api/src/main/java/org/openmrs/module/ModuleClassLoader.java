@@ -539,7 +539,7 @@ public class ModuleClassLoader extends URLClassLoader {
 					/*if (resolve) {
 						resolveClass(result);
 					}*/
-					break; // found class in publicly imported module
+					return result; // found class in required module
 				}
 			}
 		}
@@ -561,7 +561,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				/*if (resolve) {
 					resolveClass(result);
 				}*/
-				break; // found class in publicly imported module
+				return result; // found class in aware of module
 			}
 		}
 		
@@ -843,7 +843,7 @@ public class ModuleClassLoader extends URLClassLoader {
 					result = mcl.findResource(name, requestor, seenModules);
 				
 				if (result != null) {
-					break; // found resource in publicly imported module
+					return result; // found resource in required module
 				}
 			}
 		} else {
@@ -862,7 +862,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				result = mcl.findResource(name, requestor, seenModules);
 			
 			if (result != null) {
-				break; // found resource in publicly imported module
+				return result; // found resource in aware of module
 			}
 		}
 		

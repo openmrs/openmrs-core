@@ -50,6 +50,7 @@ import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.hl7.HL7InQueue;
+import org.openmrs.hl7.HL7QueueItem;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.hl7.HL7Source;
 import org.openmrs.hl7.HL7Util;
@@ -58,6 +59,7 @@ import org.openmrs.hl7.Hl7InArchivesMigrateThread.Status;
 import org.openmrs.hl7.db.HL7DAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 
 import ca.uhn.hl7v2.HL7Exception;
@@ -323,6 +325,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		return dao.getHL7InQueue(hl7InQueueId);
 	}
 	
+	@Override
+	public HL7InQueue getHL7InQueueByUuid(String uuid) throws APIException {
+		return dao.getHL7InQueueByUuid(uuid);
+	}
+	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InQueues()
 	 * @deprecated
@@ -473,6 +480,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 */
 	public HL7InError getHL7InError(Integer hl7InErrorId) {
 		return dao.getHL7InError(hl7InErrorId);
+	}
+	
+	@Override
+	public HL7InError getHL7InErrorByUuid(String uuid) throws APIException {
+		return dao.getHL7InErrorByUuid(uuid);
 	}
 	
 	/**
@@ -1226,6 +1238,26 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			if (writer != null)
 				writer.close();
 		}
+	}
+	
+	@Override
+	public HL7QueueItem getHl7QueueItemByUuid(String uuid) throws APIException {
+		HL7QueueItem result = getHL7InQueueByUuid(uuid);
+		if (result != null) {
+			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_QUEUE);
+			return result;
+		}
+		result = getHL7InErrorByUuid(uuid);
+		if (result != null) {
+			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_EXCEPTION);
+			return result;
+		}
+		result = getHL7InArchiveByUuid(uuid);
+		if (result != null) {
+			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_ARCHIVE);
+			return result;
+		}
+		return null;
 	}
 	
 }
