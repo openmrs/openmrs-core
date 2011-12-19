@@ -550,7 +550,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean)
 	 */
-	public Integer getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	public Long getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		//Skip the ordering of names because H2(and i think PostgreSQL) will require one of the ordered
@@ -559,6 +559,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
 		    matchIdentifierExactly, false);
 		criteria.setProjection(Projections.countDistinct("patientId"));
-		return (Integer) criteria.uniqueResult();
+		return (Long) criteria.uniqueResult();
 	}
 }

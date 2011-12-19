@@ -324,11 +324,11 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterDAO#getCountOfEncounters(java.lang.String, boolean)
 	 */
 	@Override
-	public Integer getCountOfEncounters(String query, boolean includeVoided) {
+	public Long getCountOfEncounters(String query, boolean includeVoided) {
 		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, false);
 		
 		criteria.setProjection(Projections.countDistinct("enc.encounterId"));
-		return (Integer) criteria.uniqueResult();
+		return (Long) criteria.uniqueResult();
 	}
 	
 	/**

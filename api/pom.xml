@@ -102,8 +102,28 @@
          <artifactId>stax-api</artifactId>
       </dependency>
       <dependency>
+        <groupId>javassist</groupId>
+        <artifactId>javassist</artifactId>
+      </dependency>
+      <dependency>
          <groupId>org.openmrs.hibernate</groupId>
-         <artifactId>hibernate</artifactId>
+         <artifactId>hibernate-core</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-c3p0</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-ehcache</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-search</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-search-analyzers</artifactId>
       </dependency>
       <dependency>
          <groupId>dom4j</groupId>

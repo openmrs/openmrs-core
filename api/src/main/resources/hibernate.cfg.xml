@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE hibernate-configuration PUBLIC
-	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-	"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 
 <hibernate-configuration>
 
 	<session-factory>
+		<!-- Hibernate Search configuration -->
+		<property name="hibernate.search.default.directory_provider">
+			org.hibernate.search.store.FSDirectoryProvider
+		</property>
+		<!-- TODO: change this to just "lucene-index" where does it go then?
+		           (because windows machines don't put "~" in the same place as the app data dir)
+		     TODO: add this to the openmrs-runtime properties wiki page as an option
+		-->
+		<property name="hibernate.search.default.indexBase">
+			~/.OpenMRS/lucene-index/ 
+		</property>
+
 		<!--  Hibernate Mapping files -->
 		
 		<!-- API -->

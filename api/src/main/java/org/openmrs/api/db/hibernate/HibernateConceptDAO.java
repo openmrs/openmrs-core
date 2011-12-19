@@ -38,7 +38,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
@@ -354,11 +354,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean includeRetired) throws DAOException {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (includeRetired == false)
-			searchCriteria.add(Expression.eq("drug.retired", false));
+			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
-			searchCriteria.add(Expression.eq("drug.concept", concept));
+			searchCriteria.add(Restrictions.eq("drug.concept", concept));
 		if (drugName != null)
-			searchCriteria.add(Expression.eq("drug.name", drugName));
+			searchCriteria.add(Restrictions.eq("drug.name", drugName));
 		return (List<Drug>) searchCriteria.list();
 	}
 	
@@ -375,11 +375,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 			
 			Iterator<String> word = words.iterator();
-			searchCriteria.add(Expression.like("name", word.next(), MatchMode.ANYWHERE));
+			searchCriteria.add(Restrictions.like("name", word.next(), MatchMode.ANYWHERE));
 			while (word.hasNext()) {
 				String w = word.next();
 				log.debug(w);
-				searchCriteria.add(Expression.like("name", w, MatchMode.ANYWHERE));
+				searchCriteria.add(Restrictions.like("name", w, MatchMode.ANYWHERE));
 			}
 			searchCriteria.addOrder(Order.asc("drug.concept"));
 			conceptDrugs = searchCriteria.list();
@@ -402,7 +402,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptClass> getConceptClasses(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
 		if (name != null)
-			crit.add(Expression.eq("name", name));
+			crit.add(Restrictions.eq("name", name));
 		return crit.list();
 	}
 	
@@ -415,7 +415,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		// Minor bug - was assigning includeRetired instead of evaluating
 		if (includeRetired == false)
-			crit.add(Expression.eq("retired", false));
+			crit.add(Restrictions.eq("retired", false));
 		
 		return crit.list();
 	}
@@ -450,7 +450,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptDatatype.class);
 		
 		if (includeRetired == false)
-			crit.add(Expression.eq("retired", false));
+			crit.add(Restrictions.eq("retired", false));
 		
 		return crit.list();
 	}
@@ -463,7 +463,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptDatatype.class);
 		
 		if (name != null)
-			crit.add(Expression.like("name", name, MatchMode.START));
+			crit.add(Restrictions.like("name", name, MatchMode.START));
 		
 		return crit.list();
 	}
@@ -525,7 +525,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Concept.class);
 		
-		criteria.add(Expression.eq("retired", false));
+		criteria.add(Restrictions.eq("retired", false));
 		
 		if (!StringUtils.isBlank(name)) {
 			if (loc == null)
@@ -538,24 +538,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 			if (searchOnPhrase)
 				matchmode = MatchMode.ANYWHERE;
 			
-			criteria.add(Expression.ilike("names.name", name, matchmode));
+			criteria.add(Restrictions.ilike("names.name", name, matchmode));
 			
 			String language = loc.getLanguage();
 			if (language.length() > 2) {
 				// if searching in specific locale like en_US
-				criteria.add(Expression.or(Expression.eq("names.locale", loc.getLanguage()), Expression.eq("names.locale",
-				    loc.getLanguage().substring(0, 2))));
+				criteria.add(Restrictions.or(Restrictions.eq("names.locale", loc), Restrictions.eq("names.locale",
+				    new Locale(loc.getLanguage().substring(0, 2)))));
 			} else {
 				// if searching in general locale like just "en"
-				criteria.add(Expression.like("names.locale", loc.getLanguage(), MatchMode.START));
+				//	criteria.add(Restrictions.like("names.locale", loc.getLanguage(), MatchMode.START));
 			}
 		}
 		
 		if (classes.size() > 0)
-			criteria.add(Expression.in("conceptClass", classes));
+			criteria.add(Restrictions.in("conceptClass", classes));
 		
 		if (datatypes.size() > 0)
-			criteria.add(Expression.in("datatype", datatypes));
+			criteria.add(Restrictions.in("datatype", datatypes));
 		
 		return criteria.list();
 	}
@@ -613,7 +613,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Integer i = c.getConceptId();
 		
 		List<Concept> concepts = sessionFactory.getCurrentSession().createCriteria(Concept.class).add(
-		    Expression.lt("conceptId", i)).addOrder(Order.desc("conceptId")).setFetchSize(1).list();
+		    Restrictions.lt("conceptId", i)).addOrder(Order.desc("conceptId")).setFetchSize(1).list();
 		
 		if (concepts.size() < 1)
 			return null;
@@ -628,7 +628,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Integer i = c.getConceptId();
 		
 		List<Concept> concepts = sessionFactory.getCurrentSession().createCriteria(Concept.class).add(
-		    Expression.gt("conceptId", i)).addOrder(Order.asc("conceptId")).setFetchSize(1).list();
+		    Restrictions.gt("conceptId", i)).addOrder(Order.asc("conceptId")).setFetchSize(1).list();
 		
 		if (concepts.size() < 1)
 			return null;
@@ -692,7 +692,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (concept != null) {
 			if (log.isDebugEnabled()) {
 				Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class);
-				crit.add(Expression.eq("concept", concept));
+				crit.add(Restrictions.eq("concept", concept));
 				
 				List<ConceptWord> words = crit.list();
 				
@@ -731,7 +731,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptProposal.class);
 		
 		if (includeCompleted == false) {
-			crit.add(Expression.eq("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
+			crit.add(Restrictions.eq("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
 		}
 		crit.addOrder(Order.asc("originalText"));
 		return crit.list();
@@ -750,8 +750,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@SuppressWarnings("unchecked")
 	public List<ConceptProposal> getConceptProposals(String text) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptProposal.class);
-		crit.add(Expression.eq("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
-		crit.add(Expression.eq("originalText", text));
+		crit.add(Restrictions.eq("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
+		crit.add(Restrictions.eq("originalText", text));
 		return crit.list();
 	}
 	
@@ -761,9 +761,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@SuppressWarnings("unchecked")
 	public List<Concept> getProposedConcepts(String text) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptProposal.class);
-		crit.add(Expression.ne("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
-		crit.add(Expression.eq("originalText", text));
-		crit.add(Expression.isNotNull("mappedConcept"));
+		crit.add(Restrictions.ne("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
+		crit.add(Restrictions.eq("originalText", text));
+		crit.add(Restrictions.isNotNull("mappedConcept"));
 		crit.setProjection(Projections.distinct(Projections.property("mappedConcept")));
 		
 		return crit.list();
@@ -961,7 +961,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	public ConceptNameTag getConceptNameTagByName(String name) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptNameTag.class).add(
-		    Expression.eq("tag", name));
+		    Restrictions.eq("tag", name));
 		
 		if (crit.list().size() < 1) {
 			log.warn("No concept name tag found with name: " + name);
@@ -993,7 +993,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptSource> getAllConceptSources() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class);
 		
-		criteria.add(Expression.eq("retired", false));
+		criteria.add(Restrictions.eq("retired", false));
 		
 		return criteria.list();
 	}
@@ -1106,24 +1106,25 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.createAlias("conceptReferenceTerm", "term");
 		
 		// match the source code to the passed code
-		criteria.add(Expression.eq("term.code", code));
+		criteria.add(Restrictions.eq("term.code", code));
 		
 		// join to concept reference source and match to the h17Code or source name
 		criteria.createAlias("term.conceptSource", "source");
-		criteria.add(Expression.or(Expression.eq("source.name", sourceName), Expression.eq("source.hl7Code", sourceName)));
+		criteria.add(Restrictions.or(Restrictions.eq("source.name", sourceName), Restrictions.eq("source.hl7Code",
+		    sourceName)));
 		
 		criteria.createAlias("concept", "concept");
 		
 		if (!includeRetired) {
 			// ignore retired concepts
-			criteria.add(Expression.eq("concept.retired", false));
+			criteria.add(Restrictions.eq("concept.retired", false));
 		} else {
 			// sort retired concepts to the end of the list
 			criteria.addOrder(Order.asc("concept.retired"));
 		}
 		
 		// we only want distinct concepts
-		criteria.setResultTransformer(new DistinctRootEntityResultTransformer());
+		criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
 		
 		return (List<Concept>) criteria.list();
 	}
@@ -1246,7 +1247,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptMap> getConceptMapsBySource(ConceptSource conceptSource) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
 		criteria.createAlias("conceptReferenceTerm", "term");
-		criteria.add(Expression.eq("term.conceptSource", conceptSource));
+		criteria.add(Restrictions.eq("term.conceptSource", conceptSource));
 		return (List<ConceptMap>) criteria.list();
 	}
 	
@@ -1255,7 +1256,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class, "source");
-		criteria.add(Expression.eq("source.name", conceptSourceName));
+		criteria.add(Restrictions.eq("source.name", conceptSourceName));
 		return (ConceptSource) criteria.uniqueResult();
 	}
 	
@@ -1345,7 +1346,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 *      List, List, Concept)
 	 */
 	@Override
-	public Integer getCountOfConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
+	public Long getCountOfConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, boolean forUniqueConcepts) {
 		if (StringUtils.isBlank(phrase)) {
@@ -1360,10 +1361,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 			else
 				searchCriteria.setProjection(Projections.rowCount());
 			
-			return (Integer) searchCriteria.uniqueResult();
+			return (Long) searchCriteria.uniqueResult();
 		}
 		
-		return 0;
+		return (long) 0;
 	}
 	
 	/**
@@ -1417,21 +1418,21 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (words.size() > 0 || !answers.isEmpty()) {
 			
 			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class, "cw1");
-			searchCriteria.add(Expression.in("locale", locales));
+			searchCriteria.add(Restrictions.in("locale", locales));
 			
 			if (includeRetired == false) {
 				searchCriteria.createAlias("concept", "concept");
-				searchCriteria.add(Expression.eq("concept.retired", false));
+				searchCriteria.add(Restrictions.eq("concept.retired", false));
 			}
 			
 			// Only restrict on answers if there are any
 			if (!answers.isEmpty())
-				searchCriteria.add(Expression.in("cw1.concept", answers));
+				searchCriteria.add(Restrictions.in("cw1.concept", answers));
 			
 			if (words.size() > 0) {
 				Iterator<String> word = words.iterator();
-				searchCriteria.add(Expression.like("word", word.next(), MatchMode.START));
-				Conjunction junction = Expression.conjunction();
+				searchCriteria.add(Restrictions.like("word", word.next(), MatchMode.START));
+				Conjunction junction = Restrictions.conjunction();
 				while (word.hasNext()) {
 					String w = word.next();
 					
@@ -1439,24 +1440,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 						log.debug("Current word: " + w);
 					
 					DetachedCriteria crit = DetachedCriteria.forClass(ConceptWord.class).setProjection(
-					    Property.forName("concept")).add(Expression.eqProperty("concept", "cw1.concept")).add(
-					    Restrictions.like("word", w, MatchMode.START)).add(Expression.in("locale", locales));
+					    Property.forName("concept")).add(Restrictions.eqProperty("concept", "cw1.concept")).add(
+					    Restrictions.like("word", w, MatchMode.START)).add(Restrictions.in("locale", locales));
 					junction.add(Subqueries.exists(crit));
 				}
 				searchCriteria.add(junction);
 			}
 			
 			if (requireClasses.size() > 0)
-				searchCriteria.add(Expression.in("concept.conceptClass", requireClasses));
+				searchCriteria.add(Restrictions.in("concept.conceptClass", requireClasses));
 			
 			if (excludeClasses.size() > 0)
-				searchCriteria.add(Expression.not(Expression.in("concept.conceptClass", excludeClasses)));
+				searchCriteria.add(Restrictions.not(Restrictions.in("concept.conceptClass", excludeClasses)));
 			
 			if (requireDatatypes.size() > 0)
-				searchCriteria.add(Expression.in("concept.datatype", requireDatatypes));
+				searchCriteria.add(Restrictions.in("concept.datatype", requireDatatypes));
 			
 			if (excludeDatatypes.size() > 0)
-				searchCriteria.add(Expression.not(Expression.in("concept.datatype", excludeDatatypes)));
+				searchCriteria.add(Restrictions.not(Restrictions.in("concept.datatype", excludeDatatypes)));
 			
 			return searchCriteria;
 		}
@@ -1467,30 +1468,30 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean)
 	 */
-	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	public Long getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired) throws DAOException {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (StringUtils.isBlank(drugName) && concept == null)
-			return 0;
+			return 0L;
 		
 		if (includeRetired == false)
-			searchCriteria.add(Expression.eq("drug.retired", false));
+			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
-			searchCriteria.add(Expression.eq("drug.concept", concept));
+			searchCriteria.add(Restrictions.eq("drug.concept", concept));
 		MatchMode matchMode = MatchMode.START;
 		if (searchOnPhrase)
 			matchMode = MatchMode.ANYWHERE;
 		if (!StringUtils.isBlank(drugName)) {
-			searchCriteria.add(Expression.ilike("drug.name", drugName, matchMode));
+			searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
 			if (searchDrugConceptNames) {
 				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
-				searchCriteria.add(Expression.ilike("names.name", drugName, matchMode));
+				searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
 			}
 		}
 		
 		searchCriteria.setProjection(Projections.countDistinct("drug.drugId"));
 		
-		return (Integer) searchCriteria.uniqueResult();
+		return (Long) searchCriteria.uniqueResult();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -1502,17 +1503,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 			return Collections.emptyList();
 		
 		if (includeRetired == false)
-			searchCriteria.add(Expression.eq("drug.retired", false));
+			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
-			searchCriteria.add(Expression.eq("drug.concept", concept));
+			searchCriteria.add(Restrictions.eq("drug.concept", concept));
 		MatchMode matchMode = MatchMode.START;
 		if (searchOnPhrase)
 			matchMode = MatchMode.ANYWHERE;
 		if (!StringUtils.isBlank(drugName)) {
-			searchCriteria.add(Expression.ilike("drug.name", drugName, matchMode));
+			searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
 			if (searchDrugConceptNames) {
 				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
-				searchCriteria.add(Expression.ilike("names.name", drugName, matchMode));
+				searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
 			}
 		}
 		
@@ -1663,9 +1664,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptMapType> getConceptMapTypes(boolean includeRetired, boolean includeHidden) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMapType.class);
 		if (!includeRetired)
-			criteria.add(Expression.eq("retired", false));
+			criteria.add(Restrictions.eq("retired", false));
 		if (!includeHidden)
-			criteria.add(Expression.eq("isHidden", false));
+			criteria.add(Restrictions.eq("isHidden", false));
 		return criteria.list();
 	}
 	
@@ -1720,7 +1721,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptReferenceTerm> getConceptReferenceTerms(boolean includeRetired) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
 		if (!includeRetired)
-			criteria.add(Expression.eq("retired", false));
+			criteria.add(Restrictions.eq("retired", false));
 		return criteria.list();
 	}
 	
@@ -1749,7 +1750,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public List<ConceptReferenceTerm> getConceptReferenceTermsBySource(ConceptSource conceptSource) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
-		criteria.add(Expression.eq("conceptSource", conceptSource));
+		criteria.add(Restrictions.eq("conceptSource", conceptSource));
 		return (List<ConceptReferenceTerm>) criteria.list();
 	}
 	
@@ -1761,8 +1762,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public ConceptReferenceTerm getConceptReferenceTermByName(String name, ConceptSource conceptSource) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
-		criteria.add(Expression.eq("name", name));
-		criteria.add(Expression.eq("conceptSource", conceptSource));
+		criteria.add(Restrictions.eq("name", name));
+		criteria.add(Restrictions.eq("conceptSource", conceptSource));
 		List terms = criteria.list();
 		if (terms.size() == 0)
 			return null;
@@ -1781,8 +1782,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public ConceptReferenceTerm getConceptReferenceTermByCode(String code, ConceptSource conceptSource) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
-		criteria.add(Expression.eq("code", code));
-		criteria.add(Expression.eq("conceptSource", conceptSource));
+		criteria.add(Restrictions.eq("code", code));
+		criteria.add(Restrictions.eq("conceptSource", conceptSource));
 		List terms = criteria.list();
 		if (terms.size() == 0)
 			return null;
@@ -1876,13 +1877,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
 		criteria.add(Restrictions.eq("conceptReferenceTerm", term));
 		criteria.setProjection(Projections.rowCount());
-		if ((Integer) criteria.uniqueResult() > 0)
+		if ((Long) criteria.uniqueResult() > 0)
 			return true;
 		
 		criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTermMap.class);
 		criteria.add(Restrictions.eq("termB", term));
 		criteria.setProjection(Projections.rowCount());
-		return (Integer) criteria.uniqueResult() > 0;
+		return (Long) criteria.uniqueResult() > 0;
 	}
 	
 	/**
@@ -1893,12 +1894,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
 		criteria.add(Restrictions.eq("conceptMapType", mapType));
 		criteria.setProjection(Projections.rowCount());
-		if ((Integer) criteria.uniqueResult() > 0)
+		if ((Long) criteria.uniqueResult() > 0)
 			return true;
 		
 		criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTermMap.class);
 		criteria.add(Restrictions.eq("conceptMapType", mapType));
 		criteria.setProjection(Projections.rowCount());
-		return (Integer) criteria.uniqueResult() > 0;
+		return (Long) criteria.uniqueResult() > 0;
 	}
 }
