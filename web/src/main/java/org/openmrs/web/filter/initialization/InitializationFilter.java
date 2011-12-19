@@ -704,17 +704,17 @@ public class InitializationFilter extends StartupFilter {
 						checkForEmptyValue(wizardModel.remoteUsername, errors, "install.testing.username.required");
 						checkForEmptyValue(wizardModel.remotePassword, errors, "install.testing.password.required");
 						
-						//check if the username and password are valid
-						try {
-							TestInstallUtil.getResourceInputStream(wizardModel.remoteUrl + RELEASE_TESTING_MODULE_PATH
-							        + "verifycredentials.htm", wizardModel.remoteUsername, wizardModel.remotePassword);
-						}
-						catch (APIAuthenticationException e) {
-							log.warn("Error generated: ", e);
-							errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
-						}
-						
 						if (errors.isEmpty()) {
+							//check if the username and password are valid
+							try {
+								TestInstallUtil.getResourceInputStream(wizardModel.remoteUrl + RELEASE_TESTING_MODULE_PATH
+								        + "verifycredentials.htm", wizardModel.remoteUsername, wizardModel.remotePassword);
+							}
+							catch (APIAuthenticationException e) {
+								log.warn("Error generated: ", e);
+								errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
+							}
+							
 							//If we have a runtime properties file, get the database setup details from it
 							if (skipDatabaseSetupPage()) {
 								Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
