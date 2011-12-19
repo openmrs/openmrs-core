@@ -16,7 +16,6 @@ package org.openmrs.web.controller.patient;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -180,7 +179,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	@Test
 	@Verifies(value = "should add a new name if the person had no names", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
 	public void saveShortPatient_shouldAddANewNameIfThePersonHadNoNames() throws Exception {
-		Patient p = Context.getPatientService().getPatient(2);
+		Patient p = Context.getPatientService().getPatient(7);
 		p.getPersonName().setVoided(true);
 		Context.getPatientService().savePatient(p);
 		Assert.assertNull(p.getPersonName());// make sure all names are voided

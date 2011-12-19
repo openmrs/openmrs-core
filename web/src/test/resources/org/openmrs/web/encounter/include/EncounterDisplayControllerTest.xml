@@ -40,7 +40,8 @@
   <concept_set concept_set_id="123" concept_id="1553" concept_set="1726" sort_weight="1.0" creator="305" date_created="2007-06-05 17:38:53.0" uuid="ffe75225-8830-434c-a704-5f58a2c1b498"/>
   <concept_set concept_set_id="124" concept_id="1554" concept_set="1726" sort_weight="2.0" creator="305" date_created="2007-06-05 17:38:53.0" uuid="55797171-9591-4997-86dd-1dc1525838e5"/>
   <concept_set concept_set_id="125" concept_id="1558" concept_set="1726" sort_weight="0.0" creator="305" date_created="2007-06-05 17:38:53.0" uuid="53e37235-9115-4018-a7ef-788849e8c292"/>
-  <encounter encounter_id="3" patient_id="3" provider_id="1" location_id="0" encounter_datetime="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="546b7041-75ad-4cc1-b5dd-c5daff61a6db"/>
+  <encounter encounter_id="3" patient_id="3" location_id="0" encounter_datetime="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="546b7041-75ad-4cc1-b5dd-c5daff61a6db"/>
+  <encounter_provider encounter_provider_id="2" encounter_id="3" encounter_role_id="1" provider_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="c1897cef-05d4-4f71-bc1f-078ddba780ae" />
   <encounter_type encounter_type_id="1" name="Test Enc Type" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="06c17b56-87d7-4c5d-9369-a4be48f68693"/>
   <encounter_type encounter_type_id="2" name="Test Enc Type 2" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="8c589eef-bbb2-47fb-a662-2a7730c072d7"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="0c0ae9a5-c66c-4614-8c82-2f76218239c6"/>

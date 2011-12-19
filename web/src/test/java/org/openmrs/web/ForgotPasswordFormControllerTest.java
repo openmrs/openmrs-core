@@ -19,7 +19,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.controller.ForgotPasswordFormController;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
@@ -100,7 +99,7 @@ public class ForgotPasswordFormControllerTest extends BaseWebContextSensitiveTes
 		HttpServletResponse response = new MockHttpServletResponse();
 		controller.handleRequest(request, response);
 		
-		Assert.assertEquals(new User(2), Context.getAuthenticatedUser());
+		Assert.assertEquals(2, Context.getAuthenticatedUser().getId().intValue());
 	}
 	
 	/**
