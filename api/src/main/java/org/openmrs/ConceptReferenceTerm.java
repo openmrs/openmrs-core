@@ -173,21 +173,6 @@ public class ConceptReferenceTerm extends BaseOpenmrsMetadata implements java.io
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof ConceptReferenceTerm)) {
-			return false;
-		}
-		ConceptReferenceTerm rhs = (ConceptReferenceTerm) obj;
-		if (this.conceptReferenceTermId != null && rhs.conceptReferenceTermId != null)
-			return (this.conceptReferenceTermId.equals(rhs.conceptReferenceTermId));
-		
-		return this == obj;
-	}
-	
-	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -201,17 +186,4 @@ public class ConceptReferenceTerm extends BaseOpenmrsMetadata implements java.io
 		
 		return "";
 	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (this.conceptReferenceTermId == null)
-			return super.hashCode();
-		int hash = 3;
-		hash = hash + 31 * this.conceptReferenceTermId;
-		return hash;
-	}
-	
 }
