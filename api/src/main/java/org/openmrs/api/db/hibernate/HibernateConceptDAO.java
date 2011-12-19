@@ -38,7 +38,6 @@ import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
@@ -1288,15 +1287,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 		locale = (locale == null ? Context.getLocale() : locale);
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptStopWord.class);
+		criteria.setProjection(Projections.property("value"));
 		criteria.add(Restrictions.eq("locale", locale));
 		
-		List<ConceptStopWord> stopWordList = criteria.list();
-		List<String> stopWords = new ArrayList<String>();
-		
-		for (ConceptStopWord conceptStopWord : stopWordList) {
-			stopWords.add(conceptStopWord.getValue());
-		}
-		return stopWords;
+		return (List<String>)criteria.list();
 	}
 	
 	/**
