@@ -6093,6 +6093,19 @@
  			update person set gender = 'M' where person_id = 1;
  		</sql>
  	</changeSet>
+ 	
+	<changeSet id="20111218-2274" author="gsluthra">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				select count(*) from concept_description where concept_id = 679 and description = 'Blood test to measure the number of white blood cells.';
+			</sqlCheck>
+		</preConditions>
+		<comment>Fix the description for RBC concept</comment>
+		<update tableName="concept_description">
+			<column name="description" value="Blood test to measure the number of red blood cells."/>
+			<where>concept_id=679 and description='Blood test to measure the number of white blood cells.'</where>
+		</update>
+	</changeSet>
 	
 </databaseChangeLog>
 
