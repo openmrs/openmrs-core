@@ -29,6 +29,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 
+import static org.openmrs.web.WebUtilTest.containsId;
+
 /**
  * Test the methods on the org.openmrs.web.controller.encounter.EncounterDisplayController
  */
@@ -103,15 +105,22 @@ public class EncounterDisplayControllerTest extends BaseWebContextSensitiveTest 
 			Map<Obs, List<List<Obs>>> matrix = fieldHolder.getObsGroupMatrix();
 			Assert.assertEquals(1, matrix.keySet().size());
 			
-			List<List<Obs>> listOfCells = matrix.get(new Obs(16));
+			List<List<Obs>> listOfCells = null;
 			
+			for (Obs obs : matrix.keySet()) {
+				if (obs.getId() == 16) {
+					listOfCells = matrix.get(obs);
+				}
+			}
+			
+			Assert.assertNotNull(listOfCells);
 			// there should be only one column/cell
 			List<Obs> firstAndOnlyCell = listOfCells.get(0);
 			
 			// within that cell, there should be two obs: #17 and #18
 			Assert.assertEquals(2, firstAndOnlyCell.size());
-			Assert.assertTrue(firstAndOnlyCell.contains(new Obs(17)));
-			Assert.assertTrue(firstAndOnlyCell.contains(new Obs(18)));
+			Assert.assertTrue(containsId(firstAndOnlyCell, 17));
+			Assert.assertTrue(containsId(firstAndOnlyCell, 18));
 		}
 	}
 	
