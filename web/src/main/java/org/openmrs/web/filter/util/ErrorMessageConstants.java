@@ -14,8 +14,8 @@
 package org.openmrs.web.filter.util;
 
 /**
- * This class contains all constants that describes names of properties, which are used as keys, when
- * showing localized error messages on pages of install and databtase wizard
+ * This class contains all constants that describes names of properties, which are used as keys,
+ * when showing localized error messages on pages of install and databtase wizard
  */
 public class ErrorMessageConstants {
 	
@@ -59,6 +59,8 @@ public class ErrorMessageConstants {
 	
 	public static final String ERROR_DB_CONNECTION_FAIL = "install.error.unableConnect";
 	
+	public static final String ERROR_DB_IMPORT_TEST_DATA = "install.error.unableImportTestData";
+	
 	public static final String ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA = "install.error.unableCreateTablesOrAddDemoData";
 	
 	public static final String ERROR_DB_UPDATE_TO_LATEST = "install.error.unableUpdateToLatest";
@@ -90,4 +92,8 @@ public class ErrorMessageConstants {
 	public static final String UPDATE_ERROR_UNABLE = "update.error.unableUpdate";
 	
 	public static final String UPDATE_ERROR_UNABLE_AUTHENTICATE = "update.error.unableAuthenticate";
+	
+	public static final String ERROR_DB_UNABLE_TO_ADD_MODULES = "install.error.failedToAddModules";
+	
+	public static final String ERROR_DB_UNABLE_TO_FETCH_MODULES = "install.error.failedToFetchModules";
 }

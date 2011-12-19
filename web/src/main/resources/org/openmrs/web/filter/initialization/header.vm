@@ -6,6 +6,21 @@
     <link type="text/css" rel="stylesheet" href="initfilter/scripts/jquery-ui/css/orange/jquery-ui.custom.css" />
     
 	<style type="text/css" media="all">
+		.openmrs_msg {
+			background-color: lightyellow;
+		}
+
+		.openmrs_error {
+			background-color: lightpink;
+		}
+
+		.openmrs_msg, .openmrs_error { 
+			margin-top: 3px;
+			margin-bottom: 5px;
+			border: 1px dashed lightgrey;
+			padding: 2px 2px 2px 18px;
+		}
+			
         .question {
             text-align:left;
             background-color: #E9E4CC;
@@ -53,6 +68,10 @@
             -webkit-border-radius: 15px;
             background-color: #E9E4CC;
         }
+        .label{
+            text-align:left;
+            white-space:nowrap;
+        }
     </style>
 </head>
 <body style="background:#ecf3f7">
@@ -69,7 +88,7 @@
     </table>
 	
 	#if( ! $errors.isEmpty() )
-	<div id="errorMsgs" style="color: red">
+	<div id="errorMsgs" class="openmrs_error">
 		<ul>
 		#foreach ($error in $errors.entrySet())
 			#if (!$error.getValue()) 
@@ -81,7 +100,22 @@
 		</ul>
 	</div>
 	<br/>
-	#end	
+	#end
+	
+	#if( ! $msgs.isEmpty() )
+	<div id="infoMsgs" class="openmrs_msg">
+		<ul>
+		#foreach ($msg in $msgs.entrySet())
+			#if (!$msg.getValue()) 
+				<li>$l10n.get($msg.getKey())</li>
+			#else
+				<li>$l10n.get($msg.getKey()).insert($msg.getValue())</li>
+			#end
+		#end
+		</ul>
+	</div>
+	<br/>
+	#end		
 	
 	#if( ! $workLog.isEmpty() )
 	$l10n.get("install.header.tasks")

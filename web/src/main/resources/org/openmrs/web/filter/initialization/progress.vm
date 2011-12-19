@@ -7,7 +7,7 @@
 			jQuery.get("${setupPageUrl}", {page: "progress.vm.ajaxRequest"} , function(data) {
 				if(data){
 					if(data.initializationComplete) {
-						window.location="index.htm";
+						window.location="index.htm#if($localeToSave)?lang=$localeToSave#end";
 						return;
 					}
 				
@@ -131,7 +131,7 @@
 			width:30px; text-align: center;
 		}
 		.col_taskDisplayText{
-			width:215px; text-align:left; border-right:2px solid #ECF3F7;
+			width:215px; text-align:left; border-right:2px solid #ECF3F7; white-space:nowrap;
 		}
 		.col_progressBar{
 			width:340px; text-align:left; padding-left:7px;
@@ -146,7 +146,7 @@
 			background:#BBBBBB; border-color:#F7F7F0;
 		}
 		.taskImage{
-			display:none; border: none;
+			display:none; border: none; float:right
 		}
 		.col_progressPercentage{
 			width:50px; font-size: small; text-align:left;
@@ -154,8 +154,11 @@
 	</style>
 	
     <div class="content">
-	    #if($isInstallationStarted == true)
-			Installation is currently in progress...<br/>
+	    #if($isInstallationStarted == true && $installMethod != $INSTALL_METHOD_TESTING)
+	    	<div align="center">$l10n.get("install.progress.message")</div><br/>
+		#end
+		#if($installMethod == $INSTALL_METHOD_TESTING)
+			<div align="center">$l10n.get("install.testing.inprogress")</div><br/>
 		#end
        	<table cellpadding="0" cellspacing="0" align="center">
        		<tr valign="middle">

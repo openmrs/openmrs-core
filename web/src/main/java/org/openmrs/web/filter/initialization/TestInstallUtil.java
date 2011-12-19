@@ -18,19 +18,25 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.module.ModuleConstants;
+import org.apache.xerces.impl.dv.util.Base64;
+import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.APIException;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -40,69 +46,6 @@ import org.openmrs.util.OpenmrsUtil;
 public class TestInstallUtil {
 	
 	private static final Log log = LogFactory.getLog(TestInstallUtil.class);
-	
-	private static final File SQL_DUMP_FILE = new File(System.getProperty("java.io.tmpdir"), "sqldump.sql");
-	
-	/**
-	 * Creates a new database for testing
-	 * 
-	 * @param connectionUrl
-	 * @param databaseName
-	 * @param databaseDriver
-	 * @param user
-	 * @param pwd
-	 * @return
-	 */
-	protected static int createTestDatabase(String connectionUrl, String databaseName, String databaseDriver, String user,
-	        String pwd) {
-		Connection connection = null;
-		Statement statement = null;
-		
-		try {
-			Class.forName(databaseDriver).newInstance();
-			
-			connection = DriverManager.getConnection(connectionUrl, user, pwd);
-			statement = connection.createStatement();
-			String createDBsql = "create database if not exists `" + databaseName + "` default character set utf8";
-			if (!connectionUrl.contains("mysql"))
-				createDBsql = createDBsql.replaceAll("`", "\"");
-			
-			return statement.executeUpdate(createDBsql);
-		}
-		catch (InstantiationException e) {
-			log.error("error:", e);
-		}
-		catch (IllegalAccessException e) {
-			log.error("error:", e);
-		}
-		catch (ClassNotFoundException e) {
-			log.error("error:", e);
-		}
-		catch (SQLException sqlEx) {
-			log.error("Failed to create a test database:", sqlEx);
-		}
-		finally {
-			if (statement != null) {
-				try {
-					statement.close();
-				}
-				catch (SQLException e) {
-					log.warn("Error while closing sql statemnt: ", e);
-				}
-			}
-			
-			if (connection != null) {
-				try {
-					connection.close();
-				}
-				catch (SQLException e) {
-					log.warn("Error while closing connection: ", e);
-				}
-			}
-		}
-		
-		return -1;
-	}
 	
 	/**
 	 * Adds data to the test database from a sql dump file
@@ -114,12 +57,21 @@ public class TestInstallUtil {
 	 * @param pwd
 	 * @return
 	 */
-	protected static boolean addTestData(String host, String port, String databaseName, String user, String pwd) {
+	protected static boolean addTestData(String host, int port, String databaseName, String user, String pwd, String filePath) {
 		Process proc = null;
 		BufferedReader br = null;
 		String errorMsg = null;
 		String[] command = new String[] { "mysql", "--host=" + host, "--port=" + port, "--user=" + user,
-		        "--password=" + pwd, "--database=" + databaseName, "-e", "source " + SQL_DUMP_FILE.getAbsolutePath() };
+		        "--password=" + pwd, "--database=" + databaseName, "-e", "source " + filePath };
+		
+		//For stand-alone, use explicit path to the mysql executable.
+		String runDirectory = System.getProperties().getProperty("user.dir");
+		File file = new File(runDirectory + File.separatorChar + "database" + File.separatorChar + "bin"
+		        + File.separatorChar + "mysql");
+		
+		if (file.exists()) {
+			command[0] = file.getAbsolutePath();
+		}
 		
 		try {
 			proc = Runtime.getRuntime().exec(command);
@@ -171,94 +123,31 @@ public class TestInstallUtil {
 	}
 	
 	/**
-	 * Creates a sql dump from the database matching the specified credentials
+	 * Extracts .omod files from the specified {@link InputStream} and copies them to the module
+	 * repository of the test application data directory, the method always closes the InputStream
+	 * before returning
 	 * 
-	 * @param host
-	 * @param port
-	 * @param databaseName
-	 * @param user
-	 * @param pwd
-	 * @return
-	 */
-	protected static boolean createSqlDump(String host, String port, String databaseName, String user, String pwd) {
-		Process proc = null;
-		BufferedReader br = null;
-		String errorMsg = null;
-		String[] command = new String[] { "mysqldump", "--host=" + host, "--port=" + port, "--user=" + user,
-		        "--password=" + pwd, "--result-file=" + SQL_DUMP_FILE.getAbsolutePath(), "--skip-extended-insert",
-		        "--skip-quick", "--skip-comments", "--skip-add-drop-table", "--default-character-set=utf8", databaseName };
-		try {
-			proc = Runtime.getRuntime().exec(command);
-			try {
-				br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-				String line;
-				StringBuffer sb = new StringBuffer();
-				while ((line = br.readLine()) != null) {
-					sb.append(line);
-					sb.append(System.getProperty("line.separator"));
-				}
-				errorMsg = sb.toString();
-			}
-			catch (IOException e) {
-				log.error("error", e);
-			}
-			finally {
-				if (br != null) {
-					try {
-						br.close();
-					}
-					catch (Exception e) {
-						log.error("error: ", e);
-					}
-				}
-			}
-			
-			//print out the error messages from the process
-			if (StringUtils.isNotBlank(errorMsg))
-				log.error(errorMsg);
-			
-			if (proc.waitFor() == 0) {
-				if (log.isDebugEnabled())
-					log.debug("The sql dump file was created successfully");
-				
-				return true;
-			}
-			
-			log.error("The process terminated abnormally while creating the sql dump");
-			
-		}
-		catch (IOException e) {
-			log.error("Failed to create the sql dump", e);
-		}
-		catch (InterruptedException e) {
-			log.error("The back up was interrupted while creating the sql dump", e);
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Extracts .omod files from the specified zip file and copies them to the module repository of
-	 * the test application data directory
-	 * 
-	 * @param moduleFileItems the uploaded file times for the uploading modules to be added to the
-	 *            testing environment
+	 * @param in the {@link InputStream} for the zip file
+	 * @param moduleRepository the directory where to copy to the module files
 	 */
 	@SuppressWarnings("rawtypes")
-	protected static boolean addZippedTestModules(File testModulesZipFile) {
-		Enumeration entries;
+	protected static boolean addZippedTestModules(InputStream in, File moduleRepository) {
 		ZipFile zipFile = null;
+		FileOutputStream out = null;
+		File tempFile = null;
 		boolean successfullyAdded = true;
 		
 		try {
-			File moduleRepository = OpenmrsUtil
-			        .getDirectoryInApplicationDataDirectory(ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
-			zipFile = new ZipFile(testModulesZipFile);
-			entries = zipFile.entries();
+			tempFile = File.createTempFile("modules", null);
+			out = new FileOutputStream(tempFile);
+			IOUtils.copy(in, out);
+			zipFile = new ZipFile(tempFile);
+			Enumeration entries = zipFile.entries();
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry) entries.nextElement();
 				if (entry.isDirectory()) {
-					log.debug("Skipping directory: " + entry.getName());
+					if (log.isDebugEnabled())
+						log.debug("Skipping directory: " + entry.getName());
 					continue;
 				}
 				
@@ -269,18 +158,23 @@ public class TestInstallUtil {
 					if (fileName.contains(System.getProperty("file.separator")))
 						fileName = new File(entry.getName()).getName();
 					
-					log.info("Extracting module file: " + fileName);
+					if (log.isDebugEnabled())
+						log.debug("Extracting module file: " + fileName);
 					OpenmrsUtil.copyFile(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(
 					        new File(moduleRepository, fileName))));
-				} else
-					log.debug("Ignoring file that is not a .omod '" + fileName);
+				} else {
+					if (log.isDebugEnabled())
+						log.debug("Ignoring file that is not a .omod '" + fileName);
+				}
 			}
 		}
 		catch (IOException e) {
-			log.error("An error occured while copying modules to the test server:", e);
+			log.error("An error occured while copying modules to the test system:", e);
 			successfullyAdded = false;
 		}
 		finally {
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
 			if (zipFile != null) {
 				try {
 					zipFile.close();
@@ -289,9 +183,75 @@ public class TestInstallUtil {
 					log.error("Failed to close zip file: ", e);
 				}
 			}
+			if (tempFile != null) {
+				tempFile.deleteOnExit();
+			}
 		}
 		
 		return successfullyAdded;
 	}
 	
+	/**
+	 * Tests the connection to the specified URL
+	 * 
+	 * @param urlString the url to test
+	 * @return true if a connection a established otherwise false
+	 */
+	protected static boolean testConnection(String urlString) {
+		try {
+			HttpURLConnection urlConnect = (HttpURLConnection) new URL(urlString).openConnection();
+			//wait for 15sec
+			urlConnect.setConnectTimeout(15000);
+			urlConnect.setUseCaches(false);
+			//trying to retrieve data from the source. If there
+			//is no connection, this line will fail
+			urlConnect.getContent();
+			return true;
+		}
+		catch (UnknownHostException e) {
+			log.error("Error generated:", e);
+		}
+		catch (IOException e) {
+			log.error("Error generated:", e);
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * @param url
+	 * @param openmrsUsername
+	 * @param openmrsPassword
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	protected static InputStream getResourceInputStream(String urlString, String openmrsUsername, String openmrsPassword)
+	        throws MalformedURLException, IOException, APIException {
+		
+		HttpURLConnection urlConnection = (HttpURLConnection) new URL(urlString).openConnection();
+		urlConnection.setRequestMethod("POST");
+		urlConnection.setConnectTimeout(15000);
+		urlConnection.setUseCaches(false);
+		urlConnection.setDoOutput(true);
+		
+		String requestParams = "username=" + Base64.encode(openmrsUsername.getBytes(Charset.forName("UTF-8")))
+		        + "&password=" + Base64.encode(openmrsPassword.getBytes(Charset.forName("UTF-8")));
+		
+		OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream());
+		out.write(requestParams);
+		out.flush();
+		out.close();
+		
+		if (log.isInfoEnabled())
+			log.info("Http response message:" + urlConnection.getResponseMessage() + ", Code:"
+			        + urlConnection.getResponseCode());
+		
+		if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
+			throw new APIAuthenticationException("Invalid username or password");
+		else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR)
+			throw new APIException("An error occurred on the remote server");
+		
+		return urlConnection.getInputStream();
+	}
 }

@@ -8,7 +8,7 @@
                         </tr>
                         <tr>
                         <td>
-	                        <select name="locale">
+	                        <select name="locale" id="locale">
 				  				<option value="en" #if( $locale == "en" ) selected #end >English</option>
 				  				<option value="en_GB" #if( $locale == "en_GB" ) selected #end >English (GB)</option>
 				  				<option value="es" #if( $locale == "es" ) selected #end >Espanol</option>
