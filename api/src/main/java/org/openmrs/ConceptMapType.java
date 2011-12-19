@@ -89,31 +89,6 @@ public class ConceptMapType extends BaseOpenmrsMetadata implements java.io.Seria
 	}
 	
 	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getConceptMapTypeId() == null)
-			return super.hashCode();
-		return this.getConceptMapTypeId().hashCode();
-	}
-	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	public boolean equals(Object obj) {
-		if (!(obj instanceof ConceptMapType)) {
-			return false;
-		}
-		ConceptMapType rhs = (ConceptMapType) obj;
-		if (this.conceptMapTypeId != null && rhs.conceptMapTypeId != null)
-			return (this.conceptMapTypeId.equals(rhs.conceptMapTypeId));
-		return this == obj;
-	}
-	
-	/**
 	 * Returns true if this concept map type is hidden otherwise false
 	 * 
 	 * @return
