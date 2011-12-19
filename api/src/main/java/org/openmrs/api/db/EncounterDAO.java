@@ -187,7 +187,7 @@ public interface EncounterDAO {
 	 * @return the number of encounters matching the given search phrase
 	 * @see {@link EncounterService#getCountOfEncounters(String, boolean)}
 	 */
-	public Integer getCountOfEncounters(String query, boolean includeVoided);
+	public Long getCountOfEncounters(String query, boolean includeVoided);
 	
 	/**
 	 * @see EncounterService#getEncountersByVisit(Visit, boolean)

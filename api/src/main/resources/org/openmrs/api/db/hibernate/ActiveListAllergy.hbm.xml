@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    "-//Hibernate/Hibernate Mapping DTD 3.1//EN" 
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
     <joined-subclass name="org.openmrs.activelist.Allergy" extends="org.openmrs.activelist.ActiveListItem" table="active_list_allergy" lazy="false">

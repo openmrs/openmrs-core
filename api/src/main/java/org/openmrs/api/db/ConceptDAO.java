@@ -484,14 +484,14 @@ public interface ConceptDAO {
 	 * @param forUniqueConcepts Specifies if conceptWords that are associated to multiple
 	 *            conceptWords should be counted one or more times.
 	 */
-	public Integer getCountOfConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
+	public Long getCountOfConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, boolean forUniqueConcepts);
 	
 	/**
 	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
 	 */
-	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	public Long getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired) throws DAOException;
 	
 	/**

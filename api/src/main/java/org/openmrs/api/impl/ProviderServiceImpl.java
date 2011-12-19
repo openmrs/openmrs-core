@@ -24,13 +24,9 @@ import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
-import org.openmrs.attribute.AttributeType;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
-import org.openmrs.validator.ProviderValidator;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Default implementation of the {@link ProviderService}. This class should not be used on its own.
@@ -127,7 +123,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 */
 	@Override
 	public Integer getCountOfProviders(String query) {
-		return dao.getCountOfProviders(query);
+		return OpenmrsUtil.convertToInteger(dao.getCountOfProviders(query));
 	}
 	
 	/**

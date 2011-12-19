@@ -190,10 +190,10 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 * @see org.openmrs.api.db.ProviderDAO#getCountOfProviders(java.lang.String)
 	 */
 	@Override
-	public Integer getCountOfProviders(String name) {
+	public Long getCountOfProviders(String name) {
 		Criteria criteria = prepareProviderCriteria(name);
 		criteria.setProjection(Projections.countDistinct("providerId"));
-		return (Integer) criteria.uniqueResult();
+		return (Long) criteria.uniqueResult();
 	}
 	
 	/* (non-Javadoc)
@@ -267,7 +267,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 			criteria.add(Restrictions.not(Restrictions.eq("providerId", provider.getProviderId())));
 		criteria.setProjection(Projections.countDistinct("providerId"));
 		
-		return (Integer) criteria.uniqueResult() == 0;
+		return (Long) criteria.uniqueResult() == 0L;
 	}
 	
 }

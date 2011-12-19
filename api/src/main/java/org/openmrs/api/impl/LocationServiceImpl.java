@@ -28,6 +28,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LocationDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
 
 /**
@@ -321,7 +322,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Override
 	public Integer getCountOfLocations(String nameFragment, Boolean includeRetired) {
-		return dao.getCountOfLocations(nameFragment, includeRetired);
+		return OpenmrsUtil.convertToInteger(dao.getCountOfLocations(nameFragment, includeRetired));
 	}
 	
 	/**

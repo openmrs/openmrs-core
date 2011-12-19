@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping package="org.openmrs">
 
@@ -27,7 +27,7 @@
         <property name="preferredHandlerClassname" type="java.lang.String" column="preferred_handler" length="255" />
         
         <!-- TODO CHECK LENGTH -->
-        <property name="handlerConfig" type="text" column="handler_config" length="16777215" />
+        <property name="handlerConfig" type="materialized_clob" column="handler_config" length="16777215" />
         
         <property name="minOccurs" type="int" column="min_occurs" length="11" not-null="true" />
 
