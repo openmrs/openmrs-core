@@ -58,7 +58,6 @@ import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.openmrs.web.filter.util.LocalizationTool;
-import org.springframework.util.StringUtils;
 import org.springframework.web.util.JavaScriptUtils;
 
 /**
@@ -85,6 +84,11 @@ public abstract class StartupFilter implements Filter {
 	 * Records errors that will be displayed to the user
 	 */
 	protected Map<String, Object[]> errors = new HashMap<String, Object[]>();
+	
+	/**
+	 * Messages that will be displayed to the user
+	 */
+	protected Map<String, Object[]> msgs = new HashMap<String, Object[]>();
 	
 	/**
 	 * Used for configuring tools within velocity toolbox
@@ -142,6 +146,7 @@ public abstract class StartupFilter implements Filter {
 				} else if (httpRequest.getMethod().equals("POST")) {
 					// only clear errors before POSTS so that redirects can show errors too.
 					errors.clear();
+					msgs.clear();
 					doPost(httpRequest, httpResponse);
 				}
 			}
@@ -213,7 +218,8 @@ public abstract class StartupFilter implements Filter {
 	        throws IOException {
 		// first we should get velocity tools context for current client request (within
 		// his http session) and merge that tools context with basic velocity context
-		ToolContext toolContext = getToolContext(referenceMap.get(FilterUtil.LOCALE_ATTRIBUTE).toString());
+		Object locale = referenceMap.get(FilterUtil.LOCALE_ATTRIBUTE);
+		ToolContext toolContext = getToolContext(locale != null ? locale.toString() : Context.getLocale().toString());
 		VelocityContext velocityContext = new VelocityContext(toolContext);
 		
 		if (referenceMap != null) {
@@ -244,6 +250,7 @@ public abstract class StartupFilter implements Filter {
 		}
 		
 		velocityContext.put("errors", errors);
+		velocityContext.put("msgs", msgs);
 		
 		// explicitly set the content type for the response because some servlet containers are assuming text/plain
 		httpResponse.setContentType("text/html");

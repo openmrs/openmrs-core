@@ -6,7 +6,7 @@
 		<div class="content">
             <table align="center" cellspacing="5" cellpadding="9">
 			  <tr>
-                    <td colspan="2"><strong>$l10n.get("install.advanced.dbsetup")</strong></td>
+                    <td colspan="2"><strong>$l10n.get("install.advanced.dbsetup").insert(${currentStepNumber}).insert(${numberOfSteps})</strong></td>
 			  </tr>
 			  <tr>
                     <td colspan="2" class="question">$l10n.get("install.advanced.dbsetup.capt")</td>

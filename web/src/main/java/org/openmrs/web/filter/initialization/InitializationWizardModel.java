@@ -42,6 +42,12 @@ public class InitializationWizardModel {
 	public static final String ADMIN_DEFAULT_PASSWORD = "Admin123";
 	
 	/**
+	 * Default database name to use unless user specifies another in the wizard or they are creating
+	 * a test installation
+	 */
+	public static final String DEFAULT_DATABASE_NAME = "openmrs";
+	
+	/**
 	 * Records completed tasks and are displayed at the top of the page upon error
 	 */
 	public List<String> workLog = new ArrayList<String>();
@@ -88,7 +94,7 @@ public class InitializationWizardModel {
 	/**
 	 * Filled out by the user on the databasesetup.vm page
 	 */
-	public String databaseName = "openmrs";
+	public String databaseName = DEFAULT_DATABASE_NAME;
 	
 	/**
 	 * Filled out by user on the databasesetup.vm page Looks like:
@@ -149,6 +155,11 @@ public class InitializationWizardModel {
 	public Boolean createDatabaseUser = Boolean.FALSE;
 	
 	/**
+	 * Enables importing test data from the remote server
+	 */
+	public Boolean importTestData = Boolean.FALSE;
+	
+	/**
 	 * Does the user want to add the demo data to the database?
 	 */
 	public Boolean addDemoData = Boolean.FALSE;
@@ -200,48 +211,27 @@ public class InitializationWizardModel {
 	public String localeToSave = "";
 	
 	/**
-	 * Specified by the user when they select the testing install method
+	 * The url to the remote system
 	 */
-	public String currentDatabaseHost = "";
+	public String remoteUrl = "";
 	
 	/**
-	 * Specified by the user when they select the testing install method
+	 * The username to use to authenticate to the remote system
 	 */
-	public String currentDatabasePort = "3306";
+	public String remoteUsername = "";
 	
 	/**
-	 * Specified by the user when they select the testing install method
+	 * The password to use to authenticate to the remote system
 	 */
-	public String currentDatabaseName = "openmrs";
+	public String remotePassword = "";
 	
 	/**
-	 * Specified by the user when they select the testing install method
+	 * The current step. e.g Step 1 of ...
 	 */
-	public String testDatabaseHost = "127.0.0.1";
+	public Integer currentStepNumber = 1;
 	
 	/**
-	 * Specified by the user when they select the testing install method
+	 * The total number of steps. e.g Step ... of 5
 	 */
-	public String testDatabasePort = "3306";
-	
-	/**
-	 * Specified by the user when they select the testing install method
-	 */
-	public String testDatabaseUsername = "root";
-	
-	/**
-	 * Specified by the user when they select the testing install method
-	 */
-	public String testDatabasePassword = "";
-	
-	/**
-	 * Specified by the user when they add modules to be installed for testing
-	 */
-	public Boolean addModules = Boolean.FALSE;
-	
-	/**
-	 * This is actually note meant to be specified by the user, it is only in the model so that we
-	 * can access from the review page
-	 */
-	public static final String TEST_DATABASE_NAME = "openmrs_test";
+	public Integer numberOfSteps = 1;
 }
