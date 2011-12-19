@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>1.9.0-SNAPSHOT</version>
+	<version>1.10.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -39,6 +38,7 @@
 		<module>api</module>
 		<module>web</module>
 		<module>webapp</module>
+		<module>release-test</module>
 	</modules>
 
 	<dependencyManagement>
@@ -227,7 +227,7 @@
 			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr-runtime</artifactId>
-				<version>3.2</version>
+				<version>3.4</version>
 			</dependency>
 			<dependency>
 				<groupId>asm</groupId>
@@ -249,16 +249,94 @@
 				<artifactId>cglib-nodep</artifactId>
 				<version>2.2</version>
 			</dependency>
-
+			<dependency>
+				<groupId>javassist</groupId>
+				<artifactId>javassist</artifactId>
+				<version>3.12.1.GA</version>
+			</dependency>
 			<dependency>
 				<groupId>org.openmrs.hibernate</groupId>
-				<artifactId>hibernate</artifactId>
-				<version>3.2.5.ga-mod</version>
+				<artifactId>hibernate-core</artifactId>
+				<version>3.6.5.Final-mod</version>
 				<exclusions>
 					<exclusion>
 						<groupId>asm</groupId>
 						<artifactId>asm</artifactId>
 					</exclusion>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>asm</groupId>
+						<artifactId>asm-attrs</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>net.sf.ehcache</groupId>
+						<artifactId>ehcache</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>cglib</groupId>
+						<artifactId>cglib</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-search-analyzers</artifactId>
+				<version>3.4.0.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-c3p0</artifactId>
+				<version>3.6.0.Final</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>asm</groupId>
+						<artifactId>asm-attrs</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>net.sf.ehcache</groupId>
+						<artifactId>ehcache</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>cglib</groupId>
+						<artifactId>cglib</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency> 
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-ehcache</artifactId>
+				<version>3.6.0.Final</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>asm</groupId>
+						<artifactId>asm-attrs</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>net.sf.ehcache</groupId>
+						<artifactId>ehcache</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>cglib</groupId>
+						<artifactId>cglib</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-search</artifactId>
+				<version>3.4.0.Final</version>
+				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
@@ -305,17 +383,17 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.5.6</version>
+				<version>1.6.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
-				<version>1.5.6</version>
+				<version>1.6.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
-				<version>1.5.6</version>
+				<version>1.6.0</version>
 				<scope>runtime</scope>
 			</dependency>
 
@@ -437,6 +515,18 @@
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
+				<groupId>postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>9.0-801.jdbc4</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.jtds</groupId>
+				<artifactId>jtds</artifactId>
+				<version>1.2.4</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
 				<artifactId>jackson-core-asl</artifactId>
 				<version>1.5.0</version>
@@ -466,6 +556,21 @@
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.8.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-all</artifactId>
+				<version>1.8.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-module-junit4</artifactId>
+				<version>1.4.10</version>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-api-mockito</artifactId>
+				<version>1.4.10</version>
 			</dependency>
 			<dependency>
 				<groupId>org.databene</groupId>
@@ -522,6 +627,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.3.2</version>
 					<configuration>
 						<archive>
 							<manifestEntries>
@@ -547,6 +653,7 @@
 						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
 						<revisionOnScmFailure>0</revisionOnScmFailure>
+						<useLastCommittedRevision>true</useLastCommittedRevision>
 						<providerImplementations>
 							<svn>javasvn</svn>
 						</providerImplementations>
@@ -675,15 +782,16 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.6.1</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active
 						development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
-					<header>&lt;a href=&quot;http://www.openmrs.org&quot;
+					<header>&lt;a href="http://www.openmrs.org"
 						target=_top&gt;&lt;img
-						src=&quot;resources/openmrs-logo-small.gif&quot;
+						src="resources/openmrs-logo-small.gif"
 						border=0/&gt;&lt;/a&gt;</header>
-					<footer>&lt;a href=&quot;http://www.openmrs.org&quot;
+					<footer>&lt;a href="http://www.openmrs.org"
 						target=_top&gt;${project.name}&lt;/a&gt;</footer>
 					<taglet>org.openmrs.tools.doclet.ShouldTaglet</taglet>
 					<tagletArtifact>
@@ -694,8 +802,9 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jxr-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.3</version>
 			</plugin>
 		</plugins>
 	</reporting>

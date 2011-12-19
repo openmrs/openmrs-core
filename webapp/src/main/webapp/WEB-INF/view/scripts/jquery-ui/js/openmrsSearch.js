@@ -1,65 +1,64 @@
 /**
- * Helper function to get started quickly
- * 
- * opts is a map that can be any option of the openmrsSearch widget:
- *   minLength - The minimum required number of characters a user has to enter for a search to be triggered
- *   searchLabel - The text label to appear on the left of the input text box
- *   searchPlaceholder - The text to appear as placeholder of the input text box
- *   includeVoidedLabel - The label for the includeVoided/includeRetired checkbox
- *   showIncludeVoided - If the includeVoided/includeRetired checkbox should be displayed
- *   searchHandler (Required)
- *   resultsHandler
- *   selectionHandler
- *   fieldHeaders (Required) - Array of fieldName and column header maps)
- *   displayLength - The number of results to display per page
- *   columnWidths: an array of column widths, the length of the array should be equal to the number of columns
- *   columnRenderers: array of fnRender for each column
- *   columnVisibility: array of bVisible values for each column
- *   
+ * Helper function to get started quickly, below are the required arguments:
+ * <ul>
+ * <li>div - Container element for the search widget</li>
+ * <li>showIncludeVoided - If the includeVoided/includeRetired checkbox should be displayed</li>
+ * <li>searchHandler - The function to be triggered to fetch results from server, 
+ * 		should return the projected count and results</li>
+ * <li>selectionHandler - The function to trigger when the user selects a row in the results table</li>
+ * <li>fieldHeaders - Array of fieldName and column header maps)</li>
+ * <li>opts - A map that can contain any option of the openmrsSearch widget, see below for the options</li>
+ * </ul>
  * The parameters 'showIncludeVoided' and 'selectionHandler' are options to the widget but
  * given here as simple params.
  * 
- * These are the same:
+ * These approaches below are the same:<br/><br/>
+ * <b>Approach 1:</b>
  * <pre>
-   $j(document).ready(function() {
-		$j("#elementId").openmrsSearch({
-			searchLabel:'<spring:message code="General.search"/>',
-			showIncludeVoided: true,
-			displayLength: 5,
-			minLength: 3,
-			columnWidths: ["15%","15%","15%","15%","15%", "25%"],
-			columnRenderers: [null, null, null, null, null, null], 
-			columnVisibility: [true, true, true, true, true, true],
-			searchHandler: doSearchHandler,
-			selectionHandler: doSelectionHandler,
-			fieldsAndHeaders: [
-				{fieldName:"field1", header:"Header1"},
-				{fieldName:"fiels2", header:"Header2"},
-				{fieldName:"field3", header:"Header3"},
-				{fieldName:"field4", header:"Header4"},
-				{fieldName:"fiels5", header:"Header5"},
-				{fieldName:"field6", header:"Header6"}
-			]
-		});
-
-		new OpenmrsSearch("elementid", true, doSearchHandler, doSelectionHandler, 
-			[	{fieldName:"field1", header:"Header1"},
-				{fieldName:"fiels2", header:"Header2"},
-				{fieldName:"field3", header:"Header3"},
-				{fieldName:"field4", header:"Header4"},
-				{fieldName:"fiels5", header:"Header5"},
-				{fieldName:"field6", header:"Header6"}
-			],
-			{searchLabel: '<spring:message code="General.search"/>',
-                searchPlaceholder:'<spring:message code="general.search" javaScriptEscape="true"/>',
-                displayLength: 5,
-				minLength: 3, columnWidths: ["15%","15%","15%","15%","15%", "25%"],
-				columnRenderers: [null, null, null, null, null, null], 
-				columnVisibility: [true, true, true, true, true, true]}
-		);
-	});
-	</pre>
- */
+ *  $j(document).ready(function() {
+ *		$j("#elementId").openmrsSearch({
+ *			searchLabel:'<spring:message code="General.search"/>',
+ *			showIncludeVoided: true,
+ *			displayLength: 5,
+ *			minLength: 3,
+ *			columnWidths: ["15%","15%","15%","15%","15%", "25%"],
+ *			columnRenderers: [null, null, null, null, null, null], 
+ *			columnVisibility: [true, true, true, true, true, true],
+ *			searchHandler: doSearchHandler,
+ *			selectionHandler: doSelectionHandler,
+ *			fieldsAndHeaders: [
+ *				{fieldName:"field1", header:"Header1"},
+ *				{fieldName:"fiels2", header:"Header2"},
+ *				{fieldName:"field3", header:"Header3"},
+ *				{fieldName:"field4", header:"Header4"},
+ *				{fieldName:"fiels5", header:"Header5"},
+ *				{fieldName:"field6", header:"Header6"}
+ *			]
+ *		});
+ *	});
+ *</pre>
+ *<br/><br/>
+ *<b>Approach 2:</b>
+ *<pre>
+ *	new OpenmrsSearch("elementId", true, doSearchHandler, doSelectionHandler, 
+ *			[	{fieldName:"field1", header:"Header1"},
+ *				{fieldName:"fiels2", header:"Header2"},
+ *				{fieldName:"field3", header:"Header3"},
+ *				{fieldName:"field4", header:"Header4"},
+ *				{fieldName:"fiels5", header:"Header5"},
+ *				{fieldName:"field6", header:"Header6"}
+ *			],
+ *			{searchLabel: '<spring:message code="General.search"/>',
+ *              searchPlaceholder:'<spring:message code="general.search" javaScriptEscape="true"/>',
+ *              displayLength: 5,
+ *				minLength: 3, 
+ *				columnWidths: ["15%","15%","15%","15%","15%", "25%"],
+ *				columnRenderers: [null, null, null, null, null, null], 
+ *				columnVisibility: [true, true, true, true, true, true]}
+ *		);
+ *	});
+ *	</pre>
+ **/
 function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, fieldsAndHeaders, opts) {
 	var el;
 	if(typeof div == 'string') {
@@ -79,41 +78,20 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	if(!opts.fieldsAndHeaders)
 		opts.fieldsAndHeaders = fieldsAndHeaders;
 
-	//Create an array of arrays from the array of objects if we have any initial data
-	if(opts.initialData){
-		opts.initialRows = new Array();//array to hold the arrays of initial row data
-		var cols = opts.fieldsAndHeaders;
-		for(var i in opts.initialData){
-			var obj = opts.initialData[i];
-			//create an array to hold each initial row's column values
-			var iRowData = new Array();
-			$j.map(cols, function(c) {				
-				iRowData.push(obj[c.fieldName]);				 
-			});
-			
-			opts.initialRows.push(iRowData);
-		}
-	}
-	
 	jQuery(el).openmrsSearch(opts);
-
-     //Add the placeholder text to the Search field
-    if(opts.searchPlaceholder){
-        //The value should not contain line feeds or carriage returns.
-        var textShown=opts.searchPlaceholder.toString().replace(/(\r\n|\n|\r)/gm,"");
-        $j('#inputNode').attr('placeholder', textShown);
-    }
 }
 
 /**
  * Expects to be put on a div.
  * Options:
- *   minLength:int (default: 3)
- *   searchLabel:string (default: omsgs.searchLabel)
- *   includeVoidedLabel:string (default: omsgs.includeVoided)
- *   showIncludeVoided:bool (default: false)
- *   searchHandler:function(text, resultHandler, options) (default:null)
- *   resultsHandler:function(results) (default:null)
+ *   minLength:int (default: 1) The minimum number of characters required to trigger a search, this is ignored if 'doSearchWhenEmpty' is set to true
+ *   searchLabel:string (default: omsgs.searchLabel) The text to be used as the label for the search textbox
+ *   includeVoidedLabel:string (default: omsgs.includeVoided) The text to be used as the label for the 'includeVoided' checkbox
+ *   showIncludeVoided:bool (default: false) - Specifies whether the 'includeVoided' checkbox and label should be displayed
+ *   includeVerboseLabel:string (default: omsgs.includeVerbose) The text to be used as the label for the 'includeVerbose' checkbox
+ *   showIncludeVerbose:bool (default: false) Specifies whether the 'includeVerbose' checkbox and label should be displayed
+ *   searchHandler:function(text, resultHandler, options) (default:null) The function to be called to fetch search results from the server
+ *   resultsHandler:function(results) (default:null) The function to be called
  *   selectionHandler:function(index, rowData)
  *   fieldsAndHeaders: Array of fieldNames and column header maps
  *   displayLength: int (default: 10)
@@ -122,25 +100,47 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   columnVisibility: array of bVisible values for each column
  *   initialData:The initial data to be displayed e.g if it is an encounter search, it should be an encounter list
  *   searchPhrase: The phrase to be set in the search box so that a search is triggered on page load to display initial items
+ *   doSearchWhenEmpty: If it is set to true, it lists all items initially and filters them with the given search phrase. (default:false)
+ *   verboseHandler: function to be called to return the text to display as verbose output
  *   
  * The styling on this table works like this:
- * <pre> 
-#openmrsSearchTable tbody tr.even:hover {
-	background-color: #ECFFB3;
-}
-#openmrsSearchTable tbody tr.odd:hover {
-	background-color: #E6FF99;
-}
-#openmrsSearchTable tbody tr.even.row_highlight {
-	background-color: #ECFFB3;
-}
-#openmrsSearchTable tbody tr.odd.row_highlight {
-	background-color: #E6FF99;
-}
-	</pre>
+ * <pre>  
+ *#openmrsSearchTable tbody tr:hover {
+ *	background-color: #F0E68C;
+ *}
+ *</pre>
  */
 (function($j) {
-	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off" placeholder=" "/><input type="checkbox" style="display:none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="loadingMsg"></span><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
+	var openmrsSearch_div = 
+	'<span>'+
+		'<span>'+
+			'<table cellspacing="0" width="100%">'+
+				'<tr>'+
+					'<td align="left">'+
+						'<span id="searchLabelNode"></span>'+
+						'<input type="text" value="" id="inputNode" autocomplete="off" placeholder=" " />'+
+						'<img id="spinner" src="" /><input type="checkbox" style="display: none" id="includeVoided" />&nbsp;&nbsp;'+
+						'<input type="checkbox" style="display: none" id="includeVerbose" />'+
+						'<span id="loadingMsg"></span>'+
+						'<span id="minCharError" class="error"></span>'+
+					'</td>'+
+					'<td align="right"><span id="pageInfo"></span></td>'+
+				'</tr>'+
+				'<tr>'+
+					'<td colspan="2" align="left"><span id="searchWidgetNotification"></span></td>'+
+				'</tr>'+
+			'</table>'+
+		'</span>'+
+		'<span class="openmrsSearchDiv">'+
+			'<table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%">'+
+				'<thead id="searchTableHeader">'+
+					'<tr></tr>'+
+				'</thead>'+
+				'<tbody></tbody>'+
+			'</table>'+
+		'</span>'+
+	'</span>';
+	
 	var BATCH_SIZE = gp.maxSearchResults;
 	var SEARCH_DELAY = gp.searchDelay;//time interval in ms between keyup and triggering the search off
 	var ERROR_MSG_DELAY = 600;//time interval in ms between keyup and  showing the minimum character error
@@ -149,13 +149,16 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	var ajaxTimer = null;
 	var buffer = null;
 	var inSerialMode = Boolean(gp.searchRunInSerialMode);
+	var MAXIMUM_NUMBER_OF_RESULTS = gp.maximumResults;
+	if(!Number(MAXIMUM_NUMBER_OF_RESULTS))
+		MAXIMUM_NUMBER_OF_RESULTS = 2000;
 	$j.widget("ui.openmrsSearch", {
 		plugins: {},
 		options: {
 			minLength: omsgs.minSearchCharactersGP,
 			searchLabel: ' ',
 			includeVoidedLabel: omsgs.includeVoided,
-			showIncludeVoided: false,
+			includeVerboseLabel: omsgs.showVerbose,
 			displayLength: 10,
 			columnWidths: null,
 			columnRenderers: null,
@@ -180,6 +183,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		        input = div.find("#inputNode"),
 		        table = div.find("#openmrsSearchTable");
 		    	checkBox = div.find("#includeVoided");
+		    	verboseCheckBox = div.find("#includeVerbose");
 		    	spinnerObj = div.find("#spinner");
 		    	spinnerObj.css("visibility", "hidden");
 		    	spinnerObj.attr("src", openmrsContextPath+"/images/loading.gif");
@@ -189,7 +193,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	loadingMsgObj = div.find("#loadingMsg");
 		    
 		    this._div = div;
-
+		    
 		    lbl.text(o.searchLabel);
 		    
 		    //3 should be the minimum number of results to display per page
@@ -198,28 +202,46 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    
 		    if(o.showIncludeVoided) {
 		    	var tmp = div.find("#includeVoided");
-			    tmp.before("<label for='includeVoided'>" + o.includeVoidedLabel + "</label>");
+			    tmp.after("<label for='includeVoided'>" + o.includeVoidedLabel + "</label>");
 		    	tmp.show();
+		    	
+		    	//when the user checks/unchecks the includeVoided checkbox, trigger a search
+			    checkBox.click(function() {
+			    	if($j.trim(input.val()) != '' || self.options.doSearchWhenEmpty)
+			    		self._doSearch(input.val());
+			    	else{
+			    		if(spinnerObj.css("visibility") == 'visible')
+		    				spinnerObj.css("visibility", "hidden");
+			    		//if the user is viewing initial data, ignore
+			    		if($j.trim(input.val()) != ''){
+			    			$j("#minCharError").css("visibility", "visible");
+			    			$j(".openmrsSearchDiv").hide();
+			    		}
+			    		if($j('#pageInfo').css("visibility") == 'visible')
+							$j('#pageInfo').css("visibility", "hidden");
+			    	}
+			    	//to maintain keyDown and keyUp events since they are only fired when the input box has focus
+			    	input.focus();
+				});
+			    
+			    if(userProperties.showRetired)
+			    	tmp.attr('checked', true);
 		    }
 		    
-		    //when the user checks/unchecks the includeVoided checkbox, trigger a search
-		    checkBox.click(function() {
-		    	if($j.trim(input.val()) != '')
-		    		self._doSearch(input.val());
-		    	else{
-		    		if(spinnerObj.css("visibility") == 'visible')
-	    				spinnerObj.css("visibility", "hidden");
-		    		//if the user is viewing initial data, ignore
-		    		if($j.trim(input.val()) != ''){
-		    			$j("#minCharError").css("visibility", "visible");
-		    			$j(".openmrsSearchDiv").hide();
-		    		}
-		    		if($j('#pageInfo').css("visibility") == 'visible')
-						$j('#pageInfo').css("visibility", "hidden");
-		    	}
-		    	//to maintain keyDown and keyUp events since they are only fired when the input box has focus
-		    	input.focus();
-			});
+		    if(o.showIncludeVerbose) {
+		    	var tmp = div.find("#includeVerbose");
+		    	tmp.after("<label for='includeVerbose'>" + o.includeVerboseLabel + "</label>");
+		    	tmp.show();
+		    	
+		    	//when the user checks/unchecks the includeVerbose checkbox, show/hide the verbose rows
+		    	verboseCheckBox.click(function() {
+		    		$j('.verbose').toggle();
+		    		input.focus();
+		    	});
+			    
+		    	if(userProperties.showVerbose)
+		    		tmp.attr('checked', true);
+		    }
 		    
 		    //this._trigger('initialized');
 		    input.keyup(function(event) {
@@ -251,13 +273,15 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     				window.clearTimeout(self._textInputTimer);
     			}
 	        	
+    			if(text == '' && !self.options.doSearchWhenEmpty)
+    				return false;
+	        	
 	        	//This discontinues any further ajax SUB calls from the last triggered search
     			if(!inSerialMode && ajaxTimer)
     				window.clearInterval(ajaxTimer);
     			
-    			
     			var searchDelay = SEARCH_DELAY;
-    			if(text.length < o.minLength) {
+    			if(text.length < o.minLength && !self.options.doSearchWhenEmpty) {
         			// force a longer delay since we are going to search on a shorter string
     				searchDelay = 3000;
     			}
@@ -297,10 +321,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					
 					switch(event.keyCode) {
 			    		case 33:
-			    			self._doPageDown();
+			    			self._doPageUp();
 			    			break;
 			    		case 34:
-			    			self._doPageUp();
+			    			self._doPageDown();
 			    			break;
 				    	case 35:
 				    		self._doKeyEnd();
@@ -342,41 +366,142 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	self._results = self.options.initialData;
 		    else
 		    	div.find(".openmrsSearchDiv").hide();
+			
+			/*=============== Begin Processing of some initialization stuff  =======================*/
+		    
+		    //Add the placeholder text to the Search field
+		    if(self.options.searchPlaceholder){
+		        //The value should not contain line feeds or carriage returns.
+		        var textShown=self.options.searchPlaceholder.toString().replace(/(\r\n|\n|\r)/gm,"");
+		        $j('#inputNode').attr('placeHolder', textShown);
+		    }
+		    
+		    //Create an array of arrays from the array of objects if we have any initial data
+		  	if(self.options.initialData){
+		  		self.options.initialRows = new Array();//array to hold the arrays of initial row data
+		  		var cols = self.options.fieldsAndHeaders;
+		  		for(var i in self.options.initialData){
+		  			var obj = self.options.initialData[i];
+		  			//create an array to hold each initial row's column values
+		  			var iRowData = new Array();
+		  			$j.map(cols, function(c) {				
+		  				iRowData.push(obj[c.fieldName]);				 
+		  			});
+		  			
+		  			self.options.initialRows.push(iRowData);
+		  		}
+		  	}
+		    
+		    /*=============== End Processing of some initialization stuff  =======================*/
 
 			//TODO columns need to be built: id='searchTableHeader'
 		    this._table = table.dataTable({
 		    	bFilter: false,
-		    	bLengthChange: false,
+		    	bLengthChange: true,
 		    	bSort: false,
 		    	sPaginationType: "full_numbers",
 		    	aaData: self.options.initialRows,
 		    	aoColumns: this._makeColumns(),
 		    	iDisplayLength: self.options.displayLength,
 		    	numberOfPages: 0,
-		    	currPage: 0,
 		    	bAutoWidth: false,
 		    	bJQueryUI: true,
-		    	sDom: 'rt<"fg-button ui-helper-clearfix"flip>',
+		    	sDom: 't<"fg-button ui-helper-clearfix"ip><"ui-helper-clearfix"l>',
 		    	oLanguage: {
 		    		"sInfo": omsgs.sInfoLabel,
 		    		"oPaginate": {"sFirst": omsgs.first, "sPrevious": omsgs.previous, "sNext": omsgs.next, "sLast": omsgs.last},
 		    		"sZeroRecords": omsgs.noMatchesFound,
-		    		"sInfoEmpty": " "
+		    		"sInfoEmpty": " ",
+		    		"sLengthMenu": omsgs.showNumberofEntries
 		    	},
-		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {					
-		    		//register mouseover/out events handlers to have row highlighting
-		    		$j(nRow).bind('mouseover', function(){
-		    			$j(this).addClass('tr_row_highlight_hover');
-		    			$j(this).css("cursor", "pointer");
-		    			if(self.curRowSelection != null)
-		    				$j(self._table.fnGetNodes()[self.curRowSelection]).removeClass("row_highlight");
-					});
-		    		$j(nRow).bind('mouseout', function(){
-		    			$j(this).removeClass('tr_row_highlight_hover');
-		    			if(self.curRowSelection != null)
-		    				$j(self._table.fnGetNodes()[self.curRowSelection]).addClass("row_highlight");
-		    	    });
+		    	
+		    	/* Called to toggle the verobse output */
+		    	fnDrawCallback : function(oSettings){
+		    		//we have nothing to hide
+		    		if(!self.options.showIncludeVerbose || !self._table || self._table.fnGetNodes().length == 0)
+	    				return;
+		    		pageRowCount = oSettings._iDisplayStart+oSettings._iDisplayLength;
+		    		for(var i = oSettings._iDisplayStart; i < pageRowCount; i++){
+		    			if(self.options.showIncludeVerbose && self.options.verboseHandler){
+		    				rowData = self._results[i];
+		    				verboseText = self.options.verboseHandler(i, rowData);
+		    				nRow = self._table.fnGetNodes()[i];
+		    				if(!nRow)
+		    					break;
+		    			
+		    				verboseRow = self._table.fnOpen( nRow, verboseText, 'verbose' );
+		    				$j(verboseRow).css('background-color', $j(nRow).css('background-color'));
+		    				$j(verboseRow).hover(
+		    		    			function(){
+		    		    				$j(nRow).css("cursor", "pointer");
+				    					if(self.curRowSelection != null){
+				    						currNode = self._table.fnGetNodes()[self.curRowSelection];
+				    						self._unHighlightRow(currNode);
+				    						self._unHighlightVerboseRow(currNode.nextSibling);
+				    					}
+				    					self.hoverRowSelection = i;
+				    					$j(this.previousSibling).addClass('row_highlight');
+		    		    			}, function(){
+		    		    				if(self.curRowSelection != null){
+				    						currNode = self._table.fnGetNodes()[self.curRowSelection];
+				    						$j(currNode).addClass("row_highlight");
+				    						$j(currNode.nextSibling).addClass("row_highlight");
+				    					}
+		    		    				self.hoverRowSelection = null;
+		    		    				dataRow = this.previousSibling;
+		    		    				//If this is the current highlighted row with up/down arrows and at the sametime 
+		    		    				//was hovered over, keep it highlighted
+		    		    				if(self.curRowSelection != null && self._table.fnGetPosition(dataRow) == self.curRowSelection)
+		    			    				return;
+		    		    				$j(dataRow).removeClass('row_highlight');
+		    		    			}
+		    		    		);
+		    				//draw a strike through for all voided/retired objects that have been loaded
+				    		if(rowData && (rowData.voided || rowData.retired)){		    			
+				    			$j(verboseRow).children().each(function(){		    				
+				    				$j(this).addClass('voided');
+				    			}); 
+				    		}
+				    		if(self.options.selectionHandler) {
+				    			$j(verboseRow).bind('click', function() {
+				    				rowIndex = self._table.fnGetPosition(this.previousSibling);
+				    				//Onclick handlers should work on the verbose row too
+				    				self._doSelected(rowIndex, self._results[rowIndex]);
+				    			});
+				    		}
+		    		}}
 		    		
+		    		if(!$j(verboseCheckBox).attr('checked')){
+		    			$j('.verbose').hide();
+		    		}
+		    	},
+		    	
+		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+		    		//register hover event handlers to unhighlight the current row highlighted with up/down keys
+		    		$j(nRow).hover(
+		    			function(){
+		    				if(self.curRowSelection != null){
+		    					currentNode = self._table.fnGetNodes()[self.curRowSelection];
+		    					self._unHighlightRow(currentNode);
+		    				}
+			    			self.hoverRowSelection = iDisplayIndexFull;
+			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).attr('checked'))
+			    				$j(this.nextSibling).addClass('row_highlight');
+		    			}, function(){
+		    				if(self.curRowSelection != null){
+		    					currentNode = self._table.fnGetNodes()[self.curRowSelection];
+			    				$j(currentNode).addClass("row_highlight");
+			    				if(self.options.showIncludeVerbose)
+				    				$j(currentNode.nextSibling).addClass('row_highlight');
+		    				}
+			    			self.hoverRowSelection = null;
+			    			if(self.curRowSelection != null && self._table.fnGetPosition(this) == self.curRowSelection)
+			    				return;
+			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).attr('checked'))
+			    				$j(this.nextSibling).removeClass('row_highlight');
+		    			}
+		    		);
+		    			
 		    		var currItem = self._results[iDisplayIndexFull];
 		    		//draw a strike through for all voided/retired objects that have been loaded
 		    		if(currItem && (currItem.voided || currItem.retired)){		    			
@@ -396,17 +521,29 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	}
 		    });
 		    
+		    //register an onchange event handler for the length dropdown so that we don't lose 
+		    //the row highlight when the user makes changes to the length
+		    var selectElement = document.getElementById('openmrsSearchTable_length').getElementsByTagName('select')[0];
+		    if(selectElement){
+		    	$j(selectElement).change(function(){
+		    		input.focus();
+		    	});
+		    }
+		    
 		    //if we have initial data, set the current page and number of pages for the row highlight not to break
 		    if(self.options.initialData){
-		    	self._table.currPage = 1;
 		    	var initialRowCount = self.options.initialData.length;
 				if(initialRowCount % self._table.fnSettings()._iDisplayLength == 0)
 					self._table.numberOfPages = initialRowCount/self._table.fnSettings()._iDisplayLength;
 				else
 					self._table.numberOfPages = Math.floor(initialRowCount/self._table.fnSettings()._iDisplayLength)+1;
 				
-		    }else if(self.options.searchPhrase)
+		    } else if(self.options.searchPhrase || self.options.doSearchWhenEmpty) {
+		    	if (self.options.searchPhrase == null) {
+		    		self.options.searchPhrase = "";
+		    	}
 		    	$j(input).val(self.options.searchPhrase).keyup();
+		    }
 		},
 		
 		_makeColumns: function() {
@@ -441,9 +578,13 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				var storedCallCount = this._callCount++;
 				spinnerObj.css("visibility", "visible");
 				this._lastCallCount = storedCallCount;
+				numberOfResults = this._table.fnSettings()._iDisplayLength;
+				if(MAXIMUM_NUMBER_OF_RESULTS && MAXIMUM_NUMBER_OF_RESULTS > 0 && 
+						MAXIMUM_NUMBER_OF_RESULTS < numberOfResults)
+					numberOfResults = MAXIMUM_NUMBER_OF_RESULTS
 				//First get data to appear on the first page
 				this.options.searchHandler(text, this._handleResults(text, storedCallCount), true, 
-						{includeVoided: tmpIncludeVoided, start: 0, length: this._table.fnSettings()._iDisplayLength});
+						{includeVoided: tmpIncludeVoided, start: 0, length: numberOfResults});
 			}
 		},
 		
@@ -455,6 +596,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					$j(notification).html(results["notification"]);
 				
 				var matchCount = results["count"];
+				//if we have any hits, enforce the max results limit
+				if(matchCount > 0 && MAXIMUM_NUMBER_OF_RESULTS > 0 && matchCount > MAXIMUM_NUMBER_OF_RESULTS)
+					matchCount = MAXIMUM_NUMBER_OF_RESULTS;
+				
 				self._results = results["objectList"];
 				if(matchCount <= self._table.fnSettings()._iDisplayLength){
 					spinnerObj.css("visibility", "hidden");
@@ -470,7 +615,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				//than the minimum characters, this can arise when user presses backspace relatively fast
 				//yet there were some intermediate calls that might have returned results
 				var currInput = $j.trim($j("#inputNode").val());
-				if(currInput == ''){
+				if(currInput == '' && !self.options.doSearchWhenEmpty){
 					if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
@@ -518,10 +663,13 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			if(curCallCount && this._lastCallCount > curCallCount) {
 				return;
 			}
+			actualBatchSize = BATCH_SIZE;
+			if((startIndex+BATCH_SIZE) > matchCount)
+				actualBatchSize = matchCount-this._results.length;
 			
 			this.options.searchHandler(searchText, this._addMoreRows(curCallCount, searchText, matchCount, startIndex, curSubCallCount),
 				false, {includeVoided: this.options.showIncludeVoided && checkBox.attr('checked'),
-				start: startIndex, length: BATCH_SIZE});
+				start: startIndex, length: actualBatchSize});
 					
 			if(inSerialMode)
 				return;
@@ -536,7 +684,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					if(ajaxTimer)
 						window.clearTimeout(ajaxTimer);
 						return;
-					}
+				}
 			}, 10);//fetch more results every 10ms till we have all
 		},
 			
@@ -579,7 +727,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			this._table.fnAddData(d);
 			
 			this._table.numberOfPages = 1;
-			this._table.currPage = 1;
 			
     	    if(matchCount <= this._table.fnSettings()._iDisplayLength){
     	    	$j('#openmrsSearchTable_paginate').hide();
@@ -616,121 +763,108 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		},
 		
 		_doKeyDown: function() {
+			//the user is using the mouse and they also want to use up/down keys?, dont support this
+			if(this.hoverRowSelection != null)
+				return;
+			
 			var prevRow = this.curRowSelection;
-			if(this.curRowSelection == null) {
-				this.curRowSelection = 0;
-			}
-			else {
+			//if we are on the last page, and the last row is highlighted, do nothing
+			if(this._getCurrVisiblePage() == this._table.numberOfPages && prevRow >= (this._results.length-1) && this._results.length > 1)
+				return;
+			
+			//only move the highlight to next row if it is currently on the visible page otherwise should be on first row
+			if(this._isHighlightedRowOnVisiblePage()){
 				this.curRowSelection++;
-			}
-			//if the row has yet been populated, don't highlight it
-			if(!this._results[this.curRowSelection]){
-				this.curRowSelection--;//reverse
-				return;
-			}
-			if(this.curRowSelection >= this._table.fnGetData().length) {
-				this.curRowSelection--;//redact it
-				//cant go any further so return
-				return;
-			}
-			
-			if(prevRow != null) {
-				$j(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
-			}
-			
-			//If the selected row is the first one on the next page, flip over to its page
-			if(this.curRowSelection != 0 && (this.curRowSelection % this._table.fnSettings()._iDisplayLength) == 0) {
-				this._table.fnPageChange('next');
-			}
-			
-			//hide the hover
-			$j('.tr_row_highlight_hover').removeClass("tr_row_highlight_hover");
-			$j(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
-		},
-		
-		_doKeyUp: function() {
-			var prevRow = this.curRowSelection;
-			if(this.curRowSelection == null) {
-				if($j(spinnerObj).css("visibility") == "visible" || 
-						this._table.fnGetData().length < this._table.fnSettings()._iDisplayLength)
-					return;
-				this.curRowSelection = this._table.fnGetData().length-1;
-				this._table.currPage = this._table.numberOfPages;
-				this._table.fnPageChange('last');
-			}
-			else {
-				this.curRowSelection--;
-			}
-			
-			if(this.curRowSelection < 0) {
-				this.curRowSelection++;//redact it
-				//cant go any further so return
-				return;
-			}
-			
-			if(prevRow != null) {
-				$j(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
-
-				if(prevRow % this._table.fnSettings()._iDisplayLength == 0) {
-					this._table.fnPageChange('previous');
+				
+				//If the selected row is the first one on the next page, flip over to its page
+				if(this.curRowSelection != 0 && (this.curRowSelection % this._table.fnSettings()._iDisplayLength) == 0) {
+					this._table.fnPageChange('next');
 				}
 			}
 			
-			//hide the hover
-			$j('.tr_row_highlight_hover').removeClass("tr_row_highlight_hover");
-			$j(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
+			if(prevRow != null && this._results.length > 1) {
+				this._unHighlightRow(this._table.fnGetNodes()[prevRow]);
+			}
+			
+			this._highlightRow();
+		},
+		
+		_doKeyUp: function() {
+			if(this.hoverRowSelection != null)
+				return;
+			
+			//we are on the first page and the first row is already highlighted, do nothing
+			if(this._table.fnSettings()._iDisplayStart == 0 && this.curRowSelection == 0)
+				return;
+			
+			var prevRow = this.curRowSelection;
+			//only move the highlight to prev row if it is currently on the visible page otherwise shoule be last row
+			if(this._isHighlightedRowOnVisiblePage()){
+				this.curRowSelection--;
+				if(prevRow != null) {
+					if(prevRow % this._table.fnSettings()._iDisplayLength == 0)
+						this._table.fnPageChange('previous');
+				}
+			}else{
+				//user just flipped pages, highlight the last row on the currently visible page
+				if(this._getCurrVisiblePage() < this._table.numberOfPages){
+					this.curRowSelection = this._table.fnSettings()._iDisplayStart + this._table.fnSettings()._iDisplayLength - 1;
+				}else{
+					//this is the last page, highlight the last item in the table
+					this.curRowSelection = this._results.length-1;
+				}
+			}
+			
+			if(prevRow != null){
+				this._unHighlightRow(this._table.fnGetNodes()[prevRow]);
+			}
+			
+			this._highlightRow();
 		},
 		
 		_doPageUp: function() {
-			this._table.fnPageChange('next');
-			if(++this._table.currPage > this._table.numberOfPages)
-				this._table.currPage = this._table.numberOfPages;
-			
-			//move the highlight to the first row on the next page so that we dont lose it if the highlight isn't on the page			
-			if(this._table.currPage < this._table.numberOfPages || (this._table.currPage == this._table.numberOfPages && this.curRowSelection < 
-					((this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength)))
-				this._updateRowHighlight(((this._table.currPage - 1)*this._table.fnSettings()._iDisplayLength));
+			this._table.fnPageChange('previous');
+			if(this._isHighlightedRowOnVisiblePage())
+				return;
+			//update the highlight to go to last row on previous page
+			this._highlightRowOnPageFlip();
 		},
 		
 		_doPageDown: function() {
-			var rowToHighlight = null;
-			if(--this._table.currPage < 1){
-				this._table.currPage = 1;
-				this._table.fnPageChange('first');
-				if(this.curRowSelection == null || this.curRowSelection < this._table.fnSettings()._iDisplayLength)
-					return;
-				rowToHighlight = 0;
-			}
-			else{
-				rowToHighlight = (this._table.currPage - 1)*this._table.fnSettings()._iDisplayLength;
-				this._table.fnPageChange('previous');
-			}
+			this._table.fnPageChange('next');
+			//if this is the last page and we already have a selected row, do nothing
+			if( (this._getCurrVisiblePage() == this._table.numberOfPages) && this.curRowSelection > this._table.fnSettings()._iDisplayStart)
+			 	return;
 			
-			this._updateRowHighlight(rowToHighlight);
+			this._highlightRowOnPageFlip();
 		},
 		
 		_doKeyEnter: function() {
-			if(this.curRowSelection != null) {
-				this._doSelected(this.curRowSelection, this._results[this.curRowSelection]);
+			var selectedRowIndex = null;
+			if(this.hoverRowSelection != null) {
+				selectedRowIndex = this.hoverRowSelection;
+			}else if(this.curRowSelection != null){
+				selectedRowIndex = this.curRowSelection;
 			}
+			
+			if(selectedRowIndex != null)
+				this._doSelected(selectedRowIndex, this._results[selectedRowIndex]);
 		},
 		
 		_doKeyHome: function() {
 			this._table.fnPageChange('first');
-			this._table.currPage = 1;
-			if(this.curRowSelection == null || this.curRowSelection < this._table.fnSettings()._iDisplayLength)
+			if(this._isHighlightedRowOnVisiblePage())
 				return;
-			this._updateRowHighlight(0);
+			
+			this._highlightRowOnPageFlip();
 		},
 		
 		_doKeyEnd: function() {
 			this._table.fnPageChange('last');
-			this._table.currPage = this._table.numberOfPages;
-			//if the highlight is already on the last page, don't switch it
-			if( this.curRowSelection != null && this.curRowSelection > (this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength )
+			if(this._isHighlightedRowOnVisiblePage())
 				return;
-				
-			this._updateRowHighlight(((this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength));
+			
+			this._highlightRowOnPageFlip();
 		},
 		
 		_doSelected: function(position, rowData) {
@@ -753,19 +887,98 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	        }
 	        alert("LOG=[" + s + "]");
 	    },
-		
+	    
+	    _highlightRowOnPageFlip: function(){
+	    	//deselect the current selected row if any
+			if(this.curRowSelection != null){
+				currentNode = this._table.fnGetNodes()[this.curRowSelection];
+				$j(currentNode).removeClass("row_highlight");
+				if(this.options.showIncludeVerbose)
+					$j(currentNode.nextSibling).removeClass('row_highlight');
+			}
+			
+			this.curRowSelection = null;
+			this._highlightRow();
+	    },
+	    
+	    /*
+	     * Highlights the row at the index that matches the value of 'curRowSelection' otherwise the 
+	     * first on the current visible page
+	     */
+	    _highlightRow: function(){
+	    	//the row to hightlight has to be on the visible page, this helps not to lose the highlight
+	    	//when the user uses the pagination buttons(datatables provides no callback function)
+			if(!this._isHighlightedRowOnVisiblePage()){
+				//highlight the first row on the currently visible page
+				this.curRowSelection = this._table.fnSettings()._iDisplayStart;
+			}
+			currentNode = this._table.fnGetNodes()[this.curRowSelection];
+			$j(currentNode).addClass("row_highlight");
+			if(this.options.showIncludeVerbose)
+				$j($j(currentNode).next()).addClass('row_highlight');
+	    },
+	    
+	    /*
+	     * Unhighlights the specified row
+	     */
+	    _unHighlightRow: function(row){
+	    	$j(row).removeClass("row_highlight");
+			if(this.options.showIncludeVerbose)
+				this._unHighlightVerboseRow(row.nextSibling);
+	    },
+	    
+	    /**
+	     * Unhighlights the specified verbose row
+	     * @param vRow the verbose row to be unhighlighted
+	     */
+	    _unHighlightVerboseRow: function(vRow){
+	    	if(vRow){
+	    		//the verbose row inherits its bg color from the actual data row
+	    		//so we need to do the same if the class is not present
+	    		if($j(vRow).hasClass('row_highlight'))
+	    			$j(vRow).removeClass('row_highlight');
+	    		else
+	    			$j(vRow).css('background-color', $j(vRow.previousSibling).css('background-color'));
+			}
+	    },
+	    
+	    /* Returnss true if the row highlight is on the current visible page */
+	    _isHighlightedRowOnVisiblePage:function(){
+	    	return this.curRowSelection != null && (this.curRowSelection >= this._table.fnSettings()._iDisplayStart) 
+					&& (this.curRowSelection < (this._table.fnSettings()._iDisplayStart + this._table.fnSettings()._iDisplayLength));
+	    },
+	    
+	    /* Gets the number of columns that will be visible */
+	    _getVisibleColumnCount: function(){
+	    	if(!this.options.columnVisibility)
+	    		return this.options.fieldsAndHeaders.length;
+	    	
+	    	var self = this;
+	    	var count = 0;
+	    	var columnIndex = 0;
+	    	$j.map(self.options.fieldsAndHeaders, function(c) {
+				if(self.options.columnVisibility[columnIndex] == true )
+					count++;
+				
+				columnIndex++;
+			});
+	    	
+	    	return count;
+	    },
+	    
+	    /* Gets the current page the user is viewing on the screen */
+	    _getCurrVisiblePage:function(){
+	    	return Math.ceil(this._table.fnSettings()._iDisplayStart / this._table.fnSettings()._iDisplayLength) + 1;
+	    },
 		_updatePageInfo: function(searchText) {
-			$j('#pageInfo').html(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'"));
+			textToDisplay = omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'");
+			if($j.trim(searchText) == '')
+				textToDisplay = omsgs.viewingAll;
+			
+			$j('#pageInfo').html(textToDisplay);
 
 			if($j('#pageInfo').css("visibility") != 'visible')
 				$j('#pageInfo').css("visibility", "visible");
-		},
-		
-		_updateRowHighlight: function(rowNumber){
-			//highlight the row if the highlight is visible
-			$j(this._table.fnGetNodes()[this.curRowSelection]).removeClass("row_highlight");
-			$j(this._table.fnGetNodes()[rowNumber]).addClass("row_highlight");
-			this.curRowSelection = rowNumber;
 		},
 		
 		//This function adds the data returned by the second ajax call that fetches the remaining rows
@@ -776,7 +989,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				//Don't display results from delayed ajax calls when the input box is blank or has less 
 				//than the minimum characters
 				var currInput = $j.trim($j("#inputNode").val());
-				if(currInput == ''){
+				if(currInput == '' && !self.options.doSearchWhenEmpty){
 					$j(notification).html(" ");
 					if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
@@ -832,7 +1045,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 							for(var i in self._bufferedAjaxCallCounters){
 								subCallCounter = self._bufferedAjaxCallCounters[i];
 								//Skip past the ones that come after those that are not yet returned by DWR calls e.g if we have ajax
-								//calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ingore 5 since it has to wait on 4							
+								//calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ignore 5 since it has to wait on 4							
 								bufferedRows = buffer[subCallCounter];
 								if(subCallCounter && (subCallCounter == nextSubCallCount) && bufferedRows){
 									self._table.fnAddData(bufferedRows);
@@ -886,58 +1099,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					pageStr = omsgs.pagesWithPlaceHolder.replace("_NUMBER_OF_PAGES_", self._table.numberOfPages);
 					$j('#pageInfo').append(" - "+pageStr);
 				}
-				
-				//TODO Fix this very hacky way to capture the visible buttons before the user clicks any of them,
-				//so that we can add/remove onclick events to/from each.
-				$j("#openmrsSearchTable_paginate").mouseenter(function(){
-					var buttonElement = document.getElementById('openmrsSearchTable_paginate');
-					if(buttonElement){
-					    var spans = buttonElement.getElementsByTagName("span");
-					    if(self._results && self._results.length > 0){
-					    	for(var i in spans){
-					    		var span = spans[i];
-					    		var elementClass = span.className;	
-					    		if(span.getElementsByTagName){
-					    			var children = span.getElementsByTagName("span");
-					    			//ignore disbaled buttons and the span tag that has nested spans for the numbering 1,2,3,4,5,........
-					    			if(children == null || children.length == 0){					    			
-					    				//ignore the greyed out buttons
-					    				if(span.className && span.className.indexOf("ui-state-disabled") < 0 ){
-					    					span.onclick = function(){
-					    						if(this.innerHTML){
-					    							var buttonText = $j.trim(this.innerHTML);
-					    							//if the clicked button bears a number
-					    							if(Number(buttonText)){
-					    								self._table.currPage = buttonText;
-					    								self._updateRowHighlight((self._table.currPage - 1)*self._table.fnSettings()._iDisplayLength);
-					    							}else{
-					    								//move the highlight to the first row on the displayed page
-					    								if(buttonText == omsgs.next){
-					    									self._table.currPage++;								
-					    									self._updateRowHighlight((self._table.currPage - 1)*self._table.fnSettings()._iDisplayLength);
-					    								}else if(buttonText == omsgs.previous){
-					    									self._table.currPage--;
-					    									self._updateRowHighlight((self._table.currPage - 1)*self._table.fnSettings()._iDisplayLength);
-					    								}else if(buttonText == omsgs.first){
-					    									self._table.currPage = 1;
-					    									self._updateRowHighlight(0);
-					    								}else if(buttonText == omsgs.last){
-					    									self._table.currPage = self._table.numberOfPages;
-					    									self._updateRowHighlight((self._table.numberOfPages - 1)*self._table.fnSettings()._iDisplayLength);
-					    								}
-					    							}
-					    						}
-					    					};
-					    				}else{
-					    					//drop the event handler if the button was previously active
-					    					span.onclick = "";
-					    				}
-					    			}
-					    		}
-					    	}
-					    }
-					}
-				});
 				
 				//if there are still more hits to fetch and we are in serial mode, get them
 				if(inSerialMode && actualResultCount < matchCount){
