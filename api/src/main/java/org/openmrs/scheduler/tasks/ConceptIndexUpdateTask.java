@@ -72,10 +72,11 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 						log.debug("updateConceptWords() : current concept: " + currentConcept);
 					cs.updateConceptIndex(currentConcept);
 					
-					gp.setPropertyValue(currentConcept.getConceptId().toString());
-					as.saveGlobalProperty(gp);
 					// keep memory consumption low
-					if (counter++ > 200) {
+					if (counter++ > 25) {
+						gp.setPropertyValue(currentConcept.getConceptId().toString());
+						as.saveGlobalProperty(gp);
+						
 						//persist to DB prior to releasing memory
 						Context.flushSession();
 						Context.clearSession();
