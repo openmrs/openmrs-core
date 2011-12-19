@@ -69,6 +69,10 @@ public class RelationshipTypeFormController extends SimpleFormController {
 		if (type.getbIsToA() == null || type.getbIsToA().equals(""))
 			errors.rejectValue("bIsToA", "RelationshipType.bIsToA.required");
 		
+		if (!StringUtils.hasText(type.getDescription()))
+			errors.rejectValue("description", "error.required", new Object[] { Context.getMessageSourceService().getMessage(
+			    "general.description") }, null);
+		
 		return super.processFormSubmission(request, response, type, errors);
 	}
 	
@@ -127,6 +131,12 @@ public class RelationshipTypeFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
 					return showForm(request, response, errors);
 				}
+			}
+			// if the user unretiring relationship type
+			else if (request.getParameter("unretire") != null) {
+				ps.unretireRelationshipType(relationshipType);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "RelationshipType.unretiredSuccessfully");
+				view = getSuccessView();
 			}
 			
 		}

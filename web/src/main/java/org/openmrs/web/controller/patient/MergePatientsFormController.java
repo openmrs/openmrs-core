@@ -87,6 +87,7 @@ public class MergePatientsFormController extends SimpleFormController {
 			String pref = request.getParameter("preferred");
 			String[] nonPreferred = request.getParameter("nonPreferred").split(",");
 			String redirectURL = request.getParameter("redirectURL");
+			String modalMode = request.getParameter("modalMode");
 			
 			Patient preferred = ps.getPatient(Integer.valueOf(pref));
 			List<Patient> notPreferred = new ArrayList<Patient>();
@@ -105,6 +106,13 @@ public class MergePatientsFormController extends SimpleFormController {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.merge.fail");
 				return showForm(request, response, errors);
 			}
+			
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.merged");
+			
+			if ("true".equals(modalMode)) {
+				return showForm(request, response, errors);
+			}
+			
 			int index = redirectURL.indexOf(request.getContextPath(), 2);
 			if (index != -1) {
 				redirectURL = redirectURL.substring(index);
@@ -112,8 +120,6 @@ public class MergePatientsFormController extends SimpleFormController {
 					redirectURL = "findDuplicatePatients.htm";
 			} else
 				redirectURL = view;
-			
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.merged");
 			
 			return new ModelAndView(new RedirectView(redirectURL));
 		}
@@ -185,6 +191,7 @@ public class MergePatientsFormController extends SimpleFormController {
 		map.put("patientEncounters", encounterList);
 		map.put("patient2", p2);
 		map.put("patientList", patientList);
+		map.put("modalMode", request.getParameter("modalMode"));
 		
 		return map;
 	}
