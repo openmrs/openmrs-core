@@ -49,7 +49,6 @@
                             		<li>$l10n.get("install.testing.list.avoidOverriting")</li>
                             		<li>$l10n.get("install.testing.list.ensurePath")</li>
                             		<li>$l10n.get("install.testing.list.ensureConnection")</li>
-                            		<li>$l10n.get("install.testing.list.time")</li>
                             	</ul>
                             </td>
                         </tr>
