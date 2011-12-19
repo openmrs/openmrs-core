@@ -86,6 +86,11 @@ public abstract class StartupFilter implements Filter {
 	protected Map<String, Object[]> errors = new HashMap<String, Object[]>();
 	
 	/**
+	 * Messages that will be displayed to the user
+	 */
+	protected Map<String, Object[]> msgs = new HashMap<String, Object[]>();
+	
+	/**
 	 * Used for configuring tools within velocity toolbox
 	 */
 	private ToolContext toolContext = null;
@@ -141,6 +146,7 @@ public abstract class StartupFilter implements Filter {
 				} else if (httpRequest.getMethod().equals("POST")) {
 					// only clear errors before POSTS so that redirects can show errors too.
 					errors.clear();
+					msgs.clear();
 					doPost(httpRequest, httpResponse);
 				}
 			}
@@ -244,6 +250,7 @@ public abstract class StartupFilter implements Filter {
 		}
 		
 		velocityContext.put("errors", errors);
+		velocityContext.put("msgs", msgs);
 		
 		// explicitly set the content type for the response because some servlet containers are assuming text/plain
 		httpResponse.setContentType("text/html");

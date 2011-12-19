@@ -737,6 +737,7 @@ public class InitializationFilter extends StartupFilter {
 								page = DATABASE_SETUP;
 								wizardModel.currentStepNumber = 2;
 							}
+							msgs.put("install.testing.testingModuleFound", null);
 						} else {
 							renderTemplate(page, referenceMap, httpResponse);
 							return;
