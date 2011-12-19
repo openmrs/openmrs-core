@@ -62,7 +62,7 @@
 							</c:forEach>
 						</td>
                         <td valign="top">
-							${program.outcomesConcept.name}
+							<openmrs:format concept="${program.outcomesConcept}"/>
 						</td>
 					</c:if>
 				</tr>

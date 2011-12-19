@@ -85,7 +85,7 @@
 		<input type="hidden" name="jumpAction" id="jumpAction" value="previous"/>
 		<a href="#previousConcept" id="previousConcept" valign="middle" accesskey="," onclick="return jumpToConcept('previous')"><spring:message code="general.previous"/></a> |
 		<c:if test="${conceptsLocked != 'true'}">
-		<openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form?conceptId=${command.concept.conceptId}" id="editConcept" accesskey="e" valign="middle"></openmrs:hasPrivilege><spring:message code="general.edit"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege> |
+		<openmrs:hasPrivilege privilege="Manage Concepts"><a href="concept.form?conceptId=${command.concept.conceptId}" id="editConcept" accesskey="e" valign="middle"></openmrs:hasPrivilege><spring:message code="general.edit"/><openmrs:hasPrivilege privilege="Manage Concepts"></a></openmrs:hasPrivilege> |
 		</c:if>
 		<a href="conceptStats.form?conceptId=${command.concept.conceptId}" accesskey="s" id="conceptStats" valign="middle"><spring:message code="Concept.stats"/></a> |
 		<a href="#nextConcept" id="nextConcept" valign="middle" accesskey="." onclick="return jumpToConcept('next')"><spring:message code="general.next"/></a> 
@@ -93,7 +93,7 @@
 </c:if>
 
 <c:if test="${conceptsLocked != 'true'}">
-	| <openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form" id="newConcept" valign="middle"></openmrs:hasPrivilege><spring:message code="general.new"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege>
+	| <openmrs:hasPrivilege privilege="Manage Concepts"><a href="concept.form" id="newConcept" valign="middle"></openmrs:hasPrivilege><spring:message code="general.new"/><openmrs:hasPrivilege privilege="Manage Concepts"></a></openmrs:hasPrivilege>
 </c:if>
 
 <form class="inlineForm" action="index.htm" method="get">
@@ -282,13 +282,27 @@
 			</tr>
 		</c:if>
 	 	<tr id="conceptMapRow">
-			<th valign="top" title="<spring:message code="Concept.mappings.help"/>">
+			<th valign="top" style="padding-top: 8px" title="<spring:message code="Concept.mappings.help"/>">
 				<spring:message code="Concept.mappings"/>
 			</th>
 			<td>
-				<c:forEach var="mapping" items="${command.mappings}" varStatus="mapStatus">
-					${mapping.source.name}: ${mapping.sourceCode} <br/>
+				<table cellpadding="5" cellspacing="3" align="left" class="lightBorderBox">
+				<tr id="conceptMappingsHeadersRow" <c:if test="${fn:length(command.conceptMappings) == 0}">style="display:none"</c:if>>
+					<th style="text-align: center"><spring:message code="Concept.mappings.relationship"/></th>
+					<th style="text-align: center"><spring:message code="ConceptReferenceTerm.source"/></th>
+					<th style="text-align: center"><spring:message code="ConceptReferenceTerm.code"/></th>
+					<th style="text-align: center"><spring:message code="general.name"/></th>
+				</tr>
+				<c:forEach var="mapping" items="${command.conceptMappings}" varStatus="mapStatus">
+					<tr <c:if test="${mapStatus.index % 2 == 0}">class='evenRow'</c:if>>
+						<td>${mapping.conceptMapType.name}</td>
+						<td>${mapping.conceptReferenceTerm.conceptSource.name}</td>
+						<td>${mapping.conceptReferenceTerm.code}</td>
+						<td>${mapping.conceptReferenceTerm.name}</td>
+					</tr>
 				</c:forEach>
+				
+				</table>
 			</td>
 		</tr>
 		

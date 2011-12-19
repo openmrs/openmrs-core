@@ -22,7 +22,9 @@
 					includeVoidedLabel: '<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>', 
 					columnRenderers: [nameColumnRenderer, null], 
 					columnVisibility: [true, false],
-					searchPhrase:'<request:parameter name="phrase"/>'
+					searchPhrase:'<request:parameter name="phrase"/>',
+					showIncludeVerbose: true,
+					verboseHandler: doGetVerbose
 				});
 	});
 	
@@ -41,6 +43,13 @@
 			return "<span>"+oObj.aData[0]+"</span><span class='otherHit'> &rArr; "+oObj.aData[1]+"</span>";
 		
 		return "<span>"+oObj.aData[0]+"</span>";
+	}
+	
+	//generates and returns the verbose text
+	function doGetVerbose(index, data){
+		if(!data)
+			return "";
+		return "#"+data.conceptId+": "+data.description;
 	}
 </script>
 
