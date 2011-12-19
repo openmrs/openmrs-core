@@ -2,8 +2,11 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 var omsgs = new Array();
 var gp = new Array();//array to hold only global properties
+var gp = new Array();//array to hold only global properties
+var userProperties = new Array();//Array to hold userProperties
 omsgs.minSearchCharactersGP="<openmrs:globalProperty key="minSearchCharacters" defaultValue="3"/>";
 omsgs.datePattern="<openmrs:datePattern />";
+omsgs.name="<spring:message javaScriptEscape="true" code="general.name"/>";
 
 omsgs.addNewPatient="<spring:message javaScriptEscape="true" code="Patient.addNew"/>";
 omsgs.addNewPersonMsg="<spring:message code='Person.addNew.msg' />";
@@ -42,6 +45,9 @@ omsgs.userRoles="<spring:message code="User.roles" javaScriptEscape="true"/>";
 omsgs.username="<spring:message code="User.username" javaScriptEscape="true"/>";
 omsgs.yearsOld="<spring:message code="general.yearsOldAbbrev" javaScriptEscape="true"/>";
 omsgs.tabLabelPrefix="<spring:message code="Patient.merge.tabLabelPrefix" javaScriptEscape="true"/>";
+omsgs.conceptSource="<spring:message javaScriptEscape="true" code="ConceptReferenceTerm.source"/>";
+omsgs.conceptReferenceTermCode="<spring:message javaScriptEscape="true" code="ConceptReferenceTerm.code"/>";
+omsgs.referencTermSearchPlaceholder="<spring:message javaScriptEscape="true" code="ConceptReferenceTerm.searchBox.placeholder"/>";
 
 omsgs.genderArray=new Array();
 <openmrs:forEachRecord name='gender'>
@@ -83,6 +89,7 @@ omsgs.userListingHeaders=new Array();
 gp.maxSearchResults=<openmrs:globalProperty key="searchWidget.batchSize" defaultValue="200"/>;
 gp.searchRunInSerialMode=<openmrs:globalProperty key="searchWidget.runInSerialMode" defaultValue="false"/>;
 gp.searchDelay=<openmrs:globalProperty key="searchWidget.searchDelayInterval" defaultValue="400"/>;
+gp.maximumResults=<openmrs:globalProperty key="searchWidget.maximumResults" defaultValue="2000"/>;
 
 /* General Labels and text to be used on SEARCH WIDGET */
 omsgs.encounterType="<spring:message code="Encounter.type" javaScriptEscape="true" />";
@@ -92,17 +99,27 @@ omsgs.encounterLocation="<spring:message code="Encounter.location" javaScriptEsc
 omsgs.encounterDate="<spring:message code="Encounter.datetime" javaScriptEscape="true" />";
 omsgs.last="<spring:message code="searchWidget.last" javaScriptEscape="true" />";
 omsgs.first="<spring:message code="searchWidget.first" javaScriptEscape="true" />";
-omsgs.minCharRequired="<spring:message code="searchWidget.minCharRequired" javaScriptEscape="true" />";
+omsgs.minCharRequired="<spring:message code="searchWidget.minCharRequired" javaScriptEscape="true" arguments="_REQUIRED_NUMBER_" />";
 omsgs.next="<spring:message code="searchWidget.next" javaScriptEscape="true" />";
 omsgs.noMatchesFound="<spring:message code="searchWidget.noMatchesFound" javaScriptEscape="true" />";
 omsgs.page="<spring:message code="searchWidget.page" javaScriptEscape="true" />";
 omsgs.pages="<spring:message code="searchWidget.pages" javaScriptEscape="true" />";
 omsgs.patientName="<spring:message code="Patient.name" javaScriptEscape="true" />";
 omsgs.previous="<spring:message code="searchWidget.previous" javaScriptEscape="true" />";
-omsgs.pagesWithPlaceHolder="<spring:message code="searchWidget.pagesWithPlaceHolder" javaScriptEscape="true" />";
+omsgs.pagesWithPlaceHolder="<spring:message code="searchWidget.pagesWithPlaceHolder" javaScriptEscape="true" arguments="_NUMBER_OF_PAGES_" />";
 omsgs.of="<spring:message code="general.of" javaScriptEscape="true" />";
 omsgs.onePage="<spring:message code="searchWidget.OnePage" javaScriptEscape="true" />";
-omsgs.sInfoLabel="<spring:message code="searchWidget.sInfoLabel" javaScriptEscape="true" />";
+omsgs.sInfoLabel="<spring:message code="searchWidget.sInfoLabel" javaScriptEscape="true" arguments="_START_, _END_, _TOTAL_" />";
 omsgs.to="<spring:message code="general.to" javaScriptEscape="true" />";
-omsgs.viewingResultsFor="<spring:message code="searchWidget.viewingResults" javaScriptEscape="true" />";
-omsgs.loadingWithArgument="<spring:message code="searchWidget.loadingWithPlaceHolder" javaScriptEscape="true" />";
+omsgs.viewingResultsFor="<spring:message code="searchWidget.viewingResults" javaScriptEscape="true" arguments="_SEARCH_TEXT_" />";
+omsgs.loadingWithArgument="<spring:message code="searchWidget.loadingWithPlaceHolder" javaScriptEscape="true" arguments="_NUMBER_OF_PAGES_" />";
+omsgs.showVerbose="<spring:message code="searchWidget.showVerbose" javaScriptEscape="true"/>";
+omsgs.viewingAll="<spring:message code="searchWidget.viewingAll" javaScriptEscape="true"/>";
+omsgs.showNumberofEntries="<spring:message code="searchWidget.showNumberOfEntries" javaScriptEscape="true" arguments="_MENU_"/>";
+
+/* User Properties*/
+userProperties.showRetired=<openmrs:userProperty key="showRetired" defaultValue="false"/>;
+userProperties.showVerbose=<openmrs:userProperty key="showVerbose" defaultValue="false"/>;
+
+omsgs.providerName="<spring:message code="Provider.name" javaScriptEscape="true" />";
+omsgs.providerIdentifier="<spring:message code="Provider.identifier" javaScriptEscape="true" />";

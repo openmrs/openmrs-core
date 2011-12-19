@@ -1,70 +1,273 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
-<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
+<openmrs:htmlInclude
+	file="/scripts/jquery/dataTables/css/dataTables.css" />
+<openmrs:htmlInclude
+	file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
 
-<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
-<link href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css" type="text/css" rel="stylesheet" />
+<openmrs:htmlInclude
+	file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
+<link
+	href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css"
+	type="text/css" rel="stylesheet" />
+
+<style>
+.dimmedDates {
+	font-size: small;
+	color: grey;
+	white-space: nowrap;
+}
+tr.encounter-in-visit td {
+	border-width: 0px;
+	border-color: #1aac9b;
+	border-style: solid;
+	padding: 5px;
+}
+
+tr.encounter-in-visit td:first-child {
+	border-left-width: 1px;
+}
+
+tr.encounter-in-visit td:last-child {
+	border-right-width: 1px;
+}
+
+tr.top-encounter-in-visit td {
+	border-top-width: 1px;
+}
+
+tr.top-encounter-in-visit td:first-child {
+	border-left-width: 1px;
+	border-top-left-radius: 10px;
+}
+
+tr.top-encounter-in-visit td:last-child {
+	border-right-width: 1px;
+	border-top-right-radius: 10px;
+}
+
+tr.bottom-encounter-in-visit td {
+	border-bottom-width: 1px;
+}
+
+tr.bottom-encounter-in-visit td:first-child {
+	border-left-width: 1px;
+	border-bottom-left-radius: 10px;
+}
+
+tr.bottom-encounter-in-visit td:last-child {
+	border-right-width: 1px;
+	border-bottom-right-radius: 10px;
+}
+</style>
+
+<script type="text/javascript">
+	$j(document)
+			.ready(
+					function() {
+						$j('#patientVisitsTable')
+								.dataTable(
+										{
+											"bProcessing" : true,
+											"bServerSide" : true,
+											"sAjaxSource" : "${pageContext.request.contextPath}/admin/visits/datatable.list?patient=${model.patient.patientId}",
+											"bLengthChange" : false,
+											"oLanguage": {
+												"sInfo": ""//hack to hide the text but keep the element to maintain the UI
+											},
+											"aoColumns" : [ {
+												"bVisible" : false
+											}, {
+												"bVisible" : false
+											}, null, {
+												"bVisible" : false
+											}, {
+												"bVisible" : false
+											}, {
+												"bVisible" : false
+											}, {
+												"bVisible" : false
+											}, {
+												"bVisible" : false
+											}, {
+												"bVisible" : false
+											}, null, null, null, null, null, null, {
+												"bVisible" : false
+											} ],
+											"fnRowCallback" : function(nRow,
+													aData, iDisplayIndex) {
+												var encounterId = aData[9];
+												if (encounterId != '') {
+													//Changes the action column
+													var actions = '';
+													var encounterURL = aData[15];
+
+													var viewImg = '<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" />';
+													actions = actions
+															+ ' <a href="'
+															+ encounterURL
+															+ '">'
+															+ viewImg + '</a>';
+
+													$j('td:eq(1)', nRow).html(
+															actions);
+												} else {
+													$j('td:eq(2)', nRow)
+															.html(
+																	'<i><spring:message code="Encounter.noEncounters" /></i>');
+												}
+												return nRow;
+											},
+											"fnDrawCallback" : function(
+													oSettings) {
+												if (oSettings.aiDisplay.length == 0) {
+													return;
+												}
+
+												sInfoElement = document.getElementById('patientVisitsTable_info');
+												pageCount = Math.ceil(oSettings._iRecordsTotal/oSettings._iDisplayLength);
+												currentPage = Math.ceil(oSettings._iDisplayStart/oSettings._iDisplayLength) + 1;
+												pageInfoElement = document.getElementById('pageInfo');
+												if(!pageInfoElement){
+													pageInfoElement = document.createElement('div');
+													pageInfoElement.id = 'pageInfo';
+													$j(pageInfoElement).css('float','left');
+													//vertically position the element just like 'sInfo'
+													$j(pageInfoElement).css('padding-top', $j(sInfoElement).css('padding-top'));
+												}
+												
+												pageInfoElement.innerHTML = '<b><spring:message code="patientDashboard.visits.showing.pages"/>'.
+													replace('{0}', currentPage).replace('{1}', pageCount)+'</b>';
+												sInfoElement.parentNode.insertBefore(pageInfoElement, sInfoElement);
+
+												var trs = $j('#patientVisitsTable tbody tr');
+												var colspan = trs[0]
+														.getElementsByTagName('td').length;
+												var lastVisitId = "";
+												for ( var i = 0; i < trs.length; i++) {
+													//Groups visits
+
+													var iDisplayIndex = i;
+													var aoData = oSettings.aoData[oSettings.aiDisplay[iDisplayIndex]];
+													var visitId = aoData._aData[0];
+													var first = aoData._aData[7];
+													var last = aoData._aData[8];
+
+													if (visitId != '') {
+														$j(trs[i])
+																.addClass(
+																		'encounter-in-visit');
+													}
+
+													if (first == 'true') {
+														$j(trs[i])
+																.addClass(
+																		'top-encounter-in-visit');
+													}
+													if (last == 'true') {
+														$j(trs[i])
+																.addClass(
+																		'bottom-encounter-in-visit');
+
+														//Adds a whitespace between groups
+														var trGroup = document
+																.createElement('tr');
+														var tdGroup = document
+																.createElement('td');
+														tdGroup.colSpan = colspan;
+														trGroup
+																.appendChild(tdGroup);
+														trs[i].parentNode
+																.insertBefore(
+																		trGroup,
+																		trs[i + 1]);
+													}
+
+													if (visitId != lastVisitId) {
+														//Adds info about a visit to the first displayed row
+														if (visitId != '') {
+															var active = aoData._aData[1];
+															var type = visitsPortletEscapeHtml(aoData._aData[2]);
+															var location = visitsPortletEscapeHtml(aoData._aData[3]);
+															var from = aoData._aData[4];
+															var to = aoData._aData[5];
+															var indication = visitsPortletEscapeHtml(aoData._aData[6]);
+
+															visit = '<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId='
+																	+ visitId
+																	+ '&patientId=${model.patient.patientId}">'
+																	+ type
+																	+ '</a><br/><span class="dimmedDates"><spring:message code="general.fromDate" /> '
+																	+ from;
+															if (to != '') {
+																visit = visit + ' <spring:message code="general.toDate" /> ' + to;
+															}
+															visit = visit + '</span>';
+															$j('td:eq(0)',
+																	trs[i])
+																	.html(visit);
+														}
+
+														lastVisitId = visitId;
+													} else if(visitId == '') {
+														$j('td:eq(0)', trs[i]).html('<spring:message code="general.none" />');
+													} else{
+														$j('td:eq(0)', trs[i]).html('');
+													}
+												}
+											}
+										});
+					});
+
+	function visitsPortletEscapeHtml(text) {
+		return $j('<div/>').text(text).html();
+	}
+</script>
 
 <div id="portlet${model.portletUUID}">
-<div id="visitPortlet">
 
-	<openmrs:hasPrivilege privilege="View Visits">
-		<div id="visits">
-			<div class="boxHeader${model.patientVariation}"><c:choose><c:when test="${empty model.title}"><spring:message code="Visit.header"/></c:when><c:otherwise><spring:message code="${model.title}"/></c:otherwise></c:choose></div>
-			<div class="box${model.patientVariation}">
-				<openmrs:hasPrivilege privilege="Add Visits">
-				&nbsp;<a href="<openmrs:contextPath />/admin/visits/visit.form?patientId=${model.patient.patientId}"><spring:message code="Visit.add"/></a>
-				<br/><br/>
-				</openmrs:hasPrivilege>
-				<div>
-					<table cellspacing="0" cellpadding="2" id="patientVisitsTable">
-						<thead>
-							<tr>
-								<th class="visitEdit" align="center">
-									<spring:message code="general.edit"/>
-								</th>
-								<th class="visitTypeHeader"> <spring:message code="Visit.type"/>     </th>
-								<th class="visitLocationHeader"> <spring:message code="Visit.location"/> </th>
-								<th class="startDatetimeHeader"> <spring:message code="Visit.startDatetime"/> </th>
-								<th class="stopDatetimeHeader"> <spring:message code="Visit.stopDatetime"/> </th>
-								<th class="indicationHeader"> <spring:message code="Visit.indication"/> </th>
-							</tr>
-						</thead>
-						<tbody>
-							<openmrs:forEachVisit visits="${model.patientVisits}" sortBy="startDatetime" descending="true" var="visit" num="${model.num}">
-								<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
-									<td class="visitEdit" align="center">
-										<openmrs:hasPrivilege privilege="Edit Visits">
-											<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=${visit.visitId}">
-												<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" />
-											</a>
-										</openmrs:hasPrivilege>
-									</td>
-					 				<td class="visitType"><openmrs:format visitType="${visit.visitType}"/></td>
-					 				<td class="visitLocation"><openmrs:format location="${visit.location}"/></td>
-					 				<td class="startDatetime">
-										<openmrs:formatDate date="${visit.startDatetime}" type="small" />
-									</td>
-									<td class="stopDatetime">
-										<openmrs:formatDate date="${visit.stopDatetime}" type="small" />
-									</td>
-									<td class="indication"><openmrs:format concept="${visit.indication}"/></td>
-								</tr>
-							</openmrs:forEachVisit>
-						</tbody>
-					</table>
-				</div>
+	<div id="visitPortlet">
+		<openmrs:hasPrivilege privilege="View Visits, View Encounters">
+			<openmrs:hasPrivilege privilege="Add Visits">
+				&nbsp;<a
+					href="<openmrs:contextPath />/admin/visits/visit.form?patientId=${model.patient.patientId}"><spring:message
+						code="Visit.add" /></a>
+				<br />
+				<br />
+			</openmrs:hasPrivilege>
+			<div>
+				<table id="patientVisitsTable" style="border-spacing: 0px;">
+					<thead>
+						<tr>
+							<th class="visitIdHeader"></th>
+							<th class="visitActiveHeader"></th>
+							<th class="visitTypeHeader"><spring:message code="Visit" /></th>
+							<th class="visitLocationHeader"></th>
+							<th class="visitFromHeader"></th>
+							<th class="visitToHeader"></th>
+							<th class="visitIndicationHeader"></th>
+							<th class="encounterFirstHeader"></th>
+							<th class="encounterLastHeader"></th>
+							<th class="encounterIdHeader"><spring:message
+									code="general.view" /></th>
+							<th class="encounterDateHeader"><spring:message
+									code="Encounter.datetime" /></th>
+							<th class="encounterTypeHeader"><spring:message
+									code="Encounter.type" /></th>
+							<th class="encounterProvidersHeader"><spring:message
+									code="Encounter.providers" /></th>
+							<th class="encounterLocationHeader"><spring:message
+									code="Encounter.location" /></th>
+							<th class="encounterEntererHeader"><spring:message
+									code="Encounter.enterer" /></th>
+							<th class="encounterViewURLHeader"></th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
 			</div>
-		</div>
-		
-		<c:if test="${model.showPagination != 'true'}">
-			<script type="text/javascript">
-				// hide the columns in the above table if datatable isn't doing it already 
-				$j(".hidden").hide();
-			</script>
-		</c:if>
-	</openmrs:hasPrivilege>
-	
-</div>
+		</openmrs:hasPrivilege>
+
+	</div>
 </div>

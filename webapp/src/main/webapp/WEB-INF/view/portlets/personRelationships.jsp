@@ -199,6 +199,7 @@
 		$j("#voidRelationship .relationship_desc").html(relationships[relId].desc);
 		$j("#voidRelationship #relationship_id").val(relId);
 		$j("#voidRelationship #relationship_void_reason").val("");
+		$j("#relationship_empty_reason").hide();
 		$j("#voidRelationship").dialog("open");
 		$j("#voidRelationship #relationship_void_reason").focus();
 	}
@@ -206,9 +207,12 @@
 	function handleVoidRelationship() {
 		var relId = $j("#voidRelationship #relationship_id").val();
 		var reason = $j("#voidRelationship #relationship_void_reason").val();
-		$j("#voidRelationship").dialog("close");
-		if (reason != null && reason != '') {
+		if (reason != null && reason.trim().length > 0) {
+			$j("#voidRelationship").dialog("close");
 			DWRRelationshipService.voidRelationship(relId, reason, refreshRelationships);
+		}
+		else{
+			$j("#relationship_empty_reason").show();
 		}
 	}
 
@@ -302,5 +306,6 @@
 		<label for="relationship_void_reason"><spring:message code="general.reason"/>: </label>
 		<input type="hidden" id="relationship_id"/>
 		<input type="text" id="relationship_void_reason"/>
+		<span id="relationship_empty_reason" class="error"><spring:message code="Relationship.emptyReason"/></span>
 	</div>
 </div>

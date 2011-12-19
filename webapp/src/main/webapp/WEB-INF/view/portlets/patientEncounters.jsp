@@ -48,7 +48,6 @@
 			"iDisplayLength": 20,
 			"aoColumns": [
 				{ "bVisible": false, "sType": "numeric" },
-				{ "bVisible": ${showEditLink}, "iDataSort": 0 }, // sort this column by using the previous invisible column for encounterIds,
 				{ "bVisible": ${showViewLink}, "iDataSort": 0 }, // sort this column by using the first invisible column for encounterIds,
             	{ "iDataSort": 4 }, // sort the date in this column by using the next invisible column for time in milliseconds
             	{ "bVisible": false, "sType": "numeric" },
@@ -119,9 +118,6 @@ Parameters
 						<thead>
 							<tr>
 								<th class="hidden"> hidden Encounter id </th>
-								<th class="encounterEdit" align="center"><c:if test="${showEditLink == 'true'}">
-									<spring:message code="general.edit"/>
-								</c:if></th>
 								<th class="encounterView" align="center"><c:if test="${showViewLink == 'true'}">
 								 	<spring:message code="general.view"/>
 								</c:if></th>
@@ -143,31 +139,22 @@ Parameters
 										<%--  this column contains the encounter id and will be used for sorting in the dataTable's encounter edit column --%>
 										${enc.encounterId}
 									</td>
-									<td class="encounterEdit" align="center">
-										<c:if test="${showEditLink == 'true'}">
-											<openmrs:hasPrivilege privilege="Edit Encounters">
-												<c:set var="editUrl" value="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${enc.encounterId}"/>
-												<c:if test="${ model.formToEditUrlMap[enc.form] != null }">
-													<c:url var="editUrl" value="${model.formToEditUrlMap[enc.form]}">
-														<c:param name="encounterId" value="${enc.encounterId}"/>
-													</c:url>
-												</c:if>
-												<a href="${editUrl}">
-													<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" />
-												</a>
-											</openmrs:hasPrivilege>
-										</c:if>
-									</td>
 									<td class="encounterView" align="center">
 										<c:if test="${showViewLink}">
-											<c:set var="viewEncounterUrl" value="${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=${enc.encounterId}"/>
-											<c:if test="${ model.formToViewUrlMap[enc.form] != null }">
-												<c:url var="viewEncounterUrl" value="${model.formToViewUrlMap[enc.form]}">
-													<c:param name="encounterId" value="${enc.encounterId}"/>
-													<c:param name="inPopup" value="true"/>
-												</c:url>
-											</c:if>
-											<a href="javascript:void(0)" onClick="loadUrlIntoEncounterPopup('<openmrs:format encounter="${enc}" javaScriptEscape="true"/>', '${viewEncounterUrl}'); return false;">
+											<c:set var="viewEncounterUrl" value="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${enc.encounterId}"/>
+											<c:choose>
+												<c:when test="${ model.formToViewUrlMap[enc.form] != null }">
+													<c:url var="viewEncounterUrl" value="${model.formToViewUrlMap[enc.form]}">
+														<c:param name="encounterId" value="${enc.encounterId}"/>
+													</c:url>
+												</c:when>
+												<c:when test="${ model.formToEditUrlMap[enc.form] != null }">
+													<c:url var="viewEncounterUrl" value="${model.formToEditUrlMap[enc.form]}">
+														<c:param name="encounterId" value="${enc.encounterId}"/>
+													</c:url>
+												</c:when>
+											</c:choose>
+											<a href="${viewEncounterUrl}">
 												<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" border="0" />
 											</a>
 										</c:if>
@@ -184,7 +171,7 @@ Parameters
 					 				<td class="encounterVisit">
 					 					<c:if test="${enc.visit != null}"><openmrs:format visitType="${enc.visit.visitType}"/></c:if>
 					 				</td>
-					 				<td class="encounterProvider"><openmrs:format person="${enc.provider}"/></td>
+					 				<td class="encounterProvider"><openmrs:format encounterProviders="${enc.providersByRoles}"/></td>
 					 				<td class="encounterForm">${enc.form.name}</td>
 					 				<td class="encounterLocation"><openmrs:format location="${enc.location}"/></td>
 					 				<td class="encounterEnterer">${enc.creator.personName}</td>

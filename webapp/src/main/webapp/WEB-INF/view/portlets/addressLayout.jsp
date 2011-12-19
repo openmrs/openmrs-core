@@ -248,6 +248,9 @@
 									  </c:if>
 									</td>
 								</c:if>
+								<c:if test="${token.isToken == model.layoutTemplate.nonLayoutToken}">
+									<td>${token.displayText}</td>
+								</c:if>
 							</c:forEach>
 						</tr>
 					</c:forEach>
