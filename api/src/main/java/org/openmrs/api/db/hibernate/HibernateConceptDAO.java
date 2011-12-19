@@ -1290,7 +1290,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.setProjection(Projections.property("value"));
 		criteria.add(Restrictions.eq("locale", locale));
 		
-		return (List<String>)criteria.list();
+		return (List<String>) criteria.list();
 	}
 	
 	/**
