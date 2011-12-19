@@ -40,9 +40,10 @@ public class ConceptReferenceTermTest {
 	@Verifies(value = "should not add a map where termB is itself", method = "addConceptReferenceTermMap(ConceptReferenceTermMap)")
 	public void addConceptReferenceTermMap_shouldNotAddAMapWhereTermBIsItself() throws Exception {
 		ConceptReferenceTerm term = new ConceptReferenceTerm(2);
+		term.setUuid("test uuid");
 		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), new ConceptMapType(1)));
 		//add a mapping where termB is itself
-		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(2), new ConceptMapType(1)));
+		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(term, new ConceptMapType(1)));
 		Assert.assertEquals(1, term.getConceptReferenceTermMaps().size());
 	}
 	
