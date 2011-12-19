@@ -2380,7 +2380,7 @@ public class OpenmrsUtil {
 		} else {
 			pathName = getRuntimePropertiesFilePathName(applicationName);
 		}
-
+		
 		FileInputStream propertyStream = null;
 		try {
 			if (pathName != null) {
@@ -2414,11 +2414,11 @@ public class OpenmrsUtil {
 	 * Checks whether the system is running in test mode
 	 * @return boolean
 	 */
-
+	
 	public static boolean isTestMode() {
 		return "true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"));
 	}
-
+	
 	/**
 	 * Gets the full path and name of the runtime properties file.
 	 * 
@@ -2434,7 +2434,7 @@ public class OpenmrsUtil {
 		
 		String defaultFileName = applicationName + "-runtime.properties";
 		String fileNameInTestMode = getRuntimePropertiesFileNameInTestMode();
-
+		
 		// first look in the current directory (that java was started from)
 		String pathName = fileNameInTestMode != null ? fileNameInTestMode : defaultFileName;
 		log.debug("Attempting to look for properties file in current directory: " + pathName);
@@ -2481,7 +2481,7 @@ public class OpenmrsUtil {
 		}
 		return filename;
 	}
-
+	
 	/**
 	 * Gets OpenMRS version name under test mode.
 	 * @return String openmrs version number
@@ -2489,7 +2489,7 @@ public class OpenmrsUtil {
 	public static String getOpenMRSVersionInTestMode() {
 		return System.getProperty("OPENMRS_VERSION", "openmrs");
 	}
-
+	
 	/**
 	 * Performs a case insensitive Comparison of two strings taking care of null values
 	 * 

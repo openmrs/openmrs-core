@@ -440,7 +440,7 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.adminUserPassword = InitializationWizardModel.ADMIN_DEFAULT_PASSWORD;
 			
 			createSimpleSetup(httpRequest.getParameter("database_root_password"), httpRequest.getParameter("add_demo_data"));
-
+			
 			try {
 				loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection,
 				    wizardModel.databaseDriver);
@@ -649,7 +649,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			//get the tasks the user selected and show them in the page while the initialization wizard runs
 			wizardModel.tasksToExecute = new ArrayList<WizardTask>();
-
+			
 			if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 				//TODO support other database to be used in test mode, ONLY MySql is being supported 
 				//in the test mode hence passing in null for driver name
@@ -661,7 +661,7 @@ public class InitializationFilter extends StartupFilter {
 				}
 				wizardModel.tasksToExecute.add(WizardTask.CREATE_TEST_INSTALLATION);
 			} else {
-                createDatabaseTask();
+				createDatabaseTask();
 				createTablesTask();
 				createDemoDataTask();
 			}
@@ -674,7 +674,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			referenceMap.put("tasksToExecute", wizardModel.tasksToExecute);
 			
-            startInstallation();
+			startInstallation();
 			referenceMap.put("isInstallationStarted", isInstallationStarted());
 			
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
@@ -749,7 +749,8 @@ public class InitializationFilter extends StartupFilter {
 			return;
 		}
 	}
-		private void startInstallation() {
+	
+	private void startInstallation() {
 		//if no one has run any installation
 		if (!isInstallationStarted()) {
 			initJob = new InitializationCompletion();
@@ -757,63 +758,63 @@ public class InitializationFilter extends StartupFilter {
 			initJob.start();
 		}
 	}
-
- 	private void createDemoDataTask() {
+	
+	private void createDemoDataTask() {
 		if (wizardModel.addDemoData)
 			wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
 	}
-
+	
 	private void createTablesTask() {
 		if (wizardModel.createTables) {
 			wizardModel.tasksToExecute.add(WizardTask.CREATE_TABLES);
 			wizardModel.tasksToExecute.add(WizardTask.ADD_CORE_DATA);
 		}
 	}
-
+	
 	private void createDatabaseTask() {
 		if (!wizardModel.hasCurrentOpenmrsDatabase)
 			wizardModel.tasksToExecute.add(WizardTask.CREATE_SCHEMA);
 		if (wizardModel.createDatabaseUser)
 			wizardModel.tasksToExecute.add(WizardTask.CREATE_DB_USER);
 	}
-
+	
 	private void createSimpleSetup(String databaseRootPassword, String addDemoData) {
 		setDatabaseNameIfInTestMode();
 		wizardModel.databaseConnection = Context.getRuntimeProperties().getProperty("connection.url",
 		    wizardModel.databaseConnection);
-
+		
 		wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
 		    wizardModel.createDatabaseUsername);
-
+		
 		wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
-
+		
 		wizardModel.databaseRootPassword = databaseRootPassword;
 		checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
-
+		
 		wizardModel.hasCurrentOpenmrsDatabase = false;
 		wizardModel.createTables = true;
 		// default wizardModel.databaseName is openmrs
 		// default wizardModel.createDatabaseUsername is root
 		wizardModel.createDatabasePassword = wizardModel.databaseRootPassword;
 		wizardModel.addDemoData = "yes".equals(addDemoData);
-
+		
 		wizardModel.hasCurrentDatabaseUser = false;
 		wizardModel.createDatabaseUser = true;
 		// default wizardModel.createUserUsername is root
 		wizardModel.createUserPassword = wizardModel.databaseRootPassword;
-
+		
 		wizardModel.moduleWebAdmin = true;
 		wizardModel.autoUpdateDatabase = false;
-
+		
 		wizardModel.adminUserPassword = InitializationWizardModel.ADMIN_DEFAULT_PASSWORD;
 	}
-
+	
 	private void setDatabaseNameIfInTestMode() {
 		if (OpenmrsUtil.isTestMode()) {
 			wizardModel.databaseName = OpenmrsUtil.getOpenMRSVersionInTestMode();
 		}
 	}
-
+	
 	private void autoRunOpenMRS(HttpServletRequest httpRequest) {
 		File runtimeProperties = getRuntimePropertiesFile();
 		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
@@ -835,6 +836,7 @@ public class InitializationFilter extends StartupFilter {
 		wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
 		startInstallation();
 	}
+	
 	/**
 	 * This method should be called after the user has left wizard's first page (i.e. choose
 	 * language). It checks if user has changed any of locale related parameters and makes
@@ -937,7 +939,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 		return fileName;
 	}
-
+	
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#getTemplatePrefix()
 	 */

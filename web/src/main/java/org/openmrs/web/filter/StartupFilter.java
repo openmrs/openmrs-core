@@ -72,8 +72,8 @@ public abstract class StartupFilter implements Filter {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected static VelocityEngine velocityEngine = null;
-
-    public static final String AUTO_RUN_OPENMRS = "auto_run_openmrs";
+	
+	public static final String AUTO_RUN_OPENMRS = "auto_run_openmrs";
 	
 	/**
 	 * Set by the {@link #init(FilterConfig)} method so that we have access to the current
