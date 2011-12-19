@@ -256,7 +256,7 @@ public class DatabaseUpdater {
 	public static boolean updatesRequired() throws Exception {
 		log.debug("checking for updates");
 		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges();
-
+		
 		// if the db is locked, it means there was a crash
 		// or someone is executing db updates right now. either way
 		// returning true here stops the openmrs startup and shows
@@ -741,10 +741,12 @@ public class DatabaseUpdater {
 		}
 		catch (Exception e) {
 			throw new LockException(e);
-		} finally {
+		}
+		finally {
 			try {
 				database.getConnection().close();
-			} catch (Throwable t) {
+			}
+			catch (Throwable t) {
 				// pass
 			}
 		}
@@ -765,10 +767,12 @@ public class DatabaseUpdater {
 		}
 		catch (Exception e) {
 			return false;
-		} finally {
+		}
+		finally {
 			try {
 				database.getConnection().close();
-			} catch (Throwable t) {
+			}
+			catch (Throwable t) {
 				// pass
 			}
 		}
