@@ -508,11 +508,24 @@ table.patientTreatmentPrograms td {
 }
 .box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited {
 	border: 1px solid #1aac9b;
-	width: 99%;
+	width: 100%;
 	padding: 5px 2px 5px 2px;
 	text-align: left;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.box .noBorder {
+	border: 0px;
+}
+
+.column {
+	float: left;
+	padding: 2px 5px 2px 5px;
+}
+
+.columnEnd {
+	clear: both;
 }
 
 .box>*, .boxRed>*, .boxExited>* {
@@ -769,6 +782,12 @@ fieldset {
 .tableTitle {
 	text-align: center;
 	background-color: whitesmoke;
+}
+
+.tableGroup {
+	border-top: 1px solid #1aac9b;
+    background: #e0e0f0;
+    border-bottom: 1px solid #1aac9b;
 }
 
 .oddRow {
@@ -1089,12 +1108,12 @@ th.smallHeader {
 }
 
 .highlighted, .highlight {
-	background-color: yellow;
+	background-color: #FFFF6E;
 }
 
 .dashedAndHighlighted {
 	border: 1px black dashed;
-	background-color: yellow;
+	background-color: #FFFF6E;
 }
 
 .datePatternHint {
@@ -1260,17 +1279,23 @@ table td#summaryHeaderPatientGender {
 #openmrsSearchTable tbody tr.odd.row_highlight {
 	 background-color: #F0E68C;
 }
+.row_highlight {
+	 background-color: #F0E68C !important;
+}
+.verbose{
+	text-align: left; padding-left: 15px;
+}
+.verbose:hover{
+	background-color: #F0E68C !important;
+}
 img#spinner{
 	vertical-align: middle;
 }
-#openmrsSearchTable .tr_row_highlight {
-	 background-color: #F0E68C;
-}
-#openmrsSearchTable .tr_row_highlight_hover {
-	 background-color: #F0E68C;
+#openmrsSearchTable tbody tr:hover {
+	background-color: #F0E68C; cursor: pointer;
 }
 #pageInfo{
-	float:right; margin-right: 20px; font-style: italic; margin-bottom: 5px;
+	text-align:right; font-style: italic;
 }
 #openmrsSearchTable{
 	padding-bottom: 10px;
@@ -1341,6 +1366,33 @@ span.otherHit{
 .mergePatientsTabDiv{
 	width:85px;
 }
+.form_align_left{
+	text-align: left;
+}
 .hidden{
 	display: none
+}
+.lightBorderBox{
+	border: 1px solid lightgrey
+}
+.content_align_center{
+	text-align: center;
+}
+.alignRight{
+	text-align: right;
+}
+div#openmrsSearchTable_length{
+	text-align: left; float: left; padding-top: 5px;
+}
+tr.headerRow{
+	background-color: #CCCCCC;
+}
+table.left-aligned-th th {
+	text-align: left
+}
+td.dataTables_empty{
+	background-color: #BBCCF7;
+}
+td.dataTables_empty:hover{
+	background-color: #BBCCF7;
 }

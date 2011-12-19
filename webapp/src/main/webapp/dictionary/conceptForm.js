@@ -29,8 +29,8 @@ dojo.addOnLoad( function() {
 });
 
 function selectConcept(nameList, idList, conceptList, widget) {
-	var nameListBox = $(nameList);
-	var idListBox = $(idList);
+	var nameListBox = document.getElementById(nameList);
+	var idListBox = document.getElementById(idList);
 	
 	var options = nameListBox.options;
 	for (i=0; i<conceptList.length; i++)
@@ -38,7 +38,6 @@ function selectConcept(nameList, idList, conceptList, widget) {
 		
 	copyIds(nameListBox.id, idListBox.id, ' ');
 }
-
 
 function removeItem(nameList, idList, delim)
 {
@@ -125,11 +124,11 @@ function copyIds(from, to, delimiter)
 
 function addOption(obj, options) {
 	var objId = obj.conceptId;
-	var objName = obj.name + ' ('+objId+')';
+	var objName =  (obj.drugId != null ? obj.fullName : obj.name) + ' ('+objId+')';
 	
 	if (obj.drugId != null) //if obj is actually a drug object
 		objId = objId + "^" + obj.drugId;
-		
+	
 	if (isAddable(objId, options)==true) {
 		var opt = new Option(objName, objId);
 		opt.selected = true;
@@ -197,14 +196,23 @@ function hotkeys(event) {
 	var k = event.keyCode;
 	if (event.cntrlKey == true) {
 		if (k == 86) { // v
-			document.location = document.getElementById('viewConcept').href;
+			var element = document.getElementById('viewConcept');
+			if (element) {
+				document.location = element.href;
+			}
 		}
 	}
 	if (k == 37) { // left key
-		document.location = document.getElementById('previousConcept').href;
+		var element = document.getElementById('previousConcept');
+		if (element) {
+			document.location = element.href;
+		}
 	}
 	else if (k == 39) { //right key
-		document.location = document.getElementById('nextConcept').href;
+		var element = document.getElementById('nextConcept');
+		if (element) {
+			document.location = element.href;
+		}
 	}
 }
 
@@ -278,6 +286,7 @@ function cloneElement(id, initialSizeOfClonedSiblings, inputNamePrefix) {
 	elementToClone.parentNode.insertBefore(clone, elementToClone);
 	clone.style.display = "";
 
+	return clone;
 }
 
 /**
@@ -397,5 +406,66 @@ function setCloneRadioValue(textElement){
 			inputs[x].value = textElement.value;
 	}
 }
- 
+
+/**
+ * Method is called to to add a new concept mapping and assigns the attribute values to the cloned element
+ * @param id id of the element to clone
+ * @param initialSizeOfClonedSiblings the number of mappings on page load
+ */
+function addConceptMapping(initialSizeOfClonedSiblings){
+		
+	var inputNamePrefix = 'conceptMappings';
+	var newMappingRow = cloneElement('newConceptMapping', initialSizeOfClonedSiblings, inputNamePrefix);
+	
+	if(newMappingRow){
+		newMappingRow.id = "";
+		var index = numberOfClonedElements['newConceptMapping'];
+		var inputs = newMappingRow.getElementsByTagName("input");
+		var selects = newMappingRow.getElementsByTagName("select");
+		
+		//find the term(termId), name and code text boxes and set their names and ids
+		for (var x = 0; x < inputs.length; x++) {
+			var input = inputs[x];
+			if (input && input.name == 'termId' && input.type == 'hidden') {
+				input.name = inputNamePrefix+'[' + index + '].conceptReferenceTerm';
+				input.id = inputNamePrefix+'[' + index + '].conceptReferenceTerm';
+			}else if (input && input.name == 'term.code' && input.type == 'text') {
+				input.id = 'term[' + index + '].code';
+			}else if (input && input.name == 'term.name' && input.type == 'text') {
+				input.id = 'term[' + index + '].name';
+			}
+		}
+		
+		//find the select element and set the name attribute for the conceptSource and map type
+		for (var i in selects) {
+			var select = selects[i];
+			if (select && select.name == "type.name") {
+				select.id = 'term[' + index + '].conceptMapType';
+				select.name = inputNamePrefix+'[' + index + '].conceptMapType';
+			}else if (select && select.name == "term.source") {
+				select.id = 'term[' + index + '].source';
+			}
+		}
+		
+		//set up the auto complete
+		addAutoComplete('term[' + index + '].code', 'term[' + index + '].source', inputNamePrefix+'[' + index + '].conceptReferenceTerm', 'term[' + index + '].name')
+	}
+}
+
+function addAutoComplete(displayInputId, sourceSelectElementId, hiddenElementId, nameInputId){
+	var selectOption = document.getElementById(sourceSelectElementId);
+	// set up the autocomplete on the conceptReferenceTerm input box for the new mapping
+	new AutoComplete(displayInputId, new CreateCallback().conceptReferenceTermCallback(selectOption), {
+		select: function(event, ui) {
+			jquerySelectEscaped(hiddenElementId).val(ui.item.object.conceptReferenceTermId);
+			//set the concept source in the source dropdown to match that of the selected term
+			selectOption.value = ui.item.object.conceptSourceId;
+			//display the name of the term
+			if(document.getElementById(nameInputId))
+				document.getElementById(nameInputId).value = ui.item.object.name;
+		},
+		placeholder:omsgs.referencTermSearchPlaceholder
+	});
+}
+
 document.onkeypress = hotkeys;
