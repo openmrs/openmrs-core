@@ -660,7 +660,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (concept != null) {
 			// remove all old words
 			if (concept.getConceptId() != null && concept.getConceptId() > 0)
-				
 				deleteConceptWord(concept);
 			
 			// add all new words
@@ -690,7 +689,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	private void deleteConceptWord(Concept concept) throws DAOException {
 		log.debug("deletConceptWord(" + concept + ")");
 		if (concept != null) {
-			if (log.isDebugEnabled()) {
+			if (log.isTraceEnabled()) {
 				Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class);
 				crit.add(Restrictions.eq("concept", concept));
 				
@@ -700,7 +699,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				if (Context.isAuthenticated())
 					authUserId = Context.getAuthenticatedUser().getUserId();
 				
-				log.debug(authUserId + "|ConceptWord|" + words);
+				log.trace(authUserId + "|ConceptWord|" + words);
 			}
 			sessionFactory.getCurrentSession().createQuery("delete ConceptWord where concept = :c").setInteger("c",
 			    concept.getConceptId()).executeUpdate();
@@ -1637,8 +1636,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	private double computeBonusWeight(Double weightCoefficient, ConceptWord word) {
 		double bonusWeight = 0.0;
 		ConceptName conceptName = word.getConceptName();
-		if (conceptName.isIndexTerm()
-		        || (word.getConceptName().isPreferred() && word.getConceptName().isFullySpecifiedName()))
+		if (conceptName.isIndexTerm() || (conceptName.isPreferred() && conceptName.isFullySpecifiedName()))
 			bonusWeight += weightCoefficient * 0.25;
 		else if (conceptName.isPreferred())
 			bonusWeight += weightCoefficient * 0.24;
@@ -1651,7 +1649,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		//the shorter the full concept name, the higher the weight, the word 'MEASELS' in 
 		//'MEASELS ON EARTH' should weigh more than another 'MEASELS' in 'MEASELS ON JUPITER'
-		bonusWeight += weightCoefficient / new Double(word.getConceptName().getName().length());
+		bonusWeight += weightCoefficient / new Double(conceptName.getName().length());
 		
 		return bonusWeight;
 	}
