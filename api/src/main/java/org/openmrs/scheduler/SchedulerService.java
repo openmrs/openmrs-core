@@ -138,6 +138,16 @@ public interface SchedulerService extends OpenmrsService {
 	public void saveTask(TaskDefinition task);
 	
 	/**
+	 * Create the given task
+	 *
+	 * @param taskDefinition the task to be created
+	 * @should save task to the database
+	 */
+	@Authorized( { "Manage Scheduler" })
+	@Logging(ignore = true)
+	public void saveTaskDefinition(TaskDefinition task);
+	
+	/**
 	 * Return SchedulerConstants
 	 * 
 	 * @return SortedMap<String, String>

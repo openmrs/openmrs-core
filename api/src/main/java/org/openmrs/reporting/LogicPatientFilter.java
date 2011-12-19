@@ -106,21 +106,6 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object o) {
-		if (o == null) {
-			return false;
-		}
-		if (o instanceof LogicPatientFilter) {
-			LogicPatientFilter other = (LogicPatientFilter) o;
-			return equals(criteria, other.getCriteria());
-		} else {
-			return false;
-		}
-	}
-	
-	/**
 	 * @see org.openmrs.reporting.AbstractReportObject#getDescription()
 	 */
 	public String getDescription() {

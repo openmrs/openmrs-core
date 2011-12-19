@@ -76,22 +76,6 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		super.setSubType(DataExportReportObject.SUB_TYPE_NAME);
 	}
 	
-	public boolean equals(Object obj) {
-		if (obj instanceof DataExportReportObject) {
-			DataExportReportObject c = (DataExportReportObject) obj;
-			return (this.getReportObjectId().equals(c.getReportObjectId()));
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getReportObjectId() == null)
-			return super.hashCode();
-		int hash = 5;
-		hash = 31 * this.getReportObjectId() + hash;
-		return hash;
-	}
-	
 	/**
 	 * Append a simple column
 	 * 

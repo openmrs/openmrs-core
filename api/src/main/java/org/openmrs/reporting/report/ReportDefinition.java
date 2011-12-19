@@ -166,45 +166,6 @@ public class ReportDefinition extends AbstractReportObject implements Serializab
 	}
 	
 	/**
-	 * Gets the default cohort.
-	 * 
-	 * @return the default cohort for this report public Cohort getCohort() { return cohort; }
-	 */
-	
-	/**
-	 * Sets the default cohort.
-	 * 
-	 * @param cohort public void setCohort(Cohort cohort) { this.cohort = cohort; }
-	 */
-	
-	/**
-	 * Compares the object IDs and indicates whether the given object is equal to this object.
-	 * 
-	 * @param obj object to compare
-	 * @return true if object id's are equals, false otherwise
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof ReportDefinition) {
-			ReportDefinition reportDef = (ReportDefinition) obj;
-			return (this.getReportObjectId().equals(reportDef.getReportObjectId()));
-		}
-		return false;
-	}
-	
-	/**
-	 * Returns hash code representation of object.
-	 * 
-	 * @return an integer hash code that represents the identity of the object
-	 */
-	public int hashCode() {
-		if (this.getReportObjectId() == null)
-			return super.hashCode();
-		int hash = 5;
-		hash = 31 * this.getReportObjectId() + hash;
-		return hash;
-	}
-	
-	/**
 	 * Converts object to string
 	 */
 	@Override
