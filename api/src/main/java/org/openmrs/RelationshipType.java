@@ -61,30 +61,6 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 		this.relationshipTypeId = relationshipTypeId;
 	}
 	
-	/**
-	 * Compares two RelationshipTypes for similarity
-	 * 
-	 * @param obj RelationshipType to compare to this object
-	 * @return boolean true/false whether or not they are the same objects
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		if (relationshipTypeId != null && obj instanceof RelationshipType) {
-			RelationshipType m = (RelationshipType) obj;
-			return (relationshipTypeId.equals(m.getRelationshipTypeId()));
-		}
-		return false;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getRelationshipTypeId() == null)
-			return super.hashCode();
-		return this.getRelationshipTypeId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

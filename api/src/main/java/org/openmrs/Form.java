@@ -21,8 +21,6 @@ import java.util.Set;
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.DAOException;
-import org.openmrs.util.FormConstants;
 
 /**
  * Form
@@ -62,39 +60,6 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 		this.formId = formId;
 	}
 	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 * @should have equal form objects by form id
-	 * @should not have equal form objects by formId
-	 * @should have equal form objects with no formId
-	 * @should not have equal form objects when one has null formId
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Form) {
-			Form f = (Form) obj;
-			if (this.getFormId() != null && f.getFormId() != null)
-				return (this.getFormId().equals(f.getFormId()));
-		}
-		
-		// default to comparing the object pointers
-		return this == obj;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 * @should get hashCode even with null attributes
-	 */
-	@Override
-	public int hashCode() {
-		if (this.getFormId() == null)
-			return super.hashCode();
-		return this.getFormId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**
@@ -105,8 +70,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param formId
-	 *            The formId to set.
+	 * @param formId The formId to set.
 	 */
 	public void setFormId(Integer formId) {
 		this.formId = formId;
@@ -120,8 +84,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param version
-	 *            The version to set.
+	 * @param version The version to set.
 	 */
 	public void setVersion(String version) {
 		this.version = version;
@@ -135,8 +98,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param build
-	 *            The build number to set
+	 * @param build The build number to set
 	 */
 	public void setBuild(Integer build) {
 		this.build = build;
@@ -150,8 +112,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param published
-	 *            The published to set.
+	 * @param published The published to set.
 	 */
 	public void setPublished(Boolean published) {
 		this.published = published;
@@ -165,101 +126,46 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param encounterType
-	 *            type of encounter associated with this form
+	 * @param encounterType type of encounter associated with this form
 	 */
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
 	}
 	
 	/**
-	 * Convenience method for accessing the FormService
-	 * 
-	 * TODO: remove this method when xslt and template properties / methods are removed
-	 * 
-	 * @return the current context's form service
-	 * @throws APIException
-	 */
-	private FormService getFormService() throws APIException {
-		FormService formService = Context.getFormService();
-		if (formService == null)
-			throw new APIException("Cannot retrieve form template; no service available from context");
-		
-		return formService;
-	}
-	
-	/**
 	 * @return Returns the template.
-	 * @deprecated use
-	 *             {@link org.openmrs.api.FormService#getFormResource(Form, String, String)}
+	 * @deprecated
 	 */
 	@Deprecated
 	public String getTemplate() {
-		FormService formService = this.getFormService();
-		
-		String template;
-		try {
-			template = (String) formService.getFormResource(this, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
-			    FormConstants.FORM_RESOURCE_FORMENTRY_TEMPLATE);
-		}
-		catch (DAOException e) {
-			// template does not exist
-			return null;
-		}
-		
-		// TODO use a conversion method in FormUtil, for various reasons (i.e.
-		// compression)
-		return template;
+		throw new UnsupportedOperationException("Templates no longer exist on Forms. Use Form Attributes.");
 	}
 	
 	/**
-	 * @param template
-	 *            The template to set.
-	 * @deprecated use
-	 *             {@link org.openmrs.api.FormService#saveFormResource(Form, String, String, byte[])}
+	 * @param template The template to set.
+	 * @deprecated
 	 */
 	@Deprecated
 	public void setTemplate(String template) {
-		FormService formService = this.getFormService();
-		formService.saveFormResource(this, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
-		    FormConstants.FORM_RESOURCE_FORMENTRY_TEMPLATE, template);
+		throw new UnsupportedOperationException("Templates no longer exist on Forms. Use Form Attributes.");
 	}
 	
 	/**
 	 * @return Returns the creator
-	 * @deprecated use
-	 *             {@link org.openmrs.api.FormService#getFormResource(Form, String, String)}
+	 * @deprecated
 	 */
 	@Deprecated
 	public String getXslt() {
-		FormService formService = this.getFormService();
-		
-		String xslt;
-		try {
-			xslt = (String) formService.getFormResource(this, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
-			    FormConstants.FORM_RESOURCE_FORMENTRY_XSLT);
-		}
-		catch (DAOException e) {
-			// xslt does not exist
-			return null;
-		}
-		
-		// TODO use a conversion method in FormUtil, for various reasons (i.e.
-		// compression)
-		return xslt;
+		throw new UnsupportedOperationException("XSLTs no longer exist on Forms. Use Form Attributes.");
 	}
 	
 	/**
-	 * @param xslt
-	 *            the xslt to set.
-	 * @deprecated use
-	 *             {@link org.openmrs.api.FormService#saveFormResource(Form, String, String, byte[])}
+	 * @param xslt the xslt to set.
+	 * @deprecated
 	 */
 	@Deprecated
 	public void setXslt(String xslt) {
-		FormService formService = this.getFormService();
-		formService.saveFormResource(this, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
-		    FormConstants.FORM_RESOURCE_FORMENTRY_XSLT, xslt);
+		throw new UnsupportedOperationException("XSLTs no longer exist on Forms. Use Form Attributes.");
 	}
 	
 	/**
@@ -308,8 +214,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param formFields
-	 *            The formFields to set.
+	 * @param formFields The formFields to set.
 	 */
 	public void setFormFields(Set<FormField> formFields) {
 		this.formFields = formFields;
@@ -318,8 +223,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	 * Adds a FormField to the list of form fields
 	 * 
-	 * @param formField
-	 *            FormField to be added
+	 * @param formField FormField to be added
 	 */
 	public void addFormField(FormField formField) {
 		if (formFields == null)
@@ -333,8 +237,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	 * Removes a FormField from the list of form fields
 	 * 
-	 * @param formField
-	 *            FormField to be removed
+	 * @param formField FormField to be removed
 	 */
 	public void removeFormField(FormField formField) {
 		if (formFields != null) {

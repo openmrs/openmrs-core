@@ -89,23 +89,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 		setDescription(description);
 	}
 	
-	public boolean equals(Object obj) {
-		if (!(obj instanceof ConceptNameTag)) {
-			return false;
-		}
-		ConceptNameTag rhs = (ConceptNameTag) obj;
-		
-		return (this.conceptNameTagId == rhs.conceptNameTagId);
-	}
-	
-	public int hashCode() {
-		if (this.getTag() == null)
-			return super.hashCode();
-		int hash = 3;
-		hash = hash + 31 * this.getTag().hashCode();
-		return hash;
-	}
-	
 	// Property accessors
 	
 	/**

@@ -119,17 +119,6 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 		return getActive(null);
 	}
 	
-	/** @see Object#equals(Object) */
-	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof PatientState) {
-			PatientState p = (PatientState) obj;
-			if (this.getPatientStateId() != null) {
-				return (this.getPatientStateId().equals(p.getPatientStateId()));
-			}
-		}
-		return this == obj;
-	}
-	
 	/** @see Object#toString() */
 	public String toString() {
 		return "id=" + getPatientStateId() + ", patientProgram=" + getPatientProgram() + ", state=" + getState()

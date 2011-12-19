@@ -91,15 +91,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	 * @return true/false if this user is defined as a super user
 	 */
 	public boolean isSuperUser() {
-		Set<Role> tmproles = getAllRoles();
-		
-		Role role = new Role(RoleConstants.SUPERUSER); // default administrator with
-		// complete control
-		
-		if (tmproles.contains(role))
-			return true;
-		
-		return false;
+		return containsRole(RoleConstants.SUPERUSER);
 	}
 	
 	/**
@@ -163,11 +155,15 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 		if (log.isDebugEnabled())
 			log.debug("User #" + userId + " has roles: " + tmproles);
 		
-		Role role = new Role(r);
-		
-		if (tmproles.contains(role))
-			return true;
-		
+		return containsRole(r);
+	}
+	
+	private boolean containsRole(String roleName) {
+		for (Role role : getAllRoles()) {
+			if (role.getRole().equals(roleName)) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -190,38 +186,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 		}
 		
 		return privileges;
-	}
-	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof User) {
-			User user = (User) obj;
-			
-			if (getUserId() != null && user.getUserId() != null)
-				return userId.equals(user.getUserId());
-		}
-		
-		// if userId is null for either object, for equality the
-		// two objects must be the same
-		return this == obj;
-	}
-	
-	/**
-	 * The hashcode for a user is used to index the objects in a tree
-	 * 
-	 * @see org.openmrs.Person#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (getUserId() == null)
-			return super.hashCode();
-		return getUserId().hashCode();
 	}
 	
 	// Property accessors
@@ -619,21 +583,23 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	public List<Locale> getProficientLocales() {
 		String proficientLocalesProperty = getUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES);
 		
-		if ((proficientLocales == null) || (!parsedProficientLocalesProperty.equals(proficientLocalesProperty))) {
+		if ((proficientLocales == null)
+		        || (!OpenmrsUtil.nullSafeEquals(parsedProficientLocalesProperty, proficientLocalesProperty))) {
 			parsedProficientLocalesProperty = proficientLocalesProperty;
 			proficientLocales = new ArrayList<Locale>();
-			
-			String[] proficientLocalesArray = proficientLocalesProperty.split(",");
-			for (String proficientLocaleSpec : proficientLocalesArray) {
-				if (proficientLocaleSpec.length() > 0) {
-					Locale proficientLocale = LocaleUtility.fromSpecification(proficientLocaleSpec);
-					if (!proficientLocales.contains(proficientLocale)) {
-						proficientLocales.add(proficientLocale);
-						if (!"".equals(proficientLocale.getCountry())) {
-							// add the language also
-							Locale languageOnlyLocale = LocaleUtility.fromSpecification(proficientLocale.getLanguage());
-							if (!proficientLocales.contains(languageOnlyLocale)) {
-								proficientLocales.add(LocaleUtility.fromSpecification(proficientLocale.getLanguage()));
+			if (proficientLocalesProperty != null) {
+				String[] proficientLocalesArray = proficientLocalesProperty.split(",");
+				for (String proficientLocaleSpec : proficientLocalesArray) {
+					if (proficientLocaleSpec.length() > 0) {
+						Locale proficientLocale = LocaleUtility.fromSpecification(proficientLocaleSpec);
+						if (!proficientLocales.contains(proficientLocale)) {
+							proficientLocales.add(proficientLocale);
+							if (!"".equals(proficientLocale.getCountry())) {
+								// add the language also
+								Locale languageOnlyLocale = LocaleUtility.fromSpecification(proficientLocale.getLanguage());
+								if (!proficientLocales.contains(languageOnlyLocale)) {
+									proficientLocales.add(LocaleUtility.fromSpecification(proficientLocale.getLanguage()));
+								}
 							}
 						}
 					}

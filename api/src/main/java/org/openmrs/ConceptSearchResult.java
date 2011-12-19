@@ -13,8 +13,6 @@
  */
 package org.openmrs;
 
-import org.openmrs.util.OpenmrsUtil;
-
 /**
  * An Object of this class represents a search result returned when searching for concepts, it holds
  * extra metadata about the matched concept(s).
@@ -146,44 +144,5 @@ public class ConceptSearchResult implements java.io.Serializable {
 	 */
 	public void setTransientWeight(Double transientWeight) {
 		this.transientWeight = transientWeight;
-	}
-	
-	/**
-	 * @see java.lang.Object#equals(Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof ConceptSearchResult) {
-			ConceptSearchResult result = (ConceptSearchResult) obj;
-			
-			return OpenmrsUtil.nullSafeEquals(this.getConcept(), result.getConcept())
-			        && OpenmrsUtil.nullSafeEquals(this.getConceptName(), result.getConceptName())
-			        && OpenmrsUtil.nullSafeEquals(this.getWord(), result.getWord())
-			        && OpenmrsUtil.nullSafeEquals(this.getTransientWeight(), result.getTransientWeight());
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (this.getConcept() == null && this.getConceptName() == null && this.getWord() != null
-		        && this.getTransientWeight() == null)
-			return super.hashCode();
-		
-		int hash = 5;
-		if (this.getConcept() != null && this.getConcept().getConceptId() != null)
-			hash = 31 * getConcept().hashCode() + hash;
-		if (this.getConceptName() != null && this.getConceptName().getConceptNameId() != null)
-			hash = 31 * getConceptName().hashCode() + hash;
-		if (this.getWord() != null)
-			hash = 31 * getWord().hashCode() + hash;
-		if (this.getTransientWeight() != null)
-			hash = 31 * getTransientWeight().hashCode() + hash;
-		
-		return hash;
 	}
 }

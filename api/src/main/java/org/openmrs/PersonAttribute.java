@@ -106,36 +106,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	}
 	
 	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 * @should return true if personAttributeIds match
-	 * @should return false if personAttributeIds do not match
-	 * @should match on object equality if a personAttributeId is null
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof PersonAttribute) {
-			PersonAttribute attr = (PersonAttribute) obj;
-			if (attr.getPersonAttributeId() != null && getPersonAttributeId() != null)
-				return attr.getPersonAttributeId().equals(getPersonAttributeId());
-			
-		}
-		return this == obj;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getPersonAttributeId() == null)
-			return super.hashCode();
-		int hash = 5;
-		hash += 29 * hash + this.getPersonAttributeId().hashCode();
-		return hash;
-	}
-	
-	/**
 	 * Compares this PersonAttribute object to the given otherAttribute. This method differs from
 	 * {@link #equals(Object)} in that this method compares the inner fields of each attribute for
 	 * equality. Note: Null/empty fields on <code>otherAttribute</code> /will not/ cause a false

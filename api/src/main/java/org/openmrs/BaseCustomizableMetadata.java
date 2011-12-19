@@ -14,90 +14,94 @@
 package org.openmrs;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.openmrs.attribute.Attribute;
-import org.openmrs.attribute.AttributeType;
-import org.openmrs.attribute.Customizable;
+import org.openmrs.customdatatype.CustomValueDescriptor;
+import org.openmrs.customdatatype.Customizable;
 
 /**
  * Extension of {@link org.openmrs.BaseOpenmrsMetadata} for classes that support customization via user-defined attributes.
- * @param <AttrClass> the type of attribute held
+ * @param <A> the type of attribute held
+ * @since 1.9
  */
-public abstract class BaseCustomizableMetadata<AttrClass extends Attribute> extends BaseOpenmrsMetadata implements Customizable<AttrClass> {
+public abstract class BaseCustomizableMetadata<A extends Attribute> extends BaseOpenmrsMetadata implements Customizable<A> {
 	
-	private Set<AttrClass> attributes;
+	private Set<A> attributes = new LinkedHashSet<A>();
 	
 	/**
-	 * @see org.openmrs.attribute.Customizable#getAttributes()
+	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
 	 */
 	@Override
-	public Set<AttrClass> getAttributes() {
+	public Set<A> getAttributes() {
 		return attributes;
 	}
 	
 	/**
 	 * @param attributes the attributes to set
 	 */
-	public void setAttributes(Set<AttrClass> attributes) {
+	public void setAttributes(Set<A> attributes) {
 		this.attributes = attributes;
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.Customizable#getActiveAttributes()
+	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes()
 	 */
 	@Override
-	public List<AttrClass> getActiveAttributes() {
-		List<AttrClass> ret = new ArrayList<AttrClass>();
+	public Collection<A> getActiveAttributes() {
+		List<A> ret = new ArrayList<A>();
 		if (getAttributes() != null)
-			for (AttrClass attr : getAttributes())
+			for (A attr : getAttributes())
 				if (!attr.isVoided())
 					ret.add(attr);
 		return ret;
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.Customizable#getActiveAttributes(org.openmrs.attribute.AttributeType)
+	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes(org.openmrs.customdatatype.CustomValueDescriptor)
 	 */
 	@Override
-	public List<AttrClass> getActiveAttributes(AttributeType<?> ofType) {
-		List<AttrClass> ret = getActiveAttributes();
-		for (Iterator<AttrClass> i = ret.iterator(); i.hasNext();)
-			if (!(i.next().getAttributeType().equals(ofType)))
-				i.remove();
+	public java.util.List<A> getActiveAttributes(CustomValueDescriptor ofType) {
+		List<A> ret = new ArrayList<A>();
+		if (getAttributes() != null)
+			for (A attr : getAttributes())
+				if (attr.getAttributeType().equals(ofType) && !attr.isVoided())
+					ret.add(attr);
 		return ret;
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.Customizable#addAttribute(AttrClass)
+	 * @see org.openmrs.customdatatype.Customizable#addAttribute(org.openmrs.customdatatype.SingleCustomValue)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public void addAttribute(AttrClass attribute) {
+	public void addAttribute(A attribute) {
 		if (getAttributes() == null)
-			setAttributes(new HashSet<AttrClass>());
+			setAttributes(new LinkedHashSet<A>());
 		// TODO validate
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.Customizable#setAttribute(AttrClass)
+	 * Convenience method that voids all existing attributes of the given type, and sets this new one.
+	 * TODO fail if minOccurs > 1
+	 * TODO decide whether this should require maxOccurs=1
 	 * @should void the attribute if an attribute with same attribute type already exists and the maxOccurs is set to 1
+	 * 
+	 * @param attribute
 	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void setAttribute(AttrClass attribute) {
-		if (getAttributes() == null)
-			setAttributes(new LinkedHashSet<AttrClass>());
-		// TODO validate
+	public void setAttribute(A attribute) {
+		if (getAttributes() == null) {
+			addAttribute(attribute);
+			return;
+		}
+		
 		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
-			AttrClass existing = getActiveAttributes(attribute.getAttributeType()).get(0);
-			if (existing.getSerializedValue().equals(attribute.getSerializedValue())) {
+			A existing = getActiveAttributes(attribute.getAttributeType()).get(0);
+			if (existing.getValueReference().equals(attribute.getValueReference())) {
 				// do nothing, since the value is already as-specified
 			} else {
 				if (existing.getId() != null)
@@ -107,8 +111,9 @@ public abstract class BaseCustomizableMetadata<AttrClass extends Attribute> exte
 				getAttributes().add(attribute);
 				attribute.setOwner(this);
 			}
+			
 		} else {
-			for (AttrClass existing : getActiveAttributes(attribute.getAttributeType()))
+			for (A existing : getActiveAttributes(attribute.getAttributeType()))
 				if (existing.getAttributeType().equals(attribute.getAttributeType()))
 					if (existing.getId() != null)
 						existing.setVoided(true);

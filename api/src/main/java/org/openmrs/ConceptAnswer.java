@@ -77,58 +77,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @should not return true given an object with just a null drug answer
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof ConceptAnswer) {
-			ConceptAnswer c = (ConceptAnswer) obj;
-			if (this.conceptAnswerId != null && c.getConceptAnswerId() != null)
-				return (this.conceptAnswerId.equals(c.getConceptAnswerId()));
-			else {
-				boolean ret = true;
-				
-				// if one side is null and the other is not, return false
-				if (concept == null && c.getConcept() != null)
-					return false;
-				else if (this.concept != null)
-					ret = ret && this.concept.equals(c.getConcept());
-				
-				// if one side is null and the other is not, return false
-				if (this.answerConcept == null && c.getAnswerConcept() != null)
-					return false;
-				else if (this.answerConcept != null)
-					ret = ret && this.answerConcept.equals(c.getAnswerConcept());
-				
-				// if one side is null and the other is not, return false
-				if (this.answerDrug == null && c.getAnswerDrug() != null)
-					return false;
-				else if (this.answerDrug != null)
-					ret = ret && this.answerDrug.equals(c.getAnswerDrug());
-				
-				return ret;
-			}
-			
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getConceptAnswerId() != null)
-			return this.getConceptAnswerId().hashCode();
-		int hash = 9;
-		if (concept != null)
-			hash = hash * concept.hashCode() + 31;
-		if (answerConcept != null)
-			hash = hash * answerConcept.hashCode() + 31;
-		if (answerDrug != null)
-			hash = hash * answerDrug.hashCode() + 31;
-		
-		return hash;
-		
-	}
-	
-	/**
 	 * @return Returns the answerConcept.
 	 */
 	@Element

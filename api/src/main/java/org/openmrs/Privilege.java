@@ -42,18 +42,6 @@ public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializab
 		setDescription(description);
 	}
 	
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Privilege))
-			return false;
-		return privilege.equals(((Privilege) obj).privilege);
-	}
-	
-	public int hashCode() {
-		if (this.getPrivilege() == null)
-			return super.hashCode();
-		return this.getPrivilege().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

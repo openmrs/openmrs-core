@@ -53,17 +53,6 @@ public class ProgramWorkflowState extends BaseOpenmrsMetadata implements Seriali
 	// Instance methods
 	// ******************
 	
-	/** @see Object#equals(Object) */
-	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof ProgramWorkflowState) {
-			ProgramWorkflowState p = (ProgramWorkflowState) obj;
-			if (this.getProgramWorkflowStateId() != null) {
-				return (this.getProgramWorkflowStateId().equals(p.getProgramWorkflowStateId()));
-			}
-		}
-		return this == obj;
-	}
-	
 	/** @see Object#toString() */
 	public String toString() {
 		return ("State " + getConcept().getName() + " initial=" + getInitial() + " terminal=" + getTerminal());

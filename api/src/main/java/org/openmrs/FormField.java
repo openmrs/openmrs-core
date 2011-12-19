@@ -61,35 +61,6 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	}
 	
 	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof FormField) {
-			FormField f = (FormField) obj;
-			if (this.getFormFieldId() != null && f.getFormFieldId() != null)
-				return (this.getFormFieldId().equals(f.getFormFieldId()));
-			/*
-			 * return (this.getFormField().equals(f.getFormField()) &&
-			 * this.getForm().equals(f.getForm()) && this.getField().equals(f.getField()));
-			 */
-		}
-		return false;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getFormFieldId() == null)
-			return super.hashCode();
-		return this.getFormFieldId().hashCode();
-	}
-	
-	/**
 	 * Sort order for the form fields in the schema. Attempts: 1) sortWeight 2) fieldNumber 3)
 	 * fieldPart 4) fieldName
 	 * 

@@ -103,46 +103,10 @@ public class ConceptStopWord extends BaseOpenmrsObject implements java.io.Serial
 	}
 	
 	/**
-	 * @see Object#equals(Object)
-	 */
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		
-		ConceptStopWord that = (ConceptStopWord) o;
-		
-		if (conceptStopWordId != null ? !conceptStopWordId.equals(that.conceptStopWordId) : that.conceptStopWordId != null)
-			return false;
-		if (locale != null ? !locale.equals(that.locale) : that.locale != null)
-			return false;
-		if (value != null ? !value.equals(that.value) : that.value != null)
-			return false;
-		
-		return true;
-	}
-	
-	/**
-	 * @see Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((conceptStopWordId == null) ? super.hashCode() : conceptStopWordId.hashCode());
-		result = prime * result + ((locale == null) ? super.hashCode() : locale.hashCode());
-		result = prime * result + ((value == null) ? super.hashCode() : value.hashCode());
-		return result;
-	}
-	
-	/**
 	 * @see Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "ConceptStopWord: " + this.value + ", Locale: " + locale;
 	}
-	
 }

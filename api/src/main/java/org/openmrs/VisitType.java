@@ -80,35 +80,4 @@ public class VisitType extends BaseOpenmrsMetadata implements java.io.Serializab
 		setVisitTypeId(id);
 	}
 	
-	/**
-	 * Compares two VisitType objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 * @should have equal visit type objects by visitTypeId
-	 * @should not have equal visit type objects by visitTypeId
-	 * @should have equal visit type objects with no visitTypeId
-	 * @should not have equal visit type objects when one has null visitTypeId
-	 */
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof VisitType))
-			return false;
-		
-		VisitType visitType = (VisitType) obj;
-		if (this.visitTypeId != null && visitType.getVisitTypeId() != null)
-			return (this.visitTypeId.equals(visitType.getVisitTypeId()));
-		else
-			return this == visitType;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 * @should get hashCode even with null attributes
-	 */
-	public int hashCode() {
-		if (this.getVisitTypeId() == null)
-			return super.hashCode();
-		
-		return this.getVisitTypeId().hashCode();
-	}
 }
