@@ -37,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
-import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -250,8 +249,6 @@ public class TestInstallUtil {
 		
 		if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
 			throw new APIAuthenticationException("Invalid username or password");
-		else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN)
-			throw new ContextAuthenticationException("user locked out");
 		else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR)
 			throw new APIException("An error occurred on the remote server");
 		

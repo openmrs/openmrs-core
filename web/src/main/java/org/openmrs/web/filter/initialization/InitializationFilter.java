@@ -710,12 +710,8 @@ public class InitializationFilter extends StartupFilter {
 							        + "verifycredentials.htm", wizardModel.remoteUsername, wizardModel.remotePassword);
 						}
 						catch (APIAuthenticationException e) {
-							log.warn("Unable to authenticate as a User with the System Developer role");
+							log.warn("Error generated: ", e);
 							errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
-						}
-						catch (ContextAuthenticationException e) {
-							log.warn("User has been locked out by the remote system");
-							errors.put("install.lockedout", null);
 						}
 						
 						if (errors.isEmpty()) {
