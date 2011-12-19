@@ -288,10 +288,9 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		Assert.assertEquals("too many NK1s parsed out", 1, nk1List.size());
-		Person expected = new Person(2);
 		Person result = hl7service.resolvePersonFromIdentifiers(nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers());
 		Assert.assertNotNull("should have found a person", result);
-		Assert.assertEquals("found the wrong person", expected, result);
+		Assert.assertEquals("found the wrong person", 2, result.getId().intValue());
 	}
 	
 	/**
@@ -314,10 +313,9 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		Assert.assertEquals("too many NK1s parsed out", 1, nk1List.size());
-		Person expected = new Person(2);
 		Person result = hl7service.resolvePersonFromIdentifiers(nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers());
 		Assert.assertNotNull("should have found a person", result);
-		Assert.assertEquals("found the wrong person", expected, result);
+		Assert.assertEquals("found the wrong person", 2, result.getId().intValue());
 	}
 	
 	/**
@@ -340,10 +338,9 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		Assert.assertEquals("too many NK1s parsed out", 1, nk1List.size());
-		Person expected = new Person(2);
 		Person result = hl7service.resolvePersonFromIdentifiers(nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers());
 		Assert.assertNotNull("should have found a person", result);
-		Assert.assertEquals("found the wrong person", expected, result);
+		Assert.assertEquals("found the wrong person", 2, result.getId().intValue());
 	}
 	
 	/**

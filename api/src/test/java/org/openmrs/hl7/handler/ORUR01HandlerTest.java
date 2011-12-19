@@ -246,7 +246,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		List<Obs> obsForPatient = Context.getObsService().getObservationsByPersonAndConcept(patient, question);
 		assertEquals(1, obsForPatient.size()); // there should be 1 obs now for
 		// this patient
-		assertEquals(new Encounter(3), obsForPatient.get(0).getEncounter());
+		assertEquals(3, obsForPatient.get(0).getEncounter().getId().intValue());
 		
 	}
 	
@@ -376,7 +376,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		ConceptName name = obss.get(0).getValueCodedName();
 		Assert.assertNotNull(name);
-		junit.framework.Assert.assertEquals("The valueCodedName should be 2471", new ConceptName(2471), name);
+		Assert.assertEquals("The valueCodedName should be 2471", 2471, name.getId().intValue());
 	}
 	
 	/**
@@ -385,7 +385,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a Concept if given local coding system", method = "getConcept(String,String)")
 	public void getConcept_shouldReturnAConceptIfGivenLocalCodingSystem() throws Exception {
-		Assert.assertEquals(new Concept(123), new ORUR01Handler().getConcept("123", "99DCT", "xj39bnj4k34nmf"));
+		Assert.assertEquals(123, new ORUR01Handler().getConcept("123", "99DCT", "xj39bnj4k34nmf").getId().intValue());
 	}
 	
 	/**
@@ -394,7 +394,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a mapped Concept if given a valid mapping", method = "getConcept(String,String)")
 	public void getConcept_shouldReturnAMappedConceptIfGivenAValidMapping() throws Exception {
-		Assert.assertEquals(new Concept(5089), new ORUR01Handler().getConcept("WGT234", "SSTRM", "23498343sdnm3"));
+		Assert.assertEquals(5089, new ORUR01Handler().getConcept("WGT234", "SSTRM", "23498343sdnm3").getId().intValue());
 	}
 	
 	/**
