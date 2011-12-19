@@ -5,14 +5,14 @@
 
 <%@ attribute name="formFieldNamePrefix" required="true" type="java.lang.String" %>
 <%@ attribute name="attributeType" required="true" type="org.openmrs.attribute.AttributeType" %>
-<%@ attribute name="customizable" required="true" type="org.openmrs.attribute.Customizable" %>
+<%@ attribute name="customizable" required="true" type="org.openmrs.customdatatype.Customizable" %>
 <%
 List<Attribute> existing = customizable.getActiveAttributes(attributeType);
 int howManyToShow = attributeType.getMaxOccurs() == null ? 1 : attributeType.getMaxOccurs();
 howManyToShow = Math.max(howManyToShow, existing.size());
 %>
 <tr>
-    <td>${ attributeType.name }</td>
+    <th>${ attributeType.name }</th>
     <td>
 <% for (int i = 0; i < howManyToShow; ++i) {
 	Attribute val = null;
@@ -24,8 +24,8 @@ howManyToShow = Math.max(howManyToShow, existing.size());
 	else
 		formFieldName += ".new[" + i + "]";
 %>
-        <openmrs_tag:attribute
-            attributeType="${ attributeType }"
+        <openmrs_tag:singleCustomValue
+            customValueDescriptor="${ attributeType }"
             formFieldName="<%= formFieldName %>"
             value="<%= val %>"/>
         <br/>

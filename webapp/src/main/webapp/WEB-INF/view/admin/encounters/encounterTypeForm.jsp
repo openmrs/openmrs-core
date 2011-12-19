@@ -93,6 +93,17 @@
 	</form>
 </c:if>
 
+<c:if test="${encounterType.retired && not empty encounterType.encounterTypeId}">
+	<form method="post">
+		<fieldset>
+			<h4><spring:message code="EncounterType.unretireEncounterType"/></h4>
+			
+			<br/>
+			<input type="submit" value='<spring:message code="EncounterType.unretireEncounterType"/>' name="unretire"/>
+		</fieldset>
+	</form>
+</c:if>
+
 <br/>
 
 <c:if test="${not empty encounterType.encounterTypeId}">

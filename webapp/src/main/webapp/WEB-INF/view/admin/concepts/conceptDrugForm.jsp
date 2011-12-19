@@ -181,9 +181,6 @@
 		</fieldset>
 	</form>
 </c:if>
-<script type="text/javascript">
-	document.getElementById('retiredReasonRow').style.display = document.getElementById('retired').checked ==true ? '' : 'none';
-</script>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.footer" type="html" parameters="drugId=${drug.drugId}" />
 

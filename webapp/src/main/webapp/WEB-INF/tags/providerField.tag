@@ -1,14 +1,11 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ attribute name="formFieldName" required="true" %>
-<%@ attribute name="searchLabel" required="false" %> <%-- deprecated --%>
-<%@ attribute name="searchLabelCode" required="false" %> <%-- deprecated --%>
-<%@ attribute name="roles" required="false" %>
-<%@ attribute name="initialValue" required="false" %> <%-- This should be a userId --%>
-<%@ attribute name="linkUrl" required="false" %> <%-- deprecated --%>
-<%@ attribute name="callback" required="false" %> <%-- gets the relType, UserListItem sent back --%>
+<%@ attribute name="initialValue" required="false" %> <%-- This should be a providerId --%>
+<%@ attribute name="callback" required="false" %> <%-- gets the relType, ProviderListItem sent back --%>
+<%@ attribute name="formFieldId" required="false" description="The unique id to assign to the formField" %>
 
-<openmrs:htmlInclude file="/dwr/interface/DWRUserService.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRProviderService.js" />
 <openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
 <openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.ui.autocomplete.autoSelect.js" />
 
@@ -22,9 +19,9 @@
 	$j(document).ready( function() {
 
 		// set up the autocomplete
-		new AutoComplete("${displayNameInputId}", new CreateCallback({roles:"${roles}"}).userCallback(), {
+		new AutoComplete("${displayNameInputId}", new CreateCallback().providerCallback(), {
 			select: function(event, ui) {
-				jquerySelectEscaped("${formFieldId}").val(ui.item.object.userId);
+				jquerySelectEscaped("${formFieldId}").val(ui.item.object.providerId);
 					
 				<c:if test="${not empty callback}">
 				if (ui.item.object) {
@@ -33,7 +30,7 @@
 				}
 				</c:if>
 			},
-            placeholder:'<spring:message code="User.search.placeholder" javaScriptEscape="true"/>'
+            placeholder:'<spring:message code="Provider.search.placeholder" javaScriptEscape="true"/>'
 		});
 
 		//Clear hidden value on losing focus with no valid entry
@@ -43,14 +40,14 @@
 			}
 		});
 		
-		// get the name of the person that they passed in the id for
+		// get the name of the privider that they passed in the id for
 		<c:if test="${not empty initialValue}">
 			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
-			DWRUserService.getUser("${initialValue}", function(user) {
-				jquerySelectEscaped("${displayNameInputId}").val(user.personName);
-				jquerySelectEscaped("${displayNameInputId}").autocomplete("option", "initialValue", user.personName);
+			DWRProviderService.getProvider("${initialValue}", function(provider) {
+				jquerySelectEscaped("${displayNameInputId}").val(provider.name);
+				jquerySelectEscaped("${displayNameInputId}").autocomplete("option", "initialValue", provider.name);
 				<c:if test="${not empty callback}">
-					${callback}("${formFieldName}", user);
+					${callback}("${formFieldName}", provider);
 			</c:if>
 			});
 		</c:if>

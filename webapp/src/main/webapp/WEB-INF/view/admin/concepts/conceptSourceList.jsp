@@ -5,7 +5,7 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="ConceptSource.title"/></h2>
+<h2><spring:message code="ConceptSource.manage"/></h2>
 
 <a href="conceptSource.form"><spring:message code="ConceptSource.add"/></a>
 
