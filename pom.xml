@@ -632,6 +632,8 @@
 						<archive>
 							<manifestEntries>
 								<Build-Timestamp>${TIMESTAMP}</Build-Timestamp>
+								<Specification-Version>${openmrs.version.shortnumericonly}</Specification-Version>
+								<Specification-Vendor>${openmrs.version.long}</Specification-Vendor>
 							</manifestEntries>
 						</archive>
 					</configuration>
