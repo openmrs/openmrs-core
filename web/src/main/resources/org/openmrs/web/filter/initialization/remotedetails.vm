@@ -15,11 +15,11 @@
 				</td>
 			</tr>
 			<tr>
-                <th align="right">$l10n.get("User.username"):</th>
+                <th align="right">$l10n.get("install.testing.username.remote"):</th>
                 <td><input type="text" name="username" value="${remoteUsername}" onKeyPress="return submitenter(this,event);" /></td>
             </tr>
             <tr>
-                <th align="right">$l10n.get("User.password"):</th>
+                <th align="right">$l10n.get("install.testing.password.remote"):</th>
                 <td><input type="password" name="password" onKeyPress="return submitenter(this,event);" /></td>
             </tr>
 			<tr><td colspan="2" height="40px"></td></tr>
