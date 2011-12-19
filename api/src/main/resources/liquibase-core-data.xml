@@ -856,7 +856,7 @@
             <column name="b_is_to_a" value="Niece/Nephew"/>
             <column name="preferred" valueBoolean="false"/>
             <column name="weight" valueNumeric="0"/>
-            <column name="description" value=""/>
+            <column name="description" value="Relationship from a parent's sibling to a child of that parent"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2007-05-04"/>
         </insert>
