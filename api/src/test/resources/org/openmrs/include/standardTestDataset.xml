@@ -301,8 +301,8 @@
   <global_property property="concept.true" property_value="7" uuid="6ed7aeb4-0663-11e1-8c99-2b4f0c4f671a"/>
   <global_property property="concept.false" property_value="8" uuid="7abcc444-0663-11e1-8c99-2b4f0c4f671a"/>
   <concept_stop_word concept_stop_word_id="1" word="A" locale="en" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972eb"/>
-  <concept_stop_word concept_stop_word_id="2" word="An" locale="en" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ec"/>
-  <concept_stop_word concept_stop_word_id="3" word="But" locale="en_GB" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ed"/>
+  <concept_stop_word concept_stop_word_id="2" word="AN" locale="en" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ec"/>
+  <concept_stop_word concept_stop_word_id="3" word="BUT" locale="en_GB" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ed"/>
   <concept_stop_word concept_stop_word_id="4" word="A" locale="en_US" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ee"/>  
   <visit_type visit_type_id="1" name="Initial HIV Clinic Visit" description="Initial HIV Clinic Visit Description" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c0c579b0-8e59-401d-8a4a-976a0b183519"/>
   <visit_type visit_type_id="2" name="Return TB Clinic Visit" description="Return TB Clinic Visit Description" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="759799ab-c9a5-435e-b671-77773ada74e4"/>

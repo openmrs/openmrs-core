@@ -963,7 +963,7 @@ public final class OpenmrsConstants {
 	 */
 	public static final String AUTO_CLOSE_VISITS_TASK_NAME = "Auto Close Visits Task";
 	
-	public static final String GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT = "conceptIndexUpdateTask.lastConceptUpdated";
+	public static final String GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT = "concept.IndexUpdateTask.lastConceptUpdated";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
