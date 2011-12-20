@@ -336,8 +336,8 @@ public class WebModuleUtil {
 						log.warn(msg + " for module: " + mod.getModuleId(), e);
 					
 					try {
-						ModuleFactory.stopModule(mod, true, true); //remove jar from classloader play
 						stopModule(mod, servletContext, true);
+						ModuleFactory.stopModule(mod, true, true); //remove jar from classloader play
 					}
 					catch (Exception e2) {
 						// exception expected with most modules here
@@ -345,10 +345,10 @@ public class WebModuleUtil {
 							log.warn("Error while stopping a module that had an error on refreshWAC", e2);
 					}
 					
-					notifySuperUsersAboutModuleFailure(mod);
-					
 					// try starting the application context again
 					refreshWAC(servletContext, false, mod);
+					
+					notifySuperUsersAboutModuleFailure(mod);
 				}
 				
 			}
