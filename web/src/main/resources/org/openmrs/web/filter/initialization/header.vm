@@ -89,30 +89,26 @@
 	
 	#if( ! $errors.isEmpty() )
 	<div id="errorMsgs" class="openmrs_error">
-		<ul>
 		#foreach ($error in $errors.entrySet())
 			#if (!$error.getValue()) 
-				<li>$l10n.get($error.getKey())</li>
+				<p>$l10n.get($error.getKey())</p>
 			#else
-				<li>$l10n.get($error.getKey()).insert($error.getValue())</li>
+				<p>$l10n.get($error.getKey()).insert($error.getValue())</p>
 			#end
 		#end
-		</ul>
 	</div>
 	<br/>
 	#end
 	
 	#if( ! $msgs.isEmpty() )
 	<div id="infoMsgs" class="openmrs_msg">
-		<ul>
 		#foreach ($msg in $msgs.entrySet())
 			#if (!$msg.getValue()) 
-				<li>$l10n.get($msg.getKey())</li>
+				<p>$l10n.get($msg.getKey())</p>
 			#else
-				<li>$l10n.get($msg.getKey()).insert($msg.getValue())</li>
+				<p>$l10n.get($msg.getKey()).insert($msg.getValue())</p>
 			#end
 		#end
-		</ul>
 	</div>
 	<br/>
 	#end		
