@@ -183,15 +183,6 @@
 
 				//searchHandler for the Search widget
 				function doPatientSearch(text, resultHandler, getMatchCount, opts) {
-					
-					//Do not search when the text has not changed.
-					//e.g when user hits spacebar, backspace, alt-tab etc without changing the seach phrase.
-					if (text == lastSearch) {
-						$j("#spinner").css("visibility", "hidden");
-						$j('#pageInfo').css("visibility", "visible");
-						return;
-					}
-					
 					lastSearch = text;
 					DWRPatientService.findCountAndPatients(text, opts.start, opts.length, getMatchCount, resultHandler);
 				}
