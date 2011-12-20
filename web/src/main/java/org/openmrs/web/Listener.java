@@ -37,7 +37,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
-import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.Module;
@@ -51,7 +50,6 @@ import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsSecurityManager;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
@@ -488,7 +486,7 @@ public final class Listener extends ContextLoaderListener {
 		}
 		catch (Throwable t) {
 			// don't print the unhelpful "contextDAO is null" message
-			if (!t.getMessage().equals("contextDAO is null")) {
+			if (!"contextDAO is null".equals(t.getMessage())) {
 				// not using log.error here so it can be garbage collected
 				System.out.println("Listener.contextDestroyed: Error while shutting down openmrs: ");
 				t.printStackTrace();
@@ -582,8 +580,16 @@ public final class Listener extends ContextLoaderListener {
 				try {
 					WebModuleUtil.shutdownModules(servletContext);
 					for (Module mod : ModuleFactory.getLoadedModules()) {// use loadedModules to avoid a concurrentmodificationexception
-						if (!mod.isCoreModule() && !mod.isMandatory())
-							ModuleFactory.stopModule(mod, true, true);
+						if (!mod.isCoreModule() && !mod.isMandatory()) {
+							try {
+								ModuleFactory.stopModule(mod, true, true);
+							}
+							catch (Throwable t3) {
+								// just keep going if we get an error shutting down.  was probably caused by the module 
+								// that actually got us to this point!
+								log.trace("Unable to shutdown module:" + mod, t3);
+							}
+						}
 					}
 					WebModuleUtil.refreshWAC(servletContext, true, null);
 				}
