@@ -568,7 +568,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @param cc ConceptClass
 	 * @return Returns all concepts in a given class
 	 * @throws APIException
-	 * 
 	 * @should not fail due to no name in search
 	 */
 	@Transactional(readOnly = true)
@@ -702,7 +701,8 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param cd ConceptDatatype to create or update
 	 * @throws NotImplementedException
-	 * @deprecated as of 1.9 because users should never change datatypes, it could harm data and other code expecting them to be here
+	 * @deprecated as of 1.9 because users should never change datatypes, it could harm data and
+	 *             other code expecting them to be here
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPT_DATATYPES })
 	@Deprecated
@@ -713,7 +713,8 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param cd ConceptDatatype to purge
 	 * @throws NotImplementedException
-	 * @deprecated as of 1.9 because users should never delete datatypes, it could harm data and other code expecting them to be here
+	 * @deprecated as of 1.9 because users should never delete datatypes, it could harm data and
+	 *             other code expecting them to be here
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPT_DATATYPES)
 	@Deprecated
@@ -1960,6 +1961,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the count of matching concept reference terms
 	 * @since 1.9
 	 * @throws APIException
+	 * @should include retired terms if includeRetired is set to true
+	 * @should not include retired terms if includeRetired is set to false
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)

@@ -2048,4 +2048,22 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		cs.getConceptsByClass(cs.getConceptClass(1));
 	}
+	
+	/**
+	 * @see {@link ConceptService#getCountOfConceptReferenceTerms(String,ConceptSource,null)}
+	 */
+	@Test
+	@Verifies(value = "should include retired terms if includeRetired is set to true", method = "getCountOfConceptReferenceTerms(String,ConceptSource,null)")
+	public void getCountOfConceptReferenceTerms_shouldIncludeRetiredTermsIfIncludeRetiredIsSetToTrue() throws Exception {
+		Assert.assertEquals(11, conceptService.getCountOfConceptReferenceTerms("", null, true).intValue());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getCountOfConceptReferenceTerms(String,ConceptSource,null)}
+	 */
+	@Test
+	@Verifies(value = "should not include retired terms if includeRetired is set to false", method = "getCountOfConceptReferenceTerms(String,ConceptSource,null)")
+	public void getCountOfConceptReferenceTerms_shouldNotIncludeRetiredTermsIfIncludeRetiredIsSetToFalse() throws Exception {
+		Assert.assertEquals(10, conceptService.getCountOfConceptReferenceTerms("", null, false).intValue());
+	}
 }
