@@ -622,7 +622,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Integer i = c.getConceptId();
 		
 		List<Concept> concepts = sessionFactory.getCurrentSession().createCriteria(Concept.class).add(
-		    Expression.gt("conceptId", i)).addOrder(Order.asc("conceptId")).setFetchSize(1).list();
+		    Expression.gt("conceptId", i)).addOrder(Order.asc("conceptId")).setMaxResults(1).list();
 		
 		if (concepts.size() < 1)
 			return null;
