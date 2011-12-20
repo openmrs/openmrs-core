@@ -601,7 +601,7 @@ public interface ConceptDAO {
 	/**
 	 * @see ConceptService#getCountOfConceptReferenceTerms(String, ConceptSource, boolean)
 	 */
-	public Integer getCountOfConceptReferenceTerms(String query, ConceptSource conceptSource, boolean includeRetired)
+	public Long getCountOfConceptReferenceTerms(String query, ConceptSource conceptSource, boolean includeRetired)
 	        throws DAOException;
 	
 	/**
