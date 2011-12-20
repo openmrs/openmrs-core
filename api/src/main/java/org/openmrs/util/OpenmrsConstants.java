@@ -1329,7 +1329,7 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(
 		                GP_SEARCH_WIDGET_IN_SERIAL_MODE,
-		                "true",
+		                "false",
 		                "Specifies whether the search widgets should make ajax requests in serial or parallel order, a value of true is appropriate for implementations running on a slow network connection and vice versa",
 		                BooleanDatatype.class, null));
 		
