@@ -1815,12 +1815,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getCountOfConceptReferenceTerms(java.lang.String, boolean)
 	 */
 	@Override
-	public Integer getCountOfConceptReferenceTerms(String query, ConceptSource conceptSource, boolean includeRetired)
+	public Long getCountOfConceptReferenceTerms(String query, ConceptSource conceptSource, boolean includeRetired)
 	        throws DAOException {
 		Criteria criteria = createConceptReferenceTermCriteria(query, conceptSource, includeRetired);
 		
 		criteria.setProjection(Projections.rowCount());
-		return (Integer) criteria.uniqueResult();
+		return (Long) criteria.uniqueResult();
 	}
 	
 	/**

@@ -2106,7 +2106,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public Integer getCountOfConceptReferenceTerms(String query, ConceptSource conceptSource, boolean includeRetired) {
-		return dao.getCountOfConceptReferenceTerms(query, conceptSource, includeRetired);
+		return OpenmrsUtil.convertToInteger(dao.getCountOfConceptReferenceTerms(query, conceptSource, includeRetired));
 	}
 	
 	/**
