@@ -618,6 +618,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				if(currInput == '' && !self.options.doSearchWhenEmpty){
 					if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
+					if($j('#spinner').css("visibility") == 'visible')
+						$j("#spinner").css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
 					if(currInput.length > 0)
 						$j("#minCharError").css("visibility", "visible");
