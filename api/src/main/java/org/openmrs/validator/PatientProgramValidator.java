@@ -32,7 +32,7 @@ import org.springframework.validation.Validator;
 /**
  * This class validates a {@link PatientProgram} object
  * 
- * @since 1.9
+ * @since 1.8.4
  */
 @Handler(supports = { PatientProgram.class }, order = 50)
 public class PatientProgramValidator implements Validator {
