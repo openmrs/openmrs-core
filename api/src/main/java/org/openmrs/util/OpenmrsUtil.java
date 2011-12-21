@@ -2373,13 +2373,7 @@ public class OpenmrsUtil {
 		if (applicationName == null)
 			applicationName = "openmrs";
 		String pathName = "";
-		if ("true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"))) {
-			log.info("In functional testing mode. Ignoring the existing runtime properties file");
-			pathName = applicationName + "-test-runtime.properties";
-		} else {
-			pathName = getRuntimePropertiesFilePathName(applicationName);
-		}
-		
+		pathName = getRuntimePropertiesFilePathName(applicationName);
 		FileInputStream propertyStream = null;
 		try {
 			if (pathName != null) {
@@ -2445,8 +2439,8 @@ public class OpenmrsUtil {
 		
 		// next look from environment variable
 		String envVarName = applicationName.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
-		pathName = System.getenv(envVarName);
-		if (pathName != null) {
+		String envFileName = System.getenv(envVarName);
+		if (envFileName != null) {
 			log.debug("Atempting to look for runtime properties from: " + pathName);
 			if (new File(pathName).exists()) {
 				return pathName;
@@ -2461,7 +2455,7 @@ public class OpenmrsUtil {
 		}
 		
 		// next look in the OpenMRS application data directory
-		pathName = OpenmrsUtil.getApplicationDataDirectory() + defaultFileName;
+		pathName = OpenmrsUtil.getApplicationDataDirectory() + pathName;
 		log.debug("Attempting to look for property file from: " + pathName);
 		if (new File(pathName).exists()) {
 			return pathName;
