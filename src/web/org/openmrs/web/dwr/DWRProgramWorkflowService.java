@@ -31,6 +31,7 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.validator.ValidateUtil;
 
 public class DWRProgramWorkflowService {
 	
@@ -154,6 +155,7 @@ public class DWRProgramWorkflowService {
 		if (anyChange) {
 			pp.setDateEnrolled(dateEnrolled);
 			pp.setDateCompleted(dateCompleted);
+			ValidateUtil.validate(pp);
 			Context.getProgramWorkflowService().savePatientProgram(pp);
 		}
 	}
@@ -186,6 +188,7 @@ public class DWRProgramWorkflowService {
 		if (onDateDMY != null && onDateDMY.length() > 0)
 			onDate = ymdDf.parse(onDateDMY);
 		pp.transitionToState(st, onDate);
+		ValidateUtil.validate(pp);
 		s.savePatientProgram(pp);
 	}
 	
@@ -194,6 +197,7 @@ public class DWRProgramWorkflowService {
 		PatientProgram pp = s.getPatientProgram(patientProgramId);
 		ProgramWorkflow wf = s.getWorkflow(programWorkflowId);
 		pp.voidLastState(wf, Context.getAuthenticatedUser(), new Date(), voidReason);
+		ValidateUtil.validate(pp);
 		Context.getProgramWorkflowService().savePatientProgram(pp);
 	}
 }
