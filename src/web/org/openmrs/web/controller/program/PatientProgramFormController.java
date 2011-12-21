@@ -25,8 +25,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
+import org.openmrs.validator.ValidateUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.web.servlet.ModelAndView;
@@ -59,7 +61,7 @@ public class PatientProgramFormController implements Controller {
 		
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		
-		// make sure we parse dates the same was as if we were using the initBinder + property editor method 
+		// make sure we parse dates the same was as if we were using the initBinder + property editor method
 		CustomDateEditor cde = new CustomDateEditor(Context.getDateFormat(), true, 10);
 		cde.setAsText(enrollmentDateStr);
 		Date enrollmentDate = (Date) cde.getValue();
@@ -75,7 +77,13 @@ public class PatientProgramFormController implements Controller {
 			pp.setProgram(program);
 			pp.setDateEnrolled(enrollmentDate);
 			pp.setDateCompleted(completionDate);
-			Context.getProgramWorkflowService().savePatientProgram(pp);
+			try {
+				ValidateUtil.validate(pp);
+				Context.getProgramWorkflowService().savePatientProgram(pp);
+			}
+			catch (APIException e) {
+				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+			}
 		}
 		return new ModelAndView(new RedirectView(returnPage));
 	}
@@ -91,14 +99,20 @@ public class PatientProgramFormController implements Controller {
 		String patientProgramIdStr = request.getParameter("patientProgramId");
 		String dateCompletedStr = request.getParameter("dateCompleted");
 		
-		// make sure we parse dates the same was as if we were using the initBinder + property editor method 
+		// make sure we parse dates the same was as if we were using the initBinder + property editor method
 		CustomDateEditor cde = new CustomDateEditor(Context.getDateFormat(), true, 10);
 		cde.setAsText(dateCompletedStr);
 		Date dateCompleted = (Date) cde.getValue();
 		
 		PatientProgram p = Context.getProgramWorkflowService().getPatientProgram(Integer.valueOf(patientProgramIdStr));
 		p.setDateCompleted(dateCompleted);
-		Context.getProgramWorkflowService().savePatientProgram(p);
+		try {
+			ValidateUtil.validate(p);
+			Context.getProgramWorkflowService().savePatientProgram(p);
+		}
+		catch (APIException e) {
+			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+		}
 		
 		return new ModelAndView(new RedirectView(returnPage));
 	}
