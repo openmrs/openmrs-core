@@ -20,7 +20,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * PatientState
  */
-public class PatientState extends BaseOpenmrsData implements java.io.Serializable {
+public class PatientState extends BaseOpenmrsData implements java.io.Serializable, Comparable<PatientState> {
 	
 	public static final long serialVersionUID = 0L;
 	
@@ -186,5 +186,21 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 	 */
 	public void setId(Integer id) {
 		setPatientStateId(id);
+	}
+	
+	/**
+	 * Compares by startDate with null as earliest and endDate with null as latest.
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * @should return positive if startDates equal and this endDate null
+	 * @should return negative if this startDate null
+	 */
+	@Override
+	public int compareTo(PatientState o) {
+		int result = OpenmrsUtil.compareWithNullAsEarliest(getStartDate(), o.getStartDate());
+		if (result == 0) {
+			result = OpenmrsUtil.compareWithNullAsLatest(getEndDate(), o.getEndDate());
+		}
+		return result;
 	}
 }

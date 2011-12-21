@@ -702,6 +702,7 @@
 	<bean id="orderValidator" class="org.openmrs.validator.OrderValidator" />
 	<bean id="drugOrderValidator" class="org.openmrs.validator.DrugOrderValidator" />
 	<bean id="requireNameValidator" class="org.openmrs.validator.RequireNameValidator"/>
+	<bean id="patientProgramValidator" class="org.openmrs.validator.PatientProgramValidator" />
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 	
