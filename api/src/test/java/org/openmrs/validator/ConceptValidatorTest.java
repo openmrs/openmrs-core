@@ -211,12 +211,12 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-     * @see ConceptValidator#validate(Object,Errors)
-     * @verifies pass if the concept being validated is retired and has a duplicate name
-     */
-    @Test
-    public void validate_shouldPassIfTheConceptBeingValidatedIsRetiredAndHasADuplicateName() throws Exception {
-    	Context.setLocale(new Locale("en"));
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies pass if the concept being validated is retired and has a duplicate name
+	 */
+	@Test
+	public void validate_shouldPassIfTheConceptBeingValidatedIsRetiredAndHasADuplicateName() throws Exception {
+		Context.setLocale(new Locale("en"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		Context.getConceptService().saveConcept(concept);
 		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
@@ -227,7 +227,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(anotherConcept, "concept");
 		new ConceptValidator().validate(anotherConcept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
-    }
+	}
 	
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
