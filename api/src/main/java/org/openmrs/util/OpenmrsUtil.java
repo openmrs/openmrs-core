@@ -2405,6 +2405,7 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Checks whether the system is running in test mode
+	 * 
 	 * @return boolean
 	 */
 	
@@ -2477,6 +2478,7 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Gets OpenMRS version name under test mode.
+	 * 
 	 * @return String openmrs version number
 	 */
 	public static String getOpenMRSVersionInTestMode() {
@@ -2503,19 +2505,39 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * This method converts the given Long value to an Integer. If the Long
-	 * value will not fit in an Integer an exception is thrown
+	 * This method converts the given Long value to an Integer. If the Long value will not fit in an
+	 * Integer an exception is thrown
 	 * 
-	 * @param longValue
-	 *            the value to convert
+	 * @param longValue the value to convert
 	 * @return the long value in integer form.
-	 * @throws IllegalArgumentException
-	 *             if the long value does not fit into an integer
+	 * @throws IllegalArgumentException if the long value does not fit into an integer
 	 */
 	public static Integer convertToInteger(Long longValue) {
 		if (longValue < Integer.MIN_VALUE || longValue > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException(longValue + " cannot be cast to Integer without changing its value.");
 		}
 		return longValue.intValue();
+	}
+	
+	/**
+	 * Checks if the passed in date's day of the year is the one that comes immediately before that
+	 * of the current date
+	 * 
+	 * @param date the date to check
+	 * @since 1.9
+	 * @return true if the date comes immediately before the current date otherwise false
+	 */
+	public static boolean isYesterday(Date date) {
+		if (date == null)
+			return false;
+		
+		Calendar c1 = Calendar.getInstance();
+		c1.add(Calendar.DAY_OF_YEAR, -1); // yesterday
+		
+		Calendar c2 = Calendar.getInstance();
+		c2.setTime(date);
+		
+		return (c1.get(Calendar.ERA) == c2.get(Calendar.ERA) && c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1
+		        .get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR));
 	}
 }

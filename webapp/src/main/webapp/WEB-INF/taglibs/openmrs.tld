@@ -178,6 +178,16 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+		<description>
+			Specifies if text like 'Today' or 'Yesterday' can be prepended to the date in case the day of the year 
+			of the passed in date instance is the same as that of the current date instance or the day of the year 
+			of the passed in date instance is immediately before that of the current date instance respectively
+		</description>
+		<name>prependTodayOrYesterday</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
 </tag>
 
 <tag>
