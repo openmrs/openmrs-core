@@ -1,13 +1,11 @@
 /* Used for getting jstl code into the javascript files */
 <%@ include file="/WEB-INF/template/include.jsp" %>
 var omsgs = new Array();
-var gp = new Array();//array to hold only global properties
-var gp = new Array();//array to hold only global properties
-var userProperties = new Array();//Array to hold userProperties
+var gp = new Array();
+var userProperties = new Array();
 omsgs.minSearchCharactersGP="<openmrs:globalProperty key="minSearchCharacters" defaultValue="3"/>";
 omsgs.datePattern="<openmrs:datePattern />";
 omsgs.name="<spring:message javaScriptEscape="true" code="general.name"/>";
-
 omsgs.addNewPatient="<spring:message javaScriptEscape="true" code="Patient.addNew"/>";
 omsgs.addNewPersonMsg="<spring:message code='Person.addNew.msg' />";
 omsgs.addNewPerson="<spring:message code='Person.addNew'/>";
@@ -85,13 +83,11 @@ omsgs.userListingHeaders=new Array();
  omsgs.userListingHeaders.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
 </openmrs:forEachDisplayAttributeType>
 
-/* Global properties to be used in search widgets */
 gp.maxSearchResults=<openmrs:globalProperty key="searchWidget.batchSize" defaultValue="200"/>;
 gp.searchRunInSerialMode=<openmrs:globalProperty key="searchWidget.runInSerialMode" defaultValue="false"/>;
 gp.searchDelay=<openmrs:globalProperty key="searchWidget.searchDelayInterval" defaultValue="400"/>;
 gp.maximumResults=<openmrs:globalProperty key="searchWidget.maximumResults" defaultValue="2000"/>;
-
-/* General Labels and text to be used on SEARCH WIDGET */
+gp.weekStart=<openmrs:globalProperty key="datePicker.weekStart" defaultValue="0"/>;
 omsgs.encounterType="<spring:message code="Encounter.type" javaScriptEscape="true" />";
 omsgs.encounterForm="<spring:message code="Encounter.form" javaScriptEscape="true" />";
 omsgs.encounterProvider="<spring:message code="Encounter.provider" javaScriptEscape="true" />";
@@ -116,10 +112,7 @@ omsgs.loadingWithArgument="<spring:message code="searchWidget.loadingWithPlaceHo
 omsgs.showVerbose="<spring:message code="searchWidget.showVerbose" javaScriptEscape="true"/>";
 omsgs.viewingAll="<spring:message code="searchWidget.viewingAll" javaScriptEscape="true"/>";
 omsgs.showNumberofEntries="<spring:message code="searchWidget.showNumberOfEntries" javaScriptEscape="true" arguments="_MENU_"/>";
-
-/* User Properties*/
-userProperties.showRetired=<openmrs:userProperty key="showRetired" defaultValue="false"/>;
-userProperties.showVerbose=<openmrs:userProperty key="showVerbose" defaultValue="false"/>;
-
 omsgs.providerName="<spring:message code="Provider.name" javaScriptEscape="true" />";
 omsgs.providerIdentifier="<spring:message code="Provider.identifier" javaScriptEscape="true" />";
+userProperties.showRetired=<openmrs:userProperty key="showRetired" defaultValue="false"/>;
+userProperties.showVerbose=<openmrs:userProperty key="showVerbose" defaultValue="false"/>;
