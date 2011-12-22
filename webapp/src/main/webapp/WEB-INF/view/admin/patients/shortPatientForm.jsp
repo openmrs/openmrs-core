@@ -275,9 +275,8 @@
 				<tbody id="identifiersTbody">
 					<c:forEach var="id" items="${patientModel.identifiers}" varStatus="varStatus">
 					<%-- Don't display new identifiers that have been removed from the UI in previous submits that had errors--%>
-					<c:if test="${!id.voided}">
 					<spring:nestedPath path="identifiers[${varStatus.index}]">
-					<tr id="existingIdentifiersRow[${varStatus.index}]">					
+					<tr id="existingIdentifiersRow[${varStatus.index}]" <c:if test="${id.voided}">style='display: none'</c:if>>					
 					<td valign="top">						
 						<spring:bind path="identifier">
 						<input type="text" size="30" name="${status.expression}" value="${status.value}" />					
@@ -318,13 +317,12 @@
 					<td valign="middle">
 						<spring:bind path="voided">
 						<input type="hidden" name="_${status.expression}" value=""/>		
-						<input id="identifiers[${varStatus.index}].isVoided" type="checkbox" name="${status.expression}" value="false" style="display:none"/>						
+						<input id="identifiers[${varStatus.index}].isVoided" type="checkbox" name="${status.expression}" value="${status.value}" <c:if test="${id.voided}">checked='checked'</c:if> style="display:none"/>						
 						<input type="button" name="closeButton" onClick="removeRow(this, 'identifiers[${varStatus.index}].isVoided');" class="closeButton" value='<spring:message code="general.remove"/>' <c:if test="${(varStatus.first && varStatus.last)}">style="display: none;"</c:if> />
 						</spring:bind>
 					</td>
 					</tr>
 					</spring:nestedPath>
-					</c:if>
 					</c:forEach>
 					
 					<%-- The row from which to clone new identifiers --%>
