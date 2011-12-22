@@ -9,6 +9,9 @@ function showCalendar(obj, yearsPrevious) {
 	if (yearsPrevious)
 		opts["yearRange"] = "c-" + yearsPrevious + ":c10";
 	
+	if (gp.weekStart)
+		opts["firstDay"] = gp.weekStart;
+	
 	var dp = new DatePicker(jsDateFormat, obj.id, opts);
 	jQuery.datepicker.setDefaults(jQuery.datepicker.regional[jsLocale]);
 	
