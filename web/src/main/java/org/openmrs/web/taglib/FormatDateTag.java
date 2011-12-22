@@ -17,14 +17,17 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.tags.NestedPathTag;
@@ -65,6 +68,8 @@ public class FormatDateTag extends TagSupport {
 	private String type;
 	
 	private String format;
+	
+	private boolean prependTodayOrYesterday = false;
 	
 	public int doStartTag() {
 		RequestContext requestContext = (RequestContext) this.pageContext
@@ -137,9 +142,16 @@ public class FormatDateTag extends TagSupport {
 			dateFormat = new SimpleDateFormat("MM-dd-yyyy");
 		
 		String datestr = "";
+		String datePrefix = "";
 		
 		try {
 			if (date != null) {
+				if (prependTodayOrYesterday) {
+					if (DateUtils.isSameDay(Calendar.getInstance().getTime(), date))
+						datePrefix = Context.getMessageSourceService().getMessage("general.today") + " ";
+					else if (OpenmrsUtil.isYesterday(date))
+						datePrefix = Context.getMessageSourceService().getMessage("general.yesterday") + " ";
+				}
 				if (type.equals("milliseconds")) {
 					datestr = "" + date.getTime();
 				} else {
@@ -156,7 +168,7 @@ public class FormatDateTag extends TagSupport {
 		}
 		
 		try {
-			pageContext.getOut().write(datestr);
+			pageContext.getOut().write(datePrefix + datestr);
 		}
 		catch (IOException e) {
 			log.error(e);
@@ -177,6 +189,7 @@ public class FormatDateTag extends TagSupport {
 		this.date = null;
 		this.format = null;
 		this.path = null;
+		this.prependTodayOrYesterday = false;
 	}
 	
 	// variable access methods
@@ -214,4 +227,19 @@ public class FormatDateTag extends TagSupport {
 		this.type = type;
 	}
 	
+	/**
+	 * @return the prependTodayOrYesterday
+	 * @since 1.9
+	 */
+	public boolean isPrependTodayOrYesterday() {
+		return prependTodayOrYesterday;
+	}
+	
+	/**
+	 * @param prependTodayOrYesterday the prependTodayOrYesterday to set
+	 * @since 1.9
+	 */
+	public void setPrependTodayOrYesterday(boolean prependTodayOrYesterday) {
+		this.prependTodayOrYesterday = prependTodayOrYesterday;
+	}
 }
