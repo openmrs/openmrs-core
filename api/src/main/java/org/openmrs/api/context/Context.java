@@ -148,6 +148,8 @@ public class Context {
 	
 	private static Properties runtimeProperties = new Properties();
 	
+	private static Properties configProperties = new Properties();
+	
 	// A place to store data that will persist longer than a session, but won't
 	// persist beyond application restart
 	// TODO: put an optional expire date on these items
@@ -1219,5 +1221,38 @@ public class Context {
 	 */
 	public static DatatypeService getDatatypeService() {
 		return getServiceContext().getDatatypeService();
+	}
+	
+	/**
+	 * Add or replace a property in the config properties list
+	 * 
+	 * @param key name of the property
+	 * @param value value of the property
+	 * @since 1.9
+	 */
+	public static void addConfigProperty(Object key, Object value) {
+		configProperties.put(key, value);
+	}
+	
+	/**
+	 * Remove a property from the list of config properties
+	 * 
+	 * @param key name of the property
+	 * @since 1.9
+	 */
+	public static void removeConfigProperty(Object key) {
+		configProperties.remove(key);
+	}
+	
+	/**
+	 * Get the config properties that have been added to this OpenMRS instance
+	 * 
+	 * @return copy of the module properties
+	 * @since 1.9
+	 */
+	public static Properties getConfigProperties() {
+		Properties props = new Properties();
+		props.putAll(configProperties);
+		return props;
 	}
 }
