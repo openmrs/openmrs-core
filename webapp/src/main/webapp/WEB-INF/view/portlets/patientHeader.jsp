@@ -252,10 +252,10 @@
 					<spring:message code="general.atLocation" />
 					<strong><openmrs:format location="${ visit.location }" /></strong></c:if>
 				<spring:message code="general.fromDate" />
-				<openmrs:formatDate date="${ visit.startDatetime }" prependTodayOrYesterday="true" />
+				<openmrs:formatDate date="${ visit.startDatetime }" showTodayOrYesterday="true" />
 				<c:if test="${not empty visit.stopDatetime }">
 					<spring:message code="general.toDate" />
-					<openmrs:formatDate date="${ visit.stopDatetime }" prependTodayOrYesterday="true" />
+					<openmrs:formatDate date="${ visit.stopDatetime }" showTodayOrYesterday="true" />
 				</c:if>
 				<openmrs:hasPrivilege privilege="Edit Visits">
 					<input type="button" value="<spring:message code="Visit.edit"/>"
