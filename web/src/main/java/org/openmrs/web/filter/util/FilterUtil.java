@@ -225,6 +225,7 @@ public class FilterUtil {
 	 * useful when you want to get a value of a global property before the application context has
 	 * been setup
 	 * 
+	 * @param globalPropertyName the name of the global property
 	 * @return the global property value
 	 */
 	public static String getGlobalPropertyValue(String globalPropertyName) {
