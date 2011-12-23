@@ -184,7 +184,7 @@
 			of the passed in date instance is the same as that of the current date instance or the day of the year 
 			of the passed in date instance is immediately before that of the current date instance respectively
 		</description>
-		<name>prependTodayOrYesterday</name>
+		<name>showTodayOrYesterday</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>

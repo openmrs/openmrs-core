@@ -69,7 +69,7 @@ public class FormatDateTag extends TagSupport {
 	
 	private String format;
 	
-	private boolean prependTodayOrYesterday = false;
+	private boolean showTodayOrYesterday = false;
 	
 	public int doStartTag() {
 		RequestContext requestContext = (RequestContext) this.pageContext
@@ -142,20 +142,26 @@ public class FormatDateTag extends TagSupport {
 			dateFormat = new SimpleDateFormat("MM-dd-yyyy");
 		
 		String datestr = "";
-		String datePrefix = "";
 		
 		try {
 			if (date != null) {
-				if (prependTodayOrYesterday) {
-					if (DateUtils.isSameDay(Calendar.getInstance().getTime(), date))
-						datePrefix = Context.getMessageSourceService().getMessage("general.today") + " ";
-					else if (OpenmrsUtil.isYesterday(date))
-						datePrefix = Context.getMessageSourceService().getMessage("general.yesterday") + " ";
-				}
 				if (type.equals("milliseconds")) {
 					datestr = "" + date.getTime();
 				} else {
-					datestr = dateFormat.format(date);
+					if (showTodayOrYesterday
+					        && (DateUtils.isSameDay(Calendar.getInstance().getTime(), date) || OpenmrsUtil.isYesterday(date))) {
+						//print only time of day but maintaining the format(24 Vs 12) if any was specified
+						String timeFormatString = (format != null && !format.contains("a")) ? "HH:mm"
+						        : "h:mm a";
+						dateFormat = new SimpleDateFormat(timeFormatString);
+						if (DateUtils.isSameDay(Calendar.getInstance().getTime(), date))
+							datestr = Context.getMessageSourceService().getMessage("general.today") + " "
+							        + dateFormat.format(date);
+						else
+							datestr = Context.getMessageSourceService().getMessage("general.yesterday") + " "
+							        + dateFormat.format(date);
+					} else
+						datestr = dateFormat.format(date);
 				}
 			}
 		}
@@ -168,7 +174,7 @@ public class FormatDateTag extends TagSupport {
 		}
 		
 		try {
-			pageContext.getOut().write(datePrefix + datestr);
+			pageContext.getOut().write(datestr);
 		}
 		catch (IOException e) {
 			log.error(e);
@@ -189,7 +195,7 @@ public class FormatDateTag extends TagSupport {
 		this.date = null;
 		this.format = null;
 		this.path = null;
-		this.prependTodayOrYesterday = false;
+		this.showTodayOrYesterday = false;
 	}
 	
 	// variable access methods
@@ -228,18 +234,18 @@ public class FormatDateTag extends TagSupport {
 	}
 	
 	/**
-	 * @return the prependTodayOrYesterday
+	 * @return the showTodayOrYesterday
 	 * @since 1.9
 	 */
-	public boolean isPrependTodayOrYesterday() {
-		return prependTodayOrYesterday;
+	public boolean isShowTodayOrYesterday() {
+		return showTodayOrYesterday;
 	}
 	
 	/**
-	 * @param prependTodayOrYesterday the prependTodayOrYesterday to set
+	 * @param showTodayOrYesterday the showTodayOrYesterday to set
 	 * @since 1.9
 	 */
-	public void setPrependTodayOrYesterday(boolean prependTodayOrYesterday) {
-		this.prependTodayOrYesterday = prependTodayOrYesterday;
+	public void setShowTodayOrYesterday(boolean showTodayOrYesterday) {
+		this.showTodayOrYesterday = showTodayOrYesterday;
 	}
 }
