@@ -151,8 +151,7 @@ public class FormatDateTag extends TagSupport {
 					if (showTodayOrYesterday
 					        && (DateUtils.isSameDay(Calendar.getInstance().getTime(), date) || OpenmrsUtil.isYesterday(date))) {
 						//print only time of day but maintaining the format(24 Vs 12) if any was specified
-						String timeFormatString = (format != null && !format.contains("a")) ? "HH:mm"
-						        : "h:mm a";
+						String timeFormatString = (format != null && !format.contains("a")) ? "HH:mm" : "h:mm a";
 						dateFormat = new SimpleDateFormat(timeFormatString);
 						if (DateUtils.isSameDay(Calendar.getInstance().getTime(), date))
 							datestr = Context.getMessageSourceService().getMessage("general.today") + " "
