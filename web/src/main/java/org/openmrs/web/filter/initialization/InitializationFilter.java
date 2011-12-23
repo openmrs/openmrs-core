@@ -708,8 +708,12 @@ public class InitializationFilter extends StartupFilter {
 								        + "verifycredentials.htm", wizardModel.remoteUsername, wizardModel.remotePassword);
 							}
 							catch (APIAuthenticationException e) {
-								log.warn("Error generated: ", e);
+								if (log.isDebugEnabled())
+									log.debug("Error generated: ", e);
+								page = TESTING_REMOTE_DETAILS_SETUP;
 								errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
+								renderTemplate(page, referenceMap, httpResponse);
+								return;
 							}
 							
 							//If we have a runtime properties file, get the database setup details from it
