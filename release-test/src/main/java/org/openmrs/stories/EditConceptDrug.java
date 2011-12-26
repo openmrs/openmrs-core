@@ -13,21 +13,21 @@
  */
 package org.openmrs.stories;
 
-import static java.util.Arrays.asList;
-
-import java.util.List;
-
-import org.junit.Ignore;
 import org.openmrs.Steps;
 import org.openmrs.Story;
+import org.openmrs.steps.AdminSteps;
 import org.openmrs.steps.EditConceptDrugSteps;
 import org.openmrs.steps.LoginSteps;
 
-@Ignore //No corresponding story definition
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
+
 public class EditConceptDrug extends Story {
 	
 	@Override
     public List<Steps> includeSteps() {
-        return asList(new LoginSteps(driver), new EditConceptDrugSteps(driver));
+        return asList(new LoginSteps(driver),new AdminSteps(driver), new EditConceptDrugSteps(driver));
     }
 }

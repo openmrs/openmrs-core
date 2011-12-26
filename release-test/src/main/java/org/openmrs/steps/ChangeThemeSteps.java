@@ -13,22 +13,15 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.div;
-import static org.openqa.selenium.lift.Finders.link;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Finders.title;
-import static org.openqa.selenium.lift.Matchers.text;
-import static org.openqa.selenium.lift.match.AttributeMatcher.attribute;
-
-import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
-import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.lift.find.HtmlTagFinder;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.text;
+import static org.openqa.selenium.lift.match.AttributeMatcher.attribute;
 
 
 public class ChangeThemeSteps extends ViewLocaleAndThemeSteps {
@@ -50,4 +43,9 @@ public class ChangeThemeSteps extends ViewLocaleAndThemeSteps {
 	public void verifySuccessMessage(String name) {
 		assertPresenceOf(div().with(text(containsString(name))));
 	}
+
+    @When("I click on the $manageLocaleAndTheme link")
+    public void clickOnLink(String manageLocaleAndTheme) {
+        clickOn(link().with(text(equalTo(manageLocaleAndTheme))));
+    }
 }

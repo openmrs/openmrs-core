@@ -4,7 +4,7 @@ Given I am on Admin page
 When I click on the Advanced Settings link
 Then take me to Advanced Settings Page with Advanced Settings as heading
 
-When I click on Add Property button
+When I click input button Add Property
 When I type Test1 as name
 When I type Test2 as value
 

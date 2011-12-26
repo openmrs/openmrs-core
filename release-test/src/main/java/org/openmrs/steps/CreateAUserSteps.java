@@ -35,14 +35,14 @@ public class CreateAUserSteps extends Steps {
 		clickOn(link().with(text(equalTo("Manage Users"))));
 	}
 
-	@When("I choose to add a user")
+	@When("I click on the Add User")
 	public void addUser() {
 		clickOn(link().with(text(equalTo("Add User"))));
 	}
 
-	@When("I choose to create a new person")
+	@When("I create a new person")
 	public void createNewPerson() {
-		clickOn(button().with(attribute("id", equalTo("createNewPerson"))));
+		clickOn(button().with(attribute("id", equalTo("createNewPersonButton"))));
 	}
 
 	@When("I enter $given, $middle, $family, $gender, $username, $password, $confirmPassword")

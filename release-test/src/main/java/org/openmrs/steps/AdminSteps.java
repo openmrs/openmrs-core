@@ -33,11 +33,6 @@ public class AdminSteps extends Steps {
 		assertPresenceOf(title().with(text(equalTo("OpenMRS - " + title))));
 	}
 
-//	@When("I click on the $admin link")
-//	public void clickOnAdminLink(String admin) {
-//		clickOn(link().with(text(equalTo(admin))));
-//	}
-
 	@Then("take me to $title page")
 	public void verifyAdminPage(String title) {
 		assertPresenceOf(title().with(text(equalTo("OpenMRS - " + title))));

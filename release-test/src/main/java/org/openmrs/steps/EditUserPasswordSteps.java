@@ -13,20 +13,16 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.div;
-import static org.openqa.selenium.lift.Finders.link;
-import static org.openqa.selenium.lift.Finders.radioButton;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Matchers.attribute;
-import static org.openqa.selenium.lift.Matchers.text;
-
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.attribute;
+import static org.openqa.selenium.lift.Matchers.text;
 
 public class EditUserPasswordSteps extends Steps {
 
@@ -46,7 +42,7 @@ public class EditUserPasswordSteps extends Steps {
 		clickOn(link().with(text(equalTo("Administration"))));
 	}
 
-	@When("I choose to manage users")
+	@When("I click on the Manage Users")
 	public void navigateToManageUsersUrl() {
 		clickOn(link().with(text(equalTo("Manage Users"))));
 	}
@@ -57,11 +53,12 @@ public class EditUserPasswordSteps extends Steps {
 		clickOn(button().with(attribute("name", equalTo("action"))));
 	}
 
-	@When("I choose to edit the user")
+	@When("I chose to edit the user")
 	public void editUser() {
-		String userXpath = "//table[@class = 'openmrsSearchTable']/tbody/tr[1]/td[1]/a"; //html/body/div/div[3]/div[3]/table/tbody/tr/td/a
-		waitFor(finderByXpath(userXpath));
-		clickOn(finderByXpath(userXpath));
+		clickOn(link().with(text(equalTo("6-7"))));
+		//String userXpath = "id('content')/x:div[2]/x:table/x:tbody/x:tr[1]/x:td[1]/x:a"; //html/body/div/div[3]/div[3]/table/tbody/tr/td/a
+		//waitFor(finderByXpath(userXpath));
+		//clickOn(finderByXpath(userXpath));
 	}
 
 	@When("I changed the $password, $confirmPassword")

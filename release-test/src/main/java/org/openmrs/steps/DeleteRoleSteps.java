@@ -13,20 +13,16 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.cell;
-import static org.openqa.selenium.lift.Finders.div;
-import static org.openqa.selenium.lift.Finders.first;
-import static org.openqa.selenium.lift.Finders.title;
-import static org.openqa.selenium.lift.Matchers.attribute;
-import static org.openqa.selenium.lift.Matchers.text;
-
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.attribute;
+import static org.openqa.selenium.lift.Matchers.text;
 
 public class DeleteRoleSteps extends Steps {
 
@@ -39,7 +35,7 @@ public class DeleteRoleSteps extends Steps {
 		assertPresenceOf(title().with(text(equalTo("OpenMRS - Role Management"))));
 	}
 
-	@When("I choose to delete a role with the name $role")
+	@When("I delete a role with the name $role")
 	public void deleteRole(String role) {
 		clickOn(first(checkbox().with(attribute("value", equalTo(role)))));
 		clickOn(button("Delete Selected Roles"));

@@ -20,9 +20,9 @@ public class UpdatePersonAttributesSteps extends Steps {
         this.driver = driver;
     }
 
-    @When("I change the attribute description to '$description'")
+    @When("I change the attribute description to $description")
     public void changeTheAttributeDescriptionTo(String description){
-        type(description, into(finderByXpath("//textarea[@name='description']")));
+         type(description, into(finderByXpath("//textarea[@name='description']")));
     }
 
     @When("I save the attribute type")
@@ -30,7 +30,7 @@ public class UpdatePersonAttributesSteps extends Steps {
         clickOn(button().with(attribute("value",is("Save Person Attribute Type"))));
     }
 
-    @Then("display message '$message'")
+    @Then("display message $message")
     public void displayMessageIs(String message){
         assertPresenceOf(Finders.div().with(attribute("id", equalTo("openmrs_msg"))).with(text(containsString(message))));
 

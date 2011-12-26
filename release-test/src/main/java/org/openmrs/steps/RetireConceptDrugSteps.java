@@ -13,19 +13,16 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.div;
-import static org.openqa.selenium.lift.Finders.link;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Matchers.attribute;
-import static org.openqa.selenium.lift.Matchers.text;
-
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.attribute;
+import static org.openqa.selenium.lift.Matchers.text;
 
 public class RetireConceptDrugSteps extends Steps {
 
@@ -43,16 +40,15 @@ public class RetireConceptDrugSteps extends Steps {
 		clickOn(link().with(text(equalTo("Administration"))));
 	}
 
-	@When("I choose to manage concept drugs")
-	public void navigateToManageConceptDrugsUrl() {
-		clickOn(link().with(text(equalTo("Manage Concept Drugs"))));
-	}
 
-	@When("I choose to edit a concept drug")
+
+	@When("I edit a concept drug")
 	public void navigateToEditConceptDrugUrl() {
-		String drugXpath = "//table[@id = 'drugTable']/tbody/tr[2]/td[1]/a"; //html/body/div/div[3]/div[2]/table/tbody/tr[2]/td/a
-		waitFor(finderByXpath(drugXpath));
-		clickOn(finderByXpath(drugXpath));
+		//String drugXpath = "//table[@id = 'drugTable']/tbody/tr[2]/td[1]/a"; //html/body/div/div[3]/div[2]/table/tbody/tr[2]/td/a
+	//	waitFor(finderByXpath(drugXpath));
+	//	clickOn(finderByXpath(drugXpath));
+        clickOn(link().with(text(equalTo("d4T-40"))));
+
 	}
 
 	@When("I provide a retire reason such as $retireReason")

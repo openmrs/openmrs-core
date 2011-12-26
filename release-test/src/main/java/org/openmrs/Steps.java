@@ -212,9 +212,9 @@ public abstract class Steps {
 		clickOn(link().with(text(equalTo(domain))));
 	}
 
-    @When("I click on the button $save")
-	public void save(String save) {
-		clickOn(button(save));
+    @When("I click on the button $buttonName")
+	public void save(String buttonName) {
+		clickOn(button(buttonName));
 	}
 
 }
