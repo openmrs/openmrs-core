@@ -298,7 +298,7 @@
 					<input type="radio" name="placeHolder" value="" style="visibility: hidden" />
 					<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
 				</div>
-				<input type="button" value='<spring:message code="Concept.indexTerm.add"/>' class="smallButton" onClick="cloneElement('newConceptIndexTerm-${loc}', ${fn:length(command.indexTermsByLocale[loc])}, 'indexTermsByLocale[${loc}]')" />				
+				<input type="button" id="addSearch" value='<spring:message code="Concept.indexTerm.add"/>' class="smallButton" onClick="cloneElement('newConceptIndexTerm-${loc}', ${fn:length(command.indexTermsByLocale[loc])}, 'indexTermsByLocale[${loc}]')" />
 			</td>
 			
 		</c:forEach>

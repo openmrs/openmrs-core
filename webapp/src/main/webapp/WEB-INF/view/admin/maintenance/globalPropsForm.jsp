@@ -23,8 +23,7 @@
  	 border-style: solid;
  	 border-width: 1px;
      padding: 5px;
- 	 position: fixed; 
- 	 top: 600px; 
+ 	 top: 600px;
  	 left: 1100px; 
  	 width: 180px; 
  	 height: 100px; 

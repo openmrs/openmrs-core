@@ -13,19 +13,18 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.link;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Finders.title;
-import static org.openqa.selenium.lift.Matchers.attribute;
-import static org.openqa.selenium.lift.Matchers.text;
-
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.junit.Assert;
 import org.openmrs.Steps;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.lift.Finders;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.attribute;
+import static org.openqa.selenium.lift.Matchers.text;
 
 public class EditAConceptSteps extends Steps {
 	
@@ -47,7 +46,7 @@ public class EditAConceptSteps extends Steps {
 	
 	@When("I select $aspirin from the hits")
 	public void takeMeToCreateNewConceptPage(String selection) {
-		clickOn(finderByXpath("//table[@id='openmrsSearchTable']//tr//td/span[starts-with(text(),'" + selection + "')]"));
+		clickOn(finderByXpath("//table[@id='openmrsSearchTable']/tbody/tr[@class='odd']/td/span[starts-with(text(),'" + selection + "')]"));
 	}
 	
 	@Then("Take me to the viewing concept page")
@@ -56,11 +55,7 @@ public class EditAConceptSteps extends Steps {
 		        .startsWith("OpenMRS - Viewing Concept"));
 	}
 	
-	@When("I choose to edit the concept take me to the concept form")
-	public void goToEditConceptForm() {
-		clickOn(link().with(text(equalTo("Edit"))));
-	}
-	
+
 	@When("I change the fully specified name to $aspirin")
 	public void editTheFullySpecifiedName(String newName) {
 		type(random(newName), into(textbox().with(attribute("id", equalTo("namesByLocale[en].name")))));
@@ -70,7 +65,10 @@ public class EditAConceptSteps extends Steps {
 	public void editTheSynonymName() {
 		type(random("syn"), into(textbox().with(attribute("name", equalTo("synonymsByLocale[en][0].name")))));
 	}
-	
+	@When("I click on Add Search Term")
+    public void clickOnAddSearchTerm(){
+        getWebDriver().findElement(By.id("addSearch")).click();
+    }
 	@When("I edit the index term name")
 	public void changeSearchTermName() {
 		type(random("term"), into(textbox().with(attribute("name", equalTo("indexTermsByLocale[en][0].name")))));

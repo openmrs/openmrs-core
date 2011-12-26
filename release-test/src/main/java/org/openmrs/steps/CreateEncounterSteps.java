@@ -13,22 +13,19 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.openmrs.Finders.selectbox;
-import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.div;
-import static org.openqa.selenium.lift.Finders.first;
-import static org.openqa.selenium.lift.Finders.link;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Matchers.attribute;
-import static org.openqa.selenium.lift.Matchers.text;
-
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.openmrs.Finders.selectbox;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.attribute;
+import static org.openqa.selenium.lift.Matchers.text;
 
 public class CreateEncounterSteps extends Steps {
 	
@@ -40,21 +37,22 @@ public class CreateEncounterSteps extends Steps {
 	public void manageEncounters() {
 		clickOn(link().with(text(containsString("Manage Encounters"))));
 	}
-	
+
 	@When("I choose to add an encounter")
 	public void addEncounter() {
 		clickOn(link().with(text(equalTo("Add Encounter"))));
 	}
 	
-	@When("I enter $name, $provider, $location, $date")
-	public void enterDetails(String name, String provider, String location, String date) {
+	@When("I enter $name, $provider, $location, $date, $providerRole")
+	public void enterDetails(String name, String provider, String location, String date, String providerRole) {
 		type(name, into(textbox().with(attribute("id", equalTo("patientId_id_selection")))));
-		type(provider, into(textbox().with(attribute("id", equalTo("providerId_id_selection")))));
-		waitAndClickOn(first(link().with(attribute("class", equalTo("ui-corner-all")))));
-		waitAndClickOn(second(link().with(attribute("class", equalTo("ui-corner-all")))));
-		clickOn(textbox().with(attribute("name", equalTo("encounterDatetime"))));
-		type(location, into(selectbox().with(attribute("id", equalTo("location")))));
-		type(date, into(textbox().with(attribute("name", equalTo("encounterDatetime")))));
+        type(location, into(selectbox().with(attribute("id", equalTo("location")))));
+        type(date, into(textbox().with(attribute("name", equalTo("encounterDatetime")))));
+        clickOn(textbox().with(attribute("name", equalTo("encounterDatetime"))));
+        getWebDriver().findElement(By.id("addProviderButton")).click();
+		type(providerRole, into(selectbox().with(attribute("id", equalTo("roleIds[0]")))));
+        type(provider, into(textbox().with(attribute("id", equalTo("providers[0]")))));
+        //type(provider, into(finderByXpath("/html/body/div[@id='pageBody']/div[@id='content']/form/div[@class='box'][2]/table[@id='providers']/tbody/tr[2]/td[2]/input[@id='providers[0]']")));
 	}
 	
 	@When("I save the encounter")

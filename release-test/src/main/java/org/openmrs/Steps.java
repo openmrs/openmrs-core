@@ -13,28 +13,28 @@
  */
 package org.openmrs;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Matchers.attribute;
-import static org.openqa.selenium.lift.match.NumericalMatchers.exactly;
-import static org.openqa.selenium.lift.match.SelectionMatcher.selection;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.jbehave.core.annotations.When;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.lift.TestContext;
+import org.openqa.selenium.lift.find.*;
+import org.openqa.selenium.support.ui.Select;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.lift.TestContext;
-import org.openqa.selenium.lift.find.BaseFinder;
-import org.openqa.selenium.lift.find.Finder;
-import org.openqa.selenium.lift.find.HtmlTagFinder;
-import org.openqa.selenium.lift.find.InputFinder;
-import org.openqa.selenium.lift.find.XPathFinder;
-import org.openqa.selenium.support.ui.Select;
+import static org.hamcrest.Matchers.equalTo;
+import static org.openqa.selenium.lift.Finders.button;
+import static org.openqa.selenium.lift.Finders.link;
+import static org.openqa.selenium.lift.Matchers.attribute;
+import static org.openqa.selenium.lift.Matchers.text;
+import static org.openqa.selenium.lift.match.NumericalMatchers.exactly;
+import static org.openqa.selenium.lift.match.SelectionMatcher.selection;
 
 public abstract class Steps {
 
@@ -201,4 +201,20 @@ public abstract class Steps {
 			}
 		};
 	}
+
+    @When("I click on the $linkName link")
+	public void clickLinkWithName(String linkName) {
+		clickOn(link().with(text(equalTo(linkName))));
+	}
+
+    @When("I choose to $domain")
+	public void addEncounter(String domain) {
+		clickOn(link().with(text(equalTo(domain))));
+	}
+
+    @When("I click on the button $save")
+	public void save(String save) {
+		clickOn(button(save));
+	}
+
 }

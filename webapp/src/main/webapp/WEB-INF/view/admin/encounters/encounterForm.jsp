@@ -414,7 +414,7 @@
 			</td>
 		</tr>
 	</table>
-	<input type="button" value='<spring:message code="Provider.add"/>' class="smallButton" onclick="addProvider()" />
+	<input type="button" id="addProviderButton" value='<spring:message code="Provider.add"/>' class="smallButton" onclick="addProvider()" />
 	</div>
 	<br/>
 	<input type="hidden" name="phrase" value='<request:parameter name="phrase" />'/>
