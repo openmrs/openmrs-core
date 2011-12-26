@@ -13,17 +13,15 @@
  */
 package org.openmrs.stories;
 
-import static java.util.Arrays.asList;
-
-import java.util.List;
-
-import org.junit.Ignore;
 import org.openmrs.Steps;
 import org.openmrs.Story;
 import org.openmrs.steps.EditAConceptSteps;
 import org.openmrs.steps.LoginSteps;
 
-@Ignore //No corresponding story definition
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 public class EditAConcept extends Story {
 	
 	@Override

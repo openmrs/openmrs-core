@@ -13,22 +13,21 @@
  */
 package org.openmrs.stories;
 
-import org.junit.Ignore;
 import org.openmrs.Steps;
 import org.openmrs.Story;
 import org.openmrs.steps.AdminSteps;
 import org.openmrs.steps.CreateEncounterSteps;
+import org.openmrs.steps.CreateProviderSteps;
 import org.openmrs.steps.LoginSteps;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
 
-@Ignore
 public class CreateAnEncounter extends Story {
 
     @Override
     public List<Steps> includeSteps() {
-        return asList(new LoginSteps(driver), new AdminSteps(driver), new CreateEncounterSteps(driver));
+        return asList(new LoginSteps(driver), new AdminSteps(driver), new CreateProviderSteps(driver), new CreateEncounterSteps(driver));
     }
 }

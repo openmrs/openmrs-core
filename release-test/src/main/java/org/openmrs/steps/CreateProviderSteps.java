@@ -13,34 +13,33 @@
  */
 package org.openmrs.steps;
 
-import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.openqa.selenium.lift.Finders.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.openqa.selenium.lift.Finders.div;
+import static org.openqa.selenium.lift.Finders.textbox;
+import static org.openqa.selenium.lift.Matchers.attribute;
 import static org.openqa.selenium.lift.Matchers.text;
 
+public class CreateProviderSteps extends Steps {
 
-public class ViewGlobalPropertySteps extends Steps {
-    public ViewGlobalPropertySteps(WebDriver driver) {
-        super(driver);
+	public CreateProviderSteps(WebDriver driver) {
+		super(driver);
+	}
+	
+	@When("I enter some identifier, $person")
+    public void enterProviderDetails(String person){
+        type(random("id"), into(textbox().with(attribute("name", equalTo("identifier")))));
+        type(person, into(textbox().with(attribute("id", equalTo("person_id_selection")))));
+
     }
 
-    @Given("I am on Admin page")
-    public void iAmOnAdminPage() {
-        assertPresenceOf(title("OpenMRS - Administration"));
-    }
-    
-    @When("I click on the $manageRelationshipType link")
-    public void clickManageGlobalPropertiesLink(String manageRelationshipType) {
-        clickOn(link(manageRelationshipType));
-    }
-    
-    @Then("take me to Advanced Settings Page with $name as heading")
-    public void verifyManagementPage(String name) {
-        assertPresenceOf(div().with(text(containsString(name))));
-    }
+    @Then("the provider should be saved")
+	public void verifySavedEncounter() {
+		assertPresenceOf(div().with(text(containsString("Provider saved"))));
+	}
 }

@@ -16,18 +16,17 @@ package org.openmrs.stories;
 import org.openmrs.Steps;
 import org.openmrs.Story;
 import org.openmrs.steps.AdminSteps;
-import org.openmrs.steps.ChangeGlobalPropertySteps;
+import org.openmrs.steps.CreateProviderSteps;
 import org.openmrs.steps.LoginSteps;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
 
-
-public class ChangeAGlobalProperty extends Story {
+public class CreateAProvider extends Story {
 
     @Override
-	public List<Steps> includeSteps() {
-		return asList(new LoginSteps(driver), new AdminSteps(driver), new ChangeGlobalPropertySteps(driver));
-	}
+    public List<Steps> includeSteps() {
+        return asList(new LoginSteps(driver), new AdminSteps(driver), new CreateProviderSteps(driver));
+    }
 }
