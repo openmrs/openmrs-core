@@ -13,19 +13,16 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.div;
-import static org.openqa.selenium.lift.Finders.link;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Matchers.attribute;
-import static org.openqa.selenium.lift.Matchers.text;
-
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.attribute;
+import static org.openqa.selenium.lift.Matchers.text;
 
 public class RetireLocationSteps extends Steps {
 
@@ -43,16 +40,10 @@ public class RetireLocationSteps extends Steps {
 		clickOn(link().with(text(equalTo("Administration"))));
 	}
 
-	@When("I choose to manage locations")
-	public void navigateToManageLocationsUrl() {
-		clickOn(link().with(text(equalTo("Manage Locations"))));
-	}
 
-	@When("I choose to edit a location")
+	@When("I chose to edit a location")
 	public void navigateToEditLocationUrl() {
-		String locationXpath = "//table[@id = 'locationTable']/tbody/tr[2]/td[2]/a"; //html/body/div/div[3]/div[2]/table/tbody/tr[3]/td/a
-		waitFor(finderByXpath(locationXpath));
-		clickOn(finderByXpath(locationXpath));
+        clickOn(link().with(text(equalTo("Unknown Location"))));
 	}
 
 	@When("I mention the retired reason as $retireReason")

@@ -13,23 +13,18 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.cell;
-import static org.openqa.selenium.lift.Finders.div;
-import static org.openqa.selenium.lift.Finders.table;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Finders.title;
-import static org.openqa.selenium.lift.Matchers.text;
-import static org.openqa.selenium.lift.match.AttributeMatcher.attribute;
-
-import static org.hamcrest.Matchers.containsString;
-
 import org.jbehave.core.annotations.Alias;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.text;
+import static org.openqa.selenium.lift.match.AttributeMatcher.attribute;
 
 public class VerifyPatientDashboardSteps extends Steps {
 
@@ -64,7 +59,6 @@ public class VerifyPatientDashboardSteps extends Steps {
 		assertPresenceOf(table().with(attribute("id",equalTo("patientHeaderObs"))));
 		assertPresenceOf(cell().with(attribute("id",equalTo("patientHeaderObsCD4"))));
 		assertPresenceOf(cell().with(attribute("id", equalTo("patientHeaderObsRegimen"))));
-		assertPresenceOf(cell().with(attribute("class", equalTo("patientLastEncounterData"))));
 		assertPresenceOf(div().with(attribute("id",equalTo("patientHeaderPreferredIdentifier"))).with(text(containsString("101-6"))));
 		assertPresenceOf(cell().with(attribute("id", equalTo("patientHeaderOtherIdentifiers"))).with(text(containsString("Old Identification Number: 101"))));
 		assertPresenceOf(title().with(text(equalTo("OpenMRS - Patient Dashboard"))));

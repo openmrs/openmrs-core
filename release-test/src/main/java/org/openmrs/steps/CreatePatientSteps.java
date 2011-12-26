@@ -40,7 +40,7 @@ public class CreatePatientSteps extends Steps {
 
 	@When("I enter $name as Name")
 	public void enterName(String name) {
-		type(random(name), into(textbox().with(attribute("id", equalTo("personName")))));
+		type(name, into(textbox().with(attribute("id", equalTo("personName")))));
 	}
 
 	@When("I enter random number as Age")
@@ -52,12 +52,6 @@ public class CreatePatientSteps extends Steps {
 	public void selectGender() {
 		clickOn(radioButton().with(attribute("id", equalTo("gender-M"))));
 
-	}
-
-	@When("I click on the $createPerson button")
-	public void clickCreatePersonButton(String createPerson) {
-		System.out.println(createPerson);
-        clickOn(button(createPerson));
 	}
 
 	@Then("take me to the Create Patient Page")
@@ -116,11 +110,6 @@ public class CreatePatientSteps extends Steps {
 		type(country,
 				into(textbox().with(
 						attribute("name", equalTo("personAddress.country")))));
-	}
-
-	@When("I click on $save button")
-	public void clickOnSave(String save) {
-		clickOn(button("Save"));
 	}
 
 	@Then("take me to Patient dashboard page with title Patient Dashboard")

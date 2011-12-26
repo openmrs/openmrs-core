@@ -13,22 +13,23 @@
  */
 package org.openmrs.stories;
 
-import static java.util.Arrays.asList;
+import org.openmrs.Steps;
+import org.openmrs.Story;
+import org.openmrs.steps.AdminSteps;
+import org.openmrs.steps.CreateAUserSteps;
+import org.openmrs.steps.LoginSteps;
+import org.openmrs.steps.LogoutSteps;
 
 import java.util.List;
 
-import org.junit.Ignore;
-import org.openmrs.Steps;
-import org.openmrs.Story;
-import org.openmrs.steps.CreateAUserSteps;
-import org.openmrs.steps.LogoutSteps;
+import static java.util.Arrays.asList;
 
-@Ignore //corresponding story definition need to be created
+
 public class LogoutOfWebsite extends Story {
 
 	@Override
     public List<Steps> includeSteps() {
-        return asList(new CreateAUserSteps(driver),
+        return asList(new LoginSteps(driver), new AdminSteps(driver), new CreateAUserSteps(driver),
 				new LogoutSteps(driver));
     }
 }

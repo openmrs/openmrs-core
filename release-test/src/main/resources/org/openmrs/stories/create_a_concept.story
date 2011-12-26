@@ -4,7 +4,7 @@ Given I am on Home screen
 When I click on the Dictionary link
 Then Take me to the Dictionary page
 
-When I choose to add new concept
+When I choose to Add new Concept
 Then Take me to the Creating New Concept form
 When I enter test as a fully specified name
 And I click add Synonym button for en locale

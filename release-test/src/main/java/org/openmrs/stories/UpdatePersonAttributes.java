@@ -1,6 +1,5 @@
 package org.openmrs.stories;
 
-import org.junit.Ignore;
 import org.openmrs.Steps;
 import org.openmrs.Story;
 import org.openmrs.steps.AdminSteps;
@@ -11,7 +10,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-@Ignore //corresponding story definition need to be created
+
 public class UpdatePersonAttributes extends Story {
     @Override
 	public List<Steps> includeSteps() {

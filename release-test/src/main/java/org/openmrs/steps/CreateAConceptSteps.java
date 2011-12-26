@@ -13,20 +13,17 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.link;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Finders.title;
-import static org.openqa.selenium.lift.Matchers.attribute;
-import static org.openqa.selenium.lift.Matchers.text;
-
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.lift.Finders;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.attribute;
+import static org.openqa.selenium.lift.Matchers.text;
 
 public class CreateAConceptSteps extends Steps {
 	
@@ -40,9 +37,10 @@ public class CreateAConceptSteps extends Steps {
 	}
 	
 	@When("I click on the $dictionary link")
-	public void clickOnAdminLink(String dictionary) {
-		link().with(text(equalTo(dictionary)));
-	}
+	public void clickOnDictionaryLink(String dictionary) {
+		clickOn(link().with(text(equalTo(dictionary))));
+        
+        	}
 	
 	@Then("Take me to the $dictionary page")
 	public void takeMeToDictionaryPage(String dictionary) {
@@ -51,7 +49,7 @@ public class CreateAConceptSteps extends Steps {
 	
 	@When("I choose to add new concept")
 	public void clickOnAddNewConcept() {
-		link().with(text(equalTo("Add new Concept")));
+		clickOn(link().with(text(equalTo("Add new Concept"))));
 	}
 	
 	@Then("Take me to the $creatingNewConcept form")

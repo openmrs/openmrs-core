@@ -24,6 +24,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
+
 public class CreateAnEncounter extends Story {
 
     @Override

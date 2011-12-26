@@ -13,7 +13,6 @@
  */
 package org.openmrs.stories;
 
-import org.junit.Ignore;
 import org.openmrs.Steps;
 import org.openmrs.Story;
 import org.openmrs.steps.FindPatientSteps;
@@ -24,7 +23,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-@Ignore
+
 public class VerifyPatientDashboard extends Story {
 
     @Override

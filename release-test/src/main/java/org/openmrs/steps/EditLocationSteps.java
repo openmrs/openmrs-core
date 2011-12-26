@@ -13,22 +13,18 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.div;
-import static org.openqa.selenium.lift.Finders.link;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Finders.title;
-import static org.openqa.selenium.lift.Matchers.text;
-import static org.openqa.selenium.lift.match.AttributeMatcher.attribute;
-
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.lift.find.HtmlTagFinder;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.openmrs.find.TextAreaFinder.textarea;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.text;
+import static org.openqa.selenium.lift.match.AttributeMatcher.attribute;
 
 
 public class EditLocationSteps extends Steps {
@@ -47,22 +43,17 @@ public class EditLocationSteps extends Steps {
 		clickOn(link().with(text(equalTo("Administration"))));
     }
     
-    @When("I Choose to manage locations")
-    public void clickOnManageLocations() {
-		clickOn(link().with(text(equalTo("Manage Locations"))));
-    }
-    
-    @When("I choose to edit a location")
+
+    @When("I edit a location")
     public void navigateToEditALocationUrl() {
-		String locationXpath = "//table[@id = 'locationTable']/tbody/tr[2]/td[2]/a"; //html/body/div/div[3]/div[2]/table/tbody/tr[3]/td/a
-		waitFor(finderByXpath(locationXpath));
-		clickOn(finderByXpath(locationXpath));
+        clickOn(link().with(text(equalTo("Unknown Location"))));
     }
 
-    @When("I choose to mention name $name and description $description")
+    @When("I mention name $name and description $description")
     public void editLocation(String name, String description) {
 		type(name, into(textbox().with(attribute("name", equalTo("name")))));
-		type(description, into(finderByXpath("//table/tbody/tr[2]/td[2]/textarea"))); //html/body/div/div[3]/form/fieldset/table/tbody/tr[2]/td[2]/textarea
+		//type(description, into(finderByXpath("id('content')/x:form[1]/x:fieldset/x:table/x:tbody/x:tr[2]/x:td/x:textarea"))); //html/body/div/div[3]/form/fieldset/table/tbody/tr[2]/td[2]/textarea
+        type(name, into(textarea().with(attribute("name", equalTo("description")))));
     }
     
     @When("I save the location")

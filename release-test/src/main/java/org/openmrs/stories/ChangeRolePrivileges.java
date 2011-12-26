@@ -13,7 +13,6 @@
  */
 package org.openmrs.stories;
 
-import org.junit.Ignore;
 import org.openmrs.Steps;
 import org.openmrs.Story;
 import org.openmrs.steps.AdminSteps;
@@ -25,7 +24,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-@Ignore //Fixing ChangeALocale will fix this test
+
 public class ChangeRolePrivileges extends Story {
 
     @Override

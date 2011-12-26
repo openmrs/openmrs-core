@@ -13,22 +13,15 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.div;
-import static org.openqa.selenium.lift.Finders.link;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Finders.title;
-import static org.openqa.selenium.lift.Matchers.text;
-import static org.openqa.selenium.lift.match.AttributeMatcher.attribute;
-
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.lift.find.HtmlTagFinder;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.text;
 
 
 public class ViewLocaleAndThemeSteps extends Steps {
@@ -41,7 +34,7 @@ public class ViewLocaleAndThemeSteps extends Steps {
         assertPresenceOf(title("OpenMRS - Administration"));
     }
     
-    @When("I click on the Manage $name link")
+    @When("I click on the  $name link")
     public void clickManageGlobalPropertiesLink(String name) {
         clickOn(link(name));
     }

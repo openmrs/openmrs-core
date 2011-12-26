@@ -35,12 +35,7 @@ public class CreateRelationshipTypeSteps extends Steps {
 	public void iAmOnAdminPage() {
 		assertPresenceOf(title("OpenMRS - Administration"));
 	}
-	
-//	@When("I click on the $manageRelationshipType link")
-//	public void clickManageRelationshipTypesLink(String manageRelationshipType) {
-//		clickOn(link(manageRelationshipType));
-//	}
-	
+
 	@Then("take me to Relationship Type Management Page with $name as heading")
 	public void verifyManagementPage(String name) {
 		assertPresenceOf(div().with(text(containsString(name))));

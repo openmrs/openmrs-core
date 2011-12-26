@@ -13,20 +13,15 @@
  */
 package org.openmrs.stories;
 
-import static java.util.Arrays.asList;
+import org.openmrs.Steps;
+import org.openmrs.Story;
+import org.openmrs.steps.*;
 
 import java.util.List;
 
-import org.junit.Ignore;
-import org.openmrs.Steps;
-import org.openmrs.Story;
-import org.openmrs.steps.AdminSteps;
-import org.openmrs.steps.CreateAUserSteps;
-import org.openmrs.steps.EditUserPasswordSteps;
-import org.openmrs.steps.LoginSteps;
-import org.openmrs.steps.LogoutSteps;
+import static java.util.Arrays.asList;
 
-@Ignore //no corresponding story definition
+
 public class EditUserPassword extends Story {
 	
 	@Override

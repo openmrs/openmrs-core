@@ -8,7 +8,7 @@ Given I am on the Find/Create Patient Page
 When I enter Robert as Name
 And I enter random number as Age
 And I select Male as Gender
-And I click on the createPerson button
+And I click on the button Create Person
 Then take me to the Create Patient Page
 
 
@@ -20,7 +20,7 @@ And I select Unknown Location as location with index 1
 And I select preferred option
 And I enter address as address
 And I enter India as country
-And I click on Save button
+And I click on the button Save
 Then take me to Patient dashboard page with title Patient Dashboard
 
 

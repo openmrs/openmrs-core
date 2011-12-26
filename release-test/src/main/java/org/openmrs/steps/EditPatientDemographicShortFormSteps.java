@@ -13,19 +13,16 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.div;
-import static org.openqa.selenium.lift.Finders.link;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Matchers.attribute;
-import static org.openqa.selenium.lift.Matchers.text;
-
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Matchers.attribute;
+import static org.openqa.selenium.lift.Matchers.text;
 
 public class EditPatientDemographicShortFormSteps extends Steps {
 
@@ -33,7 +30,7 @@ public class EditPatientDemographicShortFormSteps extends Steps {
 		super(driver);
 	}
 
-	@Given("I choose to edit the patient in the short form")
+	@Given("I edit the patient in the short form")
 	public void editPatientInShortForm() throws InterruptedException {
 		clickOn(link("Demographics"));
 		clickOn(link("Edit this Patient (Short Form)"));

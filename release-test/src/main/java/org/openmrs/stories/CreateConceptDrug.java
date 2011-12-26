@@ -13,17 +13,16 @@
  */
 package org.openmrs.stories;
 
-import static java.util.Arrays.asList;
-
-import java.util.List;
-
-import org.junit.Ignore;
 import org.openmrs.Steps;
 import org.openmrs.Story;
 import org.openmrs.steps.CreateConceptDrugSteps;
 import org.openmrs.steps.LoginSteps;
 
-@Ignore
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
+
 public class CreateConceptDrug extends Story {
 	
 	@Override

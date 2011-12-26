@@ -13,18 +13,17 @@
  */
 package org.openmrs.stories;
 
-import static java.util.Arrays.asList;
-
-import java.util.List;
-
-import org.junit.Ignore;
 import org.openmrs.Steps;
 import org.openmrs.Story;
 import org.openmrs.steps.LoginSteps;
 import org.openmrs.steps.RetireLocationSteps;
 import org.openmrs.steps.UnretireLocationSteps;
 
-@Ignore //corresponding story definition need to be created
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
+
 public class UnretireLocation extends Story {
 	
 	@Override

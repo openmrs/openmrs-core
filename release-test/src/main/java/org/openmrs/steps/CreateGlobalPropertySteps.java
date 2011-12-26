@@ -13,22 +13,14 @@
  */
 package org.openmrs.steps;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.div;
-import static org.openqa.selenium.lift.Finders.link;
-import static org.openqa.selenium.lift.Finders.textbox;
-import static org.openqa.selenium.lift.Finders.title;
-import static org.openqa.selenium.lift.Matchers.text;
-import static org.openqa.selenium.lift.match.AttributeMatcher.attribute;
-
-import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
-import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.lift.find.HtmlTagFinder;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.openqa.selenium.lift.Finders.button;
+import static org.openqa.selenium.lift.Finders.div;
+import static org.openqa.selenium.lift.Matchers.text;
 
 
 public class CreateGlobalPropertySteps extends ViewGlobalPropertySteps {
@@ -36,7 +28,7 @@ public class CreateGlobalPropertySteps extends ViewGlobalPropertySteps {
         super(driver);
     }
     
-    @When("I click on $addProperty button")
+    @When("I click input button $addProperty ")
     public void clickOnAddGlobalPropertyButton(String addProperty) {
     	clickOn(finderByXpath("//input[@value='" + addProperty + "']"));
     }
