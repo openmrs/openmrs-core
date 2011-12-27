@@ -643,11 +643,7 @@ public interface ConceptDAO {
 	public boolean isConceptMapTypeInUse(ConceptMapType mapType) throws DAOException;
 	
 	/**
-	 * Returns a list of concepts with the same name across all locals.
-	 * 
-	 * @param name
-	 * @param locale
-	 * @return the list of concepts
+	 * @see ConceptService#getConceptsByName(String, Locale)
 	 */
 	public List<Concept> getConceptsByName(String name, Locale locale);
 }
