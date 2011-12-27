@@ -365,4 +365,23 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertFalse(errors.hasErrors());
 	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies fail if there is a duplicate unretired concept name in the same locale different than the system locale
+	 */
+	@Test(expected = DuplicateConceptNameException.class)
+	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheSameLocaleDifferentThanTheSystemLocale()
+	        throws Exception {
+		Context.setLocale(new Locale("pl"));
+		Locale en = new Locale("en");
+		Concept concept = Context.getConceptService().getConcept(5497);
+		Assert.assertEquals(true, concept.getFullySpecifiedName(en).isFullySpecifiedName());
+		String duplicateName = concept.getFullySpecifiedName(en).getName();
+		
+		Concept anotherConcept = Context.getConceptService().getConcept(5089);
+		anotherConcept.getFullySpecifiedName(en).setName(duplicateName);
+		Errors errors = new BindException(anotherConcept, "concept");
+		new ConceptValidator().validate(anotherConcept, errors);
+	}
 }
