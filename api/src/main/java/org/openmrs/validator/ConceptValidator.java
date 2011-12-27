@@ -80,6 +80,7 @@ public class ConceptValidator implements Validator {
 	 * @should fail if a concept map type created on the fly is used for a mapping
 	 * @should fail if a term created on the fly is used for a mapping
 	 * @should fail if a term is mapped multiple times to the same concept
+	 * @should fail if there is a duplicate unretired concept name in the same locale different than the system locale
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -161,14 +162,18 @@ public class ConceptValidator implements Validator {
 				if (!conceptToValidate.isRetired()) {
 					if (nameInLocale.isLocalePreferred() || nameInLocale.isFullySpecifiedName()) {
 						List<Concept> conceptsWithPossibleDuplicateNames = Context.getConceptService().getConceptsByName(
-						    nameInLocale.getName());
+						    nameInLocale.getName(), nameInLocale.getLocale());
 						if (conceptsWithPossibleDuplicateNames.size() > 0) {
 							for (Concept concept : conceptsWithPossibleDuplicateNames) {
-								//skip past the concept being edited and retired ones
-								if (concept.isRetired()
-								        || (conceptToValidate.getConceptId() != null && conceptToValidate.getConceptId()
-								                .equals(concept.getConceptId())))
+								//skip retired
+								if (concept.isRetired())
 									continue;
+								
+								//skip same
+								if (conceptToValidate.getConceptId() != null
+								        && conceptToValidate.getConceptId().equals(concept.getConceptId()))
+									continue;
+								
 								//should be a unique name amongst all preferred and fully specified names in its locale system wide
 								if ((concept.getFullySpecifiedName(conceptNameLocale) != null && concept
 								        .getFullySpecifiedName(conceptNameLocale).getName().equalsIgnoreCase(

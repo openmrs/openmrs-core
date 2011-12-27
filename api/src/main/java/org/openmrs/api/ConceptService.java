@@ -53,11 +53,16 @@ import org.springframework.transaction.annotation.Transactional;
  * <pre>
  * 
  * 
+ * 
+ * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
+ * 
  * To get a single concept:
  * 
  * <pre>
+ * 
+ * 
  * 
  * 
  * // if there is a concept row in the database with concept_id = 3845
@@ -65,6 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * String name = concept.getPreferredName(Context.getLocale()).getName();
  * </pre>
+ * 
  * To save a concept to the database
  * 
  * <pre>
@@ -1982,4 +1988,23 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
 	public List<ConceptReferenceTermMap> getReferenceTermMappingsTo(ConceptReferenceTerm term) throws APIException;
+	
+	/**
+	 * Returns a list of concepts with the same name in the given locale.
+	 * <p>
+	 * This method is case insensitive. It searches for exactly matching names and close matching
+	 * locales. It considers only non-voided names and all concepts.
+	 * 
+	 * @param name
+	 * @param locale <code>null</code> = all locales
+	 * @return the list of concepts
+	 * @throws APIException
+	 * @since 1.10
+	 * @should return concepts for all countries and global language given language only locale
+	 * @should return concepts for specific country and global language given language and country
+	 *         locale
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	public List<Concept> getConceptsByName(String name, Locale locale) throws APIException;
 }

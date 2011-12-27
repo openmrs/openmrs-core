@@ -2116,4 +2116,12 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public List<ConceptReferenceTermMap> getReferenceTermMappingsTo(ConceptReferenceTerm term) throws APIException {
 		return dao.getReferenceTermMappingsTo(term);
 	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptsByName(java.lang.String, java.util.Locale)
+	 */
+	@Override
+	public List<Concept> getConceptsByName(String name, Locale locale) throws APIException {
+		return dao.getConceptsByName(name, locale);
+	}
 }
