@@ -64,6 +64,7 @@ public class EncounterValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail if the patients for the visit and the encounter dont match
 	 * @should fail if patient is not set
+	 * @should fail if encounter dateTime is after current dateTime
 	 * @should fail if encounter dateTime is before visit startDateTime
 	 * @should fail if encounter dateTime is after visit stopDateTime
 	 */
@@ -83,8 +84,14 @@ public class EncounterValidator implements Validator {
 				    "The patient for the encounter and visit should be the same");
 			}
 			
-			Visit visit = encounter.getVisit();
 			Date encounterDateTime = encounter.getEncounterDatetime();
+			
+			if (encounterDateTime != null && encounterDateTime.after(new Date())) {
+				errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeBeforeCurrent",
+				    "The encounter datetime should be before the current date.");
+			}
+			
+			Visit visit = encounter.getVisit();
 			if (visit != null && encounterDateTime != null) {
 				if (visit.getStartDatetime() != null && encounterDateTime.before(visit.getStartDatetime())) {
 					errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeInVisitDatesRange",
