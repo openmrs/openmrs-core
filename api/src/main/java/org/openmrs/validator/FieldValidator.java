@@ -29,7 +29,7 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Field.class }, order = 50)
 public class FieldValidator implements Validator {
-
+	
 	private static final Log log = LogFactory.getLog(FieldValidator.class);
 	
 	/**
@@ -71,7 +71,9 @@ public class FieldValidator implements Validator {
 		Field field = (Field) obj;
 		
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.null", "Field name is required");
-		if (field.getSelectMultiple() == null) errors.rejectValue("selectMultiple", "error.general");
-		if (field.getRetired() == null) errors.rejectValue("retired", "error.general");
+		if (field.getSelectMultiple() == null)
+			errors.rejectValue("selectMultiple", "error.general");
+		if (field.getRetired() == null)
+			errors.rejectValue("retired", "error.general");
 	}
 }

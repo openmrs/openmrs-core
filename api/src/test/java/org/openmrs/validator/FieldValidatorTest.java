@@ -92,7 +92,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("name"));
 	}
-		
+	
 	/**
 	 * @see {@link FieldValidator#validate(Object,Errors)}
 	 */
@@ -116,7 +116,6 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("selectMultiple"));
 	}
 	
-
 	/**
 	 * @see {@link FieldValidator#validate(Object,Errors)}
 	 */
@@ -140,8 +139,6 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("retired"));
 	}
 	
-
-	
 	/**
 	 * @see {@link FieldValidator#validate(Object,Errors)}
 	 */
@@ -157,7 +154,6 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		ff.setRetired(retired);
 		Boolean multiple = new Boolean(false);
 		ff.setSelectMultiple(multiple);
-		
 		
 		Errors errors = new BindException(ff, "name");
 		new FieldValidator().validate(ff, errors);
