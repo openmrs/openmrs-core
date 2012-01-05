@@ -424,7 +424,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "treat SNAPSHOT as earliest version", method = "compareVersion(String,String)")
-	public void compareVersion_treatSNAPSHOTAsEarliestVersion() throws Exception {
+	public void compareVersion_shouldTreatSNAPSHOTAsEarliestVersion() throws Exception {
 		String olderVersion = "1.8.4-SNAPSHOT";
 		String newerVersion = "1.8.3";
 		Assert.assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) > 0);
