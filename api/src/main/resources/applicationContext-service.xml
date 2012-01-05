@@ -51,6 +51,12 @@
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 	
 	<!--  **************************  EVENT LISTENERS ***************************** -->
+
+	<!--  Clear out the global property listeners list first -->
+	<bean id="clearOpenmrsEventListeners" class="org.openmrs.api.EventListeners">
+		<property name="globalPropertyListenersToEmpty"><value>false</value></property>
+	</bean>
+	
 	<bean id="openmrsEventListeners" class="org.openmrs.api.EventListeners">
 		<property name="globalPropertyListeners">
 			<list value-type="org.openmrs.api.GlobalPropertyListener" merge="true">
