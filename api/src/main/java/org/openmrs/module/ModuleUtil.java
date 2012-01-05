@@ -342,7 +342,8 @@ public class ModuleUtil {
 	 *         numerically less than the argument <code>value</code>; and a value greater than
 	 *         <code>0</code> if <code>version</code> is numerically greater than the argument
 	 *         <code>value</code>
-	 * @should correctly comparing two version number
+	 * @should correctly comparing two version numbers
+	 * @should treat SNAPSHOT as earliest version
 	 */
 	public static int compareVersion(String version, String value) {
 		try {
@@ -351,6 +352,10 @@ public class ModuleUtil {
 			
 			List<String> versions = new Vector<String>();
 			List<String> values = new Vector<String>();
+			
+			// treat "-SNAPSHOT" as the lowest possible version
+			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0 
+			version = version.replace("-SNAPSHOT", ".0");
 			
 			Collections.addAll(versions, version.split("\\."));
 			Collections.addAll(values, value.split("\\."));
