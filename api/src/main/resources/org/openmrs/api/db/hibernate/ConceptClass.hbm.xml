@@ -8,8 +8,8 @@
 	<class name="org.openmrs.ConceptClass" table="concept_class">
 
 		<id name="conceptClassId" type="java.lang.Integer"
-			column="concept_class_id" unsaved-value="0">
-			<generator class="native" />
+			column="concept_class_id" unsaved-value="undefined">
+			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator" />
 		</id>
 
 		<discriminator column="concept_class_id" insert="false" />
