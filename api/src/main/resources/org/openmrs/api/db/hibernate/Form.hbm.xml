@@ -7,8 +7,8 @@
 
 	<class name="Form" table="form">
 
-		<id name="formId" type="int" column="form_id" unsaved-value="0">
-			<generator class="native" />
+		<id name="formId" type="int" column="form_id" unsaved-value="undefined">
+			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator" />
 		</id>
 
 		<discriminator column="form_id" insert="false" />
