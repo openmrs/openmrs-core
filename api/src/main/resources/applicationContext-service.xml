@@ -57,9 +57,9 @@
 		<property name="globalPropertyListenersToEmpty"><value>false</value></property>
 	</bean>
 	
-	<bean id="openmrsEventListeners" class="org.openmrs.api.EventListeners">
+	<bean id="openmrsEventListeners" class="org.openmrs.api.EventListeners" depends-on="clearOpenmrsEventListeners">
 		<property name="globalPropertyListeners">
-			<list value-type="org.openmrs.api.GlobalPropertyListener" merge="true">
+			<list value-type="org.openmrs.api.GlobalPropertyListener">
 				<bean class="org.openmrs.util.LocaleUtility" />
 				<bean class="org.openmrs.util.LocationUtility" />
 				<ref bean="globalLocaleList" />
