@@ -195,6 +195,9 @@ public class DWRProgramWorkflowService {
 		Context.getProgramWorkflowService().voidPatientProgram(p, reason);
 	}
 	
+	/**
+	 * @should return a list consisting of active, not retired, states.
+	 */
 	public Vector<ListItem> getPossibleNextStates(Integer patientProgramId, Integer programWorkflowId) {
 		Vector<ListItem> ret = new Vector<ListItem>();
 		PatientProgram pp = Context.getProgramWorkflowService().getPatientProgram(patientProgramId);
@@ -204,10 +207,14 @@ public class DWRProgramWorkflowService {
 			ListItem li = new ListItem();
 			li.setId(state.getProgramWorkflowStateId());
 			li.setName(state.getConcept().getName(Context.getLocale(), false).getName());
-			ret.add(li);
+			if (!state.isRetired() && !state.getConcept().isRetired()) {
+				ret.add(li);
+			}
 		}
 		return ret;
 	}
+	
+	//TODO there doesn't seem to be any way in the administrator interface to retire a state, just a concept.
 	
 	public void changeToState(Integer patientProgramId, Integer programWorkflowId, Integer programWorkflowStateId,
 	        String onDateDMY) throws ParseException {
