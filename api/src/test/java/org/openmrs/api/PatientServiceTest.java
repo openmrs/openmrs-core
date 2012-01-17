@@ -2698,9 +2698,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
-		Assert
-		        .assertTrue("prior date of birth was not audited", audit.getPersonMergeLogData()
-		                .isPriorDateOfBirthEstimated());
+		Assert.assertTrue("prior estimated date of birth was not audited", audit.getPersonMergeLogData()
+		        .isPriorDateOfBirthEstimated());
 	}
 	
 	/**
@@ -2720,7 +2719,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
-		Assert.assertEquals("prior date of birth was not audited", cDate.getTime(), audit.getPersonMergeLogData()
+		Assert.assertEquals("prior date of death was not audited", cDate.getTime(), audit.getPersonMergeLogData()
 		        .getPriorDateOfDeath());
 	}
 	
@@ -2730,14 +2729,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditPriorGender() throws Exception {
-		//retrieve preferred patient and set a cause of death
+		//retrieve preferred patient and set gender
 		Patient preferred = patientService.getPatient(999);
 		preferred.setGender("M");
 		patientService.savePatient(preferred);
 		//merge with not preferred
 		Patient notPreferred = patientService.getPatient(7);
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
-		Assert.assertEquals("prior cause of death was not audited", "M", audit.getPersonMergeLogData().getPriorGender());
+		Assert.assertEquals("prior gender was not audited", "M", audit.getPersonMergeLogData().getPriorGender());
 	}
 	
 	private PersonMergeLog mergeAndRetrieveAudit(Patient preferred, Patient notPreferred) throws SerializationException {
