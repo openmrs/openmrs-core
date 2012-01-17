@@ -145,6 +145,24 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	 * @see {@link PersonAttribute#getHydratedObject()}
 	 */
 	@Test
+	@Verifies(value = "should load user class in format property", method = "getHydratedObject()")
+	public void getHydratedObject_shouldLoadUserClassInFormatProperty() throws Exception {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setFormat("org.openmrs.User");
+		
+		PersonAttribute pa = new PersonAttribute(2);
+		
+		pa.setAttributeType(type);
+		pa.setValue("1");
+		
+		Object value = pa.getHydratedObject();
+		Assert.assertTrue("should load user class in format property", (value instanceof User));
+	}
+	
+	/**
+	 * @see {@link PersonAttribute#getHydratedObject()}
+	 */
+	@Test
 	@Verifies(value = "should still load class in format property if not Attributable", method = "getHydratedObject()")
 	public void getHydratedObject_shouldStillLoadClassInFormatPropertyIfNotAttributable() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
