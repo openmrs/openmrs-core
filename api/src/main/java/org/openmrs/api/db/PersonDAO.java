@@ -224,6 +224,15 @@ public interface PersonDAO {
 	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws DAOException;
 	
 	/**
+	 * Gets a <code>PersonMergeLog</code> object from the model by id
+	 * 
+	 * @param id the id of the <code>PersonMergeLog</code> object to retrieve
+	 * @return the <code>PersonMergeLog</code> object
+	 * @throws DAOException
+	 */
+	public PersonMergeLog getPersonMergeLog(Integer id) throws DAOException;
+	
+	/**
 	 * Gets a PersonMergeLog object from the model using UUID
 	 * 
 	 * @param uuid the UUID of the PersonMergeLog object to retrieve
@@ -239,6 +248,24 @@ public interface PersonDAO {
 	 * @throws DAOException
 	 */
 	public List<PersonMergeLog> getAllPersonMergeLogs() throws DAOException;
+	
+	/**
+	 * Gets the PersonMergeLog objects by winner
+	 * 
+	 * @param person the winning person
+	 * @return List of <code>PersonMergeLog</code> objects
+	 * @throws DAOException
+	 */
+	public List<PersonMergeLog> getWinningPersonMergeLogs(Person person) throws DAOException;
+	
+	/**
+	 * Finds the PersonMergeLog by loser
+	 * 
+	 * @param person
+	 * @return <code>PersonMergeLog</code> object
+	 * @throws DAOException
+	 */
+	public PersonMergeLog getLosingPersonMergeLogs(Person person) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PersonService#savePersonName(org.openmrs.PersonName)

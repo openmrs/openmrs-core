@@ -865,7 +865,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#savePersonName(org.openmrs.PersonName)
 	 */
 	public PersonName savePersonName(PersonName personName) throws APIException {
-
+		
 		boolean atLeastOneNonVoidPersonNameLeft = false;
 		for (PersonName pn : personName.getPerson().getNames()) {
 			if (!pn.equals(personName) && !pn.isVoided()) {
@@ -878,7 +878,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			return dao.savePersonName(personName);
 		} else {
 			throw new APIException(Context.getMessageSourceService().getMessage("PersonName.save.failReason", null,
-				"At least one non-voided PersonName should be left on Person", Context.getLocale()));
+			    "At least one non-voided PersonName should be left on Person", Context.getLocale()));
 		}
 		
 	}
@@ -961,20 +961,11 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Override
 	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws SerializationException, APIException {
 		//verify required fields
-		if (personMergeLog.getPersonMergeLogData() == null)
-			throw new APIException("PersonMergeLog cannot be saved without providing a non-null PersonMergeLogData");
-		if (personMergeLog.getWinner() == null || personMergeLog.getLoser() == null)
-			throw new APIException("Both winner and loser person fields need to be set in order to save a PersonMergeLog");
 		if (Context.getSerializationService().getDefaultSerializer() == null)
 			throw new APIException(
 			        "A default serializer was not found. Cannot proceed without at least one installed serializer");
 		log.debug("Auditing merging of non-preferred person " + personMergeLog.getLoser().getUuid()
 		        + " with preferred person " + personMergeLog.getWinner().getId());
-		//set date created and creator fields if not set. UUID is set by AOP so no need to set it here.
-		if (personMergeLog.getDateCreated() == null)
-			personMergeLog.setDateCreated(new Date());
-		if (personMergeLog.getCreator() == null)
-			personMergeLog.setCreator(Context.getAuthenticatedUser());
 		//populate the mergedData XML from the PersonMergeLogData object
 		String serialized = Context.getSerializationService().getDefaultSerializer().serialize(
 		    personMergeLog.getPersonMergeLogData());
@@ -995,11 +986,33 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		PersonMergeLog personMergeLog = dao.getPersonMergeLogByUuid(uuid);
 		//deserialize if requested
 		if (deserialize) {
-			PersonMergeLogData data = Context.getSerializationService().getDefaultSerializer().deserialize(
-			    personMergeLog.getSerializedMergedData(), PersonMergeLogData.class);
-			personMergeLog.setPersonMergeLogData(data);
+			deserialize(personMergeLog);
 		}
 		return personMergeLog;
+	}
+	
+	/**
+	 * Deserializes a List of <code>PersonMErgeLog</code> objects
+	 * 
+	 * @param lst the List of <code> PersonMergeLog</code> objects to deserialize
+	 * @throws SerializationException
+	 */
+	private void deserializeList(List<PersonMergeLog> lst) throws SerializationException {
+		for (PersonMergeLog personMergeLog : lst) {
+			deserialize(personMergeLog);
+		}
+	}
+	
+	/**
+	 * Deserializes a <code>PersonMErgeLog</code> object
+	 * 
+	 * @param personMergeLog the <code> PersonMergeLog</code> object to deserialize
+	 * @throws SerializationException
+	 */
+	private void deserialize(PersonMergeLog personMergeLog) throws SerializationException {
+		PersonMergeLogData data = Context.getSerializationService().getDefaultSerializer().deserialize(
+		    personMergeLog.getSerializedMergedData(), PersonMergeLogData.class);
+		personMergeLog.setPersonMergeLogData(data);
 	}
 	
 	/**
@@ -1010,13 +1023,33 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		List<PersonMergeLog> lst = dao.getAllPersonMergeLogs();
 		//deserialize if requested
 		if (deserialize) {
-			for (PersonMergeLog personMergeLog : lst) {
-				PersonMergeLogData data = Context.getSerializationService().getDefaultSerializer().deserialize(
-				    personMergeLog.getSerializedMergedData(), PersonMergeLogData.class);
-				personMergeLog.setPersonMergeLogData(data);
-			}
+			deserializeList(lst);
 		}
 		return lst;
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getWinningPersonMergeLogs(org.openmrs.Person)
+	 */
+	@Override
+	public List<PersonMergeLog> getWinningPersonMergeLogs(Person person, boolean deserialize) throws SerializationException {
+		List<PersonMergeLog> lst = dao.getWinningPersonMergeLogs(person);
+		if (deserialize) {
+			deserializeList(lst);
+		}
+		return lst;
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getLosingPersonMergeLog(org.openmrs.Person)
+	 */
+	@Override
+	public PersonMergeLog getLosingPersonMergeLog(Person person, boolean deserialize) throws SerializationException {
+		PersonMergeLog personMergeLog = dao.getLosingPersonMergeLogs(person);
+		if (deserialize) {
+			deserialize(personMergeLog);
+		}
+		return personMergeLog;
 	}
 	
 	/**
