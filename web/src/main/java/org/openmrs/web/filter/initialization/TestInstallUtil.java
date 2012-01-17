@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -37,7 +38,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.ModuleConstants;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.filter.util.FilterUtil;
 
 /**
  * Contains static methods to be used by the installation wizard when creating a testing
@@ -128,10 +133,9 @@ public class TestInstallUtil {
 	 * before returning
 	 * 
 	 * @param in the {@link InputStream} for the zip file
-	 * @param moduleRepository the directory where to copy to the module files
 	 */
 	@SuppressWarnings("rawtypes")
-	protected static boolean addZippedTestModules(InputStream in, File moduleRepository) {
+	protected static boolean addZippedTestModules(InputStream in) {
 		ZipFile zipFile = null;
 		FileOutputStream out = null;
 		File tempFile = null;
@@ -160,6 +164,26 @@ public class TestInstallUtil {
 					
 					if (log.isDebugEnabled())
 						log.debug("Extracting module file: " + fileName);
+					
+					//use the module repository folder GP value if specified
+					String moduleRepositoryFolder = FilterUtil
+					        .getGlobalPropertyValue(ModuleConstants.REPOSITORY_FOLDER_PROPERTY);
+					if (StringUtils.isBlank(moduleRepositoryFolder))
+						moduleRepositoryFolder = ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT;
+					
+					//At this point 'OpenmrsConstants.APPLICATION_DATA_DIRECTORY' is still null so we need check
+					//for the app data directory defined in the runtime props file if any otherwise the logic in
+					//the OpenmrsUtil.getDirectoryInApplicationDataDirectory(String) will default to the other
+					String appDataDirectory = Context.getRuntimeProperties().getProperty(
+					    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY);
+					if (StringUtils.isNotBlank(appDataDirectory))
+						OpenmrsConstants.APPLICATION_DATA_DIRECTORY = appDataDirectory;
+					
+					File moduleRepository = OpenmrsUtil.getDirectoryInApplicationDataDirectory(moduleRepositoryFolder);
+					
+					//delete all previously added modules in case of prior test installations
+					FileUtils.cleanDirectory(moduleRepository);
+					
 					OpenmrsUtil.copyFile(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(
 					        new File(moduleRepository, fileName))));
 				} else {
@@ -209,10 +233,12 @@ public class TestInstallUtil {
 			return true;
 		}
 		catch (UnknownHostException e) {
-			log.error("Error generated:", e);
+			if (log.isDebugEnabled())
+				log.debug("Error generated:", e);
 		}
 		catch (IOException e) {
-			log.error("Error generated:", e);
+			if (log.isDebugEnabled())
+				log.debug("Error generated:", e);
 		}
 		
 		return false;
