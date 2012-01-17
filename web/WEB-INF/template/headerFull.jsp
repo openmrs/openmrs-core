@@ -52,7 +52,7 @@
 			
 			/* prevents users getting false dwr errors msgs when leaving pages */
 			var pageIsExiting = false;
-			if (jQuery)
+			if (typeof(jQuery) != "undefined")
                 jQuery(window).bind('beforeunload', function () { pageIsExiting = true; } );
 			
 			var handler = function(msg, ex) {
