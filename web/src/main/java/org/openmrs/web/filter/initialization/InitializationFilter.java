@@ -43,7 +43,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import liquibase.changelog.ChangeSet;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,9 +53,7 @@ import org.openmrs.ImplementationId;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.MandatoryModuleException;
-import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.SchedulerUtil;
@@ -1475,23 +1472,7 @@ public class InitializationFilter extends StartupFilter {
 									
 									setCompletedPercentage(90);
 									setMessage("Adding imported modules...");
-									File moduleRepository = OpenmrsUtil
-									        .getDirectoryInApplicationDataDirectory(ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
-									
-									//Use the app data directory defined in the runtime props file if any
-									String appDataDirectory = Context.getRuntimeProperties().getProperty(
-									    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY);
-									if (StringUtils.hasText(appDataDirectory)) {
-										moduleRepository = new File(appDataDirectory,
-										        ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
-										if (!moduleRepository.isDirectory())
-											moduleRepository.mkdirs();
-									}
-									
-									//delete all previously added modules in case of prior test installations
-									FileUtils.cleanDirectory(moduleRepository);
-									
-									if (!TestInstallUtil.addZippedTestModules(inModules, moduleRepository)) {
+									if (!TestInstallUtil.addZippedTestModules(inModules)) {
 										reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE, "");
 										return;
 									} else {

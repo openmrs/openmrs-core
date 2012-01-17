@@ -17,11 +17,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -195,7 +197,9 @@ public class FilterUtil {
 	}
 	
 	/**
-	 * This is a utility method that can be used for retrieving user id by given user name and sql connection
+	 * This is a utility method that can be used for retrieving user id by given user name and sql
+	 * connection
+	 * 
 	 * @param userNameOrSystemId the name of user
 	 * @param connection the java sql connection to use
 	 * @return not null id of given user in case of success or null otherwise
@@ -214,5 +218,40 @@ public class FilterUtil {
 				userId = results.getInt(1);
 		}
 		return userId;
+	}
+	
+	/**
+	 * Gets the value of a global Property as a string from the database using sql, this method is
+	 * useful when you want to get a value of a global property before the application context has
+	 * been setup
+	 * 
+	 * @param globalPropertyName the name of the global property
+	 * @return the global property value
+	 */
+	public static String getGlobalPropertyValue(String globalPropertyName) {
+		String propertyValue = null;
+		Connection connection = null;
+		
+		try {
+			connection = DatabaseUpdater.getConnection();
+			List<List<Object>> results = DatabaseUtil.executeSQL(connection,
+			    "select property_value from global_property where property = '" + globalPropertyName + "'", true);
+			if (results.size() == 1 && results.get(0).size() == 1)
+				propertyValue = results.get(0).get(0).toString();
+		}
+		catch (Exception e) {
+			log.error("Error while retrieving value for global property:" + globalPropertyName, e);
+		}
+		finally {
+			if (connection != null)
+				try {
+					connection.close();
+				}
+				catch (SQLException e) {
+					log.debug("Error while closing the database connection", e);
+				}
+		}
+		
+		return propertyValue;
 	}
 }
