@@ -69,7 +69,7 @@ public final class OpenmrsConstants {
 	 * <i>major</i>.<i>minor</i>.<i>maintenance</i> <i>suffix</i> Build <i>buildNumber</i>
 	 */
 	public static final String OPENMRS_VERSION = THIS_PACKAGE.getSpecificationVendor() != null ? THIS_PACKAGE
-	        .getSpecificationVendor() : getVersion();
+	        .getSpecificationVendor() : getBuildVersion();
 	
 	/**
 	 * This holds the current openmrs code version in a short space-less string.<br/>
@@ -77,44 +77,68 @@ public final class OpenmrsConstants {
 	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i>
 	 */
 	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion() != null ? THIS_PACKAGE
-	        .getSpecificationVersion() : getVersion();
+	        .getSpecificationVersion() : getBuildVersionShort();
 	
 	/**
-	 * Somewhat hacky method to fetch the version from the maven pom.properties file.
-	 * <br/>
-	 * This method should not be used unless in a dev environment.  The preferred way to get the 
-	 * version is from the manifest in the api jar file.  More detail is included in the 
-	 * properties there. 
+	 * @return build  version with alpha characters  (eg:1.10.0 SNAPSHOT  Build 24858)  
+	 * defined in MANIFEST.MF(specification-Vendor)
 	 * 
-	 * @return version number defined in maven pom.xml file(s)
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
-	private static String getVersion() {
+	private static String getBuildVersion() {
 		
 		Properties props = new Properties();
 		
-		// Get hold of the path to the properties file
-		// (Maven will make sure it's on the class path)
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource(
-		    "META-INF/maven/org.openmrs.api/openmrs-api/pom.properties");
+		java.net.URL url  = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
 		
 		if (url == null) {
-			log.error("Unable to find pom.properties file built by maven");
+			log.error("Unable to find MANIFEST.MF file built by maven");
 			return null;
 		}
 		
 		// Load the file
 		try {
 			props.load(url.openStream());
-			return props.getProperty("version"); // this will return "1.9.0-SNAPSHOT" in dev environments
+			
+			return props.getProperty("Specification-Vendor");
 		}
 		catch (IOException e) {
-			log.error("Unable to get pom.properties file into Properties object");
+			log.error("Unable to get MANIFEST.MF file into manifest  object");
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * @return build version without alpha characters (eg: 1.10.0.24858) 
+	 * defined in MANIFEST.MF (specification-Version)
+	 * 
+	 * @see #OPENMRS_VERSION_SHORT
+	 * @see #OPENMRS_VERSION
+	 */
+	private static String getBuildVersionShort() {
 		
+		Properties props = new Properties();
+		
+		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
+		
+		if (url == null) {
+			log.error("Unable to find MANIFEST.MF file built by maven");
+			return null;
+		}
+		
+		// Load the file
+		try {
+			props.load(url.openStream());
+			
+			return props.getProperty("Specification-Version");
+		}
+		catch (IOException e) {
+			log.error("Unable to get MANIFEST.MF file into manifest object");
+		}
+		
+		return null;
 	}
 	
 	/**
