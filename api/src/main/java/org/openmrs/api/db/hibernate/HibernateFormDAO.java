@@ -41,6 +41,7 @@ import org.openmrs.FormField;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.FormDAO;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Hibernate specific Form related functions This class should not be used directly. All calls
@@ -383,7 +384,7 @@ public class HibernateFormDAO implements FormDAO {
 		
 		crit.setProjection(Projections.count("formId"));
 		
-		return (Integer) crit.uniqueResult();
+		return OpenmrsUtil.convertToInteger((Long) crit.uniqueResult());
 	}
 	
 	/**
