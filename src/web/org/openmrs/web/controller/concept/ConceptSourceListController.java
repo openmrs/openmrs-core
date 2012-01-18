@@ -52,7 +52,8 @@ public class ConceptSourceListController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+	@Override
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
@@ -66,7 +67,8 @@ public class ConceptSourceListController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	@Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
@@ -124,7 +126,8 @@ public class ConceptSourceListController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		//default empty Object
 		List<ConceptSource> conceptSourceList = new Vector<ConceptSource>();
@@ -150,10 +153,10 @@ public class ConceptSourceListController extends SimpleFormController {
 		
 		ImplementationId implId = Context.getAdministrationService().getImplementationId();
 		
-		// make available the source that corresponds to the implementation id 
+		// make available the source that corresponds to the implementation id
 		if (implId != null) {
 			for (ConceptSource conceptSource : conceptSources) {
-				if (conceptSource.getHl7Code().equals(implId.getImplementationId()))
+				if (conceptSource.getHl7Code() != null && conceptSource.getHl7Code().equals(implId.getImplementationId()))
 					map.put("implIdSource", conceptSource);
 			}
 		}
