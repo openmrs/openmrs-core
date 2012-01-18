@@ -153,7 +153,7 @@ public class ConceptSourceListController extends SimpleFormController {
 		// make available the source that corresponds to the implementation id 
 		if (implId != null) {
 			for (ConceptSource conceptSource : conceptSources) {
-				if (conceptSource.getHl7Code().equals(implId.getImplementationId()))
+				if (conceptSource.getHl7Code() != null && conceptSource.getHl7Code().equals(implId.getImplementationId()))
 					map.put("implIdSource", conceptSource);
 			}
 		}
