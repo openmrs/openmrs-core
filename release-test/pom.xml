@@ -133,6 +133,8 @@
 								<id>run-stories</id>
 								<phase>integration-test</phase>
 								<configuration>
+                                    <ignoreFailureInStories>true</ignoreFailureInStories>
+                                    <ignoreFailureInView>true</ignoreFailureInView>
 									<includes>
 										<include>**/stories/*.java</include>
 									</includes>
@@ -211,6 +213,7 @@
 						<configuration>
                             <webApp>${basedir}/target/${openMRSVersion}/webapp</webApp>
                             <contextPath>/${webapp.name}</contextPath>
+
                             <systemProperties>
 								<systemProperty>
 									<name>FUNCTIONAL_TEST_MODE</name>
@@ -257,6 +260,8 @@
 								<id>run-stories</id>
 								<phase>integration-test</phase>
 								<configuration>
+                                    <ignoreFailureInStories>true</ignoreFailureInStories>
+                                    <ignoreFailureInView>true</ignoreFailureInView>
 									<excludes>
 										<exclude>**/stories/AinstallationWizard.java</exclude>
 									</excludes>
