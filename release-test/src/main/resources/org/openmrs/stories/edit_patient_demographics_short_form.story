@@ -1,6 +1,6 @@
 GivenStories: org/openmrs/stories/verify_patient_dashboard.story
 
 Given I edit the patient in the short form
-When I mention Address, Address2, City as addressOne, addressTwo, Bangalore
-And save the demographics
+
+And I click on the button Save
 Then the information should be saved 

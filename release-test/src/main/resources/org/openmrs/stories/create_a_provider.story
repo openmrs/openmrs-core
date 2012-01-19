@@ -2,7 +2,7 @@ GivenStories: org/openmrs/stories/go_to_admin_page.story
 
 When I click on the Manage Providers link
 And I click on the Add Provider link
-And I enter identifier, Attending Doctor
+And I enter identifier, Attending Nurse
 And I click on the button Save
 Then the provider should be saved
 

@@ -16,7 +16,6 @@ package org.openmrs.stories;
 import org.openmrs.Steps;
 import org.openmrs.Story;
 import org.openmrs.steps.AdminSteps;
-import org.openmrs.steps.CreateAUserSteps;
 import org.openmrs.steps.LoginSteps;
 import org.openmrs.steps.LogoutSteps;
 
@@ -29,7 +28,6 @@ public class LogoutOfWebsite extends Story {
 
 	@Override
     public List<Steps> includeSteps() {
-        return asList(new LoginSteps(driver), new AdminSteps(driver), new CreateAUserSteps(driver),
-				new LogoutSteps(driver));
+        return asList(new LoginSteps(driver), new AdminSteps(driver), new LogoutSteps(driver));
     }
 }

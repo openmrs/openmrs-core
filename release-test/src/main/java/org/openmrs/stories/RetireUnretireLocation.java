@@ -15,19 +15,20 @@ package org.openmrs.stories;
 
 import org.openmrs.Steps;
 import org.openmrs.Story;
+import org.openmrs.steps.EditLocationSteps;
 import org.openmrs.steps.LoginSteps;
-import org.openmrs.steps.RetireConceptDrugSteps;
+import org.openmrs.steps.RetireUnretireLocationSteps;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
 
 
-public class RetireConceptDrug extends Story {
+public class RetireUnretireLocation extends Story {
 	
 	@Override
     public List<Steps> includeSteps() {
-        return asList(new LoginSteps(driver), 
-                new RetireConceptDrugSteps(driver));
+        return asList(new LoginSteps(driver),new EditLocationSteps(driver),
+                new RetireUnretireLocationSteps(driver));
     }
 }

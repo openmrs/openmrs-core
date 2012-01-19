@@ -16,8 +16,13 @@ package org.openmrs.steps;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
+import java.util.List;
+
+import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.openqa.selenium.lift.Finders.div;
@@ -44,9 +49,25 @@ public class CreateProviderSteps extends Steps {
 		assertPresenceOf(div().with(text(containsString("Provider saved"))));
 	}
 
+    @When("I enter $providerName as provider name")
+    public void enterProviderName(String providerName)  {
+        type(providerName, into(textbox().with(attribute("id", equalTo("inputNode")))));
+    }
+
     @When("I select identifier from provider search results")
-    public void takeMeToProviderPage() {
-        clickOn(finderByXpath("//table[@id='openmrsSearchTable']/tbody/tr/td[2]="+providerIdentifier));
+    public void takeMeToProviderPage() throws InterruptedException {
+        Thread.sleep(1000);
+        WebElement openmrsSearchTable = driver.findElement(By.id("openmrsSearchTable"));
+        List<WebElement> trList = openmrsSearchTable.findElements(By.tagName("tr"));
+        for(WebElement tr : trList){
+            List<WebElement> tdList = tr.findElements(By.tagName("td"));
+            List<WebElement> selectedTD = select(tdList, having(on(WebElement.class).getText(), equalTo(providerIdentifier)));
+            if(selectedTD.size() > 0){
+                tr.click();
+
+                break;
+            }
+        }
     }
     
     @When("I enter $retireReason as retired reason")
