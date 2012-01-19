@@ -40,7 +40,7 @@ public abstract class Steps {
 
 	private static final long DEFAULT_TIMEOUT = 5000;
 
-	private WebDriver driver;
+	protected WebDriver driver;
 
 	private TestContext context;
 

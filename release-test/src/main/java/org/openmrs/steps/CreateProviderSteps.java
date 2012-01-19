@@ -26,15 +26,16 @@ import static org.openqa.selenium.lift.Matchers.attribute;
 import static org.openqa.selenium.lift.Matchers.text;
 
 public class CreateProviderSteps extends Steps {
-
+    public static String providerIdentifier = String.valueOf(System.currentTimeMillis());
 	public CreateProviderSteps(WebDriver driver) {
 		super(driver);
 	}
 	
-	@When("I enter some identifier, $person")
-    public void enterProviderDetails(String person){
-        type(random("id"), into(textbox().with(attribute("name", equalTo("identifier")))));
-        type(person, into(textbox().with(attribute("id", equalTo("person_id_selection")))));
+	@When("I enter identifier, $person")
+    public void enterProviderDetails( String person){
+        
+        type(providerIdentifier, into(textbox().with(attribute("name", equalTo("identifier")))));
+        type(person, into(textbox().with(attribute("name", equalTo("name")))));
 
     }
 
@@ -42,4 +43,19 @@ public class CreateProviderSteps extends Steps {
 	public void verifySavedEncounter() {
 		assertPresenceOf(div().with(text(containsString("Provider saved"))));
 	}
+
+    @When("I select identifier from provider search results")
+    public void takeMeToProviderPage() {
+        clickOn(finderByXpath("//table[@id='openmrsSearchTable']/tbody/tr/td[2]="+providerIdentifier));
+    }
+    
+    @When("I enter $retireReason as retired reason")
+    public void retireProvider(String retireReason){
+        type(retireReason, into(textbox().with(attribute("id", equalTo("retire")))));
+    }
+
+    @Then("the provider should be retired")
+    public void verifyRetiredProvider() {
+        assertPresenceOf(div().with(text(containsString("Provider retired"))));
+    }
 }
