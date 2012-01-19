@@ -17,8 +17,14 @@ import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.lift.Matchers;
 
+import java.util.List;
+
+import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.openmrs.find.TextAreaFinder.textarea;
@@ -44,9 +50,9 @@ public class EditLocationSteps extends Steps {
     }
     
 
-    @When("I edit a location")
-    public void navigateToEditALocationUrl() {
-        clickOn(link().with(text(equalTo("Unknown Location"))));
+    @When("I edit a location with name $locationName")
+    public void navigateToEditALocationUrl(String locationName) {
+        clickOn(link().with(text(equalTo(locationName))));
     }
 
     @When("I mention name $name and description $description")
@@ -65,4 +71,58 @@ public class EditLocationSteps extends Steps {
     public void verifySuccessMessage() {
 	        assertPresenceOf(div().with(text(containsString("Location saved"))));
     }
+    
+    @When("I enter $retireReason as retire reason")
+    public void retireLocation(String retireReason){
+        type(retireReason, into(textbox().with(attribute("name", equalTo("retireReason")))));
+    }
+
+    @Then("the location should be retired")
+    public void locationRetiredSuccessfully(){
+        assertPresenceOf(div().with(text(containsString("Location retired successfully"))));
+    }
+
+    @When("I want to unretire the retired location")
+    public void displayRetiredLocation() {
+        clickOn(link().with(text(equalTo("Toggle Retired"))));
+    }
+
+    @When("I chose to edit the retired location $retiredLocation")
+    public void navigateToEditRetiredLocationUrl(String retiredLocation) {
+//        HtmlTagFinder link = link().with(text(equalTo(retiredLocation)));
+//        waitFor(link);
+//        clickOn(link);
+        clickOn(link().with(text(equalTo(retiredLocation))));
+    }
+
+    @When("I unretire the location")
+    public void unretireLocation() {
+        clickOn(button().with(Matchers.attribute("name", equalTo("unretireLocation"))));
+    }
+
+    @Then("the location should get unretired")
+    public void verifyLocationUnretired() {
+        assertPresenceOf(div().with(text(equalTo("Location unretired successfully"))));
+    }
+
+    @When("I check on $locationName")
+    public void checkOnLocation(String locationName){
+        WebElement locationTable = driver.findElement(By.id("locationTable"));
+        List<WebElement> trList = locationTable.findElements(By.tagName("tr"));
+        boolean isFoundTR = false;
+        for(int i=0; i < trList.size(); i++){
+            List<WebElement> tdList = trList.get(i).findElements(By.tagName("td"));
+            List<WebElement> selectedTD = select(tdList, having(on(WebElement.class).getText(), equalTo(locationName)));
+            if(selectedTD.size() > 0){
+                isFoundTR = true;
+            }
+            if(isFoundTR){
+                trList.get(i).findElement(By.name("locationId")).click();
+                break;
+            }
+        }
+
+    }
+
+
 }

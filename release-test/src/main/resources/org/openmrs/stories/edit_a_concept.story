@@ -7,8 +7,7 @@ Then Take me to the viewing concept page
 When I choose to Edit
 And I change the fully specified name to ASPIRIN
 And I edit the synonym
-And I click on Add Search Term
-And I edit the index term name
+
 And I edit the short name
 And I change the concept class to Test
 And I check/uncheck is set

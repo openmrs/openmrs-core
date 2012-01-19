@@ -36,7 +36,8 @@ public class EditConceptDrugSteps extends Steps {
 
 	@When("I click on the edit option")
 	public void navigateToEditConceptDrugUrl() {
-		clickOn(link().with(text(equalTo("Triomune-40"))));
+        clickOn(finderByXpath("//table[@id='drugTable']/tbody/tr[2]/td[1]/a"));
+		//clickOn(link().with(text(equalTo("Triomune-40"))));
 	}
 
 	@When("I change $name, $concept, $doseStrength, $units, $maximumDose and $minimumDose")

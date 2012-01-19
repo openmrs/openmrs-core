@@ -64,6 +64,6 @@ public class CreateAUserSteps extends Steps {
 
 	@Then("the user should be saved/created")
 	public void verifyUser() {
-		assertPresenceOf(div().with(text(equalTo("User Saved"))));
+        waitFor(div().with(text(equalTo("User Saved"))));
 	}
 }

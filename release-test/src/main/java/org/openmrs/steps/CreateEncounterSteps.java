@@ -46,15 +46,16 @@ public class CreateEncounterSteps extends Steps {
 	@When("I enter $name, $provider, $location, $date, $providerRole")
 	public void enterDetails(String name, String provider, String location, String date, String providerRole) {
 		type(name, into(textbox().with(attribute("id", equalTo("patientId_id_selection")))));
+        String autoCompleteXPath = "//ul[@class='ui-autocomplete ui-menu ui-widget ui-widget-content ui-corner-all']";
+        waitFor(finderByXpath(autoCompleteXPath));
         type(location, into(selectbox().with(attribute("id", equalTo("location")))));
         type(date, into(textbox().with(attribute("name", equalTo("encounterDatetime")))));
         clickOn(textbox().with(attribute("name", equalTo("encounterDatetime"))));
         getWebDriver().findElement(By.id("addProviderButton")).click();
 		type(providerRole, into(selectbox().with(attribute("id", equalTo("roleIds[0]")))));
         type(provider, into(textbox().with(attribute("id", equalTo("providers[0]")))));
-        //type(provider, into(finderByXpath("/html/body/div[@id='pageBody']/div[@id='content']/form/div[@class='box'][2]/table[@id='providers']/tbody/tr[2]/td[2]/input[@id='providers[0]']")));
 	}
-	
+
 	@When("I save the encounter")
 	public void saveEncounter() {
 		clickOn(button("Save Encounter"));

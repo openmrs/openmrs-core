@@ -13,7 +13,6 @@
  */
 package org.openmrs.steps;
 
-import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
@@ -21,28 +20,23 @@ import org.openqa.selenium.WebDriver;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.openqa.selenium.lift.Finders.button;
-import static org.openqa.selenium.lift.Finders.link;
+import static org.openqa.selenium.lift.Finders.div;
 import static org.openqa.selenium.lift.Matchers.attribute;
 import static org.openqa.selenium.lift.Matchers.text;
 
-public class LogoutSteps extends Steps {
+public class RetireUnretireLocationSteps extends Steps {
 
-	public LogoutSteps(WebDriver driver) {
+	public RetireUnretireLocationSteps(WebDriver driver) {
 		super(driver);
 	}
 
-	@Given("I am already logged into openmrs")
-	public void alreadyLoggedIn() {
-		assertPresenceOf(link().with(text(equalTo("Log out"))));
-	}
+    @When("I unretire the location")
+    public void unretireLocation() {
+        clickOn(button().with(attribute("name", equalTo("unretireLocation"))));
+    }
 
-	@When("I click on link Log out")
-	public void logOut() {
-		clickOn(link().with(text(equalTo("Log out"))));
-	}
-
-	@Then("I must navigate to login page")
-	public void verifyPage() {
-		waitFor(button().with(attribute("value", equalTo("Log In"))));
-	}
+    @Then("the location should get unretired")
+    public void verifyLocationUnretired() {
+        assertPresenceOf(div().with(text(equalTo("Location unretired successfully"))));
+    }
 }

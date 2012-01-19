@@ -73,7 +73,7 @@ public class CreateObservationSteps extends Steps {
     @When("I type $name as person")
     public void enterPersonName(String name) {
         type(name, into(textbox().with(attribute("id", equalTo("person_id_selection")))));
-        waitAndClickOn(link().with(attribute("class", equalTo("ui-corner-all"))));
+        waitAndClickOn(finderByXpath("//li[@class='ui-menu-item'][1]"));
     }
     
     @When("I select Unknown Location as Location with index $index")

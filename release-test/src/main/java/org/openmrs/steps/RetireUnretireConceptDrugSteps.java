@@ -24,9 +24,9 @@ import static org.openqa.selenium.lift.Finders.*;
 import static org.openqa.selenium.lift.Matchers.attribute;
 import static org.openqa.selenium.lift.Matchers.text;
 
-public class RetireConceptDrugSteps extends Steps {
+public class RetireUnretireConceptDrugSteps extends Steps {
 
-	public RetireConceptDrugSteps(WebDriver driver) {
+	public RetireUnretireConceptDrugSteps(WebDriver driver) {
 		super(driver);
 	}
 
@@ -44,10 +44,7 @@ public class RetireConceptDrugSteps extends Steps {
 
 	@When("I edit a concept drug")
 	public void navigateToEditConceptDrugUrl() {
-		//String drugXpath = "//table[@id = 'drugTable']/tbody/tr[2]/td[1]/a"; //html/body/div/div[3]/div[2]/table/tbody/tr[2]/td/a
-	//	waitFor(finderByXpath(drugXpath));
-	//	clickOn(finderByXpath(drugXpath));
-        clickOn(link().with(text(equalTo("d4T-40"))));
+        clickOn(link().with(text(equalTo("d4T-30"))));
 
 	}
 
