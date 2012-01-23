@@ -54,7 +54,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Visit visit = makeVisit();
 		visit.addAttribute(makeAttribute("one"));
 		visit.addAttribute(makeAttribute("two"));
-		ValidateUtil.validate(visit);
+		ValidateUtil.invokeValidatorInManualFlushMode(visit);
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldRejectAVisitIfItHasFewerThanMinOccursOfAnAttribute() throws Exception {
 		Visit visit = makeVisit();
 		visit.addAttribute(makeAttribute("one"));
-		ValidateUtil.validate(visit);
+		ValidateUtil.invokeValidatorInManualFlushMode(visit);
 	}
 	
 	/**
@@ -79,7 +79,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.addAttribute(makeAttribute("two"));
 		visit.addAttribute(makeAttribute("three"));
 		visit.addAttribute(makeAttribute("four"));
-		ValidateUtil.validate(visit);
+		ValidateUtil.invokeValidatorInManualFlushMode(visit);
 	}
 	
 	private Visit makeVisit() {

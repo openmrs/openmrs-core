@@ -153,7 +153,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		PatientState patientState = program.getStates().iterator().next();
 		patientState.getPatientProgram().transitionToState(patientState.getState().getProgramWorkflow().getState(4),
 		    new Date());
-		ValidateUtil.validate(program);
+		ValidateUtil.invokeValidatorInManualFlushMode(program);
 	}
 	
 	/**
@@ -222,7 +222,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		        .getState(5));
 		program.getStates().add(patientState2);
 		
-		ValidateUtil.validate(program);
+		ValidateUtil.invokeValidatorInManualFlushMode(program);
 	}
 	
 	/**
