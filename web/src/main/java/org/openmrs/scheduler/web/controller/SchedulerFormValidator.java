@@ -13,10 +13,13 @@
  */
 package org.openmrs.scheduler.web.controller;
 
+import org.springframework.stereotype.Component;
+
 /**
  * @deprecated use {@link org.openmrs.validator.SchedulerFormValidator} instead
  */
 @Deprecated
+@Component("webSchedulerFormValidator")
 public class SchedulerFormValidator extends org.openmrs.validator.SchedulerFormValidator {
 
 }
