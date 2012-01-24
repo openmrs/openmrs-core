@@ -28,6 +28,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.util.ConfigHelper;
+import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -156,7 +157,19 @@ public class HibernateContextDAO implements ContextDAO {
 				
 				attempts++;
 				
-				if (attempts >= 8) {
+				Integer allowedFailedLoginCount = 7;
+				
+				try {
+					allowedFailedLoginCount = Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
+					    OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
+				}
+				catch (NumberFormatException nfex) {
+					log.error("Unable to convert the global property "
+					        + OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT
+					        + "to a valid integer. Using default value of 7");
+				}
+				
+				if (attempts > allowedFailedLoginCount) {
 					// set the user as locked out at this exact time
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
 					        .currentTimeMillis()));

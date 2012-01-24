@@ -995,6 +995,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT = "concept.IndexUpdateTask.lastConceptUpdated";
 	
+	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
+	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -1394,6 +1396,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_VISIT_TYPES_TO_AUTO_CLOSE, "",
 		        "comma-separated list of the visit type(s) to automatically close"));
+		
+		props.add(new GlobalProperty(GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT, "7",
+		        "Maximum number of failed logins allowed after which username is locked out"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
