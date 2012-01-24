@@ -216,6 +216,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier.setIdentifier("123-0");
 		patientIdentifier.setIdentifierType(patientIdTypes.get(0));
 		patientIdentifier.setLocation(new Location(1));
+		patientIdentifier.setPreferred(true);
 		
 		Set<PatientIdentifier> patientIdentifiers = new LinkedHashSet<PatientIdentifier>();
 		patientIdentifiers.add(patientIdentifier);
@@ -251,28 +252,44 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifier ident4 = new PatientIdentifier("123-A", pit, locationService.getLocation(1));
 		
 		try {
+			ident1.setPreferred(true);
 			patient.addIdentifier(ident1);
 			patientService.savePatient(patient);
 			fail("Patient creation should have failed with identifier " + ident1.getIdentifier());
 		}
 		catch (InvalidCheckDigitException ex) {}
+		catch (APIException e) {
+			if (!(e.getMessage() != null && e.getMessage().contains(
+			    "failed to validate with reason: PatientIdentifier.error.checkDigitWithParameter"))) {
+				fail("Patient creation should have failed with identifier " + ident1.getIdentifier());
+			}
+		}
 		
 		patient.removeIdentifier(ident1);
 		
 		try {
+			ident2.setPreferred(true);
 			patient.addIdentifier(ident2);
 			patientService.savePatient(patient);
 			fail("Patient creation should have failed with identifier " + ident2.getIdentifier());
 		}
 		catch (InvalidCheckDigitException ex) {}
+		catch (APIException e) {
+			if (!(e.getMessage() != null && e.getMessage().contains(
+			    "failed to validate with reason: PatientIdentifier.error.unallowedIdentifier"))) {
+				fail("Patient creation should have failed with identifier " + ident1.getIdentifier());
+			}
+		}
 		
 		patient.removeIdentifier(ident2);
 		
 		try {
+			ident3.setPreferred(true);
 			patient.addIdentifier(ident3);
 			patientService.savePatient(patient);
 			patientService.purgePatient(patient);
 			patient.removeIdentifier(ident3);
+			ident4.setPreferred(true);
 			patient2.addIdentifier(ident4);
 			patientService.savePatient(patient2);
 		}
@@ -584,7 +601,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Person existingPerson = Context.getPersonService().getPerson(501);
 		Context.clearSession();
 		Patient patient = new Patient(existingPerson);
-		patient.addIdentifier(new PatientIdentifier("some identifier", new PatientIdentifierType(2), new Location(1)));
+		PatientIdentifier patientIdentifier = new PatientIdentifier("some identifier", new PatientIdentifierType(2),
+		        new Location(1));
+		patientIdentifier.setPreferred(true);
+		patient.addIdentifier(patientIdentifier);
 		
 		patientService.savePatient(patient);
 		
@@ -627,7 +647,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.setGender("M");
 		patient.setPatientId(2);
 		patient.addName(new PersonName("This", "Isa", "Test"));
-		patient.addIdentifier(new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1)));
+		PatientIdentifier patientIdentifier = new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1));
+		patientIdentifier.setPreferred(true);
+		patient.addIdentifier(patientIdentifier);
 		patientService.savePatient(patient);
 	}
 	
@@ -697,7 +719,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// patient.setDateCreated date_created="2005-09-22 00:00:00.0"
 		// changed_by="1" date_changed="2008-08-18 12:29:59.0"
 		patient.addName(new PersonName("This", "Isa", "Test"));
-		patient.addIdentifier(new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1)));
+		PatientIdentifier patientIdentifier = new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1));
+		patientIdentifier.setPreferred(true);
+		patient.addIdentifier(patientIdentifier);
 		Context.getPatientService().savePatient(patient);
 	}
 	
@@ -2716,6 +2740,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferred = patientService.getPatient(999);
 		preferred.setDeathDate(cDate.getTime());
 		preferred.setDead(true);
+		preferred.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
