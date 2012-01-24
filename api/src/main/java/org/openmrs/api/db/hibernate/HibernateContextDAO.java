@@ -163,7 +163,7 @@ public class HibernateContextDAO implements ContextDAO {
 					allowedFailedLoginCount = Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
 					    OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
 				}
-				catch (NumberFormatException nfex) {
+				catch (Exception ex) {
 					log.error("Unable to convert the global property "
 					        + OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT
 					        + "to a valid integer. Using default value of 7");
