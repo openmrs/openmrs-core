@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="FormResource" table="form_resource">
+
+        <cache usage="read-write"/>
+
+		<id name="formResourceId" type="int" column="form_resource_id" unsaved-value="null">
+			<generator class="native" />
+		</id>
+
+		<discriminator column="form_resource_id" insert="false" />
+		
+		<many-to-one name="form" class="Form" not-null="true" column="form_id" />
+
+		<property name="name" type="java.lang.String" not-null="false" length="255"/>
+
+		<property name="valueReference" type="java.lang.String" access="field" column="value_reference"
+			not-null="false" length="65535"/>
+
+        <property name="datatypeClassname" type="java.lang.String" column="datatype" length="255" />
+        
+        <property name="datatypeConfig" type="text" column="datatype_config" />
+        
+        <property name="preferredHandlerClassname" type="java.lang.String" column="preferred_handler" length="255" />
+        
+        <property name="handlerConfig" type="text" column="handler_config" />
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true" />
+
+	</class>
+	
+</hibernate-mapping>

@@ -23,6 +23,7 @@ import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
+import org.openmrs.FormResource;
 import org.openmrs.api.FormService;
 
 /**
@@ -302,5 +303,41 @@ public interface FormDAO {
 	 * @return List of FormFields
 	 */
 	public List<FormField> getFormFieldsByField(Field field);
+	
+	/**
+	 * @see FormService#getFormResource(java.lang.Integer) 
+	 * @since 1.9
+	 */
+	public FormResource getFormResource(Integer formResourceId);
+	
+	/**
+	 * @see FormService#getFormResourceByUuid(java.lang.String) 
+	 * @since 1.9
+	 */
+	public FormResource getFormResourceByUuid(String uuid);
+	
+	/**
+	 * @see FormService#getFormResource(org.openmrs.Form, java.lang.String)
+	 * @since 1.9
+	 */
+	public FormResource getFormResource(Form form, String name);
+	
+	/**
+	 * @see FormService#getFormResourcesForForm(org.openmrs.Form)
+	 * @since 1.9
+	 */
+	public Collection<FormResource> getFormResourcesForForm(Form form);
+	
+	/**
+	 * @see FormService#saveFormResource(org.openmrs.FormResource)
+	 * @since 1.9
+	 */
+	public FormResource saveFormResource(FormResource formResource);
+	
+	/**
+	 * @see FormService#purgeFormResource(org.openmrs.FormResource)
+	 * @since 1.9
+	 */
+	public void deleteFormResource(FormResource formResource);
 	
 }

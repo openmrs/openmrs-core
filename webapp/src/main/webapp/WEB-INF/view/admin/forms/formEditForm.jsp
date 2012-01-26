@@ -23,6 +23,8 @@
 <c:if test="${form.formId != null && empty param.duplicate}">
 <br/>
 <a href="#designSchema"><spring:message code="Form.designSchema" /></a>
+|
+<a href="formResources.form?formId=${ form.formId }"><spring:message code="Form.manageResources"/></a>
 <c:if test="${not isBasicForm}">
 	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formHeader" type="html" parameters="formId=${form.formId}">
 		<c:forEach items="${extension.links}" var="link">

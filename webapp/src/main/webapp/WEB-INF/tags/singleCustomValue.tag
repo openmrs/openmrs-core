@@ -19,6 +19,7 @@ if (value != null) {
 	customValueDescriptor = value.getDescriptor();
 }
 CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(customValueDescriptor);
+Object initialValue = value == null ? null : value.getValue();
 
 if (handler instanceof FieldGenDatatypeHandler) {
     FieldGenDatatypeHandler h = (FieldGenDatatypeHandler) handler;
@@ -29,13 +30,13 @@ if (handler instanceof FieldGenDatatypeHandler) {
         formFieldName="${ formFieldName }"
         type="<%= widgetName %>"
         parameterMap="<%= widgetConfig %>"
-        val="${ value.value }"/>
+        val="${ initialValue }"/>
 <% } else if (handler instanceof WebDatatypeHandler) {
 	WebDatatypeHandler h = (WebDatatypeHandler) handler;
 	CustomDatatype dt = CustomDatatypeUtil.getDatatype(customValueDescriptor);
 %>
 
-	<%= h.getWidgetHtml(dt, formFieldName, value.getValue()) %>
+	<%= h.getWidgetHtml(dt, formFieldName, initialValue) %>
 
 <% } else {
 	String valueAsString = "";
