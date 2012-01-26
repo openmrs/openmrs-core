@@ -14,10 +14,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,13 +35,14 @@ import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
+import org.openmrs.FormResource;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.FormDAO;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Hibernate specific Form related functions This class should not be used directly. All calls
+ * Hibernate-specific Form-related functions. This class should not be used directly. All calls
  * should go through the {@link org.openmrs.api.FormService} methods.
  * 
  * @see org.openmrs.api.db.FormDAO
@@ -518,6 +516,62 @@ public class HibernateFormDAO implements FormDAO {
 	public List<FormField> getFormFieldsByField(Field field) {
 		return sessionFactory.getCurrentSession().createQuery("from FormField f where f.field = :field").setEntity("field",
 		    field).list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormDAO#getFormResource(java.lang.Integer) 
+	 */
+	@Override
+	public FormResource getFormResource(Integer formResourceId) {
+		return (FormResource) sessionFactory.getCurrentSession().get(FormResource.class, formResourceId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormDAO#getFormResourceByUuid(java.lang.String) 
+	 */
+	@Override
+	public FormResource getFormResourceByUuid(String uuid) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormResource.class).add(
+		    Restrictions.eq("uuid", uuid));
+		return (FormResource) crit.uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormDAO#getFormResource(org.openmrs.Form, java.lang.String) 
+	 */
+	@Override
+	public FormResource getFormResource(Form form, String name) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormResource.class).add(
+		    Restrictions.and(Restrictions.eq("form", form), Restrictions.eq("name", name)));
+		
+		return (FormResource) crit.uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormDAO#saveFormResource(org.openmrs.FormResource) 
+	 */
+	@Override
+	public FormResource saveFormResource(FormResource formResource) {
+		sessionFactory.getCurrentSession().saveOrUpdate(formResource);
+		return formResource;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormDAO#deleteFormResource(org.openmrs.FormResource) 
+	 */
+	@Override
+	public void deleteFormResource(FormResource formResource) {
+		sessionFactory.getCurrentSession().delete(formResource);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormDAO#getFormResourcesForForm(org.openmrs.Form) 
+	 */
+	@Override
+	public Collection<FormResource> getFormResourcesForForm(Form form) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormResource.class).add(
+		    Restrictions.eq("form", form));
+		return crit.list();
 	}
 	
 }

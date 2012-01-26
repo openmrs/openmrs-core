@@ -16,6 +16,7 @@ package org.openmrs.api;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.api.db.ClobDatatypeStorage;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeException;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
@@ -60,5 +61,36 @@ public interface DatatypeService extends OpenmrsService {
 	 */
 	@SuppressWarnings("rawtypes")
 	List<Class<? extends CustomDatatypeHandler>> getHandlerClasses(Class<? extends CustomDatatype<?>> datatypeClass);
+	
+	/**
+	 * Gets a clob storage object by its id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	ClobDatatypeStorage getClobDatatypeStorage(Integer id);
+	
+	/**
+	 * Gets a clob storage object by its uuid
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	ClobDatatypeStorage getClobDatatypeStorageByUuid(String uuid);
+	
+	/**
+	 * Creates or updates a clob storage object
+	 * 
+	 * @param storage
+	 * @return the saved object
+	 */
+	ClobDatatypeStorage saveClobDatatypeStorage(ClobDatatypeStorage storage);
+	
+	/**
+	 * Deletes a clob storage object from the database
+	 * 
+	 * @param storage the object to delete
+	 */
+	void deleteClobDatatypeStorage(ClobDatatypeStorage storage);
 	
 }

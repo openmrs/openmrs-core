@@ -30,7 +30,9 @@ import org.openmrs.attribute.BaseAttribute;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
+import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.web.attribute.handler.FieldGenDatatypeHandler;
 import org.openmrs.web.attribute.handler.WebDatatypeHandler;
 import org.springframework.validation.BindingResult;
@@ -40,6 +42,13 @@ import org.springframework.validation.BindingResult;
  * @since 1.9
  */
 public class WebAttributeUtil {
+	
+	@SuppressWarnings( { "unchecked", "rawtypes" })
+	public static Object getValue(HttpServletRequest request, CustomValueDescriptor descriptor, String paramName) {
+		CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(descriptor);
+		CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(descriptor);
+		return getValue(request, datatype, handler, paramName);
+	}
 	
 	/**
 	 * Gets the value of an attribute out of an HTTP request, treating it according to the appropriate handler type.
