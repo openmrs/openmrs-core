@@ -17,10 +17,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.InvalidCustomValueException;
-import org.openmrs.customdatatype.CustomDatatype.Summary;
 import org.openmrs.customdatatype.datatype.LongFreeTextDatatype;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
