@@ -88,9 +88,9 @@ public class DownloadCustomValueController {
 		// render the output
 		String data = null;
 		if (handler != null) {
-			data = handler.render(datatype, valueReference, CustomDatatype.VIEW_DOWNLOAD);
+			data = handler.render(datatype, valueReference, null); // the real fix for this class is TRUNK-3039
 		} else {
-			data = datatype.render(valueReference, CustomDatatype.VIEW_DOWNLOAD);
+			data = datatype.fromReferenceString(valueReference).toString();
 		}
 		
 		if (data == null) {

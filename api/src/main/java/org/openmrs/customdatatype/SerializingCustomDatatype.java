@@ -31,29 +31,17 @@ public abstract class SerializingCustomDatatype<T> implements CustomDatatype<T> 
 	public abstract T deserialize(String serializedValue);
 	
 	/**
-	 * Most implementations should override this method to return a user-suitable String representation of
-	 * typedValue in the given view. 
+	 * Most implementations should override this method to return plain-text summary of the typed value, as defined
+	 * by {@link CustomDatatype#getTextSummary(String)}. If {@link #deserialize(String)} is expensive, then the
+	 * implementation should override {@link #getTextSummary(String)} instead.
 	 * 
-	 * The default implementation returns typedValue.toString().
+	 * The default implementation returns typedValue.toString(), and indicates it is complete.
 	 * 
 	 * @param typedValue
-	 * @param view
-	 * @return
+	 * @return a plain-text summary of the typed value
 	 */
-	public String doRender(T typedValue, String view) {
-		return typedValue.toString();
-	}
-	
-	/**
-	 * This method will be called when a consumer wants to generate a view of an object very quickly, for example because
-	 * they want to display 1000 <T>s in a list. The default implementation calls {@link #deserialize(String)} and {@link #doRender(Object, String)}
-	 * with the default view. If an implementation's deserialize is slow, it should override this too.
-	 * 
-	 * @param serializedValue
-	 * @return
-	 */
-	public String getQuickSummary(String serializedValue) {
-		return doRender(deserialize(serializedValue), CustomDatatype.VIEW_DEFAULT);
+	public CustomDatatype.Summary doGetTextSummary(T typedValue) {
+		return new CustomDatatype.Summary(typedValue.toString(), true);
 	}
 	
 	/**
@@ -98,16 +86,16 @@ public abstract class SerializingCustomDatatype<T> implements CustomDatatype<T> 
 	}
 	
 	/**
-	 * Default implementation calls {@link #doRender(Object, String)}. Most implementations should override that
+	 * Default implementation calls {@link #doGetTextSummary(Object)}. Most implementations should override that
 	 * other method, but if {@link #deserialize(String)} is expensive, then you should override this method instead.
-	 * @see org.openmrs.customdatatype.CustomDatatype#render(java.lang.String, java.lang.String)
+	 * @see org.openmrs.customdatatype.CustomDatatype#getTextSummary(java.lang.String)
 	 */
 	@Override
-	public String render(String serializedValue, String view) {
-		if (CustomDatatype.VIEW_FAST.equals(view))
-			return getQuickSummary(serializedValue);
+	public CustomDatatype.Summary getTextSummary(String referenceString) {
+		if (referenceString == null)
+			return new CustomDatatype.Summary("", true);
 		else
-			return doRender(deserialize(serializedValue), view);
+			return doGetTextSummary(deserialize(referenceString));
 	}
 	
 }

@@ -18,6 +18,7 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.SerializingCustomDatatype;
 import org.springframework.stereotype.Component;
@@ -32,11 +33,11 @@ public class DateDatatype extends SerializingCustomDatatype<Date> {
 	final static String dateFormat = "yyyy-MM-dd";
 	
 	/**
-	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#doRender(java.lang.Object, java.lang.String)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#doGetTextSummary(java.lang.Object)
 	 */
 	@Override
-	public String doRender(Date typedValue, String view) {
-		return Context.getDateFormat().format(typedValue);
+	public CustomDatatype.Summary doGetTextSummary(Date typedValue) {
+		return new CustomDatatype.Summary(Context.getDateFormat().format(typedValue), true);
 	}
 	
 	/**
