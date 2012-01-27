@@ -22,16 +22,6 @@ package org.openmrs.customdatatype;
  */
 public interface CustomDatatype<T> {
 	
-	public String VIEW_FAST = "fast";
-	
-	public String VIEW_HTML_SUMMARY = "html-summary";
-	
-	public String VIEW_HTML_FULL = "html-full";
-	
-	public String VIEW_DEFAULT = "text";
-	
-	public String VIEW_DOWNLOAD = "download";
-	
 	/**
 	 * A {@link CustomValueDescriptor} defines both a datatype and its configuration (e.g. a regex for a RegexValidatedString datatype).
 	 * The framework will instantiate datatypes and call this method to set that configuration. Subclasses should define the format
@@ -80,12 +70,15 @@ public interface CustomDatatype<T> {
 	T fromReferenceString(String referenceString) throws InvalidCustomValueException;
 	
 	/**
-	 * TODO where are well-known view constants?
+	 * Converts a reference string to a short (generally < 100 characters) plain-text representation of its value. The return
+	 * value also indicates whether this representation is a complete view of the value, or if there is more to display. 
+	 * Implementations of this method must be high-performance, e.g. if the method is called thousands of times for a table
+	 * of objects with custom values.
+	 * 
 	 * @param referenceString
-	 * @param view
-	 * @return display representation of the given value, suitable for the given view
+	 * @return a summary representation of the given value
 	 */
-	String render(String referenceString, String view);
+	Summary getTextSummary(String referenceString);
 	
 	/**
 	 * Validates the given value to see if it is a legal value for the given handler. (For example the RegexValidatedText
@@ -93,5 +86,55 @@ public interface CustomDatatype<T> {
 	 * @param typedValue
 	 */
 	void validate(T typedValue) throws InvalidCustomValueException;
+	
+	/**
+	 * A short reprepresentation of a custom value, along with an indication of whether this is the complete value,
+	 * or just a summary.
+	 */
+	public class Summary {
+		
+		private String summary;
+		
+		private boolean complete;
+		
+		/**
+		 * @param summary
+		 * @param complete
+		 */
+		public Summary(String summary, boolean complete) {
+			this.summary = summary;
+			this.complete = complete;
+		}
+		
+		/**
+		 * @return the short representation of a custom value
+		 */
+		public String getSummary() {
+			return summary;
+		}
+		
+		/**
+		 * @param summary the summary to set
+		 */
+		public void setSummary(String summary) {
+			this.summary = summary;
+		}
+		
+		/**
+		 * @return if true, then getSummary() returns a complete view of the custom value; otherwise the value is
+		 * in fact a summary 
+		 */
+		public boolean isComplete() {
+			return complete;
+		}
+		
+		/**
+		 * @param complete the complete to set
+		 */
+		public void setComplete(boolean complete) {
+			this.complete = complete;
+		}
+		
+	}
 	
 }

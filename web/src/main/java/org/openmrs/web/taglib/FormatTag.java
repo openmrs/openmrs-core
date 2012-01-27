@@ -125,8 +125,6 @@ public class FormatTag extends TagSupport {
 	
 	private SingleCustomValue<?> singleCustomValue;
 	
-	private String view; // controls how singleCustomValue is displayed
-	
 	@Override
 	public int doStartTag() {
 		StringBuilder sb = new StringBuilder();
@@ -219,7 +217,7 @@ public class FormatTag extends TagSupport {
 		}
 		
 		if (singleCustomValue != null) {
-			printSingleCustomValue(sb, singleCustomValue, view);
+			printSingleCustomValue(sb, singleCustomValue);
 		}
 		
 		if (StringUtils.hasText(var)) {
@@ -256,19 +254,16 @@ public class FormatTag extends TagSupport {
 	 * 
 	 * @param sb
 	 * @param val
-	 * @param view
 	 */
 	@SuppressWarnings( { "rawtypes", "unchecked" })
-	private void printSingleCustomValue(StringBuilder sb, SingleCustomValue<?> val, String view) {
+	private void printSingleCustomValue(StringBuilder sb, SingleCustomValue<?> val) {
 		CustomValueDescriptor descriptor = val.getDescriptor();
 		CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(descriptor);
 		CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(descriptor);
-		if (view == null)
-			view = CustomDatatype.VIEW_DEFAULT;
 		if (handler != null) {
-			sb.append(handler.render(datatype, val.getValueReference(), view));
+			sb.append(handler.render(datatype, val.getValueReference(), null)); // this will get fixed in the next ticket
 		} else if (datatype != null) {
-			sb.append(datatype.render(val.getValueReference(), view));
+			sb.append(datatype.getTextSummary(val.getValueReference()));
 		} else {
 			sb.append(val.getValueReference());
 		}
@@ -528,7 +523,6 @@ public class FormatTag extends TagSupport {
 		encounterProviders = null;
 		form = null;
 		singleCustomValue = null;
-		view = null;
 	}
 	
 	public Integer getConceptId() {
@@ -819,20 +813,6 @@ public class FormatTag extends TagSupport {
 	 */
 	public void setSingleCustomValue(SingleCustomValue<?> singleCustomValue) {
 		this.singleCustomValue = singleCustomValue;
-	}
-	
-	/**
-	 * @return the view
-	 */
-	public String getView() {
-		return view;
-	}
-	
-	/**
-	 * @param view the view to set
-	 */
-	public void setView(String view) {
-		this.view = view;
 	}
 	
 }
