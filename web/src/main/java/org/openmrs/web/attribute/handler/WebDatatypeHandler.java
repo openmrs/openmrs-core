@@ -22,7 +22,7 @@ import org.openmrs.customdatatype.InvalidCustomValueException;
 /**
  * A web-layer extension of {@link CustomDatatypeHandler}, which generates the HTML for a widget, and handles the submission of that widget 
  */
-public interface WebDatatypeHandler<DT extends CustomDatatype<T>, T> extends CustomDatatypeHandler<DT, T> {
+public interface WebDatatypeHandler<DT extends CustomDatatype<T>, T> extends HtmlDisplayableDatatypeHandler<T> {
 	
 	String getWidgetHtml(DT datatype, String formFieldName, T startingValue);
 	

@@ -30,13 +30,4 @@ public interface CustomDatatypeHandler<DT extends CustomDatatype<T>, T> {
 	 */
 	void setHandlerConfiguration(String handlerConfig);
 	
-	/**
-	 * TODO do we need this? Should it just be handled by the CustomDatatype?
-	 * TODO where are well-known view constants?
-	 * @param referenceString
-	 * @param view
-	 * @return display representation of the given value, suitable for the given view
-	 */
-	String render(DT datatype, String referenceString, String view);
-	
 }
