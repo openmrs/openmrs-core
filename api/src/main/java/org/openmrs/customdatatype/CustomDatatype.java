@@ -135,6 +135,13 @@ public interface CustomDatatype<T> {
 			this.complete = complete;
 		}
 		
+		/**
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return summary;
+		}
 	}
 	
 }
