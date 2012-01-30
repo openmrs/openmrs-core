@@ -44,9 +44,11 @@ import org.openmrs.VisitType;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.customdatatype.CustomDatatype.Summary;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
+import org.openmrs.customdatatype.DownloadableDatatypeHandler;
 import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler;
@@ -262,10 +264,36 @@ public class FormatTag extends TagSupport {
 		CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(descriptor);
 		CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(descriptor);
 		if (handler != null && handler instanceof HtmlDisplayableDatatypeHandler) {
-			sb.append(((HtmlDisplayableDatatypeHandler) handler).toHtmlSummary(datatype, val.getValueReference()));
+			Summary summary = ((HtmlDisplayableDatatypeHandler) handler).toHtmlSummary(datatype, val.getValueReference());
+			if (summary.isComplete()) {
+				sb.append(summary);
+			} else {
+				sb.append(summary);
+				sb.append("...");
+				if (handler instanceof HtmlDisplayableDatatypeHandler) {
+					String link = "viewCustomValue.form?handler=" + handler.getClass().getName() + "&datatype="
+					        + datatype.getClass().getName() + "&value=" + val.getValueReference();
+					sb.append(" (<a target=\"_blank\" href=\"" + link + "\">"
+					        + Context.getMessageSourceService().getMessage("general.view") + "</a>)");
+				}
+				if (handler instanceof DownloadableDatatypeHandler) {
+					String link = "downloadCustomValue.form?handler=" + handler.getClass().getName() + "&datatype="
+					        + datatype.getClass().getName() + "&value=" + val.getValueReference();
+					sb.append(" (<a href=\"" + link + "\">"
+					        + Context.getMessageSourceService().getMessage("general.download") + "</a>)");
+				}
+			}
 		} else if (datatype != null) {
-			sb.append(datatype.getTextSummary(val.getValueReference()));
+			Summary summary = datatype.getTextSummary(val.getValueReference());
+			if (summary.isComplete()) {
+				sb.append(summary);
+			} else {
+				sb.append(summary);
+				sb.append("...");
+			}
 		} else {
+			sb.append(Context.getMessageSourceService().getMessage("CustomDatatype.error.missingDatatype",
+			    new Object[] { descriptor.getDatatypeClassname() }, Context.getLocale()));
 			sb.append(val.getValueReference());
 		}
 	}

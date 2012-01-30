@@ -74,7 +74,7 @@ public class LongFreeTextDatatype implements CustomDatatype<String> {
 	@Override
 	public CustomDatatype.Summary getTextSummary(String referenceString) {
 		/*
-		 * Use this code snippet instead if we think that fetching the clob is 
+		 * Use this code snippet instead if we think that fetching the clob is fast enough
 		 * 
 		ClobDatatypeStorage storage = Context.getDatatypeService().getClobDatatypeStorageByUuid(referenceString);
 		if (storage == null)

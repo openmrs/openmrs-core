@@ -37,40 +37,66 @@ public class CustomDatatypeUtil {
 	
 	private static Log log = LogFactory.getLog(CustomDatatypeUtil.class);
 	
+	/**
+	 * @param descriptor
+	 * @return a configured datatype appropriate for descriptor
+	 */
 	public static CustomDatatype<?> getDatatype(CustomValueDescriptor descriptor) {
+		return getDatatype(descriptor.getDatatypeClassname(), descriptor.getDatatypeConfig());
+	}
+	
+	/**
+	 * @param datatypeClassname
+	 * @param datatypeConfig
+	 * @return a configured datatype with the given classname and configuration
+	 */
+	public static CustomDatatype<?> getDatatype(String datatypeClassname, String datatypeConfig) {
 		try {
-			Class dtClass = Context.loadClass(descriptor.getDatatypeClassname());
-			CustomDatatype<?> ret = (CustomDatatype<?>) Context.getDatatypeService().getDatatype(dtClass,
-			    descriptor.getDatatypeConfig());
+			Class dtClass = Context.loadClass(datatypeClassname);
+			CustomDatatype<?> ret = (CustomDatatype<?>) Context.getDatatypeService().getDatatype(dtClass, datatypeConfig);
 			if (ret == null)
-				throw new CustomDatatypeException("Can't find datatype: " + descriptor.getDatatypeClassname());
+				throw new CustomDatatypeException("Can't find datatype: " + datatypeClassname);
 			return ret;
 		}
 		catch (Exception ex) {
-			throw new CustomDatatypeException("Error loading " + descriptor.getDatatypeClassname()
-			        + " and configuring it with " + descriptor.getDatatypeConfig(), ex);
+			throw new CustomDatatypeException("Error loading " + datatypeClassname + " and configuring it with "
+			        + datatypeConfig, ex);
 		}
 	}
 	
+	/**
+	 * @param descriptor
+	 * @return a configured datatype handler appropriate for descriptor
+	 */
 	public static CustomDatatypeHandler getHandler(CustomValueDescriptor descriptor) {
-		if (descriptor.getPreferredHandlerClassname() != null) {
+		return getHandler(getDatatype(descriptor), descriptor.getPreferredHandlerClassname(), descriptor.getHandlerConfig());
+	}
+	
+	/**
+	 * @param dt the datatype that this handler should be for
+	 * @param preferredHandlerClassname
+	 * @param handlerConfig
+	 * @return a configured datatype handler with the given classname and configuration
+	 */
+	public static CustomDatatypeHandler getHandler(CustomDatatype<?> dt, String preferredHandlerClassname,
+	        String handlerConfig) {
+		if (preferredHandlerClassname != null) {
 			try {
 				Class<? extends CustomDatatypeHandler> clazz = (Class<? extends CustomDatatypeHandler>) Context
-				        .loadClass(descriptor.getPreferredHandlerClassname());
+				        .loadClass(preferredHandlerClassname);
 				CustomDatatypeHandler handler = clazz.newInstance();
-				if (descriptor.getHandlerConfig() != null)
-					handler.setHandlerConfiguration(descriptor.getHandlerConfig());
+				if (handlerConfig != null)
+					handler.setHandlerConfiguration(handlerConfig);
 				return handler;
 			}
 			catch (Exception ex) {
-				log.warn("Failed to instantiate and configure preferred handler for " + descriptor, ex);
+				log.warn("Failed to instantiate and configure preferred handler with class " + preferredHandlerClassname
+				        + " and config " + handlerConfig, ex);
 			}
 		}
 		
 		// if we couldn't get the preferred handler (or none was specified) we get the default one by datatype
-		
-		CustomDatatype<?> datatype = getDatatype(descriptor);
-		return Context.getDatatypeService().getHandler(datatype, descriptor.getHandlerConfig());
+		return Context.getDatatypeService().getHandler(dt, handlerConfig);
 	}
 	
 	/**
