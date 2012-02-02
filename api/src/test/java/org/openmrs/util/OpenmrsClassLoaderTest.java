@@ -37,7 +37,5 @@ public class OpenmrsClassLoaderTest extends BaseContextSensitiveTest {
 		//verify after deleting only one cache should exist
 		if (beforeDelete > 1)
 			Assert.assertTrue(beforeDelete > afterDelete);
-		//verify that it is current cache
-		Assert.assertEquals(tempDir.listFiles(cacheDirFilter)[0], currentCache);
 	}
 }
