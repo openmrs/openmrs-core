@@ -773,8 +773,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		for (PatientIdentifier pi : notPreferred.getActiveIdentifiers()) {
 			PatientIdentifier tmpIdentifier = new PatientIdentifier();
 			tmpIdentifier.setIdentifier(pi.getIdentifier());
-			tmpIdentifier.setIdentifierType(null); // don't compare identifier
-			// types.
+			tmpIdentifier.setIdentifierType(pi.getIdentifierType());
 			tmpIdentifier.setLocation(pi.getLocation());
 			tmpIdentifier.setPatient(preferred);
 			boolean found = false;
@@ -876,16 +875,15 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		 * preferred.setRace(notPreferred.getRace());
 		 */
 
-		if (preferred.getBirthdate() == null || preferred.getBirthdate().equals("")
-		        || (preferred.getBirthdateEstimated() && !notPreferred.getBirthdateEstimated())) {
+		if (preferred.getBirthdate() == null || (preferred.getBirthdateEstimated() && !notPreferred.getBirthdateEstimated())) {
 			preferred.setBirthdate(notPreferred.getBirthdate());
 			preferred.setBirthdateEstimated(notPreferred.getBirthdateEstimated());
 		}
 		
-		if (preferred.getDeathDate() == null || preferred.getDeathDate().equals(""))
+		if (preferred.getDeathDate() == null)
 			preferred.setDeathDate(notPreferred.getDeathDate());
 		
-		if (preferred.getCauseOfDeath() == null || preferred.getCauseOfDeath().equals(""))
+		if (preferred.getCauseOfDeath() == null)
 			preferred.setCauseOfDeath(notPreferred.getCauseOfDeath());
 		
 		// void the non preferred patient
@@ -1311,7 +1309,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getProblems(org.openmrs.api.Person)
+	 * @see org.openmrs.api.PatientService#getProblems(org.openmrs.Person)
 	 */
 	public List<Problem> getProblems(Person p) throws APIException {
 		List<Problem> problems = Context.getActiveListService().getActiveListItems(Problem.class, p,
@@ -1356,7 +1354,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getAllergies(org.openmrs.api.Person)
+	 * @see org.openmrs.api.PatientService#getAllergies(org.openmrs.Person)
 	 */
 	public List<Allergy> getAllergies(Person p) throws APIException {
 		return Context.getActiveListService().getActiveListItems(Allergy.class, p, Allergy.ACTIVE_LIST_TYPE);

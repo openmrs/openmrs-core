@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import junit.framework.Assert;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -2193,5 +2194,43 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(USER_WHO_IS_NOT_PATIENT_XML);
 		Patient patient = patientService.getPatientOrPromotePerson(-1);
 		Assert.assertNull(patient);
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies not copy over duplicate patient identifiers
+	 */
+	@Test
+	public void mergePatients_shouldNotCopyOverDuplicatePatientIdentifiers() throws Exception {
+		List<Location> locations = Context.getLocationService().getAllLocations();
+		Assert.assertTrue(CollectionUtils.isNotEmpty(locations));
+		// check if we have patient identifiers already
+		List<PatientIdentifierType> patientIdentifierTypes = Context.getPatientService().getAllPatientIdentifierTypes();
+		Assert.assertTrue(CollectionUtils.isNotEmpty(patientIdentifierTypes));
+		//retrieve preferred patient and set gender
+		Patient preferred = patientService.getPatient(999);
+		// create new identifier for the preferred patient
+		PatientIdentifier preferredIdentifier = new PatientIdentifier();
+		preferredIdentifier.setIdentifier("9999-4");
+		preferredIdentifier.setIdentifierType(patientIdentifierTypes.get(0));
+		preferredIdentifier.setLocation(locations.get(0));
+		preferred.addIdentifier(preferredIdentifier);
+		patientService.savePatient(preferred);
+		
+		int oldPreferred = preferred.getIdentifiers().size();
+		
+		//merge with not preferred
+		Patient notPreferred = patientService.getPatient(7);
+		// create identifier with the same values for the non preferred patient
+		PatientIdentifier nonPreferredIdentifier = new PatientIdentifier();
+		nonPreferredIdentifier.setIdentifier("9999-4");
+		nonPreferredIdentifier.setIdentifierType(patientIdentifierTypes.get(0));
+		nonPreferredIdentifier.setLocation(locations.get(0));
+		notPreferred.addIdentifier(nonPreferredIdentifier);
+		patientService.savePatient(notPreferred);
+		
+		patientService.mergePatients(preferred, notPreferred);
+		int expected = oldPreferred + notPreferred.getIdentifiers().size() - 1;
+		Assert.assertEquals(expected, preferred.getIdentifiers().size());
 	}
 }
