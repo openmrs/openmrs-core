@@ -2374,7 +2374,7 @@ public class OpenmrsUtil {
 		if (applicationName == null)
 			applicationName = "openmrs";
 		String pathName = "";
-        pathName = getRuntimePropertiesFilePathName(applicationName);
+		pathName = getRuntimePropertiesFilePathName(applicationName);
 		FileInputStream propertyStream = null;
 		try {
 			if (pathName != null) {
