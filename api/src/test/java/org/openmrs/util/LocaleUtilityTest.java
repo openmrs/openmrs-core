@@ -211,6 +211,16 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see {@link LocaleUtility#getLocalesInOrder()}
 	 */
 	@Test
+	@Verifies(value = "should always have default locale default value included in the returned collection", method = "getLocalesInOrder()")
+	public void getLocalesInOrder_shouldAlwaysHaveDefaultLocaleDefaultValueIncludedInTheReturnedCollection() throws Exception {
+		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
+		Assert.assertEquals(true, localesInOrder.contains(LocaleUtility.fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE)));
+	}
+	
+	/**
+	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 */
+	@Test
 	@Verifies(value = "should have default locale as the first element if user has no preferred locale", method = "getLocalesInOrder()")
 	public void getLocalesInOrder_shouldHaveDefaultLocaleAsTheFirstElementIfUserHasNoPreferredLocale() throws Exception {
 		// make sure the user doesn't have a locale
@@ -270,7 +280,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Locale lu_UG = new Locale("lu", "UG");
 		Context.setLocale(lu_UG);
 		//note that unique list of locales should be lu_UG, lu, sw_KE, en_US, en
-		Assert.assertEquals(5, LocaleUtility.getLocalesInOrder().size());
+		Assert.assertEquals(6, LocaleUtility.getLocalesInOrder().size());
 	}
 	
 	/**
