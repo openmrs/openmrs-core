@@ -701,6 +701,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should audit prior date of birth
 	 * @should audit prior date of birth estimated
 	 * @should audit prior gender
+	 * @should not copy over duplicate patient identifiers
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException, SerializationException;

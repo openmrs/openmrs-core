@@ -34,6 +34,7 @@ import java.util.Vector;
 
 import junit.framework.Assert;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -2738,6 +2739,41 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(7);
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertEquals("prior cause of death was not audited", "M", audit.getPersonMergeLogData().getPriorGender());
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies not copy over duplicate patient identifiers
+	 */
+	@Test
+	public void mergePatients_shouldNotCopyOverDuplicatePatientIdentifiers() throws Exception {
+		List<Location> locations = Context.getLocationService().getAllLocations();
+		Assert.assertTrue(CollectionUtils.isNotEmpty(locations));
+		// check if we have patient identifiers already
+		List<PatientIdentifierType> patientIdentifierTypes = Context.getPatientService().getAllPatientIdentifierTypes();
+		Assert.assertTrue(CollectionUtils.isNotEmpty(patientIdentifierTypes));
+		//retrieve preferred patient and set gender
+		Patient preferred = patientService.getPatient(999);
+		// create new identifier for the preferred patient
+		PatientIdentifier preferredIdentifier = new PatientIdentifier();
+		preferredIdentifier.setIdentifier("9999-4");
+		preferredIdentifier.setIdentifierType(patientIdentifierTypes.get(0));
+		preferredIdentifier.setLocation(locations.get(0));
+		preferred.addIdentifier(preferredIdentifier);
+		patientService.savePatient(preferred);
+		//merge with not preferred
+		Patient notPreferred = patientService.getPatient(7);
+		// create identifier with the same values for the non preferred patient
+		PatientIdentifier nonPreferredIdentifier = new PatientIdentifier();
+		nonPreferredIdentifier.setIdentifier("9999-4");
+		nonPreferredIdentifier.setIdentifierType(patientIdentifierTypes.get(0));
+		nonPreferredIdentifier.setLocation(locations.get(0));
+		notPreferred.addIdentifier(nonPreferredIdentifier);
+		patientService.savePatient(notPreferred);
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		// should not copy the duplicate identifier to the winner
+		Assert.assertEquals(notPreferred.getIdentifiers().size() - 1, audit.getPersonMergeLogData().getCreatedIdentifiers()
+		        .size());
 	}
 	
 	private PersonMergeLog mergeAndRetrieveAudit(Patient preferred, Patient notPreferred) throws SerializationException {
