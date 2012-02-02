@@ -663,6 +663,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should void non preferred patient
 	 * @should void all relationships for non preferred patient
 	 * @should not void relationships for same type and side with different relatives
+	 * @should not copy over duplicate patient identifiers
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException;
