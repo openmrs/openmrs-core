@@ -1371,6 +1371,10 @@ public class InitializationFilter extends StartupFilter {
 						runtimeProperties.put("connection.password", connectionPassword);
 						if (StringUtils.hasText(wizardModel.databaseDriver))
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
+						if (finalDatabaseConnectionString.contains("postgres"))
+							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+						if (finalDatabaseConnectionString.contains("sqlserver"))
+							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
 						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
 						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY, Base64.encode(Security
