@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Calendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -105,20 +106,28 @@ public class DWROrderService {
 	
 	public void discontinueOrder(Integer orderId, String discontinueReason, String discontinueDate) throws DWRException {
 		Date dDiscDate = null;
+		Date currentDate = null;
 		if (discontinueDate != null) {
 			SimpleDateFormat sdf = Context.getDateFormat();
 			try {
+				String str = sdf.format(Calendar.getInstance().getTime());
+				currentDate = sdf.parse(str);
 				dDiscDate = sdf.parse(discontinueDate);
 			}
 			catch (ParseException e) {
 				throw new DWRException(e.getMessage());
 			}
 		}
-		
 		Order o = Context.getOrderService().getOrder(orderId);
 		try {
-			Context.getOrderService().discontinueOrder(o, Context.getConceptService().getConcept(discontinueReason),
-			    dDiscDate);
+			if (dDiscDate.after(currentDate)) {
+				Context.getOrderService().discontinueFutureOrder(o,
+				    Context.getConceptService().getConcept(discontinueReason), dDiscDate);
+			} else {
+				Context.getOrderService().discontinueOrder(o, Context.getConceptService().getConcept(discontinueReason),
+				    dDiscDate);
+				
+			}
 		}
 		catch (APIException e) {
 			throw new DWRException(e.getMessage());
