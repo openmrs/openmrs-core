@@ -173,6 +173,9 @@ public interface OrderService extends OpenmrsService {
 	 *             Unknown or Unknown Location, or if there's no encounter type with name 'Regimen
 	 *             Change'
 	 */
+	@Authorized(PrivilegeConstants.EDIT_ORDERS)
+	public Order discontinueFutureOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException;
+	
 	@Authorized(value = { PrivilegeConstants.ADD_ORDERS, PrivilegeConstants.ADD_ENCOUNTERS }, requireAll = true)
 	public void createOrdersAndEncounter(Patient p, Collection<Order> orders) throws APIException;
 	
