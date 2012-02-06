@@ -170,6 +170,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	 * @should have default locale as the first element if user has no preferred locale
 	 * @should have default locale as the second element if user has a preferred locale
 	 * @should always have english included in the returned collection
+	 * @should always have default locale default value included in the returned collection
 	 * @since 1.7
 	 */
 	public static Set<Locale> getLocalesInOrder() {
@@ -184,6 +185,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 			locales.addAll(localesAllowedListCache);
 		
 		locales.add(Locale.ENGLISH);
+		locales.add(fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE));
 		
 		return locales;
 	}
