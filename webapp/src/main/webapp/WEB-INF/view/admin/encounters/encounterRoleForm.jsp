@@ -59,7 +59,7 @@
                 <tr>
                     <td><spring:message code="general.createdBy"/></td>
                     <td>
-                      ${encounterRole.creator.personName} - <openmrs:formatDate date="${encounterRole.dateCreated}" type="long"/>
+                      <c:out value="${encounterRole.creator.personName}"/> - <openmrs:formatDate date="${encounterRole.dateCreated}" type="long"/>
                     </td>
                 </tr>
             </c:if>

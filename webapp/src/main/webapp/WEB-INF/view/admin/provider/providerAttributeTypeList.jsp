@@ -24,15 +24,15 @@
 					<a href="providerAttributeType.form?providerAttributeTypeId=${providerAttributeType.providerAttributeTypeId}">
 						<c:choose>
 							<c:when test="${providerAttributeType.retired == true}">
-								<del>${providerAttributeType.name}</del>
+								<del><c:out value="${providerAttributeType.name}"/></del>
 							</c:when>
 							<c:otherwise>
-								${providerAttributeType.name}
+								<c:out value="${providerAttributeType.name}"/>
 							</c:otherwise>
 						</c:choose>
 					</a>
 				</td>
-				<td valign="top">${providerAttributeType.description}</td>
+				<td valign="top"><c:out value="${providerAttributeType.description}"/></td>
 			</tr>
 		</c:forEach>
 	</table>

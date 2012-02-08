@@ -1472,9 +1472,9 @@ public interface ConceptService extends OpenmrsService {
 	public boolean hasAnyObservation(ConceptName conceptName) throws APIException;
 	
 	/**
-	 * Searches for concepts by the given parameters
+	 * Searches for concepts by the given parameters.
 	 * 
-	 * @param phrase matched to the start of any word in any of the names of a concept
+	 * @param phrase matched to the start of any word in any of the names of a concept (if blank/null, matches all concepts)
 	 * @param locales List<Locale> to restrict to
 	 * @param includeRetired boolean if false, will exclude retired concepts
 	 * @param requireClasses List<ConceptClass> to restrict to
@@ -1548,7 +1548,7 @@ public interface ConceptService extends OpenmrsService {
 	/**
 	 * Searches for concepts with the given parameters
 	 * 
-	 * @param phrase the string to search against
+	 * @param phrase the string to search against (if blank/null, matches all concepts)
 	 * @param locale the locale in which to search for the concepts
 	 * @param includeRetired Specifies whether to include retired concepts
 	 * @return a list ConceptSearchResults
