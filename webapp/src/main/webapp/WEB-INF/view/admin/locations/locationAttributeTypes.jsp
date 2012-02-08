@@ -29,15 +29,15 @@
 							<a href="locationAttributeType.form?id=${ attrType.id }">
 								<c:choose>
 									<c:when test="${ attrType.retired }">
-										<del><c:out value="${ attrType.name }" escapeXml="true" /></del>
+										<del><c:out value="${ attrType.name }"/></del>
 									</c:when>
 									<c:otherwise>
-										<c:out value="${ attrType.name }" escapeXml="true" />
+										<c:out value="${ attrType.name }"/>
 									</c:otherwise>
 								</c:choose>
 							</a>
 						</td>
-						<td valign="top"><c:out value="${ attrType.description }" escapeXml="true" /></td>
+						<td valign="top"><c:out value="${ attrType.description }"/></td>
 					</tr>
 				</c:forEach>
 			</table>
