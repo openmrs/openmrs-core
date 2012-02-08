@@ -13,14 +13,8 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterRole;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.APIException;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
 /**
  * Validator for {@link org.openmrs.EncounterRole} class
@@ -28,44 +22,6 @@ import org.springframework.validation.Validator;
  * @since 1.9
  */
 @Handler(supports = { EncounterRole.class }, order = 50)
-public class EncounterRoleValidator implements Validator {
-	
-	private static final Log log = LogFactory.getLog(EncounterRoleValidator.class);
-	
-	/**
-	 * Returns whether or not this validator supports validating a given class.
-	 *
-	 * @param c The class to check for support.
-	 * @see org.springframework.validation.Validator#supports(Class)
-	 */
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class c) {
-		if (log.isDebugEnabled())
-			log.debug(this.getClass().getName() + ".supports: " + c.getName());
-		return EncounterRole.class.isAssignableFrom(c);
-	}
-	
-	/**
-	 * Validates the given EncounterRole. Currently checks if name
-	 * of the encounter role is given or not.
-	 * @param obj The encounter role to validate.
-	 * @param errors Errors
-	 * @see org.springframework.validation.Validator#validate(Object,
-	 *      org.springframework.validation.Errors)
-	 * @should fail if the name of the encounter role is not set
-	 */
-	public void validate(Object obj, Errors errors) throws APIException {
-		if (log.isDebugEnabled())
-			log.debug(this.getClass().getName() + ".validate...");
-		
-		if (obj == null || !(obj instanceof EncounterRole))
-			throw new IllegalArgumentException("The parameter obj should not be null and must be of type "
-			        + EncounterRole.class);
-		
-		EncounterRole encounterRole = (EncounterRole) obj;
-		
-		if (encounterRole != null) {
-			ValidationUtils.rejectIfEmpty(errors, "name", "error.null");
-		}
-	}
+public class EncounterRoleValidator extends RequireNameValidator {
+
 }

@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="View Provider" otherwise="/login.htm" redirect="/admin/provider/provider.form" />
+<openmrs:require privilege="View Providers" otherwise="/login.htm" redirect="/admin/provider/provider.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -185,7 +185,7 @@ function toggleProviderDetails(){
 						</tr>
 						<tr>
 							<th><spring:message code="general.retiredReason" /></th>
-							<td>${provider.retireReason}</td>
+							<td><c:out value="${provider.retireReason}"/></td>
 						</tr>
 						<tr>
 							<td><input type="submit" name="unretireProviderButton"

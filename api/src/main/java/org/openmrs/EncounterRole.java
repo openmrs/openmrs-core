@@ -50,7 +50,7 @@ public class EncounterRole extends BaseOpenmrsMetadata {
 	public String toString() {
 		String ret = "";
 		ret += encounterRoleId == null ? "(no ID) " : encounterRoleId.toString() + " ";
-		return "Encounter: [" + ret + "]";
+		return "EncounterRole: [" + ret + "]";
 	}
 	
 	/**

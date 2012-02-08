@@ -68,7 +68,7 @@
 				</div>
 			</openmrs:hasPrivilege>
 			
-			<openmrs:hasPrivilege privilege="View Providers,Edit Providers,Add Providers,Manage Provider Attribute Types">
+			<openmrs:hasPrivilege privilege="View Providers,Manage Providers,Manage Provider Attribute Types">
 				<div class="adminMenuList">
 					<h4><spring:message code="Provider.header"/></h4>
 						<%@ include file="provider/localHeader.jsp" %>
