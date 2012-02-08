@@ -126,18 +126,4 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(true, errors.hasFieldErrors("encounterDatetime"));
 	}
 	
-	/**
-	 * @see {@link EncounterValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should fail if provider is more than once for the same encounter role", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfProviderIsMoreThanOnceForTheSameEncounterRole() throws Exception {
-		Encounter encounter = new Encounter();
-		encounter.setPatient(new Patient(2));
-		encounter.addProvider(new EncounterRole(1), new Provider(1));
-		encounter.addProvider(new EncounterRole(1), new Provider(1));
-		Errors errors = new BindException(encounter, "encounter");
-		new EncounterValidator().validate(encounter, errors);
-		Assert.assertTrue(errors.hasFieldErrors("providersByRoles"));
-	}
 }

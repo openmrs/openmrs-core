@@ -489,7 +489,6 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to delete visits")
 	public static final String DELETE_VISITS = "Delete Visits";
 	
-	@AddOnStartup(description = "Able to purge visits")
 	public static final String PURGE_VISITS = "Purge Visits";
 	
 	@AddOnStartup(description = "Able to view visit attribute types")
@@ -498,7 +497,6 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to add/edit/retire visit attribute types")
 	public static final String MANAGE_VISIT_ATTRIBUTE_TYPES = "Manage Visit Attribute Types";
 	
-	@AddOnStartup(description = "Able to purge visit attribute types")
 	public static final String PURGE_VISIT_ATTRIBUTE_TYPES = "Purge Visit Attribute Types";
 	
 	@AddOnStartup(description = "Able to view the 'Visits' tab on the patient dashboard")
@@ -510,20 +508,15 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to add/edit/retire location attribute types")
 	public static final String MANAGE_LOCATION_ATTRIBUTE_TYPES = "Manage Location Attribute Types";
 	
-	@AddOnStartup(description = "Able to purge location attribute types")
 	public static final String PURGE_LOCATION_ATTRIBUTE_TYPES = "Purge Location Attribute Types";
 	
 	@AddOnStartup(description = "Able to view Provider")
 	public static final String VIEW_PROVIDERS = "View Providers";
 	
 	@AddOnStartup(description = "Able to edit Provider")
-	public static final String EDIT_PROVIDER = "Edit Providers";
+	public static final String MANAGE_PROVIDERS = "Manage Providers";
 	
-	@AddOnStartup(description = "Able to add Provider")
-	public static final String ADD_PROVIDER = "Add Providers";
-	
-	@AddOnStartup(description = "Able to delete provider")
-	public static final String PURGE_PROVIDER = "Purge Providers";
+	public static final String PURGE_PROVIDERS = "Purge Providers";
 	
 	@AddOnStartup(description = "Able to view encounter roles")
 	public static final String VIEW_ENCOUNTER_ROLES = "View Encounter Roles";
