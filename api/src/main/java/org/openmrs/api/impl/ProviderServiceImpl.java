@@ -102,10 +102,10 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProviderService#getProviderbyUuid(java.lang.String)
+	 * @see org.openmrs.api.ProviderService#getProviderByUuid(java.lang.String)
 	 */
 	@Override
-	public Provider getProviderbyUuid(String uuid) {
+	public Provider getProviderByUuid(String uuid) {
 		return dao.getProviderByUuid(uuid);
 	}
 	
