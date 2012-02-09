@@ -112,7 +112,7 @@ public interface ProviderService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
-	public Provider getProviderbyUuid(String uuid);
+	public Provider getProviderByUuid(String uuid);
 	
 	/**
 	 * Gets the Providers for the given person.
