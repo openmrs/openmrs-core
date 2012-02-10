@@ -1,7 +1,6 @@
 package org.openmrs.notification;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.impl.AlertServiceImpl;
@@ -15,7 +14,6 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "should add an alert to the database", method = "notifySuperUsers(String,Exception,null)")
 	public void notifySuperUsers_shouldAddAnAlertToTheDatabase() throws Exception {
 		// Check there are no alerts before the method is called
