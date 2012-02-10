@@ -57,7 +57,7 @@ public class PatientProgramValidator implements Validator {
 	 * @should fail validation if obj is null
 	 * @should fail if the patient field is blank
 	 * @should fail if there is more than one patientState with the same states and startDates
-	 * @should fail if the start date for any patient state is null and is not the first
+	 * @should fail if there is more than one state with a null start date in the same workflow
 	 * @should pass if the start date of the first patient state in the work flow is null
 	 * @should fail if any patient state has an end date before its start date
 	 * @should fail if the program property is null
@@ -94,16 +94,21 @@ public class PatientProgramValidator implements Validator {
 				Set<String> statesAndStartDates = new HashSet<String>();
 				PatientState latestState = null;
 				boolean foundCurrentPatientState = false;
+				boolean foundStateWithNullStartDate = false;
 				for (PatientState patientState : patientStates) {
 					if (patientState.isVoided())
 						continue;
 					
 					String missingRequiredFieldCode = null;
-					//only the intial state can have a null start date
-					if (patientState.getStartDate() == null && !patientState.getState().getInitial())
-						missingRequiredFieldCode = "general.dateStart";
-					else if (patientState.getState() == null)
+					//only the initial state can have a null start date
+					if (patientState.getStartDate() == null) {
+						if (foundStateWithNullStartDate)
+							missingRequiredFieldCode = "general.dateStart";
+						else
+							foundStateWithNullStartDate = true;
+					} else if (patientState.getState() == null) {
 						missingRequiredFieldCode = "State.state";
+					}
 					
 					if (missingRequiredFieldCode != null) {
 						errors.rejectValue("states", "PatientState.error.requiredField", new Object[] { mss
