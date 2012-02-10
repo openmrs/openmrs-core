@@ -302,4 +302,14 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 		setProgramWorkflowId(id);
 		
 	}
+	
+	/**
+	 * Gets the number of states which are not retired
+	 * 
+	 * @return the total number of non retired states
+	 * @Since 1.9
+	 */
+	public int getNonRetiredStateCount() {
+		return getStates(false).size();
+	}
 }

@@ -56,7 +56,7 @@
 							<c:forEach var="workflow" items="${program.workflows}">
 								<a href="workflow.form?programWorkflowId=${workflow.programWorkflowId}">
 									<openmrs_tag:concept conceptId="${workflow.concept.conceptId}"/>
-									(${fn:length(workflow.states)})
+									(${workflow.nonRetiredStateCount})
 								</a>
 								<br/>
 							</c:forEach>
