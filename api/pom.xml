@@ -22,6 +22,10 @@
          <artifactId>commons-collections</artifactId>
       </dependency>
       <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-lang3</artifactId>
+      </dependency>
+      <dependency>
          <groupId>commons-beanutils</groupId>
          <artifactId>commons-beanutils</artifactId>
       </dependency>

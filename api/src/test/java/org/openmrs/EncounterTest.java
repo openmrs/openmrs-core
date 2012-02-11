@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
@@ -860,7 +861,10 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		encounter.addProvider(role, provider1);
 		
 		//then
-		Assert.assertEquals(1, encounter.getProvidersByRole(role).size());
+		// we need to cheat and use reflection to look at the private encounterProviders property; we don't want the getProvidersByRole method hiding duplicates from us
+		Collection<EncounterProvider> providers = (Collection<EncounterProvider>) FieldUtils.readField(encounter,
+		    "encounterProviders", true);
+		Assert.assertEquals(1, providers.size());
 		Assert.assertTrue(encounter.getProvidersByRole(role).contains(provider1));
 	}
 	
