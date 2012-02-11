@@ -542,6 +542,11 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should not add same provider twice for role
 	 */
 	public void addProvider(EncounterRole role, Provider provider) {
+		// first, make sure the provider isn't already there
+		for (EncounterProvider ep : encounterProviders) {
+			if (ep.getEncounterRole().equals(role) && ep.getProvider().equals(provider))
+				return;
+		}
 		EncounterProvider encounterProvider = new EncounterProvider();
 		encounterProvider.setEncounter(this);
 		encounterProvider.setEncounterRole(role);
