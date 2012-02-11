@@ -682,8 +682,8 @@
             <column defaultValueBoolean="false" name="published" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="xslt" type="text"/> <!--TODO-->
-            <column name="template" type="text"/> <!--TODO-->
+            <column name="xslt" type="text"/>
+            <column name="template" type="text"/>
             <column name="description" type="text"/>
             <column name="encounter_type" type="int"/>
             <column defaultValueNumeric="0" name="creator" type="int">
@@ -2119,7 +2119,7 @@
             <column name="retired" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
-            <column name="retired_by" type="int(11)" />
+            <column name="retired_by" type="int" />
             <column name="date_retired" type="datetime" />
             <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
             <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
@@ -2144,7 +2144,7 @@
             <column name="voided" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
-            <column name="voided_by" type="int(11)" />
+            <column name="voided_by" type="int" />
             <column name="date_voided" type="datetime" />
             <column name="void_reason" type="varchar(255)" defaultValue="null"/>
         </createTable>
@@ -2180,7 +2180,7 @@
 			<column name="retired" type="boolean" defaultValueBoolean="false">
 				<constraints nullable="false" />
 			</column>
-			<column name="retired_by" type="int(11)" />
+			<column name="retired_by" type="int" />
 			<column name="date_retired" type="datetime" />
 			<column name="retire_reason" type="varchar(255)" defaultValue="null" />
 			<column name="uuid" type="char(38)">
@@ -2207,7 +2207,7 @@
             <column name="voided" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
-            <column name="voided_by" type="int(11)" />
+            <column name="voided_by" type="int" />
             <column name="date_voided" type="datetime" />
             <column name="void_reason" type="varchar(255)" defaultValue="null"/>
         </createTable>
@@ -2341,10 +2341,10 @@
  			</column>
  			<column name="changed_by" type="int" />
  			<column name="date_changed" type="datetime" />
- 			<column name="retired" type="tinyint" defaultValueNumeric="0">
+ 			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
  				<constraints nullable="false" />
  			</column>
- 			<column name="retired_by" type="int(11)" />
+ 			<column name="retired_by" type="int" />
  			<column name="date_retired" type="datetime" />
  			<column name="retire_reason" type="varchar(255)" defaultValue="null" />
  			<column name="uuid" type="char(38)">
@@ -2383,10 +2383,10 @@
              <column name="date_created" type="datetime"><constraints nullable="false"/></column>
              <column name="changed_by" type="int"/>
              <column name="date_changed" type="datetime" />
-             <column name="retired" type="smallint" defaultValueNumeric="0">
+             <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
                  <constraints nullable="false"/>
              </column>
-             <column name="retired_by" type="int(11)" />
+             <column name="retired_by" type="int" />
              <column name="date_retired" type="datetime" />
              <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
              <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
