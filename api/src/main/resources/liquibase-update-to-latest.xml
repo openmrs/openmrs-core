@@ -4574,6 +4574,8 @@
 	
 
     <changeSet id="20110817-1601-create-location-attribute-table" author="djazayeri">
+        <validCheckSum>3:564e414d29bdccd1bf770252ccd11431</validCheckSum>
+        <validCheckSum>3:c7cb1b35d68451d10badeb445df599b9</validCheckSum>
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="location_attribute"/></not>
         </preConditions>
@@ -4593,7 +4595,7 @@
             <column name="voided" type="smallint" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
-            <column name="voided_by" type="int(11)" />
+            <column name="voided_by" type="int" />
             <column name="date_voided" type="datetime" />
             <column name="void_reason" type="varchar(255)" defaultValue="null"/>
         </createTable>
@@ -5651,7 +5653,9 @@
 	</changeSet>
 
  	<changeSet id="20110426-11701" author="zabil">
- 		<preConditions onFail="MARK_RAN">
+ 		<validCheckSum>3:3fb5c7a79a254b4bb9cea018a35f78be</validCheckSum>
+		<validCheckSum>3:56caae006a3af14242e2ea57627004c7</validCheckSum>
+                <preConditions onFail="MARK_RAN">
  			<not>
  				<tableExists tableName="provider" />
  			</not>
@@ -5676,10 +5680,10 @@
  			</column>
  			<column name="changed_by" type="int" />
  			<column name="date_changed" type="datetime" />
- 			<column name="retired" type="tinyint" defaultValueNumeric="0">
+ 			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
  				<constraints nullable="false" />
  			</column>
- 			<column name="retired_by" type="int(11)" />
+ 			<column name="retired_by" type="int" />
  			<column name="date_retired" type="datetime" />
  			<column name="retire_reason" type="varchar(255)" defaultValue="null" />
  			<column name="uuid" type="char(38)">
@@ -5700,10 +5704,22 @@
  			baseTableName="provider" baseColumnNames="creator"
  			referencedTableName="users" referencedColumnNames="user_id" />
  	</changeSet>
+	<changeSet id="20110426-11701-fix" author="sunbiz">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="provider" columnName="retired"/>
+		</preConditions>
+		<comment>(Fixed)Change provider.retired to BOOLEAN</comment>
+		<ext:modifyColumn tableName="provider">
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
   	
      <changeSet id="20110510-11702-create-provider-attribute-type-table" author="zabil">
      	 <validCheckSum>3:d96f09404f0aeea2956206b8941c55d0</validCheckSum>
      	 <validCheckSum>3:dabb301881068d6f011eeefb026c46a7</validCheckSum>
+         <validCheckSum>3:7478ac84804d46a4f2b3daa63efe99be</validCheckSum>
          <preConditions onFail="MARK_RAN">
              <not><tableExists tableName="provider_attribute_type"/></not>
          </preConditions>
@@ -5724,10 +5740,10 @@
              <column name="date_created" type="datetime"><constraints nullable="false"/></column>
              <column name="changed_by" type="int"/>
              <column name="date_changed" type="datetime" />
-             <column name="retired" type="smallint" defaultValueNumeric="0">
+             <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
                  <constraints nullable="false"/>
              </column>
-             <column name="retired_by" type="int(11)" />
+             <column name="retired_by" type="int" />
              <column name="date_retired" type="datetime" />
              <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
              <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
@@ -5742,6 +5758,17 @@
              baseTableName="provider_attribute_type" baseColumnNames="retired_by" referencedTableName="users"
              referencedColumnNames="user_id" />
      </changeSet>
+	<changeSet id="20110510-11702-create-provider-attribute-type-table-fix" author="sunbiz">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="provider_attribute_type" columnName="retired"/>
+		</preConditions>
+		<comment>(Fixed)Change provider_attribute_type.retired to BOOLEAN</comment>
+		<ext:modifyColumn tableName="provider_attribute_type">
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
      
      <changeSet id="201110072043-fix-provider-attribute-type-columns" author="djazayeri">
 		<preConditions onFail="MARK_RAN">
@@ -5757,6 +5784,8 @@
 	</changeSet>
      
      <changeSet id="20110628-1400-create-provider-attribute-table" author="kishoreyekkanti">
+         <validCheckSum>3:6b869e17f82b860055f27d0953a42f63</validCheckSum>
+         <validCheckSum>3:298aaacafd48547be294f4c9b7c40d35</validCheckSum>
          <preConditions onFail="MARK_RAN">
              <not><tableExists tableName="provider_attribute"/></not>
          </preConditions>
@@ -5773,10 +5802,10 @@
              <column name="date_created" type="datetime"><constraints nullable="false"/></column>
              <column name="changed_by" type="int"/>
              <column name="date_changed" type="datetime" />
-             <column name="voided" type="smallint" defaultValueNumeric="0">
+             <column name="voided" type="BOOLEAN" defaultValueBoolean="false">
                  <constraints nullable="false"/>
              </column>
-             <column name="voided_by" type="int(11)" />
+             <column name="voided_by" type="int" />
              <column name="date_voided" type="datetime" />
              <column name="void_reason" type="varchar(255)" defaultValue="null"/>
          </createTable>
@@ -5796,8 +5825,21 @@
              baseTableName="provider_attribute" baseColumnNames="voided_by" referencedTableName="users"
              referencedColumnNames="user_id" />
      </changeSet>
+	<changeSet id="20110628-1400-create-provider-attribute-table-fix" author="sunbiz">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="provider_attribute" columnName="voided"/>
+		</preConditions>
+		<comment>(Fixed)Change provider_attribute.voided to BOOLEAN</comment>
+		<ext:modifyColumn tableName="provider_attribute">
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
      
      <changeSet id="20110705-2300-create-encounter-role-table" author="kishoreyekkanti">
+         <validCheckSum>3:409eb019d6387707442af989139b8345</validCheckSum>
+         <validCheckSum>3:a381ef81f10e4f7443b4d4c8d6231de8</validCheckSum>
          <preConditions onFail="MARK_RAN">
              <not><tableExists tableName="encounter_role"/></not>
          </preConditions>
@@ -5812,10 +5854,10 @@
              <column name="date_created" type="datetime"><constraints nullable="false"/></column>
              <column name="changed_by" type="int"/>
              <column name="date_changed" type="datetime" />
-             <column name="retired" type="smallint" defaultValueNumeric="0">
+             <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
                  <constraints nullable="false"/>
              </column>
-             <column name="retired_by" type="int(11)" />
+             <column name="retired_by" type="int" />
              <column name="date_retired" type="datetime" />
              <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
              <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
@@ -5830,8 +5872,21 @@
              baseTableName="encounter_role" baseColumnNames="retired_by" referencedTableName="users"
              referencedColumnNames="user_id" />
      </changeSet>
+	<changeSet id="20110705-2300-create-encounter-role-table-fix" author="sunbiz">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="encounter_role" columnName="retired"/>
+		</preConditions>
+		<comment>(Fixed)Change encounter_role.retired to BOOLEAN</comment>
+		<ext:modifyColumn tableName="encounter_role">
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
  
      <changeSet id="20110811-1205-create-encounter-provider-table" author="sree/vishnu">
+         <validCheckSum>3:694e9f92781b1a42d18d6af65d8e6c14</validCheckSum>
+         <validCheckSum>3:e20ca5412e37df98c58a39552aafb5ad</validCheckSum>
          <preConditions onFail="MARK_RAN">
              <not><tableExists tableName="encounter_provider"/></not>
          </preConditions>
@@ -5840,14 +5895,14 @@
              <column name="encounter_provider_id" type="int" autoIncrement="true">
                  <constraints primaryKey="true" nullable="false" />
          </column>
-             <column name="encounter_id" type="int(11)"><constraints nullable="false" /></column>
-             <column name="provider_id" type="int(11)"><constraints nullable="false" /> </column>
-             <column name="encounter_role_id" type="int(11)"><constraints nullable="false" /></column>
+             <column name="encounter_id" type="int"><constraints nullable="false" /></column>
+             <column name="provider_id" type="int"><constraints nullable="false" /> </column>
+             <column name="encounter_role_id" type="int"><constraints nullable="false" /></column>
              <column defaultValueNumeric="0" name="creator" type="int"><constraints nullable="false"/></column>
              <column name="date_created" type="datetime"><constraints nullable="false"/></column>
              <column name="changed_by" type="int"/>
              <column name="date_changed" type="datetime" />
-             <column defaultValueNumeric="0" name="voided" type="tinyint"><constraints nullable="false" /></column>
+             <column defaultValueBoolean="false" name="voided" type="BOOLEAN"><constraints nullable="false" /></column>
              <column name="date_voided" type="datetime" />
              <column name="voided_by" type="int" />
              <column name="void_reason" type="varchar(255)" />
@@ -5863,6 +5918,17 @@
              baseTableName="encounter_provider" baseColumnNames="encounter_role_id" referencedTableName="encounter_role"
              referencedColumnNames="encounter_role_id" />
      </changeSet>
+	 <changeSet id="20110811-1205-create-encounter-provider-table-fix" author="sunbiz">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="encounter_provider" columnName="voided"/>
+		</preConditions>
+		<comment>(Fixed)Change encounter_provider.voided to BOOLEAN</comment>
+		<ext:modifyColumn tableName="encounter_provider">
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</ext:modifyColumn>
+	 </changeSet>
      
      <changeSet id="20110819-1455-insert-unknown-encounter-role" author="raff">
      	<preConditions onFail="MARK_RAN">
@@ -5879,9 +5945,13 @@
  			<column name="retired" valueBoolean="false" />
  			<column name="uuid" value="a0b03050-c99b-11e0-9572-0800200c9a66" />
  		</insert>
+		<!-- Update postgres sequence correctly as it is incorrect after initial bulk inserts -->
+		<modifySql dbms="postgresql">
+			<prepend value="SELECT setval('encounter_role_encounter_role_id_seq', (SELECT MAX(encounter_role_id) FROM encounter_role)+1);"/>
+		</modifySql>
      </changeSet>
      
-     <changeSet id="20110825-1000-creating-providers-for-persons-from-encounter" author="raff">
+     <changeSet id="20110825-1000-creating-providers-for-persons-from-encounter" author="raff" dbms="mysql">
      	<validCheckSum>3:d0da8b0b930623f6c62e2bd02bc2523b</validCheckSum>
      	<validCheckSum><comment>Changing identifier from person.person_id to user.system_id</comment>3:cccc02519a766bd8fde048cea13d307c</validCheckSum>
      	<validCheckSum><comment>Changing now() to CURRENT_TIMESTAMP</comment>3:a70d8897d05364a0a4398f2b90542fd4</validCheckSum>
@@ -5908,7 +5978,7 @@
          </sql>
  	</changeSet>
      
-     <changeSet id="20110825-1000-migrating-providers-to-encounter-provider" author="raff">
+     <changeSet id="20110825-1000-migrating-providers-to-encounter-provider" author="raff" dbms="mysql">
      	<preConditions onFail="MARK_RAN">
  			<columnExists tableName="encounter" columnName="provider_id"/>
  		</preConditions>
@@ -6012,7 +6082,7 @@
 			/>
 	</changeSet>
 
-	<changeSet id="20110326-2" author="Knoll_Frank">
+	<changeSet id="20110326-2" author="Knoll_Frank" dbms="mysql">
 		<preConditions>
 			<columnExists tableName="obs" columnName="previous_version"/>
 		</preConditions>
