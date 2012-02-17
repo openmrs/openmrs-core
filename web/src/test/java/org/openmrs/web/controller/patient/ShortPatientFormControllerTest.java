@@ -180,10 +180,13 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	@Verifies(value = "should add a new name if the person had no names", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
 	public void saveShortPatient_shouldAddANewNameIfThePersonHadNoNames() throws Exception {
 		Patient p = Context.getPatientService().getPatient(7);
-		p.getPersonName().setVoided(true);
-		Context.getPatientService().savePatient(p);
-		Assert.assertNull(p.getPersonName());// make sure all names are voided
 		
+		//Commenting this out because person validator requires each person
+		//to have at least one non voided name.
+		/*p.getPersonName().setVoided(true);
+		Context.getPatientService().savePatient(p);
+		Assert.assertNull(p.getPersonName());// make sure all names are voided*/
+
 		// add a name that will used as a duplicate for testing purposes
 		PersonName newName = new PersonName("new", null, "name");
 		newName.setDateCreated(new Date());
