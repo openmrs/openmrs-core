@@ -122,4 +122,17 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
+	/**
+	 * @see PersonValidator#validate(Object,Errors)
+	 * @verifies fail validation if person does not have at least one non voided name
+	 */
+	@Test
+	@Verifies(value = "should fail validation if person does not have at least one non voided name", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfPersonDoesNotHaveAtleastOneNonVoidedName() throws Exception {
+		Patient pa = Context.getPatientService().getPatient(2);
+		pa.getNames().clear();
+		Errors errors = new BindException(pa, "patient");
+		validator.validate(pa, errors);
+		Assert.assertTrue(errors.hasFieldErrors("names"));
+	}
 }
