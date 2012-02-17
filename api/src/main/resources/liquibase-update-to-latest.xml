@@ -6321,5 +6321,14 @@
 		</createIndex>
 	</changeSet>
 	
+	<changeSet id="201202020847" author="abbas">
+		<comment>Change merged_data column type to CLOB in person_merge_log table</comment>
+		<modifyDataType tableName="person_merge_log" columnName="merged_data" newDataType="CLOB"/>
+		<!-- modifyDataType has a bug causing the column to lose notNull constraint. 
+		see: http://liquibase.jira.com/browse/CORE-670
+		temp fix, add the not null constraint after modifying the data type -->
+		<addNotNullConstraint tableName="person_merge_log" columnName="merged_data" columnDataType="CLOB"/>
+	</changeSet>
+	
 </databaseChangeLog>
 
