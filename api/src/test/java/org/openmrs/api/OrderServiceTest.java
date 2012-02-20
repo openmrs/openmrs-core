@@ -13,8 +13,11 @@
  */
 package org.openmrs.api;
 
+import java.util.Date;
+import java.util.Calendar;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Concept;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
@@ -102,6 +105,41 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(discontinuedReasonNonCoded, order.getDiscontinuedReasonNonCoded());
 	}
 	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order, Concept, Date)}
+	 */
+	@Test
+	@Verifies(value = "should set discontinuedDate if the discontinue date is not in future", method = "discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate)")
+	public void discontinueOrder_shouldSetDiscontinuedDateIfTheDiscontinueDateIsNotInFuture() throws Exception {
+		String uuid = "921de0a3-05c4-444a-be03-e01b4c4b9142";
+		Order order = Context.getOrderService().getOrderByUuid(uuid);
+		Concept discontinudReason = Context.getConceptService().getConcept(1107);
+		Date discontinueDate = new Date();
+		
+		Order updatedOrder = Context.getOrderService().discontinueOrder(order, discontinudReason, discontinueDate);
+		
+		Assert.assertEquals(discontinueDate, updatedOrder.getDiscontinuedDate());
+		
+	}
+	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order, Concept, Date)}
+	 */
+	@Test
+	@Verifies(value = "should set autoExpireDate if the discontinue date is in future", method = "discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate)")
+	public void discontinueOrder_shouldSetAutoExpireDateIfTheDiscontinueDateIsInFuture() throws Exception {
+		String uuid = "921de0a3-05c4-444a-be03-e01b4c4b9142";
+		Order order = Context.getOrderService().getOrderByUuid(uuid);
+		Concept discontinudReason = Context.getConceptService().getConcept(1107);
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, 10);
+		Date autoExpireDate = cal.getTime();
+		Order updatedOrder = Context.getOrderService().discontinueOrder(order, discontinudReason, autoExpireDate);
+		
+		Assert.assertEquals(autoExpireDate, updatedOrder.getAutoExpireDate());
+		
+	}
+	
 	@Test
 	public void voidDrugSet_shouldNotVoidThePatient() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
@@ -109,4 +147,5 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Context.getOrderService().voidDrugSet(p, "1", "Reason", OrderService.SHOW_ALL);
 		Assert.assertFalse(p.isVoided());
 	}
+	
 }

@@ -157,17 +157,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      java.util.Date)
 	 */
 	public Order discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException {
-		order.setDiscontinued(Boolean.TRUE);
+		if (discontinueDate.after(new Date()))
+			order.setAutoExpireDate(discontinueDate);
+		else {
+			order.setDiscontinued(Boolean.TRUE);
+			order.setDiscontinuedDate(discontinueDate);
+		}
 		order.setDiscontinuedReason(discontinueReason);
-		order.setDiscontinuedDate(discontinueDate);
-		order.setDiscontinuedBy(Context.getAuthenticatedUser());
-		
-		return saveOrder(order);
-	}
-	
-	public Order discontinueFutureOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException {
-		order.setDiscontinuedReason(discontinueReason);
-		order.setAutoExpireDate(discontinueDate);
 		order.setDiscontinuedBy(Context.getAuthenticatedUser());
 		
 		return saveOrder(order);
