@@ -208,7 +208,7 @@ public class TestInstallUtil {
 				}
 			}
 			if (tempFile != null) {
-				tempFile.deleteOnExit();
+				tempFile.delete();
 			}
 		}
 		
