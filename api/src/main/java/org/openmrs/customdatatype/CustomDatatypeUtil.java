@@ -28,6 +28,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.serialization.SerializationException;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Helper methods for dealing with custom datatypes and their handlers
@@ -73,7 +74,7 @@ public class CustomDatatypeUtil {
 			return getDatatype(descriptor);
 		}
 		catch (CustomDatatypeException ex) {
-			return getDatatype("org.openmrs.customdatatype.datatype.FreeTextDatatype", descriptor.getDatatypeConfig());
+			return getDatatype(OpenmrsConstants.DEFAULT_CUSTOM_DATATYPE, null);
 		}
 	}
 	
