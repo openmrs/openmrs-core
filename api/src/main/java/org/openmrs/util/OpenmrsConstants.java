@@ -1630,4 +1630,6 @@ public final class OpenmrsConstants {
 	
 	public static final String TEXT_VIEW = "TEXT_VIEW";
 	
+	/** The data type to return on failing to load a custom data type. */
+	public static final String DEFAULT_CUSTOM_DATATYPE = "org.openmrs.customdatatype.datatype.FreeTextDatatype";
 }
