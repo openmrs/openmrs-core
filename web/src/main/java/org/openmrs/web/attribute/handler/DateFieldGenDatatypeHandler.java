@@ -14,12 +14,14 @@
 package org.openmrs.web.attribute.handler;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.springframework.stereotype.Component;
@@ -37,14 +39,6 @@ public class DateFieldGenDatatypeHandler implements FieldGenDatatypeHandler<Date
 	@Override
 	public void setHandlerConfiguration(String arg0) {
 		// not used
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#render(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public String render(DateDatatype datatype, String persistedValue, String view) {
-		return Context.getDateFormat().format(datatype.fromReferenceString(persistedValue));
 	}
 	
 	/**
@@ -84,4 +78,19 @@ public class DateFieldGenDatatypeHandler implements FieldGenDatatypeHandler<Date
 		}
 	}
 	
+	/**
+	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtmlSummary(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
+	 */
+	@Override
+	public CustomDatatype.Summary toHtmlSummary(CustomDatatype<Date> datatype, String valueReference) {
+		return new CustomDatatype.Summary(toHtml(datatype, valueReference), true);
+	}
+	
+	/**
+	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtml(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
+	 */
+	@Override
+	public String toHtml(CustomDatatype<Date> datatype, String valueReference) {
+		return Context.getDateFormat().format(datatype.fromReferenceString(valueReference));
+	}
 }

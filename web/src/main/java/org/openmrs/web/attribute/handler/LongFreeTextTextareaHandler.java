@@ -17,8 +17,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.customdatatype.CustomDatatype.Summary;
 import org.openmrs.customdatatype.datatype.LongFreeTextDatatype;
 import org.openmrs.web.WebUtil;
 import org.springframework.stereotype.Component;
@@ -49,11 +51,19 @@ public class LongFreeTextTextareaHandler implements WebDatatypeHandler<LongFreeT
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#render(org.openmrs.customdatatype.CustomDatatype, java.lang.String, java.lang.String)
+	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtmlSummary(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
 	 */
 	@Override
-	public String render(LongFreeTextDatatype datatype, String referenceString, String view) {
-		return datatype.fromReferenceString(referenceString); // The real fix is another subtask of TRUNK-3034
+	public Summary toHtmlSummary(CustomDatatype<String> datatype, String valueReference) {
+		return datatype.getTextSummary(valueReference);
+	}
+	
+	/**
+	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtml(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
+	 */
+	@Override
+	public String toHtml(CustomDatatype<String> datatype, String valueReference) {
+		return datatype.fromReferenceString(valueReference);
 	}
 	
 	/**

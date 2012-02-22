@@ -49,6 +49,7 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.JavaScriptUtils;
 
@@ -260,8 +261,8 @@ public class FormatTag extends TagSupport {
 		CustomValueDescriptor descriptor = val.getDescriptor();
 		CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(descriptor);
 		CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(descriptor);
-		if (handler != null) {
-			sb.append(handler.render(datatype, val.getValueReference(), null)); // this will get fixed in the next ticket
+		if (handler != null && handler instanceof HtmlDisplayableDatatypeHandler) {
+			sb.append(((HtmlDisplayableDatatypeHandler) handler).toHtmlSummary(datatype, val.getValueReference()));
 		} else if (datatype != null) {
 			sb.append(datatype.getTextSummary(val.getValueReference()));
 		} else {
