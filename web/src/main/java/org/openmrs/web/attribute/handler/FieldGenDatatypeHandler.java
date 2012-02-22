@@ -26,7 +26,7 @@ import org.openmrs.customdatatype.InvalidCustomValueException;
  * collect the values, and how to fetch them from a web request.
  * @since 1.9
  */
-public interface FieldGenDatatypeHandler<DT extends CustomDatatype<T>, T> extends CustomDatatypeHandler<DT, T> {
+public interface FieldGenDatatypeHandler<DT extends CustomDatatype<T>, T> extends HtmlDisplayableDatatypeHandler<T> {
 	
 	/**
 	 * @return the name of the fieldgen widget to be used to allow data entry for attribute types that

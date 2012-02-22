@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.customdatatype.CustomDatatype.Summary;
 import org.openmrs.customdatatype.datatype.LongFreeTextDatatype;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,19 +42,11 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#render(org.openmrs.customdatatype.CustomDatatype, java.lang.String, java.lang.String)
+	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtmlSummary(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
 	 */
 	@Override
-	public String render(LongFreeTextDatatype datatype, String referenceString, String view) {
-		
-		// send the entire file's contents if the view is "download"
-		/* Commenting this out so it compiles, but the real fix is another subtask of TRUNK-3034
-		if (CustomDatatype.VIEW_DOWNLOAD.equals(view)) {
-			return datatype.render(referenceString, view);
-		}
-		*/
-
-		// otherwise, build a link to it
+	public CustomDatatype.Summary toHtmlSummary(CustomDatatype<String> datatype, String valueReference) {
+		/* Leaving this code here since it will probably be used in TRUNK-3039 
 		StringBuilder sb = new StringBuilder();
 		sb.append("<a href=\"");
 		sb.append("downloadCustomValue.form");
@@ -62,11 +55,21 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 		sb.append("&datatype=");
 		sb.append(LongFreeTextDatatype.class.getName());
 		sb.append("&value=");
-		sb.append(referenceString);
+		sb.append(valueReference);
 		sb.append("\">");
 		sb.append(Context.getMessageSourceService().getMessage("general.download", null, Context.getLocale()));
 		sb.append("</a>");
-		return sb.toString();
+		return new CustomDatatype.Summary(sb.toString(), false);
+		*/
+		return datatype.getTextSummary(valueReference);
+	}
+	
+	/**
+	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtml(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
+	 */
+	@Override
+	public String toHtml(CustomDatatype<String> datatype, String valueReference) {
+		return datatype.fromReferenceString(valueReference);
 	}
 	
 	/**

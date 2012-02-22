@@ -20,7 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.messagesource.MessageSourceService;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +30,7 @@ import org.springframework.stereotype.Component;
  * Handler for the boolean custom datatype
  */
 @Component
-public class BooleanFieldGenDatatypeHandler implements FieldGenDatatypeHandler<org.openmrs.customdatatype.datatype.BooleanDatatype, java.lang.Boolean> {
+public class BooleanFieldGenDatatypeHandler implements FieldGenDatatypeHandler<BooleanDatatype, Boolean> {
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#setHandlerConfiguration(java.lang.String)
@@ -36,14 +38,6 @@ public class BooleanFieldGenDatatypeHandler implements FieldGenDatatypeHandler<o
 	@Override
 	public void setHandlerConfiguration(String arg0) {
 		// not used
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#render(org.openmrs.customdatatype.CustomDatatype, java.lang.String, java.lang.String)
-	 */
-	@Override
-	public String render(org.openmrs.customdatatype.datatype.BooleanDatatype datatype, String referenceString, String view) {
-		return referenceString;
 	}
 	
 	/**
@@ -84,4 +78,19 @@ public class BooleanFieldGenDatatypeHandler implements FieldGenDatatypeHandler<o
 		}
 	}
 	
+	/**
+	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtmlSummary(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
+	 */
+	@Override
+	public CustomDatatype.Summary toHtmlSummary(CustomDatatype<Boolean> datatype, String valueReference) {
+		return new CustomDatatype.Summary(valueReference, true);
+	}
+	
+	/**
+	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtml(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
+	 */
+	@Override
+	public String toHtml(CustomDatatype<Boolean> datatype, String valueReference) {
+		return valueReference;
+	}
 }

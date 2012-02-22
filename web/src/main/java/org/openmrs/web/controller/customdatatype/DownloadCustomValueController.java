@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
+import org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,13 +45,13 @@ public class DownloadCustomValueController {
 		
 		// get the handler
 		Class handlerClass = null;
-		CustomDatatypeHandler handler = null;
+		HtmlDisplayableDatatypeHandler handler = null;
 		
 		// only try if the handlerClassname is not empty
 		if (StringUtils.isNotBlank(handlerClassname)) {
 			try {
 				handlerClass = Context.loadClass(handlerClassname);
-				handler = (CustomDatatypeHandler) handlerClass.newInstance();
+				handler = (HtmlDisplayableDatatypeHandler) handlerClass.newInstance();
 			}
 			catch (ClassNotFoundException ex) {
 				log.warn("could not find handler class " + handlerClassname, ex);
@@ -88,7 +89,7 @@ public class DownloadCustomValueController {
 		// render the output
 		String data = null;
 		if (handler != null) {
-			data = handler.render(datatype, valueReference, null); // the real fix for this class is TRUNK-3039
+			data = handler.toHtml(datatype, valueReference); // the real fix for this class is TRUNK-3039
 		} else {
 			data = datatype.fromReferenceString(valueReference).toString();
 		}
