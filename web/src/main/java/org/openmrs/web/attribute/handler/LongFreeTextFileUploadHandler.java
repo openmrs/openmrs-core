@@ -14,13 +14,13 @@
 package org.openmrs.web.attribute.handler;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.customdatatype.DownloadableDatatypeHandler;
 import org.openmrs.customdatatype.InvalidCustomValueException;
-import org.openmrs.customdatatype.CustomDatatype.Summary;
 import org.openmrs.customdatatype.datatype.LongFreeTextDatatype;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,7 +31,7 @@ import org.springframework.web.multipart.MultipartRequest;
  * @since 1.9
  */
 @Component
-public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFreeTextDatatype, String> {
+public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFreeTextDatatype, String>, DownloadableDatatypeHandler<String> {
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#setHandlerConfiguration(java.lang.String)
@@ -105,6 +105,31 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 			throw new IllegalArgumentException(
 			        "Programming error: file upload handler can only be used in a form with enctype='multipart/form-data'");
 		}
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.DownloadableDatatypeHandler#getContentType(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
+	 */
+	@Override
+	public String getContentType(CustomDatatype<String> dt, String valueReference) {
+		return "text/plain";
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.DownloadableDatatypeHandler#getFilename(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
+	 */
+	@Override
+	public String getFilename(CustomDatatype<String> dt, String valueReference) {
+		return "OpenMRS-long-free-text.txt";
+	}
+	
+	/**
+	 * @see org.openmrs.customdatatype.DownloadableDatatypeHandler#writeToStream(org.openmrs.customdatatype.CustomDatatype, java.lang.String, java.io.OutputStream)
+	 */
+	@Override
+	public void writeToStream(CustomDatatype<String> dt, String valueReference, OutputStream os) throws IOException {
+		String val = dt.fromReferenceString(valueReference);
+		os.write(val.getBytes("UTF-8"));
 	}
 	
 }
