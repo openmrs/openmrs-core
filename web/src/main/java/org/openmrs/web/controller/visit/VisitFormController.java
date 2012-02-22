@@ -16,6 +16,7 @@ package org.openmrs.web.controller.visit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.lang.String;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -82,6 +83,7 @@ public class VisitFormController {
 			visit.setStartDatetime(new Date());
 		if (visit.getVisitId() != null)
 			model.addAttribute("canPurgeVisit", Context.getEncounterService().getEncountersByVisit(visit, true).size() == 0);
+		model.addAttribute("dateTimeFormat", Context.getDateTimeFormat().toPattern());
 		addEncounterAndObservationCounts(visit, model);
 		return VISIT_FORM;
 	}
