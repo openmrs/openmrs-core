@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.dwr;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -24,6 +25,10 @@ import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.validator.VisitValidator;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 
 /**
  * Contains methods for processing DWR requests for visits
@@ -120,5 +125,47 @@ public class DWRVisitService {
 			objectList.add(Context.getMessageSourceService().getMessage("Visit.find.encounters.error"));
 		}
 		return objectList;
+	}
+	
+	/**
+	 * sets the stop Date for the specified visitId
+	 * 
+	 * @param visitId
+	 * @param endDateTime
+	 * @return url to redirect
+	 * 
+	 * @throws APIException
+	 */
+	public List<String> endVisit(Integer visitId, String endDateTime) throws APIException {
+		Visit visit = null;
+		List<String> errors = new ArrayList<String>();
+		MessageSourceService mss = Context.getMessageSourceService();
+		try {
+			if (visitId != null) {
+				visit = Context.getVisitService().getVisit(visitId);
+				if (endDateTime != null && endDateTime.length() > 0) {
+					visit.setStopDatetime(Context.getDateTimeFormat().parse(endDateTime));
+				} else {
+					throw new APIException(Context.getMessageSourceService().getMessage("VisitStopDate.cannotBeNull"));
+				}
+			} else {
+				throw new APIException(Context.getMessageSourceService().getMessage("VisitId.cannotBeNull"));
+			}
+			Errors bindErrors = new BindException(visit, "visit");
+			new VisitValidator().validate(visit, bindErrors);
+			if (bindErrors.hasErrors()) {
+				for (ObjectError objectError : bindErrors.getAllErrors())
+					errors.add(mss.getMessage(objectError.getCode()));
+			} else {
+				Context.getVisitService().saveVisit(visit);
+				errors.add(0, "/patientDashboard.form?patientId=" + visit.getPatient().getPatientId());
+			}
+			
+		}
+		catch (Exception e) {
+			errors.add(mss.getMessage("Visit.save.error"));
+			System.out.println("Exception : " + e.getMessage());
+		}
+		return errors;
 	}
 }
