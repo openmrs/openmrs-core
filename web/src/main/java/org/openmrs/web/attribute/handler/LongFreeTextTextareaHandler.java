@@ -53,7 +53,7 @@ public class LongFreeTextTextareaHandler implements WebDatatypeHandler<LongFreeT
 	 */
 	@Override
 	public String render(LongFreeTextDatatype datatype, String referenceString, String view) {
-		return datatype.render(referenceString, view);
+		return datatype.fromReferenceString(referenceString); // The real fix is another subtask of TRUNK-3034
 	}
 	
 	/**
