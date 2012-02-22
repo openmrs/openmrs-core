@@ -1331,6 +1331,22 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+		<name>singleCustomValue</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<description>controls how singleCustomValue is formatted</description>
+		<name>view</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>form</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
 </tag>
 <tag>
 	<description>

@@ -162,7 +162,10 @@
 		<property name="supportedTypes">
 			<list></list>
 		</property>
-	</bean>	
+	</bean>
+	<bean id="datatypeDAO" class="org.openmrs.api.db.hibernate.HibernateDatatypeDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
 	<bean id="schedulerDAO" class="org.openmrs.scheduler.db.hibernate.HibernateSchedulerDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
@@ -258,7 +261,9 @@
 		<property name="eventListeners"><ref bean="openmrsEventListeners"/></property>
 		<property name="globalLocaleList"><ref bean="globalLocaleList"/></property>
 	</bean>
-	<bean id="datatypeServiceTarget" class="org.openmrs.api.impl.DatatypeServiceImpl"/>
+	<bean id="datatypeServiceTarget" class="org.openmrs.api.impl.DatatypeServiceImpl">
+		<property name="dao"><ref bean="datatypeDAO"/></property>
+	</bean>
 	<bean id="programWorkflowServiceTarget" class="org.openmrs.api.impl.ProgramWorkflowServiceImpl">
 		<property name="programWorkflowDAO"><ref bean="programWorkflowDAO"/></property>	
 	</bean>

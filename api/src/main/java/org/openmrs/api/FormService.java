@@ -24,6 +24,7 @@ import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
+import org.openmrs.FormResource;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
@@ -795,4 +796,60 @@ public interface FormService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.PURGE_FIELD_TYPES)
 	public void purgeFieldType(FieldType fieldType) throws APIException;
 	
+	/**
+	 * Finds a FormResource by its id
+	 *
+	 * @param formResourceId the id of the resource
+	 * @should find a saved FormResource
+	 * @should return null if no FormResource found
+	 * @since 1.9
+	 */
+	public FormResource getFormResource(Integer formResourceId) throws APIException;
+	
+	/**
+	 * Finds a FormResource by its uuid
+	 *
+	 * @param uuid the uuid of the resource
+	 * @since 1.9
+	 */
+	public FormResource getFormResourceByUuid(String uuid) throws APIException;
+	
+	/**
+	 * Finds a FormResource based on a given Form and name
+	 * 
+	 * @param form the Form that the resource belongs to
+	 * @param name the name of the resource
+	 * @since 1.9
+	 */
+	public FormResource getFormResource(Form form, String name) throws APIException;
+	
+	/**
+	 * Finds all FormResources tied to a given form
+	 * 
+	 * @param form
+	 * @return the resources attached to the form
+	 * @throws APIException 
+	 * @since 1.9
+	 */
+	public Collection<FormResource> getFormResourcesForForm(Form form) throws APIException;
+	
+	/**
+	 * Saves or updates the given form resource
+	 *
+	 * @param formResource the resource to be saved
+	 * @should persist a FormResource
+	 * @should overwrite an existing resource with same name
+	 * @should be able to save an XSLT
+	 * @since 1.9
+	 */
+	public FormResource saveFormResource(FormResource formResource) throws APIException;
+	
+	/**
+	 * Purges a form resource
+	 *
+	 * @param formResource the resource to be purged
+	 * @should delete a form resource
+	 * @since 1.9
+	 */
+	public void purgeFormResource(FormResource formResource) throws APIException;
 }
