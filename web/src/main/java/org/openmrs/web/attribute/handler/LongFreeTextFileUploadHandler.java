@@ -65,14 +65,8 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	 */
 	@Override
 	public String getWidgetHtml(LongFreeTextDatatype datatype, String formFieldName, String startingValue) {
-		return "<input type=\"file\" name=\"" + formFieldName + "\"/>";
-		/* TODO add something like this
-		var form = jq('#${ id }').closest('form');
-		if (form.length) {
-			form.attr('method', 'post');
-			form.attr('enctype', 'multipart/form-data');
-		}
-		*/
+		return "var form = jq('#${ id }').closest('form'); " + "if (form.length) { " + "	form.attr('method', 'post'); "
+		        + "	form.attr('enctype', 'multipart/form-data'); " + "}";
 	}
 	
 	/**
