@@ -69,36 +69,29 @@ public class LongFreeTextDatatype implements CustomDatatype<String> {
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.CustomDatatype#render(java.lang.String, java.lang.String)
+	 * @see org.openmrs.customdatatype.CustomDatatype#getTextSummary(java.lang.String)
 	 */
 	@Override
-	public String render(String referenceString, String view) {
-		if (CustomDatatype.VIEW_FAST.equals(view)) {
-			return Context.getMessageSourceService().getMessage(
-			    "org.openmrs.customdatatype.datatype.LongFreeTextDatatype.placeholderValue",
-			    new Object[] { referenceString }, Context.getLocale());
-			
-		} else if (CustomDatatype.VIEW_HTML_SUMMARY.equals(view)) {
-			ClobDatatypeStorage storage = Context.getDatatypeService().getClobDatatypeStorageByUuid(referenceString);
-			
-			if (storage == null)
-				return Context.getMessageSourceService().getMessage("CustomDatatype.error.missingValue");
-			
-			// truncate the value to render a summary
-			String s = storage.getValue();
-			if (s.length() > 100)
-				return s.substring(0, 100) + "...";
-			else
-				return s;
-			
-		} else {
-			ClobDatatypeStorage storage = Context.getDatatypeService().getClobDatatypeStorageByUuid(referenceString);
-			
-			if (storage == null)
-				return Context.getMessageSourceService().getMessage("CustomDatatype.error.missingValue");
-			
-			return storage.getValue();
-		}
+	public CustomDatatype.Summary getTextSummary(String referenceString) {
+		/*
+		 * Use this code snippet instead if we think that fetching the clob is 
+		 * 
+		ClobDatatypeStorage storage = Context.getDatatypeService().getClobDatatypeStorageByUuid(referenceString);
+		if (storage == null)
+			return Context.getMessageSourceService().getMessage("CustomDatatype.error.missingValue");
+		
+		// truncate the value to render a summary
+		String s = storage.getValue();
+		if (s.length() > 100)
+			return new CustomDatatype.Summary(s.substring(0, 100), false);
+		else
+			return new CustomDatatype.Summary(summary,  true);
+		*/
+
+		String ret = Context.getMessageSourceService().getMessage(
+		    "org.openmrs.customdatatype.datatype.LongFreeTextDatatype.placeholderValue", new Object[] { referenceString },
+		    Context.getLocale());
+		return new CustomDatatype.Summary(ret, false);
 	}
 	
 	/**

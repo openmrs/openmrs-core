@@ -47,10 +47,12 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	public String render(LongFreeTextDatatype datatype, String referenceString, String view) {
 		
 		// send the entire file's contents if the view is "download"
+		/* Commenting this out so it compiles, but the real fix is another subtask of TRUNK-3034
 		if (CustomDatatype.VIEW_DOWNLOAD.equals(view)) {
 			return datatype.render(referenceString, view);
 		}
-		
+		*/
+
 		// otherwise, build a link to it
 		StringBuilder sb = new StringBuilder();
 		sb.append("<a href=\"");
