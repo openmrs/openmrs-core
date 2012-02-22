@@ -24,7 +24,13 @@ public interface CustomDatatype<T> {
 	
 	public String VIEW_FAST = "fast";
 	
+	public String VIEW_HTML_SUMMARY = "html-summary";
+	
+	public String VIEW_HTML_FULL = "html-full";
+	
 	public String VIEW_DEFAULT = "text";
+	
+	public String VIEW_DOWNLOAD = "download";
 	
 	/**
 	 * A {@link CustomValueDescriptor} defines both a datatype and its configuration (e.g. a regex for a RegexValidatedString datatype).

@@ -24,6 +24,8 @@ import java.util.Set;
 
 import org.openmrs.api.DatatypeService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ClobDatatypeStorage;
+import org.openmrs.api.db.DatatypeDAO;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeException;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
@@ -39,6 +41,17 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	private List<Class<? extends CustomDatatypeHandler>> handlerClasses;
 	
 	private transient Map<Class<? extends CustomDatatype>, Class<? extends CustomDatatypeHandler>> prioritizedHandlerClasses;
+	
+	private DatatypeDAO dao;
+	
+	/**
+	 * Sets the dao
+	 * 
+	 * @param dao the dao to set
+	 */
+	public void setDao(DatatypeDAO dao) {
+		this.dao = dao;
+	}
 	
 	/**
 	 * @see org.openmrs.api.DatatypeService#getAllDatatypeClasses()
@@ -170,6 +183,38 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 				}
 			}
 		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.DatatypeService#getClobDatatypeStorage(java.lang.Integer)
+	 */
+	@Override
+	public ClobDatatypeStorage getClobDatatypeStorage(Integer id) {
+		return dao.getClobDatatypeStorage(id);
+	}
+	
+	/**
+	 * @see org.openmrs.api.DatatypeService#getClobDatatypeStorageByUuid(java.lang.String)
+	 */
+	@Override
+	public ClobDatatypeStorage getClobDatatypeStorageByUuid(String uuid) {
+		return dao.getClobDatatypeStorageByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.DatatypeService#saveClobDatatypeStorage(org.openmrs.api.db.ClobDatatypeStorage)
+	 */
+	@Override
+	public ClobDatatypeStorage saveClobDatatypeStorage(ClobDatatypeStorage storage) {
+		return dao.saveClobDatatypeStorage(storage);
+	}
+	
+	/**
+	 * @see org.openmrs.api.DatatypeService#deleteClobDatatypeStorage(org.openmrs.api.db.ClobDatatypeStorage)
+	 */
+	@Override
+	public void deleteClobDatatypeStorage(ClobDatatypeStorage storage) {
+		dao.deleteClobDatatypeStorage(storage);
 	}
 	
 }

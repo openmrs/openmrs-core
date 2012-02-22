@@ -14,10 +14,8 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +30,7 @@ import org.openmrs.ConceptNameTag;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.Obs;
@@ -44,6 +43,11 @@ import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.customdatatype.CustomDatatypeHandler;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.CustomValueDescriptor;
+import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.JavaScriptUtils;
@@ -116,6 +120,12 @@ public class FormatTag extends TagSupport {
 	private Provider provider;
 	
 	private Map<EncounterRole, Set<Provider>> encounterProviders;
+	
+	private Form form;
+	
+	private SingleCustomValue<?> singleCustomValue;
+	
+	private String view; // controls how singleCustomValue is displayed
 	
 	@Override
 	public int doStartTag() {
@@ -204,6 +214,14 @@ public class FormatTag extends TagSupport {
 			printEncounterProviders(sb, encounterProviders);
 		}
 		
+		if (form != null) {
+			printForm(sb, form);
+		}
+		
+		if (singleCustomValue != null) {
+			printSingleCustomValue(sb, singleCustomValue, view);
+		}
+		
 		if (StringUtils.hasText(var)) {
 			if (javaScriptEscape)
 				pageContext.setAttribute(var, JavaScriptUtils.javaScriptEscape(sb.toString()));
@@ -221,6 +239,39 @@ public class FormatTag extends TagSupport {
 			}
 		}
 		return SKIP_BODY;
+	}
+	
+	/**
+	 * Formats a {@link Form} and prints it to sb
+	 * 
+	 * @param sb
+	 * @param form
+	 */
+	private void printForm(StringBuilder sb, Form form) {
+		sb.append(form.getName() + " (v" + form.getVersion() + ")");
+	}
+	
+	/**
+	 * Formats a {@link SingleCustomValue} and prints it to sb
+	 * 
+	 * @param sb
+	 * @param val
+	 * @param view
+	 */
+	@SuppressWarnings( { "rawtypes", "unchecked" })
+	private void printSingleCustomValue(StringBuilder sb, SingleCustomValue<?> val, String view) {
+		CustomValueDescriptor descriptor = val.getDescriptor();
+		CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(descriptor);
+		CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(descriptor);
+		if (view == null)
+			view = CustomDatatype.VIEW_DEFAULT;
+		if (handler != null) {
+			sb.append(handler.render(datatype, val.getValueReference(), view));
+		} else if (datatype != null) {
+			sb.append(datatype.render(val.getValueReference(), view));
+		} else {
+			sb.append(val.getValueReference());
+		}
 	}
 	
 	/**
@@ -475,6 +526,9 @@ public class FormatTag extends TagSupport {
 		providerId = null;
 		provider = null;
 		encounterProviders = null;
+		form = null;
+		singleCustomValue = null;
+		view = null;
 	}
 	
 	public Integer getConceptId() {
@@ -737,6 +791,48 @@ public class FormatTag extends TagSupport {
 	 */
 	public void setWithConceptNameTag(String withConceptNameTag) {
 		this.withConceptNameTag = withConceptNameTag;
+	}
+	
+	/**
+	 * @return the form
+	 */
+	public Form getForm() {
+		return form;
+	}
+	
+	/**
+	 * @param form the form to set
+	 */
+	public void setForm(Form form) {
+		this.form = form;
+	}
+	
+	/**
+	 * @return the singleCustomValue
+	 */
+	public SingleCustomValue<?> getSingleCustomValue() {
+		return singleCustomValue;
+	}
+	
+	/**
+	 * @param singleCustomValue the singleCustomValue to set
+	 */
+	public void setSingleCustomValue(SingleCustomValue<?> singleCustomValue) {
+		this.singleCustomValue = singleCustomValue;
+	}
+	
+	/**
+	 * @return the view
+	 */
+	public String getView() {
+		return view;
+	}
+	
+	/**
+	 * @param view the view to set
+	 */
+	public void setView(String view) {
+		this.view = view;
 	}
 	
 }
