@@ -212,9 +212,11 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should always have default locale default value included in the returned collection", method = "getLocalesInOrder()")
-	public void getLocalesInOrder_shouldAlwaysHaveDefaultLocaleDefaultValueIncludedInTheReturnedCollection() throws Exception {
+	public void getLocalesInOrder_shouldAlwaysHaveDefaultLocaleDefaultValueIncludedInTheReturnedCollection()
+	        throws Exception {
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
-		Assert.assertEquals(true, localesInOrder.contains(LocaleUtility.fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE)));
+		Assert.assertEquals(true, localesInOrder.contains(LocaleUtility
+		        .fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE)));
 	}
 	
 	/**
