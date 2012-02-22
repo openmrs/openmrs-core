@@ -6,6 +6,12 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
+<style>
+	.existing-resources th,td {
+		padding-right: 1em;
+	}
+</style>
+
 <script>
 $j(function() {
 	$j('#addButton').click(function() {
@@ -43,7 +49,7 @@ $j(function() {
 			<spring:message code="general.none"/>
 		</c:when>
 		<c:otherwise>
-			<table>
+			<table class="existing-resources">
 				<tr>
 					<th><spring:message code="Form.resource.name"/></th>
 					<th><spring:message code="Form.resource.datatype"/></th>
@@ -54,7 +60,7 @@ $j(function() {
 					<tr valign="top" class="${status.index % 2 == 0 ? "evenRow" : "oddRow"}">
 						<td>${ resource.name }</td>
 						<td><spring:message code="${ resource.datatypeClassname }.name"/></td>
-						<td><openmrs:format singleCustomValue="${ resource }" view="<%= org.openmrs.customdatatype.CustomDatatype.VIEW_HTML_SUMMARY %>"/></td>
+						<td><openmrs:format singleCustomValue="${ resource }"/></td>
 						<td>
 							<form method="POST" action="deleteFormResource.form?formId=${ form.formId }&name=${ resource.name }">
 								<input type="submit" value="<spring:message code="general.delete"/>"/>

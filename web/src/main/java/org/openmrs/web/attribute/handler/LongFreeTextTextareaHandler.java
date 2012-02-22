@@ -57,8 +57,10 @@ public class LongFreeTextTextareaHandler implements WebDatatypeHandler<LongFreeT
 	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtmlSummary(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
 	 */
 	@Override
-	public Summary toHtmlSummary(CustomDatatype<String> datatype, String valueReference) {
-		return datatype.getTextSummary(valueReference);
+	public CustomDatatype.Summary toHtmlSummary(CustomDatatype<String> datatype, String valueReference) {
+		CustomDatatype.Summary summary = datatype.getTextSummary(valueReference);
+		summary.setSummary(WebUtil.escapeHTML(summary.getSummary()));
+		return summary;
 	}
 	
 	/**
@@ -66,7 +68,7 @@ public class LongFreeTextTextareaHandler implements WebDatatypeHandler<LongFreeT
 	 */
 	@Override
 	public String toHtml(CustomDatatype<String> datatype, String valueReference) {
-		return datatype.fromReferenceString(valueReference);
+		return WebUtil.escapeHTML(datatype.fromReferenceString(valueReference));
 	}
 	
 	/**
@@ -97,7 +99,7 @@ public class LongFreeTextTextareaHandler implements WebDatatypeHandler<LongFreeT
 	 */
 	@Override
 	public String getContentType(CustomDatatype<String> dt, String valueReference) {
-		return "text/plain";
+		return "text/plain; charset=utf-8";
 	}
 	
 	/**
