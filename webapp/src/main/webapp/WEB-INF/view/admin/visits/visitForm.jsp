@@ -65,21 +65,32 @@ function formatDateToDoubleDigit(item) {
 }
 
 //to set the current date
-function setCurrentDate(currentDateTime)
+function setCurrentDate(dateTimeFormat)
 {
 	var tempDateTime=new Date();
-	var patterns=new Array("dd","MM","yyyy","HH","hh","mm");
+	var patterns=new Array("dd","MM","yyyy","HH","hh","mm","a");
     var date = formatDateToDoubleDigit(tempDateTime.getDate());
 	var month = formatDateToDoubleDigit(tempDateTime.getMonth()+1);
-	var hours = formatDateToDoubleDigit(tempDateTime.getHours());
+	var hours = tempDateTime.getHours();
+	var amPm = "";
+	if(dateTimeFormat.search("hh")>=0)
+	{
+		amPm=(hours>=12)?"PM":"AM";
+		hours=(hours>12)?(hours-12):hours;
+		hours=(hours==0)?12:hours;
+	}
+	hours=formatDateToDoubleDigit(hours);
+	
 	var min = formatDateToDoubleDigit(tempDateTime.getMinutes());
 	var year=tempDateTime.getFullYear()+"";
-	var dateTime=new Array(date,month,year,hours,min); 
+	var dateTime=new Array(date,month,year,hours,min,amPm); 
+	var currentDateTime=dateTimeFormat;
 	for(var i=0,j=0;i<patterns.length;i++){
        if( currentDateTime.search(patterns[i])>=0){
 	    currentDateTime=currentDateTime.replace(patterns[i],dateTime[j]);
 	     j++;
 	   }
+
 	}
 	document.getElementById('enddate_visit').value=currentDateTime;
 }
