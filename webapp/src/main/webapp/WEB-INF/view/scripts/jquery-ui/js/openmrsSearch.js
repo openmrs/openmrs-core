@@ -571,7 +571,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		
 		_doSearch: function(text) {
 			if(this.options.searchHandler) {
-				var tmpIncludeVoided = (this.options.showIncludeVoided && checkBox.attr('checked'));
+				var tmpIncludeVoided = (this.options.showIncludeVoided && checkBox.prop('checked'));
 				//associate the ajax call to be made to a call count number to track it , so on
 				//its return we can identify it and determine if there are some later calls made 
 				//so that we can make sure older ajax calls donot overwrite later ones
