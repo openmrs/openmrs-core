@@ -259,8 +259,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			    				    	
 			    	return false;
 		    	}
-		    	//ignore the following keys SHIFT(16), ESC(27), CAPSLOCK(20), CTRL(17), ALT(18)
-		    	else if((kc >= 16 && kc <= 18) || kc == 20 || kc == 27)
+		    	//ignore the following keys SHIFT(16), ESC(27), CAPSLOCK(20), CTRL(17), ALT(18), SPACE(32), ALT_TAB(9)
+		    	else if((kc >= 16 && kc <= 18) || kc == 20 || kc == 27 || kc == 32 || kc == 9)
 		    		return false;
 		    	
 		    	$j(notification).html(" ");
