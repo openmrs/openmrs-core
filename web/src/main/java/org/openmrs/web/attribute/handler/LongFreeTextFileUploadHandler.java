@@ -22,7 +22,6 @@ import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.DownloadableDatatypeHandler;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.datatype.LongFreeTextDatatype;
-import org.openmrs.web.WebUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
@@ -47,9 +46,22 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	 */
 	@Override
 	public CustomDatatype.Summary toHtmlSummary(CustomDatatype<String> datatype, String valueReference) {
-		CustomDatatype.Summary summary = datatype.getTextSummary(valueReference);
-		summary.setSummary(WebUtil.escapeHTML(summary.getSummary()));
-		return summary;
+		/* Leaving this code here since it will probably be used in TRUNK-3039 
+		StringBuilder sb = new StringBuilder();
+		sb.append("<a href=\"");
+		sb.append("downloadCustomValue.form");
+		sb.append("?handler=");
+		sb.append(this.getClass().getName());
+		sb.append("&datatype=");
+		sb.append(LongFreeTextDatatype.class.getName());
+		sb.append("&value=");
+		sb.append(valueReference);
+		sb.append("\">");
+		sb.append(Context.getMessageSourceService().getMessage("general.download", null, Context.getLocale()));
+		sb.append("</a>");
+		return new CustomDatatype.Summary(sb.toString(), false);
+		*/
+		return datatype.getTextSummary(valueReference);
 	}
 	
 	/**
@@ -57,7 +69,7 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	 */
 	@Override
 	public String toHtml(CustomDatatype<String> datatype, String valueReference) {
-		return WebUtil.escapeHTML(datatype.fromReferenceString(valueReference));
+		return datatype.fromReferenceString(valueReference);
 	}
 	
 	/**
@@ -65,8 +77,14 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	 */
 	@Override
 	public String getWidgetHtml(LongFreeTextDatatype datatype, String formFieldName, String startingValue) {
-		return "var form = jq('#${ id }').closest('form'); " + "if (form.length) { " + "	form.attr('method', 'post'); "
-		        + "	form.attr('enctype', 'multipart/form-data'); " + "}";
+		return "<input type=\"file\" name=\"" + formFieldName + "\"/>";
+		/* TODO add something like this
+		var form = jq('#${ id }').closest('form');
+		if (form.length) {
+			form.attr('method', 'post');
+			form.attr('enctype', 'multipart/form-data');
+		}
+		*/
 	}
 	
 	/**
@@ -94,7 +112,7 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	 */
 	@Override
 	public String getContentType(CustomDatatype<String> dt, String valueReference) {
-		return "text/plain; charset=utf-8";
+		return "text/plain";
 	}
 	
 	/**
