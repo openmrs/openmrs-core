@@ -612,26 +612,4 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		adminService.saveGlobalProperty(gp);
 		Assert.assertNotNull(gp.getValueReference());
 	}
-	
-	/**
-	 * @see AdministrationService#validateInManualFlushMode(Object)
-	 * @verifies fail for an invalid object
-	 */
-	@Test
-	public void validateInManualFlushMode_shouldFailForAnInvalidObject() throws Exception {
-		EncounterType et = new EncounterType();
-		et.setName("An Encounter Type");
-		et.setDescription("Blah");
-		adminService.validateInManualFlushMode(et);
-		// if we get here without an exception, we pass
-	}
-	
-	/**
-	 * @see AdministrationService#validateInManualFlushMode(Object)
-	 * @verifies pass for a valid object
-	 */
-	@Test(expected = APIException.class)
-	public void validateInManualFlushMode_shouldPassForAValidObject() throws Exception {
-		adminService.validateInManualFlushMode(new EncounterType());
-	}
 }

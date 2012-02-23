@@ -29,7 +29,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		util.setValidators(Collections.singletonList((Validator) new LocationValidator()));
 		
 		Location loc = new Location();
-		ValidateUtil.invokeValidatorInManualFlushMode(loc);
+		ValidateUtil.validate(loc);
 	}
 	
 	/**
