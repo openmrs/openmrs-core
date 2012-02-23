@@ -1852,8 +1852,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should should set the default retire reason if none is given", method = "retireConceptReferenceTerm(ConceptReferenceTerm,String)")
 	public void retireConceptReferenceTerm_shouldShouldSetTheDefaultRetireReasonIfNoneIsGiven() throws Exception {
-		ConceptReferenceTerm term = Context.getConceptService()
-		        .retireConceptReferenceTerm(new ConceptReferenceTerm(1), null);
+		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTerm(1);
+		term = Context.getConceptService().retireConceptReferenceTerm(term, null);
 		Assert.assertNotNull(term.getRetireReason());
 	}
 	
@@ -2099,7 +2099,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptService#getConceptsByName(String,Locale)
-	 * @verifies return concepts for specific country and global language given language and country locale
+	 * @verifies return concepts for specific country and global language given language and country
+	 *           locale
 	 */
 	@Test
 	public void getConceptsByName_shouldReturnConceptsForSpecificCountryAndGlobalLanguageGivenLanguageAndCountryLocale()

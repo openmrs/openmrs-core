@@ -633,11 +633,13 @@
 	<bean id="loggingInterceptor" class="org.openmrs.aop.LoggingAdvice"/>
 	<!-- AOP before advice that calls the SetRequiredDataHandler methods -->
 	<bean id="requiredDataInterceptor" class="org.openmrs.aop.RequiredDataAdvice"/>
+	<bean id="flushAfterMethodInterceptor" class="org.openmrs.aop.FlushAfterMethodAdvice" />
 
 	<util:list id="serviceInterceptors">
 		<ref local="authorizationInterceptor"/>
 		<ref local="requiredDataInterceptor"/>
 		<ref local="loggingInterceptor"/>
+		<ref local="flushAfterMethodInterceptor"/>
 	</util:list>
 	
 	
@@ -673,7 +675,7 @@
 
 	<!--  **************************  TRANSACTION MANAGER CONFIGURATION  *************************  -->
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	<bean id="transactionManager" class="org.openmrs.api.db.hibernate.HibernateTransactionManagerFlushOnCommit">
 		<property name="sessionFactory"><ref local="sessionFactory"/></property>
 	</bean>
 

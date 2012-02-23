@@ -766,7 +766,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		// add all of the new properties
 		for (GlobalProperty prop : props) {
 			if (prop.getProperty() != null && prop.getProperty().length() > 0) {
-				saveGlobalProperty(prop);
+				Context.getAdministrationService().saveGlobalProperty(prop);
 			}
 		}
 		
@@ -1213,13 +1213,5 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
 		return dao.getMaximumPropertyLength(aClass, fieldName);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#validateInManualFlushMode(java.lang.Object)
-	 */
-	@Override
-	public void validateInManualFlushMode(Object object) {
-		dao.validateInManualFlushMode(object);
 	}
 }

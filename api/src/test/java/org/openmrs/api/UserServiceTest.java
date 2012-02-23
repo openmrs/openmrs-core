@@ -494,7 +494,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		
 		List<Role> roles = Context.getUserService().getAllRoles();
-		Assert.assertEquals(6, roles.size());
+		Assert.assertEquals(7, roles.size());
 	}
 	
 	/**
@@ -812,9 +812,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should delete given role from database", method = "purgeRole(Role)")
 	public void purgeRole_shouldDeleteGivenRoleFromDatabase() throws Exception {
 		executeDataSet(XML_FILENAME);
-		Role role = Context.getUserService().getRole("Some Role");
+		Role role = Context.getUserService().getRole("Some Role To Delete");
 		Context.getUserService().purgeRole(role);
-		Assert.assertNull(Context.getUserService().getRole("Some Role"));
+		Assert.assertNull(Context.getUserService().getRole("Some Role To Delete"));
 	}
 	
 	/**
