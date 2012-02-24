@@ -22,7 +22,9 @@ import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
+import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -229,27 +231,6 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail if the start date for any patient state is null and is not the first", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheStartDateForAnyPatientStateIsNullAndIsNotTheFirst() throws Exception {
-		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
-		PatientState firstState = program.getStates().iterator().next();
-		
-		//Add a state that comes after patientState1 with a null date
-		PatientState newPatientState = new PatientState();
-		//set the state to be that of the current state 
-		newPatientState.setState(firstState.getState().getProgramWorkflow().getState(4));
-		Assert.assertNotSame(firstState.getState(), newPatientState.getState());//sanity check
-		program.getStates().add(newPatientState);
-		
-		BindException errors = new BindException(program, "");
-		new PatientProgramValidator().validate(program, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("states"));
-	}
-	
-	/**
-	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
-	 */
-	@Test
 	@Verifies(value = "should pass if the start date of the first patient state in the work flow is null", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfTheStartDateOfTheFirstPatientStateInTheWorkFlowIsNull() throws Exception {
 		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
@@ -277,5 +258,32 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
 		Assert.assertEquals(false, errors.hasFieldErrors("states"));
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if there is more than one state with a null start date in the same workflow", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfThereIsMoreThanOneStateWithANullStartDateInTheSameWorkflow() throws Exception {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Patient patient = Context.getPatientService().getPatient(6);
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		ProgramWorkflow testWorkflow = pp.getProgram().getWorkflow(1);
+		
+		//Add 2 other patient states with null start date		
+		PatientState newPatientState1 = new PatientState();
+		newPatientState1.setState(testWorkflow.getState(1));
+		pp.getStates().add(newPatientState1);
+		
+		PatientState newPatientState2 = new PatientState();
+		newPatientState2.setState(testWorkflow.getState(2));
+		pp.getStates().add(newPatientState2);
+		
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("states"));
 	}
 }
