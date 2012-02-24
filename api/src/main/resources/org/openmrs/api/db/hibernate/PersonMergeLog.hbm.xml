@@ -26,8 +26,8 @@
 		<property name="uuid" type="java.lang.String" column="uuid"
 			length="38" unique="true" not-null="true" />
 
-		<property name="serializedMergedData" type="text" column="merged_data"
-			not-null="true" length="65535" />
+		<property name="serializedMergedData" type="materialized_clob" column="merged_data"
+			not-null="true" />
 			
 		<many-to-one name="changedBy" class="User" column="changed_by" />
 
