@@ -132,8 +132,9 @@ public abstract class StartupFilter implements Filter {
 					log.error("Unable to find file: " + file.getAbsolutePath());
 				}
 			} else if (servletPath.startsWith("/scripts")) {
-				log.error("Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
-				        + servletPath + "' instead.");
+				log
+				        .error("Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
+				                + servletPath + "' instead.");
 			}
 			// for anything but /initialsetup
 			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)
