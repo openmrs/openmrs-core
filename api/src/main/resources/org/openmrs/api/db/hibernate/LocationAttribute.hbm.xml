@@ -19,8 +19,7 @@
         
         <many-to-one name="attributeType" class="LocationAttributeType" not-null="true" column="attribute_type_id" />
         
-        <!-- TODO CHECK LENGTH -->
-        <property name="valueReference" type="text" not-null="true" access="field" column="value_reference" length="16777215" />
+        <property name="valueReference" type="text" not-null="true" access="field" column="value_reference" length="65535" />
         
         <many-to-one name="creator" class="User" not-null="true" column="creator" />
         
