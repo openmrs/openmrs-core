@@ -791,6 +791,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @return the withConceptNameType
+	 * @Since 1.9
 	 */
 	public String getWithConceptNameType() {
 		return withConceptNameType;
@@ -798,6 +799,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @param withConceptNameType the withConceptNameType to set
+	 * @Since 1.9
 	 */
 	public void setWithConceptNameType(String withConceptNameType) {
 		this.withConceptNameType = withConceptNameType;
@@ -805,6 +807,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @return the withConceptNameTag
+	 * @Since 1.9
 	 */
 	public String getWithConceptNameTag() {
 		return withConceptNameTag;
@@ -812,6 +815,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @param withConceptNameTag the withConceptNameTag to set
+	 * @Since 1.9
 	 */
 	public void setWithConceptNameTag(String withConceptNameTag) {
 		this.withConceptNameTag = withConceptNameTag;
