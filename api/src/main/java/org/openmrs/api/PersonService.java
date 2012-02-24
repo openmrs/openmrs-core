@@ -1065,6 +1065,24 @@ public interface PersonService extends OpenmrsService {
 	public List<PersonMergeLog> getAllPersonMergeLogs(boolean deserialize) throws SerializationException;
 	
 	/**
+	 * Gets <code>PersonMergeLog</code> objects by winning person p. Useful for to getting all persons merged into p.
+	 * @param person the winning person
+	 * @return List of <code>PersonMergeLog</code> objects
+	 * @throws SerializationException
+	 * @should retrieve PersonMergeLogs by winner
+	 */
+	public List<PersonMergeLog> getWinningPersonMergeLogs(Person person, boolean deserialize) throws SerializationException;
+	
+	/**
+	 * Gets the <code>PersonMergeLog</code> where person p is the loser. Useful for getting the person that p was merged into.
+	 * @param person the losing person
+	 * @return The <code>PersonMergeLog</code> object
+	 * @throws SerializationException
+	 * @should find PersonMergeLog by loser
+	 */
+	public PersonMergeLog getLosingPersonMergeLog(Person person, boolean deserialize) throws SerializationException;
+	
+	/**
 	 * Voids the given PersonAddress, effectively deleting the personAddress, from the end-user's
 	 * point of view.
 	 * 

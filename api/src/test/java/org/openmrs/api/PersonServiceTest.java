@@ -1304,6 +1304,58 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		        .getCreator().getUserId());
 	}
 	
+	/**
+	 * @see PersonService#getLosingPersonMergeLog(Person)
+	 * @verifies find PersonMergeLog by loser
+	 */
+	@Test
+	public void getLosingPersonMergeLog_shouldFindPersonMergeLogByLoser() throws Exception {
+		//log merge 1 >> 2
+		PersonMergeLog personMergeLog12 = getTestPersonMergeLog();
+		personMergeLog12.setLoser(new Person(1));
+		personMergeLog12.setWinner(new Person(2));
+		Context.getPersonService().savePersonMergeLog(personMergeLog12);
+		//log merge 2 >> 6
+		PersonMergeLog personMergeLog26 = getTestPersonMergeLog();
+		personMergeLog26.setLoser(new Person(2));
+		personMergeLog26.setWinner(new Person(6));
+		Context.getPersonService().savePersonMergeLog(personMergeLog26);
+		//find where loser is 2
+		PersonMergeLog l = Context.getPersonService().getLosingPersonMergeLog(new Person(2), true);
+		Assert.assertEquals("Incorrect PersonMergeLog found by loser", l.getUuid(), personMergeLog26.getUuid());
+	}
+	
+	/**
+	 * @see PersonService#getWinningPersonMergeLogs(Person)
+	 * @verifies retrieve PersonMergeLogs by winner
+	 */
+	@Test
+	public void getWinningPersonMergeLogs_shouldRetrievePersonMergeLogsByWinner() throws Exception {
+		//log merge 1 >> 2
+		PersonMergeLog personMergeLog12 = getTestPersonMergeLog();
+		personMergeLog12.setLoser(new Person(1));
+		personMergeLog12.setWinner(new Person(2));
+		Context.getPersonService().savePersonMergeLog(personMergeLog12);
+		//log merge 1 >> 6
+		PersonMergeLog personMergeLog16 = getTestPersonMergeLog();
+		personMergeLog16.setLoser(new Person(1));
+		personMergeLog16.setWinner(new Person(6));
+		Context.getPersonService().savePersonMergeLog(personMergeLog16);
+		//log merge 2 >> 6
+		PersonMergeLog personMergeLog26 = getTestPersonMergeLog();
+		personMergeLog26.setLoser(new Person(2));
+		personMergeLog26.setWinner(new Person(6));
+		Context.getPersonService().savePersonMergeLog(personMergeLog26);
+		//find where winner is 6
+		List<PersonMergeLog> lst = Context.getPersonService().getWinningPersonMergeLogs(new Person(6), true);
+		Assert.assertEquals("Incorrect number of PersonMergeLog objects found by winner", 2, lst.size());
+		for (PersonMergeLog l : lst) {
+			if (!l.getUuid().equals(personMergeLog16.getUuid()) && !l.getUuid().equals(personMergeLog26.getUuid())) {
+				fail("Unexpected PersonMergeLog found by winner");
+			}
+		}
+	}
+	
 	private PersonMergeLog getTestPersonMergeLog() {
 		PersonMergeLog personMergeLog = new PersonMergeLog();
 		personMergeLog.setLoser(new Person(1));

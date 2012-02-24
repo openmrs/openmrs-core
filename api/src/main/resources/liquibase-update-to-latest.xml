@@ -6214,6 +6214,47 @@
  		</sql>
  	</changeSet>
 	
+	<changeSet id="20111218-1830" author="abbas">
+		<validCheckSum>3:4cf83ec393438309efc80e0ba7fedf55</validCheckSum>
+		<validCheckSum>3:5f096b88988f19d9d3e596c03fba2b90</validCheckSum>
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists indexName="person_merge_log_unique_uuid" />
+			</not>
+		</preConditions>
+		<comment>
+			Add unique uuid constraint and attributes inherited from BaseOpenmrsData to the person_merge_log table
+		</comment>
+		<addUniqueConstraint tableName="person_merge_log"
+			columnNames="uuid" constraintName="person_merge_log_unique_uuid" />		
+		<addColumn tableName="person_merge_log">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addColumn tableName="person_merge_log">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+		<addColumn tableName="person_merge_log">
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</addColumn>
+		<addColumn tableName="person_merge_log">
+			<column name="voided_by" type="int" />
+		</addColumn>
+		<addColumn tableName="person_merge_log">
+			<column name="date_voided" type="datetime" />
+		</addColumn>
+		<addColumn tableName="person_merge_log">
+			<column name="void_reason" type="varchar(255)" defaultValue="null" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="person_merge_log_changed_by_fk"
+			baseTableName="person_merge_log" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="person_merge_log_voided_by_fk"
+			baseTableName="person_merge_log" baseColumnNames="voided_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+	
 	<changeSet id="20111219-1404" author="bwolfe">
 		<comment>Fix empty descriptions on relationship types</comment>
 		<update tableName="relationship_type">

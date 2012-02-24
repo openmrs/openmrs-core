@@ -13,11 +13,8 @@
  */
 package org.openmrs.person;
 
-import java.util.Date;
-
-import org.openmrs.BaseOpenmrsObject;
+import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Person;
-import org.openmrs.User;
 import org.openmrs.api.PersonService;
 
 /**
@@ -32,7 +29,7 @@ import org.openmrs.api.PersonService;
  * @see PersonService#savePersonMergeLog(PersonMergeLog)
  * @since 1.9
  */
-public class PersonMergeLog extends BaseOpenmrsObject {
+public class PersonMergeLog extends BaseOpenmrsData {
 	
 	/**
 	 * The unique identifier of the person merge log entity
@@ -50,16 +47,6 @@ public class PersonMergeLog extends BaseOpenmrsObject {
 	private Person loser;
 	
 	/**
-	 * The user who performed the merge
-	 */
-	private User creator;
-	
-	/**
-	 * The date of the merge
-	 */
-	private Date dateCreated;
-	
-	/**
 	 * serialized data representing the details of the merge
 	 */
 	private String serializedMergedData;
@@ -68,7 +55,7 @@ public class PersonMergeLog extends BaseOpenmrsObject {
 	 * object representing the deserialized form of the merge data. This field is not directly
 	 * mapped to the database.
 	 */
-	private PersonMergeLogData personMergeLogData;
+	private transient PersonMergeLogData personMergeLogData;
 	
 	public Integer getPersonMergeLogId() {
 		return personMergeLogId;
@@ -92,22 +79,6 @@ public class PersonMergeLog extends BaseOpenmrsObject {
 	
 	public void setLoser(Person loser) {
 		this.loser = loser;
-	}
-	
-	public User getCreator() {
-		return creator;
-	}
-	
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
 	}
 	
 	public String getSerializedMergedData() {
