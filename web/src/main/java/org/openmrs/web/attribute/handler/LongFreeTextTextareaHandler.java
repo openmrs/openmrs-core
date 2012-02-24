@@ -20,7 +20,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.customdatatype.CustomDatatype;
-import org.openmrs.customdatatype.CustomDatatype.Summary;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.DownloadableDatatypeHandler;
 import org.openmrs.customdatatype.InvalidCustomValueException;
@@ -72,12 +71,13 @@ public class LongFreeTextTextareaHandler implements WebDatatypeHandler<LongFreeT
 	}
 	
 	/**
-	 * @see org.openmrs.web.attribute.handler.WebDatatypeHandler#getWidgetHtml(org.openmrs.customdatatype.CustomDatatype, java.lang.String, java.lang.Object)
+	 * @see org.openmrs.web.attribute.handler.WebDatatypeHandler#getWidgetHtml(org.openmrs.customdatatype.CustomDatatype, java.lang.String, java.lang.String, java.lang.Object)
 	 */
 	@Override
-	public String getWidgetHtml(LongFreeTextDatatype datatype, String formFieldName, String startingValue) {
+	public String getWidgetHtml(LongFreeTextDatatype datatype, String formFieldName, String widgetId, String startingValue) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<textarea rows=\"" + rows + "\" cols=\"" + cols + "\" name=\"" + formFieldName + "\">");
+		sb.append("<textarea id=\"" + widgetId + "\" rows=\"" + rows + "\" cols=\"" + cols + "\" name=\"" + formFieldName
+		        + "\">");
 		if (startingValue != null)
 			sb.append(WebUtil.escapeHTML(startingValue));
 		sb.append("</textarea>");

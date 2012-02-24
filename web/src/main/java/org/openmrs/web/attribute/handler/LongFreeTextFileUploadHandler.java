@@ -61,18 +61,17 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	}
 	
 	/**
-	 * @see org.openmrs.web.attribute.handler.WebDatatypeHandler#getWidgetHtml(org.openmrs.customdatatype.CustomDatatype, java.lang.String, java.lang.Object)
+	 * @see org.openmrs.web.attribute.handler.WebDatatypeHandler#getWidgetHtml(org.openmrs.customdatatype.CustomDatatype, java.lang.String, java.lang.String, java.lang.Object)
 	 */
 	@Override
-	public String getWidgetHtml(LongFreeTextDatatype datatype, String formFieldName, String startingValue) {
-		return "<input type=\"file\" name=\"" + formFieldName + "\"/>";
-		/* TODO add something like this
-		var form = jq('#${ id }').closest('form');
-		if (form.length) {
-			form.attr('method', 'post');
-			form.attr('enctype', 'multipart/form-data');
-		}
-		*/
+	public String getWidgetHtml(LongFreeTextDatatype datatype, String formFieldName, String widgetId, String startingValue) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<input type=\"file\" id=\"" + widgetId + "\" name=\"" + formFieldName + "\"/>\n");
+		sb.append("<script>\n");
+		sb.append("jQuery('#" + widgetId + "').closest('form')");
+		sb.append("    .attr('method', 'post').attr('enctype', 'multipart/form-data');\n");
+		sb.append("</script>");
+		return sb.toString();
 	}
 	
 	/**

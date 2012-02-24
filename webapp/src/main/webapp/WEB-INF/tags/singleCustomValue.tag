@@ -1,3 +1,4 @@
+<%@tag import="java.util.Random"%>
 <%@tag import="org.openmrs.customdatatype.CustomDatatype"%>
 <%@tag import="org.openmrs.customdatatype.CustomDatatypeHandler"%>
 <%@tag import="org.openmrs.customdatatype.CustomDatatypeUtil"%>
@@ -32,11 +33,12 @@ if (handler instanceof FieldGenDatatypeHandler) {
         parameterMap="<%= widgetConfig %>"
         val="${ initialValue }"/>
 <% } else if (handler instanceof WebDatatypeHandler) {
+	String widgetId = "customValue" + new Random().nextInt();
 	WebDatatypeHandler h = (WebDatatypeHandler) handler;
 	CustomDatatype dt = CustomDatatypeUtil.getDatatype(customValueDescriptor);
 %>
 
-	<%= h.getWidgetHtml(dt, formFieldName, initialValue) %>
+	<%= h.getWidgetHtml(dt, formFieldName, widgetId, initialValue) %>
 
 <% } else {
 	String valueAsString = "";
