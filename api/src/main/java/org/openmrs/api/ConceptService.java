@@ -1734,6 +1734,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.9
 	 * @throws APIException
 	 * @should return a conceptMapType matching the specified name
+	 * @should be case insensitive
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
@@ -1863,6 +1864,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.9
 	 * @throws APIException
 	 * @should return a concept reference term that matches the given name from the given source
+	 * @should be case insensitive
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)

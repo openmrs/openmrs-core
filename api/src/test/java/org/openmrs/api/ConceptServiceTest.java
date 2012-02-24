@@ -2066,4 +2066,31 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getCountOfConceptReferenceTerms_shouldNotIncludeRetiredTermsIfIncludeRetiredIsSetToFalse() throws Exception {
 		Assert.assertEquals(10, conceptService.getCountOfConceptReferenceTerms("", null, false).intValue());
 	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptMapTypeByName(String)}
+	 */
+	@Test
+	@Verifies(value = "should be case insensitive", method = "getConceptMapTypeByName(String)")
+	public void getConceptMapTypeByName_shouldBeCaseInsensitive() throws Exception {
+		String name = "SAME-as";
+		ConceptMapType mt = Context.getConceptService().getConceptMapTypeByName(name);
+		Assert.assertNotNull(mt);
+		//sanity check in case the test dataset is edited
+		Assert.assertNotSame(name, mt.getName());
+		Assert.assertEquals(2, mt.getId().intValue());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptReferenceTermByName(String,ConceptSource)}
+	 */
+	@Test
+	@Verifies(value = "should be case insensitive", method = "getConceptReferenceTermByName(String,ConceptSource)")
+	public void getConceptReferenceTermByName_shouldBeCaseInsensitive() throws Exception {
+		String name = "WEIGHT term";
+		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTermByName(name, new ConceptSource(1));
+		Assert.assertNotNull(term);
+		Assert.assertNotSame(name, term.getName());
+		Assert.assertEquals(1, term.getId().intValue());
+	}
 }
