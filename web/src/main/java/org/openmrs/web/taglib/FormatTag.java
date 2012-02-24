@@ -304,6 +304,7 @@ public class FormatTag extends TagSupport {
 	 * 
 	 * @param sb
 	 * @param concept
+	 * @should print the name with the correct name and type
 	 */
 	protected void printConcept(StringBuilder sb, Concept concept) {
 		Locale loc = Context.getLocale();
