@@ -72,7 +72,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
 	public Order saveOrder(Order order) throws APIException {
-		ValidateUtil.validate(order);
+		ValidateUtil.invokeValidatorInManualFlushMode(order);
 		
 		return dao.saveOrder(order);
 	}
