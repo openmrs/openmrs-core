@@ -1684,8 +1684,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptMapType getConceptMapTypeByName(String name) throws DAOException {
-		return (ConceptMapType) sessionFactory.getCurrentSession().createQuery(
-		    "from ConceptMapType cmt where cmt.name = :name").setString("name", name).uniqueResult();
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMapType.class);
+		criteria.add(Restrictions.ilike("name", name, MatchMode.EXACT));
+		return (ConceptMapType) criteria.uniqueResult();
 	}
 	
 	/**
@@ -1754,7 +1755,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public ConceptReferenceTerm getConceptReferenceTermByName(String name, ConceptSource conceptSource) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
-		criteria.add(Restrictions.eq("name", name));
+		criteria.add(Restrictions.ilike("name", name, MatchMode.EXACT));
 		criteria.add(Restrictions.eq("conceptSource", conceptSource));
 		List terms = criteria.list();
 		if (terms.size() == 0)
