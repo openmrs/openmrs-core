@@ -1012,6 +1012,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			}
 		}
 		if (!goodIdentifiers.isEmpty()) {
+			//If we have one identifier, set it as the preferred to make the validator happy.
+			if (goodIdentifiers.size() == 1) {
+				goodIdentifiers.get(0).setPreferred(true);
+			}
+			
 			// cast the person as a Patient and add identifiers
 			person = new Patient(person);
 			((Patient) person).addIdentifiers(goodIdentifiers);
