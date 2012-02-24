@@ -54,17 +54,17 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		ValidateUtil.validateFieldLengths(errors, PatientIdentifierType.class, "name");
 		assertFalse(errors.hasFieldErrors("name"));
 	}
-
+	
 	/**
-     * @see ValidateUtil#validate(Object,Errors)
-     * @verifies populate errors if object invalid
-     */
-    @Test
-    public void validate_shouldPopulateErrorsIfObjectInvalid() throws Exception {		
+	 * @see ValidateUtil#validate(Object,Errors)
+	 * @verifies populate errors if object invalid
+	 */
+	@Test
+	public void validate_shouldPopulateErrorsIfObjectInvalid() throws Exception {
 		Location loc = new Location();
 		Errors errors = new BindException(loc, "");
 		ValidateUtil.validate(loc, errors);
 		
 		assertTrue(errors.hasErrors());
-    }
+	}
 }
