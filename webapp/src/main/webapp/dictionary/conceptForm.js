@@ -179,6 +179,8 @@ function changeDatatype(obj) {
 }
 
 function listKeyPress(from, to, delim, event) {
+	if(!event)
+		event = window.event;
 	var keyCode = event.keyCode;
 	if (keyCode == 8 || keyCode == 46) {
 		removeItem(from, to, delim);
@@ -187,6 +189,8 @@ function listKeyPress(from, to, delim, event) {
 }
 
 function hotkeys(event) {
+	if(!event)
+		event = window.event;
 	var k = event.keyCode;
 	if (event.cntrlKey == true) {
 		if (k == 86) { // v
