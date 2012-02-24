@@ -46,21 +46,6 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	 */
 	@Override
 	public CustomDatatype.Summary toHtmlSummary(CustomDatatype<String> datatype, String valueReference) {
-		/* Leaving this code here since it will probably be used in TRUNK-3039 
-		StringBuilder sb = new StringBuilder();
-		sb.append("<a href=\"");
-		sb.append("downloadCustomValue.form");
-		sb.append("?handler=");
-		sb.append(this.getClass().getName());
-		sb.append("&datatype=");
-		sb.append(LongFreeTextDatatype.class.getName());
-		sb.append("&value=");
-		sb.append(valueReference);
-		sb.append("\">");
-		sb.append(Context.getMessageSourceService().getMessage("general.download", null, Context.getLocale()));
-		sb.append("</a>");
-		return new CustomDatatype.Summary(sb.toString(), false);
-		*/
 		return datatype.getTextSummary(valueReference);
 	}
 	
@@ -73,18 +58,17 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	}
 	
 	/**
-	 * @see org.openmrs.web.attribute.handler.WebDatatypeHandler#getWidgetHtml(org.openmrs.customdatatype.CustomDatatype, java.lang.String, java.lang.Object)
+	 * @see org.openmrs.web.attribute.handler.WebDatatypeHandler#getWidgetHtml(org.openmrs.customdatatype.CustomDatatype, java.lang.String, java.lang.String, java.lang.Object)
 	 */
 	@Override
-	public String getWidgetHtml(LongFreeTextDatatype datatype, String formFieldName, String startingValue) {
-		return "<input type=\"file\" name=\"" + formFieldName + "\"/>";
-		/* TODO add something like this
-		var form = jq('#${ id }').closest('form');
-		if (form.length) {
-			form.attr('method', 'post');
-			form.attr('enctype', 'multipart/form-data');
-		}
-		*/
+	public String getWidgetHtml(LongFreeTextDatatype datatype, String formFieldName, String widgetId, String startingValue) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<input type=\"file\" id=\"" + widgetId + "\" name=\"" + formFieldName + "\"/>\n");
+		sb.append("<script>\n");
+		sb.append("jQuery('#" + widgetId + "').closest('form')");
+		sb.append("    .attr('method', 'post').attr('enctype', 'multipart/form-data');\n");
+		sb.append("</script>");
+		return sb.toString();
 	}
 	
 	/**
