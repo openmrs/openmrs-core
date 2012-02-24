@@ -2680,6 +2680,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		preferred.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		preferred.setDeathDate(new Date());
 		preferred.setDead(true);
+		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		//merge with not preferred
 		Patient notPreferred = patientService.getPatient(7);
@@ -2701,6 +2702,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		cDate.set(Calendar.MILLISECOND, 0);
 		Patient preferred = patientService.getPatient(999);
 		preferred.setBirthdate(cDate.getTime());
+		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
@@ -2720,6 +2722,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferred = patientService.getPatient(999);
 		preferred.setBirthdate(cDate.getTime());
 		preferred.setBirthdateEstimated(true);
+		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
@@ -2742,6 +2745,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		preferred.setDeathDate(cDate.getTime());
 		preferred.setDead(true);
 		preferred.setCauseOfDeath(Context.getConceptService().getConcept(3));
+		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
@@ -2758,6 +2762,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//retrieve preferred patient and set gender
 		Patient preferred = patientService.getPatient(999);
 		preferred.setGender("M");
+		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		//merge with not preferred
 		Patient notPreferred = patientService.getPatient(7);
@@ -2784,6 +2789,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		preferredIdentifier.setIdentifierType(patientIdentifierTypes.get(0));
 		preferredIdentifier.setLocation(locations.get(0));
 		preferred.addIdentifier(preferredIdentifier);
+		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		//merge with not preferred
 		Patient notPreferred = patientService.getPatient(7);
