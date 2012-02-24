@@ -114,6 +114,8 @@ public class ValidateUtil {
 	 * 
 	 * @param obj the object to validate
 	 * @param errors the validation errors found
+	 * @since 1.9
+	 * @should populate errors if object invalid
 	 */
 	public static void validate(Object obj, Errors errors) {
 		for (Validator validator : getValidators(obj)) {
@@ -123,11 +125,10 @@ public class ValidateUtil {
 	
 	/**
 	 * Test the field lengths are valid
-	 *
+	 * 
 	 * @param errors
 	 * @param aClass the class of the object being tested
 	 * @param fields a var args that contains all of the fields from the model
-	 *
 	 * @should pass validation if regEx field length is not too long
 	 * @should fail validation if regEx field length is too long
 	 * @should fail validation if name field length is too long
