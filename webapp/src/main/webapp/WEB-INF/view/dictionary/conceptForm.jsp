@@ -822,10 +822,10 @@
 	</c:if>
 </openmrs:hasPrivilege>
 
-<openmrs:hasPrivilege privilege="Manage Concept Reference Terms">
+<openmrs:hasPrivilege privilege="Create Reference Terms While Editing Concepts">
 <div id="create-new-term-dialog" title="<spring:message code="ConceptReferenceTerm.newTermForm"/>">
 	<div id="newTermErrorMsg" class="error" style="display: none" align="center"></div>
-	<div id="successMsg" class="newTermSuccessMsg" align="center">
+	<div id="successMsg" class="newTermSuccessMsg" align="center" style="display: none">
 		<spring:message code="ConceptReferenceTerm.saved"/>
 	</div><br />
 	<fieldset>
@@ -851,7 +851,7 @@
 					<option value=""></option>
 					<openmrs:forEachRecord name="conceptSource">
 					<option value="${record.conceptSourceId}">
-						${record.name} (${record.hl7Code})
+						${record.name}
 					</option>
 					</openmrs:forEachRecord>
 				</select>
