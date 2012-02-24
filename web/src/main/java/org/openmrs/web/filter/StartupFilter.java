@@ -23,6 +23,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -36,6 +37,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
@@ -130,9 +132,8 @@ public abstract class StartupFilter implements Filter {
 					log.error("Unable to find file: " + file.getAbsolutePath());
 				}
 			} else if (servletPath.startsWith("/scripts")) {
-				log
-				        .error("Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
-				                + servletPath + "' instead.");
+				log.error("Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
+				        + servletPath + "' instead.");
 			}
 			// for anything but /initialsetup
 			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)
@@ -410,6 +411,10 @@ public abstract class StartupFilter implements Filter {
 	 * @return the tool context object
 	 */
 	public ToolContext getToolContext(String locale) {
+		Locale systemLocale = LocaleUtility.fromSpecification(locale);
+		//Defaults to en if systemLocale is null or invalid e.g en_GBs
+		if (systemLocale == null || !ArrayUtils.contains(Locale.getAvailableLocales(), systemLocale))
+			systemLocale = Locale.ENGLISH;
 		// If tool context has not been configured yet
 		if (toolContext == null) {
 			// first we are creating manager for tools, factory for configuring tools 
@@ -424,7 +429,7 @@ public abstract class StartupFilter implements Filter {
 			// setting its class name, locale property etc.
 			ToolConfiguration localizationTool = new ToolConfiguration();
 			localizationTool.setClassname(LocalizationTool.class.getName());
-			localizationTool.setProperty(ToolContext.LOCALE_KEY, LocaleUtility.fromSpecification(locale));
+			localizationTool.setProperty(ToolContext.LOCALE_KEY, systemLocale);
 			localizationTool.setProperty(LocalizationTool.BUNDLES_KEY, "messages");
 			// and finally we are adding just configured tool into toolbox
 			// and creating tool context for this toolbox
@@ -443,7 +448,7 @@ public abstract class StartupFilter implements Filter {
 			String key = defaultKeyAnnotation.value();
 			//
 			LocalizationTool localizationTool = (LocalizationTool) toolContext.get(key);
-			localizationTool.setLocale(LocaleUtility.fromSpecification(locale));
+			localizationTool.setLocale(systemLocale);
 			toolContext.put(key, localizationTool);
 		}
 		return toolContext;
