@@ -615,7 +615,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			List<ConceptName> matches = new ArrayList<ConceptName>();
 			
 			for (ConceptName candidate : namesInLocale) {
-				if ((ofType == null || candidate.getConceptNameType().equals(ofType))
+				if ((ofType == null || ofType.equals(candidate.getConceptNameType()))
 				        && (havingTag == null || candidate.hasTag(havingTag)))
 					matches.add(candidate);
 			}
