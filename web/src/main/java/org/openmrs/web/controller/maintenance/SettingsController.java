@@ -70,7 +70,7 @@ public class SettingsController {
 				SettingsProperty property = settingsForm.getSettings().get(i);
 				if (StringUtils.isNotEmpty(property.getGlobalProperty().getDatatypeClassname())) {
 					// we need to handle the submitted value with the appropriate widget
-					CustomDatatype dt = CustomDatatypeUtil.getDatatype(property.getGlobalProperty());
+					CustomDatatype dt = CustomDatatypeUtil.getDatatypeOrDefault(property.getGlobalProperty());
 					CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(property.getGlobalProperty());
 					if (handler != null) {
 						try {
@@ -91,11 +91,11 @@ public class SettingsController {
 		catch (Exception e) {
 			log.error("Error saving global property", e);
 			errors.reject("GlobalProperty.not.saved");
-			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, e.getMessage());
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
 		}
 		
 		if (errors.hasErrors()) {
-			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.not.saved");
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "GlobalProperty.not.saved");
 			
 		} else {
 			for (GlobalProperty gp : toSave) {
