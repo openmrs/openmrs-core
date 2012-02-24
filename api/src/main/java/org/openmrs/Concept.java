@@ -189,7 +189,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	/**
 	 * If <code>includeRetired</code> is true, then the returned object is the actual stored list of
-	 * {@link ConceptAnswer}s 
+	 * {@link ConceptAnswer}s
 	 * 
 	 * @param includeRetired true/false whether to also include the retired answers
 	 * @return Returns the answers for this Concept
@@ -600,13 +600,13 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * Returns concept name depending of locale, type (short, fully specified, etc) and tag.
 	 * Searches in the locale, and then the locale's parent if nothing is found.
-	 *  
+	 * 
 	 * @param ofType find a name of this type (optional)
 	 * @param havingTag find a name with this tag (optional)
 	 * @param locale find a name with this locale (required)
 	 * @return a name that matches the arguments, or null if none is found. If there are multiple
-	 * matches and one is locale_preferred, that will be returned, otherwise a random one of the
-	 * matches will be returned.
+	 *         matches and one is locale_preferred, that will be returned, otherwise a random one of
+	 *         the matches will be returned.
 	 * @since 1.9
 	 **/
 	public ConceptName getName(Locale locale, ConceptNameType ofType, ConceptNameTag havingTag) {
@@ -1338,8 +1338,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Gets the synonyms in the given locale. Returns a list of names from the same language
-	 * with the preferred synonym sorted first, or an empty list if none found.
+	 * Gets the synonyms in the given locale. Returns a list of names from the same language with
+	 * the preferred synonym sorted first, or an empty list if none found.
 	 * 
 	 * @param locale
 	 * @return Collection of ConceptNames which are synonyms for the Concept in the given locale
@@ -1455,8 +1455,12 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		newConceptMap.setConcept(this);
 		if (getConceptMappings() == null)
 			conceptMappings = new HashSet<ConceptMap>();
-		if (newConceptMap != null && !conceptMappings.contains(newConceptMap))
+		if (newConceptMap != null && !conceptMappings.contains(newConceptMap)) {
+			if (newConceptMap.getConceptMapType() == null) {
+				newConceptMap.setConceptMapType(Context.getConceptService().getDefaultConceptMapType());
+			}
 			conceptMappings.add(newConceptMap);
+		}
 	}
 	
 	/**

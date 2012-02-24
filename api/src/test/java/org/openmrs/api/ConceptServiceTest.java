@@ -2128,6 +2128,67 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	@Verifies(value = "should create a reference term for a concept mapping on the fly when creating a concept", method = "saveConcept(Concept)")
+	public void saveConcept_shouldCreateAReferenceTermForAConceptMappingOnTheFlyWhenCreatingAConcept() throws Exception {
+		int initialTermCount = conceptService.getAllConceptReferenceTerms().size();
+		
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("test name", Context.getLocale()));
+		ConceptMap map = new ConceptMap();
+		map.setSourceCode("unique code");
+		map.setSource(conceptService.getConceptSource(1));
+		concept.addConceptMapping(map);
+		conceptService.saveConcept(concept);
+		Assert.assertNotNull(concept.getId());
+		Assert.assertEquals(initialTermCount + 1, conceptService.getAllConceptReferenceTerms().size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	@Verifies(value = "should create a reference term for a concept mapping on the fly when editing a concept", method = "saveConcept(Concept)")
+	public void saveConcept_shouldCreateAReferenceTermForAConceptMappingOnTheFlyWhenEditingAConcept() throws Exception {
+		int initialTermCount = conceptService.getAllConceptReferenceTerms().size();
+		Concept concept = conceptService.getConcept(5497);
+		ConceptMap map = new ConceptMap();
+		map.setSourceCode("unique code");
+		map.setSource(conceptService.getConceptSource(1));
+		concept.addConceptMapping(map);
+		conceptService.saveConcept(concept);
+		Assert.assertEquals(initialTermCount + 1, conceptService.getAllConceptReferenceTerms().size());
+	}
+	
+	/**
+	 * @see ConceptService#getDefaultConceptMapType()
+	 * @verifies return same as by default
+	 */
+	@Test
+	public void getDefaultConceptMapType_shouldReturnSameAsByDefault() throws Exception {
+		ConceptMapType conceptMapType = conceptService.getDefaultConceptMapType();
+		Assert.assertNotNull(conceptMapType);
+		Assert.assertEquals("same-as", conceptMapType.getName());
+	}
+	
+	/**
+	 * @see ConceptService#getDefaultConceptMapType()
+	 * @verifies return type as set in gp
+	 */
+	@Test
+	public void getDefaultConceptMapType_shouldReturnTypeAsSetInGp() throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty("concept.defaultConceptMapType", "is-a"));
+		
+		ConceptMapType conceptMapType = conceptService.getDefaultConceptMapType();
+		Assert.assertNotNull(conceptMapType);
+		Assert.assertEquals("is-a", conceptMapType.getName());
+	}
+	
+	/**
 	 * @see {@link ConceptService#getConceptMapTypeByName(String)}
 	 */
 	@Test

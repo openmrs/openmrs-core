@@ -7,9 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptMap;
-import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
-import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateConceptNameException;
@@ -236,34 +234,6 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail if the concept map type property for a concept mapping is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheConceptMapTypePropertyForAConceptMappingIsNull() throws Exception {
-		Concept concept = new Concept();
-		concept.addName(new ConceptName("my name", Context.getLocale()));
-		concept.addConceptMapping(new ConceptMap(Context.getConceptService().getConceptReferenceTerm(1), null));
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptMapType"));
-	}
-	
-	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should fail if the concept reference term property for a concept mapping is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheConceptReferenceTermPropertyForAConceptMappingIsNull() throws Exception {
-		Concept concept = new Concept();
-		concept.addName(new ConceptName("my name", Context.getLocale()));
-		concept.addConceptMapping(new ConceptMap(null, Context.getConceptService().getConceptMapType(1)));
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptReferenceTerm"));
-	}
-	
-	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
-	 */
-	@Test
 	@Verifies(value = "should pass if the concept has a synonym that is also a short name", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() throws Exception {
 		Concept concept = new Concept();
@@ -276,45 +246,6 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertFalse(errors.hasErrors());
-	}
-	
-	/**
-	 * This test should pass if the map type id is set
-	 * 
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should fail if a concept map type created on the fly is used for a mapping", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfAConceptMapTypeCreatedOnTheFlyIsUsedForAMapping() throws Exception {
-		Concept concept = new Concept();
-		concept.addName(new ConceptName("my name", Context.getLocale()));
-		ConceptMapType cmt = new ConceptMapType();
-		cmt.setName("name");
-		concept.addConceptMapping(new ConceptMap(Context.getConceptService().getConceptReferenceTerm(1), cmt));
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptMapType"));
-	}
-	
-	/**
-	 * This test should pass if the term id is set
-	 * 
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should fail if a term created on the fly is used for a mapping", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfATermCreatedOnTheFlyIsUsedForAMapping() throws Exception {
-		Concept concept = new Concept();
-		ConceptService cs = Context.getConceptService();
-		concept.addName(new ConceptName("my name", Context.getLocale()));
-		ConceptReferenceTerm term = new ConceptReferenceTerm();
-		term.setCode("unique code");
-		term.setConceptSource(cs.getConceptSource(1));
-		
-		concept.addConceptMapping(new ConceptMap(term, cs.getConceptMapType(1)));
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptReferenceTerm"));
 	}
 	
 	/**
@@ -368,7 +299,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptValidator#validate(Object,Errors)
-	 * @verifies fail if there is a duplicate unretired concept name in the same locale different than the system locale
+	 * @verifies fail if there is a duplicate unretired concept name in the same locale different
+	 *           than the system locale
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
 	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheSameLocaleDifferentThanTheSystemLocale()
@@ -383,5 +315,36 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		anotherConcept.getFullySpecifiedName(en).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
 		new ConceptValidator().validate(anotherConcept, errors);
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass for a new concept with a map created with deprecated concept map methods", method = "validate(Object,Errors)")
+	public void validate_shouldPassForANewConceptWithAMapCreatedWithDeprecatedConceptMapMethods() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("test name", Context.getLocale()));
+		ConceptMap map = new ConceptMap();
+		map.setSourceCode("unique code");
+		map.setSource(cs.getConceptSource(1));
+		concept.addConceptMapping(map);
+		ValidateUtil.validate(concept);
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass for an edited concept with a map created with deprecated concept map methods", method = "validate(Object,Errors)")
+	public void validate_shouldPassForAnEditedConceptWithAMapCreatedWithDeprecatedConceptMapMethods() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		Concept concept = cs.getConcept(5497);
+		ConceptMap map = new ConceptMap();
+		map.setSourceCode("unique code");
+		map.setSource(cs.getConceptSource(1));
+		concept.addConceptMapping(map);
+		ValidateUtil.validate(concept);
 	}
 }

@@ -72,7 +72,6 @@ import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ConceptValidator;
-import org.openmrs.validator.ValidateUtil;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -183,6 +182,15 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @should not set default preferred name to short or index terms
 	 */
 	public Concept saveConcept(Concept concept) throws APIException {
+		ConceptMapType defaultConceptMapType = null;
+		for (ConceptMap map : concept.getConceptMappings()) {
+			if (map.getConceptMapType() == null) {
+				if (defaultConceptMapType == null) {
+					defaultConceptMapType = getDefaultConceptMapType();
+				}
+				map.setConceptMapType(defaultConceptMapType);
+			}
+		}
 		
 		// make sure the administrator hasn't turned off concept editing
 		checkIfLocked();
@@ -2121,5 +2129,21 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	public List<Concept> getConceptsByName(String name, Locale locale) throws APIException {
 		return dao.getConceptsByName(name, locale);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getDefaultConceptMapType()
+	 */
+	@Override
+	public ConceptMapType getDefaultConceptMapType() throws APIException {
+		//Defaults to same-as if the gp is not set.
+		String defaultConceptMapType = Context.getAdministrationService().getGlobalProperty("concept.defaultConceptMapType",
+		    "same-as");
+		ConceptMapType conceptMapType = dao.getConceptMapTypeByName(defaultConceptMapType);
+		if (conceptMapType == null) {
+			throw new APIException("The default concept map type (name: " + defaultConceptMapType
+			        + ") does not exist! You need to set the 'concept.defaultConceptMapType' global property.");
+		}
+		return conceptMapType;
 	}
 }

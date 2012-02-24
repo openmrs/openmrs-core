@@ -769,6 +769,8 @@
 	<bean id="patientProgramValidator" class="org.openmrs.validator.PatientProgramValidator" />
 	<bean id="conceptValidator" class="org.openmrs.validator.ConceptValidator" />
 	<bean id="personMergeLogValidator" class="org.openmrs.validator.PersonMergeLogValidator" />
+	<bean id="conceptReferenceTermValidator" class="org.openmrs.validator.ConceptReferenceTermValidator" />
+	<bean id="conceptMapTypeValidator" class="org.openmrs.validator.ConceptMapTypeValidator" />
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 	
