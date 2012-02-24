@@ -109,6 +109,19 @@ public class ValidateUtil {
 	}
 	
 	/**
+	 * Test the given object against all validators that are registered as compatible with the
+	 * object class
+	 * 
+	 * @param obj the object to validate
+	 * @param errors the validation errors found
+	 */
+	public static void validate(Object obj, Errors errors) {
+		for (Validator validator : getValidators(obj)) {
+			validator.validate(obj, errors);
+		}
+	}
+	
+	/**
 	 * Test the field lengths are valid
 	 *
 	 * @param errors
