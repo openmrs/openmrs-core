@@ -607,6 +607,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return a name that matches the arguments, or null if none is found. If there are multiple
 	 * matches and one is locale_preferred, that will be returned, otherwise a random one of the
 	 * matches will be returned.
+	 * @since 1.9
 	 **/
 	public ConceptName getName(Locale locale, ConceptNameType ofType, ConceptNameTag havingTag) {
 		Collection<ConceptName> namesInLocale = getNames(locale);
@@ -614,7 +615,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			List<ConceptName> matches = new ArrayList<ConceptName>();
 			
 			for (ConceptName candidate : namesInLocale) {
-				if ((ofType == null || candidate.getConceptNameType().equals(ofType))
+				if ((ofType == null || ofType.equals(candidate.getConceptNameType()))
 				        && (havingTag == null || candidate.hasTag(havingTag)))
 					matches.add(candidate);
 			}
