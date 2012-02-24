@@ -43,7 +43,7 @@
 		transactionAttributeSource is what reads/remembers all Transactional attributes of a given 
 		method or class (which is done during initialization)
 	-->
-	<bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean id="transactionInterceptor" class="org.openmrs.aop.FlushSessionTransactionInterceptor">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -633,13 +633,11 @@
 	<bean id="loggingInterceptor" class="org.openmrs.aop.LoggingAdvice"/>
 	<!-- AOP before advice that calls the SetRequiredDataHandler methods -->
 	<bean id="requiredDataInterceptor" class="org.openmrs.aop.RequiredDataAdvice"/>
-	<bean id="flushAfterMethodInterceptor" class="org.openmrs.aop.FlushAfterMethodAdvice" />
 
 	<util:list id="serviceInterceptors">
 		<ref local="authorizationInterceptor"/>
 		<ref local="requiredDataInterceptor"/>
 		<ref local="loggingInterceptor"/>
-		<ref local="flushAfterMethodInterceptor"/>
 	</util:list>
 	
 	

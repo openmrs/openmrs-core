@@ -19,7 +19,7 @@ import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 
 /**
- *
+ * Sets the flush mode to COMMIT for all transactions in the AUTO or ALWAYS modes.
  */
 public class HibernateTransactionManagerFlushOnCommit extends HibernateTransactionManager {
 	
