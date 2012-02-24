@@ -15,6 +15,7 @@ package org.openmrs.validator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.annotation.Handler;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -22,6 +23,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+@Handler(supports = { TaskDefinition.class }, order = 50)
 public class SchedulerFormValidator implements Validator {
 	
 	/** Log for this class and subclasses */

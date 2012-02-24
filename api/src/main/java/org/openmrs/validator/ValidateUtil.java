@@ -132,4 +132,15 @@ public class ValidateUtil {
 			}
 		}
 	}
+	
+	/**
+	 * Performs validation in manual flush mode to prevent any premature flushes.
+	 * <p>
+	 * Calls {@link ValidateUtil#validate(Object)} on the given object.
+	 * 
+	 * @param obj the object to be validated.
+	 */
+	public static void invokeValidatorInManualFlushMode(Object obj) throws APIException {
+		Context.getAdministrationService().validateInManualFlushMode(obj);
+	}
 }

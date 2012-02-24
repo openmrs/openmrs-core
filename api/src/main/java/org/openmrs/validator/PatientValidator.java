@@ -19,12 +19,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.annotation.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 /**
  * This class validates a Patient object.
  */
+@Handler(supports = { Patient.class }, order = 50)
 public class PatientValidator extends PersonValidator {
 	
 	private static Log log = LogFactory.getLog(PersonNameValidator.class);

@@ -297,7 +297,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Drug saveDrug(Drug drug) throws APIException {
 		checkIfLocked();
 		
-		ValidateUtil.validate(drug);
+		ValidateUtil.invokeValidatorInManualFlushMode(drug);
 		return dao.saveDrug(drug);
 	}
 	

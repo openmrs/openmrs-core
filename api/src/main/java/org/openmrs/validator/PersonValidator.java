@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.annotation.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -30,6 +31,7 @@ import org.springframework.validation.Validator;
  * 
  * @since 1.9
  */
+@Handler(supports = { Person.class }, order = 50)
 public class PersonValidator implements Validator {
 	
 	private Logger log = Logger.getLogger(PersonValidator.class);
