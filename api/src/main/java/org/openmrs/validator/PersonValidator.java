@@ -69,8 +69,15 @@ public class PersonValidator implements Validator {
 		
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "Person.gender.required");
 		
+		boolean atLeastOneNonVoidPersonNameLeft = false;
 		for (PersonName personName : person.getNames()) {
 			personNameValidator.validate(personName, errors);
+			if (!personName.isVoided()) {
+				atLeastOneNonVoidPersonNameLeft = true;
+			}
+		}
+		if (!atLeastOneNonVoidPersonNameLeft) {
+			errors.rejectValue("names", "Person.shouldHaveAtleastOneNonVoidedName");
 		}
 		
 		//validate the personAddress

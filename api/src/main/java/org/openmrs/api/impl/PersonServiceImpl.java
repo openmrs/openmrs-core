@@ -46,6 +46,7 @@ import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.util.Assert;
 
 /**
@@ -865,22 +866,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#savePersonName(org.openmrs.PersonName)
 	 */
 	public PersonName savePersonName(PersonName personName) throws APIException {
-		
-		boolean atLeastOneNonVoidPersonNameLeft = false;
-		for (PersonName pn : personName.getPerson().getNames()) {
-			if (!pn.equals(personName) && !pn.isVoided()) {
-				atLeastOneNonVoidPersonNameLeft = true;
-				break;
-			}
-		}
-		
-		if (atLeastOneNonVoidPersonNameLeft) {
-			return dao.savePersonName(personName);
-		} else {
-			throw new APIException(Context.getMessageSourceService().getMessage("PersonName.save.failReason", null,
-			    "At least one non-voided PersonName should be left on Person", Context.getLocale()));
-		}
-		
+		ValidateUtil.validate(personName.getPerson());
+		return dao.savePersonName(personName);
 	}
 	
 	/**
