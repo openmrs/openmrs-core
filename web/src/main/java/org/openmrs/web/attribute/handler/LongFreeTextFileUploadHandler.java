@@ -22,6 +22,7 @@ import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.DownloadableDatatypeHandler;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.datatype.LongFreeTextDatatype;
+import org.openmrs.web.WebUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
@@ -46,7 +47,9 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	 */
 	@Override
 	public CustomDatatype.Summary toHtmlSummary(CustomDatatype<String> datatype, String valueReference) {
-		return datatype.getTextSummary(valueReference);
+		CustomDatatype.Summary summary = datatype.getTextSummary(valueReference);
+		summary.setSummary(WebUtil.escapeHTML(summary.getSummary()));
+		return summary;
 	}
 	
 	/**
@@ -54,7 +57,7 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	 */
 	@Override
 	public String toHtml(CustomDatatype<String> datatype, String valueReference) {
-		return datatype.fromReferenceString(valueReference);
+		return WebUtil.escapeHTML(datatype.fromReferenceString(valueReference));
 	}
 	
 	/**
@@ -96,7 +99,7 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	 */
 	@Override
 	public String getContentType(CustomDatatype<String> dt, String valueReference) {
-		return "text/plain";
+		return "text/plain; charset=utf-8";
 	}
 	
 	/**
