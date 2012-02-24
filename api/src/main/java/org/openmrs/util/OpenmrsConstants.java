@@ -29,6 +29,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
@@ -1617,4 +1618,6 @@ public final class OpenmrsConstants {
 	
 	public static final String TEXT_VIEW = "TEXT_VIEW";
 	
+	/** The data type to return on failing to load a custom data type. */
+	public static final String DEFAULT_CUSTOM_DATATYPE = FreeTextDatatype.class.getName();
 }
