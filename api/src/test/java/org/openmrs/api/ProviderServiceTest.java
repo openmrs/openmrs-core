@@ -461,7 +461,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ProviderService#isProviderIdentifierUnique(Provider)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	@Verifies(value = "should return false if the identifier is a duplicate", method = "isProviderIdentifierUnique(Provider)")
 	public void isProviderIdentifierUnique_shouldReturnFalseIfTheIdentifierIsADuplicate() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
@@ -470,6 +470,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Provider existingProviderToEdit = service.getProvider(1);
 		existingProviderToEdit.setName("name");
 		existingProviderToEdit.setIdentifier(duplicateProvider.getIdentifier());
-		Context.getProviderService().saveProvider(existingProviderToEdit);
+		Assert.assertFalse(service.isProviderIdentifierUnique(existingProviderToEdit));
 	}
 }
