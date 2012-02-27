@@ -34,7 +34,7 @@
 		if (ymd == null || ymd == '')
 			return '';
 		<c:choose>
-			<c:when test="${model.locale == 'fr' || model.locale == 'en_GB'}">
+			<c:when test="${model.locale == 'fr' || model.locale == 'en_GB' || model.locale == 'pt' || model.locale == 'it' || model.locale == 'es'}">
 				return ymd.substring(8, 10) + '/' + ymd.substring(5, 7) + '/' + ymd.substring(0, 4);
 			</c:when>
 			<c:otherwise>
@@ -47,7 +47,7 @@
 		if (date == null || date == '')
 			return '';
 		<c:choose>
-			<c:when test="${model.locale == 'fr' || model.locale == 'en_GB'}">
+			<c:when test="${model.locale == 'fr' || model.locale == 'en_GB' || model.locale == 'pt' || model.locale == 'it' || model.locale == 'es'}">
 				// dd/mm/yyyy 01/34/6789
 				return date.substring(6,10) + '-' + date.substring(3,5) + '-' + date.substring(0,2);
 			</c:when>
