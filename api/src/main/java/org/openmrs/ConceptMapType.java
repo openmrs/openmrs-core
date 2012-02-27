@@ -94,6 +94,6 @@ public class ConceptMapType extends BaseOpenmrsMetadata implements java.io.Seria
 	 * @return
 	 */
 	public boolean isHidden() {
-		return isHidden();
+		return isHidden;
 	}
 }

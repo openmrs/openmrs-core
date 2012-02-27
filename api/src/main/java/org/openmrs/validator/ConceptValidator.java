@@ -31,6 +31,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -49,7 +50,7 @@ public class ConceptValidator implements Validator {
 	 */
 	@SuppressWarnings("rawtypes")
 	public boolean supports(Class c) {
-		return c.equals(Concept.class);
+		return Concept.class.isAssignableFrom(c);
 	}
 	
 	/**
@@ -74,12 +75,12 @@ public class ConceptValidator implements Validator {
 	 * @should not allow an index term to be a locale preferred name
 	 * @should fail if there is no name explicitly marked as fully specified
 	 * @should pass if the duplicate ConceptName is neither preferred nor fully Specified
-	 * @should fail if the concept reference term property for a concept mapping is null
-	 * @should fail if the concept map type property for a concept mapping is null
 	 * @should pass if the concept has a synonym that is also a short name
-	 * @should fail if a concept map type created on the fly is used for a mapping
-	 * @should fail if a term created on the fly is used for a mapping
 	 * @should fail if a term is mapped multiple times to the same concept
+	 * @should fail if there is a duplicate unretired concept name in the same locale different than
+	 *         the system locale
+	 * @should pass for a new concept with a map created with deprecated concept map methods
+	 * @should pass for an edited concept with a map created with deprecated concept map methods
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -223,21 +224,23 @@ public class ConceptValidator implements Validator {
 					    "The concept reference term property is required for a concept map");
 					return;
 				} else if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {
-					//Should pick from existing terms
-					errors.rejectValue("conceptMappings[" + index + "].conceptReferenceTerm",
-					    "ConceptReferenceTerm.term.notInDatabase", "Only existing concept reference terms can be mapped");
-					return;
-				} else if (map.getConceptMapType() == null) {
+					//if this term is getting created on the fly e.g. from old legacy code, validate it
+					try {
+						errors.pushNestedPath("conceptMappings[" + index + "].conceptReferenceTerm");
+						ValidationUtils.invokeValidator(new ConceptReferenceTermValidator(), map.getConceptReferenceTerm(),
+						    errors);
+					}
+					finally {
+						errors.popNestedPath();
+					}
+					
+				}
+				/*if (map.getConceptMapType() == null) {
 					errors.rejectValue("conceptMappings[" + index + "].conceptMapType", "Concept.map.typeRequired",
 					    "The concept map type is required for a concept map");
 					return;
-				} else if (map.getConceptMapType().getConceptMapTypeId() == null) {
-					//Should pick from existing map types
-					errors.rejectValue("conceptMappings[" + index + "].conceptMapType",
-					    "ConceptReferenceTerm.mapType.notInDatabase", "Only existing concept map types can be used");
-					return;
-				}
-				
+				}*/
+
 				//don't proceed to the next maps since the current one already has errors
 				if (errors.hasErrors())
 					return;

@@ -13,6 +13,11 @@
  */
 package org.openmrs;
 
+import java.util.List;
+
+import org.openmrs.api.APIException;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -91,22 +96,19 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	 */
 	@Deprecated
 	public String getComment() {
-		if (getConceptReferenceTerm() == null)
-			return null;
 		return getConceptReferenceTerm().getDescription();
 	}
 	
 	/**
 	 * Comments on concept maps are no longer supported since version 1.9, therefore a call to this
-	 * methods is useless
+	 * results in setting the description of the associated reference term to the specified value
 	 * 
 	 * @param comment The comment to set.
 	 * @deprecated
 	 */
 	@Deprecated
 	public void setComment(String comment) {
-		//do nothing, we don't want the description of the associated term to be set/edited from here,
-		//it should done from the concept reference term form
+		getConceptReferenceTerm().setDescription(comment);
 	}
 	
 	/**
@@ -135,8 +137,6 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	 */
 	@Deprecated
 	public ConceptSource getSource() {
-		if (getConceptReferenceTerm() == null)
-			return null;
 		return getConceptReferenceTerm().getConceptSource();
 	}
 	
@@ -149,8 +149,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	 */
 	@Deprecated
 	public void setSource(ConceptSource source) {
-		if (getConceptReferenceTerm() != null)
-			getConceptReferenceTerm().setConceptSource(source);
+		getConceptReferenceTerm().setConceptSource(source);
 	}
 	
 	/**
@@ -162,8 +161,6 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	 */
 	@Deprecated
 	public String getSourceCode() {
-		if (getConceptReferenceTerm() == null)
-			return null;
 		return getConceptReferenceTerm().getCode();
 	}
 	
@@ -176,8 +173,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	 */
 	@Deprecated
 	public void setSourceCode(String sourceCode) {
-		if (getConceptReferenceTerm() != null)
-			getConceptReferenceTerm().setCode(sourceCode);
+		getConceptReferenceTerm().setCode(sourceCode);
 	}
 	
 	/**
@@ -185,6 +181,8 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	 * @since 1.9
 	 */
 	public ConceptReferenceTerm getConceptReferenceTerm() {
+		if (conceptReferenceTerm == null)
+			conceptReferenceTerm = new ConceptReferenceTerm();
 		return conceptReferenceTerm;
 	}
 	

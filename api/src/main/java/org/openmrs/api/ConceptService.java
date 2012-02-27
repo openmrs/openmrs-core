@@ -51,15 +51,11 @@ import org.springframework.transaction.annotation.Transactional;
  * To get a list of concepts:
  * 
  * <pre>
- * 
- * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
  * To get a single concept:
- * 
+
  * <pre>
- * 
- * 
  * // if there is a concept row in the database with concept_id = 3845
  * Concept concept = Context.getConceptService().getConcept(3845);
  * 
@@ -180,6 +176,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @should create a new conceptName when the old name is changed
 	 * @should set a preferred name for each locale if none is marked
 	 * @should not fail when a duplicate name is edited to a unique value
+	 * @should create a reference term for a concept mapping on the fly when editing a concept
+	 * @should create a reference term for a concept mapping on the fly when creating a concept
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public Concept saveConcept(Concept concept) throws APIException;
@@ -1469,7 +1467,8 @@ public interface ConceptService extends OpenmrsService {
 	/**
 	 * Searches for concepts by the given parameters.
 	 * 
-	 * @param phrase matched to the start of any word in any of the names of a concept (if blank/null, matches all concepts)
+	 * @param phrase matched to the start of any word in any of the names of a concept (if
+	 *            blank/null, matches all concepts)
 	 * @param locales List<Locale> to restrict to
 	 * @param includeRetired boolean if false, will exclude retired concepts
 	 * @param requireClasses List<ConceptClass> to restrict to
@@ -1985,4 +1984,18 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
 	public List<ConceptReferenceTermMap> getReferenceTermMappingsTo(ConceptReferenceTerm term) throws APIException;
+	
+	/**
+	 * Gets the concept map type to be used as the default. It is specified by the
+	 * <code>concept.defaultConceptMapType</code> global property.
+	 * 
+	 * @since 1.9
+	 * @return the {@link ConceptMapType}
+	 * @throws APIException
+	 * @should return same as by default
+	 * @should return type as set in gp
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
+	public ConceptMapType getDefaultConceptMapType() throws APIException;
 }
