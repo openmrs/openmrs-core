@@ -543,7 +543,7 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
                  
-            <!-- All handler key to class mappings
+            <%-- All handler key to class mappings
             <table>
              <c:forEach var="h" items="${handlers }">
                 <tr name="handlerRow" id="handler_${h.key}">
@@ -556,7 +556,7 @@
                 </tr>
              </c:forEach>
             </table>
-            -->
+            --%>
         </td>
     </tr>
 	<tr id="conceptMapRow">

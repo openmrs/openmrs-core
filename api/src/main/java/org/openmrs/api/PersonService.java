@@ -1111,6 +1111,7 @@ public interface PersonService extends OpenmrsService {
 	 * 
 	 * @param personAddress PersonAddress to be created or updated
 	 * @return personAddress that was created or updated
+	 * @since 1.9
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public PersonAddress savePersonAddress(PersonAddress personAddress);
