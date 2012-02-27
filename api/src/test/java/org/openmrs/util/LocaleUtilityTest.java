@@ -325,7 +325,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
 		
 		// clear GP default locale
-		gp.setProperty("");
+		gp.setPropertyValue("");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 	}
 }
