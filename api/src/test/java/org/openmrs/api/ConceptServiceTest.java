@@ -2214,16 +2214,16 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotSame(name, term.getName());
 		Assert.assertEquals(1, term.getId().intValue());
 	}
-
+	
 	/**
-     * @see ConceptService#getConceptByName(String)
-     * @verifies return null given blank string
-     */
-    @Test
-    public void getConceptByName_shouldReturnNullGivenBlankString() throws Exception {
-	    Concept concept = conceptService.getConceptByName("");
-	    assertNull(concept);
-	    concept = conceptService.getConceptByName("  ");
-	    assertNull(concept);
-    }
+	 * @see ConceptService#getConceptByName(String)
+	 * @verifies return null given blank string
+	 */
+	@Test
+	public void getConceptByName_shouldReturnNullGivenBlankString() throws Exception {
+		Concept concept = conceptService.getConceptByName("");
+		assertNull(concept);
+		concept = conceptService.getConceptByName("  ");
+		assertNull(concept);
+	}
 }
