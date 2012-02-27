@@ -209,10 +209,12 @@ tr.bottom-encounter-in-visit td:last-child {
 														}
 
 														lastVisitId = visitId;
-													} else if(visitId == '') {
-														$j('td:eq(0)', trs[i]).html('<spring:message code="general.none" />');
-													} else{
+													}else if (visitId == lastVisitId){
 														$j('td:eq(0)', trs[i]).html('');
+													}
+													
+													if (visitId == '') {
+														$j('td:eq(0)', trs[i]).html('<spring:message code="general.none" />');
 													}
 												}
 											}
