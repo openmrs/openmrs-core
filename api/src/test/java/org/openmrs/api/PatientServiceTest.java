@@ -433,10 +433,18 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should delete type from database", method = "purgePatientIdentifierType(PatientIdentifierType)")
 	public void purgePatientIdentifierType_shouldDeleteTypeFromDatabase() throws Exception {
-		PatientIdentifierType type = patientService.getPatientIdentifierType(1);
+		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
+		
+		patientIdentifierType.setName("testing");
+		patientIdentifierType.setDescription("desc");
+		patientIdentifierType.setRequired(false);
+		
+		patientService.savePatientIdentifierType(patientIdentifierType);
+		
+		PatientIdentifierType type = patientService.getPatientIdentifierType(patientIdentifierType.getId());
 		
 		patientService.purgePatientIdentifierType(type);
-		assertNull(patientService.getPatientIdentifierType(1));
+		assertNull(patientService.getPatientIdentifierType(patientIdentifierType.getId()));
 	}
 	
 	/**
@@ -1744,7 +1752,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifier identifier = new PatientIdentifier("1234-4", new PatientIdentifierType(1), new Location(1));
 		identifier.setCreator(new User(1));
 		identifier.setDateCreated(new Date());
-		Context.getPatientService().getPatient(2).addIdentifier(identifier);
+		Patient patient = Context.getPatientService().getPatient(2);
+		patient.addIdentifier(identifier);
+		Context.getPatientService().savePatient(patient);
 		assertEquals(1, Context.getPatientService().getPatients("1234-4").size());
 	}
 	
@@ -1996,7 +2006,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifier identifier = new PatientIdentifier("1234-4", new PatientIdentifierType(1), new Location(1));
 		identifier.setCreator(new User(1));
 		identifier.setDateCreated(new Date());
-		Context.getPatientService().getPatient(2).addIdentifier(identifier);
+		Patient patient = Context.getPatientService().getPatient(2);
+		patient.addIdentifier(identifier);
+		Context.getPatientService().savePatient(patient);
 		assertEquals(1, Context.getPatientService().getPatients("12344").size());
 		assertEquals(1, Context.getPatientService().getPatients("1234-4").size());
 	}

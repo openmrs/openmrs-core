@@ -468,7 +468,8 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Provider duplicateProvider = service.getProvider(200);
 		
 		Provider existingProviderToEdit = service.getProvider(1);
+		existingProviderToEdit.setName("name");
 		existingProviderToEdit.setIdentifier(duplicateProvider.getIdentifier());
-		Assert.assertFalse(service.isProviderIdentifierUnique(duplicateProvider));
+		Assert.assertFalse(service.isProviderIdentifierUnique(existingProviderToEdit));
 	}
 }

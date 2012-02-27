@@ -160,11 +160,6 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "ja"));
 		
 		Assert.assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
-		
-		// reset the locale
-		gp.setProperty("");
-		Context.getAdministrationService().saveGlobalProperty(gp);
-		
 	}
 	
 	/**

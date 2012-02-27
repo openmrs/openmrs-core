@@ -1196,10 +1196,21 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void purgePerson_shouldDeletePersonFromTheDatabase() throws Exception {
 		PersonService personService = Context.getPersonService();
 		
-		Person person = personService.getPerson(8);
+		User user = Context.getAuthenticatedUser();
+		Person person = new Person();
+		person.setPersonCreator(user);
+		person.setPersonDateCreated(new Date());
+		person.setPersonChangedBy(user);
+		person.setPersonDateChanged(new Date());
+		person.setGender("F");
+		Assert.assertNull(person.getId());
+		person.addName(new PersonName("givenName", "middleName", "familyName"));
+		person = personService.savePerson(person);
+		Assert.assertNotNull(person.getId());
+		
 		personService.purgePerson(person);
 		
-		Person deletedPerson = personService.getPerson(8);
+		Person deletedPerson = personService.getPerson(person.getId());
 		Assert.assertNull(deletedPerson);
 	}
 	
@@ -1209,12 +1220,19 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should delete person attribute type from database", method = "purgePersonAttributeType(PersonAttributeType)")
 	public void purgePersonAttributeType_shouldDeletePersonAttributeTypeFromDatabase() throws Exception {
-		PersonService personService = Context.getPersonService();
+		PersonService service = Context.getPersonService();
 		
-		PersonAttributeType personAttributeType = personService.getPersonAttributeType(1);
-		personService.purgePersonAttributeType(personAttributeType);
+		PersonAttributeType pat = new PersonAttributeType();
+		pat.setName("attr type name");
+		pat.setDescription("attr type desc");
 		
-		PersonAttributeType deletedPersonAttributeType = personService.getPersonAttributeType(1);
+		service.savePersonAttributeType(pat);
+		
+		assertNotNull(pat.getId());
+		
+		service.purgePersonAttributeType(pat);
+		
+		PersonAttributeType deletedPersonAttributeType = service.getPersonAttributeType(pat.getId());
 		Assert.assertNull(deletedPersonAttributeType);
 	}
 	
@@ -1468,10 +1486,16 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void purgeRelationshipType_shouldDeleteRelationshipTypeFromTheDatabase() throws Exception {
 		PersonService personService = Context.getPersonService();
 		
-		RelationshipType relationshipType = personService.getRelationshipType(1);
+		RelationshipType relationshipType = new RelationshipType();
+		relationshipType.setDescription("Test relationship");
+		relationshipType.setaIsToB("Sister");
+		relationshipType.setbIsToA("Brother");
+		relationshipType = personService.saveRelationshipType(relationshipType);
+		assertNotNull(relationshipType.getId());
+		
 		personService.purgeRelationshipType(relationshipType);
 		
-		RelationshipType deletedRelationshipType = personService.getRelationshipType(1);
+		RelationshipType deletedRelationshipType = personService.getRelationshipType(relationshipType.getId());
 		Assert.assertNull(deletedRelationshipType);
 	}
 	

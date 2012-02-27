@@ -719,15 +719,4 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return the max field length of a property
 	 */
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
-	
-	/**
-	 * Performs validation in manual flush mode to prevent any premature flushes.
-	 * <p>
-	 * Calls {@link ValidateUtil#validate(Object)} on the given object.
-	 * 
-	 * @param object
-	 * @should pass for a valid object
-	 * @should fail for an invalid object
-	 */
-	public void validateInManualFlushMode(Object object);
 }
