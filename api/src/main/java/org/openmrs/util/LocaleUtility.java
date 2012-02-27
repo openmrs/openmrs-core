@@ -62,6 +62,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	 * @should not fail with empty global property value
 	 * @should not fail with bogus global property value
 	 * @should return locale object for global property
+	 * @should not cache locale when session is not open
 	 */
 	public static Locale getDefaultLocale() {
 		if (defaultLocaleCache == null) {
@@ -84,12 +85,16 @@ public class LocaleUtility implements GlobalPropertyListener {
 					log.warn("Unable to get locale global property value. " + t.getMessage());
 					log.trace("Unable to get locale global property value", t);
 				}
+				
+				// if we weren't able to load the locale from the global property,
+				// use the default one
+				if (defaultLocaleCache == null)
+					defaultLocaleCache = fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);
+			} else {
+				// if session is not open, return the default locale without caching
+				return fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);
 			}
 			
-			// if we weren't able to load the locale from the global property,
-			// use the default one
-			if (defaultLocaleCache == null)
-				defaultLocaleCache = fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);
 		}
 		
 		return defaultLocaleCache;

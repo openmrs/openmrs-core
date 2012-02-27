@@ -156,6 +156,7 @@ function containsError(element) {
 		<td>
 			<spring:bind path="opts.defaultLocale">
 				<select name="${status.expression}">
+					<option value=""></option>
 					<c:forEach items="${languages}" var="locale">
 						<option value="${locale}" <c:if test="${locale == status.value}">selected</c:if>>${locale.displayName}</option>
 					</c:forEach>
