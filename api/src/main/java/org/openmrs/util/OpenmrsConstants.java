@@ -970,6 +970,11 @@ public final class OpenmrsConstants {
 	public static final String GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW = "dashboard.encounters.maximumNumberToShow";
 	
 	/**
+	 * Global property name for the default ConceptMapType which is set automatically when no other is set manually.
+	 */
+	public static final String GP_DEFAULT_CONCEPT_MAP_TYPE = "concept.defaultConceptMapType";
+	
+	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
 	 */
 	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/CBC/PKCS5Padding";
@@ -1400,6 +1405,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT, "7",
 		        "Maximum number of failed logins allowed after which username is locked out"));
+		
+		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "same-as",
+		        "Default concept map type which is used when no other is set"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

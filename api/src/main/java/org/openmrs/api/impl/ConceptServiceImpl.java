@@ -2137,12 +2137,18 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	public ConceptMapType getDefaultConceptMapType() throws APIException {
 		//Defaults to same-as if the gp is not set.
-		String defaultConceptMapType = Context.getAdministrationService().getGlobalProperty("concept.defaultConceptMapType",
-		    "same-as");
+		String defaultConceptMapType = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE);
+		if (defaultConceptMapType == null) {
+			throw new APIException("The default concept map type is not set. You need to set the '"
+			        + OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE + "' global property.");
+		}
+		
 		ConceptMapType conceptMapType = dao.getConceptMapTypeByName(defaultConceptMapType);
 		if (conceptMapType == null) {
 			throw new APIException("The default concept map type (name: " + defaultConceptMapType
-			        + ") does not exist! You need to set the 'concept.defaultConceptMapType' global property.");
+			        + ") does not exist! You need to set the '" + OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE
+			        + "' global property.");
 		}
 		return conceptMapType;
 	}
