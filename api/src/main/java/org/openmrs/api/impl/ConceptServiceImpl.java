@@ -406,7 +406,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#getConceptByName(java.lang.String)
 	 */
 	public Concept getConceptByName(String name) {
-		if (name == null)
+		if (!StringUtils.hasText(name))
 			return null;
 		
 		List<Concept> concepts = getConcepts(name, Context.getLocale(), false, null, null);

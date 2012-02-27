@@ -1550,4 +1550,16 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		duplicateNameToEdit.setName("new unique name");
 		conceptService.saveConcept(conceptToEdit);
 	}
+
+	/**
+     * @see ConceptService#getConceptByName(String)
+     * @verifies return null given blank string
+     */
+    @Test
+    public void getConceptByName_shouldReturnNullGivenBlankString() throws Exception {
+	    Concept concept = conceptService.getConceptByName("");
+	    assertNull(concept);
+	    concept = conceptService.getConceptByName("  ");
+	    assertNull(concept);
+    }
 }
