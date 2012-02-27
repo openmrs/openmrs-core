@@ -27,7 +27,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
@@ -46,7 +45,6 @@ import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.validator.ValidateUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -351,21 +349,6 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			log.error("Uh oh, couldn't find a class in the hibernate configuration named: " + aClass.getName());
 		
 		return persistentClass.getTable().getColumn(new Column(fieldName)).getLength();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationDAO#validateInManualFlushMode(java.lang.Object)
-	 */
-	@Override
-	public void validateInManualFlushMode(Object object) {
-		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getFlushMode();
-		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
-		try {
-			ValidateUtil.validate(object);
-		}
-		finally {
-			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
-		}
 	}
 	
 	@Override

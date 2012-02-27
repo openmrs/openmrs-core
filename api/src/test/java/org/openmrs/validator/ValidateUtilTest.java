@@ -1,6 +1,7 @@
 package org.openmrs.validator;
 
-import java.util.Collections;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.openmrs.Location;
@@ -9,10 +10,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
-import org.springframework.validation.Validator;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.springframework.validation.Errors;
 
 /**
  * Tests methods on the {@link ValidateUtil} class.
@@ -25,11 +23,8 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw APIException if errors occur during validation", method = "validate(Object)")
 	public void validate_shouldThrowAPIExceptionIfErrorsOccurDuringValidation() throws Exception {
-		ValidateUtil util = new ValidateUtil();
-		util.setValidators(Collections.singletonList((Validator) new LocationValidator()));
-		
 		Location loc = new Location();
-		ValidateUtil.invokeValidatorInManualFlushMode(loc);
+		ValidateUtil.validate(loc);
 	}
 	
 	/**
@@ -58,5 +53,18 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		BindException errors = new BindException(patientIdentifierType, "patientIdentifierType");
 		ValidateUtil.validateFieldLengths(errors, PatientIdentifierType.class, "name");
 		assertFalse(errors.hasFieldErrors("name"));
+	}
+	
+	/**
+	 * @see ValidateUtil#validate(Object,Errors)
+	 * @verifies populate errors if object invalid
+	 */
+	@Test
+	public void validate_shouldPopulateErrorsIfObjectInvalid() throws Exception {
+		Location loc = new Location();
+		Errors errors = new BindException(loc, "");
+		ValidateUtil.validate(loc, errors);
+		
+		assertTrue(errors.hasErrors());
 	}
 }

@@ -109,12 +109,26 @@ public class ValidateUtil {
 	}
 	
 	/**
+	 * Test the given object against all validators that are registered as compatible with the
+	 * object class
+	 * 
+	 * @param obj the object to validate
+	 * @param errors the validation errors found
+	 * @since 1.9
+	 * @should populate errors if object invalid
+	 */
+	public static void validate(Object obj, Errors errors) {
+		for (Validator validator : getValidators(obj)) {
+			validator.validate(obj, errors);
+		}
+	}
+	
+	/**
 	 * Test the field lengths are valid
-	 *
+	 * 
 	 * @param errors
 	 * @param aClass the class of the object being tested
 	 * @param fields a var args that contains all of the fields from the model
-	 *
 	 * @should pass validation if regEx field length is not too long
 	 * @should fail validation if regEx field length is too long
 	 * @should fail validation if name field length is too long
@@ -131,16 +145,5 @@ public class ValidateUtil {
 				errors.rejectValue(field, "error.exceededMaxLengthOfField", new Object[] { length }, null);
 			}
 		}
-	}
-	
-	/**
-	 * Performs validation in manual flush mode to prevent any premature flushes.
-	 * <p>
-	 * Calls {@link ValidateUtil#validate(Object)} on the given object.
-	 * 
-	 * @param obj the object to be validated.
-	 */
-	public static void invokeValidatorInManualFlushMode(Object obj) throws APIException {
-		Context.getAdministrationService().validateInManualFlushMode(obj);
 	}
 }

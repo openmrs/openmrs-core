@@ -508,7 +508,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationService ls = Context.getLocationService();
 		
 		// fetch the encounter to delete from the db
-		Location locationToDelete = ls.getLocation(1);
+		Location locationToDelete = ls.getLocation(4);
 		
 		ls.purgeLocation(locationToDelete);
 		
@@ -842,7 +842,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationService ls = Context.getLocationService();
 		
 		// Fetch the encounter to delete from the db
-		LocationTag tag = ls.getLocationTag(1);
+		LocationTag tag = ls.getLocationTag(5);
 		
 		ls.purgeLocationTag(tag);
 		

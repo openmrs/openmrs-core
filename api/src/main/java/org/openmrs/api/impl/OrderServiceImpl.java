@@ -41,7 +41,6 @@ import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.order.DrugOrderSupport;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.RegimenSuggestion;
-import org.openmrs.validator.ValidateUtil;
 import org.springframework.util.StringUtils;
 
 /**
@@ -72,8 +71,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
 	public Order saveOrder(Order order) throws APIException {
-		ValidateUtil.invokeValidatorInManualFlushMode(order);
-		
 		return dao.saveOrder(order);
 	}
 	

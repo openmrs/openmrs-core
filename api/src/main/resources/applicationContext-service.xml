@@ -43,7 +43,7 @@
 		transactionAttributeSource is what reads/remembers all Transactional attributes of a given 
 		method or class (which is done during initialization)
 	-->
-	<bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean id="transactionInterceptor" class="org.openmrs.aop.FlushSessionTransactionInterceptor">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -673,7 +673,7 @@
 
 	<!--  **************************  TRANSACTION MANAGER CONFIGURATION  *************************  -->
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	<bean id="transactionManager" class="org.openmrs.api.db.hibernate.HibernateTransactionManagerFlushOnCommit">
 		<property name="sessionFactory"><ref local="sessionFactory"/></property>
 	</bean>
 

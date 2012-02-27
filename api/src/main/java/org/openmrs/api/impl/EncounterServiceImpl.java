@@ -683,7 +683,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws APIException {
-		ValidateUtil.invokeValidatorInManualFlushMode(encounterRole);
 		dao.saveEncounterRole(encounterRole);
 		return encounterRole;
 	}
