@@ -74,7 +74,12 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 			Context.requirePrivilege(PrivilegeConstants.EDIT_COHORTS);
 		}
 		if (cohort.getName() == null) {
-			throw new APIException("Cohort name is required");
+			throw new APIException(Context.getMessageSourceService().getMessage("Cohort.save.nameRequired", null,
+			    "Cohort name is required", Context.getLocale()));
+		}
+		if (cohort.getDescription() == null) {
+			throw new APIException(Context.getMessageSourceService().getMessage("Cohort.save.descriptionRequired", null,
+			    "Cohort description is required", Context.getLocale()));
 		}
 		if (log.isInfoEnabled())
 			log.info("Saving cohort " + cohort);
