@@ -63,15 +63,12 @@ public class ConceptFormValidator implements Validator {
 				//this mapping has been removed or ignore it
 				if (map.getConceptReferenceTerm() == null)
 					continue;
-				//if this is a term getting created on the fly
-				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {
-					if (!StringUtils.hasText(map.getConceptReferenceTerm().getCode()))
-						errors.rejectValue("conceptMappings[" + x + "]", "ConceptReferenceTerm.error.codeRequired");
-					else if (map.getConceptMapType() == null)
-						errors.rejectValue("conceptMappings[" + x + "]", "ConceptReferenceTerm.error.mapTypeRequired");
-					else if (map.getConceptReferenceTerm().getConceptSource() == null)
-						errors.rejectValue("conceptMappings[" + x + "]", "ConceptReferenceTerm.error.sourceRequired");
-				}
+				//The user should select from existing reference terms
+				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null)
+					errors.rejectValue("conceptMappings[" + x + "]", "ConceptReferenceTerm.term.notInDatabase");
+				
+				if (map.getConceptMapType() == null)
+					errors.rejectValue("conceptMappings[" + x + "].conceptMapType", "Concept.map.typeRequired");
 			}
 			
 			boolean foundAtLeastOneFullySpecifiedName = false;

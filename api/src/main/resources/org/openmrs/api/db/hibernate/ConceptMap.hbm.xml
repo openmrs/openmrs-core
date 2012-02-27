@@ -18,7 +18,7 @@
  
  		<many-to-one name="concept" column="concept_id" class="Concept" not-null="true"/>
 
-		<many-to-one name="conceptReferenceTerm" column="concept_reference_term_id" class="ConceptReferenceTerm" not-null="true" />
+		<many-to-one name="conceptReferenceTerm" column="concept_reference_term_id" class="ConceptReferenceTerm" not-null="true" cascade="save-update" />
 		
 		<many-to-one name="conceptMapType" column="concept_map_type_id" class="ConceptMapType" not-null="true" />
 		
