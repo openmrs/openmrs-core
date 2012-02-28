@@ -135,8 +135,11 @@ public class CustomResourceLoader {
 		for (File possibleFile : propertiesDir.listFiles()) {
 			if (possibleFile.getName().startsWith(PREFIX) && possibleFile.getName().endsWith(SUFFIX)) {
 				Locale locale = parseLocaleFrom(possibleFile.getName(), PREFIX);
-				getResource().put(locale, getFileSystemResource(possibleFile.getAbsolutePath(), PREFIX, locale));
-				getAvailablelocales().add(locale);
+				ResourceBundle rb = getFileSystemResource(possibleFile.getAbsolutePath(), PREFIX, locale);
+				if (rb != null) {
+					getResource().put(locale, rb);
+					getAvailablelocales().add(locale);
+				}
 			}
 		}
 		if (log.isWarnEnabled() && (getResource().size() == 0)) {
