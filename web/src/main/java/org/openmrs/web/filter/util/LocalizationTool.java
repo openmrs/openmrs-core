@@ -16,6 +16,7 @@ package org.openmrs.web.filter.util;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.generic.ResourceTool;
 import org.openmrs.util.LocaleUtility;
@@ -27,6 +28,11 @@ import org.openmrs.util.LocaleUtility;
 public class LocalizationTool extends ResourceTool {
 	
 	/**
+	 * The default message resource bundle to use, this is english
+	 */
+	private static ResourceBundle defaultResourceBundle = null;
+	
+	/**
 	 * Its need to override base class method to be able to change its locale property outside the
 	 * class hierarchy
 	 * 
@@ -35,6 +41,15 @@ public class LocalizationTool extends ResourceTool {
 	@Override
 	public void setLocale(Locale locale) {
 		super.setLocale(locale);
+	}
+	
+	/**
+	 * @return the defaultResourceBundle
+	 */
+	public static ResourceBundle getDefaultResourceBundle() {
+		if (defaultResourceBundle == null)
+			defaultResourceBundle = CustomResourceLoader.getInstance(null).getResourceBundle(Locale.ENGLISH);
+		return defaultResourceBundle;
 	}
 	
 	/**
@@ -49,6 +64,26 @@ public class LocalizationTool extends ResourceTool {
 		if (baseName == null || locale == null) {
 			return null;
 		}
-		return CustomResourceLoader.getInstance(null).getResourceBundle(locale);
+		//This messages_XX.properties file doesn't exist, default to messages.properties
+		ResourceBundle rb = CustomResourceLoader.getInstance(null).getResourceBundle(locale);
+		if (rb == null)
+			rb = getDefaultResourceBundle();
+		
+		return rb;
+	}
+	
+	/**
+	 * @see org.apache.velocity.tools.generic.ResourceTool#get(java.lang.Object, java.lang.String[],
+	 *      java.lang.Object)
+	 */
+	@Override
+	public Object get(Object code, String[] resourceNamePrefixes, Object locale) {
+		Object msg = super.get(code, resourceNamePrefixes, locale);
+		//if code's translation is blank, use the english equivalent
+		if (msg == null || StringUtils.isBlank(msg.toString())) {
+			msg = super.get(code, resourceNamePrefixes, getDefaultResourceBundle().getLocale().toString());
+		}
+		
+		return msg;
 	}
 }
