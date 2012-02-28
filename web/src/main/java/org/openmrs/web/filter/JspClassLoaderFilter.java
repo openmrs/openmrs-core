@@ -43,7 +43,7 @@ public class JspClassLoaderFilter implements Filter {
 	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-	        ServletException {
+	                                                                                         ServletException {
 		// Set thread's class loader
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
