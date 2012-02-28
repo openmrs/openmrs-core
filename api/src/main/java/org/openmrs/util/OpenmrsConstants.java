@@ -90,7 +90,7 @@ public final class OpenmrsConstants {
 		
 		Properties props = new Properties();
 		
-		java.net.URL url  = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
+		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
 		
 		if (url == null) {
 			log.error("Unable to find MANIFEST.MF file built by maven");
