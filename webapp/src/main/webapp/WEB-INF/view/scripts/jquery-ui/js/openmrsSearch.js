@@ -186,7 +186,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	verboseCheckBox = div.find("#includeVerbose");
 		    	spinnerObj = div.find("#spinner");
 		    	spinnerObj.css("visibility", "hidden");
-		    	spinnerObj.attr("src", openmrsContextPath+"/images/loading.gif");
+		    	spinnerObj.prop("src", openmrsContextPath+"/images/loading.gif");
 		    	minCharErrorObj = div.find("#minCharError");
 		    	minCharErrorObj.html(omsgs.minCharRequired.replace("_REQUIRED_NUMBER_", o.minLength));
 		    	notification = div.find("#searchWidgetNotification");
@@ -225,7 +225,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				});
 			    
 			    if(userProperties.showRetired)
-			    	tmp.attr('checked', true);
+			    	tmp.prop('checked', true);
 		    }
 		    
 		    if(o.showIncludeVerbose) {
@@ -240,7 +240,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	});
 			    
 		    	if(userProperties.showVerbose)
-		    		tmp.attr('checked', true);
+		    		tmp.prop('checked', true);
 		    }
 		    
 		    //this._trigger('initialized');
@@ -354,7 +354,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    var numberOfTextInputs = 0;
 		    for(var x in inputs){
 		    	var inputField = inputs[x];
-		    	if(inputField && inputField.type == 'text' && $j(inputField).attr("disabled") == false && 
+		    	if(inputField && inputField.type == 'text' && $j(inputField).prop("disabled") == false && 
 		    			$j(inputField).is(":visible") && $j(inputField).css("visibility") != "hidden")
 		    		numberOfTextInputs++;
 		    }
@@ -373,7 +373,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    if(self.options.searchPlaceholder){
 		        //The value should not contain line feeds or carriage returns.
 		        var textShown=self.options.searchPlaceholder.toString().replace(/(\r\n|\n|\r)/gm,"");
-		        $j('#inputNode').attr('placeHolder', textShown);
+		        $j('#inputNode').prop('placeHolder', textShown);
 		    }
 		    
 		    //Create an array of arrays from the array of objects if we have any initial data
@@ -471,7 +471,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				    		}
 		    		}}
 		    		
-		    		if(!$j(verboseCheckBox).attr('checked')){
+		    		if(!$j(verboseCheckBox).prop('checked')){
 		    			$j('.verbose').hide();
 		    		}
 		    	},
@@ -485,7 +485,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    					self._unHighlightRow(currentNode);
 		    				}
 			    			self.hoverRowSelection = iDisplayIndexFull;
-			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).attr('checked'))
+			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).prop('checked'))
 			    				$j(this.nextSibling).addClass('row_highlight');
 		    			}, function(){
 		    				if(self.curRowSelection != null){
@@ -497,7 +497,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			    			self.hoverRowSelection = null;
 			    			if(self.curRowSelection != null && self._table.fnGetPosition(this) == self.curRowSelection)
 			    				return;
-			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).attr('checked'))
+			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).prop('checked'))
 			    				$j(this.nextSibling).removeClass('row_highlight');
 		    			}
 		    		);
@@ -670,7 +670,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				actualBatchSize = matchCount-this._results.length;
 			
 			this.options.searchHandler(searchText, this._addMoreRows(curCallCount, searchText, matchCount, startIndex, curSubCallCount),
-				false, {includeVoided: this.options.showIncludeVoided && checkBox.attr('checked'),
+				false, {includeVoided: this.options.showIncludeVoided && checkBox.prop('checked'),
 				start: startIndex, length: actualBatchSize});
 					
 			if(inSerialMode)
