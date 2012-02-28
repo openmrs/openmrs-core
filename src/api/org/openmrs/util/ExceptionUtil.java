@@ -18,6 +18,7 @@ import org.openmrs.api.APIAuthenticationException;
 
 /**
  * Utility methods for dealing with exceptions
+ * @since 1.6.5
  */
 public class ExceptionUtil {
 	
