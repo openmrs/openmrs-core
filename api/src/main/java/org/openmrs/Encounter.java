@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openmrs.EncounterProvider;
 import org.openmrs.api.context.Context;
 
 /**
@@ -491,14 +492,28 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * Gets all unvoided providers, grouped by role.
+	 * 
+	 * @return map of unvoided providers keyed by roles
+	 * @since 1.9
+	 * @should return empty map if no unvoided providers
+	 * @should return all roles and unvoided providers
+	 */
+	public Map<EncounterRole, Set<Provider>> getProvidersByRoles() {
+		return getProvidersByRoles(false);
+	}
+	
+	/**
 	 * Gets all providers, grouped by role.
 	 * 
+	 * @param includeVoided set to true to include voided providers, else set to false
 	 * @return map of providers keyed by roles
 	 * @since 1.9
 	 * @should return empty map if no providers
 	 * @should return all roles and providers
 	 */
-	public Map<EncounterRole, Set<Provider>> getProvidersByRoles() {
+	public Map<EncounterRole, Set<Provider>> getProvidersByRoles(boolean includeVoided) {
+		
 		Map<EncounterRole, Set<Provider>> providers = new HashMap<EncounterRole, Set<Provider>>();
 		for (EncounterProvider encounterProvider : encounterProviders) {
 			Set<Provider> list = providers.get(encounterProvider.getEncounterRole());
@@ -506,28 +521,55 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 				list = new LinkedHashSet<Provider>();
 				providers.put(encounterProvider.getEncounterRole(), list);
 			}
+			
+			if (!includeVoided && encounterProvider.getVoided()) {
+				continue;
+			}
+			
 			list.add(encounterProvider.getProvider());
 		}
+		
 		return providers;
+	}
+	
+	/**
+	 * Gets unvoided providers who had the given role in this encounter.
+	 * 
+	 * @param role
+	 * @return unvoided providers or empty set if none was found
+	 * @since 1.9
+	 * @should return unvoided providers for role
+	 * @should return empty set for no role
+	 * @should return empty set for null role
+	 */
+	public Set<Provider> getProvidersByRole(EncounterRole role) {
+		return getProvidersByRole(role, false);
 	}
 	
 	/**
 	 * Gets providers who had the given role in this encounter.
 	 * 
 	 * @param role
+	 * @param includeVoided set to true to include voided providers, else set to false
 	 * @return providers or empty set if none was found
 	 * @since 1.9
 	 * @should return providers for role
 	 * @should return empty set for no role
 	 * @should return empty set for null role
 	 */
-	public Set<Provider> getProvidersByRole(EncounterRole role) {
+	public Set<Provider> getProvidersByRole(EncounterRole role, boolean includeVoided) {
 		Set<Provider> providers = new LinkedHashSet<Provider>();
+		
 		for (EncounterProvider encounterProvider : encounterProviders) {
 			if (encounterProvider.getEncounterRole().equals(role)) {
+				if (!includeVoided && encounterProvider.getVoided()) {
+					continue;
+				}
+				
 				providers.add(encounterProvider.getProvider());
 			}
 		}
+		
 		return providers;
 	}
 	
@@ -573,7 +615,9 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 			EncounterProvider encounterProvider = it.next();
 			if (encounterProvider.getEncounterRole().equals(role)) {
 				if (!encounterProvider.getProvider().equals(provider)) {
-					it.remove();
+					encounterProvider.setVoided(true);
+					encounterProvider.setDateVoided(new Date());
+					encounterProvider.setVoidedBy(Context.getAuthenticatedUser());
 				} else {
 					hasProvider = true;
 				}
@@ -595,7 +639,9 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	public void removeProvider(EncounterRole role, Provider provider) {
 		for (EncounterProvider encounterProvider : encounterProviders) {
 			if (encounterProvider.getEncounterRole().equals(role) && encounterProvider.getProvider().equals(provider)) {
-				encounterProviders.remove(encounterProvider);
+				encounterProvider.setVoided(true);
+				encounterProvider.setDateVoided(new Date());
+				encounterProvider.setVoidedBy(Context.getAuthenticatedUser());
 				return;
 			}
 		}
