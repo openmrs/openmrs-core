@@ -14,17 +14,22 @@
 package org.openmrs.api.context;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Location;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.UserService;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Validator;
 
 /**
@@ -185,5 +190,28 @@ public class ContextTest extends BaseContextSensitiveTest {
 		PatientService ps1 = Context.getService(PatientService.class);
 		PatientService ps2 = Context.getService(PatientService.class);
 		Assert.assertTrue(ps1 == ps2);
+	}
+	
+	/**
+	 * @see {@link Context#becomeUser(String)}
+	 */
+	@Test
+	@Verifies(value = "change locale when become another user", method = "becomeUser(String)")
+	public void becomeUser_shouldChangeLocaleWhenBecomeAnotherUser() throws Exception {
+		UserService userService = Context.getUserService();
+		
+		User user = new User(new Person());
+		user.addName(new PersonName("givenName", "middleName", "familyName"));
+		user.getPerson().setGender("M");
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, "pt_BR");
+		userService.saveUser(user, "TestPass123");
+		
+		Context.becomeUser(user.getSystemId());
+		
+		Locale locale = Context.getLocale();
+		Assert.assertEquals("pt", locale.getLanguage());
+		Assert.assertEquals("BR", locale.getCountry());
+		
+		Context.logout();
 	}
 }
