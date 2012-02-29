@@ -2090,7 +2090,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Context.getConceptService().saveConcept(concept3);
 		
 		//when
-		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en"));
+		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en"), false);
 		
 		//then
 		Assert.assertEquals(3, concepts.size());
@@ -2120,7 +2120,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Context.getConceptService().saveConcept(concept3);
 		
 		//when
-		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en", "US"));
+		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en", "US"), false);
 		
 		//then
 		Assert.assertEquals(2, concepts.size());
