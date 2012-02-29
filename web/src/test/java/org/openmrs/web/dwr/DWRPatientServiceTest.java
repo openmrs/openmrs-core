@@ -14,6 +14,7 @@
 package org.openmrs.web.dwr;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -52,6 +53,46 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 		DWRPatientService dwrService = new DWRPatientService();
 		Collection<Object> resultObjects = dwrService.findPatients("Super", false);
 		Assert.assertEquals(1, resultObjects.size());
+	}
+	
+	/**
+	 * @see {@link DWRPatientService#findCountAndPatients(String,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should not signal for a new search if it is not the first ajax call", method = "findCountAndPatients(String,Integer,Integer,null)")
+	public void findCountAndPatients_shouldNotSignalForANewSearchIfItIsNotTheFirstAjaxCall() throws Exception {
+		DWRPatientService dwrService = new DWRPatientService();
+		Map<String, Object> resultObjects = dwrService.findCountAndPatients("Joht", 0, 10, true);
+		Assert.assertEquals(0, resultObjects.get("count"));
+		Assert.assertEquals("Joh", resultObjects.get("searchAgain"));
+		Assert.assertNotNull(resultObjects.get("notification"));
+	}
+	
+	/**
+	 * @see {@link DWRPatientService#findCountAndPatients(String,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should not signal for a new search if the new search value has no matches", method = "findCountAndPatients(String,Integer,Integer,null)")
+	public void findCountAndPatients_shouldNotSignalForANewSearchIfTheNewSearchValueHasNoMatches() throws Exception {
+		DWRPatientService dwrService = new DWRPatientService();
+		Map<String, Object> resultObjects = dwrService.findCountAndPatients("Jopt", 0, 10, true);
+		Assert.assertEquals(0, resultObjects.get("count"));
+		Assert.assertNull(resultObjects.get("searchAgain"));
+		Assert.assertNull(resultObjects.get("notification"));
+	}
+	
+	/**
+	 * @see {@link DWRPatientService#findCountAndPatients(String,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should signal for a new search if the new search value has matches and is a first call", method = "findCountAndPatients(String,Integer,Integer,null)")
+	public void findCountAndPatients_shouldSignalForANewSearchIfTheNewSearchValueHasMatchesAndIsAFirstCall()
+	        throws Exception {
+		DWRPatientService dwrService = new DWRPatientService();
+		Map<String, Object> resultObjects = dwrService.findCountAndPatients("Joht", 1, 10, true);
+		Assert.assertEquals(0, resultObjects.get("count"));
+		Assert.assertNull(resultObjects.get("searchAgain"));
+		Assert.assertNull(resultObjects.get("notification"));
 	}
 	
 }
