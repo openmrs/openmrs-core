@@ -445,6 +445,9 @@ function addConceptMapping(initialSizeOfClonedSiblings){
 			}
 		}
 		
+		if(!$j("#headerRow").is(":visible"))
+			$j(".hideableEle").show();
+		
 		//set up the auto complete
 		addAutoComplete('term[' + index + '].code', 'term[' + index + '].source', inputNamePrefix+'[' + index + '].conceptReferenceTerm', 'term[' + index + '].name')
 	}
