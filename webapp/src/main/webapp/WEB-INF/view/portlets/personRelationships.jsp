@@ -1,5 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<openmrs:htmlInclude file="/dwr/engine.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRRelationshipService.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" />
 
@@ -14,7 +16,6 @@
 </style>
 
 <script type="text/javascript">
-var prefIdentifierElementId = null;
 	var personA=null;
 	
 	$j(document).ready(function() {
@@ -38,18 +39,13 @@ var prefIdentifierElementId = null;
 		});
 		
 		$j("#add_new_person").click(function(){
-		document.getElementById('find_person').style.visibility='hidden';
-		document.getElementById('add_new_person').style.visibility='hidden';
-			showDiv('create_new_person');
-			
-			
+			$j('#find_person').hide();
+			$j('#create_new_person').show();
 		});
-		$j("#find_existing_person").click(function(){		
-			document.getElementById('find_person').style.visibility='visible';
-			document.getElementById('add_new_person').style.visibility='visible';
-				hideDiv('create_new_person');
-				
-			});
+		$j("#find_existing_person").click(function(){
+			$j('#find_person').show();
+			$j('#create_new_person').hide();
+		});
 		
 		$j('#voidRelationship').dialog({
 			autoOpen: false,
@@ -158,25 +154,35 @@ var prefIdentifierElementId = null;
 			showDiv("relationshipTable");
 		}
 	}
-	function handleNewRelationship() {		
-		if(document.getElementById('find_person').style.visibility=='hidden')
-			{
-		var starterDateString = $j("#add_birth_start_date").val();
-	var birthdate = parseSimpleDate(starterDateString, '<openmrs:datePattern />');
-	var age=getAge(birthdate);
-	 DWRPersonService.createPerson(document.getElementById('first_name').value, document.getElementById('middle_name').value,document.getElementById('family_name').value,starterDateString , "dd/mm/yyyy", age,
-			 prefIdentifierElementId,{callback:function(personObject) {
-				 personA=personObject.personId;				
-				 handleAddRelationship();}});
-	 
-	 clearNewPerson();
-			}
-		else
-			{
-			personA=$j("#add_rel_target_id").val();
+	function handleNewRelationship() {
+		if ( $j('#find_person').is(':visible') ) {
+			personA = $j("#add_rel_target_id").val();
 	 		handleAddRelationship();
-	 		
+		} else {
+			var starterDateString = $j("#add_birth_start_date").val();
+			var birthdate = parseSimpleDate(starterDateString, '<openmrs:datePattern />');
+			var age = getAge(birthdate);
+			var gender = $j('input[name="add_new_gender"]:checked').val();
+			var givenName = $j('#first_name').val();
+			var middleName = $j('#middle_name').val();
+			var familyName = $j('#family_name').val();
+			if (givenName == null || givenName == '' || familyName == null || familyName == '') {
+				window.alert('<spring:message code="Relationship.createPerson.nameRequired"/>');
+				return;
 			}
+			if (gender == null || gender == '') {
+				window.alert('<spring:message code="Person.gender.required"/>');
+				return;
+			}
+			DWRPersonService.createPerson(givenName, middleName, familyName,
+										  starterDateString, "<openmrs:datePattern/>", age, gender,
+					 					  { callback: function(personObject) {
+						 						personA=personObject.personId;				
+						 						handleAddRelationship();
+						 					} });
+			 
+			clearNewPerson();
+		}
 	}
 	function handleAddRelationship() {
 		
@@ -221,10 +227,9 @@ var prefIdentifierElementId = null;
 		$j("#middle_name").val("");
 		$j("#family_name").val("");
 		$j("#add_birth_start_date").val("");
-		document.getElementById(prefIdentifierElementId).checked=false;
-		document.getElementById('find_person').style.visibility='visible';
-		document.getElementById('add_new_person').style.visibility='visible';
-			hideDiv('create_new_person');
+		$j('input[name="add_new_gender"]:checked').removeAttr('checked');
+		$j('#find_person').show();
+		$j('#create_new_person').hide();
 	}
 	function editRelationshipDialog(relId) {
 		$j("#editRelationship .relationship_desc").html(relationships[relId].desc);
@@ -268,18 +273,6 @@ var prefIdentifierElementId = null;
 		document.getElementById('add_relationship_name').innerHTML = label;
 		showDiv('add_rel_details');
 	}
-	/**
-	 * Unchecks the current preferred patientIdentifier and checks the newly selected one
-	 * whenever a user clicks the radio buttons for the patientidentifiers.
-	 * @param radioElement the id of the radioButton for the selected identifier checkbox
-	 */
-	function updatePreferred(radioElement){
-		if(prefIdentifierElementId && document.getElementById(prefIdentifierElementId))
-			document.getElementById(prefIdentifierElementId).checked = false;
-		
-		radioElement.checked = true;		
-		setPrefIdentifierElementId(radioElement.id);
-	}
 
     /**
 	 * Caches the id of the checkbox of the selected preferred patientIdentifier
@@ -291,8 +284,10 @@ var prefIdentifierElementId = null;
 	}
 
 	function getAge(d, now) {
-		var age = -1;
+		if (d == null)
+			return null;
 		if (typeof(now) == 'undefined') now = new Date();
+		var age = -1;
 		while (now >= d) {
 			age++;
 			d.setFullYear(d.getFullYear() + 1);
@@ -348,33 +343,45 @@ var prefIdentifierElementId = null;
 		</table>
 		
 		<span id="add_rel_details" style="display: none">
+			<hr/>
 			${model.person.personName}<spring:message code="Relationship.possessive"/>
 			<i><span id="add_relationship_name"><spring:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
 			<spring:message code="Relationship.target"/>
-			<span id="find_person">
-		<openmrs_tag:personField formFieldName="add_rel_target" formFieldId="add_rel_target_id" displayFieldId="add_rel_display_id" searchLabel="Find a Person" canAddNewPerson="true" />	
-			</span>
-			<a id="add_new_person" href="#">Cant find the person? Add a new person</a>
+
+			<div style="background-color: #e0e0e0; margin-top: 0.5em;">
+				<div id="find_person">
+					<button style="float: right" id="add_new_person"><spring:message code="Relationship.createPerson.switch"/></button>
+					<spring:message code="Relationship.existingPerson.title"/>
+					<openmrs_tag:personField formFieldName="add_rel_target" formFieldId="add_rel_target_id" displayFieldId="add_rel_display_id" searchLabel="Find a Person" />
+				</div>
+	
+				<div id="create_new_person" style="display: none">
+					<button style="float: right" id="find_existing_person" href="#"><spring:message code="Relationship.existingPerson.switch"/></button>
+					<spring:message code="Relationship.createPerson.title"/>
+					<table>
+						<tr><td><spring:message code="PersonName.givenName"/></td><td><spring:message code="PersonName.middleName"/></td><td><spring:message code="PersonName.familyName"/></td></tr>
+						<tr><td><input id="first_name" type="text"/></td><td><input id="middle_name" type="text"/></td><td><input id="family_name" type="text"/></td></tr>
+					</table>
+						
+					<spring:message code="Person.gender"/>:
+					<openmrs:forEachRecord name="gender">
+						<input type="radio" name="add_new_gender" id="gender_${record.key}" value="${record.key}" />
+						<label for="gender_${record.key}">
+							<spring:message code="Person.gender.${record.value}"/>
+						</label>
+					</openmrs:forEachRecord>
+					<br/>
+					
+					<spring:message code="Person.birthdate"/>:
+					<openmrs_tag:dateField formFieldName="add_birth_start_date" startValue="" />		
+				</div>
+			</div>
+			
 			<br/>
 			<spring:message code="Relationship.startDateQuestion"/>
 			<openmrs_tag:dateField formFieldName="add_rel_start_date" startValue="" />
 		</span>
-		<div id="create_new_person" style="display: none">
-		<table>
-		<tr><td>First Name:</td><td>Middle Name:</td><td>Family Name:</td></tr>
-		<tr><td><input id="first_name" type="text"/></td><td><input id="middle_name" type="text"/></td><td><input id="family_name" type="text"/></td></tr>	
-		<tr><td>Gender: <spring:bind path="patient.gender">
-								<openmrs:forEachRecord name="gender">
-									<input type="radio" name="${status.expression}" id="${record.key}" value="${record.key}" onclick="updatePreferred(this)"  />
-										<label for="${record.key}"> <spring:message code="Person.gender.${record.value}"/> </label>
-								</openmrs:forEachRecord>
-							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-						</spring:bind></td></tr>
-	 <tr><td>Birthday:<openmrs_tag:dateField formFieldName="add_birth_start_date" startValue="" /></td>
-	 <!-- <td>age:<input id="ager" type="text"/></td> --><td><a id="find_existing_person" href="#">Find an already existing person</a></td></tr>	
-		</table>		
-		</div>
 	</div>
 	
 	
