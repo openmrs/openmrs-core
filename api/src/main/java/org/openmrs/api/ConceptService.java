@@ -1993,10 +1993,11 @@ public interface ConceptService extends OpenmrsService {
 	 * Returns a list of concepts with the same name in the given locale.
 	 * <p>
 	 * This method is case insensitive. It searches for exactly matching names and close matching
-	 * locales. It considers only non-voided names and all concepts.
+	 * locales (if exactLocale = false). It considers only non-voided names and all concepts.
 	 * 
 	 * @param name
 	 * @param locale <code>null</code> = all locales
+	 * @param exactLocale <code>false</code> if search for both global and country specific, <code>true</code> if <code>null</code>
 	 * @return the list of concepts
 	 * @throws APIException
 	 * @since 1.9
@@ -2006,7 +2007,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	public List<Concept> getConceptsByName(String name, Locale locale) throws APIException;
+	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocale) throws APIException;
 	
 	/**
 	 * Gets the concept map type to be used as the default. It is specified by the

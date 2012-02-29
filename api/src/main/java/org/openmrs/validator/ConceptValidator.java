@@ -165,7 +165,7 @@ public class ConceptValidator implements Validator {
 						Locale languageLocale = new Locale(nameInLocale.getLocale().getLanguage());
 						
 						List<Concept> conceptsWithPossibleDuplicateNames = Context.getConceptService().getConceptsByName(
-						    nameInLocale.getName(), languageLocale);
+						    nameInLocale.getName(), languageLocale, false);
 						if (conceptsWithPossibleDuplicateNames.size() > 0) {
 							for (Concept concept : conceptsWithPossibleDuplicateNames) {
 								//skip retired
