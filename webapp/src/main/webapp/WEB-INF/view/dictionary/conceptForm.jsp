@@ -63,6 +63,11 @@
 		jumpForm.submit();
 		return false;
 	}
+	
+	$j(document).ready(function(){
+		if(${fn:length(command.conceptMappings)} == 0)
+			$j(".hideableEle").hide();
+	});
 
 </script>
 
@@ -78,6 +83,7 @@
 	.help_icon_top{ vertical-align: top; }
 	#preferredLabel{ padding-left: 345px; padding-top:10px; }
 	#addAnswerError{ margin-bottom: 0.5em; border: 1px dashed black; background: #FAA; line-height: 2em; text-align: center; display: none; }
+	#headerRow th { text-align: center; }
 </style>
 
 <c:choose>
@@ -565,8 +571,8 @@
 		</th>
 		<td>
 			<table id="conceptMapTable" cellpadding="3" cellspacing="1">
-				<tr class="headerRow">
-					<th class="alignCenter" align="center"><spring:message code="Concept.mappings.relationship"/></th>
+				<tr id="headerRow" class="headerRow hideableEle">
+					<th><spring:message code="Concept.mappings.relationship"/></th>
 					<th><spring:message code="ConceptReferenceTerm.source"/></th>
 					<th><spring:message code="ConceptReferenceTerm.code"/></th>
 					<th><spring:message code="general.name"/></th>
@@ -680,7 +686,7 @@
 						<input id="addMapButton" type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" 
 							   onClick="addConceptMapping(${fn:length(command.conceptMappings)})" />
 					</td>
-					<td align="right">
+					<td class="hideableEle" align="right">
 						<openmrs:hasPrivilege privilege="Create Reference Terms While Editing Concepts">
 						<input class="smallButton" type="button" 
 						       value="<spring:message code="ConceptReferenceTerm.createNewTerm" />" 
