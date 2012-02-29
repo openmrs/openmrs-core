@@ -291,7 +291,7 @@
 					</td>
 					<td valign="top">
 						<c:set var="behavior" value="${id.identifierType.locationBehavior}"/>
-						<div id="initialLocationBox${varStatus.index}" style="${behavior == 'NOT_USED' ? 'display:none;' : ''}">
+						<div id="initialLocationBox${varStatus.index}" style="${(behavior == 'NOT_USED' || empty id.identifierType) ? 'display:none;' : ''}">
 							<form:select path="location">
 								<form:option value=""></form:option>
 								<form:options items="${locations}" itemValue="locationId" itemLabel="name" />
