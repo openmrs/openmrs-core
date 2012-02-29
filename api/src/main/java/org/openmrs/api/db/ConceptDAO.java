@@ -643,7 +643,7 @@ public interface ConceptDAO {
 	public boolean isConceptMapTypeInUse(ConceptMapType mapType) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getConceptsByName(String, Locale)
+	 * @see ConceptService#getConceptsByName(String, Locale, Boolean)
 	 */
-	public List<Concept> getConceptsByName(String name, Locale locale);
+	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocal);
 }
