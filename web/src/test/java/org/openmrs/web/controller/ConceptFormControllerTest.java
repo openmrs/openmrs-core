@@ -426,6 +426,38 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
+	 * Test updating a concept by adding a name
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldUpdateConceptByAddingName() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		
+		// make sure the concept already exists
+		Concept concept= cs.getConcept(3);
+		assertNotNull(concept);
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", concept.getConceptId().toString());
+		mockRequest.setParameter("namesByLocale[en].name", "new name");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Concept actualConcept = cs.getConceptByName("new name");
+		assertNotNull(actualConcept);
+		assertEquals(concept.getConceptId(), actualConcept.getConceptId());
+	}
+	
+	/**
 	 * Test adding a concept with a preferred name, short name, description and synonyms.
 	 * 
 	 * @throws Exception
