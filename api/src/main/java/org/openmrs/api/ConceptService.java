@@ -1999,7 +1999,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param locale <code>null</code> = all locales
 	 * @return the list of concepts
 	 * @throws APIException
-	 * @since 1.10
+	 * @since 1.9
 	 * @should return concepts for all countries and global language given language only locale
 	 * @should return concepts for specific country and global language given language and country
 	 *         locale

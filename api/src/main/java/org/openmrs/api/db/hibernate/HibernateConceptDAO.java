@@ -1905,6 +1905,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Restrictions.ilike("name", name));
 		criteria.add(Restrictions.eq("voided", false));
 		
+		criteria.createAlias("concept", "concept");
+		criteria.add(Restrictions.eq("concept.retired", false));
+		
 		if (locale != null && !StringUtils.isEmpty(locale.getCountry())) {
 			// if searching for specific locale like "en_US"
 			criteria.add(Restrictions.or(Restrictions.eq("locale", locale), Restrictions.eq("locale", new Locale(locale

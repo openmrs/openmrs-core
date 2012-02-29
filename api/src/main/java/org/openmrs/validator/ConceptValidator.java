@@ -161,8 +161,11 @@ public class ConceptValidator implements Validator {
 				//find duplicate names for a non-retired concept
 				if (!conceptToValidate.isRetired()) {
 					if (nameInLocale.isLocalePreferred() || nameInLocale.isFullySpecifiedName()) {
+						//must be unique among all country specific locals
+						Locale languageLocale = new Locale(nameInLocale.getLocale().getLanguage());
+						
 						List<Concept> conceptsWithPossibleDuplicateNames = Context.getConceptService().getConceptsByName(
-						    nameInLocale.getName(), nameInLocale.getLocale());
+						    nameInLocale.getName(), languageLocale);
 						if (conceptsWithPossibleDuplicateNames.size() > 0) {
 							for (Concept concept : conceptsWithPossibleDuplicateNames) {
 								//skip retired
