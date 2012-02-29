@@ -1138,4 +1138,58 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(encounter.getProvidersByRole(role).contains(providers.iterator().next()));
 	}
 	
+	/**
+	 * @see Encounter#setProvider(EncounterRole,Provider)
+	 * @verifies void existing EncounterProvider
+	 */
+	@Test
+	public void setProvider_shouldVoidExistingEncounterProvider() throws Exception {
+		Encounter encounter = new Encounter();
+		EncounterRole role = new EncounterRole();
+		Provider provider1 = new Provider();
+		Provider provider2 = new Provider();
+		
+		encounter.setProvider(role, provider1);
+		encounter.setProvider(role, provider2);
+		
+		//the size should be 1 for non voided providers
+		Assert.assertEquals(1, encounter.getProvidersByRole(role, false).size());
+		
+		//should contain the second provider since the first was voided.
+		Assert.assertTrue(encounter.getProvidersByRole(role, false).contains(provider2));
+		
+		//the size should be 2 if we include voided providers
+		Assert.assertEquals(2, encounter.getProvidersByRole(role, true).size());
+		
+		//should contain both the first (voided) and second (non voided) providers
+		Assert.assertTrue(encounter.getProvidersByRole(role, true).containsAll(Arrays.asList(provider1, provider2)));
+	}
+	
+	/**
+	 * @see Encounter#removeProvider(EncounterRole,Provider)
+	 * @verifies void existing EncounterProvider
+	 */
+	@Test
+	public void removeProvider_shouldVoidExistingEncounterProvider() throws Exception {
+		Encounter encounter = new Encounter();
+		EncounterRole role = new EncounterRole();
+		Provider provider = new Provider();
+		
+		encounter.addProvider(role, provider);
+		
+		Assert.assertEquals(1, encounter.getProvidersByRole(role).size());
+		Assert.assertTrue(encounter.getProvidersByRole(role).contains(provider));
+		
+		encounter.removeProvider(role, provider);
+		
+		//the size should be 0 for non voided providers
+		Assert.assertEquals(0, encounter.getProvidersByRole(role).size());
+		
+		//the size should be 1 if we include voided providers
+		Assert.assertEquals(1, encounter.getProvidersByRole(role, true).size());
+		
+		//should contain the voided provider
+		Assert.assertTrue(encounter.getProvidersByRole(role, true).contains(provider));
+	}
+	
 }
