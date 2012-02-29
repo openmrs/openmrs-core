@@ -182,6 +182,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should not fail when a duplicate name is edited to a unique value
 	 * @should create a reference term for a concept mapping on the fly when editing a concept
 	 * @should create a reference term for a concept mapping on the fly when creating a concept
+	 * @should add new concept name
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public Concept saveConcept(Concept concept) throws APIException;
