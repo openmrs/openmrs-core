@@ -76,7 +76,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The Hibernate class for Concepts, Drugs, and related classes. <br/>
