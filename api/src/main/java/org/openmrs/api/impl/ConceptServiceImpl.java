@@ -2124,11 +2124,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptsByName(java.lang.String, java.util.Locale)
+	 * @see org.openmrs.api.ConceptService#getConceptsByName(java.lang.String, java.util.Locale, java.lang.Boolean)
 	 */
 	@Override
-	public List<Concept> getConceptsByName(String name, Locale locale) throws APIException {
-		return dao.getConceptsByName(name, locale);
+	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocale) throws APIException {
+		return dao.getConceptsByName(name, locale, exactLocale);
 	}
 	
 	/**

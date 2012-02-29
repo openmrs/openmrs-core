@@ -2069,6 +2069,66 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+
+	 * @see ConceptService#getConceptsByName(String,Locale)
+	 * @verifies return concepts for all countries and global language given language only locale
+	 */
+	@Test
+	public void getConceptsByName_shouldReturnConceptsForAllCountriesAndGlobalLanguageGivenLanguageOnlyLocale()
+	        throws Exception {
+		//given
+		String name = "Concept";
+		Concept concept1 = new Concept();
+		concept1.addName(new ConceptName(name, new Locale("en", "US")));
+		Context.getConceptService().saveConcept(concept1);
+		
+		Concept concept2 = new Concept();
+		concept2.addName(new ConceptName(name, new Locale("en", "GB")));
+		Context.getConceptService().saveConcept(concept2);
+		
+		Concept concept3 = new Concept();
+		concept3.addName(new ConceptName(name, new Locale("en")));
+		Context.getConceptService().saveConcept(concept3);
+		
+		//when
+		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en"), false);
+		
+		//then
+		Assert.assertEquals(3, concepts.size());
+		Assert.assertTrue(concepts.containsAll(Arrays.asList(concept1, concept2, concept3)));
+	}
+	
+	/**
+	 * @see ConceptService#getConceptsByName(String,Locale)
+	 * @verifies return concepts for specific country and global language given language and country
+	 *           locale
+	 */
+	@Test
+	public void getConceptsByName_shouldReturnConceptsForSpecificCountryAndGlobalLanguageGivenLanguageAndCountryLocale()
+	        throws Exception {
+		//given
+		String name = "Concept";
+		Concept concept1 = new Concept();
+		concept1.addName(new ConceptName(name, new Locale("en", "US")));
+		Context.getConceptService().saveConcept(concept1);
+		
+		Concept concept2 = new Concept();
+		concept2.addName(new ConceptName(name, new Locale("en", "GB")));
+		Context.getConceptService().saveConcept(concept2);
+		
+		Concept concept3 = new Concept();
+		concept3.addName(new ConceptName(name, new Locale("en")));
+		Context.getConceptService().saveConcept(concept3);
+		
+		//when
+		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en", "US"), false);
+		
+		//then
+		Assert.assertEquals(2, concepts.size());
+		Assert.assertTrue(concepts.containsAll(Arrays.asList(concept1, concept3)));
+	}
+	
+	/**
 	 * @see {@link ConceptService#saveConcept(Concept)}
 	 */
 	@SuppressWarnings("deprecation")
@@ -2166,63 +2226,5 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertNull(concept);
 		concept = conceptService.getConceptByName("  ");
 		assertNull(concept);
-	}
-	
-	/**
-	 * @see ConceptService#getConceptsByName(String,Locale)
-	 * @verifies return concepts for all countries and global language given language only locale
-	 */
-	@Test
-	public void getConceptsByName_shouldReturnConceptsForAllCountriesAndGlobalLanguageGivenLanguageOnlyLocale()
-	        throws Exception {
-		//given
-		String name = "Concept";
-		Concept concept1 = new Concept();
-		concept1.addName(new ConceptName(name, new Locale("en", "US")));
-		Context.getConceptService().saveConcept(concept1);
-		
-		Concept concept2 = new Concept();
-		concept2.addName(new ConceptName(name, new Locale("en", "GB")));
-		Context.getConceptService().saveConcept(concept2);
-		
-		Concept concept3 = new Concept();
-		concept3.addName(new ConceptName(name, new Locale("en")));
-		Context.getConceptService().saveConcept(concept3);
-		
-		//when
-		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en"));
-		
-		//then
-		Assert.assertEquals(3, concepts.size());
-		Assert.assertTrue(concepts.containsAll(Arrays.asList(concept1, concept2, concept3)));
-	}
-	
-	/**
-	 * @see ConceptService#getConceptsByName(String,Locale)
-	 * @verifies return concepts for specific country and global language given language and country locale
-	 */
-	@Test
-	public void getConceptsByName_shouldReturnConceptsForSpecificCountryAndGlobalLanguageGivenLanguageAndCountryLocale()
-	        throws Exception {
-		//given
-		String name = "Concept";
-		Concept concept1 = new Concept();
-		concept1.addName(new ConceptName(name, new Locale("en", "US")));
-		Context.getConceptService().saveConcept(concept1);
-		
-		Concept concept2 = new Concept();
-		concept2.addName(new ConceptName(name, new Locale("en", "GB")));
-		Context.getConceptService().saveConcept(concept2);
-		
-		Concept concept3 = new Concept();
-		concept3.addName(new ConceptName(name, new Locale("en")));
-		Context.getConceptService().saveConcept(concept3);
-		
-		//when
-		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en", "US"));
-		
-		//then
-		Assert.assertEquals(2, concepts.size());
-		Assert.assertTrue(concepts.containsAll(Arrays.asList(concept1, concept3)));
 	}
 }
