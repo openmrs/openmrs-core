@@ -641,4 +641,9 @@ public interface ConceptDAO {
 	 * @should return false if a mapType has no maps using it
 	 */
 	public boolean isConceptMapTypeInUse(ConceptMapType mapType) throws DAOException;
+	
+	/**
+	 * @see ConceptService#getConceptsByName(String, Locale)
+	 */
+	public List<Concept> getConceptsByName(String name, Locale locale);
 }

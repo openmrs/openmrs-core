@@ -1895,4 +1895,50 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.setProjection(Projections.rowCount());
 		return (Long) criteria.uniqueResult() > 0;
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByName(java.lang.String, java.util.Locale)
+	 */
+	@Override
+	public List<Concept> getConceptsByName(String name, Locale locale) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptName.class);
+		criteria.add(Restrictions.ilike("name", name));
+		criteria.add(Restrictions.eq("voided", false));
+		
+		criteria.createAlias("concept", "concept");
+		criteria.add(Restrictions.eq("concept.retired", false));
+		
+		if (locale != null && !StringUtils.isEmpty(locale.getCountry())) {
+			// if searching for specific locale like "en_US"
+			criteria.add(Restrictions.or(Restrictions.eq("locale", locale), Restrictions.eq("locale", new Locale(locale
+			        .getLanguage()))));
+		}
+		
+		criteria.addOrder(Order.asc("concept"));
+		criteria.setProjection(Projections.distinct(Projections.property("concept")));
+		
+		@SuppressWarnings("unchecked")
+		List<Concept> concepts = criteria.list();
+		
+		if (locale != null && StringUtils.isEmpty(locale.getCountry())) {
+			// if searching for general locale like "en"
+			for (Iterator<Concept> it = concepts.iterator(); it.hasNext();) {
+				Concept concept = it.next();
+				
+				boolean found = false;
+				for (ConceptName conceptName : concept.getNames()) {
+					if (conceptName.getLocale().getLanguage().equals(locale.getLanguage())) {
+						found = true;
+						break;
+					}
+				}
+				
+				if (!found) {
+					it.remove();
+				}
+			}
+		}
+		
+		return concepts;
+	}
 }
