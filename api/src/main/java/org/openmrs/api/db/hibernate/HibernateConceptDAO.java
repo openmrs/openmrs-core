@@ -1910,8 +1910,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Restrictions.ilike("name", name));
 		criteria.add(Restrictions.eq("voided", false));
 		
-		criteria.createAlias("concept", "concept");
-		criteria.add(Restrictions.eq("concept.retired", false));
+		//This approach is very slow. It's better to remove retired concepts in Java.
+		//criteria.createAlias("concept", "concept");
+		//criteria.add(Restrictions.eq("concept.retired", false));
 		
 		if (locale != null) {
 			if (exactLocale) {
@@ -1930,6 +1931,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		@SuppressWarnings("unchecked")
 		List<Concept> concepts = criteria.list();
+		
+		//Remove retired concepts
+		for (Iterator<Concept> it = concepts.iterator(); it.hasNext();) {
+	        Concept concept = it.next();
+	        if (concept.isRetired()) {
+	        	it.remove();
+	        }
+        }
 		
 		if (locale != null && !exactLocale && StringUtils.isEmpty(locale.getCountry())) {
 			// if searching for general locale like "en", but not exact so that "en_US", "en_GB", etc. will be found as well
