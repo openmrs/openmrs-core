@@ -608,6 +608,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.9
 	 * @should set provider for new role
 	 * @should clear providers and set provider for role
+	 * @should void existing EncounterProvider
 	 */
 	public void setProvider(EncounterRole role, Provider provider) {
 		boolean hasProvider = false;
@@ -635,6 +636,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param role the role.
 	 * @param provider the provider.
 	 * @since 1.9
+	 * @should void existing EncounterProvider
 	 */
 	public void removeProvider(EncounterRole role, Provider provider) {
 		for (EncounterProvider encounterProvider : encounterProviders) {
