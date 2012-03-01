@@ -65,6 +65,7 @@ import ca.uhn.hl7v2.model.v25.datatype.DLD;
 import ca.uhn.hl7v2.model.v25.datatype.DT;
 import ca.uhn.hl7v2.model.v25.datatype.DTM;
 import ca.uhn.hl7v2.model.v25.datatype.FT;
+import ca.uhn.hl7v2.model.v25.datatype.HD;
 import ca.uhn.hl7v2.model.v25.datatype.ID;
 import ca.uhn.hl7v2.model.v25.datatype.IS;
 import ca.uhn.hl7v2.model.v25.datatype.NM;
@@ -131,10 +132,11 @@ public class ORUR01Handler implements Application {
 	 * @should set value_Numeric for obs if Question datatype is Numeric
 	 * @should fail if question datatype is coded and a boolean is not a valid answer
 	 * @should fail if question datatype is neither Boolean nor numeric nor coded
-	 * @should create an encounter with a provider that is not associated to a person
-	 * @should create an encounter with a provider that is associated to a person
-	 * @should edit an encounter with a provider that is not associated to a person
-	 * @should edit an encounter with a provider that is associated to a person
+	 * @should create an encounter and find the provider by identifier
+	 * @should create an encounter and find the provider by personId
+	 * @should create an encounter and find the provider by uuid
+	 * @should create an encounter and find the provider by providerId
+	 * @should fail if the provider name type code is not specified and is not a personId
 	 */
 	public Message processMessage(Message message) throws ApplicationException {
 		
@@ -982,19 +984,33 @@ public class ORUR01Handler implements Application {
 		XCN hl7Provider = pv1.getAttendingDoctor(0);
 		Provider provider = null;
 		String id = hl7Provider.getIDNumber().getValue();
+		String assignAuth = ((HD) hl7Provider.getComponent(8)).getNamespaceID().getValue();
+		String nameTypeCode = ((ID) hl7Provider.getComponent(9)).getValue();
+		
 		if (StringUtils.hasText(id)) {
-			if (isInteger(id)) {
-				Integer providerId = Context.getHL7Service().resolvePersonId(hl7Provider);
-				if (providerId != null) {
-					Person person = Context.getPersonService().getPerson(providerId);
+			if (OpenmrsUtil.nullSafeEquals("L", nameTypeCode)) {
+				if (HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_ID.equalsIgnoreCase(assignAuth)) {
+					try {
+						provider = Context.getProviderService().getProvider(Integer.valueOf(id));
+					}
+					catch (NumberFormatException e) {
+						// ignore
+					}
+				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_IDENTIFIER.equalsIgnoreCase(assignAuth)) {
+					provider = Context.getProviderService().getProviderByIdentifier(id);
+				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_UUID.equalsIgnoreCase(assignAuth)) {
+					provider = Context.getProviderService().getProviderByUuid(id);
+				}
+			} else {
+				try {
+					Person person = Context.getPersonService().getPerson(Integer.valueOf(id));
 					Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(person);
 					if (!providers.isEmpty())
 						provider = providers.iterator().next();
 				}
-			} else {
-				//if this is a provider identifier
-				provider = Context.getProviderService().getProviderByIdentifier(id);
-				
+				catch (NumberFormatException e) {
+					// ignore
+				}
 			}
 		}
 		
@@ -1170,15 +1186,5 @@ public class ORUR01Handler implements Application {
 			
 		}
 		log.debug("finished discharge to location method");
-	}
-	
-	private boolean isInteger(String numberString) {
-		try {
-			Integer.parseInt(numberString);
-			return true;
-		}
-		catch (NumberFormatException e) {
-			return false;
-		}
 	}
 }
