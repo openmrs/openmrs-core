@@ -17,6 +17,14 @@
 <openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
 <openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.ui.autocomplete.autoSelect.js" />
 
+<style>
+.not-found-link {
+	font-style: italic;
+	background-color: #e0e0e0;
+	margin-top: 0.25em;
+}
+</style>
+
 <c:if test="${empty formFieldId}">
 	<c:set var="formFieldId" value="${formFieldName}_id" />
 </c:if>
@@ -35,7 +43,7 @@
 			<c:if test="${ canAddNewPerson }">
 				afterResults: [ {
 									value: "",
-									label: '<spring:message code="Person.notFoundCreate"/>',
+									label: '<span class="not-found-link"><spring:message code="Person.notFoundCreate"/></span>',
 									onClick: function() {
 										$j('#${ formFieldId }_addDialog').dialog('open');
 									}
@@ -132,23 +140,41 @@
 						var given = $j('#${ formFieldId }_add_given_name').val();
 						var middle = $j('#${ formFieldId }_add_middle_name').val();
 						var family = $j('#${ formFieldId }_add_family_name').val();
-						var gender = $j('input[name="${ formFieldId }_add_gender"]:checked').val();
+						var gender = $j('input:radio[name="${ formFieldId }_add_gender"]:checked').val();
 						var birthdate = $j('#${ formFieldId }_add_birthdate').val();
 						var age = $j('#${ formFieldId }_add_age').val();
 						DWRPersonService.createPerson(given, middle, family, birthdate, '<openmrs:datePattern/>', age, gender, function(result) {
 							if (typeof result == 'string') {
 								window.alert(result);
-							} else {
-								// result is a person list item
+							} else { // result is a person list item
 								$j('#${ formFieldId }_addDialog').dialog('close');
-								jquerySelectEscaped("${displayFieldId}").val(result.personName);
-								jquerySelectEscaped("${displayFieldId}").autocomplete("option", "initialValue", result.personName);
+
+								// clear fields
+								$j('#${ formFieldId }_add_given_name')
+									.add('#${ formFieldId }_add_middle_name')
+									.add('#${ formFieldId }_add_family_name')
+									.add('#${ formFieldId }_add_birthdate')
+									.add('#${ formFieldId }_add_age')
+										.val('');
+								$j('input:radio[name="${ formFieldId }_add_gender"]:checked').removeAttr('checked');
+								
+								// set the underlying field value and display
+								jquerySelectEscaped("${ displayFieldId }").val(result.personName);
+								jquerySelectEscaped("${ formFieldId }").val(result.personId);
 							}
 						});
 						
 					},
 					'<spring:message code="general.cancel"/>': function() {
 						$j(this).dialog('close');
+						// clear fields
+						$j('#${ formFieldId }_add_given_name')
+							.add('#${ formFieldId }_add_middle_name')
+							.add('#${ formFieldId }_add_family_name')
+							.add('#${ formFieldId }_add_birthdate')
+							.add('#${ formFieldId }_add_age')
+								.val('');
+						$j('input:radio[name="${ formFieldId }_add_gender"]:checked').removeAttr('checked');
 					}
 				}
 			});
