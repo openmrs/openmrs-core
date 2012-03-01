@@ -22,7 +22,6 @@ import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.ProviderService;
-import org.openmrs.attribute.AttributeType;
 
 /**
  * Data Access function for Provider
@@ -122,4 +121,9 @@ public interface ProviderDAO {
 	 * @see ProviderService#isProviderIdentifierUnique(Provider)
 	 */
 	public boolean isProviderIdentifierUnique(Provider provider) throws DAOException;
+	
+	/**
+	 * @see ProviderService#getProviderByIdentifier(String)
+	 */
+	public Provider getProviderByIdentifier(String identifier);
 }
