@@ -30,6 +30,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -38,6 +39,7 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
@@ -97,6 +99,8 @@ public class ORUR01Handler implements Application {
 	
 	private Log log = LogFactory.getLog(ORUR01Handler.class);
 	
+	private static EncounterRole unknownRole = null;
+	
 	/**
 	 * Always returns true, assuming that the router calling this handler will only call this
 	 * handler with ORU_R01 messages.
@@ -127,6 +131,10 @@ public class ORUR01Handler implements Application {
 	 * @should set value_Numeric for obs if Question datatype is Numeric
 	 * @should fail if question datatype is coded and a boolean is not a valid answer
 	 * @should fail if question datatype is neither Boolean nor numeric nor coded
+	 * @should create an encounter with a provider that is not associated to a person
+	 * @should create an encounter with a provider that is associated to a person
+	 * @should edit an encounter with a provider that is not associated to a person
+	 * @should edit an encounter with a provider that is associated to a person
 	 */
 	public Message processMessage(Message message) throws ApplicationException {
 		
@@ -537,7 +545,7 @@ public class ORUR01Handler implements Application {
 			encounter = new Encounter();
 			
 			Date encounterDate = getEncounterDate(pv1);
-			Person provider = getProvider(pv1);
+			Provider provider = getProvider(pv1);
 			Location location = getLocation(pv1);
 			Form form = getForm(msh);
 			EncounterType encounterType = getEncounterType(msh, form);
@@ -545,7 +553,10 @@ public class ORUR01Handler implements Application {
 			//			Date dateEntered = getDateEntered(orc); // ignore this since we have no place in the data model to store it
 			
 			encounter.setEncounterDatetime(encounterDate);
-			encounter.setProvider(provider);
+			if (unknownRole == null)
+				unknownRole = Context.getEncounterService()
+				        .getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID);
+			encounter.setProvider(unknownRole, provider);
 			encounter.setPatient(patient);
 			encounter.setLocation(location);
 			encounter.setForm(form);
@@ -967,12 +978,29 @@ public class ORUR01Handler implements Application {
 		return tsToDate(pv1.getAdmitDateTime());
 	}
 	
-	private Person getProvider(PV1 pv1) throws HL7Exception {
+	private Provider getProvider(PV1 pv1) throws HL7Exception {
 		XCN hl7Provider = pv1.getAttendingDoctor(0);
-		Integer providerId = Context.getHL7Service().resolvePersonId(hl7Provider);
-		if (providerId == null)
-			throw new HL7Exception("Could not resolve provider");
-		Person provider = new Person(providerId);
+		Provider provider = null;
+		String id = hl7Provider.getIDNumber().getValue();
+		if (StringUtils.hasText(id)) {
+			if (isInteger(id)) {
+				Integer providerId = Context.getHL7Service().resolvePersonId(hl7Provider);
+				if (providerId != null) {
+					Person person = Context.getPersonService().getPerson(providerId);
+					Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(person);
+					if (!providers.isEmpty())
+						provider = providers.iterator().next();
+				}
+			} else {
+				//if this is a provider identifier
+				provider = Context.getProviderService().getProviderByIdentifier(id);
+				
+			}
+		}
+		
+		if (provider == null)
+			throw new HL7Exception("Could not resolve provider with personId or identifier as '" + id + "'");
+		
 		return provider;
 	}
 	
@@ -1144,4 +1172,13 @@ public class ORUR01Handler implements Application {
 		log.debug("finished discharge to location method");
 	}
 	
+	private boolean isInteger(String numberString) {
+		try {
+			Integer.parseInt(numberString);
+			return true;
+		}
+		catch (NumberFormatException e) {
+			return false;
+		}
+	}
 }

@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -25,21 +26,25 @@ import java.util.Vector;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PersonService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -72,9 +77,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Run this before each unit test in this class. This adds the hl7 specific
-	 * data to the initial and demo data done in the "@Before" method in
-	 * {@link BaseContextSensitiveTest}.
+	 * Run this before each unit test in this class. This adds the hl7 specific data to the initial
+	 * and demo data done in the "@Before" method in {@link BaseContextSensitiveTest}.
 	 * 
 	 * @throws Exception
 	 */
@@ -130,8 +134,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This method checks that obs grouping is happening correctly when
-	 * processing an ORUR01
+	 * This method checks that obs grouping is happening correctly when processing an ORUR01
 	 * 
 	 * @see {@link ORUR01Handler#processMessage(Message)}
 	 */
@@ -215,9 +218,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * If an hl7 message contains a "visit number" pv1-19 value, then assume its
-	 * an encounter_id and that information in the hl7 message should be
-	 * appended to that encounter.
+	 * If an hl7 message contains a "visit number" pv1-19 value, then assume its an encounter_id and
+	 * that information in the hl7 message should be appended to that encounter.
 	 * 
 	 * @see {@link ORUR01Handler#processMessage(Message)}
 	 */
@@ -942,5 +944,171 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 			}
 		}
 		Assert.assertEquals("This is a comment", newObservation.getComment());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should create an encounter with a provider that is not associated to a person", method = "processMessage(Message)")
+	public void processMessage_shouldCreateAnEncounterWithAProviderThatIsNotAssociatedToAPerson() throws Exception {
+		executeDataSet("org/openmrs/api/include/ProviderServiceTest-initial.xml");
+		int patientId = 2;
+		Patient patient = new Patient(patientId);
+		List<Encounter> encForPatient1 = Context.getEncounterService().getEncountersByPatient(patient);
+		ProviderService ps = Context.getProviderService();
+		Provider provider = ps.getProviderByIdentifier("8a760");
+		provider.setPerson(null);
+		ps.saveProvider(provider);
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||"
+		        + patientId
+		        + "^^^^||Hornblower^Horatio^Test||\r"
+		        + "PV1||O|1^Unknown Location||||8a760^name|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		// check for the new encounter
+		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
+		assertTrue("There should be an encounter created", (encForPatient1.size() + 1) == encForPatient2.size());
+		
+		encForPatient2.removeAll(encForPatient1);
+		Assert.assertTrue(encForPatient2.size() == 1);
+		
+		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
+		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
+		        .next();
+		Assert.assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", newProvider.getUuid());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should create an encounter with a provider that is associated to a person", method = "processMessage(Message)")
+	public void processMessage_shouldCreateAnEncounterWithAProviderThatIsAssociatedToAPerson() throws Exception {
+		int patientId = 2;
+		Patient patient = new Patient(patientId);
+		List<Encounter> encForPatient1 = Context.getEncounterService().getEncountersByPatient(patient);
+		ProviderService ps = Context.getProviderService();
+		Provider provider = ps.getProvider(1);
+		Assert.assertNotNull(provider.getPerson());
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||"
+		        + patientId
+		        + "^^^^||Hornblower^Horatio^Test||\r"
+		        + "PV1||O|1^Unknown Location||||1^name|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
+		assertTrue("There should be an encounter created", (encForPatient1.size() + 1) == encForPatient2.size());
+		
+		encForPatient2.removeAll(encForPatient1);
+		Assert.assertTrue(encForPatient2.size() == 1);
+		
+		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
+		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
+		        .next();
+		Assert.assertEquals("c2299800-cca9-11e0-9572-0800200c9a66", newProvider.getUuid());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Ignore
+	@Verifies(value = "should edit an encounter with a provider that is associated to a person", method = "processMessage(Message)")
+	public void processMessage_shouldEditAnEncounterWithAProviderThatIsAssociatedToAPerson() throws Exception {
+		executeDataSet("org/openmrs/api/include/ProviderServiceTest-initial.xml");
+		int patientId = 2;
+		Patient patient = new Patient(patientId);
+		EncounterService es = Context.getEncounterService();
+		EncounterRole role = es.getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID);
+		List<Encounter> encForPatient1 = es.getEncountersByPatient(patient);
+		ProviderService ps = Context.getProviderService();
+		Provider provider = ps.getProvider(1);
+		Assert.assertNotNull(provider.getPerson());
+		
+		//sanity check that the new provider is not yet associated to the encounter
+		int encounterId = 5;
+		Collection<Provider> providers = es.getEncounter(encounterId).getProvidersByRole(role);
+		Assert.assertTrue(providers.size() == 1);
+		Assert.assertTrue(providers.iterator().next().getPerson().getPersonId() != 6);
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||"
+		        + patientId
+		        + "^^^^||Hornblower^Horatio^Test||\r"
+		        + "PV1||O|1^Unknown Location||||6^name||||||||||||"
+		        + encounterId
+		        + "|||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		// no encounter gets created
+		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
+		assertTrue("There should be no encounter created", encForPatient1.size() == encForPatient2.size());
+		
+		//no provider is created but only changed
+		providers = es.getEncounter(encounterId).getProvidersByRole(role);
+		Assert.assertTrue(providers.size() == 1);
+		Provider newProvider = providers.iterator().next();
+		Assert.assertTrue(newProvider.getPerson().getPersonId() == 6);
+		Assert.assertEquals("ae401f88-6b94-11e0-93c3-18a905e044dc", newProvider.getUuid());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Ignore
+	@Verifies(value = "should edit an encounter with a provider that is not associated to a person", method = "processMessage(Message)")
+	public void processMessage_shouldEditAnEncounterWithAProviderThatIsNotAssociatedToAPerson() throws Exception {
+		executeDataSet("org/openmrs/api/include/ProviderServiceTest-initial.xml");
+		int patientId = 2;
+		Patient patient = new Patient(patientId);
+		EncounterService es = Context.getEncounterService();
+		EncounterRole role = es.getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID);
+		List<Encounter> encForPatient1 = es.getEncountersByPatient(patient);
+		ProviderService ps = Context.getProviderService();
+		Provider provider = ps.getProviderByIdentifier("8a762");
+		provider.setPerson(null);
+		ps.saveProvider(provider);
+		
+		//sanity check that the new provider is yet associated to the encounter
+		int encounterId = 5;
+		Collection<Provider> providers = es.getEncounter(encounterId).getProvidersByRole(role);
+		Assert.assertTrue(providers.size() == 1);
+		Assert.assertFalse(providers.iterator().next().getIdentifier().equals("8a762"));
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||"
+		        + patientId
+		        + "^^^^||Hornblower^Horatio^Test||\r"
+		        + "PV1||O|1^Unknown Location||||8a762^name||||||||||||"
+		        + encounterId
+		        + "|||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		// no encounter gets created
+		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
+		assertTrue("There should be no encounter created", encForPatient1.size() == encForPatient2.size());
+		
+		//no provider is created but only changed
+		providers = es.getEncounter(encounterId).getProvidersByRole(role);
+		Assert.assertTrue(providers.size() == 1);
+		Provider newProvider = providers.iterator().next();
+		Assert.assertTrue(newProvider.getPerson().getPersonId() == 6);
+		Assert.assertEquals("ae401f88-6b94-11e0-93c3-18a905e044dc", newProvider.getUuid());
 	}
 }

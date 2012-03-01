@@ -270,4 +270,13 @@ public class HibernateProviderDAO implements ProviderDAO {
 		return (Long) criteria.uniqueResult() == 0L;
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.ProviderDAO#getProviderByIdentifier(java.lang.String)
+	 */
+	@Override
+	public Provider getProviderByIdentifier(String identifier) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class);
+		criteria.add(Restrictions.ilike("identifier", identifier, MatchMode.EXACT));
+		return (Provider) criteria.uniqueResult();
+	}
 }

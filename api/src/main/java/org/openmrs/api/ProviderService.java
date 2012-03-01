@@ -262,4 +262,14 @@ public interface ProviderService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public boolean isProviderIdentifierUnique(Provider provider) throws APIException;
 	
+	/**
+	 * Gets a provider with a matching identifier, this method performs a case insensitive search
+	 * 
+	 * @param identifier the identifier to match against
+	 * @return a {@link Provider}
+	 * @should get a provider matching the specified identifier ignoring case
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	public Provider getProviderByIdentifier(String identifier);
 }
