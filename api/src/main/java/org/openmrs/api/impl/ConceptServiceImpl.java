@@ -2124,7 +2124,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptsByName(java.lang.String, java.util.Locale, java.lang.Boolean)
+	 * @see org.openmrs.api.ConceptService#getConceptsByName(java.lang.String, java.util.Locale,
+	 *      java.lang.Boolean)
 	 */
 	@Override
 	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocale) throws APIException {
@@ -2136,20 +2137,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public ConceptMapType getDefaultConceptMapType() throws APIException {
-		//Defaults to same-as if the gp is not set.
-		String defaultConceptMapType = Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE);
-		if (defaultConceptMapType == null) {
-			throw new APIException("The default concept map type is not set. You need to set the '"
-			        + OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE + "' global property.");
-		}
-		
-		ConceptMapType conceptMapType = dao.getConceptMapTypeByName(defaultConceptMapType);
-		if (conceptMapType == null) {
-			throw new APIException("The default concept map type (name: " + defaultConceptMapType
-			        + ") does not exist! You need to set the '" + OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE
-			        + "' global property.");
-		}
-		return conceptMapType;
+		//We need to fetch it in DAO since it must be done in the MANUAL fush mode to prevent pre-mature flushes.
+		return dao.getDefaultConceptMapType();
 	}
 }

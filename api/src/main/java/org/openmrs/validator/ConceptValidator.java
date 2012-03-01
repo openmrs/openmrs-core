@@ -249,7 +249,7 @@ public class ConceptValidator implements Validator {
 					    "The concept map type is required for a concept map");
 					return;
 				}*/
-				
+
 				//don't proceed to the next maps since the current one already has errors
 				if (errors.hasErrors())
 					return;
