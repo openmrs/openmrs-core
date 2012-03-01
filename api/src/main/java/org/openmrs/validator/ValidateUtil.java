@@ -16,12 +16,10 @@ package org.openmrs.validator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.HandlerUtil;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -57,26 +55,6 @@ public class ValidateUtil {
 	}
 	
 	/**
-	 * Fetches all validators that are registered
-	 * 
-	 * @param obj the object that will be validated
-	 * @return list of compatibile validators
-	 */
-	protected static List<Validator> getValidators(Object obj) {
-		List<Validator> matchingValidators = new Vector<Validator>();
-		
-		List<Validator> validators = HandlerUtil.getHandlersForType(Validator.class, obj.getClass());
-		
-		for (Validator validator : validators) {
-			if (validator.supports(obj.getClass())) {
-				matchingValidators.add(validator);
-			}
-		}
-		
-		return matchingValidators;
-	}
-	
-	/**
 	 * Test the given object against all validators that are registered as compatible with the
 	 * object class
 	 * 
@@ -87,9 +65,7 @@ public class ValidateUtil {
 	public static void validate(Object obj) throws APIException {
 		BindException errors = new BindException(obj, "");
 		
-		for (Validator validator : getValidators(obj)) {
-			validator.validate(obj, errors);
-		}
+		Context.getAdministrationService().validate(obj, errors);
 		
 		if (errors.hasErrors()) {
 			Set<String> uniqueErrorMessages = new LinkedHashSet<String>();
@@ -118,9 +94,7 @@ public class ValidateUtil {
 	 * @should populate errors if object invalid
 	 */
 	public static void validate(Object obj, Errors errors) {
-		for (Validator validator : getValidators(obj)) {
-			validator.validate(obj, errors);
-		}
+		Context.getAdministrationService().validate(obj, errors);
 	}
 	
 	/**
