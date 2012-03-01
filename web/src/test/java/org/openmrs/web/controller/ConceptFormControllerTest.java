@@ -435,7 +435,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		
 		// make sure the concept already exists
-		Concept concept= cs.getConcept(3);
+		Concept concept = cs.getConcept(3);
 		assertNotNull(concept);
 		
 		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");

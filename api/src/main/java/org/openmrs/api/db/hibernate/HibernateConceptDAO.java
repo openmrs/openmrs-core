@@ -1934,11 +1934,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		//Remove retired concepts
 		for (Iterator<Concept> it = concepts.iterator(); it.hasNext();) {
-	        Concept concept = it.next();
-	        if (concept.isRetired()) {
-	        	it.remove();
-	        }
-        }
+			Concept concept = it.next();
+			if (concept.isRetired()) {
+				it.remove();
+			}
+		}
 		
 		if (locale != null && !exactLocale && StringUtils.isEmpty(locale.getCountry())) {
 			// if searching for general locale like "en", but not exact so that "en_US", "en_GB", etc. will be found as well
