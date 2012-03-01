@@ -201,6 +201,10 @@ function CreateCallback(options) {
 			objs.push("(" + objectsSliced + " " + omsgs.resultsNotDisplayed +")");
 		}
 		
+		if (options.afterResults) {
+			objs = objs.concat(options.afterResults);
+		}
+		
 		response(jQuery.map(objs, displayFunction(q)));
 	}; }
 	
@@ -210,6 +214,10 @@ function CreateCallback(options) {
 		// dwr methods sometimes put strings into the results, just display those
 		if (typeof person == 'string')
 			return { label: person, value: "" };
+		
+		// pass non-person objects through as-is
+		if (!person.personId)
+			return person;
 			
 		// item is a PersonListItem object
 		var imageText = "";
