@@ -265,6 +265,10 @@ function CreateCallback(options) {
 		// dwr methods sometimes put strings into the results, just display those
 		if (typeof provider == 'string')
 			return { label: provider, value: "" };
+			
+		// pass non-provider objects through as-is
+		if (!provider.providerId)
+			return provider;
 		
 		var textShown = "";
 		
@@ -310,6 +314,10 @@ function CreateCallback(options) {
 		// dwr sometimes puts strings into the results, just display those
 		if (typeof item == 'string')
 			return { label: item, value: "" };
+			
+		// pass non-drug objects through as-is
+		if (!item.drugId && !item.conceptId)
+			return item;
 		
 		// add a space so the term highlighter below thinks the first word is a word
 		var textShown = " " + item.fullName;
@@ -329,6 +337,10 @@ function CreateCallback(options) {
 		// dwr sometimes puts strings into the results, just display those
 		if (typeof enc == 'string')
 			return { label: enc, value: "" };
+			
+		// pass non-encounter objects through as-is
+		if (!enc.encounterId)
+			return enc;
 		
 		// enc is an EncounterListenc
 		// add a space so the term highlighter below thinks the first word is a word
@@ -380,6 +392,10 @@ function CreateCallback(options) {
 		// dwr sometimes puts strings into the results, just display those
 		if (typeof item == 'string')
 			return { label: item, value: "" };
+			
+		// pass non-concept-reference-term-list-item objects through as-is
+		if (!item.conceptReferenceTermId)
+			return item;
 		
 		var textShown = " " + item.code+((item.name != null && $j.trim(item.name) != '') ? " - "+item.name : "")+" ["+item.conceptSourceName+"]";
 		
