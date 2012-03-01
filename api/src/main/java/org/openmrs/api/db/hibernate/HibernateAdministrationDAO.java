@@ -27,6 +27,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
@@ -44,11 +45,14 @@ import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
 /**
  * Hibernate specific database methods for the AdministrationService
@@ -354,5 +358,42 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#validate(java.lang.Object, Errors)
+	 */
+	@Override
+	public void validate(Object object, Errors errors) throws DAOException {
+		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getFlushMode();
+		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+		try {
+			for (Validator validator : getValidators(object)) {
+				validator.validate(object, errors);
+			}
+		}
+		finally {
+			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
+		}
+	}
+	
+	/**
+	 * Fetches all validators that are registered
+	 * 
+	 * @param obj the object that will be validated
+	 * @return list of compatibile validators
+	 */
+	protected List<Validator> getValidators(Object obj) {
+		List<Validator> matchingValidators = new Vector<Validator>();
+		
+		List<Validator> validators = HandlerUtil.getHandlersForType(Validator.class, obj.getClass());
+		
+		for (Validator validator : validators) {
+			if (validator.supports(obj.getClass())) {
+				matchingValidators.add(validator);
+			}
+		}
+		
+		return matchingValidators;
 	}
 }
