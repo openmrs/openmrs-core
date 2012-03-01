@@ -20,6 +20,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
+import org.springframework.validation.Errors;
 
 /**
  * Database methods for the AdministrationService
@@ -146,4 +147,9 @@ public interface AdministrationDAO {
 	 * @see org.openmrs.api.AdministrationService#getMaximumPropertyLength(Class, String)
 	 */
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#validate(Object, Errors)
+	 */
+	public void validate(Object object, Errors errors) throws DAOException;
 }

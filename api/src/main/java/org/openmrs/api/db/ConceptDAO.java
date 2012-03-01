@@ -646,4 +646,9 @@ public interface ConceptDAO {
 	 * @see ConceptService#getConceptsByName(String, Locale, Boolean)
 	 */
 	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocal);
+	
+	/**
+	 * @see ConceptService#getDefaultConceptMapType()
+	 */
+	public ConceptMapType getDefaultConceptMapType() throws DAOException;
 }

@@ -59,7 +59,6 @@ import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
-import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
@@ -70,6 +69,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.Errors;
 
 /**
  * Default implementation of the administration services. This class should not be used on its own.
@@ -1213,5 +1213,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
 		return dao.getMaximumPropertyLength(aClass, fieldName);
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#validate(java.lang.Object, Errors)
+	 */
+	@Override
+	public void validate(Object object, Errors errors) throws APIException {
+		dao.validate(object, errors);
 	}
 }
