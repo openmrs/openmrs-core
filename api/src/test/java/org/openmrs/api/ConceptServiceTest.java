@@ -2226,20 +2226,20 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		concept = conceptService.getConceptByName("  ");
 		assertNull(concept);
 	}
-
+	
 	/**
-     * @see ConceptService#saveConcept(Concept)
-     * @verifies add new concept name
-     */
-    @Test
-    public void saveConcept_shouldAddNewConceptName() throws Exception {
-    	Concept concept = conceptService.getConcept(3);
-    	
-    	ConceptName name = new ConceptName("new name", Locale.US);
-    	
-    	concept.addName(name);
-    	
-    	conceptService.saveConcept(concept);
+	 * @see ConceptService#saveConcept(Concept)
+	 * @verifies add new concept name
+	 */
+	@Test
+	public void saveConcept_shouldAddNewConceptName() throws Exception {
+		Concept concept = conceptService.getConcept(3);
+		
+		ConceptName name = new ConceptName("new name", Locale.US);
+		
+		concept.addName(name);
+		
+		conceptService.saveConcept(concept);
 		assertNotNull(name.getConceptNameId());
-    }
+	}
 }
