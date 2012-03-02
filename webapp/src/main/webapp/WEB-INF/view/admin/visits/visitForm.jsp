@@ -13,7 +13,6 @@
 
 <openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js"/>
-<openmrs:htmlInclude file="/dwr/interface/DWRVisitService.js" />
 
 
 <c:set var="canDelete" value="${ false }"/>
@@ -54,65 +53,6 @@ function removeEncounter(obj){
 	obj.parentNode.parentNode.parentNode.removeChild(obj.parentNode.parentNode);
 }
 
-function endVisitNow(visitId) {
-	hideDiv('error_div');
-	DWRVisitService.endVisit(parseInt(visitId),document.getElementById('enddate_visit').value,callBackFunction);
-}
-
-//to convet numbers in to double digit
-function formatDateToDoubleDigit(item) {
-	return (item+"").length==1?"0"+item:item+"";
-}
-
-//to set the current date
-function setCurrentDate(dateTimeFormat)
-{
-	var tempDateTime=new Date();
-	var patterns=new Array("dd","MM","yyyy","HH","hh","mm","a");
-    var date = formatDateToDoubleDigit(tempDateTime.getDate());
-	var month = formatDateToDoubleDigit(tempDateTime.getMonth()+1);
-	var hours = tempDateTime.getHours();
-	var amPm = "";
-	if(dateTimeFormat.search("hh")>=0)
-	{
-		amPm=(hours>=12)?"PM":"AM";
-		hours=(hours>12)?(hours-12):hours;
-		hours=(hours==0)?12:hours;
-	}
-	hours=formatDateToDoubleDigit(hours);
-	
-	var min = formatDateToDoubleDigit(tempDateTime.getMinutes());
-	var year=tempDateTime.getFullYear()+"";
-	var dateTime=new Array(date,month,year,hours,min,amPm); 
-	var currentDateTime=dateTimeFormat;
-	for(var i=0,j=0;i<patterns.length;i++){
-       if( currentDateTime.search(patterns[i])>=0){
-	    currentDateTime=currentDateTime.replace(patterns[i],dateTime[j]);
-	     j++;
-	   }
-
-	}
-	document.getElementById('enddate_visit').value=currentDateTime;
-}
-
-function callBackFunction(message)
-{
-  
-	if(message[0].search("/patientDashboard.form") == 0)
-	{
-		 window.location="<openmrs:contextPath />"+message[0];
-	}
-	else
-	  {
-		var errorMessages = "";
-		for (var i in message) 
-			errorMessages+=message[i]+"<br />";
-		$j('#error_div').html(errorMessages);
-		showDiv('error_div');
-	  }
-}
-
-
 $j(document).ready( function() {
 	$j("#delete-dialog").dialog({
 		autoOpen: false,
@@ -125,8 +65,6 @@ $j(document).ready( function() {
 	$j('#close-delete-dialog').click(function() {
 		$j('#delete-dialog').dialog('close')
 	});
-	
-	
 	
 	$j("#endvisit-dialogue").dialog({
 		autoOpen: false,
@@ -218,10 +156,11 @@ $j(document).ready( function() {
 
 	<c:if test="${visit.visitId != null}">
 		<div style="float: right">
+			<c:if test="${visit.stopDatetime == null}">
 		        <openmrs:hasPrivilege privilege="Edit Visits">
-					<input type="button" value="<spring:message code="Visit.endNow"/>" onclick="javascript:$j('#endvisit-dialogue').dialog('open');setCurrentDate('${dateTimeFormat}');hideDiv('error_div');	" /> 
+					<input type="button" value="<spring:message code="Visit.end"/>" onclick="javascript:$j('#endvisit-dialogue').dialog('open');	" /> 
 				</openmrs:hasPrivilege>
-		
+			</c:if>
 		
 			<openmrs:hasPrivilege privilege="Delete Visits">
 				<c:if test="${visit.voided == false}">
@@ -443,29 +382,26 @@ $j(document).ready( function() {
 		</form:form>
 	</div>
 </c:if>
-<div id="endvisit-dialogue" title="<spring:message code="Visit.endNow"/>">
+<div id="endvisit-dialogue" title="<spring:message code="Visit.end"/>">
+    <form:form action="endVisit.htm" method="post" modelAttribute="visit">
        <table cellpadding="3" cellspacing="3" align="center">
-				<tr>
-					
-					<td>
-					     <spring:message code="Visit.enterEndDate"/>
-						<input type="text" id="enddate_visit" size="20"  onClick="showDateTimePicker(this)" readonly="readonly"/></br>&nbsp;&nbsp;
-						<span id="error_div" class="error" style="display:none;"></span>
-						
-					</td>
-				
-				</tr>
-				<tr height="20"></tr>
-				<tr>
-					<td colspan="2" style="text-align: center">
-						<input type="button"  value="<spring:message code="Visit.end"/>" onclick="endVisitNow('${visit.visitId}');"  />
-						&nbsp;
-						<input id="close-endvisit-dialog" type="button" value="<spring:message code="general.cancel"/>" /> 
-					</td>
-				</tr>
-			</table>
-   		  
-   
+			<tr>
+				<td>
+					<input type="hidden" name="visitId" value="${visit.visitId}" />
+					<spring:message code="Visit.enterEndDate"/>
+					<input type="text" id="enddate_visit" size="20" name="stopDate" onClick="showDateTimePicker(this)" readonly="readonly"/></br>&nbsp;&nbsp;
+				</td>
+			</tr>
+			<tr height="20"></tr>
+			<tr>
+				<td colspan="2" style="text-align: center">
+					<input type="submit" value="<spring:message code="Visit.end"/>" />
+					&nbsp;
+					<input id="close-endvisit-dialog" type="button" value="<spring:message code="general.cancel"/>" /> 
+				</td>
+			</tr>
+		</table>
+	</form:form>
 </div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
