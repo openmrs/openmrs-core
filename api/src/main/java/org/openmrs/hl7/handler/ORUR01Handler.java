@@ -985,7 +985,9 @@ public class ORUR01Handler implements Application {
 		String id = hl7Provider.getIDNumber().getValue();
 		String assignAuth = hl7Provider.getAssigningAuthority().getUniversalID().getValue();
 		String type = hl7Provider.getAssigningAuthority().getUniversalIDType().getValue();
+		String errorMessage = "";
 		if (StringUtils.hasText(id)) {
+			String specificErrorMsg = "";
 			if (OpenmrsUtil.nullSafeEquals("L", type)) {
 				if (HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_ID.equalsIgnoreCase(assignAuth)) {
 					try {
@@ -994,10 +996,13 @@ public class ORUR01Handler implements Application {
 					catch (NumberFormatException e) {
 						// ignore
 					}
+					specificErrorMsg = "with provider Id";
 				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_IDENTIFIER.equalsIgnoreCase(assignAuth)) {
 					provider = Context.getProviderService().getProviderByIdentifier(id);
+					specificErrorMsg = "with provider identifier:" + id;
 				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_UUID.equalsIgnoreCase(assignAuth)) {
 					provider = Context.getProviderService().getProviderByUuid(id);
+					specificErrorMsg = "with provider uuid";
 				}
 			} else {
 				try {
@@ -1009,11 +1014,17 @@ public class ORUR01Handler implements Application {
 				catch (NumberFormatException e) {
 					// ignore
 				}
+				specificErrorMsg = "associated to a person with person id";
 			}
+			
+			errorMessage = "Could not resolve provider " + specificErrorMsg + ":" + id;
+		} else {
+			errorMessage = "No unique identifier was found for the provider";
 		}
 		
-		if (provider == null)
-			throw new HL7Exception("Could not resolve provider");
+		if (provider == null) {
+			throw new HL7Exception(errorMessage);
+		}
 		
 		return provider;
 	}
