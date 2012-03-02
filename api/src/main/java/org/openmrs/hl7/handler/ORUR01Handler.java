@@ -999,7 +999,7 @@ public class ORUR01Handler implements Application {
 					specificErrorMsg = "with provider Id";
 				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_IDENTIFIER.equalsIgnoreCase(assignAuth)) {
 					provider = Context.getProviderService().getProviderByIdentifier(id);
-					specificErrorMsg = "with provider identifier:" + id;
+					specificErrorMsg = "with provider identifier";
 				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_UUID.equalsIgnoreCase(assignAuth)) {
 					provider = Context.getProviderService().getProviderByUuid(id);
 					specificErrorMsg = "with provider uuid";
