@@ -14,6 +14,7 @@
 <openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js"/>
 
+
 <c:set var="canDelete" value="${ false }"/>
 <c:set var="canPurge" value="${ false }"/>
 
@@ -64,7 +65,18 @@ $j(document).ready( function() {
 	$j('#close-delete-dialog').click(function() {
 		$j('#delete-dialog').dialog('close')
 	});
-
+	
+	$j("#endvisit-dialogue").dialog({
+		autoOpen: false,
+		resizable: false,
+		width:'auto',
+		height:'auto',
+		modal: true
+	});
+	$j('#close-endvisit-dialog').click(function() {
+		$j('#endvisit-dialogue').dialog('close')
+	});
+	
 	$j("#purge-dialog").dialog({
 		autoOpen: false,
 		resizable: false,
@@ -144,6 +156,12 @@ $j(document).ready( function() {
 
 	<c:if test="${visit.visitId != null}">
 		<div style="float: right">
+			<c:if test="${visit.stopDatetime == null}">
+		        <openmrs:hasPrivilege privilege="Edit Visits">
+					<input type="button" value="<spring:message code="Visit.end"/>" onclick="javascript:$j('#endvisit-dialogue').dialog('open');	" /> 
+				</openmrs:hasPrivilege>
+			</c:if>
+		
 			<openmrs:hasPrivilege privilege="Delete Visits">
 				<c:if test="${visit.voided == false}">
 					<c:set var="canDelete" value="${ true }"/>
@@ -364,5 +382,26 @@ $j(document).ready( function() {
 		</form:form>
 	</div>
 </c:if>
+<div id="endvisit-dialogue" title="<spring:message code="Visit.end"/>">
+    <form:form action="endVisit.htm" method="post" modelAttribute="visit">
+       <table cellpadding="3" cellspacing="3" align="center">
+			<tr>
+				<td>
+					<input type="hidden" name="visitId" value="${visit.visitId}" />
+					<spring:message code="Visit.enterEndDate"/>
+					<input type="text" id="enddate_visit" size="20" name="stopDate" onClick="showDateTimePicker(this)" readonly="readonly"/></br>&nbsp;&nbsp;
+				</td>
+			</tr>
+			<tr height="20"></tr>
+			<tr>
+				<td colspan="2" style="text-align: center">
+					<input type="submit" value="<spring:message code="Visit.end"/>" />
+					&nbsp;
+					<input id="close-endvisit-dialog" type="button" value="<spring:message code="general.cancel"/>" /> 
+				</td>
+			</tr>
+		</table>
+	</form:form>
+</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

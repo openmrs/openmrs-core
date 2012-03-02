@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.dwr;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -24,6 +25,10 @@ import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.validator.VisitValidator;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 
 /**
  * Contains methods for processing DWR requests for visits
@@ -121,4 +126,5 @@ public class DWRVisitService {
 		}
 		return objectList;
 	}
+	
 }

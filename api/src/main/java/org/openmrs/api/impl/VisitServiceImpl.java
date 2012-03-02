@@ -157,6 +157,20 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	}
 	
 	/**
+	 * @see org.openmrs.api.VisitService#endVisit(org.openmrs.Visit,java.util.Date)
+	 */
+	@Override
+	public Visit endVisit(Visit visit, Date stopDate) {
+		if (stopDate == null)
+			stopDate = new Date();
+		
+		visit.setStopDatetime(stopDate);
+		
+		ValidateUtil.validate(visit);
+		return saveVisit(visit);
+	}
+	
+	/**
 	 * @see org.openmrs.api.VisitService#voidVisit(org.openmrs.Visit, java.lang.String)
 	 */
 	@Override

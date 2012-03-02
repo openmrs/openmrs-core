@@ -13,9 +13,11 @@
  */
 package org.openmrs.web.controller.visit;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.lang.String;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -191,6 +193,36 @@ public class VisitFormController {
 		}
 		
 		addEncounterAndObservationCounts(visit, model);
+		return VISIT_FORM;
+	}
+	
+	/**
+	 * Processes requests to end a visit
+	 * @param visit the visit object to updated
+	 * @param stopDate which contains the stopDate or null for current time
+	 * @param request the {@link WebRequest} object
+	 * @return the url to forward/redirect to
+	 */
+	@RequestMapping(method = RequestMethod.POST, value = "/admin/visits/endVisit")
+	public String endVisit(@ModelAttribute(value = "visit") Visit visit,
+	        @RequestParam(value = "stopDate", required = false) String stopDate, HttpServletRequest request) {
+		
+		if (stopDate.length() == 0 || stopDate == null)
+			Context.getVisitService().endVisit(visit, null);
+		else {
+			try {
+				Context.getVisitService().endVisit(visit, Context.getDateTimeFormat().parse(stopDate));
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Visit.saved");
+				return "redirect:" + "/patientDashboard.form?patientId=" + visit.getPatient().getPatientId();
+			}
+			catch (ParseException pe) {
+				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.date");
+			}
+			catch (APIException e) {
+				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+			}
+		}
+		
 		return VISIT_FORM;
 	}
 	
