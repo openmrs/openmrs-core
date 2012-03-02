@@ -960,9 +960,9 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "PID|||"
 		        + patientId
 		        + "^^^^||Hornblower^Horatio^Test||\r"
-		        + "PV1||O|1^Unknown Location||||8a760^name^^^^^^^"
+		        + "PV1||O|1^Unknown Location||||8a760^name^^^^^^^&"
 		        + HL7Constants.PROVIDER_ASSIGNING_AUTH_IDENTIFIER
-		        + "^L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "&L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
 		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
@@ -1024,9 +1024,9 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "PID|||"
 		        + patientId
 		        + "^^^^||Hornblower^Horatio^Test||\r"
-		        + "PV1||O|1^Unknown Location||||8^name^^^^^^^"
+		        + "PV1||O|1^Unknown Location||||8^name^^^^^^^&"
 		        + HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_ID
-		        + "^L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "&L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
 		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
@@ -1061,9 +1061,9 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "PID|||"
 		        + patientId
 		        + "^^^^||Hornblower^Horatio^Test||\r"
-		        + "PV1||O|1^Unknown Location||||ba4781f4-6b94-11e0-93c3-18a905e044dc^name^^^^^^^"
+		        + "PV1||O|1^Unknown Location||||ba4781f4-6b94-11e0-93c3-18a905e044dc^name^^^^^^^&"
 		        + HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_UUID
-		        + "^L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "&L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
 		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
@@ -1090,11 +1090,10 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "PID|||"
 		        + patientId
 		        + "^^^^||Hornblower^Horatio^Test||\r"
-		        + "PV1||O|1^Unknown Location||||Test^Super User (1-8)^^^^^^^"
+		        + "PV1||O|1^Unknown Location||||Test^Super User (1-8)^^^^^^^&"
 		        + HL7Constants.PROVIDER_ASSIGNING_AUTH_IDENTIFIER
-		        + "^|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
-		        + "ORC|RE||||||||20080226102537|1^Super User\r"
-		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
+		        + "&^|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 	}

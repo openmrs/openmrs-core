@@ -65,7 +65,6 @@ import ca.uhn.hl7v2.model.v25.datatype.DLD;
 import ca.uhn.hl7v2.model.v25.datatype.DT;
 import ca.uhn.hl7v2.model.v25.datatype.DTM;
 import ca.uhn.hl7v2.model.v25.datatype.FT;
-import ca.uhn.hl7v2.model.v25.datatype.HD;
 import ca.uhn.hl7v2.model.v25.datatype.ID;
 import ca.uhn.hl7v2.model.v25.datatype.IS;
 import ca.uhn.hl7v2.model.v25.datatype.NM;
@@ -984,11 +983,12 @@ public class ORUR01Handler implements Application {
 		XCN hl7Provider = pv1.getAttendingDoctor(0);
 		Provider provider = null;
 		String id = hl7Provider.getIDNumber().getValue();
-		String assignAuth = ((HD) hl7Provider.getComponent(8)).getNamespaceID().getValue();
-		String nameTypeCode = ((ID) hl7Provider.getComponent(9)).getValue();
-		
+		String assignAuth = hl7Provider.getAssigningAuthority().getUniversalID().getValue();
+		String type = hl7Provider.getAssigningAuthority().getUniversalIDType().getValue();
+		String errorMessage = "";
 		if (StringUtils.hasText(id)) {
-			if (OpenmrsUtil.nullSafeEquals("L", nameTypeCode)) {
+			String specificErrorMsg = "";
+			if (OpenmrsUtil.nullSafeEquals("L", type)) {
 				if (HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_ID.equalsIgnoreCase(assignAuth)) {
 					try {
 						provider = Context.getProviderService().getProvider(Integer.valueOf(id));
@@ -996,10 +996,13 @@ public class ORUR01Handler implements Application {
 					catch (NumberFormatException e) {
 						// ignore
 					}
+					specificErrorMsg = "with provider Id";
 				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_IDENTIFIER.equalsIgnoreCase(assignAuth)) {
 					provider = Context.getProviderService().getProviderByIdentifier(id);
+					specificErrorMsg = "with provider identifier:" + id;
 				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_UUID.equalsIgnoreCase(assignAuth)) {
 					provider = Context.getProviderService().getProviderByUuid(id);
+					specificErrorMsg = "with provider uuid";
 				}
 			} else {
 				try {
@@ -1011,11 +1014,17 @@ public class ORUR01Handler implements Application {
 				catch (NumberFormatException e) {
 					// ignore
 				}
+				specificErrorMsg = "associated to a person with person id";
 			}
+			
+			errorMessage = "Could not resolve provider " + specificErrorMsg + ":" + id;
+		} else {
+			errorMessage = "No unique identifier was found for the provider";
 		}
 		
-		if (provider == null)
-			throw new HL7Exception("Could not resolve provider");
+		if (provider == null) {
+			throw new HL7Exception(errorMessage);
+		}
 		
 		return provider;
 	}
