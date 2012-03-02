@@ -201,11 +201,12 @@ function CreateCallback(options) {
 			objs.push("(" + objectsSliced + " " + omsgs.resultsNotDisplayed +")");
 		}
 		
+		var responseVal = jQuery.map(objs, displayFunction(q)); 
 		if (options.afterResults) {
-			objs = objs.concat(options.afterResults);
+			responseVal = responseVal.concat(options.afterResults);
 		}
 		
-		response(jQuery.map(objs, displayFunction(q)));
+		response(responseVal);
 	}; }
 	
 	// a 'private' method
@@ -214,11 +215,7 @@ function CreateCallback(options) {
 		// dwr methods sometimes put strings into the results, just display those
 		if (typeof person == 'string')
 			return { label: person, value: "" };
-		
-		// pass non-person objects through as-is
-		if (!person.personId)
-			return person;
-			
+					
 		// item is a PersonListItem object
 		var imageText = "";
 		if (person.gender == 'M')
@@ -266,10 +263,6 @@ function CreateCallback(options) {
 		if (typeof provider == 'string')
 			return { label: provider, value: "" };
 			
-		// pass non-provider objects through as-is
-		if (!provider.providerId)
-			return provider;
-		
 		var textShown = "";
 		
 		if (provider.identifier)
@@ -315,10 +308,6 @@ function CreateCallback(options) {
 		if (typeof item == 'string')
 			return { label: item, value: "" };
 			
-		// pass non-drug objects through as-is
-		if (!item.drugId && !item.conceptId)
-			return item;
-		
 		// add a space so the term highlighter below thinks the first word is a word
 		var textShown = " " + item.fullName;
 		
@@ -338,10 +327,6 @@ function CreateCallback(options) {
 		if (typeof enc == 'string')
 			return { label: enc, value: "" };
 			
-		// pass non-encounter objects through as-is
-		if (!enc.encounterId)
-			return enc;
-		
 		// enc is an EncounterListenc
 		// add a space so the term highlighter below thinks the first word is a word
 		var textShown = " " + enc.encounterDateString;
@@ -393,10 +378,6 @@ function CreateCallback(options) {
 		if (typeof item == 'string')
 			return { label: item, value: "" };
 			
-		// pass non-concept-reference-term-list-item objects through as-is
-		if (!item.conceptReferenceTermId)
-			return item;
-		
 		var textShown = " " + item.code+((item.name != null && $j.trim(item.name) != '') ? " - "+item.name : "")+" ["+item.conceptSourceName+"]";
 		
 		// highlight each search term in the results
