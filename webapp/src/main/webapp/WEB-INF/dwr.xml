@@ -242,7 +242,6 @@
 			<include method="findVisitsByPatient"/>
 			<include method="getVisit"/>
 			<include method="findEncountersByVisit"/>
-			<include method="endVisit"/>
 		</create>
 		
 		<create creator="new" javascript="DWRProviderService">
@@ -311,7 +310,6 @@
 			DWRVisitService.findVisitsByPatient(Integer patientId, boolean includeEnded, boolean includeVoided);
 			DWRVisitService.getVisit(Integer visitId);
 			DWRVisitService.findEncountersByVisit(Integer visitId);
-			DWRVisitService.endVisit(Integer visitId, String endDateTime);
 			DWRProviderService.findProviderCountAndProvider(String phrase, boolean includeVoided, Integer start, Integer length);
 			DWRProviderService.findProvider(String phrase, boolean includeVoided, Integer start, Integer length);
 		]]>

@@ -36,6 +36,7 @@ import org.openmrs.api.db.VisitDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.ValidateUtil;
 
 /**
  * Default implementation of the {@link VisitService}. This class should not be used on its own. The
@@ -152,6 +153,20 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		
 		CustomDatatypeUtil.saveAttributesIfNecessary(visit);
 		return dao.saveVisit(visit);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#endVisit(org.openmrs.Visit,java.util.Date)
+	 */
+	@Override
+	public Visit endVisit(Visit visit, Date stopDate) {
+		if (stopDate == null)
+			stopDate = new Date();
+		
+		visit.setStopDatetime(stopDate);
+		
+		ValidateUtil.validate(visit);
+		return saveVisit(visit);
 	}
 	
 	/**

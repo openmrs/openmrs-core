@@ -759,6 +759,44 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link VisitService#endVisit(Visit,Date)}
+	 */
+	@Test
+	@Verifies(value = "should set stopDateTime as currentDate if stopDate is null", method = "endVisit(Visit,Date)")
+	public void endVisit_shouldSetStopDateTimeAsCurrentDateIfStopDateIsNull() throws Exception {
+		VisitService vs = Context.getVisitService();
+		Visit visit = vs.getVisit(1);
+		Assert.assertNull(visit.getStopDatetime());
+		vs.endVisit(visit, null);
+		Assert.assertNotNull(visit.getStopDatetime());
+	}
+	
+	/**
+	 * @see {@link VisitService#endVisit(Visit,Date)}
+	 */
+	@Test
+	@Verifies(value = "should not fail if no validation errors are found", method = "endVisit(Visit,Date)")
+	public void endVisit_shouldNotFailIfNoValidationErrorsAreFound() throws Exception {
+		VisitService vs = Context.getVisitService();
+		Visit visit = vs.getVisit(1);
+		vs.endVisit(visit, new Date());
+	}
+	
+	/**
+	 * @see {@link VisitService#endVisit(Visit,Date)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should fail if validation errors are found", method = "endVisit(Visit,Date)")
+	public void endVisit_shouldFailIfValidationErrorsAreFound() throws Exception {
+		VisitService vs = Context.getVisitService();
+		Visit visit = vs.getVisit(1);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(visit.getStartDatetime());
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+		vs.endVisit(visit, cal.getTime());
+	}
+	
+	/**
 	 * @see {@link VisitService#purgeVisit(Visit)}
 	 */
 	@Test(expected = APIException.class)
