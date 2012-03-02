@@ -1975,13 +1975,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 			String defaultConceptMapType = Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE);
 			if (defaultConceptMapType == null) {
-				throw new APIException("The default concept map type is not set. You need to set the '"
+				throw new DAOException("The default concept map type is not set. You need to set the '"
 				        + OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE + "' global property.");
 			}
 			
 			ConceptMapType conceptMapType = getConceptMapTypeByName(defaultConceptMapType);
 			if (conceptMapType == null) {
-				throw new APIException("The default concept map type (name: " + defaultConceptMapType
+				throw new DAOException("The default concept map type (name: " + defaultConceptMapType
 				        + ") does not exist! You need to set the '" + OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE
 				        + "' global property.");
 			}

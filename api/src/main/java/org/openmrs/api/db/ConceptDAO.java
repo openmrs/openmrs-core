@@ -107,7 +107,7 @@ public interface ConceptDAO {
 	 * @throws DAOException
 	 */
 	public List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
-	        List<ConceptDatatype> datatypes) throws DAOException;
+	                                 List<ConceptDatatype> datatypes) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptWords(String, List, boolean, List, List, List,
@@ -115,9 +115,9 @@ public interface ConceptDAO {
 	 * @throws DAOException
 	 */
 	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
-	        throws DAOException;
+	                                         List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	                                         List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
+	                                         Concept answersToConcept, Integer start, Integer size) throws DAOException;
 	
 	/**
 	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,
@@ -125,9 +125,10 @@ public interface ConceptDAO {
 	 * @throws DAOException
 	 */
 	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
-	        throws DAOException;
+	                                             List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	                                             List<ConceptDatatype> requireDatatypes,
+	                                             List<ConceptDatatype> excludeDatatypes, Concept answersToConcept,
+	                                             Integer start, Integer size) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptAnswer(java.lang.Integer)
@@ -485,20 +486,21 @@ public interface ConceptDAO {
 	 *            conceptWords should be counted one or more times.
 	 */
 	public Long getCountOfConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, boolean forUniqueConcepts);
+	                                   List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	                                   List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
+	                                   Concept answersToConcept, boolean forUniqueConcepts);
 	
 	/**
 	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
 	 */
 	public Long getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	        boolean includeRetired) throws DAOException;
+	                            boolean includeRetired) throws DAOException;
 	
 	/**
 	 * @see ConceptService#getDrugs(String, Concept, boolean, boolean, boolean, Integer, Integer)
 	 */
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	        boolean includeRetired, Integer start, Integer length) throws DAOException;
+	                           boolean includeRetired, Integer start, Integer length) throws DAOException;
 	
 	/**
 	 * Computes and returns the weight of a conceptWord. The weight is computed independent of
@@ -602,14 +604,14 @@ public interface ConceptDAO {
 	 * @see ConceptService#getCountOfConceptReferenceTerms(String, ConceptSource, boolean)
 	 */
 	public Long getCountOfConceptReferenceTerms(String query, ConceptSource conceptSource, boolean includeRetired)
-	        throws DAOException;
+	    throws DAOException;
 	
 	/**
 	 * @see ConceptService#getConceptReferenceTerms(String, ConceptSource, Integer, Integer,
 	 *      boolean)
 	 */
 	public List<ConceptReferenceTerm> getConceptReferenceTerms(String query, ConceptSource conceptSource, Integer start,
-	        Integer length, boolean includeRetired) throws APIException;
+	                                                           Integer length, boolean includeRetired) throws APIException;
 	
 	/**
 	 * @see ConceptService#getReferenceTermMappingsTo(ConceptReferenceTerm)
@@ -648,6 +650,10 @@ public interface ConceptDAO {
 	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocal);
 	
 	/**
+	 * It is in the DAO, because it must be done in the MANUAL flush mode to prevent premature
+	 * flushes in {@link ConceptService#saveConcept(Concept)}. It will be removed in 1.10 when we
+	 * have a better way to manage flush modes.
+	 * 
 	 * @see ConceptService#getDefaultConceptMapType()
 	 */
 	public ConceptMapType getDefaultConceptMapType() throws DAOException;
