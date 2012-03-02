@@ -1015,7 +1015,7 @@ public class ORUR01Handler implements Application {
 		}
 		
 		if (provider == null)
-			throw new HL7Exception("Could not resolve provider with personId or identifier as '" + id + "'");
+			throw new HL7Exception("Could not resolve provider");
 		
 		return provider;
 	}
