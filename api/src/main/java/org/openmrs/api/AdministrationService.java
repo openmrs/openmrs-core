@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
-import org.hibernate.FlushMode;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -43,8 +42,6 @@ import org.openmrs.reporting.Report;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
@@ -54,6 +51,8 @@ import org.springframework.validation.Errors;
  * Use:<br/>
  * 
  * <pre>
+ * 
+ * 
  * List&lt;GlobalProperty&gt; globalProperties = Context.getAdministrationService().getGlobalProperties();
  * </pre>
  * 
@@ -727,7 +726,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * <p>
 	 * Used by {@link ValidateUtil#validate(Object)}.
 	 * 
-	 * @see FlushMode
 	 * @since 1.9
 	 * @param object
 	 * @param errors
