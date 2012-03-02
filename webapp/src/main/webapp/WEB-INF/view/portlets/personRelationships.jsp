@@ -1,6 +1,9 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<openmrs:htmlInclude file="/dwr/engine.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRRelationshipService.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" />
 
 <style type="text/css">
 .relTable td {
@@ -13,7 +16,6 @@
 </style>
 
 <script type="text/javascript">
-	
 	$j(document).ready(function() {
 		$j('#addRelationship').dialog({
 			autoOpen: false,
@@ -32,7 +34,7 @@
 			$j("#addRelationship").dialog("open");
 			return false;
 		});
-	
+		
 		$j('#voidRelationship').dialog({
 			autoOpen: false,
 			modal: true,
@@ -140,11 +142,10 @@
 			showDiv("relationshipTable");
 		}
 	}
-	
+
 	function handleAddRelationship() {
-		var personIdB = ${model.personId};
+		var personIdB = ${model.personId};	
 		var personIdA = $j("#add_rel_target_id").val();
-		
 		if (personIdA == personIdB) {
 			window.alert('<spring:message code="Relationship.error.same" javaScriptEscape="true"/>');
 			return;
@@ -170,7 +171,7 @@
 		clearAddRelationship();	
 		DWRRelationshipService.createRelationship(personIdA, personIdB, relType, startDateString, refreshRelationships);
 	}
-
+	
 	function clearAddRelationship() {
 		$j("#add_rel_target_id").val("");
 		$j("#add_rel_display_id").val("");
@@ -178,7 +179,7 @@
 		$j("#add_rel_start_date").val("");
 		hideDiv('add_rel_details');
 	}
-	
+
 	function editRelationshipDialog(relId) {
 		$j("#editRelationship .relationship_desc").html(relationships[relId].desc);
 		$j("#editRelationship #edit_relationship_id").val(relId);
@@ -221,7 +222,6 @@
 		document.getElementById('add_relationship_name').innerHTML = label;
 		showDiv('add_rel_details');
 	}
-
 </script>
 
 <div id="patientRelationshipPortlet">
@@ -271,16 +271,18 @@
 		</table>
 		
 		<span id="add_rel_details" style="display: none">
+			<hr/>
 			${model.person.personName}<spring:message code="Relationship.possessive"/>
 			<i><span id="add_relationship_name"><spring:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
 			<spring:message code="Relationship.target"/>
-			<openmrs_tag:personField formFieldName="add_rel_target" formFieldId="add_rel_target_id" displayFieldId="add_rel_display_id" searchLabel="Find a Person" canAddNewPerson="true" />
+			<openmrs_tag:personField formFieldName="add_rel_target" formFieldId="add_rel_target_id" displayFieldId="add_rel_display_id" searchLabel="Find a Person" canAddNewPerson="true"/>
 			<br/>
 			<spring:message code="Relationship.startDateQuestion"/>
 			<openmrs_tag:dateField formFieldName="add_rel_start_date" startValue="" />
 		</span>
 	</div>
+	
 	
 	<div id="editRelationship">
 		<input type="hidden" id="edit_relationship_id"/>

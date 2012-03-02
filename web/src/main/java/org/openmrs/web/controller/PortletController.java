@@ -346,12 +346,15 @@ public class PortletController implements Controller {
 				}
 			}
 			if (personId != null) {
-				if (!model.containsKey("person")) {
-					Person p = (Person) model.get("patient");
+				Person p = (Person) model.get("person");
+				if (p == null) {
+					p = (Person) model.get("patient");
 					if (p == null)
 						p = Context.getPersonService().getPerson(personId);
 					model.put("person", p);
-					
+				}
+				
+				if (!model.containsKey("personRelationships")) {
 					if (Context.hasPrivilege(PrivilegeConstants.VIEW_RELATIONSHIPS)) {
 						List<Relationship> relationships = new ArrayList<Relationship>();
 						relationships.addAll(Context.getPersonService().getRelationshipsByPerson(p));
