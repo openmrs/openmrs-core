@@ -170,6 +170,20 @@ public interface VisitService extends OpenmrsService {
 	public Visit saveVisit(Visit visit) throws APIException;
 	
 	/**
+	 * Sets the stopDate of a given visit.
+	 * 
+	 * @param visit the visit whose stopDate is to be set
+	 * @param stopDate the date and time the visit is ending. if null, current date is used
+	 * @return the visit that was ended
+	 * @should set the stopDateTime of visit
+	 * @should set stopdatetime as current date if stopdate is null
+	 * @should not fail if no validation errors are found
+	 * @should fail if validation errors are found
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_VISITS })
+	public Visit endVisit(Visit visit, Date stopDate) throws APIException;
+	
+	/**
 	 * Voids the given visit.
 	 * 
 	 * @param visit the visit to void.
