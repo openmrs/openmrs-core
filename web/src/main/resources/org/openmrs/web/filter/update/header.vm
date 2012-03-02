@@ -4,7 +4,11 @@
     <script type="text/javascript" src="initfilter/scripts/initialsetup.js"></script>
 
     <style type="text/css" media="all">
-        .question {
+        * {
+			font-family: Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif;
+		}
+		
+		.question {
             text-align:left;
             background-color: #E9E4CC;
             -moz-border-radius: 5px;
@@ -32,16 +36,13 @@
             height:45px;
             width:100%;
             margin-left: 15px;
-            font-family:times;
         }
         .bar-round {
             background-image:url(images/openmrs_bar.gif);
             background-repeat:no-repeat;
             height:45px;
             width:100%;
-            font-family:Verdana, Geneva, sans-serif;
             font-size:24px;
-            font-family:times;
         }
         .content {
             margin-top: 10px;
