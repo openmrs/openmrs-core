@@ -6,6 +6,10 @@
     <link type="text/css" rel="stylesheet" href="initfilter/scripts/jquery-ui/css/orange/jquery-ui.custom.css" />
     
 	<style type="text/css" media="all">
+		* {
+			font-family: Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif;
+		}
+		
 		.openmrs_msg {
 			background-color: lightyellow;
 		}
@@ -55,7 +59,6 @@
             background-repeat:no-repeat;
             height:45px;
             width:100%;
-            font-family:Verdana, Geneva, sans-serif;
             font-size:24px;
         }
         .content {
