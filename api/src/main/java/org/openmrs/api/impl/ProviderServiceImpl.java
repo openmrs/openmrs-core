@@ -227,4 +227,12 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	public boolean isProviderIdentifierUnique(Provider provider) throws APIException {
 		return dao.isProviderIdentifierUnique(provider);
 	}
+	
+	/**
+	 * @see org.openmrs.api.ProviderService#getProviderByIdentifier(java.lang.String)
+	 */
+	@Override
+	public Provider getProviderByIdentifier(String identifier) {
+		return dao.getProviderByIdentifier(identifier);
+	}
 }

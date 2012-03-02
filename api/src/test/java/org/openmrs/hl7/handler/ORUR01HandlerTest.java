@@ -30,17 +30,21 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PersonService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
@@ -72,9 +76,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Run this before each unit test in this class. This adds the hl7 specific
-	 * data to the initial and demo data done in the "@Before" method in
-	 * {@link BaseContextSensitiveTest}.
+	 * Run this before each unit test in this class. This adds the hl7 specific data to the initial
+	 * and demo data done in the "@Before" method in {@link BaseContextSensitiveTest}.
 	 * 
 	 * @throws Exception
 	 */
@@ -130,8 +133,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This method checks that obs grouping is happening correctly when
-	 * processing an ORUR01
+	 * This method checks that obs grouping is happening correctly when processing an ORUR01
 	 * 
 	 * @see {@link ORUR01Handler#processMessage(Message)}
 	 */
@@ -215,9 +217,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * If an hl7 message contains a "visit number" pv1-19 value, then assume its
-	 * an encounter_id and that information in the hl7 message should be
-	 * appended to that encounter.
+	 * If an hl7 message contains a "visit number" pv1-19 value, then assume its an encounter_id and
+	 * that information in the hl7 message should be appended to that encounter.
 	 * 
 	 * @see {@link ORUR01Handler#processMessage(Message)}
 	 */
@@ -942,5 +943,159 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 			}
 		}
 		Assert.assertEquals("This is a comment", newObservation.getComment());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should create an encounter and find the provider by identifier", method = "processMessage(Message)")
+	public void processMessage_shouldCreateAnEncounterAndFindTheProviderByIdentifier() throws Exception {
+		executeDataSet("org/openmrs/api/include/ProviderServiceTest-initial.xml");
+		int patientId = 2;
+		Patient patient = new Patient(patientId);
+		List<Encounter> encForPatient1 = Context.getEncounterService().getEncountersByPatient(patient);
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||"
+		        + patientId
+		        + "^^^^||Hornblower^Horatio^Test||\r"
+		        + "PV1||O|1^Unknown Location||||8a760^name^^^^^^^"
+		        + HL7Constants.PROVIDER_ASSIGNING_AUTH_IDENTIFIER
+		        + "^L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		// check for the new encounter
+		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
+		encForPatient2.removeAll(encForPatient1);//retain only the new encounter
+		Assert.assertTrue(encForPatient2.size() == 1);
+		
+		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
+		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
+		        .next();
+		Assert.assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", newProvider.getUuid());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should create an encounter and find the provider by personId", method = "processMessage(Message)")
+	public void processMessage_shouldCreateAnEncounterAndFindTheProviderByPersonId() throws Exception {
+		int patientId = 2;
+		Patient patient = new Patient(patientId);
+		List<Encounter> encForPatient1 = Context.getEncounterService().getEncountersByPatient(patient);
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||"
+		        + patientId
+		        + "^^^^||Hornblower^Horatio^Test||\r"
+		        + "PV1||O|1^Unknown Location||||1^name|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
+		assertTrue("An encounter should have been created", (encForPatient1.size() + 1) == encForPatient2.size());
+		
+		encForPatient2.removeAll(encForPatient1);
+		Assert.assertTrue(encForPatient2.size() == 1);
+		
+		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
+		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
+		        .next();
+		Assert.assertEquals("c2299800-cca9-11e0-9572-0800200c9a66", newProvider.getUuid());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should create an encounter and find the provider by providerId", method = "processMessage(Message)")
+	public void processMessage_shouldCreateAnEncounterAndFindTheProviderByProviderId() throws Exception {
+		executeDataSet("org/openmrs/api/include/ProviderServiceTest-initial.xml");
+		int patientId = 2;
+		Patient patient = new Patient(patientId);
+		List<Encounter> encForPatient1 = Context.getEncounterService().getEncountersByPatient(patient);
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||"
+		        + patientId
+		        + "^^^^||Hornblower^Horatio^Test||\r"
+		        + "PV1||O|1^Unknown Location||||8^name^^^^^^^"
+		        + HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_ID
+		        + "^L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		// check for the new encounter
+		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
+		encForPatient2.removeAll(encForPatient1);
+		Assert.assertTrue(encForPatient2.size() == 1);
+		
+		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
+		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
+		        .next();
+		Assert.assertEquals("1f9e8336-6b95-11e0-93c3-18a905e044dc", newProvider.getUuid());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should create an encounter and find the provider by uuid", method = "processMessage(Message)")
+	public void processMessage_shouldCreateAnEncounterAndFindTheProviderByUuid() throws Exception {
+		executeDataSet("org/openmrs/api/include/ProviderServiceTest-initial.xml");
+		int patientId = 2;
+		Patient patient = new Patient(patientId);
+		List<Encounter> encForPatient1 = Context.getEncounterService().getEncountersByPatient(patient);
+		ProviderService ps = Context.getProviderService();
+		Provider provider = ps.getProviderByIdentifier("8a760");
+		provider.setPerson(null);
+		ps.saveProvider(provider);
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||"
+		        + patientId
+		        + "^^^^||Hornblower^Horatio^Test||\r"
+		        + "PV1||O|1^Unknown Location||||ba4781f4-6b94-11e0-93c3-18a905e044dc^name^^^^^^^"
+		        + HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_UUID
+		        + "^L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		// check for the new encounter
+		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
+		encForPatient2.removeAll(encForPatient1);
+		Assert.assertTrue(encForPatient2.size() == 1);
+		
+		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
+		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
+		        .next();
+		Assert.assertEquals(4, newProvider.getId().intValue());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test(expected = ApplicationException.class)
+	@Verifies(value = "should fail if the provider name type code is not specified and is not a personId", method = "processMessage(Message)")
+	public void processMessage_shouldFailIfTheProviderNameTypeCodeIsNotSpecifiedAndIsNotAPersonId() throws Exception {
+		int patientId = 2;
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||"
+		        + patientId
+		        + "^^^^||Hornblower^Horatio^Test||\r"
+		        + "PV1||O|1^Unknown Location||||Test^Super User (1-8)^^^^^^^"
+		        + HL7Constants.PROVIDER_ASSIGNING_AUTH_IDENTIFIER
+		        + "^|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
 	}
 }
