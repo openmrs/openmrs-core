@@ -201,7 +201,12 @@ function CreateCallback(options) {
 			objs.push("(" + objectsSliced + " " + omsgs.resultsNotDisplayed +")");
 		}
 		
-		response(jQuery.map(objs, displayFunction(q)));
+		var responseVal = jQuery.map(objs, displayFunction(q)); 
+		if (options.afterResults) {
+			responseVal = responseVal.concat(options.afterResults);
+		}
+		
+		response(responseVal);
 	}; }
 	
 	// a 'private' method
@@ -210,7 +215,7 @@ function CreateCallback(options) {
 		// dwr methods sometimes put strings into the results, just display those
 		if (typeof person == 'string')
 			return { label: person, value: "" };
-			
+					
 		// item is a PersonListItem object
 		var imageText = "";
 		if (person.gender == 'M')
@@ -257,7 +262,7 @@ function CreateCallback(options) {
 		// dwr methods sometimes put strings into the results, just display those
 		if (typeof provider == 'string')
 			return { label: provider, value: "" };
-		
+			
 		var textShown = "";
 		
 		if (provider.identifier)
@@ -302,7 +307,7 @@ function CreateCallback(options) {
 		// dwr sometimes puts strings into the results, just display those
 		if (typeof item == 'string')
 			return { label: item, value: "" };
-		
+			
 		// add a space so the term highlighter below thinks the first word is a word
 		var textShown = " " + item.fullName;
 		
@@ -321,7 +326,7 @@ function CreateCallback(options) {
 		// dwr sometimes puts strings into the results, just display those
 		if (typeof enc == 'string')
 			return { label: enc, value: "" };
-		
+			
 		// enc is an EncounterListenc
 		// add a space so the term highlighter below thinks the first word is a word
 		var textShown = " " + enc.encounterDateString;
@@ -372,7 +377,7 @@ function CreateCallback(options) {
 		// dwr sometimes puts strings into the results, just display those
 		if (typeof item == 'string')
 			return { label: item, value: "" };
-		
+			
 			var textShown = " " + item.code+((item.name != null && $j.trim(item.name) != '') ? " - "+item.name : "")+" ["+item.conceptSourceName+"]";
 		
 		// highlight each search term in the results
