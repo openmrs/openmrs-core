@@ -14,6 +14,7 @@
 package org.openmrs.hl7;
 
 import java.util.Hashtable;
+
 import org.openmrs.util.PrivilegeConstants;
 
 /**
@@ -182,4 +183,22 @@ public class HL7Constants {
 		// to get InfoPath to treat booleans properly
 		simpleDatatypes.put(HL7_BOOLEAN, "_infopath_boolean");
 	}
+	
+	/**
+	 * Assigning authority for an id for a provider in an HL7 message that specifies that it is a
+	 * provider identifier
+	 */
+	public static final String PROVIDER_ASSIGNING_AUTH_IDENTIFIER = "PROVIDER.IDENTIFIER";
+	
+	/**
+	 * Assigning authority for an id for a provider in an HL7 message that specifies that it is a
+	 * provider id
+	 */
+	public static final String PROVIDER_ASSIGNING_AUTH_PROV_ID = "PROVIDER.ID";
+	
+	/**
+	 * Assigning authority for an id for a provider in an HL7 message that specifies that it is a
+	 * provider uuid
+	 */
+	public static final String PROVIDER_ASSIGNING_AUTH_PROV_UUID = "PROVIDER.UUID";
 }

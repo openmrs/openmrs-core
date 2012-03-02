@@ -30,6 +30,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -38,6 +39,7 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
@@ -63,6 +65,7 @@ import ca.uhn.hl7v2.model.v25.datatype.DLD;
 import ca.uhn.hl7v2.model.v25.datatype.DT;
 import ca.uhn.hl7v2.model.v25.datatype.DTM;
 import ca.uhn.hl7v2.model.v25.datatype.FT;
+import ca.uhn.hl7v2.model.v25.datatype.HD;
 import ca.uhn.hl7v2.model.v25.datatype.ID;
 import ca.uhn.hl7v2.model.v25.datatype.IS;
 import ca.uhn.hl7v2.model.v25.datatype.NM;
@@ -97,6 +100,8 @@ public class ORUR01Handler implements Application {
 	
 	private Log log = LogFactory.getLog(ORUR01Handler.class);
 	
+	private static EncounterRole unknownRole = null;
+	
 	/**
 	 * Always returns true, assuming that the router calling this handler will only call this
 	 * handler with ORU_R01 messages.
@@ -127,6 +132,11 @@ public class ORUR01Handler implements Application {
 	 * @should set value_Numeric for obs if Question datatype is Numeric
 	 * @should fail if question datatype is coded and a boolean is not a valid answer
 	 * @should fail if question datatype is neither Boolean nor numeric nor coded
+	 * @should create an encounter and find the provider by identifier
+	 * @should create an encounter and find the provider by personId
+	 * @should create an encounter and find the provider by uuid
+	 * @should create an encounter and find the provider by providerId
+	 * @should fail if the provider name type code is not specified and is not a personId
 	 */
 	public Message processMessage(Message message) throws ApplicationException {
 		
@@ -537,7 +547,7 @@ public class ORUR01Handler implements Application {
 			encounter = new Encounter();
 			
 			Date encounterDate = getEncounterDate(pv1);
-			Person provider = getProvider(pv1);
+			Provider provider = getProvider(pv1);
 			Location location = getLocation(pv1);
 			Form form = getForm(msh);
 			EncounterType encounterType = getEncounterType(msh, form);
@@ -545,7 +555,10 @@ public class ORUR01Handler implements Application {
 			//			Date dateEntered = getDateEntered(orc); // ignore this since we have no place in the data model to store it
 			
 			encounter.setEncounterDatetime(encounterDate);
-			encounter.setProvider(provider);
+			if (unknownRole == null)
+				unknownRole = Context.getEncounterService()
+				        .getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID);
+			encounter.setProvider(unknownRole, provider);
 			encounter.setPatient(patient);
 			encounter.setLocation(location);
 			encounter.setForm(form);
@@ -967,12 +980,43 @@ public class ORUR01Handler implements Application {
 		return tsToDate(pv1.getAdmitDateTime());
 	}
 	
-	private Person getProvider(PV1 pv1) throws HL7Exception {
+	private Provider getProvider(PV1 pv1) throws HL7Exception {
 		XCN hl7Provider = pv1.getAttendingDoctor(0);
-		Integer providerId = Context.getHL7Service().resolvePersonId(hl7Provider);
-		if (providerId == null)
+		Provider provider = null;
+		String id = hl7Provider.getIDNumber().getValue();
+		String assignAuth = ((HD) hl7Provider.getComponent(8)).getNamespaceID().getValue();
+		String nameTypeCode = ((ID) hl7Provider.getComponent(9)).getValue();
+		
+		if (StringUtils.hasText(id)) {
+			if (OpenmrsUtil.nullSafeEquals("L", nameTypeCode)) {
+				if (HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_ID.equalsIgnoreCase(assignAuth)) {
+					try {
+						provider = Context.getProviderService().getProvider(Integer.valueOf(id));
+					}
+					catch (NumberFormatException e) {
+						// ignore
+					}
+				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_IDENTIFIER.equalsIgnoreCase(assignAuth)) {
+					provider = Context.getProviderService().getProviderByIdentifier(id);
+				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_UUID.equalsIgnoreCase(assignAuth)) {
+					provider = Context.getProviderService().getProviderByUuid(id);
+				}
+			} else {
+				try {
+					Person person = Context.getPersonService().getPerson(Integer.valueOf(id));
+					Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(person);
+					if (!providers.isEmpty())
+						provider = providers.iterator().next();
+				}
+				catch (NumberFormatException e) {
+					// ignore
+				}
+			}
+		}
+		
+		if (provider == null)
 			throw new HL7Exception("Could not resolve provider");
-		Person provider = new Person(providerId);
+		
 		return provider;
 	}
 	
@@ -1143,5 +1187,4 @@ public class ORUR01Handler implements Application {
 		}
 		log.debug("finished discharge to location method");
 	}
-	
 }
