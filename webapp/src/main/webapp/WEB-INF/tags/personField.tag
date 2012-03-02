@@ -36,13 +36,11 @@
 </c:if>
 
 <script type="text/javascript">
-	
 	$j(document).ready( function() {
-
 		var opts_${ displayFieldId } = {
 			<c:if test="${ canAddNewPerson }">
 				afterResults: [ {
-									value: "",
+									value: ' ',
 									label: '<span class="not-found-link"><spring:message code="Person.notFoundCreate"/></span>',
 									onClick: function() {
 										$j('#${ formFieldId }_addDialog').dialog('open');
@@ -55,7 +53,10 @@
 		new AutoComplete("${displayFieldId}", new CreateCallback(opts_${ displayFieldId }).personCallback(), {
 			select: function(event, ui) {
 				if (ui.item.onClick) {
-					ui.item.onClick();
+					// need to use a setTimeout because otherwise when you open the dialog with the keyboard, when it closes the modal overlay doesn't disappear
+					setTimeout(function() {  
+						ui.item.onClick();
+					}, 100);
 					return;
 				}
 				jquerySelectEscaped("${formFieldId}").val(ui.item.object.personId);
@@ -148,15 +149,6 @@
 								window.alert(result);
 							} else { // result is a person list item
 								$j('#${ formFieldId }_addDialog').dialog('close');
-
-								// clear fields
-								$j('#${ formFieldId }_add_given_name')
-									.add('#${ formFieldId }_add_middle_name')
-									.add('#${ formFieldId }_add_family_name')
-									.add('#${ formFieldId }_add_birthdate')
-									.add('#${ formFieldId }_add_age')
-										.val('');
-								$j('input:radio[name="${ formFieldId }_add_gender"]:checked').removeAttr('checked');
 								
 								// set the underlying field value and display
 								jquerySelectEscaped("${ displayFieldId }").val(result.personName);
@@ -167,15 +159,17 @@
 					},
 					'<spring:message code="general.cancel"/>': function() {
 						$j(this).dialog('close');
-						// clear fields
-						$j('#${ formFieldId }_add_given_name')
-							.add('#${ formFieldId }_add_middle_name')
-							.add('#${ formFieldId }_add_family_name')
-							.add('#${ formFieldId }_add_birthdate')
-							.add('#${ formFieldId }_add_age')
-								.val('');
-						$j('input:radio[name="${ formFieldId }_add_gender"]:checked').removeAttr('checked');
 					}
+				},
+				close: function() {
+					// clear fields
+					$j('#${ formFieldId }_add_given_name')
+						.add('#${ formFieldId }_add_middle_name')
+						.add('#${ formFieldId }_add_family_name')
+						.add('#${ formFieldId }_add_birthdate')
+						.add('#${ formFieldId }_add_age')
+							.val('');
+					$j('input:radio[name="${ formFieldId }_add_gender"]:checked').removeAttr('checked');
 				}
 			});
 		});
