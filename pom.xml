@@ -704,7 +704,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>2.6</version>
+					<version>2.9.1</version>
 					<configuration>
 						<configLocation>checkstyle/openmrs-checkstyle.xml</configLocation>
 						<propertiesLocation>checkstyle/openmrs-checkstyle.properties</propertiesLocation>
