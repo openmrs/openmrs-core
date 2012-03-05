@@ -9,40 +9,29 @@
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.afterTitle" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 
-<%--  <form method="post"> --%>
 <table>
 	<tr>
 		<td><spring:message code="general.name"/></td>
-		<td>
-			<spring:bind path="conceptDatatype.name">
-				<input type="text" name="name" value="${status.value}" size="35" readonly="1"/>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
+		<td><c:out value="${conceptDatatype.name}"/></td>
 	</tr>
 	<tr>
 		<td valign="top"><spring:message code="general.description"/></td>
-		<td>
-			<spring:bind path="conceptDatatype.description">
-				<textarea name="description" rows="3" cols="40" type="_moz" readonly="1">${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
+		<td><spring:message code="${conceptDatatype.description}"/></td>
 	</tr>
 	<tr>
 		<td><spring:message code="ConceptDatatype.hl7Abbreviation"/></td>
-		<td>
-			<spring:bind path="conceptDatatype.hl7Abbreviation">
-				<input type="text" name="hl7Abbreviation" value="${status.value}" size="5" readonly="1"/>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
+		<td><c:out value="${conceptDatatype.hl7Abbreviation}"/></td>
 	</tr>
+	<tr>
+		<td><spring:message code="general.uuid"/></td>
+		<td><c:out value="${conceptDatatype.uuid}"/></td>
+	</tr>
+
 	<c:if test="${!(conceptDatatype.creator == null)}">
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>
 			<td>
-				${conceptDatatype.creator.personName} -
+				<c:out value="${conceptDatatype.creator.personName}"/> -
 				<openmrs:formatDate date="${conceptDatatype.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -50,8 +39,6 @@
 </table>
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.inForm" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 <br />
-<%-- <input type="submit" value="<spring:message code="ConceptDatatype.save"/>">
-</form> --%>
 
 <div id="conceptDatatypeFormReadOnly">(<spring:message code="general.readonly"/>)</div>
 
