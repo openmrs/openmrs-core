@@ -1202,6 +1202,11 @@
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
 	<attribute>
+		<name>object</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
 		<name>concept</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>

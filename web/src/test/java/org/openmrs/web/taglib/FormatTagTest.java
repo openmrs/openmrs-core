@@ -15,6 +15,9 @@ package org.openmrs.web.taglib;
 
 import java.util.Locale;
 
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.Tag;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -24,8 +27,12 @@ import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
+import org.springframework.mock.web.MockPageContext;
 
 public class FormatTagTest extends BaseContextSensitiveTest {
+	
+	private static final String ATTRIBUTE_OBJECT_VALUE = "objectValue";
 	
 	/**
 	 * @see FormatTag#printConcept(StringBuilder,Concept)
@@ -87,5 +94,65 @@ public class FormatTagTest extends BaseContextSensitiveTest {
 		if (tag != null)
 			ret.addTag(tag);
 		return ret;
+	}
+	
+	/**
+	 * @see {@link FormatTag#doStartTag()}
+	 */
+	@Test
+	@Verifies(value = "print any domain object", method = "doStartTag()")
+	public void doStartTag_shouldPrintAnyDomainObject() throws Exception {
+		FormatTag tag = new FormatTag();
+		PageContext pageContext = new MockPageContext();
+		tag.setPageContext(pageContext);
+		tag.setVar(ATTRIBUTE_OBJECT_VALUE);
+		
+		// check if concept is properly printed
+		checkStartTagEvaluation(pageContext, tag, Context.getConceptService().getConcept(3), "COUGH SYRUP");
+		
+		// check if encounter is properly printed
+		checkStartTagEvaluation(pageContext, tag, Context.getEncounterService().getEncounter(3),
+		    "Emergency @Unknown Location | 01/08/2008 | Super User");
+		
+		// check if observation value is properly printed
+		checkStartTagEvaluation(pageContext, tag, Context.getObsService().getObs(7), "50.0");
+		
+		// check if user is properly printed
+		checkStartTagEvaluation(pageContext, tag, Context.getUserService().getUser(502),
+		    "<span class=\"user\"><span class=\"username\">butch</span><span class=\"personName\"> (Hippocrates of Cos)</span></span>");
+		
+		// check if encounter type is properly printed
+		checkStartTagEvaluation(pageContext, tag, Context.getEncounterService().getEncounterType(1), "Scheduled");
+		
+		// check if location is properly printed
+		checkStartTagEvaluation(pageContext, tag, Context.getLocationService().getLocation(1), "Unknown Location");
+		
+		// check if program is properly printed
+		checkStartTagEvaluation(pageContext, tag, Context.getProgramWorkflowService().getProgram(1), "HIV Program");
+		
+		// check if visit is properly printed
+		checkStartTagEvaluation(pageContext, tag, Context.getVisitService().getVisit(1),
+		    "Initial HIV Clinic Visit @Unknown Location | 01/01/2005");
+		
+		// check if visit type is properly printed
+		checkStartTagEvaluation(pageContext, tag, Context.getVisitService().getVisitType(1), "Initial HIV Clinic Visit");
+		
+		// check if form is properly printed
+		checkStartTagEvaluation(pageContext, tag, Context.getFormService().getForm(1), "Basic Form (v0.1)");
+	}
+	
+	/**
+	 * This method checks correctness of start tag evaluation of given tag
+	 * 
+	 * @param pageContext the page context to be used when checking start tag evaluation
+	 * @param tag the format tag whose doStartTag() method will be evaluated
+	 * @param object the object to format with given tag
+	 * @param expected the expected result of object formatting 
+	 */
+	private void checkStartTagEvaluation(PageContext pageContext, FormatTag tag, Object object, String expected) {
+		tag.setObject(object);
+		Assert.assertEquals(Tag.SKIP_BODY, tag.doStartTag());
+		Assert.assertNotNull(pageContext.getAttribute(ATTRIBUTE_OBJECT_VALUE));
+		Assert.assertEquals(pageContext.getAttribute(ATTRIBUTE_OBJECT_VALUE), expected);
 	}
 }
