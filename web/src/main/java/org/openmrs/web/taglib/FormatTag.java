@@ -14,7 +14,9 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -69,6 +71,8 @@ public class FormatTag extends TagSupport {
 	private final Log log = LogFactory.getLog(getClass());
 	
 	private String var;
+	
+	private Object object;
 	
 	private Integer conceptId;
 	
@@ -131,6 +135,11 @@ public class FormatTag extends TagSupport {
 	@Override
 	public int doStartTag() {
 		StringBuilder sb = new StringBuilder();
+		
+		if (object != null) {
+			printObject(sb, object);
+		}
+		
 		if (conceptId != null)
 			concept = Context.getConceptService().getConcept(conceptId);
 		if (concept != null) {
@@ -153,13 +162,7 @@ public class FormatTag extends TagSupport {
 		if (encounterId != null)
 			encounter = Context.getEncounterService().getEncounter(encounterId);
 		if (encounter != null) {
-			printMetadata(sb, encounter.getEncounterType());
-			sb.append(" @");
-			printMetadata(sb, encounter.getLocation());
-			sb.append(" | ");
-			printDate(sb, encounter.getEncounterDatetime());
-			sb.append(" | ");
-			printPerson(sb, encounter.getProvider());
+			printEncounter(sb, encounter);
 		}
 		
 		if (encounterTypeId != null)
@@ -177,11 +180,7 @@ public class FormatTag extends TagSupport {
 		if (visitId != null)
 			visit = Context.getVisitService().getVisit(visitId);
 		if (visit != null) {
-			printMetadata(sb, visit.getVisitType());
-			sb.append(" @");
-			printMetadata(sb, visit.getLocation());
-			sb.append(" | ");
-			printDate(sb, visit.getStartDatetime());
+			printVisit(sb, visit);
 		}
 		
 		if (locationId != null)
@@ -199,11 +198,7 @@ public class FormatTag extends TagSupport {
 		if (programId != null)
 			program = Context.getProgramWorkflowService().getProgram(programId);
 		if (program != null) {
-			if (StringUtils.hasText(program.getName())) {
-				printMetadata(sb, program);
-			} else if (program.getConcept() != null) {
-				printConcept(sb, program.getConcept());
-			}
+			printProgram(sb, program);
 		}
 		
 		if (providerId != null)
@@ -240,6 +235,89 @@ public class FormatTag extends TagSupport {
 			}
 		}
 		return SKIP_BODY;
+	}
+	
+	/**
+	 * Formats anything and prints it to string builder. (Delegates to other methods here)
+	 * @param sb the string builder to print object with
+	 * @param o the object to print
+	 */
+	private void printObject(StringBuilder sb, Object o) {
+		if (o instanceof Collection<?>) {
+			for (Iterator<?> i = ((Collection<?>) o).iterator(); i.hasNext();) {
+				printObject(sb, i.next());
+				if (i.hasNext())
+					sb.append(", ");
+			}
+		} else if (o instanceof Date) {
+			printDate(sb, (Date) o);
+		} else if (o instanceof Concept) {
+			printConcept(sb, (Concept) o);
+		} else if (o instanceof Obs) {
+			sb.append(((Obs) o).getValueAsString(Context.getLocale()));
+		} else if (o instanceof User) {
+			printUser(sb, (User) o);
+		} else if (o instanceof Encounter) {
+			printEncounter(sb, (Encounter) o);
+		} else if (o instanceof Visit) {
+			printVisit(sb, (Visit) o);
+		} else if (o instanceof Program) {
+			printProgram(sb, (Program) o);
+		} else if (o instanceof Provider) {
+			printProvider(sb, (Provider) o);
+		} else if (o instanceof Form) {
+			printForm(sb, (Form) o);
+		} else if (o instanceof SingleCustomValue<?>) {
+			printSingleCustomValue(sb, (SingleCustomValue<?>) o);
+		} else if (o instanceof OpenmrsMetadata) {
+			printMetadata(sb, (OpenmrsMetadata) o);
+		} else {
+			sb.append("" + o);
+		}
+	}
+	
+	/**
+	 * Prints encounter into via given string builder
+	 * 
+	 * @param sb the string builder object to print encounter value with
+	 * @param encounter the encounter to print
+	 */
+	private void printEncounter(StringBuilder sb, Encounter encounter) {
+		printMetadata(sb, encounter.getEncounterType());
+		sb.append(" @");
+		printMetadata(sb, encounter.getLocation());
+		sb.append(" | ");
+		printDate(sb, encounter.getEncounterDatetime());
+		sb.append(" | ");
+		printPerson(sb, encounter.getProvider());
+	}
+	
+	/**
+	 * Prints visit via given string builder
+	 * 
+	 * @param sb the string builder to print visit with
+	 * @param visit the visit object to print
+	 */
+	private void printVisit(StringBuilder sb, Visit visit) {
+		printMetadata(sb, visit.getVisitType());
+		sb.append(" @");
+		printMetadata(sb, visit.getLocation());
+		sb.append(" | ");
+		printDate(sb, visit.getStartDatetime());
+	}
+	
+	/**
+	 * Prints program via given string builder
+	 * 
+	 * @param sb the string builder to print program with
+	 * @param program the program object to print
+	 */
+	private void printProgram(StringBuilder sb, Program program) {
+		if (StringUtils.hasText(program.getName())) {
+			printMetadata(sb, program);
+		} else if (program.getConcept() != null) {
+			printConcept(sb, program.getConcept());
+		}
 	}
 	
 	/**
@@ -527,6 +605,7 @@ public class FormatTag extends TagSupport {
 	
 	private void reset() {
 		var = null;
+		object = null;
 		conceptId = null;
 		concept = null;
 		withConceptNameType = null;
@@ -553,6 +632,22 @@ public class FormatTag extends TagSupport {
 		encounterProviders = null;
 		form = null;
 		singleCustomValue = null;
+	}
+	
+	/**
+	 * Gets the object property
+	 * @return the object property value
+	 */
+	public Object getObject() {
+		return object;
+	}
+	
+	/**
+	 * Sets the object property
+	 * @param object the object to set
+	 */
+	public void setObject(Object object) {
+		this.object = object;
 	}
 	
 	public Integer getConceptId() {
