@@ -139,7 +139,7 @@ public class DWROrderService {
 	}
 	
 	public Vector<DrugOrderListItem> getCurrentDrugOrdersByPatientId(Integer patientId) {
-		return getDrugOrdersByPatientId(patientId, OrderService.SHOW_CURRENT);
+		return getDrugOrdersByPatientId(patientId, OrderService.SHOW_CURRENT_AND_FUTURE);
 	}
 	
 	public Vector<DrugOrderListItem> getCompletedDrugOrdersByPatientId(Integer patientId) {
@@ -160,7 +160,7 @@ public class DWROrderService {
 	}
 	
 	public Vector<DrugSetItem> getCurrentDrugSet(Integer patientId, String drugSetId) {
-		return getDrugSet(patientId, drugSetId, OrderService.SHOW_CURRENT);
+		return getDrugSet(patientId, drugSetId, OrderService.SHOW_CURRENT_AND_FUTURE);
 	}
 	
 	public Vector<DrugSetItem> getCompletedDrugSet(Integer patientId, String drugSetId) {
@@ -194,7 +194,7 @@ public class DWROrderService {
 	}
 	
 	public Vector<DrugSetItem> getCurrentOtherDrugSet(Integer patientId, String displayDrugSetIds) {
-		return getOtherDrugSet(patientId, displayDrugSetIds, OrderService.SHOW_CURRENT);
+		return getOtherDrugSet(patientId, displayDrugSetIds, OrderService.SHOW_CURRENT_AND_FUTURE);
 	}
 	
 	public Vector<DrugSetItem> getCompletedOtherDrugSet(Integer patientId, String displayDrugSetIds) {
@@ -223,7 +223,8 @@ public class DWROrderService {
 	        String displayDrugSetIds) {
 		log.debug("in getCurrentOtherDrugOrdersBy...() method");
 		
-		return this.getOtherDrugOrdersByPatientIdDrugSetId(patientId, displayDrugSetIds, OrderService.SHOW_CURRENT);
+		return this.getOtherDrugOrdersByPatientIdDrugSetId(patientId, displayDrugSetIds,
+		    OrderService.SHOW_CURRENT_AND_FUTURE);
 	}
 	
 	public Vector<DrugOrderListItem> getCompletedOtherDrugOrdersByPatientIdDrugSetId(Integer patientId,
@@ -280,7 +281,7 @@ public class DWROrderService {
 	}
 	
 	public Vector<DrugOrderListItem> getCurrentDrugOrdersByPatientIdDrugSetId(Integer patientId, String drugSetId) {
-		return getDrugOrdersByPatientIdDrugSetId(patientId, drugSetId, OrderService.SHOW_CURRENT);
+		return getDrugOrdersByPatientIdDrugSetId(patientId, drugSetId, OrderService.SHOW_CURRENT_AND_FUTURE);
 	}
 	
 	public Vector<DrugOrderListItem> getCompletedDrugOrdersByPatientIdDrugSetId(Integer patientId, String drugSetId) {
@@ -292,7 +293,7 @@ public class DWROrderService {
 		
 		Patient p = Context.getPatientService().getPatient(patientId);
 		
-		Context.getOrderService().voidDrugSet(p, drugSetId, voidReason, OrderService.SHOW_CURRENT);
+		Context.getOrderService().voidDrugSet(p, drugSetId, voidReason, OrderService.SHOW_CURRENT_AND_FUTURE);
 	}
 	
 	public void voidCompletedDrugSet(Integer patientId, String drugSetId, String voidReason) {
@@ -340,7 +341,8 @@ public class DWROrderService {
 		
 		Patient p = Context.getPatientService().getPatient(patientId);
 		
-		List<DrugOrder> currentOrders = Context.getOrderService().getDrugOrdersByPatient(p, OrderService.SHOW_CURRENT);
+		List<DrugOrder> currentOrders = Context.getOrderService().getDrugOrdersByPatient(p,
+		    OrderService.SHOW_CURRENT_AND_FUTURE);
 		
 		for (DrugOrder o : currentOrders) {
 			Context.getOrderService().voidOrder(o, voidReason);
@@ -371,7 +373,8 @@ public class DWROrderService {
 		
 		Patient p = Context.getPatientService().getPatient(patientId);
 		
-		List<DrugOrder> currentOrders = Context.getOrderService().getDrugOrdersByPatient(p, OrderService.SHOW_CURRENT);
+		List<DrugOrder> currentOrders = Context.getOrderService().getDrugOrdersByPatient(p,
+		    OrderService.SHOW_CURRENT_AND_FUTURE);
 		
 		for (DrugOrder o : currentOrders) {
 			try {
