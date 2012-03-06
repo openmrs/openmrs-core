@@ -422,6 +422,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				for (DrugOrder drugOrder : drugOrders) {
 					if (orderStatus == ORDER_STATUS.CURRENT && drugOrder.isCurrent())
 						ret.add(drugOrder);
+					else if (orderStatus == ORDER_STATUS.CURRENT_AND_FUTURE
+					        && (drugOrder.isCurrent() || drugOrder.isFuture()))
+						ret.add(drugOrder);
 					else if (orderStatus == ORDER_STATUS.NOTVOIDED && !drugOrder.getVoided())
 						ret.add(drugOrder);
 					else if (orderStatus == ORDER_STATUS.COMPLETE && drugOrder.isDiscontinuedRightNow())
@@ -584,8 +587,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				return ORDER_STATUS.ANY;
 			case SHOW_COMPLETE:
 				return ORDER_STATUS.COMPLETE;
-				//case SHOW_NOTVOIDED:
-				// fall through to default
+			case SHOW_CURRENT_AND_FUTURE:
+				return ORDER_STATUS.CURRENT_AND_FUTURE;
+			//case SHOW_NOTVOIDED:
+			// fall through to default
 			default:
 				return ORDER_STATUS.NOTVOIDED;
 		}

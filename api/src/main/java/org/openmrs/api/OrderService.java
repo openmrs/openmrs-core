@@ -65,6 +65,11 @@ public interface OrderService extends OpenmrsService {
 	public static final int SHOW_NOTVOIDED = 4;
 	
 	/**
+	 * @deprecated use {@link ORDER_STATUS#CURRENT_AND_FUTURE}
+	 */
+	public static final int SHOW_CURRENT_AND_FUTURE = 5;
+	
+	/**
 	 * The type of status to match on an order. Used in getOrder* methods
 	 */
 	public static enum ORDER_STATUS {
@@ -86,7 +91,12 @@ public interface OrderService extends OpenmrsService {
 		/**
 		 * All orders that have not been voided/deleted
 		 */
-		NOTVOIDED
+		NOTVOIDED,
+
+		/**
+		 * The patient is considered to be currently and or future on this order
+		 */
+		CURRENT_AND_FUTURE
 	}
 	
 	/**
@@ -317,6 +327,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderStatus the status of the orders returned
 	 * @param includeVoided true/false whether or not to include voided drug orders
 	 * @return List of drug orders for the given patient
+	 * @should return list of drug orders with given status
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
