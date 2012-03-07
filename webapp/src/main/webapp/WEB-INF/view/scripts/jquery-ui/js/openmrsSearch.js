@@ -463,7 +463,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				    			}); 
 				    		}
 				    		if(self.options.selectionHandler) {
-				    			$j(verboseRow).bind('click', function() {
+				    			$j(verboseRow).unbind('click').bind('click', function() {
 				    				rowIndex = self._table.fnGetPosition(this.previousSibling);
 				    				//Onclick handlers should work on the verbose row too
 				    				self._doSelected(rowIndex, self._results[rowIndex]);
@@ -511,7 +511,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		}
 		    		
 		    		if(self.options.selectionHandler) {
-		    			$j(nRow).bind('click', function() {
+		    			$j(nRow).unbind('click').bind('click', function() {
 		    				//Register onclick handlers to each row
 		    				self._doSelected(iDisplayIndexFull, self._results[iDisplayIndexFull]);
 		    			});
