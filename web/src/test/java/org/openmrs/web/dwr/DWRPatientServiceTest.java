@@ -62,10 +62,10 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 	@Verifies(value = "should not signal for a new search if it is not the first ajax call", method = "findCountAndPatients(String,Integer,Integer,null)")
 	public void findCountAndPatients_shouldNotSignalForANewSearchIfItIsNotTheFirstAjaxCall() throws Exception {
 		DWRPatientService dwrService = new DWRPatientService();
-		Map<String, Object> resultObjects = dwrService.findCountAndPatients("Joht", 0, 10, true);
+		Map<String, Object> resultObjects = dwrService.findCountAndPatients("Joht", 1, 10, true);
 		Assert.assertEquals(0, resultObjects.get("count"));
-		Assert.assertEquals("Joh", resultObjects.get("searchAgain"));
-		Assert.assertNotNull(resultObjects.get("notification"));
+		Assert.assertNull(resultObjects.get("searchAgain"));
+		Assert.assertNull(resultObjects.get("notification"));
 	}
 	
 	/**
@@ -89,10 +89,10 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 	public void findCountAndPatients_shouldSignalForANewSearchIfTheNewSearchValueHasMatchesAndIsAFirstCall()
 	        throws Exception {
 		DWRPatientService dwrService = new DWRPatientService();
-		Map<String, Object> resultObjects = dwrService.findCountAndPatients("Joht", 1, 10, true);
+		Map<String, Object> resultObjects = dwrService.findCountAndPatients("Joht", 0, 10, true);
 		Assert.assertEquals(0, resultObjects.get("count"));
-		Assert.assertNull(resultObjects.get("searchAgain"));
-		Assert.assertNull(resultObjects.get("notification"));
+		Assert.assertEquals("Joh", resultObjects.get("searchAgain"));
+		Assert.assertNotNull(resultObjects.get("notification"));
 	}
 	
 }
