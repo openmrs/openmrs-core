@@ -395,7 +395,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		}
 		    		
 		    		if(self.options.selectionHandler) {
-		    			$j(nRow).bind('click', function() {
+		    			$j(nRow).unbind('click').bind('click', function() {
 		    				//Register onclick handlers to each row
 		    				self._doSelected(iDisplayIndexFull, self._results[iDisplayIndexFull]);
 		    			});
