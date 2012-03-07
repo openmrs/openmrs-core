@@ -460,8 +460,17 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		_handleResults: function(searchText, curCallCount) {
 			var self = this;
 			return function(results) {
-				if(results["notification"])					
+				if(results["notification"])
 					$j(notification).html(results["notification"]);
+				
+				//this lets the specific widgets to signal that a new 
+				//search should be triggered for the specified text
+				if(results["searchAgain"]){
+					newSearch = $j.trim(results["searchAgain"]);
+					if(newSearch != '' && newSearch != searchText)
+						self._doSearch(newSearch);
+					return;
+				}
 				
 				var matchCount = results["count"];
 				self._results = results["objectList"];
