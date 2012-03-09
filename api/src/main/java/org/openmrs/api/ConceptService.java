@@ -2001,7 +2001,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param exactLocale <code>false</code> if search for both global and country specific, <code>true</code> if <code>null</code>
 	 * @return the list of concepts
 	 * @throws APIException
-	 * @since 1.9
+	 * @since 1.9, 1.8.4
 	 * @should return concepts for all countries and global language given language only locale
 	 * @should return concepts for specific country and global language given language and country
 	 *         locale
