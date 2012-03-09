@@ -500,4 +500,8 @@ public interface ConceptDAO {
 	 */
 	public Double weighConceptWord(ConceptWord word);
 	
+	/**
+	 * @see ConceptService#getConceptsByName(String, Locale, Boolean)
+	 */
+	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocal);
 }

@@ -1575,4 +1575,70 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		return bonusWeight;
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByName(java.lang.String, java.util.Locale,
+	 *      java.lang.Boolean)
+	 */
+	@Override
+	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocale) {
+		if (exactLocale == null) {
+			exactLocale = true;
+		}
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptName.class);
+		criteria.add(Restrictions.ilike("name", name));
+		criteria.add(Restrictions.eq("voided", false));
+		
+		//This approach is very slow. It's better to remove retired concepts in Java.
+		//criteria.createAlias("concept", "concept");
+		//criteria.add(Restrictions.eq("concept.retired", false));
+		
+		if (locale != null) {
+			if (exactLocale) {
+				criteria.add(Restrictions.eq("locale", locale));
+			} else {
+				if (!StringUtils.isEmpty(locale.getCountry())) {
+					// if searching for specific locale like "en_US", but not exact so that "en" will be found as well
+					criteria.add(Restrictions.or(Restrictions.eq("locale", locale), Restrictions.eq("locale", new Locale(
+					        locale.getLanguage()))));
+				}
+			}
+		}
+		
+		criteria.addOrder(Order.asc("concept"));
+		criteria.setProjection(Projections.distinct(Projections.property("concept")));
+		
+		@SuppressWarnings("unchecked")
+		List<Concept> concepts = criteria.list();
+		
+		//Remove retired concepts
+		for (Iterator<Concept> it = concepts.iterator(); it.hasNext();) {
+			Concept concept = it.next();
+			if (concept.isRetired()) {
+				it.remove();
+			}
+		}
+		
+		if (locale != null && !exactLocale && StringUtils.isEmpty(locale.getCountry())) {
+			// if searching for general locale like "en", but not exact so that "en_US", "en_GB", etc. will be found as well
+			for (Iterator<Concept> it = concepts.iterator(); it.hasNext();) {
+				Concept concept = it.next();
+				
+				boolean found = false;
+				for (ConceptName conceptName : concept.getNames()) {
+					if (conceptName.getLocale().getLanguage().equals(locale.getLanguage())) {
+						found = true;
+						break;
+					}
+				}
+				
+				if (!found) {
+					it.remove();
+				}
+			}
+		}
+		
+		return concepts;
+	}
 }
