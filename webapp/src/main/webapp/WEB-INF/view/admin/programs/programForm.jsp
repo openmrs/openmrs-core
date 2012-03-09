@@ -194,8 +194,15 @@
 
 <script type="text/javascript">
 	cleanupWorkflowsValue();
-	<c:forEach var="workflow" items="${program.workflows}">
-		idToNameMap[${workflow.concept.conceptId}] = '<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>';
+	<c:forEach var="workflow" items="${program.allWorkflows}">
+		<c:choose>
+		<c:when test="${!workflow.retired}">
+			idToNameMap[${workflow.concept.conceptId}] = '<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>';
+		</c:when>
+		<c:otherwise>
+			removeWorkflow(${workflow.concept.conceptId});
+		</c:otherwise>
+		</c:choose>
 	</c:forEach>
 	refreshWorkflowsDisplay();
 </script>
