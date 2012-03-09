@@ -6,6 +6,7 @@
 <%@ include file="localHeader.jsp" %>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 
 <script type="text/javascript">
 	var idToNameMap = new Array();
@@ -52,18 +53,18 @@
 	}
 	
 	function cleanupWorkflowsValue() {
-		var value = $('workflowsValue').value;
+		var value = $j('#workflowsValue').val();
 		if (value == '' || value == 'null') value = ':';
-		$('workflowsValue').value = value;
+		$j('#workflowsValue').val(value);
 	}
 	
 	function addWorkflow(conceptId) {
-		$('workflowsValue').value = $('workflowsValue').value + ' ' + conceptId;
+		$j('#workflowsValue').val($j('#workflowsValue').val() + ' ' + conceptId);
 		refreshWorkflowsDisplay();
 	}
 	
 	function removeWorkflow(conceptId) {
-		var value = $('workflowsValue').value;
+		var value = $j('#workflowsValue').val();
 		if (value == '' || value == 'null') value = ':';
 		var progId = value.substring(0, value.indexOf(":"));
 		value = value.substring(value.indexOf(":") + 1);
@@ -74,13 +75,13 @@
 				ret += values[i] + ' ';
 			}
 		}
-		$('workflowsValue').value = ret;
+		$j('#workflowsValue').val(ret);
 		refreshWorkflowsDisplay();
 	}
 	
 	function refreshWorkflowsDisplay() {
 		var tableId = 'workflowsDisplay';
-		var value = $('workflowsValue').value;
+		var value = $j('#workflowsValue').val();
 		value = value.substring(value.indexOf(":") + 1);
 		values = helper(value);
 		dwr.util.removeAllRows(tableId);
