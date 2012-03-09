@@ -72,6 +72,8 @@ public class ConceptValidator implements Validator {
 	 * @should not allow multiple short names in a given locale
 	 * @should not allow an index term to be a locale preferred name
 	 * @should fail if there is no name explicitly marked as fully specified
+	 * @should fail if there is a duplicate unretired concept name in the same locale different than
+	 *         the system locale
 	 * @should pass if the duplicate ConceptName is neither preferred nor fully Specified
 	 * @should pass if the concept has a synonym that is also a short name
 	 */
@@ -154,15 +156,22 @@ public class ConceptValidator implements Validator {
 				//find duplicate names for a non-retired concept
 				if (!conceptToValidate.isRetired()) {
 					if (nameInLocale.isLocalePreferred() || nameInLocale.isFullySpecifiedName()) {
+						//must be unique among all country specific locals
+						Locale languageLocale = new Locale(nameInLocale.getLocale().getLanguage());
+						
 						List<Concept> conceptsWithPossibleDuplicateNames = Context.getConceptService().getConceptsByName(
-						    nameInLocale.getName());
+						    nameInLocale.getName(), languageLocale, false);
 						if (conceptsWithPossibleDuplicateNames.size() > 0) {
 							for (Concept concept : conceptsWithPossibleDuplicateNames) {
-								//skip past the concept being edited and retired ones
-								if (concept.isRetired()
-								        || (conceptToValidate.getConceptId() != null && conceptToValidate.getConceptId()
-								                .equals(concept.getConceptId())))
+								//skip retired
+								if (concept.isRetired())
 									continue;
+								
+								//skip same
+								if (conceptToValidate.getConceptId() != null
+								        && conceptToValidate.getConceptId().equals(concept.getConceptId()))
+									continue;
+								
 								//should be a unique name amongst all preferred and fully specified names in its locale system wide
 								if ((concept.getFullySpecifiedName(conceptNameLocale) != null && concept
 								        .getFullySpecifiedName(conceptNameLocale).getName().equalsIgnoreCase(
