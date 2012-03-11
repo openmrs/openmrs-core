@@ -531,7 +531,7 @@
                         <spring:message code="general.class"/>
                     </th>
                     <td>
-                        ${h.value.class.name }
+                        ${h.value['class'].name }
                     </td>
                 </tr>
              </c:forEach>
