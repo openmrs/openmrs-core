@@ -432,10 +432,10 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 */
 	public OpenmrsMemento saveToMemento() {
 		
-		Set<TaskDefinition> tasks = new HashSet<TaskDefinition>();
+		Set<Integer> tasks = new HashSet<Integer>();
 		
 		for (TaskDefinition task : getScheduledTasks()) {
-			tasks.add(task);
+			tasks.add(task.getId());
 			try {
 				shutdownTask(task);
 			}
@@ -460,21 +460,23 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 		if (memento != null && memento instanceof TimerSchedulerMemento) {
 			TimerSchedulerMemento timerMemento = (TimerSchedulerMemento) memento;
 			
-			Set<TaskDefinition> tasks = (HashSet<TaskDefinition>) timerMemento.getState();
+			Set<Integer> taskIds = (HashSet<Integer>) timerMemento.getState();
 			
 			// try to start all of the tasks that were stopped right before this restore
-			for (TaskDefinition task : tasks) {
+			for (Integer taskId : taskIds) {
+				TaskDefinition task = getTask(taskId);
 				try {
 					scheduleTask(task);
 				}
 				catch (Exception e) {
 					// essentially swallow exceptions
-					log.debug("EXPECTED ERROR IF STOPPING THIS TASK'S MODULE: Unable to start task " + task, e);
+					log.debug("EXPECTED ERROR IF STOPPING THIS TASK'S MODULE: Unable to start task " + taskId, e);
 					
 					// save this errored task and try again next time we restore
-					timerMemento.addErrorTask(task);
+					timerMemento.addErrorTask(taskId);
 				}
 			}
+			timerMemento = null; // so the old cl can be gc'd
 		}
 	}
 	

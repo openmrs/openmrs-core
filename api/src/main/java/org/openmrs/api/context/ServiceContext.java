@@ -141,7 +141,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 * Null out the current instance of the ServiceContext. This should be used when modules are
 	 * refreshing (being added/removed) and/or openmrs is shutting down
 	 */
-	@SuppressWarnings("unchecked")
 	public static void destroyInstance() {
 		if (instance != null && instance.services != null) {
 			if (log.isDebugEnabled()) {
@@ -170,6 +169,9 @@ public class ServiceContext implements ApplicationContextAware {
 				instance.addedAdvice = null;
 			}
 		}
+		
+		if (instance != null)
+			instance.applicationContext = null;
 		
 		if (log.isDebugEnabled())
 			log.debug("Destroying ServiceContext instance: " + instance);
