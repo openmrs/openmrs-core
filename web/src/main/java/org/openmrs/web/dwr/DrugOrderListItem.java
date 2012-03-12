@@ -13,7 +13,7 @@
  */
 package org.openmrs.web.dwr;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,12 +95,12 @@ public class DrugOrderListItem {
 		}
 		instructions = drugOrder.getInstructions();
 		
-		SimpleDateFormat sdf = Context.getDateFormat();
+		DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, Context.getLocale());
 		
 		if (drugOrder.getStartDate() != null)
-			startDate = sdf.format(drugOrder.getStartDate());
+			startDate = df.format(drugOrder.getStartDate());
 		if (drugOrder.getAutoExpireDate() != null)
-			autoExpireDate = sdf.format(drugOrder.getAutoExpireDate());
+			autoExpireDate = df.format(drugOrder.getAutoExpireDate());
 		if (drugOrder.getEncounter() != null)
 			encounterId = drugOrder.getEncounter().getEncounterId();
 		if (drugOrder.getOrderer() != null)
@@ -109,7 +109,7 @@ public class DrugOrderListItem {
 		if (drugOrder.getDiscontinuedBy() != null)
 			discontinuerId = drugOrder.getDiscontinuedBy().getUserId();
 		if (drugOrder.getDiscontinuedDate() != null)
-			discontinuedDate = sdf.format(drugOrder.getDiscontinuedDate());
+			discontinuedDate = df.format(drugOrder.getDiscontinuedDate());
 		if (drugOrder.getDiscontinuedReason() != null)
 			discontinueReason = drugOrder.getDiscontinuedReason().getConceptId();
 		if (drugOrder.getDrug() != null)
@@ -126,12 +126,12 @@ public class DrugOrderListItem {
 		if (drugOrder.getVoidedBy() != null)
 			voiderId = drugOrder.getVoidedBy().getUserId();
 		if (drugOrder.getDateVoided() != null)
-			voidedDate = sdf.format(drugOrder.getDateVoided());
+			voidedDate = df.format(drugOrder.getDateVoided());
 		voidReason = drugOrder.getVoidReason();
 		if (drugOrder.getCreator() != null)
 			creatorId = drugOrder.getCreator().getUserId();
 		if (drugOrder.getDateCreated() != null)
-			createdDate = sdf.format(drugOrder.getDateCreated());
+			createdDate = df.format(drugOrder.getDateCreated());
 	}
 	
 	/**
