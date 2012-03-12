@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -53,8 +54,10 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.EntityResolver;
@@ -67,8 +70,8 @@ import org.xml.sax.SAXException;
  * Context.startup) Basic startup needs specific to the web layer: 1) Do the web startup of the
  * modules 2) Copy the custom look/images/messages over into the web layer
  */
-public final class Listener extends ContextLoaderListener {
-	
+public final class Listener extends ContextLoader implements ServletContextListener { // extends ContextLoaderListener {
+
 	private static boolean runtimePropertiesFound = false;
 	
 	private static Throwable errorAtStartup = null;
@@ -144,7 +147,18 @@ public final class Listener extends ContextLoaderListener {
 				// found but before the database update is done
 				copyCustomizationIntoWebapp(servletContext, props);
 				
-				super.contextInitialized(event);
+				//super.contextInitialized(event);
+				// also see commented out line in contextDestroyed
+				
+				/** This logic is from ContextLoader.initWebApplicationContext.
+				 * Copied here instead of calling that so that the context is not cached
+				 * and hence not garbage collected
+				 */
+				ApplicationContext parent = loadParentContext(servletContext);
+				WebApplicationContext context = createWebApplicationContext(servletContext, parent);
+				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
+				/** */
+				
 				WebDaemon.startOpenmrs(event.getServletContext());
 			}
 			
@@ -504,7 +518,8 @@ public final class Listener extends ContextLoaderListener {
 			Context.closeSession();
 		}
 		
-		super.contextDestroyed(event);
+		// commented out because we are not init'ing it in the contextInitialization anymore
+		// super.contextDestroyed(event);
 		
 		try {
 			for (Enumeration<Driver> e = DriverManager.getDrivers(); e.hasMoreElements();) {

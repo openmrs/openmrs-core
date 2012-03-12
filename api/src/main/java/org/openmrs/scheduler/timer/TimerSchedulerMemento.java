@@ -16,44 +16,43 @@ package org.openmrs.scheduler.timer;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsMemento;
 
 public class TimerSchedulerMemento extends OpenmrsMemento {
 	
-	private Set<TaskDefinition> startedTasks = new HashSet<TaskDefinition>();
+	private Set<Integer> startedTaskIds = new HashSet<Integer>();
 	
-	private static Set<TaskDefinition> errorTasks = new HashSet<TaskDefinition>();
+	private static Set<Integer> errorTaskIds = new HashSet<Integer>();
 	
-	public TimerSchedulerMemento(Set<TaskDefinition> tasks) {
-		this.startedTasks = tasks;
+	public TimerSchedulerMemento(Set<Integer> taskIds) {
+		this.startedTaskIds = taskIds;
 	}
 	
 	@Override
 	public Object getState() {
-		return startedTasks;
+		return startedTaskIds;
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void setState(Object state) {
-		this.startedTasks = (Set<TaskDefinition>) state;
+		this.startedTaskIds = (Set<Integer>) state;
 	}
 	
-	public Boolean addErrorTask(TaskDefinition task) {
-		return errorTasks.add(task);
+	public Boolean addErrorTask(Integer taskId) {
+		return errorTaskIds.add(taskId);
 	}
 	
-	public Boolean removeErrorTask(TaskDefinition task) {
-		return errorTasks.remove(task);
+	public Boolean removeErrorTask(Integer taskId) {
+		return errorTaskIds.remove(taskId);
 	}
 	
-	public static Set<TaskDefinition> getErrorTasks() {
-		return errorTasks;
+	public static Set<Integer> getErrorTasks() {
+		return errorTaskIds;
 	}
 	
 	public void saveErrorTasks() {
-		this.startedTasks.addAll(errorTasks);
+		this.startedTaskIds.addAll(errorTaskIds);
 	}
 	
 }

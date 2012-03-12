@@ -13,37 +13,28 @@
  */
 package org.openmrs.scheduler.tasks;
 
+import java.util.Date;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Implementation of a task that writes "Hello World" to a log file.
  * 
- * @version 1.0
  */
 public class HelloWorldTask extends AbstractTask {
 	
-	// Thread
-	private Thread thread;
-	
-	private boolean started;
+	private static Log log = LogFactory.getLog(HelloWorldTask.class);
 	
 	/**
 	 * Public constructor.
 	 */
 	public HelloWorldTask() {
-		thread = new Thread(new HelloWorldThread());
+		log.debug(" *** HelloWorldThread Constructor called");
+		log.debug("HelloWorldThread was created at " + new Date());
 	}
 	
-	/**
-	 * Illustrates stateless functionality as simply as possible. Not very useful in our system,
-	 * except maybe as a polling thread that checks internet connectivity by opening a connection to
-	 * an external URL. But even that isn't very useful unless it tells someone or something about
-	 * the connectivity (i.e. calls another service method)
-	 */
 	public void execute() {
-		synchronized (thread) {
-			if (!started) {
-				thread.start();
-				started = true;
-			}
-		}
+		
 	}
 }
