@@ -28,7 +28,6 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
 import org.springframework.util.StringUtils;
@@ -79,7 +78,8 @@ public class RequireTag extends TagSupport {
 	 * @should reject user without any of the privileges
 	 * @should reject user without all of the privileges
 	 */
-	public int doStartTag() {
+	@Override
+    public int doStartTag() {
 		
 		errorOccurred = false;
 		HttpServletResponse httpResponse = (HttpServletResponse) pageContext.getResponse();
@@ -93,7 +93,7 @@ public class RequireTag extends TagSupport {
 		if (userContext == null && privilege != null) {
 			log.error("userContext is null. Did this pass through a filter?");
 			//httpSession.removeAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-			//TODO find correct error to throw 
+			//TODO find correct error to throw
 			throw new APIException("The context is currently null.  Please try reloading the site.");
 		}
 		
@@ -105,6 +105,20 @@ public class RequireTag extends TagSupport {
 		if (!hasPrivilege) {
 			errorOccurred = true;
 			if (userContext.isAuthenticated()) {
+				String referer = request.getHeader("Referer");
+				// If the user has just authenticated, but is still not authorized to see the page.
+				if (referer != null && referer.contains("login.")) {
+					try {
+						httpResponse.sendRedirect(request.getContextPath()); // Redirect to the home page.
+						return SKIP_PAGE;
+					}
+					catch (IOException e) {
+						// oops, cannot redirect
+						log.error("Unable to redirect to the home page", e);
+						throw new APIException(e);
+					}
+				}
+
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.unauthorized");
 				log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + redirect
 				        + " which requires privilege: " + privilege + " or one of: " + allPrivileges + " or any of "
@@ -254,7 +268,8 @@ public class RequireTag extends TagSupport {
 	/**
 	 * @see javax.servlet.jsp.tagext.TagSupport#doEndTag()
 	 */
-	public int doEndTag() {
+	@Override
+    public int doEndTag() {
 		if (errorOccurred)
 			return SKIP_PAGE;
 		else
