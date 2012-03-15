@@ -1498,9 +1498,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	private void setBooleanConcepts() {
 		
 		try {
-			trueConcept = new Concept(Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+			trueConcept = Context.getConceptService().getConcept(
+			    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT)));
-			falseConcept = new Concept(Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+			falseConcept = Context.getConceptService().getConcept(
+			    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT)));
 		}
 		catch (NumberFormatException e) {
