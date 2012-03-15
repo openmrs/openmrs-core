@@ -1558,10 +1558,12 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	private void setBooleanConcepts() {
 		
 		try {
-			trueConcept = new Concept(Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT)));
-			falseConcept = new Concept(Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT)));
+			trueConcept = Context.getConceptService().getConcept(
+			    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+			        OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT)));
+			falseConcept = Context.getConceptService().getConcept(
+			    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+			        OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT)));
 		}
 		catch (NumberFormatException e) {
 			log.warn("Concept ids for boolean concepts should be numbers");
