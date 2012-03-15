@@ -1622,4 +1622,28 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(2, concepts.size());
 		Assert.assertTrue(concepts.containsAll(Arrays.asList(concept1, concept3)));
 	}
+	
+	/**
+	 * @see ConceptService@getTrueConcept()
+	 * @verifies should return proper true concept
+	 */
+	@Test
+	public void getTrueConcept_shouldReturnProperTrueConcept() throws Exception {
+		Concept trueConceptLoadedManually = Context.getConceptService().getConcept(
+		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT));
+		Concept trueConceptLoadedByServiceMethod = Context.getConceptService().getTrueConcept();
+		Assert.assertTrue(trueConceptLoadedManually.equals(trueConceptLoadedByServiceMethod));
+	}
+	
+	/**
+	 * @see ConceptService@getFalseConcept()
+	 * @verifies should return proper false concept
+	 */
+	@Test
+	public void getFalseConcept_shouldReturnProperFalseConcept() throws Exception {
+		Concept falseConceptLoadedManually = Context.getConceptService().getConcept(
+		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT));
+		Concept falseConceptLoadedByServiceMethod = Context.getConceptService().getFalseConcept();
+		Assert.assertTrue(falseConceptLoadedManually.equals(falseConceptLoadedByServiceMethod));
+	}
 }
