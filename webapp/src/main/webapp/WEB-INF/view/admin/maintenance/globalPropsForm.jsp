@@ -19,17 +19,16 @@
  	padding-top: 0px;
  }
  #buttonsAtBottom {
- 	 border-color: black;
- 	 border-style: solid;
- 	 border-width: 1px;
-     padding: 5px;
- 	 top: 600px;
- 	 left: 1100px; 
- 	 width: 180px; 
- 	 height: 100px; 
- 	 background-color: #FFFF66;
- 	 display: none;
- 	 text-align: center;
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+	padding: 5px;
+	top: 20em;
+	position: fixed;
+	left: 75em;
+	background-color: #FFFF66;
+	display: none;
+	text-align: center;
   }
   
   td#message {
@@ -221,6 +220,7 @@
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<input type="button" value='<spring:message code="general.cancel"/>' onclick="location.reload(true);"/>
 	</div>
+	<div style="clear:both"></div>
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
