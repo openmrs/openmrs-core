@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -1960,5 +1961,34 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		return concepts;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDefaultConceptMapType()
+	 */
+	@Override
+	public ConceptMapType getDefaultConceptMapType() throws DAOException {
+		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getFlushMode();
+		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+		try {
+			//Defaults to same-as if the gp is not set.
+			String defaultConceptMapType = Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE);
+			if (defaultConceptMapType == null) {
+				throw new DAOException("The default concept map type is not set. You need to set the '"
+				        + OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE + "' global property.");
+			}
+			
+			ConceptMapType conceptMapType = getConceptMapTypeByName(defaultConceptMapType);
+			if (conceptMapType == null) {
+				throw new DAOException("The default concept map type (name: " + defaultConceptMapType
+				        + ") does not exist! You need to set the '" + OpenmrsConstants.GP_DEFAULT_CONCEPT_MAP_TYPE
+				        + "' global property.");
+			}
+			return conceptMapType;
+		}
+		finally {
+			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
+		}
 	}
 }

@@ -51,8 +51,6 @@ import org.springframework.validation.Errors;
  * Use:<br/>
  * 
  * <pre>
- * 
- * 
  * List&lt;GlobalProperty&gt; globalProperties = Context.getAdministrationService().getGlobalProperties();
  * </pre>
  * 

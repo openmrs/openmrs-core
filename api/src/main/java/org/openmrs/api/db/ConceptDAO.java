@@ -646,4 +646,13 @@ public interface ConceptDAO {
 	 * @see ConceptService#getConceptsByName(String, Locale, Boolean)
 	 */
 	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocal);
+	
+	/**
+	 * It is in the DAO, because it must be done in the MANUAL flush mode to prevent premature
+	 * flushes in {@link ConceptService#saveConcept(Concept)}. It will be removed in 1.10 when we
+	 * have a better way to manage flush modes.
+	 * 
+	 * @see ConceptService#getDefaultConceptMapType()
+	 */
+	public ConceptMapType getDefaultConceptMapType() throws DAOException;
 }

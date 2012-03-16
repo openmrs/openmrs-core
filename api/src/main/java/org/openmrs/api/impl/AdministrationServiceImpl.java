@@ -59,7 +59,6 @@ import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
-import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
