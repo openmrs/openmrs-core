@@ -234,7 +234,8 @@ public class UserContext {
 	 */
 	public Locale getLocale() {
 		if (locale == null)
-			locale = LocaleUtility.getDefaultLocale();
+			// don't cache default locale - allows recognition of changed default at login page
+			return LocaleUtility.getDefaultLocale();
 		
 		return locale;
 	}
