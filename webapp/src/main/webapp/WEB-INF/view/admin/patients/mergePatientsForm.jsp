@@ -100,7 +100,7 @@ function collectInfo(){
 			</c:forEach>
 			patientAddress.value = patientAddress.value+"#";
 
-			patientInfos.value = patientInfos.value+"${patient.patientId},${patient.gender},<openmrs:formatDate date='${patient.birthdate}' type='short' />,<openmrs:formatDate date='${patient.deathDate}' type='short' />,${patient.creator.personName} - <openmrs:formatDate date='${patient.dateCreated}' type='long' />,${patient.changedBy.personName} - <openmrs:formatDate date='${patient.dateChanged}' type='long' />,${patient.voided}#";
+			patientInfos.value = patientInfos.value+"${patient.patientId}|${patient.gender}|<openmrs:formatDate date='${patient.birthdate}' type='short' />|<openmrs:formatDate date='${patient.deathDate}' type='short' />|${patient.creator.personName} - <openmrs:formatDate date='${patient.dateCreated}' type='long' />|${patient.changedBy.personName} - <openmrs:formatDate date='${patient.dateChanged}' type='long' />|${patient.voided}#";
 			if(!isPreferred){
 				addPatientTab('${status.index}', notPreferredCount);
 			}
@@ -170,7 +170,7 @@ function display(obj, updateTabs){
 			address = address+"<li>"+patientAddress[j];
 		}//address print Ended
 		
-		var patientInfos = patientsInfos[i].split(',');
+		var patientInfos = patientsInfos[i].split('|');
 		var infos = "";
 		for(var j=0;j<patientInfos.length;j++){//info print Started
 			infos = patientInfos[j];
@@ -267,7 +267,7 @@ function unPrefPatient(i){
 			address = address+"<li>"+patientAddress[j];
 		}//address print Ended
 		
-		var patientInfos = patientsInfos[i].split(',');
+		var patientInfos = patientsInfos[i].split('|');
 		var infos = "";
 		for(var j=0;j<patientInfos.length;j++){//info print Started
 			infos = patientInfos[j];
