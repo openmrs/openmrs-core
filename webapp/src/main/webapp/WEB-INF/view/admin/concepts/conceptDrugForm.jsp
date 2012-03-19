@@ -18,11 +18,25 @@
 	dojo.addOnLoad( function() {
 		
 		var cSelection = dojo.widget.manager.getWidgetById("conceptSelection");
+		var dfSelection = dojo.widget.manager.getWidgetById("dosageFormSelection");
+		var rSelection = dojo.widget.manager.getWidgetById("routeSelection");
 		
 		dojo.event.topic.subscribe("conceptSearch/select", 
 			function(msg) {
 				cSelection.displayNode.innerHTML = "<a href='#View Concept' onclick='return gotoConcept(\"concept\")'>" + msg.objs[0].name + "</a>";
 				cSelection.hiddenInputNode.value = msg.objs[0].conceptId;
+			}
+		);
+		dojo.event.topic.subscribe("dosageFormSearch/select", 
+			function(msg) {
+				dfSelection.displayNode.innerHTML = "<a href='#View Concept' onclick='return gotoConcept(\"dosageForm\")'>" + msg.objs[0].name + "</a>";
+				dfSelection.hiddenInputNode.value = msg.objs[0].conceptId;
+			}
+		);
+		dojo.event.topic.subscribe("routeSearch/select", 
+			function(msg) {
+				rSelection.displayNode.innerHTML = "<a href='#View Concept' onclick='return gotoConcept(\"route\")'>" + msg.objs[0].name + "</a>";
+				rSelection.hiddenInputNode.value = msg.objs[0].conceptId;
 			}
 		);
 	});
@@ -102,6 +116,16 @@
 		</td>
 	</tr>
 	<tr>
+		<th><spring:message code="ConceptDrug.dosageForm"/></th>
+		<td>
+			<spring:bind path="drug.dosageForm">
+				<div dojoType="ConceptSearch" widgetId="dosageFormSearch" conceptId="${status.value}" showVerboseListing="true"></div>
+				<div dojoType="OpenmrsPopup" widgetId="dosageFormSelection" hiddenInputName="${status.expression}" hiddenInputId="dosageForm" searchWidget="dosageFormSearch" searchTitle='<spring:message code="Concept.find"/>'></div>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>				
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
 		<th><spring:message code="ConceptDrug.doseStrength"/></th>
 		<td>
 			<spring:bind path="drug.doseStrength">			
@@ -138,6 +162,16 @@
 				<input type="text" name="${status.expression}" size="10" 
 					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<th><spring:message code="ConceptDrug.route"/></th>
+		<td>
+			<spring:bind path="drug.route">
+				<div dojoType="ConceptSearch" widgetId="routeSearch" conceptId="${status.value}" showVerboseListing="true"></div>
+				<div dojoType="OpenmrsPopup" widgetId="routeSelection" hiddenInputName="${status.expression}" hiddenInputId="route" searchWidget="routeSearch" searchTitle='<spring:message code="Concept.find"/>'></div>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>				
 			</spring:bind>
 		</td>
 	</tr>
