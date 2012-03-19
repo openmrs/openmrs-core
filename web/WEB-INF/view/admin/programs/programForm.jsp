@@ -6,6 +6,7 @@
 <%@ include file="localHeader.jsp" %>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 
 <script type="text/javascript">
 	var idToNameMap = new Array();
@@ -43,18 +44,18 @@
 	}
 	
 	function cleanupWorkflowsValue() {
-		var value = $('workflowsValue').value;
+		var value = $j('#workflowsValue').val();
 		if (value == '' || value == 'null') value = ':';
-		$('workflowsValue').value = value;
+		$j('#workflowsValue').val(value);
 	}
 	
 	function addWorkflow(conceptId) {
-		$('workflowsValue').value = $('workflowsValue').value + ' ' + conceptId;
+		$j('#workflowsValue').val($j('#workflowsValue').val() + ' ' + conceptId);
 		refreshWorkflowsDisplay();
 	}
 	
 	function removeWorkflow(conceptId) {
-		var value = $('workflowsValue').value;
+		var value = $j('#workflowsValue').val();
 		if (value == '' || value == 'null') value = ':';
 		var progId = value.substring(0, value.indexOf(":"));
 		value = value.substring(value.indexOf(":") + 1);
@@ -65,13 +66,13 @@
 				ret += values[i] + ' ';
 			}
 		}
-		$('workflowsValue').value = ret;
+		$j('#workflowsValue').val(ret);
 		refreshWorkflowsDisplay();
 	}
 	
 	function refreshWorkflowsDisplay() {
 		var tableId = 'workflowsDisplay';
-		var value = $('workflowsValue').value;
+		var value = $j('#workflowsValue').val();
 		value = value.substring(value.indexOf(":") + 1);
 		values = helper(value);
 		dwr.util.removeAllRows(tableId);
@@ -164,13 +165,20 @@
 	</tr>
 </table>
 <br />
-<input type="submit" value='<spring:message code="Program.save"/>' onClick="$('theForm').submit()" />
+<input type="submit" value='<spring:message code="Program.save"/>' onClick="$j('#theForm').submit()" />
 </form>
 
 <script type="text/javascript">
 	cleanupWorkflowsValue();
-	<c:forEach var="workflow" items="${program.workflows}">
-		idToNameMap[${workflow.concept.conceptId}] = '<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>';
+	<c:forEach var="workflow" items="${program.allWorkflows}">
+		<c:choose>
+			<c:when test="${!workflow.retired}">
+				idToNameMap[${workflow.concept.conceptId}] = '<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>';
+			</c:when>
+			<c:otherwise>
+				removeWorkflow(${workflow.concept.conceptId});
+			</c:otherwise>
+		</c:choose>
 	</c:forEach>
 	refreshWorkflowsDisplay();
 </script>

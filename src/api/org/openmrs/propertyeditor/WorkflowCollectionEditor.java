@@ -54,7 +54,8 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	 * purpose is to retire and un-retire workflows where possible rather than deleting and creating
 	 * them.
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
 			ConceptService cs = Context.getConceptService();
 			ProgramWorkflowService pws = Context.getProgramWorkflowService();
@@ -84,7 +85,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 			for (ProgramWorkflow pw : oldSet) {
 				if (!newConceptIds.contains(pw.getConcept().getConceptId())) {
 					pw.setRetired(true);
-				} else if (pw.isRetired()) { // && newConceptIds.contains(pw...)
+				} else if (newConceptIds.contains(pw.getConcept().getConceptId()) && pw.isRetired()) {
 					pw.setRetired(false);
 				}
 				alreadyDone.add(pw.getConcept().getConceptId());
@@ -110,7 +111,8 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	 * 
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public String getAsText() {
 		Collection<ProgramWorkflow> pws = (Collection<ProgramWorkflow>) getValue();
 		if (pws == null || pws.size() == 0) {
