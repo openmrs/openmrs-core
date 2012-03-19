@@ -11,10 +11,10 @@
 	                        <select name="locale" id="locale">
 				  				<option value="en" #if( $locale == "en" ) selected #end >English</option>
 				  				<option value="en_GB" #if( $locale == "en_GB" ) selected #end >English (GB)</option>
-				  				<option value="es" #if( $locale == "es" ) selected #end >Espanol</option>
-				  				<option value="fr" #if( $locale == "fr" ) selected #end >Francais</option>
+				  				<option value="es" #if( $locale == "es" ) selected #end >Español</option>
+				  				<option value="fr" #if( $locale == "fr" ) selected #end >Français</option>
 				  				<option value="it"  #if( $locale == "it" ) selected #end >Italiano</option>
-				  				<option value="pt" #if( $locale == "pt" ) selected #end >Portugues</option>
+				  				<option value="pt" #if( $locale == "pt" ) selected #end >Português</option>
 							</select>
 						</td>
                         </tr>
