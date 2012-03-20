@@ -173,7 +173,8 @@ public class DatabaseUpdater {
 			
 			@Override
 			public void visit(ChangeSet changeSet, Database database) throws LiquibaseException {
-				callback.executing(changeSet, numChangeSetsToRun);
+				if (callback != null)
+					callback.executing(changeSet, numChangeSetsToRun);
 				super.visit(changeSet, database);
 			}
 		}
