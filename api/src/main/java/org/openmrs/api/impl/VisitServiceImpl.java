@@ -166,8 +166,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		
 		visit.setStopDatetime(stopDate);
 		
-		ValidateUtil.validate(visit);
-		return saveVisit(visit);
+		return Context.getVisitService().saveVisit(visit);
 	}
 	
 	/**

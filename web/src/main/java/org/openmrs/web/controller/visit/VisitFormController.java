@@ -207,7 +207,7 @@ public class VisitFormController {
 	public String endVisit(@ModelAttribute(value = "visit") Visit visit,
 	        @RequestParam(value = "stopDate", required = false) String stopDate, HttpServletRequest request) {
 		
-		if (stopDate.length() == 0 || stopDate == null)
+		if (!StringUtils.hasLength(stopDate))
 			Context.getVisitService().endVisit(visit, null);
 		else {
 			try {
