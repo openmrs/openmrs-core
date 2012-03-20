@@ -44,12 +44,12 @@
 			"sPaginationType": "two_button",
 			"bAutoWidth": false,
 			"bFilter": false,
-			"aaSorting": [[4,'asc']], // initial sorting uses the samer order given by ForEachEncounter (Encounter.datetime by default)
+			"aaSorting": [[3,'asc']], // initial sorting uses the samer order given by ForEachEncounter (Encounter.datetime by default)
 			"iDisplayLength": 20,
 			"aoColumns": [
 				{ "bVisible": false, "sType": "numeric" },
 				{ "bVisible": ${showViewLink}, "iDataSort": 0 }, // sort this column by using the first invisible column for encounterIds,
-            	{ "iDataSort": 4 }, // sort the date in this column by using the next invisible column for time in milliseconds
+            	{ "iDataSort": 3 }, // sort the date in this column by using the next invisible column for time in milliseconds
             	{ "bVisible": false, "sType": "numeric" },
             	null,
             	null,
