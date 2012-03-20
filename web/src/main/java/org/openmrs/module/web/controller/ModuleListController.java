@@ -198,7 +198,7 @@ public class ModuleListController extends SimpleFormController {
 			}
 			Module mod = ModuleFactory.getModuleById(moduleId);
 			if (mod.getDownloadURL() != null) {
-				ModuleFactory.stopModule(mod);
+				ModuleFactory.stopModule(mod, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
 				WebModuleUtil.stopModule(mod, getServletContext());
 				Module newModule = ModuleFactory.updateModule(mod);
 				WebModuleUtil.startModule(newModule, getServletContext(), false);
