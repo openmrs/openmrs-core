@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.filter.initialization;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.FilterChain;
@@ -1014,16 +1016,37 @@ public class InitializationFilter extends StartupFilter {
 	
 	private void importTestDataSet(InputStream in, String connectionUrl, String connectionUsername, String connectionPassword)
 	        throws IOException {
+		
+		final int BUFFER_SIZE = 1024;
 		File tempFile = null;
 		FileOutputStream fileOut = null;
+		byte buffer[] = new byte[BUFFER_SIZE];
+		
 		try {
-			ZipInputStream zipIn = new ZipInputStream(in);
-			zipIn.getNextEntry();
-			
 			tempFile = File.createTempFile("testDataSet", "dump");
 			fileOut = new FileOutputStream(tempFile);
 			
-			IOUtils.copy(zipIn, fileOut);
+			ZipInputStream zipIn = new ZipInputStream(in);
+			ZipEntry zipEntry = zipIn.getNextEntry();
+			
+			while (zipEntry != null) {
+				int remainingBytes = (int) zipEntry.getSize();
+				int bytesRead;
+				while (remainingBytes > 0
+				        && (bytesRead = zipIn.read(buffer, 0, Math.min(BUFFER_SIZE, remainingBytes))) != -1) {
+					fileOut.write(buffer, 0, bytesRead);
+					remainingBytes -= bytesRead;
+				}
+				
+				try {
+					zipEntry = zipIn.getNextEntry();
+				}
+				catch (EOFException ex) {
+					//Ignore the: Unexpected end of ZLIB input stream
+					//http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4040920	
+					zipEntry = null;
+				}
+			}
 			
 			fileOut.close();
 			zipIn.close();
