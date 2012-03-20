@@ -80,7 +80,7 @@
 		if (endDate != '' && !$j('#editProgramOutcomeRow').is(':hidden')
 				&& outcomeId == '') {
 			alert("<spring:message code="PatientProgram.error.outcomeRequired" />");
-		} else if (!isEmpty(startDate) && startDate > endDate) {
+		} else if (!isEmpty(startDate) && startDate > endDate && !isEmpty(endDate)) {
 			alert('<spring:message code="Program.error.invalidDate" javaScriptEscape="true"/>');
 		} else {
 			currentProgramBeingEdited = null;
