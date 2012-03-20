@@ -93,6 +93,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#saveVisitType(org.openmrs.VisitType)
 	 */
 	public VisitType saveVisitType(VisitType visitType) throws APIException {
+		ValidateUtil.validate(visitType);
 		return getVisitDAO().saveVisitType(visitType);
 	}
 	
@@ -165,8 +166,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		
 		visit.setStopDatetime(stopDate);
 		
-		ValidateUtil.validate(visit);
-		return saveVisit(visit);
+		return Context.getVisitService().saveVisit(visit);
 	}
 	
 	/**
