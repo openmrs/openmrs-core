@@ -589,8 +589,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				return ORDER_STATUS.COMPLETE;
 			case SHOW_CURRENT_AND_FUTURE:
 				return ORDER_STATUS.CURRENT_AND_FUTURE;
-			//case SHOW_NOTVOIDED:
-			// fall through to default
+				//case SHOW_NOTVOIDED:
+				// fall through to default
 			default:
 				return ORDER_STATUS.NOTVOIDED;
 		}
