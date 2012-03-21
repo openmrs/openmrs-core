@@ -215,16 +215,8 @@
 			</table>
 		</div>
 	</div>
-	<div class="column">
-		<div class="box noBorder">
-			<openmrs:extensionPoint
-				pointId="org.openmrs.patientDashboard.afterLastEncounter"
-				type="html" parameters="patientId=${model.patient.patientId}" />
-		</div>
-	</div>
 </c:if>
-<div class="columnEnd"></div>
-</div>
+
 <c:if test="${visitsEnabled }">
 	<openmrs:hasPrivilege privilege="Add Visits">
 		<c:if test="${empty model.activeVisits}">
@@ -328,6 +320,18 @@
 		</c:forEach>
 	</openmrs:hasPrivilege>
 </c:if>
+
+<div class="column">
+	<div class="box noBorder">
+		<openmrs:extensionPoint
+			pointId="org.openmrs.patientDashboard.afterLastEncounter"
+			type="html" parameters="patientId=${model.patient.patientId}" />
+	</div>
+</div>
+
+<div class="columnEnd"></div>
+
+</div> <!-- Closing div from c:if for model.patientReasonForExit above -->
 
 <script type="text/javascript">
 	function showMoreIdentifiers() {
