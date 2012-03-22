@@ -166,7 +166,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				}
 				
 				//marks the changeset as a failed one
-				throw new CustomChangeException("Failed to insert one or more concept map types");
+				throw new CustomChangeException("Failed to insert one or more concept map types", be);
 			}
 		}
 		catch (DatabaseException e) {
