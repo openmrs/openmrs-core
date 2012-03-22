@@ -63,7 +63,8 @@ public class WebDaemon extends Daemon {
 		}
 		
 		if (startOpenmrsThread.getExceptionThrown() != null) {
-			throw new ModuleException("Unable to start OpenMRS. Error thrown was: " + startOpenmrsThread.getExceptionThrown().getMessage(), startOpenmrsThread.getExceptionThrown());
+			throw new ModuleException("Unable to start OpenMRS. Error thrown was: "
+			        + startOpenmrsThread.getExceptionThrown().getMessage(), startOpenmrsThread.getExceptionThrown());
 		}
 	}
 }
