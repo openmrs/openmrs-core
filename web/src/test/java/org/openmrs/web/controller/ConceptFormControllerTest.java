@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.api.ConceptService;
@@ -780,4 +781,131 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertEquals(true, preferredName.isVoided());
 	}
 	
+	/**
+	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should add a new Concept map to an existing concept", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldAddANewConceptMapToAnExistingConcept() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		int conceptId = 3;
+		
+		// make sure the concept already exists
+		Concept concept = cs.getConcept(conceptId);
+		assertNotNull(concept);
+		int initialConceptMappingCount = concept.getConceptMappings().size();
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", concept.getConceptId().toString());
+		mockRequest.setParameter("conceptMappings[0].conceptReferenceTerm", "1");
+		mockRequest.setParameter("conceptMappings[0].conceptMapType", "3");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		assertEquals(initialConceptMappingCount + 1, cs.getConcept(conceptId).getConceptMappings().size());
+	}
+	
+	/**
+	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should add a new Concept map when creating a concept", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldAddANewConceptMapWhenCreatingAConcept() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		final String conceptName = "new concept";
+		// make sure the concept doesn't already exist
+		Concept newConcept = cs.getConceptByName(conceptName);
+		assertNull(newConcept);
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("namesByLocale[en].name", conceptName);
+		mockRequest.setParameter("concept.datatype", "1");
+		mockRequest.setParameter("conceptMappings[0].conceptReferenceTerm", "1");
+		mockRequest.setParameter("conceptMappings[0].conceptMapType", "3");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Concept createdConcept = cs.getConceptByName(conceptName);
+		assertNotNull(createdConcept);
+		Assert.assertEquals(1, createdConcept.getConceptMappings().size());
+	}
+	
+	/**
+	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should ignore new concept map row if the user did not select a term", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldIgnoreNewConceptMapRowIfTheUserDidNotSelectATerm() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		int conceptId = 3;
+		
+		// make sure the concept already exists
+		Concept concept = cs.getConcept(conceptId);
+		assertNotNull(concept);
+		int initialConceptMappingCount = concept.getConceptMappings().size();
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", concept.getConceptId().toString());
+		mockRequest.setParameter("conceptMappings[0].conceptReferenceTerm", "");
+		mockRequest.setParameter("conceptMappings[0].conceptMapType", "");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		assertEquals(initialConceptMappingCount, cs.getConcept(conceptId).getConceptMappings().size());
+	}
+	
+	/**
+	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should remove a concept map from an existing concept", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldRemoveAConceptMapFromAnExistingConcept() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		int conceptId = 5089;
+		
+		// make sure the concept already exists and has some concept mappings
+		Concept concept = cs.getConcept(conceptId);
+		assertNotNull(concept);
+		Collection<ConceptMap> maps = concept.getConceptMappings();
+		int initialConceptMappingCount = maps.size();
+		assertTrue(initialConceptMappingCount > 0);
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", concept.getConceptId().toString());
+		//remove the first row
+		mockRequest.setParameter("conceptMappings[0].conceptReferenceTerm", "");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		assertEquals(initialConceptMappingCount - 1, cs.getConcept(conceptId).getConceptMappings().size());
+	}
 }
