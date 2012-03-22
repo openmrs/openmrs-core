@@ -154,6 +154,10 @@ public class ConceptFormController extends SimpleFormController {
 	 * @should return a concept with a null id if no match is found
 	 * @should void a synonym marked as preferred when it is removed
 	 * @should set the local preferred name
+	 * @should add a new Concept map to an existing concept
+	 * @should remove a concept map from an existing concept
+	 * @should ignore new concept map row if the user did not select a term
+	 * @should add a new Concept map when creating a concept
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
