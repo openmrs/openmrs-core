@@ -273,10 +273,16 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     				window.clearTimeout(self._textInputTimer);
     			}
 	        	
-    			if(text == '' && !self.options.doSearchWhenEmpty)
+    			if(text == '' && !self.options.doSearchWhenEmpty){
+    				$j('#pageInfo').css("visibility", "hidden");
+					$j("#spinner").css("visibility", "hidden");
+					$j("#minCharError").css("visibility", "hidden");
+					$j(".openmrsSearchDiv").hide();
+						
     				return false;
-	        	
-	        	//This discontinues any further ajax SUB calls from the last triggered search
+    			}
+    			
+    			//This discontinues any further ajax SUB calls from the last triggered search
     			if(!inSerialMode && ajaxTimer)
     				window.clearInterval(ajaxTimer);
     			
