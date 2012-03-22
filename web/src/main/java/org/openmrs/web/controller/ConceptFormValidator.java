@@ -60,13 +60,9 @@ public class ConceptFormValidator implements Validator {
 			// validate the concept term mappings
 			for (int x = 0; x < backingObject.getConceptMappings().size(); x++) {
 				ConceptMap map = backingObject.getConceptMappings().get(x);
-				//this mapping has been removed or ignore it
-				if (map.getConceptReferenceTerm() == null)
-					continue;
-				//The user should select from existing reference terms
+				//this mapping has been removed or is new with no term selected, so ignore it
 				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null)
-					errors.rejectValue("conceptMappings[" + x + "]", "ConceptReferenceTerm.term.notInDatabase");
-				
+					continue;
 				if (map.getConceptMapType() == null)
 					errors.rejectValue("conceptMappings[" + x + "].conceptMapType", "Concept.map.typeRequired");
 			}
