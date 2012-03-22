@@ -518,15 +518,18 @@ public class ConceptFormController extends SimpleFormController {
 				if (mappedTermIds == null)
 					mappedTermIds = new HashSet<Integer>();
 				
-				//skip past this mapping because its term is already in use by another mapping for this concept
-				if (map.getConceptReferenceTerm() != null
-				        && !mappedTermIds.add(map.getConceptReferenceTerm().getConceptReferenceTermId()))
-					continue;
-				
-				if (map.getConceptReferenceTerm() == null) {
-					// because of the _mappings[x].conceptReferenceTerm input name in the jsp, the conceptReferenceTerm will be empty for
-					// deleted mappings.  remove those from the concept object now.
+				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {
+					//if the user didn't select an existing term via the reference term autocomplete
+					// OR the user added a new row but entered nothing, ignore
+					if (map.getConceptMapId() == null)
+						continue;
+					
+					// because of the _mappings[x].conceptReferenceTerm input name in the jsp, the ids for 
+					// terms will be empty for deleted mappings, remove those from the concept object now.
 					concept.removeConceptMapping(map);
+				} else if (!mappedTermIds.add(map.getConceptReferenceTerm().getConceptReferenceTermId())) {
+					//skip past this mapping because its term is already in use by another mapping for this concept
+					continue;
 				} else if (!concept.getConceptMappings().contains(map)) {
 					// assumes null sources also don't get here
 					concept.addConceptMapping(map);
