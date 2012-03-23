@@ -586,8 +586,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				this._lastCallCount = storedCallCount;
 				numberOfResults = this._table.fnSettings()._iDisplayLength;
 				if(MAXIMUM_NUMBER_OF_RESULTS && MAXIMUM_NUMBER_OF_RESULTS > 0 && 
-						MAXIMUM_NUMBER_OF_RESULTS < numberOfResults)
-					numberOfResults = MAXIMUM_NUMBER_OF_RESULTS
+						MAXIMUM_NUMBER_OF_RESULTS < numberOfResults){
+					numberOfResults = MAXIMUM_NUMBER_OF_RESULTS;
+				}
 				//First get data to appear on the first page
 				this.options.searchHandler(text, this._handleResults(text, storedCallCount), true, 
 						{includeVoided: tmpIncludeVoided, start: 0, length: numberOfResults});
@@ -681,8 +682,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				return;
 			}
 			actualBatchSize = BATCH_SIZE;
-			if((startIndex+BATCH_SIZE) > matchCount)
-				actualBatchSize = matchCount-this._results.length;
+			if((startIndex+BATCH_SIZE) > matchCount){
+				//startIndex always matches the actual row count
+				actualBatchSize = matchCount-startIndex;
+			}
 			
 			this.options.searchHandler(searchText, this._addMoreRows(curCallCount, searchText, matchCount, startIndex, curSubCallCount),
 				false, {includeVoided: this.options.showIncludeVoided && checkBox.attr('checked'),
