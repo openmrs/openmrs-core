@@ -657,9 +657,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param notPreferred The Patient to merge from (and then void)
 	 * @throws APIException
 	 * @throws SerializationException
-	 * 
 	 * @see PersonMergeLogData
-	 * 
 	 * @should not merge the same patient to itself
 	 * @should copy nonvoided names to preferred patient
 	 * @should copy nonvoided identifiers to preferred patient
@@ -826,6 +824,10 @@ public interface PatientService extends OpenmrsService {
 	 *         this id
 	 * @should ignore voided patientIdentifiers
 	 * @should ignore voided patients
+	 * @should return true if in use for a location and id type uniqueness is set to location
+	 * @should return false if in use for another location and id uniqueness is set to location
+	 * @should return true if in use and id type uniqueness is set to unique
+	 * @should return true if in use and id type uniqueness is null
 	 */
 	@Authorized(PrivilegeConstants.VIEW_PATIENTS)
 	@Transactional(readOnly = true)

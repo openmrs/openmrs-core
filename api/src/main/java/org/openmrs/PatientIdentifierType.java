@@ -21,7 +21,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	public static final long serialVersionUID = 211231L;
 	
 	/**
-	 * Enumerates the possible ways that location may be applicable for a particular Patient Identifer Type
+	 * Enumerates the possible ways that location may be applicable for a particular Patient
+	 * Identifer Type
 	 */
 	public enum LocationBehavior {
 		/**
@@ -32,6 +33,28 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 		 * Indicates that location is not used for the current identifier type
 		 */
 		NOT_USED
+	}
+	
+	/**
+	 * Enumeration for the way to handle uniqueness among identifiers for a given identifier type
+	 */
+	public enum UniquenessBehavior {
+		
+		/**
+		 * Indicates that identifiers should be globally unique
+		 */
+		UNIQUE,
+
+		/**
+		 * Indicates that duplicates identifiers are allowed
+		 */
+		NON_UNIQUE,
+
+		/**
+		 * Indicates that identifiers should be unique only across a location if the identifier's
+		 * location property is not null
+		 */
+		LOCATION
 	}
 	
 	// Fields	
@@ -48,6 +71,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	private String validator;
 	
 	private LocationBehavior locationBehavior;
+	
+	private UniquenessBehavior uniquenessBehavior;
 	
 	/** default constructor */
 	public PatientIdentifierType() {
@@ -100,6 +125,22 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	 */
 	public void setLocationBehavior(LocationBehavior locationBehavior) {
 		this.locationBehavior = locationBehavior;
+	}
+	
+	/**
+	 * @return the uniquenessBehavior
+	 * @since 1.10
+	 */
+	public UniquenessBehavior getUniquenessBehavior() {
+		return uniquenessBehavior;
+	}
+	
+	/**
+	 * @param uniquenessBehavior the uniquenessBehavior to set
+	 * @since 1.10
+	 */
+	public void setUniquenessBehavior(UniquenessBehavior uniquenessBehavior) {
+		this.uniquenessBehavior = uniquenessBehavior;
 	}
 	
 	/**

@@ -37,6 +37,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientIdentifierType.UniquenessBehavior;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
@@ -500,6 +501,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
 		boolean checkPatient = patientIdentifier.getPatient() != null
 		        && patientIdentifier.getPatient().getPatientId() != null;
+		boolean checkLocation = patientIdentifier.getLocation() != null
+		        && patientIdentifier.getIdentifierType().getUniquenessBehavior() == UniquenessBehavior.LOCATION;
 		
 		// switched this to an hql query so the hibernate cache can be considered as well as the database
 		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patient.patientId "
@@ -508,12 +511,18 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (checkPatient) {
 			hql += " and p.patientId != :ptId";
 		}
+		if (checkLocation) {
+			hql += " and pi.location = :locationId";
+		}
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		query.setString("identifier", patientIdentifier.getIdentifier());
 		query.setInteger("idType", patientIdentifier.getIdentifierType().getPatientIdentifierTypeId());
 		if (checkPatient) {
 			query.setInteger("ptId", patientIdentifier.getPatient().getPatientId());
+		}
+		if (checkLocation) {
+			query.setInteger("locationId", patientIdentifier.getLocation().getLocationId());
 		}
 		return !query.uniqueResult().toString().equals("0");
 	}

@@ -169,6 +169,8 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 		
 		toReturn.put("locationBehaviors", PatientIdentifierType.LocationBehavior.values());
 		
+		toReturn.put("uniquenessBehaviors", PatientIdentifierType.UniquenessBehavior.values());
+		
 		return toReturn;
 	}
 	
