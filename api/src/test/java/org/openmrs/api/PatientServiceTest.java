@@ -33,8 +33,8 @@ import java.util.Set;
 import java.util.Vector;
 
 import junit.framework.Assert;
-import org.apache.commons.collections.CollectionUtils;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -48,6 +48,7 @@ import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientIdentifierType.UniquenessBehavior;
 import org.openmrs.PatientProgram;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
@@ -3005,5 +3006,76 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		//then
 		Assert.assertTrue(patients.isEmpty());
+	}
+	
+	/**
+	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should return true if in use and id type uniqueness is null", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
+	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseAndIdTypeUniquenessIsNull() throws Exception {
+		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
+		Assert.assertNotNull(duplicateId.getLocation());
+		
+		PatientIdentifierType idType = duplicateId.getIdentifierType();
+		Assert.assertNull(idType.getUniquenessBehavior());
+		
+		PatientIdentifier pi = new PatientIdentifier(duplicateId.getIdentifier(), idType, duplicateId.getLocation());
+		Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(pi));
+	}
+	
+	/**
+	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should return true if in use and id type uniqueness is set to unique", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
+	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseAndIdTypeUniquenessIsSetToUnique() throws Exception {
+		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
+		Assert.assertNotNull(duplicateId.getLocation());
+		
+		PatientIdentifierType idType = duplicateId.getIdentifierType();
+		idType.setUniquenessBehavior(UniquenessBehavior.UNIQUE);
+		patientService.savePatientIdentifierType(idType);
+		
+		PatientIdentifier pi = new PatientIdentifier(duplicateId.getIdentifier(), idType, duplicateId.getLocation());
+		Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(pi));
+	}
+	
+	/**
+	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should return true if in use for a location and id type uniqueness is set to location", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
+	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseForALocationAndIdTypeUniquenessIsSetToLocation()
+	        throws Exception {
+		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
+		Assert.assertNotNull(duplicateId.getLocation());
+		
+		PatientIdentifierType idType = duplicateId.getIdentifierType();
+		idType.setUniquenessBehavior(UniquenessBehavior.LOCATION);
+		patientService.savePatientIdentifierType(idType);
+		
+		PatientIdentifier pi = new PatientIdentifier(duplicateId.getIdentifier(), idType, duplicateId.getLocation());
+		Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(pi));
+	}
+	
+	/**
+	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should return false if in use for another location and id uniqueness is set to location", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
+	public void isIdentifierInUseByAnotherPatient_shouldReturnFalseIfInUseForAnotherLocationAndIdUniquenessIsSetToLocation()
+	        throws Exception {
+		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
+		Assert.assertNotNull(duplicateId.getLocation());
+		
+		PatientIdentifierType idType = duplicateId.getIdentifierType();
+		idType.setUniquenessBehavior(UniquenessBehavior.LOCATION);
+		patientService.savePatientIdentifierType(idType);
+		
+		Location idLocation = locationService.getLocation(2);
+		Assert.assertNotSame(idLocation, duplicateId.getLocation());//sanity check
+		PatientIdentifier pi = new PatientIdentifier(duplicateId.getIdentifier(), idType, idLocation);
+		Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(pi));
 	}
 }

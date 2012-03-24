@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientIdentifierType.LocationBehavior;
+import org.openmrs.PatientIdentifierType.UniquenessBehavior;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
@@ -70,6 +71,7 @@ public class PatientIdentifierValidator implements Validator {
 	 * @should fail validation if PatientIdentifier is null
 	 * @should pass validation if PatientIdentifier is voided
 	 * @should fail validation if another patient has a matching identifier of the same type
+	 * @should pass if in use and id type uniqueness is set to non unique
 	 * @see #validateIdentifier(String, PatientIdentifierType)
 	 */
 	public static void validateIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
@@ -92,11 +94,14 @@ public class PatientIdentifierValidator implements Validator {
 				throw new PatientIdentifierException(Context.getMessageSourceService().getMessage(
 				    "PatientIdentifier.location.null", new Object[] { identifierString }, Context.getLocale()));
 			}
-			// Check is already in use by another patient
-			if (Context.getPatientService().isIdentifierInUseByAnotherPatient(pi)) {
-				throw new IdentifierNotUniqueException(Context.getMessageSourceService().getMessage(
-				    "PatientIdentifier.error.notUniqueWithParameter", new Object[] { pi.getIdentifier() },
-				    Context.getLocale()), pi);
+			
+			if (pi.getIdentifierType().getUniquenessBehavior() != UniquenessBehavior.NON_UNIQUE) {
+				// Check is already in use by another patient
+				if (Context.getPatientService().isIdentifierInUseByAnotherPatient(pi)) {
+					throw new IdentifierNotUniqueException(Context.getMessageSourceService().getMessage(
+					    "PatientIdentifier.error.notUniqueWithParameter", new Object[] { pi.getIdentifier() },
+					    Context.getLocale()), pi);
+				}
 			}
 		}
 	}

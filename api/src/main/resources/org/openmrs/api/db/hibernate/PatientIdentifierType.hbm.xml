@@ -62,6 +62,12 @@
 			<param name="enumClassName">org.openmrs.PatientIdentifierType$LocationBehavior</param>
 		</type>
 	</property>
+    
+    <property name="uniquenessBehavior" column="uniqueness_behavior" length="50">
+    	<type name="org.openmrs.util.HibernateEnumType">
+    		<param name="enumClassName">org.openmrs.PatientIdentifierType$UniquenessBehavior</param>
+    	</type>
+    </property>
 	
     <!-- Associations -->
   
