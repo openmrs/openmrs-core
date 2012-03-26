@@ -988,11 +988,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptSources()
 	 */
+	
 	@SuppressWarnings("unchecked")
-	public List<ConceptSource> getAllConceptSources() {
+	public List<ConceptSource> getAllConceptSources(boolean includeRetired) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class);
 		
-		criteria.add(Restrictions.eq("retired", false));
+		if (includeRetired == false)
+			criteria.add(Restrictions.eq("retired", false));
 		
 		return criteria.list();
 	}

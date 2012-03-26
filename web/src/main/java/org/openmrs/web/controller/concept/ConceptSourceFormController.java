@@ -28,6 +28,7 @@ import org.openmrs.ImplementationId;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.util.StringUtils;
 
 public class ConceptSourceFormController extends SimpleFormController {
 	
@@ -69,10 +71,46 @@ public class ConceptSourceFormController extends SimpleFormController {
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
-			ConceptSource conceptSource = (ConceptSource) obj;
-			Context.getConceptService().saveConceptSource(conceptSource);
-			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptSource.saved");
+			
+			if (request.getParameter("retire") != null) {
+				String retireReason = request.getParameter("retireReason");
+				ConceptSource conceptSource = (ConceptSource) obj;
+				if (retireReason != null && !(StringUtils.hasText(retireReason))) {
+					errors.reject("retireReason", "general.retiredReason.empty");
+					return showForm(request, response, errors);
+				}
+				
+				conceptSource.setRetireReason(retireReason);
+				conceptSource.setRetired(true);
+				
+				Context.getConceptService().saveConceptSource(conceptSource);
+				view = getSuccessView();
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptSource.retired");
+			} else if (request.getParameter("restore") != null) {
+				ConceptSource conceptSource = (ConceptSource) obj;
+				conceptSource.setRetireReason(null);
+				conceptSource.setRetired(false);
+				
+				Context.getConceptService().saveConceptSource(conceptSource);
+				view = getSuccessView();
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptSource.restored");
+			} else if (request.getParameter("purge") != null) {
+				ConceptSource conceptSource = (ConceptSource) obj;
+				try {
+					Context.getConceptService().purgeConceptSource(conceptSource);
+					view = getSuccessView();
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptSource.purged");
+				}
+				catch (DataIntegrityViolationException e) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
+					return showForm(request, response, errors);
+				}
+			} else {
+				ConceptSource conceptSource = (ConceptSource) obj;
+				Context.getConceptService().saveConceptSource(conceptSource);
+				view = getSuccessView();
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptSource.saved");
+			}
 		}
 		
 		return new ModelAndView(new RedirectView(view));

@@ -1343,8 +1343,17 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	/**
 	 * @see org.openmrs.api.ConceptService#getAllConceptSources()
 	 */
+	@Deprecated
 	public List<ConceptSource> getAllConceptSources() {
-		return dao.getAllConceptSources();
+		// backwards compatible
+		return getAllConceptSources(true);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getAllConceptSources(java.lang.boolean)
+	 */
+	public List<ConceptSource> getAllConceptSources(boolean includeRetired) {
+		return dao.getAllConceptSources(includeRetired);
 	}
 	
 	/**

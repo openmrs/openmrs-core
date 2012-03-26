@@ -1178,13 +1178,25 @@ public interface ConceptService extends OpenmrsService {
 	public Set<Locale> getLocalesOfConceptNames();
 	
 	/**
-	 * Return a list of concept sources currently in the database that are not voided
+	 * Returns all concept sources, including retired
+	 *
+	 * @deprecated use {@link #getAllConceptSources(boolean)}
+	 */
+	@Deprecated
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_SOURCES)
+	public List<ConceptSource> getAllConceptSources() throws APIException;
+	
+	/**
+	 * Return a list of concept sources currenly in the database
+	 * Whether or not to return retired concept sources is decided by the boolean includeRetired param
 	 * 
+	 * @param includeRetired whether or not to include retired sources
 	 * @return List of Concept source objects
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_SOURCES)
-	public List<ConceptSource> getAllConceptSources() throws APIException;
+	public List<ConceptSource> getAllConceptSources(boolean includeRetired) throws APIException;
 	
 	/**
 	 * Return a Concept source matching the given concept source id

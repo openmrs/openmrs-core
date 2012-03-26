@@ -15,6 +15,7 @@
 	<form method="post">
 </c:if>
 
+<fieldset>
 <table>
 	<tr>
 		<td><spring:message code="general.name"/></td>
@@ -57,6 +58,48 @@
 		</tr>
 	</c:if>
 </table>
+</fieldset>
+
+
+<c:if test="${not conceptSource.voided && not empty conceptSource.conceptSourceId}">
+<br/>
+<fieldset>
+	<form method="post">
+			<h4><spring:message code="ConceptSource.retire"/></h4>
+			
+			<b><spring:message code="general.reason"/></b>
+			<input type="text" value="" size="40" name="retireReason" />
+			<spring:hasBindErrors name="conceptSource">
+				<c:forEach items="${errors.allErrors}" var="error">
+					<c:if test="${error.code == 'retireReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+				</c:forEach>
+			</spring:hasBindErrors>
+			<br/>
+			<input type="submit" value='<spring:message code="ConceptSource.retire"/>' name="retire"/>
+	</form>
+</fieldset>
+</c:if>
+
+<c:if test="${conceptSource.voided && not empty conceptSource.conceptSourceId}">
+<br/>
+<fieldset>
+	<form method="post">
+			<h4><spring:message code="ConceptSource.restore"/></h4>
+			<input type="submit" value='<spring:message code="ConceptSource.restore"/>' name="restore"/>
+	</form>
+</fieldset>
+</c:if>
+
+<c:if test="${not empty conceptSource.conceptSourceId }">
+<br/>
+<fieldset>
+	<form method="post">
+			<h4><spring:message code="ConceptSource.purge"/></h4>
+			<input type="submit" value='<spring:message code="ConceptSource.purge"/>' name="purge"/>
+	</form>
+</fieldset>
+</c:if>
+
 <br />
 <c:choose>
 	<c:when test="${conceptSource.conceptSourceId == null}">

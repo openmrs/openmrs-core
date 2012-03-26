@@ -313,9 +313,9 @@ public interface ConceptDAO {
 	public ConceptSource getConceptSource(Integer conceptSourceId) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getAllConceptSources()
+	 * @see org.openmrs.api.ConceptService#getAllConceptSources(java.lang.boolean)
 	 */
-	public List<ConceptSource> getAllConceptSources() throws DAOException;
+	public List<ConceptSource> getAllConceptSources(boolean includeRetired) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConceptSource(org.openmrs.ConceptSource)
