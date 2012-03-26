@@ -488,8 +488,10 @@ public class ModuleFactory {
 				
 				// check for required modules
 				if (!requiredModulesStarted(module)) {
-					throw new ModuleException("Not all required modules are started: "
-					        + OpenmrsUtil.join(getMissingRequiredModules(module), ", ") + ". ", module.getName());
+					throw new ModuleException("Module " + module.getName()
+					        + " cannot be added because it requires the following module(s): "
+					        + OpenmrsUtil.join(getMissingRequiredModules(module), ", ")
+					        + ". Please add and start these modules first.");
 				}
 				
 				// fire up the classloader for this module
