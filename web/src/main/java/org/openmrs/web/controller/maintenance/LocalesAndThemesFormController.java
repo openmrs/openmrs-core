@@ -13,14 +13,17 @@
  */
 package org.openmrs.web.controller.maintenance;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 
 /**
  * Backs the localesAndThemes.jsp page to let the admin change the default locale, default theme,
@@ -58,19 +61,39 @@ public class LocalesAndThemesFormController {
 	 * @throws Exception
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/maintenance/localesAndThemes")
-	public String saveDefaults(@RequestParam("theme") String theme, @RequestParam("locale") String locale) throws Exception {
-		
+	public String saveDefaults(WebRequest request, @RequestParam("theme") String theme, @RequestParam("locale") String locale)
+	        throws Exception {
+		boolean localeInList = false;
+		String allowedLocales = Context.getAdministrationService().getGlobalProperty(
+						    OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
+						String[] allowedLocalesList = allowedLocales.split(",");
+						
 		// save the theme
 		GlobalProperty themeGP = Context.getAdministrationService().getGlobalPropertyObject(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_THEME);
 		themeGP.setPropertyValue(theme);
 		Context.getAdministrationService().saveGlobalProperty(themeGP);
+
+		// save the locale		
+		for (String loc : allowedLocalesList) {
+			loc = loc.trim();
+			if (loc.equals(locale)) {
+				localeInList = true;
+				GlobalProperty localeGP = Context.getAdministrationService().getGlobalPropertyObject(
+				    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
+				localeGP.setPropertyValue(locale);
+				Context.getAdministrationService().saveGlobalProperty(localeGP);
+				break;
+			}
+		}
 		
-		// save the locale
-		GlobalProperty localeGP = Context.getAdministrationService().getGlobalPropertyObject(
-		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
-		localeGP.setPropertyValue(locale);
-		Context.getAdministrationService().saveGlobalProperty(localeGP);
+		//displaying the success or failure message
+		if (localeInList || StringUtils.isBlank(locale)) {
+			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
+			    "LocalesAndThemes.saved"), WebRequest.SCOPE_SESSION);
+		} else {
+			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage("LocalesAndThemes.localeError"), WebRequest.SCOPE_SESSION);
+		}
 		
 		return "redirect:/admin/maintenance/localesAndThemes.form";
 	}
