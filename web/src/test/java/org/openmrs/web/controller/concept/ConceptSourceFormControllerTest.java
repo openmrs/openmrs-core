@@ -24,9 +24,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
- * Tests the {@link ConceptSourceListController}
+ * Tests the {@link ConceptSourceFormController}
  */
-public class ConceptSourceListControllerTest extends BaseWebContextSensitiveTest {
+public class ConceptSourceFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
 	 * @see {@link ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
@@ -35,13 +35,14 @@ public class ConceptSourceListControllerTest extends BaseWebContextSensitiveTest
 	@Verifies(value = "should retire concept source", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldRetireConceptSource() throws Exception {
 		ConceptService cs = Context.getConceptService();
-		ConceptSourceListController controller = (ConceptSourceListController) applicationContext
-		        .getBean("conceptSourceList");
+		ConceptSourceFormController controller = (ConceptSourceFormController) applicationContext
+		        .getBean("conceptSourceForm");
 		
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
 		mockRequest.setMethod("POST");
 		mockRequest.setParameter("conceptSourceId", "3");
 		mockRequest.setParameter("retireReason", "dummy reason for retirement");
+		mockRequest.setParameter("retire", "dummy reason for retirement");
 		
 		controller.handleRequest(mockRequest, new MockHttpServletResponse());
 		
