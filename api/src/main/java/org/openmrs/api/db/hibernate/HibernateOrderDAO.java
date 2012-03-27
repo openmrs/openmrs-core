@@ -93,7 +93,6 @@ public class HibernateOrderDAO implements OrderDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(OrderType.class);
 		
 		if (includeRetired == false) {
-			// TODO implement OrderType.retired
 			crit.add(Expression.eq("retired", false));
 		}
 		
