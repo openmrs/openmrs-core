@@ -278,6 +278,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					$j("#spinner").css("visibility", "hidden");
 					$j("#minCharError").css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
+					loadingMsgObj.html("");
 						
     				return false;
     			}
