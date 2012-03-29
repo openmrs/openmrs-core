@@ -130,12 +130,20 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public List<Provider> getProviders(String name, Map<ProviderAttributeType, String> serializedAttributeValues,
-	        Integer start, Integer length) {
+	        Integer start, Integer length, boolean includeRetired) {
 		Criteria criteria = prepareProviderCriteria(name);
 		if (start != null)
 			criteria.setFirstResult(start);
 		if (length != null)
 			criteria.setMaxResults(length);
+		
+		if (!includeRetired) {
+			criteria.add(Expression.eq("retired", false));
+		} else {
+			//push retired Provider to the end of the returned list
+			criteria.addOrder(Order.asc("retired"));
+		}
+		
 		List<Provider> providers = criteria.list();
 		if (serializedAttributeValues != null) {
 			CollectionUtils.filter(providers, new AttributeMatcherPredicate<Provider, ProviderAttributeType>(

@@ -1320,7 +1320,7 @@ public class InitializationFilter extends StartupFilter {
 							}
 							
 							// connect via jdbc with root user and create an openmrs user
-							String host="'%'";
+							String host = "'%'";
 							if (wizardModel.databaseConnection.contains("localhost")) {
 								host = "'localhost'";
 							}

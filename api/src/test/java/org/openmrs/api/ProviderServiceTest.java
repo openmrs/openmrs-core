@@ -238,7 +238,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderByMatchingQueryStringWithAnyUnVoidedPersonsFamilyName() throws Exception {
-		assertEquals(2, service.getProviders("Che", 0, null, null).size());
+		assertEquals(2, service.getProviders("Che", 0, null, null, true).size());
 	}
 	
 	/**
@@ -407,6 +407,16 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map)
+	 * @verifies does not find retired providers
+	 */
+	@Test
+	public void getProviders_shouldNotReturnRetiredProviders() throws Exception {
+		List<Provider> providers = service.getProviders(null, null, null, null);
+		Assert.assertEquals(7, providers.size());
+	}
+	
+	/**
 	 * @see ProviderService#getProvidersByPerson(Person)
 	 * @verifies fail if person is null
 	 */
@@ -447,12 +457,12 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 * @verifies return all providers if query is empty
 	 */
 	@Test
-	public void getProviders_shouldReturnAllProvidersIfQueryIsEmpty() throws Exception {
+	public void getProviders_shouldReturnAllProvidersIfQueryIsEmptyAndIncludeRetiredTrue() throws Exception {
 		//given
 		List<Provider> allProviders = service.getAllProviders();
 		
 		//when
-		List<Provider> providers = service.getProviders("", null, null, null);
+		List<Provider> providers = service.getProviders("", null, null, null, true);
 		
 		//then
 		Assert.assertEquals(allProviders.size(), providers.size());
