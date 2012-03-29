@@ -65,15 +65,15 @@ public class LocalesAndThemesFormController {
 	        throws Exception {
 		boolean localeInList = false;
 		String allowedLocales = Context.getAdministrationService().getGlobalProperty(
-						    OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
-						String[] allowedLocalesList = allowedLocales.split(",");
-						
+		    OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
+		String[] allowedLocalesList = allowedLocales.split(",");
+		
 		// save the theme
 		GlobalProperty themeGP = Context.getAdministrationService().getGlobalPropertyObject(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_THEME);
 		themeGP.setPropertyValue(theme);
 		Context.getAdministrationService().saveGlobalProperty(themeGP);
-
+		
 		// save the locale		
 		for (String loc : allowedLocalesList) {
 			loc = loc.trim();
@@ -92,7 +92,8 @@ public class LocalesAndThemesFormController {
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "LocalesAndThemes.saved"), WebRequest.SCOPE_SESSION);
 		} else {
-			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage("LocalesAndThemes.localeError"), WebRequest.SCOPE_SESSION);
+			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+			    "LocalesAndThemes.localeError"), WebRequest.SCOPE_SESSION);
 		}
 		
 		return "redirect:/admin/maintenance/localesAndThemes.form";

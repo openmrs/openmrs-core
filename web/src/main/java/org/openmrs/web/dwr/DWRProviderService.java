@@ -52,15 +52,14 @@ public class DWRProviderService {
 	 */
 	public Vector<Object> findProvider(String name, boolean includeRetired, Integer start, Integer length) {
 		Vector<Object> providerListItem = new Vector<Object>();
-		List<Provider> providerList = Context.getProviderService().getProviders(name, start, length, null);
+		List<Provider> providerList = Context.getProviderService().getProviders(name, start, length, null, includeRetired);
 		
 		if (providerList.size() == 0) {
 			MessageSourceService mss = Context.getMessageSourceService();
 			providerListItem.add(mss.getMessage("Provider.noMatchesFound", new Object[] { name }, Context.getLocale()));
 		} else {
 			for (Provider p : providerList) {
-				if (!p.isRetired() || (p.isRetired() && includeRetired == true))
-					providerListItem.add(new ProviderListItem(p));
+				providerListItem.add(new ProviderListItem(p));
 			}
 		}
 		return providerListItem;
