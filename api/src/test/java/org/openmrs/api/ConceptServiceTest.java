@@ -34,6 +34,7 @@ import junit.framework.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -2265,5 +2266,78 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT));
 		Concept falseConceptLoadedByServiceMethod = Context.getConceptService().getFalseConcept();
 		Assert.assertTrue(falseConceptLoadedManually.equals(falseConceptLoadedByServiceMethod));
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Ignore
+	@Verifies(value = "should not set audit info if the concept is not edited", method = "saveConcept(Concept)")
+	public void saveConcept_shouldNotSetAuditInfoIfTheConceptIsNotEdited() throws Exception {
+		Concept concept = conceptService.getConcept(3);
+		Assert.assertNull(concept.getDateChanged());
+		Assert.assertNull(concept.getChangedBy());
+		conceptService.saveConcept(concept);
+		
+		Assert.assertNull(concept.getDateChanged());
+		Assert.assertNull(concept.getChangedBy());
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should set audit info if an item is removed from any of its child collections", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSetAuditInfoIfAnItemIsRemovedFromAnyOfItsChildCollections() throws Exception {
+		Concept concept = conceptService.getConcept(3);
+		Assert.assertNull(concept.getDateChanged());
+		Assert.assertNull(concept.getChangedBy());
+		
+		ConceptDescription description = concept.getDescription();
+		Assert.assertNotNull(description);
+		Assert.assertTrue(concept.removeDescription(description));
+		conceptService.saveConcept(concept);
+		
+		Assert.assertNotNull(concept.getDateChanged());
+		Assert.assertNotNull(concept.getChangedBy());
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should set audit info if any item in the child collections is edited", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSetAuditInfoIfAnyItemInTheChildCollectionsIsEdited() throws Exception {
+		Concept concept = conceptService.getConcept(3);
+		Assert.assertNull(concept.getDateChanged());
+		Assert.assertNull(concept.getChangedBy());
+		
+		ConceptDescription description = concept.getDescription();
+		Assert.assertNotNull(description);
+		description.setDescription("changed to something else");
+		conceptService.saveConcept(concept);
+		
+		Assert.assertNotNull(concept.getDateChanged());
+		Assert.assertNotNull(concept.getChangedBy());
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should set audit info if an item is added to any of its child collections", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSetAuditInfoIfAnItemIsAddedToAnyOfItsChildCollections() throws Exception {
+		Concept concept = conceptService.getConcept(3);
+		Assert.assertNull(concept.getDateChanged());
+		Assert.assertNull(concept.getChangedBy());
+		
+		ConceptDescription description = new ConceptDescription("new description", Context.getLocale());
+		concept.addDescription(description);
+		conceptService.saveConcept(concept);
+		Assert.assertNotNull(description.getConceptDescriptionId());
+		
+		Assert.assertNotNull(concept.getDateChanged());
+		Assert.assertNotNull(concept.getChangedBy());
 	}
 }

@@ -54,7 +54,6 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
- * 
  * To get a single concept:
  * 
  * <pre>
@@ -64,7 +63,6 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * String name = concept.getPreferredName(Context.getLocale()).getName();
  * </pre>
- * 
  * To save a concept to the database
  * 
  * <pre>
@@ -183,6 +181,10 @@ public interface ConceptService extends OpenmrsService {
 	 * @should create a reference term for a concept mapping on the fly when editing a concept
 	 * @should create a reference term for a concept mapping on the fly when creating a concept
 	 * @should add new concept name
+	 * @should not set audit info if the concept is not edited
+	 * @should set audit info if an item is removed from any of its child collections
+	 * @should set audit info if any item in the child collections is edited
+	 * @should set audit info if an item is added to any of its child collections
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public Concept saveConcept(Concept concept) throws APIException;
@@ -1179,7 +1181,7 @@ public interface ConceptService extends OpenmrsService {
 	
 	/**
 	 * Returns all concept sources, including retired
-	 *
+	 * 
 	 * @deprecated use {@link #getAllConceptSources(boolean)}
 	 */
 	@Deprecated
@@ -1188,8 +1190,8 @@ public interface ConceptService extends OpenmrsService {
 	public List<ConceptSource> getAllConceptSources() throws APIException;
 	
 	/**
-	 * Return a list of concept sources currenly in the database
-	 * Whether or not to return retired concept sources is decided by the boolean includeRetired param
+	 * Return a list of concept sources currenly in the database Whether or not to return retired
+	 * concept sources is decided by the boolean includeRetired param
 	 * 
 	 * @param includeRetired whether or not to include retired sources
 	 * @return List of Concept source objects
@@ -2010,7 +2012,8 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param name
 	 * @param locale <code>null</code> = all locales
-	 * @param exactLocale <code>false</code> if search for both global and country specific, <code>true</code> if <code>null</code>
+	 * @param exactLocale <code>false</code> if search for both global and country specific,
+	 *            <code>true</code> if <code>null</code>
 	 * @return the list of concepts
 	 * @throws APIException
 	 * @since 1.9, 1.8.4
