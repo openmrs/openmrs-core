@@ -31,7 +31,7 @@
 		<property name="valueModifier" type="java.lang.String"
 			column="value_modifier" length="2" />
 		<property name="valueText" type="java.lang.String"
-			column="value_text" length="50" />
+			column="value_text" length="65535" />
 		<property name="valueComplex" type="java.lang.String"
 		    column="value_complex" length="255" />
 			
