@@ -41,6 +41,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.Security;
 import org.openmrs.util.UserByNameComparator;
 
@@ -290,6 +291,11 @@ public class HibernateUserDAO implements UserDAO {
 		credentials.setUuid(changeForUser.getUuid());
 		
 		sessionFactory.getCurrentSession().merge(credentials);
+		
+		// reset lockout 
+		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
+		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+		saveUser(changeForUser, null);
 	}
 	
 	/**
