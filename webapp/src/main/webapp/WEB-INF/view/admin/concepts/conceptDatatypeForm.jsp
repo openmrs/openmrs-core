@@ -9,27 +9,27 @@
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.afterTitle" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 
-<table>
+<table class="left-aligned-th">
 	<tr>
-		<td><spring:message code="general.name"/></td>
+		<th><spring:message code="general.name"/></th>
 		<td><c:out value="${conceptDatatype.name}"/></td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
+		<th valign="top"><spring:message code="general.description"/></th>
 		<td><spring:message code="${conceptDatatype.description}"/></td>
 	</tr>
 	<tr>
-		<td><spring:message code="ConceptDatatype.hl7Abbreviation"/></td>
+		<th><spring:message code="ConceptDatatype.hl7Abbreviation"/></th>
 		<td><c:out value="${conceptDatatype.hl7Abbreviation}"/></td>
 	</tr>
 	<tr>
-		<td><spring:message code="general.uuid"/></td>
+		<th><spring:message code="general.uuid"/></th>
 		<td><c:out value="${conceptDatatype.uuid}"/></td>
 	</tr>
 
 	<c:if test="${!(conceptDatatype.creator == null)}">
 		<tr>
-			<td><spring:message code="general.createdBy" /></td>
+			<th><spring:message code="general.createdBy" /></th>
 			<td>
 				<c:out value="${conceptDatatype.creator.personName}"/> -
 				<openmrs:formatDate date="${conceptDatatype.dateCreated}" type="long" />
