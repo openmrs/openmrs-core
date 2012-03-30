@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -305,7 +304,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Task which does not return TaskDefinition in getTaskDefinition should run without throwing exceptions.
+	 * Task which does not return TaskDefinition in getTaskDefinition should run without throwing
+	 * exceptions.
 	 * 
 	 * @throws Exception
 	 */
@@ -331,7 +331,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Task opens a session and stores the execution time.
 	 */
-	static class SessionTask extends AbstractTask {
+	public static class SessionTask extends AbstractTask {
 		
 		public void execute() {
 			try {
@@ -349,13 +349,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Check saved last execution time.
-	 * 
-	 * TODO: Fix this test so that it doesn't depend on timing.  
-	 *   See http://tickets.openmrs.org/browse/TRUNK-1964
-	 * 
 	 */
 	@Test
-	@Ignore
 	public void shouldSaveLastExecutionTime() throws Exception {
 		final String NAME = "Session Task";
 		SchedulerService service = Context.getSchedulerService();
@@ -365,6 +360,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		td.setStartOnStartup(false);
 		td.setTaskClass(SessionTask.class.getName());
 		td.setStartTime(null);
+		td.setRepeatInterval(new Long(0));//0 indicates single execution
 		service.saveTask(td);
 		
 		service.scheduleTask(td);
