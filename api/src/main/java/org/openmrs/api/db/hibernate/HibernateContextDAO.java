@@ -106,8 +106,15 @@ public class HibernateContextDAO implements ContextDAO {
 			
 			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
 			Long lockoutTime = null;
-			if (lockoutTimeString != null && !lockoutTimeString.equals("0"))
-				lockoutTime = Long.valueOf(lockoutTimeString);
+			if (lockoutTimeString != null && !lockoutTimeString.equals("0")) {
+				try {
+					// putting this in a try/catch in case the admin decided to put junk into the property
+					lockoutTime = Long.valueOf(lockoutTimeString);
+				}
+				catch (NumberFormatException e) {
+					log.debug("bad value stored in " + OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP + " user property: " + lockoutTimeString);
+				}
+			}
 			
 			// if they've been locked out, don't continue with the authentication
 			if (lockoutTime != null) {
