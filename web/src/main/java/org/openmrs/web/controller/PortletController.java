@@ -47,7 +47,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.controller.PortletControllerUtil;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -284,8 +283,6 @@ public class PortletController implements Controller {
 										Date exitDate = reasonForExitObs.getObsDatetime();
 										if (exitReason != null && exitDate != null) {
 											patientVariation = "Exited";
-											model.put("exitReason", exitReason);
-											model.put("exitDate", exitDate);									
 										}
 									} else {
 										if (patientExitObs.size() == 0) {
