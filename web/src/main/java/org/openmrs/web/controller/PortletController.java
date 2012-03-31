@@ -284,6 +284,8 @@ public class PortletController implements Controller {
 										Date exitDate = reasonForExitObs.getObsDatetime();
 										if (exitReason != null && exitDate != null) {
 											patientVariation = "Exited";
+											model.put("exitReason", exitReason);
+											model.put("exitDate", exitDate);									
 										}
 									} else {
 										if (patientExitObs.size() == 0) {
