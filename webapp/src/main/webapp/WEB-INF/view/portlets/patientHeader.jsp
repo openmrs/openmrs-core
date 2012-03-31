@@ -5,13 +5,20 @@
 
 <openmrs:globalProperty key="visits.enabled" var="visitsEnabled" />
 
+<c:if test="${model.patientVariation == 'Exited'}">
+	<div class="retiredMessage">
+		<div>
+			<spring:message code="Patient.patientExitedCare"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<spring:message code="Patient.patientCareExitDate"/>: <openmrs:formatDate date="${model.exitDate}"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<spring:message code="Patient.patientCareExitReason"/>: <openmrs:format concept="${model.exitReason}"/>
+		</div>
+	</div>
+</c:if>
+
 <%-- Header showing preferred name, id, and treatment status --%>
-<c:if test="${empty model.patientReasonForExit}">
-	<div id="patientHeader" class="boxHeader">
-</c:if>
-<c:if test="${not empty model.patientReasonForExit}">
-	<div id="patientHeader" class="boxHeaderRed">
-</c:if>
+<div id="patientHeader" class="boxHeader">
 <div id="patientHeaderPatientName">${model.patient.personName}</div>
 <div id="patientHeaderPreferredIdentifier">
 	<c:if test="${fn:length(model.patient.activeIdentifiers) > 0}">
@@ -113,13 +120,8 @@
 		</c:if>
 	</tr>
 </table>
-</div>
-<c:if test="${empty model.patientReasonForExit}">
-	<div id="patientSubheader" class="box">
-</c:if>
-<c:if test="${not empty model.patientReasonForExit}">
-	<div id="patientSubheaderExited" class="boxRed">
-</c:if>
+</div><%-- Closing div for the patientHeader box --%>
+<div id="patientSubheader" class="box">
 
 <openmrs:globalProperty var="programIdsToShow"
 	key="dashboard.header.programs_to_show" listSeparator="," />
@@ -331,7 +333,7 @@
 
 <div class="columnEnd"></div>
 
-</div> <!-- Closing div from c:if for model.patientReasonForExit above -->
+</div> <%-- Closing div for the patientSubheader box --%>
 
 <script type="text/javascript">
 	function showMoreIdentifiers() {
