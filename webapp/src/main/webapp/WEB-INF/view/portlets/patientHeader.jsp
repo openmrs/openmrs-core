@@ -10,9 +10,9 @@
 		<div>
 			<spring:message code="Patient.patientExitedCare"/>
 			&nbsp;&nbsp;&nbsp;&nbsp;
-			<spring:message code="Patient.patientCareExitDate"/>: <openmrs:formatDate date="${model.exitDate}"/>
+			<spring:message code="Patient.patientCareExitDate"/>: <openmrs:formatDate date="${model.patientReasonForExit.obsDatetime}"/>
 			&nbsp;&nbsp;&nbsp;&nbsp;
-			<spring:message code="Patient.patientCareExitReason"/>: <openmrs:format concept="${model.exitReason}"/>
+			<spring:message code="Patient.patientCareExitReason"/>: <openmrs:format concept="${model.patientReasonForExit.valueCoded}"/>
 		</div>
 	</div>
 </c:if>
