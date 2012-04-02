@@ -398,7 +398,7 @@ tr td#patientHeaderObsReturnVisit {
 	font-weight: bold;
 }
 
-#patientSubheaderExited th {
+#patientSubheaderExited th, #patientSubheaderDead th {
 	color: #555555;
 	font-weight: bold;
 }
@@ -506,7 +506,7 @@ table.patientTreatmentPrograms td {
 .patientIdentifier {
 	width: 7em;
 }
-.box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited {
+.box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited, .boxDead, .boxHeaderDead {
 	border: 1px solid #1aac9b;
 	width: 100%;
 	padding: 5px 2px 5px 2px;
@@ -528,7 +528,7 @@ table.patientTreatmentPrograms td {
 	clear: both;
 }
 
-.box>*, .boxRed>*, .boxExited>* {
+.box>*, .boxRed>*, .boxExited>*, .boxDead>* {
 	font-size: .9em;
 }
 
@@ -543,7 +543,7 @@ table.patientTreatmentPrograms td {
 	border: 1px solid #b82619;
 }
 
-.boxExited {
+.boxExited,.boxDead {
 	border: 1px solid #999999;
 }
 
@@ -555,7 +555,7 @@ table.patientTreatmentPrograms td {
 	background-color: #b82619;
 }
 
-.boxHeaderExited {
+.boxHeaderExited, .boxHeaderDead {
 	color: white;
 	display: block;
 	padding: 2px;
@@ -1182,7 +1182,7 @@ table td#summaryHeaderPatientGender {
 	border: 1px dotted #ffffff;
 }
 
-#patientTabsExited {
+#patientTabsExited, #patientTabsDead {
 	margin: 10px auto 7px auto;
 	padding-top: 5px;
 	padding-left: 5px;
@@ -1191,13 +1191,13 @@ table td#summaryHeaderPatientGender {
 	width: 99%;
 }
 
-#patientTabsExited ul, #patientTabsExited li {
+#patientTabsExited ul, #patientTabsExited li, #patientTabsDead ul, #patientTabsDead li {
 	display: inline;
 	list-style-type: none;
 	padding: 0px 0px 0px 0px;
 }
 
-#patientTabsExited a:link, #patientTabsExited a:visited {
+#patientTabsExited a:link, #patientTabsExited a:visited, #patientTabsDead a:link, #patientTabsDead a:visited {
 	border: 1px solid #555555;
 	font-size: small;
 	font-weight: bold;
@@ -1207,16 +1207,16 @@ table td#summaryHeaderPatientGender {
 	color: #555555;
 	background: #bbbbbb;
 }
-#patientTabsExited a:link.active, #patientTabsExited a:visited.active {
+#patientTabsExited a:link.active, #patientTabsExited a:visited.active, #patientTabsDead a:link.active, #patientTabsDead a:visited.active {
 	border-bottom: 1px solid #FFFFFF;
 }
-#patientTabsExited a.current, #patientTabsExited a:link.current, #patientTabsExited a:visited.current, #patientTabsExited a.current:hover {
+#patientTabsExited a.current, #patientTabsExited a:link.current, #patientTabsExited a:visited.current, #patientTabsExited a.current:hover, #patientTabsDead a.current, #patientTabsDead a:link.current, #patientTabsDead a:visited.current, #patientTabsDead a.current:hover {
 	background: #FFFFFF;
 	border-bottom: 1px solid #FFFFFF;
 	color: #555555;
 	text-decoration: none;
 }
-#patientTabsExited a:hover {
+#patientTabsExited a:hover, #patientTabsDead a:hover {
 	text-decoration: underline;
 }
 

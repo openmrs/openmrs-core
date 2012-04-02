@@ -18,7 +18,7 @@
 </c:if>
 
 <%-- Header showing preferred name, id, and treatment status --%>
-<div id="patientHeader" class="boxHeader">
+<div id="patientHeader" class="boxHeader${model.patientVariation}">
 <div id="patientHeaderPatientName">${model.patient.personName}</div>
 <div id="patientHeaderPreferredIdentifier">
 	<c:if test="${fn:length(model.patient.activeIdentifiers) > 0}">

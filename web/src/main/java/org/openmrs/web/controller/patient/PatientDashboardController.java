@@ -98,6 +98,8 @@ public class PatientDashboardController {
 		// determine patient variation
 		
 		String patientVariation = "";
+		if (patient.isDead())
+			patientVariation = "Dead";
 		
 		Concept reasonForExitConcept = Context.getConceptService().getConcept(
 		    Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
