@@ -188,6 +188,8 @@ public class PortletController implements Controller {
 					if (Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)) {
 						Patient p = Context.getPatientService().getPatient(patientId);
 						model.put("patient", p);
+						if (p.isDead())
+							patientVariation = "Dead";
 						
 						// add encounters if this user can view them
 						if (Context.hasPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS))

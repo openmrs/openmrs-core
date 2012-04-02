@@ -37,9 +37,9 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientIdentifierType.LocationBehavior;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
-import org.openmrs.PatientIdentifierType.LocationBehavior;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
@@ -533,6 +533,8 @@ public class PatientFormController extends PersonFormController {
 		}
 		
 		String patientVariation = "";
+		if (patient.isDead())
+			patientVariation = "Dead";
 		
 		Concept reasonForExitConcept = Context.getConceptService().getConcept(
 		    Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
