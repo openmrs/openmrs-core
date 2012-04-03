@@ -1393,7 +1393,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_VISIT_TYPES_TO_AUTO_CLOSE, "",
 		        "comma-separated list of the visit type(s) to automatically close"));
 		
-		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "same-as",
+		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "NARROWER-THAN",
 		        "Default concept map type which is used when no other is set"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
