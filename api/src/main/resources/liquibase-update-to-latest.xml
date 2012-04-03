@@ -5205,26 +5205,49 @@
 	</changeSet>
 	
 	<changeSet id="20110301-1030f" author="wyclif" dbms="mysql">
+		<validCheckSum><comment>Initial version with random UUIDs</comment>3:97128f92a883840dc2ba1a55a01cd4a3</validCheckSum>
+		<validCheckSum><comment>Corrected version with predefined UUIDs</comment>3:5faead5506cbcde69490fef985711d66</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_map_type" />
 		</preConditions>
 		<comment>Inserting core concept map types</comment>
 		<customChange class="org.openmrs.util.databasechange.AddConceptMapTypesChangeset">
 			<param name="visibleConceptMapTypes">
-				SAME-AS, NARROWER-THAN, BROADER-THAN, Associated finding, Associated morphology, Associated procedure, 
-				Associated with, Causative agent, Finding site, Has specimen, Laterality, Severity
+				SAME-AS|35543629-7d8c-11e1-909d-c80aa9edcf4e, NARROWER-THAN|43ac5109-7d8c-11e1-909d-c80aa9edcf4e, BROADER-THAN|4b9d9421-7d8c-11e1-909d-c80aa9edcf4e, 
+				Associated finding|55e02065-7d8c-11e1-909d-c80aa9edcf4e, Associated morphology|605f4a61-7d8c-11e1-909d-c80aa9edcf4e, 
+				Associated procedure|6eb1bfce-7d8c-11e1-909d-c80aa9edcf4e, Associated with|781bdc8f-7d8c-11e1-909d-c80aa9edcf4e, 
+				Causative agent|808f9e19-7d8c-11e1-909d-c80aa9edcf4e, Finding site|889c3013-7d8c-11e1-909d-c80aa9edcf4e, 
+				Has specimen|929600b9-7d8c-11e1-909d-c80aa9edcf4e, Laterality|999c6fc0-7d8c-11e1-909d-c80aa9edcf4e, Severity|a0e52281-7d8c-11e1-909d-c80aa9edcf4e
 			</param>
 			<param name="hiddenConceptMapTypes">
-				Access, After, Clinical course, Component, Direct device, Direct morphology, Direct substance, Due to, 
-				Episodicity, Finding context, Finding informer, Finding method, Has active ingredient, 
-				Has definitional manifestation,	Has dose form, Has focus, Has intent, Has interpretation, Indirect device, 
-				Indirect morphology, Interprets, Measurement method, Method, Occurrence, Part of, Pathological process, 
-				Priority, Procedure context, Procedure device, Procedure morphology, Procedure site, Procedure site - Direct, 
-				Procedure site - Indirect, Property, Recipient category, Revision status, Route of administration, Scale type, 
-				Specimen procedure, Specimen source identity, Specimen source morphology, Specimen source topography, 
-				Specimen substance, Subject of information, Subject relationship context, Surgical approach, Temporal context, 
-				Time aspect, Using access device, Using device, Using energy, Using substance, IS A, MAY BE A, MOVED FROM,
-				MOVED TO, REPLACED BY, WAS A
+				Access|f9e90b29-7d8c-11e1-909d-c80aa9edcf4e, After|01b60e29-7d8d-11e1-909d-c80aa9edcf4e, Clinical course|5f7c3702-7d8d-11e1-909d-c80aa9edcf4e, 
+				Component|67debecc-7d8d-11e1-909d-c80aa9edcf4e, Direct device|718c00da-7d8d-11e1-909d-c80aa9edcf4e, 
+				Direct morphology|7b9509cb-7d8d-11e1-909d-c80aa9edcf4e, Direct substance|82bb495d-7d8d-11e1-909d-c80aa9edcf4e, 
+				Due to|8b77f7d3-7d8d-11e1-909d-c80aa9edcf4e, Episodicity|94a81179-7d8d-11e1-909d-c80aa9edcf4e, 
+				Finding context|9d23c22e-7d8d-11e1-909d-c80aa9edcf4e, Finding informer|a4524368-7d8d-11e1-909d-c80aa9edcf4e, 
+				Finding method|af089254-7d8d-11e1-909d-c80aa9edcf4e, Has active ingredient|b65aa605-7d8d-11e1-909d-c80aa9edcf4e, 
+				Has definitional manifestation|c2b7b2fa-7d8d-11e1-909d-c80aa9edcf4,	Has dose form|cc3878e6-7d8d-11e1-909d-c80aa9edcf4e, 
+				Has focus|d67c5840-7d8d-11e1-909d-c80aa9edcf4e, Has intent|de2fb2c5-7d8d-11e1-909d-c80aa9edcf4e, 
+				Has interpretation|e758838b-7d8d-11e1-909d-c80aa9edcf4e, Indirect device|ee63c142-7d8d-11e1-909d-c80aa9edcf4e, 
+				Indirect morphology|f4f36681-7d8d-11e1-909d-c80aa9edcf4e, Interprets|fc7f5fed-7d8d-11e1-909d-c80aa9edcf4e, 
+				Measurement method|06b11d79-7d8e-11e1-909d-c80aa9edcf4e, Method|0efb4753-7d8e-11e1-909d-c80aa9edcf4e, 
+				Occurrence|16e7b617-7d8e-11e1-909d-c80aa9edcf4e, Part of|1e82007b-7d8e-11e1-909d-c80aa9edcf4e, 
+				Pathological process|2969915e-7d8e-11e1-909d-c80aa9edcf4e, Priority|32d57796-7d8e-11e1-909d-c80aa9edcf4e, 
+				Procedure context|3f11904c-7d8e-11e1-909d-c80aa9edcf4e, Procedure device|468c4aa3-7d8e-11e1-909d-c80aa9edcf4e, 
+				Procedure morphology|5383e889-7d8e-11e1-909d-c80aa9edcf4e, Procedure site|5ad2655d-7d8e-11e1-909d-c80aa9edcf4e, 
+				Procedure site - Direct|66085196-7d8e-11e1-909d-c80aa9edcf4e, Procedure site - Indirect|7080e843-7d8e-11e1-909d-c80aa9edcf4e, 
+				Property|76bfb796-7d8e-11e1-909d-c80aa9edcf4e, Recipient category|7e7d00e4-7d8e-11e1-909d-c80aa9edcf4e, 
+				Revision status|851e14c1-7d8e-11e1-909d-c80aa9edcf4e, Route of administration|8ee5b13d-7d8e-11e1-909d-c80aa9edcf4e, 
+				Scale type|986acf48-7d8e-11e1-909d-c80aa9edcf4e, Specimen procedure|a6937642-7d8e-11e1-909d-c80aa9edcf4e, 
+				Specimen source identity|b1d6941e-7d8e-11e1-909d-c80aa9edcf4e, Specimen source morphology|b7c793c1-7d8e-11e1-909d-c80aa9edcf4e, 
+				Specimen source topography|be9f9eb8-7d8e-11e1-909d-c80aa9edcf4e, Specimen substance|c8f2bacb-7d8e-11e1-909d-c80aa9edcf4e, 
+				Subject of information|d0664c4f-7d8e-11e1-909d-c80aa9edcf4e, Subject relationship context|dace9d13-7d8e-11e1-909d-c80aa9edcf4e, 
+				Surgical approach|e3cd666d-7d8e-11e1-909d-c80aa9edcf4e, Temporal context|ed96447d-7d8e-11e1-909d-c80aa9edcf4e, 
+				Time aspect|f415bcce-7d8e-11e1-909d-c80aa9edcf4e, Using access device|fa9538a9-7d8e-11e1-909d-c80aa9edcf4e, 
+				Using device|06588655-7d8f-11e1-909d-c80aa9edcf4e, Using energy|0c2ae0bc-7d8f-11e1-909d-c80aa9edcf4e, 
+				Using substance|13d2c607-7d8f-11e1-909d-c80aa9edcf4e, IS A|1ce7a784-7d8f-11e1-909d-c80aa9edcf4e, 
+				MAY BE A|267812a3-7d8f-11e1-909d-c80aa9edcf4e, MOVED FROM|2de3168e-7d8f-11e1-909d-c80aa9edcf4e,
+				MOVED TO|32f0fd99-7d8f-11e1-909d-c80aa9edcf4e, REPLACED BY|3b3b9a7d-7d8f-11e1-909d-c80aa9edcf4e, WAS A|41a034da-7d8f-11e1-909d-c80aa9edcf4e
 			</param>
 		</customChange>
 	</changeSet>
