@@ -22,7 +22,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -102,8 +101,11 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 			        .prepareStatement("INSERT INTO concept_map_type (name, is_hidden, retired, creator, date_created, uuid) VALUES(?,?,?,"
 			                + userId + ", ?,?)");
 			
-			for (String mapType : visibleConceptMapTypeArray) {
-				mapType = mapType.trim();
+			for (String map : visibleConceptMapTypeArray) {
+				String[] mapTypeAndUuid = map.trim().split("\\|");
+				String mapType = mapTypeAndUuid[0];
+				String mapUuid = mapTypeAndUuid[1];
+				
 				if (mapType.length() < 1 || existingMapTypes.contains(mapType.toUpperCase()))
 					continue;
 				
@@ -111,12 +113,15 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				pStmt.setBoolean(2, false);
 				pStmt.setBoolean(3, false);
 				pStmt.setDate(4, new Date(Calendar.getInstance().getTimeInMillis()));
-				pStmt.setString(5, UUID.randomUUID().toString());
+				pStmt.setString(5, mapUuid);
 				pStmt.addBatch();
 			}
 			
-			for (String mapType : hiddenConceptMapTypeArray) {
-				mapType = mapType.trim();
+			for (String map : hiddenConceptMapTypeArray) {
+				String[] mapTypeAndUuid = map.trim().split("\\|");
+				String mapType = mapTypeAndUuid[0];
+				String mapUuid = mapTypeAndUuid[1];
+				
 				if (mapType.length() < 1 || existingMapTypes.contains(mapType.toUpperCase()))
 					continue;
 				
@@ -124,7 +129,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				pStmt.setBoolean(2, true);
 				pStmt.setBoolean(3, false);
 				pStmt.setDate(4, new Date(Calendar.getInstance().getTimeInMillis()));
-				pStmt.setString(5, UUID.randomUUID().toString());
+				pStmt.setString(5, mapUuid);
 				pStmt.addBatch();
 			}
 			
