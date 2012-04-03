@@ -1355,15 +1355,6 @@
 
 	<changeSet author="ben (generated)" id="1226412230538-33">
 		<insert tableName="order_type">
-			<column name="order_type_id" valueNumeric="2" />
-			<column name="name" value="Drug order" />
-			<column name="description" value="Order of medications for the patient" />
-			<column name="creator" valueNumeric="1" />
-			<column name="date_created" valueDate="2008-08-15" />
-			<column name="retired" valueNumeric="0" />
-			<column name="uuid" value="131168f4-15f5-102d-96e4-000c29c2a5d7" />
-		</insert>
-		<insert tableName="order_type">
 			<column name="order_type_id" valueNumeric="1" />
 			<column name="name" value="Lab test" />
 			<column name="description" value="An order by a clinician for a laboratory test" />
