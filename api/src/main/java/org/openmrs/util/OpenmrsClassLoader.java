@@ -287,18 +287,21 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			rootGroup = parent;
 		}
 		
-		List<Thread> threads = listThreads(rootGroup, "");
-		for (Thread thread : threads) {
-			if (thread.getContextClassLoader() != null) {
-				log.debug("context classloader on thread: " + thread.getName() + " is: "
-				        + thread.getContextClassLoader().getClass().getName() + ":"
-				        + thread.getContextClassLoader().hashCode());
-				if (thread.getContextClassLoader() == OpenmrsClassLoaderHolder.INSTANCE) {
-					thread.setContextClassLoader(OpenmrsClassLoaderHolder.INSTANCE.getParent());
-					log.debug("Cleared context classloader to save the world from memory leaks");
-				}
-			}
-		}
+		log.error("this classloader hashcode: " + OpenmrsClassLoaderHolder.INSTANCE.hashCode());
+		
+//		List<Thread> threads = listThreads(rootGroup, "");
+//		for (Thread thread : threads) {
+//			if (thread.getContextClassLoader() != null) {
+//				log.debug("context classloader on thread: " + thread.getName() + " is: "
+//				        + thread.getContextClassLoader().getClass().getName() + ":"
+//				        + thread.getContextClassLoader().hashCode());
+//				if (thread.getContextClassLoader() == OpenmrsClassLoaderHolder.INSTANCE) {
+//					thread.setContextClassLoader(OpenmrsClassLoaderHolder.INSTANCE.getParent());
+//					log.error("Cleared context classloader to save the world from memory leaks. thread: " + thread.getName()
+//					        + " ");
+//				}
+//			}
+//		}
 		
 		OpenmrsClassLoaderHolder.INSTANCE = null;
 	}
@@ -315,7 +318,14 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		// List every thread in the group
 		for (int i = 0; i < nt; i++) {
 			Thread t = threads[i];
-			log.error(indent + "  Thread[" + t.getName() + ":" + t.getClass() + "]");
+			log.error(indent
+			        + "  Thread["
+			        + t.getName()
+			        + ":"
+			        + t.getClass()
+			        + ":"
+			        + (t.getContextClassLoader() == null ? "null cl" : t.getContextClassLoader().getClass().getName() + " "
+			                + t.getContextClassLoader().hashCode()) + "]");
 			threadToReturn.add(t);
 		}
 		
