@@ -31,7 +31,7 @@ if (handler instanceof FieldGenDatatypeHandler) {
         formFieldName="${ formFieldName }"
         type="<%= widgetName %>"
         parameterMap="<%= widgetConfig %>"
-        val="${ initialValue }"/>
+        val="<%= initialValue %>"/>
 <% } else if (handler instanceof WebDatatypeHandler) {
 	String widgetId = "customValue" + new Random().nextInt();
 	WebDatatypeHandler h = (WebDatatypeHandler) handler;
