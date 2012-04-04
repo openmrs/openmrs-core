@@ -12,7 +12,7 @@
 
 		<discriminator column="drug_id" insert="false" />
 
-		<property name="name" type="java.lang.String" length="50" />
+		<property name="name" type="java.lang.String" length="255" />
 		<property name="combination" type="java.lang.Boolean" length="1"
 			not-null="true" />
 		<property name="doseStrength" type="java.lang.Double"
