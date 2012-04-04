@@ -4020,8 +4020,8 @@
 		</sql>
 	</changeSet>
 
-	<changeSet id="20120330-0954" author="jkeiper">
+	<changeSet id="20120330-0954old" author="jkeiper">
 		<comment>Increase size of drug name column to 255 characters</comment>
-		<modifyDataType tableName="drug" columnName="name" newDataType="varchar(255)"/>
+		<modifyColumn tableName="drug"><column name="drug" type="varchar(255)"/></modifyColumn>
 	</changeSet>
 </databaseChangeLog>
