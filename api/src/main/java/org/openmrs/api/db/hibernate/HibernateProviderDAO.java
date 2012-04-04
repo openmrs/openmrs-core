@@ -22,9 +22,10 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.IlikeExpression;
-import org.hibernate.criterion.LogicalExpression;
+import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -155,35 +156,51 @@ public class HibernateProviderDAO implements ProviderDAO {
 			name = "%";
 		}
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class).createAlias("person", "p",
-		    Criteria.LEFT_JOIN);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class)
+		        .createAlias("person", "p", Criteria.LEFT_JOIN);
 		
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		if (name != null) {
-			criteria.createAlias("p.names", "personName", Criteria.LEFT_JOIN);
-			criteria.add(getNameSearchExpression(name));
+		
+		criteria.createAlias("p.names", "personName", Criteria.LEFT_JOIN);
+		
+		Disjunction or = Restrictions.disjunction();
+		or.add(Restrictions.ilike("identifier", name, MatchMode.ANYWHERE));
+		or.add(Restrictions.ilike("name", name, MatchMode.ANYWHERE));
+		
+		Conjunction and = Restrictions.conjunction();
+		or.add(and);
+		
+		String[] splitNames = name.split(" ");
+		for (String splitName : splitNames) {
+			and.add(getNameSearchExpression(splitName));
 		}
+		
+		criteria.add(or);
+		
 		return criteria;
 	}
 	
 	/**
-	 * Creates Logical expression that matches the input name with Provider -Name or
-	 * Provider-Person-Names(that are not voided)
+	 * Creates or that matches the input name with Provider-Person-Names (not voided)
 	 * 
 	 * @param name
-	 * @return LogicalExpression
+	 * @return Junction
 	 */
-	private LogicalExpression getNameSearchExpression(String name) {
-		
+	private Junction getNameSearchExpression(String name) {
 		MatchMode mode = MatchMode.ANYWHERE;
-		IlikeExpression providerNameExpression = (IlikeExpression) Expression.ilike("name", name, mode);
-		IlikeExpression givenName = (IlikeExpression) Expression.ilike("personName.givenName", name, mode);
-		IlikeExpression middleName = (IlikeExpression) Expression.ilike("personName.middleName", name, mode);
-		IlikeExpression familyName = (IlikeExpression) Expression.ilike("personName.familyName", name, mode);
-		IlikeExpression familyName2 = (IlikeExpression) Expression.ilike("personName.familyName2", name, mode);
-		LogicalExpression personNameExpression = Expression.and(Expression.eq("personName.voided", false), Expression.or(
-		    familyName2, Expression.or(familyName, Expression.or(middleName, givenName))));
-		return Expression.or(providerNameExpression, personNameExpression);
+		
+		Conjunction and = Restrictions.conjunction();
+		and.add(Restrictions.eq("personName.voided", false));
+		
+		Disjunction or = Restrictions.disjunction();
+		and.add(or);
+		
+		or.add(Restrictions.ilike("personName.givenName", name, mode));
+		or.add(Restrictions.ilike("personName.middleName", name, mode));
+		or.add(Restrictions.ilike("personName.familyName", name, mode));
+		or.add(Restrictions.ilike("personName.familyName2", name, mode));
+		
+		return and;
 	}
 	
 	/**
