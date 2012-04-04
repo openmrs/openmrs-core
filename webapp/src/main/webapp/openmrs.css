@@ -1182,7 +1182,7 @@ table td#summaryHeaderPatientGender {
 	border: 1px dotted #ffffff;
 }
 
-#patientTabsExited, #patientTabsDead {
+#patientTabs.Exited, #patientTabs.Dead {
 	margin: 10px auto 7px auto;
 	padding-top: 5px;
 	padding-left: 5px;
@@ -1191,13 +1191,13 @@ table td#summaryHeaderPatientGender {
 	width: 99%;
 }
 
-#patientTabsExited ul, #patientTabsExited li, #patientTabsDead ul, #patientTabsDead li {
+#patientTabs.Exited ul, #patientTabs.Exited li, #patientTabs.Dead ul, #patientTabs.Dead li {
 	display: inline;
 	list-style-type: none;
 	padding: 0px 0px 0px 0px;
 }
 
-#patientTabsExited a:link, #patientTabsExited a:visited, #patientTabsDead a:link, #patientTabsDead a:visited {
+#patientTabs.Exited a:link, #patientTabs.Exited a:visited, #patientTabs.Dead a:link, #patientTabs.Dead a:visited {
 	border: 1px solid #555555;
 	font-size: small;
 	font-weight: bold;
@@ -1207,16 +1207,16 @@ table td#summaryHeaderPatientGender {
 	color: #555555;
 	background: #bbbbbb;
 }
-#patientTabsExited a:link.active, #patientTabsExited a:visited.active, #patientTabsDead a:link.active, #patientTabsDead a:visited.active {
+#patientTabs.Exited a:link.active, #patientTabs.Exited a:visited.active, #patientTabs.Dead a:link.active, #patientTabs.Dead a:visited.active {
 	border-bottom: 1px solid #FFFFFF;
 }
-#patientTabsExited a.current, #patientTabsExited a:link.current, #patientTabsExited a:visited.current, #patientTabsExited a.current:hover, #patientTabsDead a.current, #patientTabsDead a:link.current, #patientTabsDead a:visited.current, #patientTabsDead a.current:hover {
+#patientTabs.Exited a.current, #patientTabs.Exited a:link.current, #patientTabs.Exited a:visited.current, #patientTabs.Exited a.current:hover, #patientTabs.Dead a.current, #patientTabs.Dead a:link.current, #patientTabs.Dead a:visited.current, #patientTabs.Dead a.current:hover {
 	background: #FFFFFF;
 	border-bottom: 1px solid #FFFFFF;
 	color: #555555;
 	text-decoration: none;
 }
-#patientTabsExited a:hover, #patientTabsDead a:hover {
+#patientTabs.Exited a:hover, #patientTabs.Dead a:hover {
 	text-decoration: underline;
 }
 
