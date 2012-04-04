@@ -143,6 +143,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should get all visits with given attribute values
 	 * @should not find any visits if none have given attribute values
 	 * @should return all providers if query is empty
+	 * @should find provider by identifier
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
