@@ -579,7 +579,7 @@ public class ShortPatientFormController {
 			if (personAddressCache.getId() != null) {
 				// if the existing personAddress has been edited
 				if (!personAddress.isBlank() && !personAddressCache.isBlank()
-				        && !personAddress.toString().equalsIgnoreCase(personAddressCache.toString())) {
+				        && !personAddress.equalsContent(personAddressCache)) {
 					if (log.isDebugEnabled())
 						log.debug("Voiding person address with id: " + personAddress.getId()
 						        + " and replacing it with a new one: " + personAddress.toString());
