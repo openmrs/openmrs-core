@@ -200,6 +200,8 @@ public class ShortPatientFormController {
 	 * @should not add a new person attribute with an empty value
 	 * @should void an existing person attribute with an empty value
 	 * @should should replace an existing attribute with a new one when edited
+	 * @should not void address if it was not changed
+	 * @should void address if it was changed
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = SHORT_PATIENT_FORM_URL)
 	public String saveShortPatient(WebRequest request, @ModelAttribute("personNameCache") PersonName personNameCache,
