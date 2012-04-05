@@ -557,6 +557,8 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		PersonAddress personAddress = patient.getPersonAddress();
 		
 		request.setParameter("patientId", patient.getPatientId().toString());
+		request.setParameter("personAddress.address1", personAddress.getAddress1());
+		request.setParameter("personAddress.countyDistrict", "");
 		request.setMethod("POST");
 		request.setRequestURI("/admin/patients/shortPatientForm.form");
 		
@@ -578,6 +580,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		
 		request.setParameter("patientId", patient.getPatientId().toString());
 		request.setParameter("personAddress.address1", "new");
+		request.setParameter("personAddress.countyDistrict", "");
 		request.setMethod("POST");
 		request.setRequestURI("/admin/patients/shortPatientForm.form");
 		
