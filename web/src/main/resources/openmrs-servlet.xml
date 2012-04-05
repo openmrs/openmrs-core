@@ -642,7 +642,6 @@
 
 	<bean id="conceptDrugForm"
 		class="org.openmrs.web.controller.concept.ConceptDrugFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>drug</value></property>
 		<property name="validator">
 			<ref bean="conceptDrugValidator" />
