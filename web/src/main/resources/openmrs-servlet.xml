@@ -624,7 +624,6 @@
 
 	<bean id="conceptDrugForm"
 		class="org.openmrs.web.controller.concept.ConceptDrugFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>drug</value></property>
 		<property name="formView"><value>/admin/concepts/conceptDrugForm</value></property>
 		<property name="successView"><value>conceptDrug.list</value></property>
