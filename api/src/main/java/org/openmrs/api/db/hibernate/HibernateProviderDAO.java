@@ -131,7 +131,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public List<Provider> getProviders(String name, Map<ProviderAttributeType, String> serializedAttributeValues,
-	                                   Integer start, Integer length, boolean includeRetired) {
+	        Integer start, Integer length, boolean includeRetired) {
 		Criteria criteria = prepareProviderCriteria(name);
 		if (start != null)
 			criteria.setFirstResult(start);
@@ -164,8 +164,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 			name = "%";
 		}
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class)
-		        .createAlias("person", "p", Criteria.LEFT_JOIN);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class).createAlias("person", "p",
+		    Criteria.LEFT_JOIN);
 		
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		

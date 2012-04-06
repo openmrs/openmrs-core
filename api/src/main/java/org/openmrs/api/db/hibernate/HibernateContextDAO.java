@@ -113,7 +113,8 @@ public class HibernateContextDAO implements ContextDAO {
 					lockoutTime = Long.valueOf(lockoutTimeString);
 				}
 				catch (NumberFormatException e) {
-					log.debug("bad value stored in " + OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP + " user property: " + lockoutTimeString);
+					log.debug("bad value stored in " + OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP + " user property: "
+					        + lockoutTimeString);
 				}
 			}
 			
