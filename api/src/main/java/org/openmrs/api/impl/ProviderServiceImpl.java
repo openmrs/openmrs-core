@@ -143,7 +143,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributeValues) {
-		return getProviders(query, start, length, attributeValues, false);
+		return getProviders(query, start, length, attributeValues, true);
 	}
 	
 	/**
