@@ -486,17 +486,17 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		//the test dataset is edited and the case is changed
 		Assert.assertNotSame(identifier, provider.getIdentifier());
 	}
-
+	
 	/**
-     * @see ProviderService#getProviders(String,Integer,Integer,Map,boolean)
-     * @verifies find provider by identifier
-     */
-    @Test
-    public void getProviders_shouldFindProviderByIdentifier() throws Exception {
-	    String identifier = "8a760";
-	    List<Provider> providers = service.getProviders(identifier, null, null, null);
-	    Provider provider = service.getProviderByIdentifier(identifier);
-	    
+	 * @see ProviderService#getProviders(String,Integer,Integer,Map,boolean)
+	 * @verifies find provider by identifier
+	 */
+	@Test
+	public void getProviders_shouldFindProviderByIdentifier() throws Exception {
+		String identifier = "8a760";
+		List<Provider> providers = service.getProviders(identifier, null, null, null);
+		Provider provider = service.getProviderByIdentifier(identifier);
+		
 		Assert.assertTrue(providers.contains(provider));
-    }
+	}
 }
