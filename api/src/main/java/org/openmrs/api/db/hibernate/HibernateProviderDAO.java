@@ -156,8 +156,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 			name = "%";
 		}
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class)
-		        .createAlias("person", "p", Criteria.LEFT_JOIN);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class).createAlias("person", "p",
+		    Criteria.LEFT_JOIN);
 		
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		
