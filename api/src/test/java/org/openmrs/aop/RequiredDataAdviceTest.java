@@ -13,13 +13,37 @@
  */
 package org.openmrs.aop;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Matchers;
+import org.openmrs.BaseOpenmrsData;
+import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.BaseOpenmrsObject;
+import org.openmrs.Concept;
+import org.openmrs.Location;
+import org.openmrs.OpenmrsObject;
+import org.openmrs.Person;
+import org.openmrs.User;
+import org.openmrs.annotation.DisableHandlers;
+import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.handler.BaseVoidHandler;
+import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
+import org.openmrs.api.handler.RequiredDataHandler;
+import org.openmrs.api.handler.RetireHandler;
+import org.openmrs.api.handler.SaveHandler;
+import org.openmrs.api.handler.UnretireHandler;
+import org.openmrs.api.handler.UnvoidHandler;
+import org.openmrs.api.handler.VoidHandler;
+import org.openmrs.api.impl.ConceptServiceImpl;
+import org.openmrs.test.Verifies;
+import org.openmrs.util.Reflect;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -34,24 +58,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.openmrs.*;
-import org.openmrs.annotation.DisableHandlers;
-import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.handler.*;
-import org.openmrs.api.impl.ConceptServiceImpl;
-import org.openmrs.test.Verifies;
-import org.openmrs.util.Reflect;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.validation.FieldError;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests the {@link RequiredDataAdvice} class.
