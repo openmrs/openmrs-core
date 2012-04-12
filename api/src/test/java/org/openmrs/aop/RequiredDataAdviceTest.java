@@ -13,13 +13,37 @@
  */
 package org.openmrs.aop;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Matchers;
+import org.openmrs.BaseOpenmrsData;
+import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.BaseOpenmrsObject;
+import org.openmrs.Concept;
+import org.openmrs.Location;
+import org.openmrs.OpenmrsObject;
+import org.openmrs.Person;
+import org.openmrs.User;
+import org.openmrs.annotation.DisableHandlers;
+import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.handler.BaseVoidHandler;
+import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
+import org.openmrs.api.handler.RequiredDataHandler;
+import org.openmrs.api.handler.RetireHandler;
+import org.openmrs.api.handler.SaveHandler;
+import org.openmrs.api.handler.UnretireHandler;
+import org.openmrs.api.handler.UnvoidHandler;
+import org.openmrs.api.handler.VoidHandler;
+import org.openmrs.api.impl.ConceptServiceImpl;
+import org.openmrs.test.Verifies;
+import org.openmrs.util.Reflect;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -34,28 +58,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.openmrs.BaseOpenmrsData;
-import org.openmrs.BaseOpenmrsObject;
-import org.openmrs.Location;
-import org.openmrs.OpenmrsObject;
-import org.openmrs.User;
-import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.handler.BaseVoidHandler;
-import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
-import org.openmrs.api.handler.SaveHandler;
-import org.openmrs.api.handler.VoidHandler;
-import org.openmrs.api.impl.ConceptServiceImpl;
-import org.openmrs.test.Verifies;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests the {@link RequiredDataAdvice} class.
@@ -277,6 +286,207 @@ public class RequiredDataAdviceTest {
 	}
 	
 	/**
+	 * Some OpenmrsData with a collection annotated with @DisableHandlers
+	 */
+	private class ClassWithDisableHandlersAnnotation extends BaseOpenmrsData {
+		
+		@DisableHandlers(handlerTypes = { VoidHandler.class, SaveHandler.class })
+		private List<Person> persons;
+		
+		private List<Person> notAnnotatedPersons;
+		
+		public List<Person> getPersons() {
+			return persons;
+		}
+		
+		public void setPersons(List<Person> persons) {
+			this.persons = persons;
+		}
+		
+		public List<Person> getNotAnnotatedPersons() {
+			return notAnnotatedPersons;
+		}
+		
+		public void setNotAnnotatedPersons(List<Person> notAnnotatedPersons) {
+			this.notAnnotatedPersons = notAnnotatedPersons;
+		}
+		
+		public Integer getId() {
+			return null;
+		}
+		
+		public void setId(Integer id) {
+		}
+	}
+	
+	/**
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 */
+	@Test
+	public void isHandlerMarkedAsDisabled_shouldReturnTrueIfHandlerDisabled() {
+		
+		Field persons = null;
+		
+		for (Field field : Reflect.getAllFields(ClassWithDisableHandlersAnnotation.class)) {
+			if (field.getName().equals("persons")) {
+				persons = field;
+			}
+		}
+		
+		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(SaveHandler.class, persons));
+		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(VoidHandler.class, persons));
+	}
+	
+	/**
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 */
+	@Test
+	public void isHandlerMarkedAsDisabled_shouldReturnFalseIfHandlerNotDisabled() {
+		
+		Field persons = null;
+		
+		for (Field field : Reflect.getAllFields(ClassWithDisableHandlersAnnotation.class)) {
+			if (field.getName().equals("persons")) {
+				persons = field;
+			}
+		}
+		
+		Assert.assertFalse(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
+	}
+	
+	/**
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 */
+	@Test
+	public void isHandlerMarkedAsDisabled_shouldReturnFalseIfFieldNotAnnotated() {
+		
+		Field persons = null;
+		
+		for (Field field : Reflect.getAllFields(ClassWithDisableHandlersAnnotation.class)) {
+			if (field.getName().equals("notAnnotatedPersons")) {
+				persons = field;
+			}
+		}
+		
+		Assert.assertFalse(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
+	}
+	
+	/**
+	 * Some OpenmrsData with a collection annotated with @DisableHandlers
+	 */
+	private class ClassWithDisableHandlersAnnotationForSupertype extends BaseOpenmrsData {
+		
+		// this should disable all handlers
+		@DisableHandlers(handlerTypes = { RequiredDataHandler.class })
+		private List<Person> persons;
+		
+		private List<Person> notAnnotatedPersons;
+		
+		public List<Person> getPersons() {
+			return persons;
+		}
+		
+		public void setPersons(List<Person> persons) {
+			this.persons = persons;
+		}
+		
+		public List<Person> getNotAnnotatedPersons() {
+			return notAnnotatedPersons;
+		}
+		
+		public void setNotAnnotatedPersons(List<Person> notAnnotatedPersons) {
+			this.notAnnotatedPersons = notAnnotatedPersons;
+		}
+		
+		public Integer getId() {
+			return null;
+		}
+		
+		public void setId(Integer id) {
+		}
+	}
+	
+	/**
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 */
+	@Test
+	public void isHandlerMarkedAsDisabled_shouldReturnTrueIfSupertypeHandlerDisabled() {
+		
+		Field persons = null;
+		
+		for (Field field : Reflect.getAllFields(ClassWithDisableHandlersAnnotationForSupertype.class)) {
+			if (field.getName().equals("persons")) {
+				persons = field;
+			}
+		}
+		
+		// all the handlers should be marked as disabled, since the supertype (RequiredDataHandler) was specified to be ignored
+		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(SaveHandler.class, persons));
+		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(VoidHandler.class, persons));
+		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(UnvoidHandler.class, persons));
+		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
+		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(UnretireHandler.class, persons));
+	}
+	
+	/**
+	 * Some OpenmrsMetadata with a collection annotated with @DisableHandlers
+	 */
+	private class MetadataClassWithDisableHandlersAnnotation extends BaseOpenmrsMetadata {
+		
+		@DisableHandlers(handlerTypes = { UnretireHandler.class })
+		private List<Concept> concepts;
+		
+		public List<Concept> getConcepts() {
+			return concepts;
+		}
+		
+		public void setConcepts(List<Concept> concepts) {
+			this.concepts = concepts;
+		}
+		
+		public Integer getId() {
+			return null;
+		}
+		
+		public void setId(Integer id) {
+		}
+	}
+	
+	/**
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 */
+	@Test
+	public void isHandlerMarkedAsDisabled_shouldReturnTrueIfHandlerDisabledOnMetadata() {
+		
+		Field persons = null;
+		
+		for (Field field : Reflect.getAllFields(MetadataClassWithDisableHandlersAnnotation.class)) {
+			if (field.getName().equals("concepts")) {
+				persons = field;
+			}
+		}
+		
+		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(UnretireHandler.class, persons));
+	}
+	
+	/**
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 */
+	@Test
+	public void isHandlerMarkedAsDisabled_shouldReturnFalseIfHandlerNotDisabledOnMetatdata() {
+		
+		Field persons = null;
+		
+		for (Field field : Reflect.getAllFields(MetadataClassWithDisableHandlersAnnotation.class)) {
+			if (field.getName().equals("concepts")) {
+				persons = field;
+			}
+		}
+		
+		Assert.assertFalse(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
+	}
+	
+	/**
 	 * @see {@link RequiredDataAdvice#before(Method, null, Object)}
 	 */
 	@Test
@@ -370,6 +580,50 @@ public class RequiredDataAdviceTest {
 		    anyString());
 	}
 	
+	@Test
+	public void before_shouldNotCallHandlersAnnotatedAsDisabled() throws Throwable {
+		
+		Method m = WithAppropriatelyNamedMethod.class.getMethod("voidClassWithDisableHandlersAnnotation",
+		    ClassWithDisableHandlersAnnotation.class);
+		
+		ClassWithDisableHandlersAnnotation openmrsObject = new ClassWithDisableHandlersAnnotation();
+		
+		// create a couple locations and associate them with this openmrsObject
+		List<Person> persons = new ArrayList<Person>();
+		Person person = new Person();
+		persons.add(person);
+		openmrsObject.setPersons(persons);
+		
+		requiredDataAdvice.before(m, new Object[] { openmrsObject, "void reason" }, new WithAppropriatelyNamedMethod());
+		
+		// verify that the handle method was never called on this object
+		verify(voidHandler, never()).handle(eq(person), Matchers.<User> anyObject(), Matchers.<Date> anyObject(),
+		    anyString());
+		
+	}
+	
+	@Test
+	public void before_shouldCallHandlersNotAnnotatedAsDisabled() throws Throwable {
+		
+		Method m = WithAppropriatelyNamedMethod.class.getMethod("voidClassWithDisableHandlersAnnotation",
+		    ClassWithDisableHandlersAnnotation.class);
+		
+		ClassWithDisableHandlersAnnotation openmrsObject = new ClassWithDisableHandlersAnnotation();
+		
+		// create a couple locations and associate them with this openmrsObject
+		List<Person> persons = new ArrayList<Person>();
+		Person person = new Person();
+		persons.add(person);
+		openmrsObject.setNotAnnotatedPersons(persons);
+		
+		requiredDataAdvice.before(m, new Object[] { openmrsObject, "void reason" }, new WithAppropriatelyNamedMethod());
+		
+		// verify that the handle method was never called on this object
+		verify(voidHandler, times(1)).handle(eq(person), Matchers.<User> anyObject(), Matchers.<Date> anyObject(),
+		    anyString());
+		
+	}
+	
 	class SomeOpenmrsData extends BaseOpenmrsData {
 		
 		@Override
@@ -405,6 +659,9 @@ public class RequiredDataAdviceTest {
 		}
 		
 		public void voidSomeOpenmrsDataButNotReally(SomeOpenmrsData oo) {
+		}
+		
+		public void voidClassWithDisableHandlersAnnotation(ClassWithDisableHandlersAnnotation oo) {
 		}
 	}
 	
