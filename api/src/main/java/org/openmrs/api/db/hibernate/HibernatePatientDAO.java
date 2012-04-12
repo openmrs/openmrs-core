@@ -297,13 +297,14 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+	 * @should not return null excluding retired
+	 * @should not return retired
+	 * @should not return null including retired
+	 * @should return all
 	 * @see org.openmrs.api.db.PatientDAO#getAllPatientIdentifierTypes(boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired) throws DAOException {
-		
-		// TODO test this method
-		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
 		criteria.addOrder(Order.asc("name"));
 		
