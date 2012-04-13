@@ -247,7 +247,10 @@ function containsError(element) {
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
 			</spring:bind>
-			<spring:message code="options.login.password.hint"/>
+			<%-- Don't print empty brackets --%>
+			<c:if test="${passwordHint != ''}">
+				(${passwordHint})
+			</c:if>
 		</td>
 	</tr>
 	<tr>
