@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -23,15 +24,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -308,8 +312,10 @@ public class OptionsFormController extends SimpleFormController {
 			// set location options
 			map.put("locations", ls.getAllLocations());
 			
+			AdministrationService as = Context.getAdministrationService();
+			
 			// set language/locale options
-			map.put("languages", Context.getAdministrationService().getPresentationLocales());
+			map.put("languages", as.getPresentationLocales());
 			
 			String resetPassword = (String) httpSession.getAttribute("resetPassword");
 			if (resetPassword == null)
@@ -318,8 +324,61 @@ public class OptionsFormController extends SimpleFormController {
 				httpSession.removeAttribute("resetPassword");
 			map.put("resetPassword", resetPassword);
 			
+			//generate the password hint depending on the security GP settings
+			ArrayList<String> hints = new ArrayList<String>(5);
+			int minChar = 1;
+			MessageSourceService mss = Context.getMessageSourceService();
+			try {
+				String minCharStr = as.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH);
+				if (StringUtils.isNotBlank(minCharStr))
+					minChar = Integer.valueOf(minCharStr);
+				if (minChar < 1)
+					minChar = 1;
+			}
+			catch (NumberFormatException e) {
+				//ignore
+			}
+			
+			hints.add(mss.getMessage("options.login.password.minCharacterCount", new Object[] { minChar }, null));
+			addHint(hints, as.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID), mss
+			        .getMessage("options.login.password.cannotMatchUsername"));
+			addHint(hints, as.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE), mss
+			        .getMessage("options.login.password.containUpperCase"));
+			addHint(hints, as.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT), mss
+			        .getMessage("options.login.password.containNumber"));
+			addHint(hints, as.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT), mss
+			        .getMessage("options.login.password.containNonNumber"));
+			
+			String passwordHint = "";
+			for (int i = 0; i < hints.size(); i++) {
+				if (i == 0) {
+					passwordHint += hints.get(i);
+				} else if (i < (hints.size() - 1)) {
+					passwordHint += ", " + hints.get(i);
+				} else {
+					passwordHint += " and " + hints.get(i);
+				}
+			}
+			
+			map.put("passwordHint", passwordHint);
+			
 		}
 		
 		return map;
+	}
+	
+	/**
+	 * Utility method that check if a security property with boolean values is enabled and adds hint
+	 * message for it if it is not blank
+	 * 
+	 * @param hints
+	 * @param gpValue the value of the global property
+	 * @param message the localized message to add
+	 */
+	private void addHint(ArrayList<String> hints, String gpValue, String message) {
+		if (Boolean.valueOf(gpValue)) {
+			if (!StringUtils.isBlank(message))
+				hints.add(message);
+		}
 	}
 }
