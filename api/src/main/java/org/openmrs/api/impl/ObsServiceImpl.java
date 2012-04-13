@@ -268,7 +268,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Deprecated
 	public MimeType voidMimeType(MimeType mimeType, String reason) throws APIException {
-		// TODO implement voidMimeType
 		throw new APIException("Not yet implemented");
 	}
 	
