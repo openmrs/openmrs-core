@@ -75,7 +75,7 @@ public class ConceptSourceFormController extends SimpleFormController {
 			if (request.getParameter("retire") != null) {
 				String retireReason = request.getParameter("retireReason");
 				ConceptSource conceptSource = (ConceptSource) obj;
-				if (retireReason != null && !(StringUtils.hasText(retireReason))) {
+				if (!StringUtils.hasText(retireReason)) {
 					errors.reject("retireReason", "general.retiredReason.empty");
 					return showForm(request, response, errors);
 				}
