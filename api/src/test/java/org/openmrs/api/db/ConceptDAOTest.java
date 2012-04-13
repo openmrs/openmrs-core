@@ -339,6 +339,24 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptDAO#allConceptSources(boolean)}
+	 */
+	@Test
+	@Verifies(value = "should return all concept sources", method = "getAllConceptSources(boolean)")
+	public void AllConceptSources_shouldReturnAllConceptSources() throws Exception {
+		Assert.assertEquals(dao.getAllConceptSources(true).size(), 5);
+	}
+	
+	/**
+	 * @see {@link ConceptDAO#allConceptSources(boolean)}
+	 */
+	@Test
+	@Verifies(value = "should return all unretired concept sources", method = "getAllConceptSources(boolean)")
+	public void AllConceptSources_shouldReturnAllUnretiredConceptSources() throws Exception {
+		Assert.assertEquals(dao.getAllConceptSources(false).size(), 3);
+	}
+	
+	/**
 	 * @see {@link ConceptDAO#isConceptMapTypeInUse(ConceptMapType)}
 	 */
 	@Test
