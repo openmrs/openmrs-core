@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonName;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -103,6 +104,16 @@ public class PersonNameValidator implements Validator {
 	 * @should fail validation if PersonName.degree is too long
 	 * @should pass validation if PersonName.degree is exactly max length
 	 * @should pass validation if PersonName.degree is less than maximum field length
+	 * @should fail validation if PersonName.givenName is invalid
+	 * @should pass validation if PersonName.givenName is valid
+	 * @should fail validation if PersonName.middleName is invalid
+	 * @should pass validation if PersonName.middleName is valid
+	 * @should fail validation if PersonName.familyName is invalid
+	 * @should pass validation if PersonName.familyName is valid
+	 * @should fail validation if PersonName.familyName2 is invalid
+	 * @should pass validation if PersonName.familyName2 is valid
+	 * @should pass validation if regex string is null
+	 * @should pass validation if regex string is empty
 	 */
 	public void validatePersonName(PersonName personName, Errors errors, boolean arrayInd, boolean testInd) {
 		
@@ -115,7 +126,18 @@ public class PersonNameValidator implements Validator {
 		if (StringUtils.isBlank(personName.getFamilyName())
 		        || StringUtils.isBlank(personName.getFamilyName().replaceAll("\"", "")))
 			errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "Patient.names.required.given.family");
-		
+		// Make sure the entered name value is sensible 
+		String namePattern = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
+		if (namePattern != null && namePattern != "") {
+			if (personName.getGivenName() != null && !personName.getGivenName().matches(namePattern))
+				errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "GivenName.invalid");
+			if (personName.getMiddleName() != null && !personName.getMiddleName().matches(namePattern))
+				errors.rejectValue(getFieldKey("middleName", arrayInd, testInd), "MiddleName.invalid");
+			if (personName.getFamilyName() != null && !personName.getFamilyName().matches(namePattern))
+				errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "FamilyName.invalid");
+			if (personName.getFamilyName2() != null && !personName.getFamilyName2().matches(namePattern))
+				errors.rejectValue(getFieldKey("familyName2", arrayInd, testInd), "FamilyName2.invalid");	
+		}
 		// Make sure the length does not exceed database column size
 		if (StringUtils.length(personName.getPrefix()) > 50)
 			rejectPersonNameOnLength(errors, "prefix", arrayInd, testInd);
@@ -133,7 +155,6 @@ public class PersonNameValidator implements Validator {
 			rejectPersonNameOnLength(errors, "familyNameSuffix", arrayInd, testInd);
 		if (StringUtils.length(personName.getDegree()) > 50)
 			rejectPersonNameOnLength(errors, "degree", arrayInd, testInd);
-		
 	}
 	
 	private void rejectPersonNameOnLength(Errors errors, String fieldKey, boolean arrayInd, boolean testInd) {
