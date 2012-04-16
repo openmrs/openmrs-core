@@ -114,7 +114,7 @@ public class TestInstallUtil {
 				return true;
 			}
 			
-			log.error("The process terminated abnormally while adding test data");
+			log.error("The process terminated abnormally while adding test data. Please look under the Configuration section at: https://wiki.openmrs.org/display/docs/Release+Testing+Helper+Module");
 			
 		}
 		catch (IOException e) {
