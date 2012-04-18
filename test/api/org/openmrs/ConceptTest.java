@@ -355,7 +355,7 @@ public class ConceptTest {
 		
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", definedNameLocale));
-		Assert.assertNull(concept.getName(localeToSearch, true));
+		Assert.assertNotNull(concept.getName(localeToSearch, true));
 	}
 	
 	/**
