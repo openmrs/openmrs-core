@@ -63,12 +63,12 @@ public class HtmlIncludeTag extends TagSupport {
 	 */
 	private boolean appendLocale;
 	
-	public void setRewrites(Map<String, String> rules) {
+	public synchronized void setRewrites(Map<String, String> rules) {
 		rewrites.putAll(rules);
 	}
 	
 	@Override
-	public int doStartTag() throws JspException {
+	public synchronized int doStartTag() throws JspException {
 		log.debug("\n\n");
 		
 		if (rewrites.containsKey(file))
@@ -219,35 +219,35 @@ public class HtmlIncludeTag extends TagSupport {
 		this.appendLocale = false;
 	}
 	
-	public String getType() {
+	public synchronized String getType() {
 		return type;
 	}
 	
-	public void setType(String type) {
+	public synchronized void setType(String type) {
 		this.type = type;
 	}
 	
 	/**
 	 * @return Returns the file.
 	 */
-	public String getFile() {
+	public synchronized String getFile() {
 		return file;
 	}
 	
 	/**
 	 * @param file The file to set.
 	 */
-	public void setFile(String file) {
+	public synchronized void setFile(String file) {
 		this.file = file;
 		if (file != null)
 			this.file = file.trim();
 	}
 	
-	public boolean getAppendLocale() {
+	public synchronized boolean getAppendLocale() {
 		return appendLocale;
 	}
 	
-	public void setAppendLocale(boolean appendLocale) {
+	public synchronized void setAppendLocale(boolean appendLocale) {
 		this.appendLocale = appendLocale;
 	}
 }
