@@ -351,9 +351,10 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public PatientProgram unvoidPatientProgram(PatientProgram patientProgram) throws APIException;
 	
 	/**
-	 * Get all possible outcome concepts for a program.  Will return all concept answers {@link org.openmrs.Concept#getAnswers()}
-	 * if they exist, then all concept set members {@link org.openmrs.Concept#getSetMembers()} if they exist, then empty List.
-	 *
+	 * Get all possible outcome concepts for a program. Will return all concept answers
+	 * {@link org.openmrs.Concept#getAnswers()} if they exist, then all concept set members
+	 * {@link org.openmrs.Concept#getSetMembers()} if they exist, then empty List.
+	 * 
 	 * @param programId
 	 * @return outcome concepts or empty List if none exist
 	 */
@@ -450,6 +451,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should fail if patient is invalid
 	 * @should fail if trigger is invalid
 	 * @should fail if date converted is invalid
+	 * @should skip past patient programs that are already completed
 	 */
 	public void triggerStateConversion(Patient patient, Concept reasonForExit, Date dateConverted) throws APIException;
 	
