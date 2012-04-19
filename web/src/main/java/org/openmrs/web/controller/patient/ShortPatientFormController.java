@@ -14,6 +14,7 @@
 package org.openmrs.web.controller.patient;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -86,7 +87,7 @@ public class ShortPatientFormController {
 	
 	@ModelAttribute("patientModel")
 	public ShortPatientModel getPatientModel(@RequestParam(value = "patientId", required = false) Integer patientId,
-	        ModelMap model, WebRequest request) {
+	                                         ModelMap model, WebRequest request) {
 		Patient patient;
 		if (patientId != null) {
 			patient = Context.getPatientService().getPatientOrPromotePerson(patientId);
@@ -161,7 +162,9 @@ public class ShortPatientFormController {
 	
 	@ModelAttribute("identifierTypes")
 	public List<PatientIdentifierType> getIdentifierTypes() {
-		return Context.getPatientService().getAllPatientIdentifierTypes();
+		final List<PatientIdentifierType> list = Context.getPatientService().getAllPatientIdentifierTypes();
+		Collections.sort(list);
+		return list;
 	}
 	
 	@ModelAttribute("identifierLocationUsed")
@@ -205,8 +208,8 @@ public class ShortPatientFormController {
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = SHORT_PATIENT_FORM_URL)
 	public String saveShortPatient(WebRequest request, @ModelAttribute("personNameCache") PersonName personNameCache,
-	        @ModelAttribute("personAddressCache") PersonAddress personAddressCache,
-	        @ModelAttribute("patientModel") ShortPatientModel patientModel, BindingResult result) {
+	                               @ModelAttribute("personAddressCache") PersonAddress personAddressCache,
+	                               @ModelAttribute("patientModel") ShortPatientModel patientModel, BindingResult result) {
 		
 		if (Context.isAuthenticated()) {
 			// First do form validation so that we can easily bind errors to
@@ -236,8 +239,8 @@ public class ShortPatientFormController {
 			
 			try {
 				patient = Context.getPatientService().savePatient(patient);
-				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
-				    "Patient.saved"), WebRequest.SCOPE_SESSION);
+				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
+				    Context.getMessageSourceService().getMessage("Patient.saved"), WebRequest.SCOPE_SESSION);
 				
 				// TODO do we really still need this, besides ensuring that the
 				// cause of death is provided?
@@ -257,8 +260,8 @@ public class ShortPatientFormController {
 			}
 			catch (APIException e) {
 				log.error("Error occurred while attempting to save patient", e);
-				request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
-				    "Patient.save.error"), WebRequest.SCOPE_SESSION);
+				request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+				    Context.getMessageSourceService().getMessage("Patient.save.error"), WebRequest.SCOPE_SESSION);
 				// TODO revert the changes and send them back to the form
 				
 				// don't send the user back to the form because the created
@@ -327,8 +330,8 @@ public class ShortPatientFormController {
 				
 				//if the value has been changed for an existing attribute, void it and create a new one
 				if (formAttribute.getPersonAttributeId() != null
-				        && !OpenmrsUtil.nullSafeEquals(formAttribute.getValue(), patient.getAttribute(
-				            formAttribute.getAttributeType()).getValue())) {
+				        && !OpenmrsUtil.nullSafeEquals(formAttribute.getValue(),
+				            patient.getAttribute(formAttribute.getAttributeType()).getValue())) {
 					//As per the logic in Person.addAttribute, the old edited attribute will get voided 
 					//as this new one is getting added 
 					formAttribute = new PersonAttribute(formAttribute.getAttributeType(), formAttribute.getValue());
@@ -353,7 +356,7 @@ public class ShortPatientFormController {
 	 */
 	@ModelAttribute("relationshipsMap")
 	private Map<String, Relationship> getRelationshipsMap(@ModelAttribute("patientModel") ShortPatientModel patientModel,
-	        WebRequest request) {
+	                                                      WebRequest request) {
 		Person person = patientModel.getPatient();
 		Map<String, Relationship> relationshipMap = new LinkedHashMap<String, Relationship>();
 		
@@ -541,7 +544,7 @@ public class ShortPatientFormController {
 	 * @return true if the personName or personAddress was edited otherwise false
 	 */
 	private boolean hasPersonNameOrAddressChanged(Patient patient, PersonName personNameCache,
-	        PersonAddress personAddressCache) {
+	                                              PersonAddress personAddressCache) {
 		boolean foundChanges = false;
 		PersonName personName = patient.getPersonName();
 		if (personNameCache.getId() != null) {

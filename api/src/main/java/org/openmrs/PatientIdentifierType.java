@@ -16,7 +16,7 @@ package org.openmrs;
 /**
  * PatientIdentifierType
  */
-public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.io.Serializable, Comparable<PatientIdentifierType> {
 	
 	public static final long serialVersionUID = 211231L;
 	
@@ -237,6 +237,33 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	public void setId(Integer id) {
 		setPatientIdentifierTypeId(id);
 		
+	}
+	
+	/**
+	 * @since 1.8 order for display in pulldown list so the default choice is first.
+	 */
+	@Override
+	public int compareTo(PatientIdentifierType o) {
+		
+		/* retired last */
+		if (!this.getRetired() && o.getRetired())
+			return -1;
+		
+		/* required first */
+		if (this.getRequired() && !o.getRequired())
+			return -1;
+		
+		if (!this.getRequired() && o.getRequired())
+			return 1;
+		
+		/* lex order, case insensitive */
+		int result = this.getName().compareToIgnoreCase(o.getName());
+		if (result != 0)
+			return result;
+		
+		/* id order, finally */
+		result = this.getPatientIdentifierTypeId().compareTo(o.getPatientIdentifierTypeId());
+		return result;
 	}
 	
 }
