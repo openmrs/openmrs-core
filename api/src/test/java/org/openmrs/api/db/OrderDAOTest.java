@@ -49,19 +49,19 @@ public class OrderDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(12, dao.getHighestOrderId().intValue());
 		Assert.assertEquals(12, dao.getHighestOrderId().intValue());
 	}
-
+	
 	/**
-     * @see OrderDAO#isActivatedInDatabase(Order)
-     * @verifies return value from database ignoring session
-     */
-    @Test
-    public void isActivatedInDatabase_shouldReturnValueFromDatabaseIgnoringSession() throws Exception {
-	    Order o = Context.getOrderService().getOrder(1);
-	    Assert.assertTrue(o.isActivated());
-	    o.setActivatedBy(null);
-	    o.setDateActivated(null);
-	    
-	    Assert.assertTrue(dao.isActivatedInDatabase(o));
-    }
+	 * @see OrderDAO#isActivatedInDatabase(Order)
+	 * @verifies return value from database ignoring session
+	 */
+	@Test
+	public void isActivatedInDatabase_shouldReturnValueFromDatabaseIgnoringSession() throws Exception {
+		Order o = Context.getOrderService().getOrder(1);
+		Assert.assertTrue(o.isActivated());
+		o.setActivatedBy(null);
+		o.setDateActivated(null);
+		
+		Assert.assertTrue(dao.isActivatedInDatabase(o));
+	}
 	
 }
