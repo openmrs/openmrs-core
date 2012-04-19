@@ -717,6 +717,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param fieldName name of the field to get the length for
 	 * @return the max field length of a property
 	 */
+	@Transactional(readOnly = true)
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
 	
 	/**
