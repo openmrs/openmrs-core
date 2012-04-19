@@ -7,11 +7,14 @@
 
 <h2><spring:message code="FieldType.edit" /></h2>
 
-<form method="post">
+<form method="post" onSubmit="return validateForm()">
 	<table>
 		<tr>
 			<td><spring:message code="general.name" /></td>
-			<td><input type="text" name="name" value="${fieldType.name}" size="35" /></td>
+			<td>
+				<input type="text" name="name" id="fieldTypeName" value="${fieldType.name}" size="35" onKeyUp="hideError('nameError');"/>
+				<span class="error" id="nameError"><spring:message code="error.name"/></span>
+			</td>
 		</tr>
 		<tr>
 			<td><spring:message code="FieldType.isSet" /></td>
@@ -35,5 +38,18 @@
 	<br />
 	<input type="submit" value="<spring:message code="FieldType.save"/>">
 </form>
+
+		<script type="text/javascript"><!--
+			hideError("nameError");
+			function validateForm() {
+				var name = document.getElementById("fieldTypeName");
+				var result = true;
+				if (name.value.trim() == "") {
+					showError("nameError"); 
+					result = false;
+				}
+				return result;
+			}
+		--></script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

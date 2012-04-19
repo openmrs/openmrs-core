@@ -26,7 +26,7 @@
 					<tr>
 						<td><spring:message code="Person.name"/></td>
 						<td>
-							<input type="text" name="addName" id="personName" size="40" onKeyUp="clearError('name'); clearError('invalidName');" />
+							<input type="text" name="addName" id="personName" size="40" onKeyUp="hideError('nameError'); hideError('invalidNameError');" />
 							<span class="error" id="nameError"><spring:message code="Person.name.required"/></span>
 							<span class="error" id="invalidNameError"><spring:message code="Person.name.invalid"/></span>
 						</td>
@@ -34,9 +34,9 @@
 					<tr>
 						<td><spring:message code="Person.birthdate"/><br/><i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i></td>
 						<td valign="top">
-							<input type="text" name="addBirthdate" id="birthdate" size="11" value="" onfocus="showCalendar(this,60)" onChange="clearError('birthdate')" />
+							<input type="text" name="addBirthdate" id="birthdate" size="11" value="" onfocus="showCalendar(this,60)" onChange="hideError('birthdateError')" />
 							<spring:message code="Person.age.or"/>
-							<input type="text" name="addAge" id="age" size="5" value="" onKeyUp="clearError('birthdate')" />
+							<input type="text" name="addAge" id="age" size="5" value="" onKeyUp="hideError('birthdateError')" />
 							<span class="error" id="birthdateError"><spring:message code="Person.birthdate.required"/></span>
 						</td>
 					</tr>
@@ -44,7 +44,7 @@
 						<td><spring:message code="Person.gender"/></td>
 						<td>
 							<openmrs:forEachRecord name="gender">
-								<input type="radio" name="addGender" id="gender-${record.key}" value="${record.key}"  onClick="clearError('gender')" /><label for="gender-${record.key}"> <spring:message code="Person.gender.${record.value}"/> </label>
+								<input type="radio" name="addGender" id="gender-${record.key}" value="${record.key}"  onClick="hideError('genderError')" /><label for="gender-${record.key}"> <spring:message code="Person.gender.${record.value}"/> </label>
 							</openmrs:forEachRecord>
 							<span class="error" id="genderError"><spring:message code="Person.gender.required"/></span>
 						</td>
@@ -62,10 +62,10 @@
 		</div>
 		
 		<script type="text/javascript"><!--
-			clearError("name");
-			clearError("invalidName");
-			clearError("birthdate");
-			clearError("gender");
+			hideError("nameError");
+			hideError("invalidNameError");
+			hideError("birthdateError");
+			hideError("genderError");
 			
 			function validateForm() {
 				var name = document.getElementById("personName");
@@ -82,40 +82,40 @@
 				
 				var result = true;
 				if (name.value == "") {
-					document.getElementById("nameError").style.display = ""; 
+					showError("nameError"); 
 					result = false;
 				}
 				else {
 					if (!(name.value.match(nameValidatorRegex))) {
-						document.getElementById("invalidNameError").style.display = "";
+						showError("invalidNameError");
 						result = false;	
 					}
 				}
 				
 				if (birthdate.value == "" && age.value == "") {
-					document.getElementById("birthdateError").style.display = "";
+					showError("birthdateError");
 					result = false;
 				}
 				else {
 					if (birthdate.value != "") {
 						if (birthyear.length < 4 || birthyear < (year-120) || isFutureDate(birthdate.value)) {
-							document.getElementById("birthdateError").style.display = "";
+							showError("birthdateError");
 							result = false;
 						}
 					}
 					else if (age.value != "") {
 						if (isInteger(age.value) == false) {
-							document.getElementById("birthdateError").style.display = "";
+							showError("birthdateError");
 							result = false;
 						} else if (age.value < 0 || age.value > 120) {
-							document.getElementById("birthdateError").style.display = "";
+							showError("birthdateError");
 							result = false;
 						}
 					}
 				}
 		
 				if (male.checked == false && female.checked == false) {
-					document.getElementById("genderError").style.display = "";
+					showError("genderError");
 					result = false;
 				} 
 				
@@ -159,10 +159,6 @@
 				
 			}
 			
-			function clearError(errorName) {
-				document.getElementById(errorName + "Error").style.display = "none";
-			}
-
 			function isInteger(val)
 			{
 			    if(val==null) {
