@@ -127,7 +127,8 @@ public class PersonNameValidator implements Validator {
 		        || StringUtils.isBlank(personName.getFamilyName().replaceAll("\"", "")))
 			errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "Patient.names.required.given.family");
 		// Make sure the entered name value is sensible 
-		String namePattern = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
+		String namePattern = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
 		if (namePattern != null && namePattern != "") {
 			if (personName.getGivenName() != null && !personName.getGivenName().matches(namePattern))
 				errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "GivenName.invalid");
@@ -136,7 +137,7 @@ public class PersonNameValidator implements Validator {
 			if (personName.getFamilyName() != null && !personName.getFamilyName().matches(namePattern))
 				errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "FamilyName.invalid");
 			if (personName.getFamilyName2() != null && !personName.getFamilyName2().matches(namePattern))
-				errors.rejectValue(getFieldKey("familyName2", arrayInd, testInd), "FamilyName2.invalid");	
+				errors.rejectValue(getFieldKey("familyName2", arrayInd, testInd), "FamilyName2.invalid");
 		}
 		// Make sure the length does not exceed database column size
 		if (StringUtils.length(personName.getPrefix()) > 50)
