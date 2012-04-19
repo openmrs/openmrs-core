@@ -139,7 +139,7 @@ public class PepfarReportSerializationTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldCohortSerialization() throws Exception {
 		
-		PatientSearch cohortByPatientSearch = PatientSearch.createCompositionSearch("[Male] AND [Adult]");
+		PatientSearch cohortByPatientSearch = PatientSearch.createCompositionSearch("[1] AND [2]");
 		
 		Serializer serializer = OpenmrsUtil.getSerializer();
 		StringWriter writer = new StringWriter();
