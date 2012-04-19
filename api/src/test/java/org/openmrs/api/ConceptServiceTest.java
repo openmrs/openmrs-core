@@ -1626,7 +1626,21 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//So we should see 2 results only
 		Assert.assertEquals(2, searchResults.size());
 	}
-	
+        
+        /**
+	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 */
+	@Test
+	@Verifies(value = "should return concept search results that contain all search words", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnConceptSearchResultsThatContainAllSearchWords() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust now", Collections
+		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		//"trust now" is name for conceptid=4000. 
+		//So we should see 1 results only
+		Assert.assertEquals(1, searchResults.size());
+	}
+
 	/**
 	 * @see {@link ConceptService#getConceptReferenceTermByName(String,ConceptSource)}
 	 */
