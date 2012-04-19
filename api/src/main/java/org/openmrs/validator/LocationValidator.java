@@ -50,7 +50,6 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null or empty
-	 * @should fail validation if description is null or empty
 	 * @should fail validation if retired and retireReason is null or empty
 	 * @should set retired to false if retireReason is null or empty
 	 * @should pass validation if all fields are correct
@@ -62,7 +61,6 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 			errors.rejectValue("location", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 			
 			if (location.isRetired()) {
 				if (!StringUtils.hasLength(location.getRetireReason())) {
