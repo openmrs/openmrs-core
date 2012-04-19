@@ -31,14 +31,13 @@ import org.springframework.validation.Errors;
  */
 public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	
-	
 	/**
 	 * Set the GP to a regex used during validation
 	 */
 	@Before
 	public void createNameRegex() {
 		Context.getAdministrationService().saveGlobalProperty(
-			    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX, "^[a-zA-Z \\-]+$"));
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX, "^[a-zA-Z \\-]+$"));
 	}
 	
 	/**
@@ -613,7 +612,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if regex string is null", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldSkipRegexValidationIfValidationStringIsNull() throws Exception {
 		Context.getAdministrationService().saveGlobalProperty(
-			    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX, null));
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX, null));
 		PersonName personName = new PersonName();
 		personName.setFamilyName("asd123");
 		Errors errors = new BindException(personName, "familyName");
@@ -628,7 +627,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if regex string is empty", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldSkipRegexValidationIfValidationStringIsEmpty() throws Exception {
 		Context.getAdministrationService().saveGlobalProperty(
-			    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX, ""));
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX, ""));
 		PersonName personName = new PersonName();
 		personName.setGivenName("123asd");
 		Errors errors = new BindException(personName, "givenName");
