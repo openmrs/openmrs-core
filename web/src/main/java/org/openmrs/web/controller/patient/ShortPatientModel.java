@@ -21,6 +21,7 @@ import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.ListUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
@@ -66,13 +67,15 @@ public class ShortPatientModel {
 			this.personName = patient.getPersonName();
 			this.personAddress = patient.getPersonAddress();
 			List<PatientIdentifier> activeIdentifiers = patient.getActiveIdentifiers();
-			if (activeIdentifiers.isEmpty())
-				activeIdentifiers.add(new PatientIdentifier(null, null,
+			if (activeIdentifiers.isEmpty()) {
+				final PatientIdentifierType defit = getDefaultIdentifierType();
+				activeIdentifiers.add(new PatientIdentifier(null, defit,
 				        (LocationUtility.getUserDefaultLocation() != null) ? LocationUtility.getUserDefaultLocation()
 				                : LocationUtility.getDefaultLocation()));
+			}
 			
-			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(activeIdentifiers), FactoryUtils
-			        .instantiateFactory(PatientIdentifier.class));
+			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(activeIdentifiers),
+			    FactoryUtils.instantiateFactory(PatientIdentifier.class));
 			
 			List<PersonAttributeType> viewableAttributeTypes = Context.getPersonService().getPersonAttributeTypes(
 			    PERSON_TYPE.PATIENT, ATTR_VIEW_TYPE.VIEWING);
@@ -100,6 +103,29 @@ public class ShortPatientModel {
 	 */
 	public List<PatientIdentifier> getIdentifiers() {
 		return identifiers;
+	}
+	
+	/**
+	 * @return the default patient identifier type (lexically first required id type)
+	 */
+	private PatientIdentifierType getDefaultIdentifierType() {
+		PatientIdentifierType defit = null;
+		PatientIdentifierType firstit = null;
+		for (PatientIdentifierType pit : Context.getPatientService().getAllPatientIdentifierTypes()) {
+			if (pit.getRequired()) {
+				/* find lexically first required identifier type */
+				defit = defit != null ? defit : pit;
+				if (defit.getName().compareToIgnoreCase(pit.getName()) > 0) {
+					defit = pit;
+				}
+			}
+			/* find lexically first identifier type */
+			firstit = firstit != null ? firstit : pit;
+			if (firstit.getName().compareToIgnoreCase(pit.getName()) > 0) {
+				firstit = pit;
+			}
+		}
+		return defit != null ? defit : firstit;
 	}
 	
 	/**
