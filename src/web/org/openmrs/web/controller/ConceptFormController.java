@@ -292,6 +292,13 @@ public class ConceptFormController extends SimpleFormController {
 		public ConceptFormBackingObject(Concept concept) {
 			this.concept = concept;
 			this.locales = Context.getAdministrationService().getAllowedLocales();
+			
+			for (ConceptName name : concept.getNames()) {
+				if (!this.locales.contains(name.getLocale())) {
+					this.locales.add(name.getLocale());
+				}
+			}
+			
 			for (Locale locale : locales) {
 				namesByLocale.put(locale, concept.getName(locale, true));
 				shortNamesByLocale.put(locale, concept.getShortNameInLocale(locale));
