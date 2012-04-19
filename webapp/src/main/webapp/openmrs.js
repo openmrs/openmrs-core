@@ -595,3 +595,19 @@ function addAutoComplete(displayNameInputId, formFieldId, searchFunction, valueF
 		placeholder: placeHolderText
 	});
 }
+
+/**
+ * Show an inline error element for immediate error feedback
+ * See view/portlets/addPersonForm.jsp for usage example
+ * @param errorName (Required) error element's id. It should have class="error" for best results.
+ */
+function showError(errorName) {
+	document.getElementById(errorName).style.display = "";
+}
+/**
+ * Hide an inline error element for immediate error feedback
+ * @param errorName (Required) error element's id.  It should have class="error" for best results.
+ */
+function hideError(errorName) {
+	document.getElementById(errorName).style.display = "none";
+}
