@@ -19,6 +19,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.CharArrayReader;
@@ -38,6 +40,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -394,7 +398,37 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fill in complex data object for complex obs", method = "getComplexObs(Integer,String)")
 	public void getComplexObs_shouldFillInComplexDataObjectForComplexObs() throws Exception {
 		executeDataSet(COMPLEX_OBS_XML);
-		
+		// create gif file
+		// make sure the file isn't there to begin with
+		AdministrationService as = Context.getAdministrationService();
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		File createdFile = new File(complexObsDir, "openmrs_logo_small.gif");
+		if (createdFile.exists())
+			createdFile.delete();
+		int width = 10;
+		int height = 10;
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		WritableRaster raster = image.getRaster();
+		int[] colorArray = new int[3];
+		int h = 255;
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				if (i == 0 || j == 0 || i == width - 1 || j == height - 1 || (i > width / 3 && i < 2 * width / 3)
+				        && (j > height / 3 && j < 2 * height / 3)) {
+					colorArray[0] = h;
+					colorArray[1] = h;
+					colorArray[2] = 0;
+				} else {
+					colorArray[0] = 0;
+					colorArray[1] = 0;
+					colorArray[2] = h;
+				}
+				raster.setPixel(i, j, colorArray);
+			}
+		}
+		ImageIO.write(image, "gif", createdFile);
+		// end create gif file
 		ObsService os = Context.getObsService();
 		
 		Obs complexObs = os.getComplexObs(44, OpenmrsConstants.RAW_VIEW);
@@ -403,6 +437,11 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(complexObs.isComplex());
 		Assert.assertNotNull(complexObs.getValueComplex());
 		Assert.assertNotNull(complexObs.getComplexData());
+		// delete gif file
+		// we always have to delete this inside the same unit test because it is
+		// outside the
+		// database and hence can't be "rolled back" like everything else
+		createdFile.delete();
 	}
 	
 	/**
@@ -412,10 +451,45 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not fail with null view", method = "getComplexObs(Integer,String)")
 	public void getComplexObs_shouldNotFailWithNullView() throws Exception {
 		executeDataSet(COMPLEX_OBS_XML);
-		
+		// create gif file
+		// make sure the file isn't there to begin with
+		AdministrationService as = Context.getAdministrationService();
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		File createdFile = new File(complexObsDir, "openmrs_logo_small.gif");
+		if (createdFile.exists())
+			createdFile.delete();
+		int width = 10;
+		int height = 10;
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		WritableRaster raster = image.getRaster();
+		int[] colorArray = new int[3];
+		int h = 255;
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				if (i == 0 || j == 0 || i == width - 1 || j == height - 1 || (i > width / 3 && i < 2 * width / 3)
+				        && (j > height / 3 && j < 2 * height / 3)) {
+					colorArray[0] = h;
+					colorArray[1] = h;
+					colorArray[2] = 0;
+				} else {
+					colorArray[0] = 0;
+					colorArray[1] = 0;
+					colorArray[2] = h;
+				}
+				raster.setPixel(i, j, colorArray);
+			}
+		}
+		ImageIO.write(image, "gif", createdFile);
+		// end create gif file
 		ObsService os = Context.getObsService();
 		
 		os.getComplexObs(44, null);
+		// delete gif file
+		// we always have to delete this inside the same unit test because it is
+		// outside the
+		// database and hence can't be "rolled back" like everything else
+		createdFile.delete();
 	}
 	
 	/**
