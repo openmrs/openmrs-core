@@ -108,8 +108,13 @@ public class WebModuleUtil {
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		//register the module loggers
-		if (mod.getLog4j() != null) {
-			DOMConfigurator.configure(mod.getLog4j().getDocumentElement());
+		try {
+			if (mod.getLog4j() != null) {
+				DOMConfigurator.configure(mod.getLog4j().getDocumentElement());
+			}
+		}
+		catch (Exception e) {
+			log.error("unable to load module loggers " + e.getMessage());
 		}
 		
 		if (log.isDebugEnabled())
@@ -824,7 +829,7 @@ public class WebModuleUtil {
 	 * @return The newly refreshed webApplicationContext
 	 */
 	public static XmlWebApplicationContext refreshWAC(ServletContext servletContext, boolean isOpenmrsStartup,
-	        Module startedModule) {
+	                                                  Module startedModule) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext) WebApplicationContextUtils
 		        .getWebApplicationContext(servletContext);
 		if (log.isDebugEnabled())
