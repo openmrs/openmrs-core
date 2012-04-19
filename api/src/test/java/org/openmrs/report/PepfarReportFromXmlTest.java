@@ -133,7 +133,7 @@ public class PepfarReportFromXmlTest extends BaseContextSensitiveTest {
 		}
 		if (Context.getReportObjectService().getPatientSearch("EnrolledOnDate") == null) {
 			PatientSearch ps = PatientSearch.createFilterSearch(ProgramStatePatientFilter.class);
-			ps.addArgument("program", hivProgram.getProgramId().toString(), Integer.class);
+			ps.addArgument("program", hivProgram.getProgramId().toString(), Program.class);
 			ps.addArgument("untilDate", "${date}", Date.class);
 			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("EnrolledOnDate", ps));
 		}
