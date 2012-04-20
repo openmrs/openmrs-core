@@ -15,6 +15,7 @@ package org.openmrs;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -298,14 +299,22 @@ public class Patient extends Person implements java.io.Serializable {
 	 * 
 	 * @return list of non-voided identifiers for this patient
 	 * @see #getIdentifiers()
+	 * @should return preferred identifiers first in the list
 	 */
 	public List<PatientIdentifier> getActiveIdentifiers() {
 		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
 		if (getIdentifiers() != null) {
+			List<PatientIdentifier> nonPreferred = new LinkedList<PatientIdentifier>();
 			for (PatientIdentifier pi : getIdentifiers()) {
-				if (pi.isVoided() == false)
-					ids.add(pi);
+				if (pi.isVoided() == false) {
+					if (pi.isPreferred())
+						ids.add(pi);
+					else
+						nonPreferred.add(pi);
+				}
 			}
+			for (PatientIdentifier pi : nonPreferred)
+				ids.add(pi);
 		}
 		return ids;
 	}
