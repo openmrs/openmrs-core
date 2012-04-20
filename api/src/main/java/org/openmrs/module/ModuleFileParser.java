@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -608,7 +609,7 @@ public class ModuleFileParser {
 				Node node = propNodes.item(i);
 				NodeList nodes = node.getChildNodes();
 				int x = 0;
-				String property = "", defaultValue = "", description = "";
+				String property = "", defaultValue = "", description = "", datatypeClassname = "", datatypeConfig = "";
 				while (x < nodes.getLength()) {
 					Node childNode = nodes.item(x);
 					if ("property".equals(childNode.getNodeName()))
@@ -617,17 +618,37 @@ public class ModuleFileParser {
 						defaultValue = childNode.getTextContent();
 					else if ("description".equals(childNode.getNodeName()))
 						description = childNode.getTextContent().trim();
+					else if ("datatypeClassname".equals(childNode.getNodeName()))
+						datatypeClassname = childNode.getTextContent().trim();
+					else if ("datatypeConfig".equals(childNode.getNodeName()))
+						datatypeConfig = childNode.getTextContent().trim();
 					
 					x++;
 				}
 				log.debug("property: " + property + " defaultValue: " + defaultValue + " description: " + description);
+				log.debug("datatypeClassname: " + datatypeClassname + " datatypeConfig: " + datatypeConfig);
 				
 				// remove tabs from description and trim start/end whitespace
 				if (description != null)
 					description = description.replaceAll("	", "").trim();
 				
 				// name is required
-				if (property.length() > 0)
+				if (datatypeClassname.length() > 0 && property.length() > 0) {
+					try {
+						Class<CustomDatatype<?>> datatypeClazz = (Class<CustomDatatype<?>>) Class.forName(datatypeClassname)
+						        .asSubclass(CustomDatatype.class);
+						properties
+						        .add(new GlobalProperty(property, defaultValue, description, datatypeClazz, datatypeConfig));
+					}
+					catch (ClassCastException ex) {
+						log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
+						        + ") must be a subtype of 'org.openmrs.customdatatype.CustomDatatype<?>'.", ex);
+					}
+					catch (ClassNotFoundException ex) {
+						log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
+						        + ") could not be found.", ex);
+					}
+				} else if (property.length() > 0)
 					properties.add(new GlobalProperty(property, defaultValue, description));
 				else
 					log.warn("'property' is required for global properties. Given '" + property + "'");
