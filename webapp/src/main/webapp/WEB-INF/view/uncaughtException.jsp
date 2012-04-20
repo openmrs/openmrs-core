@@ -5,6 +5,9 @@
 <%@ page import="org.openmrs.util.OpenmrsConstants" %>
 <%@ page import="org.openmrs.api.APIAuthenticationException" %>
 <%@ page import="org.springframework.transaction.UnexpectedRollbackException" %>
+<%@ page import="org.apache.commons.logging.Log" %>
+<%@ page import="org.apache.commons.logging.LogFactory" %>
+<%@ page import="org.openmrs.api.context.Context" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
@@ -46,6 +49,16 @@ try {
 	//Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception"); 
 
 	if (exception != null) {
+		
+        Log log = LogFactory.getLog(this.getClass().getName());                                                            
+        if(Context.getAuthenticatedUser() != null) {
+                log.error("Exception was thrown by user with id="+
+                        Context.getAuthenticatedUser().getUserId(), exception);
+        } else {
+                log.error("Exception was thrown by not authenticated user",
+                        exception);
+        }
+        
 		out.println("<b>" + exception.getClass().getName() + "</b>");
 		if (exception.getMessage() != null)
 			out.println("<pre id='exceptionMessage'>" + WebUtil.escapeHTML(exception.getMessage()) + "</pre>");
@@ -68,7 +81,7 @@ try {
 	<%
 	// check to see if the current user is authenticated
 	// this logic copied from the OpenmrsFilter because this
-	// page isn't passed through that filter like all other pages
+	// page isn't passed through that filter like all other pages	
 	UserContext userContext = (UserContext) session.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
 	if (exception != null) {
 		if (exception instanceof APIAuthenticationException) {
