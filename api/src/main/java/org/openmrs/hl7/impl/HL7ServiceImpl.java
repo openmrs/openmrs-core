@@ -864,7 +864,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		}
 		Context.getHL7Service().saveHL7InError(hl7InError);
 		Context.getHL7Service().purgeHL7InQueue(hl7InQueue);
-		log.error(error, cause);
+		log.info(error, cause);
 	}
 	
 	/**
