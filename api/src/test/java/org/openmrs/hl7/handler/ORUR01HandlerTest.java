@@ -58,6 +58,7 @@ import ca.uhn.hl7v2.model.v25.segment.NK1;
 import ca.uhn.hl7v2.model.v25.segment.OBR;
 import ca.uhn.hl7v2.model.v25.segment.OBX;
 import ca.uhn.hl7v2.parser.GenericParser;
+import org.openmrs.Form;
 
 /**
  * TODO finish testing all methods ORUR01Handler
@@ -1096,5 +1097,107 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should understand form uuid if present", method = "processMessage(Message)")
+	public void processMessage_shouldUnderstandFormUuidIfPresent() throws Exception {
+		
+		// save original encounter count
+		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
+		Integer originalEncounters = encounters.size();
+		
+		// process message
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||d9218f76-6c39-45f4-8efa-4c5c6c199f50^AMRS.ELD.FORMUUID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714";
+		
+		Message hl7message = parser.parse(hl7String);
+		router.processMessage(hl7message);
+		
+		// make sure an encounter was added
+		encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
+		Assert.assertEquals(originalEncounters + 1, encounters.size());
+		
+		// get last encounter
+		Encounter enc = encounters.get(encounters.size() - 1);
+		
+		// check the form uuid
+		Form form = enc.getForm();
+		Assert.assertEquals("d9218f76-6c39-45f4-8efa-4c5c6c199f50", form.getUuid());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should prefer form uuid over id if both are present", method = "processMessage(Message)")
+	public void processMessage_shouldPreferFormUuidOverIdIfBothArePresent() throws Exception {
+		
+		// save original encounter count
+		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
+		Integer originalEncounters = encounters.size();
+		
+		// process message
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID~d9218f76-6c39-45f4-8efa-4c5c6c199f50^AMRS.ELD.FORMUUID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714";
+		
+		Message hl7message = parser.parse(hl7String);
+		router.processMessage(hl7message);
+		
+		// make sure an encounter was added
+		encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
+		Assert.assertEquals(originalEncounters + 1, encounters.size());
+		
+		// get last encounter
+		Encounter enc = encounters.get(encounters.size() - 1);
+		
+		// check the form uuid
+		Form form = enc.getForm();
+		Assert.assertEquals("d9218f76-6c39-45f4-8efa-4c5c6c199f50", form.getUuid());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should prefer form id if uuid is not found", method = "processMessage(Message)")
+	public void processMessage_shouldPreferFormIdIfUuidIsNotFound() throws Exception {
+		
+		// save original encounter count
+		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
+		Integer originalEncounters = encounters.size();
+		
+		// process message
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||1^AMRS.ELD.FORMID~oicu812^AMRS.ELD.FORMUUID^^\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714";
+		
+		Message hl7message = parser.parse(hl7String);
+		router.processMessage(hl7message);
+		
+		// make sure an encounter was added
+		encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
+		Assert.assertEquals(originalEncounters + 1, encounters.size());
+		
+		// get last encounter
+		Encounter enc = encounters.get(encounters.size() - 1);
+		
+		// check the form id
+		Form form = enc.getForm();
+		Assert.assertEquals(1, form.getId().intValue());
 	}
 }

@@ -64,6 +64,7 @@ import ca.uhn.hl7v2.model.v25.datatype.CX;
 import ca.uhn.hl7v2.model.v25.datatype.DLD;
 import ca.uhn.hl7v2.model.v25.datatype.DT;
 import ca.uhn.hl7v2.model.v25.datatype.DTM;
+import ca.uhn.hl7v2.model.v25.datatype.EI;
 import ca.uhn.hl7v2.model.v25.datatype.FT;
 import ca.uhn.hl7v2.model.v25.datatype.ID;
 import ca.uhn.hl7v2.model.v25.datatype.IS;
@@ -136,6 +137,9 @@ public class ORUR01Handler implements Application {
 	 * @should create an encounter and find the provider by uuid
 	 * @should create an encounter and find the provider by providerId
 	 * @should fail if the provider name type code is not specified and is not a personId
+	 * @should understand form uuid if present
+	 * @should prefer form uuid over id if both are present
+	 * @should prefer form id if uuid is not found	 
 	 */
 	public Message processMessage(Message message) throws ApplicationException {
 		
@@ -1063,20 +1067,47 @@ public class ORUR01Handler implements Application {
 		return location;
 	}
 	
+	/**
+	 * needs to find a Form based on information in MSH-21.
+	 * 
+	 * example: 16^AMRS.ELD.FORMID
+	 * 
+	 * @param msh
+	 * @return
+	 * @throws HL7Exception 
+	 */
 	private Form getForm(MSH msh) throws HL7Exception {
-		Integer formId = null;
-		try {
-			formId = Integer.parseInt(msh.getMessageProfileIdentifier(0).getEntityIdentifier().getValue());
-		}
-		catch (Exception e) {
-			throw new HL7Exception("Error parsing form id from message", e);
+		String uuid = null;
+		String id = null;
+		
+		for (EI identifier : msh.getMessageProfileIdentifier()) {
+			if (identifier != null && identifier.getNamespaceID() != null) {
+				String identifierType = identifier.getNamespaceID().getValue();
+				if (OpenmrsUtil.nullSafeEquals(identifierType, HL7Constants.HL7_FORM_UUID))
+					uuid = identifier.getEntityIdentifier().getValue();
+				else if (OpenmrsUtil.nullSafeEquals(identifierType, HL7Constants.HL7_FORM_ID))
+					id = identifier.getEntityIdentifier().getValue();
+				else
+					log.warn("Form identifier type of " + identifierType + " unknown to ORU R01 processor.");
+			}
 		}
 		
-		// must get entire form object in order to get its metadata
-		// (encounterType) later
 		Form form = null;
-		if (formId != null)
-			form = Context.getFormService().getForm(formId);
+		
+		// prefer uuid over id
+		if (uuid != null)
+			form = Context.getFormService().getFormByUuid(uuid);
+		
+		// if uuid did not work ...
+		if (form == null) {
+			try {
+				Integer formId = Integer.parseInt(id);
+				form = Context.getFormService().getForm(formId);
+			}
+			catch (NumberFormatException e) {
+				throw new HL7Exception("Error parsing form id from message", e);
+			}
+		}
 		
 		return form;
 	}
