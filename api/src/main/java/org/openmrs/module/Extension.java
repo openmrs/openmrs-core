@@ -156,6 +156,17 @@ public abstract class Extension {
 	}
 	
 	/**
+	 * If multiple extensions are added to the same extension point, set the order
+	 * of those extensions by overriding this property.  Lower order numbers will generally 
+	 * appear first within the extension point.
+	 * 
+	 * @return 0
+	 */
+	public int getOrder() {
+		return 0;
+	}
+	
+	/**
 	 * Get the string representation of this extension
 	 * 
 	 * @see java.lang.Object#toString()

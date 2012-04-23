@@ -567,18 +567,43 @@ public class ModuleFactory {
 				// a spring context refresh anyway, so skip the advice loading here
 				// loadAdvice(module);
 				
-				// add all of this module's extensions to the extension map
+				// map extension point to a list of extensions for this module only
+				Map<String, List<Extension>> moduleExtensionMap = new HashMap<String, List<Extension>>();
 				for (Extension ext : module.getExtensions()) {
 					
 					String extId = ext.getExtensionId();
-					List<Extension> tmpExtensions = getExtensions(extId);
-					if (tmpExtensions == null)
+					List<Extension> tmpExtensions = moduleExtensionMap.get(extId);
+					if (tmpExtensions == null) {
 						tmpExtensions = new Vector<Extension>();
-					
-					log.debug("Adding to mapping ext: " + ext.getExtensionId() + " ext.class: " + ext.getClass());
+						moduleExtensionMap.put(extId, tmpExtensions);
+					}
 					
 					tmpExtensions.add(ext);
-					getExtensionMap().put(extId, tmpExtensions);
+				}
+				
+				// Sort this module's extensions, and merge them into the full extensions map
+				Comparator<Extension> sortOrder = new Comparator<Extension>() {
+					
+					@Override
+					public int compare(Extension e1, Extension e2) {
+						return Integer.valueOf(e1.getOrder()).compareTo(Integer.valueOf(e2.getOrder()));
+					}
+				};
+				for (Map.Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
+					// Sort this module's extensions for current extension point
+					List<Extension> sortedModuleExtensions = moduleExtensionEntry.getValue();
+					Collections.sort(sortedModuleExtensions, sortOrder);
+					
+					// Get existing extensions, and append the ones from the new module
+					List<Extension> extensions = getExtensionMap().get(moduleExtensionEntry.getKey());
+					if (extensions == null) {
+						extensions = new Vector<Extension>();
+						getExtensionMap().put(moduleExtensionEntry.getKey(), extensions);
+					}
+					for (Extension ext : sortedModuleExtensions) {
+						log.debug("Adding to mapping ext: " + ext.getExtensionId() + " ext.class: " + ext.getClass());
+						extensions.add(ext);
+					}
 				}
 				
 				// run the module's sql update script
