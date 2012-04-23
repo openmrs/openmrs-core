@@ -142,6 +142,13 @@ public class HL7Constants {
 	public static final String HL7_ARCHIVE_DIRECTORY_NAME = "hl7_archives";
 	
 	/**
+	 * @since 1.10
+	 */
+	public static final String HL7_FORM_ID = "AMRS.ELD.FORMID";
+	
+	public static final String HL7_FORM_UUID = "AMRS.ELD.FORMUUID";
+	
+	/**
 	 * the key to be used for numberTransferred archives in the progressStatusMap
 	 * 
 	 * @since 1.7
