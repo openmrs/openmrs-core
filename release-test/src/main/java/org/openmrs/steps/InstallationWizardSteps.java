@@ -72,10 +72,10 @@ public class InstallationWizardSteps extends Steps {
     @When("I enter a database url and mention the database name, username, password, and port as stored in system properties as $databaseNameProp, $userProp, $passwordProp, and $portProp")
     public void enterConnectionUrl(String databaseNameProp, String userProp, String passwordProp, String portProp) {
     	
-    	String database = System.getProperty(databaseNameProp, System.getProperty("OPENMRS_VERSION","openmrs-test"));
+    	String database = System.getProperty(databaseNameProp, "openmrsReleaseTest");
     	String user = System.getProperty(userProp, "root");
     	String password = System.getProperty(passwordProp, "password");
-    	String port = System.getProperty(portProp, "3306");
+    	String port = System.getProperty(portProp, "3336");
 
         type("jdbc:mysql://localhost:" + port + "/@DBNAME@?"
                 + "autoReconnect=true&sessionVariables=storage_engine=InnoDB"
@@ -101,6 +101,7 @@ public class InstallationWizardSteps extends Steps {
                         attribute("name", equalTo("create_database_password")))));
     }
 
+
     @When("I mention username and password for the user with CREATE USER privileges as stored in system properties as $userProp and $passwordProp")
     public void enterUserName(String userProp, String passwordProp) {
     	
@@ -114,15 +115,15 @@ public class InstallationWizardSteps extends Steps {
                 attribute("name", equalTo("add_demo_data"))).with(attribute("value", equalTo("yes"))));
 
         clickOn(radioButton().with(
-                attribute("name", equalTo("current_database_user"))).with(attribute("value", equalTo("yes"))));
+                attribute("name", equalTo("current_database_user"))).with(attribute("value", equalTo("no"))));
 
 
         type(user,
                 into(textbox().with(
-                        attribute("name", equalTo("current_database_username")))));
+                        attribute("name", equalTo("create_user_username")))));
         type(password,
                 into(passwordtextbox().with(
-                        attribute("name", equalTo("current_database_password")))));
+                        attribute("name", equalTo("create_user_password")))));
     }
 
     @When("I Finish")

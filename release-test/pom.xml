@@ -30,6 +30,21 @@
             <artifactId>lambdaj</artifactId>
             <version>2.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.openmrs.api</groupId>
+            <artifactId>openmrs-api</artifactId>
+            <version>1.10.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.web</groupId>
+            <artifactId>openmrs-web</artifactId>
+            <version>1.10.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-mxj</artifactId>
+            <version>5.0.11</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -109,16 +124,51 @@
 					<version>5.0.11</version>
 					<scope>compile</scope>
 				</dependency>
-
-				<dependency>
-					<groupId>com.mysql</groupId>
-					<artifactId>mysql-connector-mxj-dbfiles</artifactId>
-					<version>5.0.11</version>
-					<scope>compile</scope>
-				</dependency>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-mxj-fixed</artifactId>
+                    <version>5.0.12</version>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-mxj-db-files-fixed</artifactId>
+                    <version>5.0.12</version>
+                    <scope>compile</scope>
+                </dependency>
 			</dependencies>
 			<build>
 				<plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>start-database</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.openmrs.MysqlFactory</mainClass>
+                                    <arguments>
+                                        <argument>target/database</argument>
+                                        <argument>target/database/data</argument>
+                                    </arguments>
+                                    <systemProperties>
+                                        <systemProperty>
+                                            <key>FUNCTIONAL_TEST_MODE</key>
+                                            <value>true</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>OPENMRS_VERSION</key>
+                                            <value>${openMRSVersion}</value>
+                                        </systemProperty>
+                                    </systemProperties>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
@@ -141,7 +191,7 @@
                                     <ignoreFailureInStories>true</ignoreFailureInStories>
                                     <ignoreFailureInView>true</ignoreFailureInView>
 									<includes>
-										<include>**/stories/*.java</include>
+										<include>**/stories/${test}.java</include>
 									</includes>
 								</configuration>
 								<goals>
@@ -149,6 +199,13 @@
 								</goals>
 							</execution>
 						</executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>log4j</groupId>
+                                <artifactId>log4j</artifactId>
+                                <version>1.2.16</version>
+                            </dependency>
+                        </dependencies>
 					</plugin>
 
 
