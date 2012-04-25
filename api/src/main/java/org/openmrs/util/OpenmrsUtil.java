@@ -2443,8 +2443,8 @@ public class OpenmrsUtil {
 		String envFileName = System.getenv(envVarName);
 		if (envFileName != null) {
 			log.debug("Atempting to look for runtime properties from: " + pathName);
-			if (new File(pathName).exists()) {
-				return pathName;
+			if (new File(envFileName).exists()) {
+				return envFileName;
 			} else {
 				log.warn("Unable to find properties file with path: " + pathName + ". (derived from environment variable "
 				        + envVarName + ")");
