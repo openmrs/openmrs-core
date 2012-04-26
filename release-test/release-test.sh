@@ -28,10 +28,10 @@ cd $dir
 error=1
 success=0
 verbose="-q"
-buffer=false
+buffer=true
 testname="*"
-profile="smoke-test"
-database="openmrs"
+profile="integration-test"
+database="openmrsReleaseTest"
 mysqlusername="root"
 mysqlpassword="password"
 mysqlport=3306
@@ -58,7 +58,7 @@ do
 	esac
 done
 
-mvn_command="mvn integration-test -DskipTests -P $profile -Dtest=$testname $verbose  -Dmysql_username=$mysqlusername -Dmysql_password=$mysqlpassword -Dmysql_port=$mysqlport -Dopenmrs_username=$omrsusername -Dopenmrs_password=$omrspassword -Ddatabase_name=$databaseName"
+mvn_command="mvn integration-test -DskipTests -P $profile -Dtest=$testname $verbose  -Dmysql_username=$mysqlusername -Dmysql_password=$mysqlpassword -Dmysql_port=$mysqlport -Dopenmrs_username=$omrsusername -Dopenmrs_password=$omrspassword -Ddatabase_name=$database"
 
 echo Running $mvn_command
 echo "Use -v option for verbose mode if you run into errors"
@@ -66,6 +66,13 @@ echo "Use -v option for verbose mode if you run into errors"
 runcommand=$mvn_command
 
 
+# now run the tests in a hidden browser window (requires app called "xvfb") if the -b option has been passed
+if [ $buffer == true ]; then
+		# kill other open xvfb-run processes
+		pkill -9 -f Xvfb
+		export DISPLAY=:0
+		runcommand="xvfb-run $mvn_command"
+fi
 
 $runcommand
 
