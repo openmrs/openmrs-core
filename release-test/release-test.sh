@@ -34,7 +34,7 @@ profile="integration-test"
 database="openmrsReleaseTest"
 mysqlusername="root"
 mysqlpassword="password"
-mysqlport=3306
+mysqlport=3336
 omrsusername="admin"
 omrspassword="Admin123"
 
