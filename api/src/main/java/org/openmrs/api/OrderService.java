@@ -75,7 +75,7 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * The type of status to match on an order. Used in getOrder* methods
 	 * 
-	 * @@deprecated Will be removed in version 1.10
+	 * @deprecated Will be removed in version 1.10
 	 */
 	@Deprecated
 	public static enum ORDER_STATUS {
