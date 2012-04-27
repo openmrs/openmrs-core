@@ -34,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders and DrugOrders Use:<br/>
  * 
+ * @deprecated Will be removed in version 1.10
+ * 
  * <pre>
  *   Order order = new Order();
  *   order.set___(___);
@@ -42,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
  * </pre>
  */
 @Transactional
+@Deprecated
 public interface OrderService extends OpenmrsService {
 	
 	/**
@@ -66,7 +69,10 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * The type of status to match on an order. Used in getOrder* methods
+	 * 
+	 * @deprecated Will be removed in version 1.10
 	 */
+	@Deprecated
 	public static enum ORDER_STATUS {
 		/**
 		 * The patient is considered to be currently on this order
