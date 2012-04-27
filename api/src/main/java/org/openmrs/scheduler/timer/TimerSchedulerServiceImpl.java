@@ -190,6 +190,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * Schedule the given task according to the given schedule.
 	 * 
 	 * @param taskDefinition the task to be scheduled
+	 * @should should handle zero repeat interval
 	 */
 	public Task scheduleTask(TaskDefinition taskDefinition) throws SchedulerException {
 		Task clientTask = null;
@@ -232,8 +233,14 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 						// Start task at fixed rate at given future date and repeat as directed 							
 						log.info("Starting task ... the task will execute for the first time at " + nextTime);
 						
-						// Schedule the task to run at a fixed rate
-						getTimer(taskDefinition).scheduleAtFixedRate(schedulerTask, nextTime, repeatInterval);
+						if (repeatInterval > 0) {
+							// Schedule the task to run at a fixed rate
+							getTimer(taskDefinition).scheduleAtFixedRate(schedulerTask, nextTime, repeatInterval);
+						} else {
+							// Schedule the task to be non-repeating
+							getTimer(taskDefinition).schedule(schedulerTask, nextTime);
+						}
+						
 					} else if (repeatInterval > 0) {
 						// Start task on repeating schedule, delay for SCHEDULER_DEFAULT_DELAY seconds	
 						log.info("Delaying start time by " + SchedulerConstants.SCHEDULER_DEFAULT_DELAY + " seconds");
