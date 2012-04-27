@@ -65,9 +65,15 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	/**
 	 * @param person the person to set
+	 * @should blank out name if set to non null person
 	 */
 	public void setPerson(Person person) {
 		this.person = person;
+		
+		//blank out name so that there isn't double data sitting in the provider table.
+		if (person != null) {
+			setName(null);
+		}
 	}
 	
 	/**
@@ -97,5 +103,19 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 			return getPerson().getPersonName().toString();
 		else
 			return getName();
+	}
+	
+	/**
+	 * @see org.openmrs.BaseOpenmrsMetadata#getName()
+	 * @should return person full name if person is not null
+	 */
+	@Override
+	public String getName() {
+		if (getPerson() != null) {
+			return getPerson().getPersonName().getFullName();
+		}
+		else {
+			return super.getName();
+		}
 	}
 }
