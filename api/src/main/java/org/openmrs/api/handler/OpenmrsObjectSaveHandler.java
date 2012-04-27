@@ -111,6 +111,11 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 					}
 				}
 			}
+			catch (UnsupportedOperationException ex) {
+				// there is no need to log this. These should be (mostly) silently skipped over 
+				if (log.isInfoEnabled())
+					log.info("The property " + property.getName() + " is no longer supported and should be ignored.", ex);
+			}
 			catch (InvocationTargetException ex) {
 				if (log.isWarnEnabled())
 					log.warn("Failed to access property " + property.getName() + "; accessor threw exception.", ex);
