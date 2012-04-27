@@ -18,13 +18,21 @@ import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Program;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
+import org.openmrs.web.WebConstants;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.validation.BindException;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
 
 public class ProgramListController extends SimpleFormController {
 	
@@ -49,6 +57,53 @@ public class ProgramListController extends SimpleFormController {
 		}
 		
 		return programList;
+	}
+	
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	        BindException errors) throws Exception {
+		
+		HttpSession httpSession = request.getSession();
+		
+		String view = getFormView();
+		if (Context.isAuthenticated()) {
+			String[] programList = request.getParameterValues("programId");
+			ProgramWorkflowService ps = Context.getProgramWorkflowService();
+			
+			String success = "";
+			String error = "";
+			
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			String deleted = msa.getMessage("general.deleted");
+			String notDeleted = msa.getMessage("general.cannot.delete");
+			String textProgram = msa.getMessage("Program.program");
+			String noneDeleted = msa.getMessage("Program.nonedeleted");
+			if (programList != null) {
+				for (String p : programList) {
+					
+					try {
+						ps.purgeProgram(ps.getProgram(Integer.valueOf(p)));
+						if (!success.equals(""))
+							success += "<br/>";
+						success += textProgram + " " + p + " " + deleted;
+					}
+					catch (APIException e) {
+						log.warn("Error deleting program", e);
+						if (!error.equals(""))
+							error += "<br/>";
+						error += textProgram + " " + p + " " + notDeleted;
+					}
+				}
+			} else {
+				success += noneDeleted;
+			}
+			view = getSuccessView();
+			if (!success.equals(""))
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+			if (!error.equals(""))
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+		}
+		
+		return new ModelAndView(new RedirectView(view));
 	}
 	
 }

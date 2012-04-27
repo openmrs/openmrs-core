@@ -19,8 +19,10 @@
 		</tr>
 	</c:if>
 	<c:if test="${fn:length(programList) != 0}">
+		<form method="post" id="theForm">
 		<table cellspacing="0" cellpadding="2">
 			<tr>
+				<th> </th>
 				<th> <spring:message code="general.id"/> </th>
 				<th> <spring:message code="general.name"/> </th>
 				<th> <spring:message code="general.description"/> </th>
@@ -38,6 +40,7 @@
 						</td>
 					</c:if>
 					<c:if test="${!program.retired}">
+						<td valign="top"> <input type="checkbox" name="programId" value="${program.programId}">	</td>
 						<td valign="top">
 							${program.programId}
 						</td>
@@ -68,6 +71,8 @@
 				</tr>
 			</c:forEach>
 		</table>
+		<input type="submit" value="<spring:message code="Program.delete"/>" />
+		</form>
 	</c:if>
 </div>
 
