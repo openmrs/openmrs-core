@@ -62,7 +62,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @should be valid if identifier is set
 	 * @should be invalid if provider is retired and the retired reason is not mentioned
 	 * @should be invalid if person or name is not set
-	 * @should be invalid if both person and name are set
+	 * @should never have both person and name set
 	 * @should be valid if only person is set
 	 * @should be valid if only name is set
 	 * @should reject a provider if it has fewer than min occurs of an attribute
@@ -88,8 +88,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 			errors.rejectValue("identifier", "Provider.error.identifier.required");
 		}
 		
-		if ((provider.getPerson() != null && StringUtils.isNotBlank(provider.getName()))
-		        || (provider.getPerson() == null && StringUtils.isBlank(provider.getName()))) {
+		if (provider.getPerson() == null && StringUtils.isBlank(provider.getName())) {
 			errors.rejectValue("name", "Provider.error.personOrName.required");
 		}
 		

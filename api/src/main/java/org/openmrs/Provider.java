@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Represents a person who may provide care to a patient during an encounter
  *
@@ -111,11 +113,23 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	 */
 	@Override
 	public String getName() {
-		if (getPerson() != null) {
+		if (getPerson() != null && getPerson().getPersonName() != null) {
 			return getPerson().getPersonName().getFullName();
-		}
-		else {
+		} else {
 			return super.getName();
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.BaseOpenmrsMetadata#setName(java.lang.String)
+	 */
+	@Override
+	public void setName(String name) {
+		super.setName(name);
+		
+		//If we are setting a name, blank out the person
+		if (getPerson() != null && !StringUtils.isBlank(super.getName())) {
+			setPerson(null);
 		}
 	}
 }
