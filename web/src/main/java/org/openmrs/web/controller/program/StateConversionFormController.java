@@ -24,6 +24,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
@@ -41,6 +42,10 @@ public class StateConversionFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
+	
+	public void setStateConversionValidator(StateConversionValidator stateConversionValidator) {
+		super.setValidator(stateConversionValidator);
+	}
 	
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
@@ -86,6 +91,7 @@ public class StateConversionFormController extends SimpleFormController {
 		}
 		
 		return conversion;
+		
 	}
 	
 	/**
@@ -102,16 +108,43 @@ public class StateConversionFormController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 		
-		String view = getFormView();
-		
 		if (Context.isAuthenticated()) {
 			ConceptStateConversion c = (ConceptStateConversion) obj;
-			Context.getProgramWorkflowService().saveConceptStateConversion(c);
-			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Program.conversion.saved");
+			
+			boolean isError = false;
+			try {
+				
+				Context.getProgramWorkflowService().saveConceptStateConversion(c);
+				
+			}
+			catch (APIException ae) {
+				
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "ConceptStateConversion.error.incompleteform");
+				isError = true;
+				if (c.getConcept() == null) {
+					errors.rejectValue("conversion.concept", "error.concept");
+				}
+				if (c.getProgramWorkflow() == null) {
+					errors.rejectValue("conversion.programWorkflow", "error.programWorkflow");
+				}
+				if (c.getProgramWorkflowState() == null) {
+					errors.rejectValue("conversion.programWorkflowState", "error.programWorkflowState");
+				}
+				
+			}
+			
+			if (!isError) {
+				
+				String view = getSuccessView();
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Program.conversion.saved");
+				return new ModelAndView(new RedirectView(view));
+			} else {
+				return showForm(request, response, errors);
+			}
+			
 		}
 		
-		return new ModelAndView(new RedirectView(view));
+		return new ModelAndView(new RedirectView(getFormView()));
 	}
 	
 }
