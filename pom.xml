@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
@@ -223,12 +224,11 @@
 				</exclusions>
 			</dependency>
 
-			<!--
-			For the upgrade to Spring 3.0, antlr-runtime-3.2.jar is required. However, Hibernate 3.25 needs antlr_2.7.6.jar and they can
-			both exist because their packaging is different. The earlier version, 2.7.6, is antlr.* whereas 3.2 is org.antlr.*, so 
-			they can co-habitate here just fine.
-			For more information, see this article: http://blog.newsplore.com/2009/03/07/upgrading-to-spring-30
-			-->
+			<!-- For the upgrade to Spring 3.0, antlr-runtime-3.2.jar is required. 
+				However, Hibernate 3.25 needs antlr_2.7.6.jar and they can both exist because 
+				their packaging is different. The earlier version, 2.7.6, is antlr.* whereas 
+				3.2 is org.antlr.*, so they can co-habitate here just fine. For more information, 
+				see this article: http://blog.newsplore.com/2009/03/07/upgrading-to-spring-30 -->
 			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr-runtime</artifactId>
@@ -314,7 +314,7 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<dependency> 
+			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-ehcache</artifactId>
 				<version>3.6.0.Final</version>
@@ -728,7 +728,27 @@
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 					</configuration>
 				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>2.1.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.8.1</version>
+					<configuration>
+						<tags>
+							<tag>
+								<name>should</name>
+								<placement>a</placement>
+								<head>Should:</head>
+							</tag>
+						</tags>
+					</configuration>
+				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -844,8 +864,48 @@
 					<argLine>-Duser.language=en -Duser.region=US</argLine>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+									<goal>test-jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+									<goal>test-jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<dependencies>
 		<dependency>
@@ -863,8 +923,10 @@
 				<version>2.6.1</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
-					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active
-						development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
+					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these
+						libraries are in active
+						development and subject to
+						change&lt;/small&gt;&lt;/em&gt;</bottom>
 					<header>&lt;a href="http://www.openmrs.org"
 						target=_top&gt;&lt;img
 						src="resources/openmrs-logo-small.gif"
@@ -919,17 +981,18 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-   <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <javaCompilerVersion>1.6</javaCompilerVersion>
-      <maven.build.timestamp.format>MMM dd yyyy hh:mm aa</maven.build.timestamp.format>
-      <TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
-      
-      <openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion} ${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
-      <openmrs.version.short>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}-${parsedVersion.qualifier}</openmrs.version.short>
-      <openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}</openmrs.version.shortnumericonly>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<javaCompilerVersion>1.6</javaCompilerVersion>
+		<maven.build.timestamp.format>MMM dd yyyy hh:mm aa</maven.build.timestamp.format>
+		<TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
 
-      <springVersion>3.0.5.RELEASE</springVersion>
-   </properties>
-   
+		<openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
+			${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
+		<openmrs.version.short>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}-${parsedVersion.qualifier}</openmrs.version.short>
+		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}</openmrs.version.shortnumericonly>
+
+		<springVersion>3.0.5.RELEASE</springVersion>
+	</properties>
+
 </project>
