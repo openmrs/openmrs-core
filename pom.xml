@@ -884,7 +884,6 @@
 								<id>attach-sources</id>
 								<goals>
 									<goal>jar-no-fork</goal>
-									<goal>test-jar-no-fork</goal>
 								</goals>
 							</execution>
 						</executions>
