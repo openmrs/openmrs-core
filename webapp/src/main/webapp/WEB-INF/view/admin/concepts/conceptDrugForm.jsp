@@ -81,6 +81,9 @@
 	<br />
 </spring:hasBindErrors>
 
+<openmrs:globalProperty var="dosageFormConceptClasses" key="conceptDrug.dosageForm.conceptClasses" defaultValue=""/>
+<openmrs:globalProperty var="routeConceptClasses" key="conceptDrug.route.conceptClasses" defaultValue=""/>
+
 <form method="post">
 <fieldset>
 <table cellpadding="3" cellspacing="0" id="table">
@@ -119,7 +122,7 @@
 		<th><spring:message code="ConceptDrug.dosageForm"/></th>
 		<td>
 			<spring:bind path="drug.dosageForm">
-				<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="${status.expression}" val="${status.value}" />
+				<openmrs_tag:conceptField formFieldName="${status.expression}" formFieldId="dosageForm" initialValue="${status.value}" includeClasses="${dosageFormConceptClasses}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>				
 			</spring:bind>
 		</td>
@@ -168,7 +171,7 @@
 		<th><spring:message code="ConceptDrug.route"/></th>
 		<td>
 			<spring:bind path="drug.route">
-				<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="${status.expression}" val="${status.value}" />
+				<openmrs_tag:conceptField formFieldName="${status.expression}" formFieldId="route" initialValue="${status.value}" includeClasses="${routeConceptClasses}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>				
 			</spring:bind>
 		</td>
