@@ -168,8 +168,7 @@
 		<th><spring:message code="ConceptDrug.route"/></th>
 		<td>
 			<spring:bind path="drug.route">
-				<div dojoType="ConceptSearch" widgetId="routeSearch" conceptId="${status.value}" showVerboseListing="true"></div>
-				<div dojoType="OpenmrsPopup" widgetId="routeSelection" hiddenInputName="${status.expression}" hiddenInputId="route" searchWidget="routeSearch" searchTitle='<spring:message code="Concept.find"/>'></div>
+				<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="${status.expression}" val="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>				
 			</spring:bind>
 		</td>
