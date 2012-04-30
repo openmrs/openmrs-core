@@ -123,9 +123,6 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>				
 			</spring:bind>
 		</td>
-		<td>
-			<input type="button" value="clear"  />
-		</td>
 	</tr>
 	<tr>
 		<th><spring:message code="ConceptDrug.doseStrength"/></th>
