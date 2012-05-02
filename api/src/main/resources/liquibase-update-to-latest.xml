@@ -6367,5 +6367,99 @@
 		<comment>Increase size of drug name column to 255 characters</comment>
 		<modifyDataType tableName="drug" columnName="name" newDataType="varchar(255)"/>
 	</changeSet>
+	
+	<changeSet id="20120502-1400" author="asgoyal">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="combination_drug" />
+		</preConditions>
+		<comment>Dropping a foreign key constraint from drug_ingredient.concept_id to concept.concept_id</comment>
+		<dropForeignKeyConstraint constraintName="combination_drug" baseTableName="drug_ingredient"/>
+	</changeSet>
+	
+	<changeSet id="20120502-1401" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="ingredient" />
+		</preConditions>
+		<comment>Dropping a foreign key constraint from drug_ingredient.ingredient_id to concept.concept_id</comment>
+		<dropForeignKeyConstraint constraintName="ingredient" baseTableName="drug_ingredient"/>
+	</changeSet>
+	
+	<changeSet id="20120502-1402" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists tableName="drug_ingredient"/>
+		</preConditions>
+		<comment>Dropping the primary key from the drug_ingredient table</comment>
+		<dropPrimaryKey tableName="drug_ingredient"/>
+	</changeSet>
+	
+	<changeSet id="20120502-1403" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="drug_ingredient" columnName="concept_id"/>
+		</preConditions>
+		<comment>Dropping the concept_id column from the drug_ingredient table</comment>
+		<dropColumn tableName="drug_ingredient" columnName="concept_id"/>
+	</changeSet>
+	
+	<changeSet id="20120502-1404" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="drug_ingredient" columnName="drug_id"/></not>
+		</preConditions>
+		<comment>Adding a new drug_id column to the drug_ingredient table</comment>
+		<addColumn tableName="drug_ingredient">
+			<column name="drug_id" type="int"></column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20120502-1405" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<not><primaryKeyExists tableName="drug_ingredient"/></not>
+		</preConditions>
+		<comment>Adding a primary key to the drug_ingredient table</comment>
+		<addPrimaryKey columnNames="ingredient_id, drug_id" tableName="drug_ingredient"/>
+	</changeSet>
+	
+	<changeSet id="20120502-1406" author="asgoyal">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="drug_ingredient" columnName="quantity"></columnExists></not>
+		</preConditions>
+		<comment>Adding a new column quantity to drug_ingredient table</comment>
+		<addColumn tableName="drug_ingredient"><column name="quantity" type="double"></column></addColumn>
+	</changeSet>
+	
+	<changeSet id="20120502-1407" author="asgoyal">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="drug_ingredient" columnName="units"></columnExists></not>
+		</preConditions>
+		<comment>Adding a new column units to drug_ingredient table</comment>
+		<addColumn tableName="drug_ingredient"><column name="units" type="varchar(50)"></column></addColumn>
+	</changeSet>
+	
+	<changeSet id="20120502-1408" author="asgoyal">
+		<preConditions onFail="MARK_RAN">
+			<not><foreignKeyConstraintExists foreignKeyName="fk_drug_ingredient_drug"></foreignKeyConstraintExists></not>
+		</preConditions>
+		<comment>Adding a foreign key from drug_ingredient.drug_id to drug.drug_id</comment>
+		<addForeignKeyConstraint constraintName="fk_drug_ingredient_drug" referencedTableName="drug" baseColumnNames="drug_id" baseTableName="drug_ingredient" referencedColumnNames="drug_id"/>
+	</changeSet>
+	
+	<changeSet id="20120502-1409" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<not><foreignKeyConstraintExists foreignKeyName="fk_drug_ingredient_ingredient"></foreignKeyConstraintExists></not>
+		</preConditions>
+		<comment>Adding a foreign key from drug_ingredient.ingredient_id to concept.concept_id</comment>
+		<addForeignKeyConstraint constraintName="fk_drug_ingredient_ingredient" referencedTableName="concept" referencedColumnNames="concept_id" baseTableName="drug_ingredient" baseColumnNames="ingredient_id"/>
+	</changeSet>
+	
+	<changeSet id="20120502-1410" author="asgoyal">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug_ingredient" columnName="uuid"/>
+			</not>
+		</preConditions>
+		<comment>Adding "uuid" column to drug_ingredient table</comment>
+		<addColumn tableName="drug_ingredient">
+			<column name="uuid" type="char(38)" />
+		</addColumn>
+	</changeSet>
 </databaseChangeLog>
 

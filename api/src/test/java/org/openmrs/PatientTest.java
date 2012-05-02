@@ -323,7 +323,8 @@ public class PatientTest {
 		pa2.setPreferred(true);
 		pa3.setVoided(true);
 		
-		assertTrue("With the third identifier voided, there should only be 2 identifiers", p.getActiveIdentifiers().size() == 2);
+		assertTrue("With the third identifier voided, there should only be 2 identifiers",
+		    p.getActiveIdentifiers().size() == 2);
 		assertTrue("Preferred identifier should be first in the list", p.getActiveIdentifiers().get(0) == pa2);
 		assertTrue("Non-preferred identifier should be last in the list", p.getActiveIdentifiers().get(1) == pa1);
 	}

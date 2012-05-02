@@ -16,11 +16,13 @@ package org.openmrs.api.db;
 import java.util.List;
 
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.OrderService.ORDER_STATUS;
 
 /**
@@ -98,5 +100,10 @@ public interface OrderDAO {
 	 * @return
 	 */
 	public OrderType getOrderTypeByUuid(String uuid);
+	
+	/**
+	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient, Concept)
+	 */
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept concept);
 	
 }

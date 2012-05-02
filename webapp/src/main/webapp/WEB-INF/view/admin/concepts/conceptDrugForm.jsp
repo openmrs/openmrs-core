@@ -176,6 +176,18 @@
 			</spring:bind>
 		</td>
 	</tr>
+
+	<tr>
+		
+		<th><spring:message code="ConceptDrug.ingredients"/></th>
+		<td>
+			<table cellpadding="3" cellspacing="0">
+					<c:forEach var="ingredient" items="${drug.ingredients}">
+						<tr><td><label><openmrs:format concept="${ingredient.ingredient}"/></label></td></tr>        
+					</c:forEach>
+			</table>
+		</td>
+	</tr>
 	
 	<c:if test="${drug.creator != null}">
 		<tr>

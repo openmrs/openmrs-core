@@ -167,4 +167,49 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(4, drugOrders.size());
 	}
 	
+	/**
+	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient,Concept)
+	 * @verifies return drug orders matched by patient and intermediate concept
+	 */
+	@Test
+	public void getDrugOrdersByPatientAndIngredient_shouldReturnDrugOrdersMatchedByPatientAndIntermediateConcept()
+	        throws Exception {
+		OrderService orderService = Context.getOrderService();
+		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatientAndIngredient(new Patient(2), new Concept(88));
+		Assert.assertEquals(4, drugOrders.size());
+	}
+	
+	/**
+	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient,Concept)
+	 * @verifies return drug orders matched by patient and drug concept
+	 */
+	@Test
+	public void getDrugOrdersByPatientAndIngredient_shouldReturnDrugOrdersMatchedByPatientAndDrugConcept() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatientAndIngredient(new Patient(2), new Concept(792));
+		Assert.assertEquals(2, drugOrders.size());
+	}
+	
+	/**
+	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient,Concept)
+	 * @verifies return empty list if no concept matched
+	 */
+	@Test
+	public void getDrugOrdersByPatientAndIngredient_shouldReturnEmptyListIfNoConceptMatched() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatientAndIngredient(new Patient(2), new Concept(80));
+		Assert.assertEquals(0, drugOrders.size());
+	}
+	
+	/**
+	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient,Concept)
+	 * @verifies return empty list if no patient matched
+	 */
+	@Test
+	public void getDrugOrdersByPatientAndIngredient_shouldReturnEmptyListIfNoPatientMatched() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatientAndIngredient(new Patient(10), new Concept(88));
+		Assert.assertEquals(0, drugOrders.size());
+	}
+	
 }

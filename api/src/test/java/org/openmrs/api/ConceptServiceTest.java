@@ -1626,8 +1626,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//So we should see 2 results only
 		Assert.assertEquals(2, searchResults.size());
 	}
-        
-        /**
+	
+	/**
 	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	@Test
@@ -1640,7 +1640,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//So we should see 1 results only
 		Assert.assertEquals(1, searchResults.size());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptReferenceTermByName(String,ConceptSource)}
 	 */
@@ -2353,5 +2353,35 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNotNull(concept.getDateChanged());
 		Assert.assertNotNull(concept.getChangedBy());
+	}
+	
+	/**
+	 * @see ConceptService#getDrugsByIngredient(Concept)
+	 * @verifies return drugs matched by drug concept
+	 */
+	@Test
+	public void getDrugsByIngredient_shouldReturnDrugsMatchedByDrugConcept() throws Exception {
+		List<Drug> drugs = conceptService.getDrugsByIngredient(new Concept(792));
+		assertEquals(1, drugs.size());
+	}
+	
+	/**
+	 * @see ConceptService#getDrugsByIngredient(Concept)
+	 * @verifies return drugs matched by intermediate concept
+	 */
+	@Test
+	public void getDrugsByIngredient_shouldReturnDrugsMatchedByIntermediateConcept() throws Exception {
+		List<Drug> drugs = conceptService.getDrugsByIngredient(new Concept(88));
+		assertEquals(2, drugs.size());
+	}
+	
+	/**
+	 * @see ConceptService#getDrugsByIngredient(Concept)
+	 * @verifies return empty list if nothing found
+	 */
+	@Test
+	public void getDrugsByIngredient_shouldReturnEmptyListIfNothingFound() throws Exception {
+		List<Drug> drugs = conceptService.getDrugsByIngredient(new Concept(18));
+		assertEquals(0, drugs.size());
 	}
 }

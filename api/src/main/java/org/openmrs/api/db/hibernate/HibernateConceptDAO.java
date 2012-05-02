@@ -16,6 +16,7 @@ package org.openmrs.api.db.hibernate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -360,6 +362,20 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (drugName != null)
 			searchCriteria.add(Restrictions.eq("drug.name", drugName));
 		return (List<Drug>) searchCriteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDrugsByIngredient(org.openmrs.Concept)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Drug> getDrugsByIngredient(Concept ingredient) {
+		Criteria searchDrugCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
+		Criterion rhs = Restrictions.eq("drug.concept", ingredient);
+		searchDrugCriteria.createAlias("ingredients", "ingredients");
+		Criterion lhs = Restrictions.eq("ingredients.ingredient", ingredient);
+		searchDrugCriteria.add(Restrictions.or(lhs, rhs));
+		
+		return (List<Drug>) searchDrugCriteria.list();
 	}
 	
 	/**

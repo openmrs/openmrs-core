@@ -1693,6 +1693,18 @@ public interface ConceptService extends OpenmrsService {
 	public List<ConceptStopWord> getAllConceptStopWords();
 	
 	/**
+	 * Gets drugs by the given ingredient, which can be either the drug itself or any ingredient.
+	 * 
+	 * @return the list of drugs
+	 * @should return drugs matched by intermediate concept
+	 * @should return drugs matched by drug concept
+	 * @should return empty list if nothing found
+	 * @since 1.10
+	 */
+	@Transactional(readOnly = true)
+	public List<Drug> getDrugsByIngredient(Concept ingredient);
+	
+	/**
 	 * Returns a list of concept map types currently in the database excluding hidden ones
 	 * 
 	 * @return List of concept map type objects

@@ -13,6 +13,9 @@
  */
 package org.openmrs;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * DrugIngredient
  */
@@ -22,9 +25,13 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	
 	// Fields
 	
-	private Concept drug;
+	private Drug drug;
 	
 	private Concept ingredient;
+	
+	private Double quantity;
+	
+	private String units;
 	
 	// Constructors
 	
@@ -35,16 +42,16 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	// Property accessors
 	
 	/**
-	 * @return Returns the drug.
+	 * @return the drug
 	 */
-	public Concept getDrug() {
+	public Drug getDrug() {
 		return drug;
 	}
 	
 	/**
-	 * @param drug The drug to set.
+	 * @param drug the drug to set
 	 */
-	public void setDrug(Concept drug) {
+	public void setDrug(Drug drug) {
 		this.drug = drug;
 	}
 	
@@ -60,6 +67,34 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	 */
 	public void setIngredient(Concept ingredient) {
 		this.ingredient = ingredient;
+	}
+	
+	/**
+	 * @return Returns the quantity.
+	 */
+	public Double getQuantity() {
+		return quantity;
+	}
+	
+	/**
+	 * @param quantity The quantity to set.
+	 */
+	public void setQuantity(Double quantity) {
+		this.quantity = quantity;
+	}
+	
+	/**
+	 * @return Returns the units.
+	 */
+	public String getUnits() {
+		return units;
+	}
+	
+	/**
+	 *@param units The units to set.
+	 */
+	public void setUnits(String units) {
+		this.units = units;
 	}
 	
 	/**

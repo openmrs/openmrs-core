@@ -529,6 +529,11 @@ public interface ConceptDAO {
 	public Double weighConceptWord(ConceptWord word);
 	
 	/**
+	 * @see ConceptService#getDrugsByIngredient(Concept)
+	 */
+	public List<Drug> getDrugsByIngredient(Concept ingredient);
+	
+	/**
 	 * @see ConceptService#getConceptMapTypes(boolean, boolean)
 	 */
 	public List<ConceptMapType> getConceptMapTypes(boolean includeRetired, boolean includeHidden) throws DAOException;
