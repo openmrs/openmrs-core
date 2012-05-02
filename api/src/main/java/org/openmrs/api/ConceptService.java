@@ -1502,6 +1502,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return concept search results that match unique concepts
 	 * @should return a search result whose concept name contains a word with more weight
+	 * @should return a search result whose concept name contains all word tokens
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
