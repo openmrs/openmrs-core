@@ -1927,6 +1927,17 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
+	 * @see org.openmrs.api.ConceptService#getDrugsByIngredient(org.openmrs.Concept)
+	 */
+	@Override
+	public List<Drug> getDrugsByIngredient(Concept ingredient) throws APIException {
+		if (ingredient == null)
+			throw new IllegalArgumentException("ingredient is required");
+		
+		return dao.getDrugsByIngredient(ingredient);
+	}
+	
+	/**
 	 * @see ConceptService#getConceptMappingsToSource(ConceptSource)
 	 */
 	@Override

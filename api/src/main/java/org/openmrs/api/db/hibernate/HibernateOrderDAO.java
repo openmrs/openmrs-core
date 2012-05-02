@@ -14,13 +14,18 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -190,6 +195,23 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderType getOrderTypeByUuid(String uuid) {
 		return (OrderType) sessionFactory.getCurrentSession().createQuery("from OrderType ot where ot.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept concept) {
+		Criteria searchDrugOrderCriteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class, "order");
+		
+		searchDrugOrderCriteria.add(Restrictions.eq("order.patient", patient));
+		
+		searchDrugOrderCriteria.createAlias("drug", "drug");
+		Criterion lhs = Restrictions.eq("drug.concept", concept);
+		
+		searchDrugOrderCriteria.createAlias("drug.ingredients", "ingredients");
+		Criterion rhs = Restrictions.eq("ingredients.ingredient", concept);
+		
+		searchDrugOrderCriteria.add(Restrictions.or(lhs, rhs));
+		
+		return (List<DrugOrder>) searchDrugOrderCriteria.list();
 	}
 	
 }

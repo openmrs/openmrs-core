@@ -14,6 +14,9 @@
 package org.openmrs;
 
 import java.util.Locale;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Drug
@@ -42,10 +45,13 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private Concept concept;
 	
+	private Collection<DrugIngredient> ingredients;
+	
 	// Constructors
 	
 	/** default constructor */
 	public Drug() {
+		ingredients = new HashSet<DrugIngredient>();
 	}
 	
 	/** constructor with id */
@@ -192,6 +198,20 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public void setRoute(Concept route) {
 		this.route = route;
+	}
+	
+	/**
+	 * @return Returns the ingredients
+	 */
+	public Collection<DrugIngredient> getIngredients() {
+		return ingredients;
+	}
+	
+	/**
+	 * @param ingredients The ingredients to set
+	 */
+	public void setIngredients(Collection<DrugIngredient> ingredients) {
+		this.ingredients = ingredients;
 	}
 	
 	/**

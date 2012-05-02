@@ -134,7 +134,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should not save order if order doesnt validate
 	 * @should save discontinued reason non coded
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order) throws APIException;
 	
 	/**
@@ -551,4 +551,20 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Order> getOrdersByEncounter(Encounter encounter);
+	
+	/**
+	 * Gets all drug orders for the given patient and ingredient, which can be either the drug
+	 * itself or any ingredient.
+	 * 
+	 * @param patient
+	 * @param concept
+	 * @return the list of drug orders
+	 * @should return drug orders matched by patient and intermediate concept
+	 * @should return drug orders matched by patient and drug concept
+	 * @should return empty list if no concept matched
+	 * @should return empty list if no patient matched
+	 */
+	@Transactional(readOnly = true)
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept concept);
+	
 }
