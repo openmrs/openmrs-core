@@ -11,6 +11,7 @@
 	var prefIdentifierElementId = null;
 	var numberOfClonedElements = 0;
 	var idTypeLocationRequired = {};
+	var currentIdentifierCount = ${fn:length(patientModel.identifiers)};
 	<c:forEach items="${identifierTypes}" var="idType">
 		idTypeLocationRequired[${idType.patientIdentifierTypeId}] = ${idType.locationBehavior == null || idType.locationBehavior == "REQUIRED"};
 	</c:forEach>
@@ -20,6 +21,7 @@
 		var tbody = document.getElementById('identifiersTbody');
 		var row = document.getElementById('newIdentifierRow');
 		var newrow = row.cloneNode(true);
+		
 		newrow.style.display = "";		
 		newrow.id = 'identifiers[' + index + ']';
 		tbody.appendChild(newrow);
@@ -61,7 +63,12 @@
 				});
 			}
 		}
-			
+
+		currentIdentifierCount++;
+		if(currentIdentifierCount > 1){
+			$j("#identifiersTbody > tr:visible > td:last-child > input.closeButton").show();
+		}
+		
 		numberOfClonedElements++;
 	}
 	
@@ -116,6 +123,11 @@
 		if(checkBoxId && document.getElementById(checkBoxId)){
 			document.getElementById(checkBoxId).checked = true;
 			document.getElementById(checkBoxId).value = true;
+		}
+		
+		currentIdentifierCount --;
+		if(currentIdentifierCount < 2){
+			$j("#identifiersTbody > tr:visible > td:last-child > input.closeButton").hide();
 		}
 	}
 	
@@ -232,7 +244,7 @@
 	
 	<table cellspacing="0" cellpadding="7">
 	<tr>
-		<th class="headerCell"><spring:message code="Person.name"/></th>
+		<th class="headerCell" valign="top"><spring:message code="Person.name"/></th>
 		<td class="inputCell">
 			<table cellspacing="2">				
 				<thead>
@@ -245,7 +257,7 @@
 		</td>		
 	</tr>
 	<tr>
-		<th class="headerCell"><spring:message code="PatientIdentifier.title.endUser"/></th>
+		<th class="headerCell" valign="top"><spring:message code="PatientIdentifier.title.endUser"/></th>
 		<td class="inputCell">
 			<table id="identifiers" cellspacing="2">
 				<tr>
@@ -263,9 +275,8 @@
 				<tbody id="identifiersTbody">
 					<c:forEach var="id" items="${patientModel.identifiers}" varStatus="varStatus">
 					<%-- Don't display new identifiers that have been removed from the UI in previous submits that had errors--%>
-					<c:if test="${!id.voided}">
 					<spring:nestedPath path="identifiers[${varStatus.index}]">
-					<tr id="existingIdentifiersRow[${varStatus.index}]">					
+					<tr id="existingIdentifiersRow[${varStatus.index}]" <c:if test="${id.voided}">style='display: none'</c:if>>					
 					<td valign="top">						
 						<spring:bind path="identifier">
 						<input type="text" size="30" name="${status.expression}" value="${status.value}" />					
@@ -280,7 +291,7 @@
 					</td>
 					<td valign="top">
 						<c:set var="behavior" value="${id.identifierType.locationBehavior}"/>
-						<div id="initialLocationBox${varStatus.index}" style="${behavior == 'REQUIRED' ? '' : 'display:none;'}">
+						<div id="initialLocationBox${varStatus.index}" style="${(behavior == 'NOT_USED' || empty id.identifierType) ? 'display:none;' : ''}">
 							<form:select path="location">
 								<form:option value=""></form:option>
 								<form:options items="${locations}" itemValue="locationId" itemLabel="name" />
@@ -306,13 +317,12 @@
 					<td valign="middle">
 						<spring:bind path="voided">
 						<input type="hidden" name="_${status.expression}" value=""/>		
-						<input id="identifiers[${varStatus.index}].isVoided" type="checkbox" name="${status.expression}" value="false" style="display:none"/>						
-						<input type="button" name="closeButton" onClick="removeRow(this, 'identifiers[${varStatus.index}].isVoided');" class="closeButton" value='<spring:message code="general.remove"/>'/>
+						<input id="identifiers[${varStatus.index}].isVoided" type="checkbox" name="${status.expression}" value="${status.value}" <c:if test="${id.voided}">checked='checked'</c:if> style="display:none"/>						
+						<input type="button" name="closeButton" onClick="removeRow(this, 'identifiers[${varStatus.index}].isVoided');" class="closeButton" value='<spring:message code="general.remove"/>' <c:if test="${(varStatus.first && varStatus.last)}">style="display: none;"</c:if> />
 						</spring:bind>
 					</td>
 					</tr>
 					</spring:nestedPath>
-					</c:if>
 					</c:forEach>
 					
 					<%-- The row from which to clone new identifiers --%>
@@ -360,7 +370,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th class="headerCell"><spring:message code="patientDashboard.demographics"/></th>
+		<th class="headerCell" valign="top"><spring:message code="patientDashboard.demographics"/></th>
 		<td class="inputCell">
 			<table>
 				<tr>
@@ -426,7 +436,7 @@
 	</tr>
 
 	<tr>
-		<th class="headerCell"><spring:message code="Person.address"/></th>
+		<th class="headerCell" valign="top"><spring:message code="Person.address"/></th>
 		<td class="inputCell">
 			<spring:nestedPath path="personAddress">
 				<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=false" />
@@ -558,6 +568,10 @@
 
 <script type="text/javascript">
 	updateAge();
+	var idT = document.getElementById('identifiers0.identifierType');
+	var idTi = idT.options[idT.selectedIndex].value;
+	toggleLocationBox(idTi,'initialLocationBox0');
+
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

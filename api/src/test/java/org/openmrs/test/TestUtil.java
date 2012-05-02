@@ -25,6 +25,7 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -189,5 +190,35 @@ public class TestUtil {
 		}
 		gp.setPropertyValue(value);
 		Context.getAdministrationService().saveGlobalProperty(gp);
+	}
+	
+	/**
+	 * Utility method to check if a list contains a BaseOpenmrsObject using the id
+	 * @param list
+	 * @param id
+	 * @return true if list contains object with the id else false
+	 */
+	public static boolean containsId(Collection<? extends BaseOpenmrsObject> list, Integer id) {
+		for (BaseOpenmrsObject baseOpenmrsObject : list) {
+			if (baseOpenmrsObject.getId().equals(id)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Waits until the System.currentTimeMillis() results has changed. Useful because the
+	 * granularity of the clock on some systems is low, so doing a Thread.sleep(10) may not give you
+	 * a different clock value, for example.
+	 */
+	public static void waitForClockTick() {
+		long t = System.currentTimeMillis();
+		while (System.currentTimeMillis() == t) {
+			try {
+				Thread.sleep(1);
+			}
+			catch (InterruptedException ex) {}
+		}
 	}
 }

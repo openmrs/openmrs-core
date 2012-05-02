@@ -14,25 +14,46 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.Person;
 import org.openmrs.Program;
+import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
+import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.customdatatype.CustomDatatype.Summary;
+import org.openmrs.customdatatype.CustomDatatypeHandler;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.CustomValueDescriptor;
+import org.openmrs.customdatatype.DownloadableDatatypeHandler;
+import org.openmrs.customdatatype.SingleCustomValue;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.JavaScriptUtils;
 
@@ -51,9 +72,15 @@ public class FormatTag extends TagSupport {
 	
 	private String var;
 	
+	private Object object;
+	
 	private Integer conceptId;
 	
 	private Concept concept;
+	
+	private String withConceptNameType;
+	
+	private String withConceptNameTag;
 	
 	private Obs obsValue;
 	
@@ -95,9 +122,24 @@ public class FormatTag extends TagSupport {
 	
 	private Boolean javaScriptEscape = Boolean.FALSE;
 	
+	private Integer providerId;
+	
+	private Provider provider;
+	
+	private Map<EncounterRole, Set<Provider>> encounterProviders;
+	
+	private Form form;
+	
+	private SingleCustomValue<?> singleCustomValue;
+	
 	@Override
 	public int doStartTag() {
 		StringBuilder sb = new StringBuilder();
+		
+		if (object != null) {
+			printObject(sb, object);
+		}
+		
 		if (conceptId != null)
 			concept = Context.getConceptService().getConcept(conceptId);
 		if (concept != null) {
@@ -120,13 +162,7 @@ public class FormatTag extends TagSupport {
 		if (encounterId != null)
 			encounter = Context.getEncounterService().getEncounter(encounterId);
 		if (encounter != null) {
-			printMetadata(sb, encounter.getEncounterType());
-			sb.append(" @");
-			printMetadata(sb, encounter.getLocation());
-			sb.append(" | ");
-			printDate(sb, encounter.getEncounterDatetime());
-			sb.append(" | ");
-			printPerson(sb, encounter.getProvider());
+			printEncounter(sb, encounter);
 		}
 		
 		if (encounterTypeId != null)
@@ -144,11 +180,7 @@ public class FormatTag extends TagSupport {
 		if (visitId != null)
 			visit = Context.getVisitService().getVisit(visitId);
 		if (visit != null) {
-			printMetadata(sb, visit.getVisitType());
-			sb.append(" @");
-			printMetadata(sb, visit.getLocation());
-			sb.append(" | ");
-			printDate(sb, visit.getStartDatetime());
+			printVisit(sb, visit);
 		}
 		
 		if (locationId != null)
@@ -166,11 +198,24 @@ public class FormatTag extends TagSupport {
 		if (programId != null)
 			program = Context.getProgramWorkflowService().getProgram(programId);
 		if (program != null) {
-			if (StringUtils.hasText(program.getName())) {
-				printMetadata(sb, program);
-			} else if (program.getConcept() != null) {
-				printConcept(sb, program.getConcept());
-			}
+			printProgram(sb, program);
+		}
+		
+		if (providerId != null)
+			provider = Context.getProviderService().getProvider(providerId);
+		if (provider != null)
+			printProvider(sb, provider);
+		
+		if (encounterProviders != null) {
+			printEncounterProviders(sb, encounterProviders);
+		}
+		
+		if (form != null) {
+			printForm(sb, form);
+		}
+		
+		if (singleCustomValue != null) {
+			printSingleCustomValue(sb, singleCustomValue);
 		}
 		
 		if (StringUtils.hasText(var)) {
@@ -193,12 +238,179 @@ public class FormatTag extends TagSupport {
 	}
 	
 	/**
-	 * Formats a Concept and prints it to sb
+	 * Formats anything and prints it to string builder. (Delegates to other methods here)
+	 * @param sb the string builder to print object with
+	 * @param o the object to print
+	 */
+	private void printObject(StringBuilder sb, Object o) {
+		if (o instanceof Collection<?>) {
+			for (Iterator<?> i = ((Collection<?>) o).iterator(); i.hasNext();) {
+				printObject(sb, i.next());
+				if (i.hasNext())
+					sb.append(", ");
+			}
+		} else if (o instanceof Date) {
+			printDate(sb, (Date) o);
+		} else if (o instanceof Concept) {
+			printConcept(sb, (Concept) o);
+		} else if (o instanceof Obs) {
+			sb.append(((Obs) o).getValueAsString(Context.getLocale()));
+		} else if (o instanceof User) {
+			printUser(sb, (User) o);
+		} else if (o instanceof Encounter) {
+			printEncounter(sb, (Encounter) o);
+		} else if (o instanceof Visit) {
+			printVisit(sb, (Visit) o);
+		} else if (o instanceof Program) {
+			printProgram(sb, (Program) o);
+		} else if (o instanceof Provider) {
+			printProvider(sb, (Provider) o);
+		} else if (o instanceof Form) {
+			printForm(sb, (Form) o);
+		} else if (o instanceof SingleCustomValue<?>) {
+			printSingleCustomValue(sb, (SingleCustomValue<?>) o);
+		} else if (o instanceof OpenmrsMetadata) {
+			printMetadata(sb, (OpenmrsMetadata) o);
+		} else {
+			sb.append("" + o);
+		}
+	}
+	
+	/**
+	 * Prints encounter into via given string builder
+	 * 
+	 * @param sb the string builder object to print encounter value with
+	 * @param encounter the encounter to print
+	 */
+	private void printEncounter(StringBuilder sb, Encounter encounter) {
+		printMetadata(sb, encounter.getEncounterType());
+		sb.append(" @");
+		printMetadata(sb, encounter.getLocation());
+		sb.append(" | ");
+		printDate(sb, encounter.getEncounterDatetime());
+		sb.append(" | ");
+		printPerson(sb, encounter.getProvider());
+	}
+	
+	/**
+	 * Prints visit via given string builder
+	 * 
+	 * @param sb the string builder to print visit with
+	 * @param visit the visit object to print
+	 */
+	private void printVisit(StringBuilder sb, Visit visit) {
+		printMetadata(sb, visit.getVisitType());
+		sb.append(" @");
+		printMetadata(sb, visit.getLocation());
+		sb.append(" | ");
+		printDate(sb, visit.getStartDatetime());
+	}
+	
+	/**
+	 * Prints program via given string builder
+	 * 
+	 * @param sb the string builder to print program with
+	 * @param program the program object to print
+	 */
+	private void printProgram(StringBuilder sb, Program program) {
+		if (StringUtils.hasText(program.getName())) {
+			printMetadata(sb, program);
+		} else if (program.getConcept() != null) {
+			printConcept(sb, program.getConcept());
+		}
+	}
+	
+	/**
+	 * Formats a {@link Form} and prints it to sb
+	 * 
+	 * @param sb
+	 * @param form
+	 */
+	private void printForm(StringBuilder sb, Form form) {
+		sb.append(form.getName() + " (v" + form.getVersion() + ")");
+	}
+	
+	/**
+	 * Formats a {@link SingleCustomValue} and prints it to sb
+	 * 
+	 * @param sb
+	 * @param val
+	 */
+	@SuppressWarnings( { "rawtypes", "unchecked" })
+	private void printSingleCustomValue(StringBuilder sb, SingleCustomValue<?> val) {
+		CustomValueDescriptor descriptor = val.getDescriptor();
+		CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(descriptor);
+		CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(descriptor);
+		if (handler != null && handler instanceof HtmlDisplayableDatatypeHandler) {
+			Summary summary = ((HtmlDisplayableDatatypeHandler) handler).toHtmlSummary(datatype, val.getValueReference());
+			if (summary.isComplete()) {
+				sb.append(summary);
+			} else {
+				sb.append(summary);
+				sb.append("...");
+				if (handler instanceof HtmlDisplayableDatatypeHandler) {
+					String link = "viewCustomValue.form?handler=" + handler.getClass().getName() + "&datatype="
+					        + datatype.getClass().getName() + "&value=" + val.getValueReference();
+					sb.append(" (<a target=\"_blank\" href=\"" + link + "\">"
+					        + Context.getMessageSourceService().getMessage("general.view") + "</a>)");
+				}
+				if (handler instanceof DownloadableDatatypeHandler) {
+					String link = "downloadCustomValue.form?handler=" + handler.getClass().getName() + "&datatype="
+					        + datatype.getClass().getName() + "&value=" + val.getValueReference();
+					sb.append(" (<a href=\"" + link + "\">"
+					        + Context.getMessageSourceService().getMessage("general.download") + "</a>)");
+				}
+			}
+		} else if (datatype != null) {
+			Summary summary = datatype.getTextSummary(val.getValueReference());
+			if (summary.isComplete()) {
+				sb.append(summary);
+			} else {
+				sb.append(summary);
+				sb.append("...");
+			}
+		} else {
+			sb.append(Context.getMessageSourceService().getMessage("CustomDatatype.error.missingDatatype",
+			    new Object[] { descriptor.getDatatypeClassname() }, Context.getLocale()));
+			sb.append(val.getValueReference());
+		}
+	}
+	
+	/**
+	 * Formats a Concept and prints it to sb, respecting conceptNameType and conceptNameTag if they are
+	 * specified and a match is found. (This will always prints something.)
 	 * 
 	 * @param sb
 	 * @param concept
+	 * @should print the name with the correct name and type
 	 */
 	protected void printConcept(StringBuilder sb, Concept concept) {
+		Locale loc = Context.getLocale();
+		
+		if (withConceptNameType != null || withConceptNameTag != null) {
+			ConceptNameType lookForNameType = null;
+			
+			if (withConceptNameType != null) {
+				lookForNameType = ConceptNameType.valueOf(withConceptNameType);
+			}
+			
+			ConceptNameTag lookForNameTag = null;
+			if (withConceptNameTag != null)
+				lookForNameTag = Context.getConceptService().getConceptNameTagByName(withConceptNameTag);
+			
+			ConceptName name = concept.getName(loc, lookForNameType, lookForNameTag);
+			if (name != null) {
+				sb.append(name.getName());
+				return;
+			}
+		}
+		
+		ConceptName name = concept.getPreferredName(loc);
+		if (name != null) {
+			sb.append(name.getName());
+			return;
+		}
+		
 		sb.append(concept.getDisplayString());
 	}
 	
@@ -249,7 +461,140 @@ public class FormatTag extends TagSupport {
 	 * @param p
 	 */
 	private void printPerson(StringBuilder sb, Person p) {
-		sb.append(p.getPersonName());
+		if (p != null)
+			sb.append(p.getPersonName());
+	}
+	
+	/**
+	 * formats a provider and prints him or her to a string builder
+	 * 
+	 * @param sb the string builder
+	 * @param p the provider
+	 */
+	private void printProvider(StringBuilder sb, Provider p) {
+		if (p != null)
+			sb.append(getProviderName(p));
+	}
+	
+	/**
+	 * formats encounter providers and prints them to a string builder
+	 * 
+	 * @param sb the string builder
+	 * @param eps the encounter providers.
+	 */
+	private void printEncounterProviders(StringBuilder sb, Map<EncounterRole, Set<Provider>> eps) {
+		if (eps != null) {
+			
+			LinkedHashSet<Provider> providerList = getDisplayEncounterProviders(eps);
+			
+			String providers = null;
+			for (Provider provider : providerList) {
+				if (providers == null) {
+					providers = "";
+				} else {
+					providers += ", ";
+				}
+				
+				providers += getProviderName(provider);
+			}
+			
+			if (providers != null) {
+				sb.append(providers);
+			}
+		}
+	}
+	
+	/**
+	 * Gets the name of a provider.
+	 * 
+	 * @param provider the provider.
+	 * @return the provider name.
+	 */
+	private String getProviderName(Provider provider) {
+		if (provider.getPerson() != null)
+			return provider.getPerson().getPersonName().getFullName();
+		else
+			return provider.getName();
+	}
+	
+	/**
+	 * Filters a list of encounter providers according to the global property 
+	 * which determines providers in which encounter roles to display.
+	 * 
+	 * @param eps the encounter providers to filter.
+	 * @return the filtered encounter providers.
+	 */
+	private LinkedHashSet<Provider> getDisplayEncounterProviders(Map<EncounterRole, Set<Provider>> encounterProviders) {
+		String encounterRoles = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES, null);
+		
+		if (!StringUtils.hasText(encounterRoles)) {
+			
+			//we do not filter if user has not yet set the global property.
+			LinkedHashSet<Provider> allProviders = new LinkedHashSet<Provider>();
+			
+			for (Set<Provider> providers : encounterProviders.values()) {
+				allProviders.addAll(providers);
+			}
+			
+			return allProviders;
+		}
+		
+		return filterProviders(encounterProviders, trimStringArray(encounterRoles.split(",")));
+	}
+	
+	/**
+	 * Filters and returns a list of providers from an encounter role provider map.
+	 * The filtering is based on a given array of encounter roles names or ids.
+	 * 
+	 * @param encounterProviders map of encounter role providers to filter.
+	 * @param rolesArray the roles string array.
+	 * @return a filtered list of providers.
+	 */
+	private LinkedHashSet<Provider> filterProviders(Map<EncounterRole, Set<Provider>> encounterProviders, String[] rolesArray) {
+		LinkedHashSet<Provider> filteredProviders = new LinkedHashSet<Provider>();
+		
+		Set<EncounterRole> roles = encounterProviders.keySet();
+		for (EncounterRole encounterRole : roles) {
+			if (containsRole(encounterRole, rolesArray)) {
+				filteredProviders.addAll(encounterProviders.get(encounterRole));
+			}
+		}
+		
+		return filteredProviders;
+	}
+	
+	/**
+	 * Checks if an encounter role has its name or id in a string array.
+	 * 
+	 * @param encounterRole the encounter role.
+	 * @param rolesArray the roles string array.
+	 * @return true if yes, else false.
+	 */
+	private boolean containsRole(EncounterRole encounterRole, String[] rolesArray) {
+		for (String role : rolesArray) {
+			//Check for name and id
+			if (role.equalsIgnoreCase(encounterRole.getName()) || role.equals(encounterRole.getId().toString())) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Trims elements of a string array.
+	 * 
+	 * @param unTrimmedArray the un trimmed array.
+	 * @return the trimmed array.
+	 */
+	private String[] trimStringArray(String[] unTrimmedArray) {
+		String[] trimmedArray = new String[unTrimmedArray.length];
+		for (int index = 0; index < unTrimmedArray.length; index++) {
+			trimmedArray[index] = unTrimmedArray[index].trim();
+		}
+		
+		return trimmedArray;
 	}
 	
 	@Override
@@ -260,8 +605,11 @@ public class FormatTag extends TagSupport {
 	
 	private void reset() {
 		var = null;
+		object = null;
 		conceptId = null;
 		concept = null;
+		withConceptNameType = null;
+		withConceptNameTag = null;
 		obsValue = null;
 		userId = null;
 		user = null;
@@ -279,6 +627,27 @@ public class FormatTag extends TagSupport {
 		visitTypeId = null;
 		visitId = null;
 		visit = null;
+		providerId = null;
+		provider = null;
+		encounterProviders = null;
+		form = null;
+		singleCustomValue = null;
+	}
+	
+	/**
+	 * Gets the object property
+	 * @return the object property value
+	 */
+	public Object getObject() {
+		return object;
+	}
+	
+	/**
+	 * Sets the object property
+	 * @param object the object to set
+	 */
+	public void setObject(Object object) {
+		this.object = object;
 	}
 	
 	public Integer getConceptId() {
@@ -498,4 +867,81 @@ public class FormatTag extends TagSupport {
 	public void setJavaScriptEscape(Boolean javaScriptEscape) {
 		this.javaScriptEscape = javaScriptEscape;
 	}
+	
+	/**
+	 * @since 1.9
+	 * @param encounterProviders the encounterProviders to set
+	 */
+	public Map<EncounterRole, Set<Provider>> getEncounterProviders() {
+		return encounterProviders;
+	}
+	
+	/**
+	 * @since 1.9
+	 * @return the encounterProviders
+	 */
+	public void setEncounterProviders(Map<EncounterRole, Set<Provider>> encounterProviders) {
+		this.encounterProviders = encounterProviders;
+	}
+	
+	/**
+	 * @return the withConceptNameType
+	 * @Since 1.9
+	 */
+	public String getWithConceptNameType() {
+		return withConceptNameType;
+	}
+	
+	/**
+	 * @param withConceptNameType the withConceptNameType to set
+	 * @Since 1.9
+	 */
+	public void setWithConceptNameType(String withConceptNameType) {
+		this.withConceptNameType = withConceptNameType;
+	}
+	
+	/**
+	 * @return the withConceptNameTag
+	 * @Since 1.9
+	 */
+	public String getWithConceptNameTag() {
+		return withConceptNameTag;
+	}
+	
+	/**
+	 * @param withConceptNameTag the withConceptNameTag to set
+	 * @Since 1.9
+	 */
+	public void setWithConceptNameTag(String withConceptNameTag) {
+		this.withConceptNameTag = withConceptNameTag;
+	}
+	
+	/**
+	 * @return the form
+	 */
+	public Form getForm() {
+		return form;
+	}
+	
+	/**
+	 * @param form the form to set
+	 */
+	public void setForm(Form form) {
+		this.form = form;
+	}
+	
+	/**
+	 * @return the singleCustomValue
+	 */
+	public SingleCustomValue<?> getSingleCustomValue() {
+		return singleCustomValue;
+	}
+	
+	/**
+	 * @param singleCustomValue the singleCustomValue to set
+	 */
+	public void setSingleCustomValue(SingleCustomValue<?> singleCustomValue) {
+		this.singleCustomValue = singleCustomValue;
+	}
+	
 }

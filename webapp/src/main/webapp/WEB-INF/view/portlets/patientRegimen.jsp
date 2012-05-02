@@ -63,7 +63,8 @@
 									<tr class="patientAddFlexibleRow">
 										<td class="patientAddFlexibleData"><spring:message code="DrugOrder.drug"/></td>						
 										<td class="patientAddFlexibleData">
-											<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="drug" val="" parameters="includeVoided=false|noBind=true|optionHeader=[blank]|onChange=updateAddFields('drug','units','frequency')" />
+											<input id="drugDisplay" type="text" />
+											<input id="drug" type="hidden" name="drug" />
 										</td>
 									</tr>
 									<tr class="patientAddFlexibleRow">
@@ -166,15 +167,9 @@
 		var hasOrders = ${fn:length(model.currentDrugOrders)};
 		//alert("hasOrders starting as " + hasOrders);
 		
-		function updateAddFields(drugFieldId, unitsFieldId, frequencyDayFieldId, frequencyWeekFieldId) {
-			var drugId = dwr.util.getValue(drugFieldId);
-			gUnitsFieldId = unitsFieldId;
-			DWROrderService.getUnitsByDrugId(drugId, setUnitsField);
-		}
-		
-		function setUnitsField(unitsText) {
-			dwr.util.setValue(gUnitsFieldId + "Span", unitsText);
-			dwr.util.setValue(gUnitsFieldId, unitsText);
+		function setUnitsField(drug) {
+			dwr.util.setValue("unitsSpan", drug.units);
+			dwr.util.setValue('units', drug.units);
 			hideOtherStandards("New");
 			showAppropriateActions("New");
 		}
@@ -194,6 +189,8 @@
 
 		function cancelNewOrder() {
 			blankAddNewOrder('drug', 'brandName', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate');
+			dwr.util.setValue('drugDisplay','');
+			dwr.util.setValue("unitsSpan", '');
 			hideDiv("addNew");
 			hideDiv("actionNew");
 			hideDiv("reasNew");
@@ -354,6 +351,8 @@
 				}
 				hideDiv('cancelNew');
 				hideDiv('actionNew');
+				dwr.util.setValue('drugDisplay','');
+				dwr.util.setValue("unitsSpan", '');
 				showHideOtherStandards("New");
 			} else {
 				if ( drugId == '' ) alert("<spring:message code="DrugOrder.add.error.missingDrug" />");
@@ -376,6 +375,9 @@
 		function addNewComponent() {
 			handleAddDrugOrder(${model.patientId}, 'drug', 'brandName', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate');
 		}
+		
+		//register an autocomplete feature to the drug input test field
+		addAutoComplete('drugDisplay', 'drug', new CreateCallback().drugCallback(), 'drugId', '<spring:message code="ConceptDrug.enterName" />', setUnitsField);
 
 		// end -->
 		

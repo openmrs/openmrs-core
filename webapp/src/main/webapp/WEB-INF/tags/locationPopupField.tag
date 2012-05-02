@@ -37,11 +37,21 @@
 				</c:if>
 			}
 		});
+		
+		//Clear hidden value on losing focus with no valid entry
+		$j("#${displayFieldId}").autocomplete().blur(function(event, ui) {
+			if (!event.target.value) {
+				jquerySelectEscaped('${formFieldId}').val('');
+			}
+		});
 
 		// get the name of the location that they passed in the id for
 		<c:if test="${not empty initialValue}">
 			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
-			DWRLocationService.getLocation("${initialValue}", function(loc) { jquerySelectEscaped("${displayFieldId}").val(loc.name);});
+			DWRLocationService.getLocation("${initialValue}", function(loc) { 
+				jquerySelectEscaped("${displayFieldId}").val(loc.name);
+				jquerySelectEscaped("${displayFieldId}").autocomplete("option", "initialValue", loc.name);
+			});
 		</c:if>
 		
 	})

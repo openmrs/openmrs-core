@@ -491,30 +491,27 @@ public class ModuleClassLoader extends URLClassLoader {
 			return result;
 		}
 		
-		synchronized (this) {
-			// we didn't find a loaded class and this isn't a class
-			// from another module
-			try {
-				result = findClass(name);
-			}
-			catch (LinkageError le) {
-				throw le;
-			}
-			catch (ClassNotFoundException cnfe) {
-				// ignore
+		// we didn't find a loaded class and this isn't a class
+		// from another module
+		try {
+			result = findClass(name);
+		}
+		catch (LinkageError le) {
+			throw le;
+		}
+		catch (ClassNotFoundException cnfe) {
+			// ignore
+		}
+		
+		// we were able to "find" a class
+		if (result != null) {
+			checkClassVisibility(result, requestor);
+			
+			if (resolve) {
+				resolveClass(result);
 			}
 			
-			// we were able to "find" a class
-			if (result != null) {
-				checkClassVisibility(result, requestor);
-				
-				if (resolve) {
-					resolveClass(result);
-				}
-				
-				return result; // found class in this module
-			}
-			
+			return result; // found class in this module
 		}
 		
 		// initialize the array if need be
@@ -542,7 +539,7 @@ public class ModuleClassLoader extends URLClassLoader {
 					/*if (resolve) {
 						resolveClass(result);
 					}*/
-					break; // found class in publicly imported module
+					return result; // found class in required module
 				}
 			}
 		}
@@ -564,7 +561,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				/*if (resolve) {
 					resolveClass(result);
 				}*/
-				break; // found class in publicly imported module
+				return result; // found class in aware of module
 			}
 		}
 		
@@ -846,7 +843,7 @@ public class ModuleClassLoader extends URLClassLoader {
 					result = mcl.findResource(name, requestor, seenModules);
 				
 				if (result != null) {
-					break; // found resource in publicly imported module
+					return result; // found resource in required module
 				}
 			}
 		} else {
@@ -865,7 +862,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				result = mcl.findResource(name, requestor, seenModules);
 			
 			if (result != null) {
-				break; // found resource in publicly imported module
+				return result; // found resource in aware of module
 			}
 		}
 		

@@ -56,6 +56,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Patient patient6 = pService.getPatient(6);
 		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(2), Context
 		        .getLocationService().getLocation(1));
+		patientIdentifier6.setPreferred(true);
 		patient6.addIdentifier(patientIdentifier6);
 		pService.savePatient(patient6);
 		
@@ -87,6 +88,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Patient patient6 = pService.getPatient(6);
 		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(2), Context
 		        .getLocationService().getLocation(1));
+		patientIdentifier6.setPreferred(true);
 		patient6.addIdentifier(patientIdentifier6);
 		pService.savePatient(patient6);
 		
@@ -118,6 +120,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Patient patient6 = pService.getPatient(6);
 		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(2), Context
 		        .getLocationService().getLocation(1));
+		patientIdentifier6.setPreferred(true);
 		patient6.addIdentifier(patientIdentifier6);
 		pService.savePatient(patient6);
 		
@@ -148,6 +151,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Patient patient6 = pService.getPatient(6);
 		PersonName name6 = new PersonName("acats", "and", "dogs");
 		patient6.addName(name6);
+		patient6.getPatientIdentifier().setPreferred(true);
 		pService.savePatient(patient6);
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
@@ -176,6 +180,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Patient patient6 = pService.getPatient(6);
 		PersonName name6 = new PersonName("acats", "and", "dogs");
 		patient6.addName(name6);
+		patient6.getPatientIdentifier().setPreferred(true);
 		pService.savePatient(patient6);
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
@@ -205,6 +210,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Patient patient6 = pService.getPatient(6);
 		PersonName name6 = new PersonName("acats", "and", "dogs");
 		patient6.addName(name6);
+		patient6.getPatientIdentifier().setPreferred(true);
 		pService.savePatient(patient6);
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();

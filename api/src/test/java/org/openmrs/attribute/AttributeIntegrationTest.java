@@ -1,17 +1,17 @@
 package org.openmrs.attribute;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.BaseCustomizableData;
-import org.openmrs.attribute.handler.AttributeHandler;
+import org.openmrs.Visit;
+import org.openmrs.VisitAttribute;
+import org.openmrs.VisitAttributeType;
+import org.openmrs.api.APIException;
+import org.openmrs.api.VisitService;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
@@ -20,80 +20,42 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 	
-	@Test(expected = InvalidAttributeValueException.class)
-	public void shouldTestAttributeHandler() throws Exception {
-		Visit visit = new Visit();
-		VisitAttributeType paymentDateAttrType = new VisitAttributeType();
-		paymentDateAttrType.setDatatype("date");
+	VisitService service;
+	
+	@Before
+	public void before() {
+		service = Context.getVisitService();
+	}
+	
+	@Test
+	public void shouldTestAddingAnAttributeToSomethingAndSavingIt() throws Exception {
+		Visit visit = service.getVisit(1);
+		VisitAttributeType auditDate = service.getVisitAttributeType(1);
+		
+		VisitAttribute legalDate = new VisitAttribute();
+		legalDate.setAttributeType(auditDate);
+		// try using a subclass of java.util.Date, to make sure the handler can take subclasses.
+		legalDate.setValue(new java.sql.Date(new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-15").getTime()));
+		visit.addAttribute(legalDate);
+		
+		service.saveVisit(visit);
+		
+		// saving the visit should have caused the date to be validated and saved
+		Assert.assertNotNull(legalDate.getValueReference());
+		Assert.assertEquals("2011-04-15", legalDate.getValueReference());
+		
+		VisitAttribute badDate = new VisitAttribute();
+		badDate.setAttributeType(auditDate);
+		// no value
+		visit.addAttribute(badDate);
 		
 		try {
-			VisitAttribute legalDate = new VisitAttribute();
-			legalDate.setAttributeType(paymentDateAttrType);
-			// try using a subclass of java.util.Date, to make sure the handler can take subclasses.
-			legalDate.setObjectValue(new java.sql.Date(new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-15").getTime()));
-			Assert.assertEquals("2011-04-15", legalDate.getSerializedValue());
-			Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-15"), legalDate.getObjectValue());
-			visit.addAttribute(legalDate);
+			service.saveVisit(visit);
+			Assert.fail("Should have failed because of bad date attribute");
 		}
-		catch (InvalidAttributeValueException ex) {
-			Assert.fail("should not fail on a legal date");
-		}
-		Assert.assertEquals(1, visit.getAttributes().size());
-		
-		VisitAttribute illegalDate = new VisitAttribute();
-		illegalDate.setAttributeType(paymentDateAttrType);
-		illegalDate.setObjectValue(new Date(System.currentTimeMillis() + 100000));
-	}
-	
-	/**
-	 * A parent class
-	 */
-	class Visit extends BaseCustomizableData<VisitAttribute> {
-		
-		@Override
-		public Integer getId() {
-			// not needed for testing
-			return null;
-		}
-		
-		@Override
-		public void setId(Integer id) {
-			// not needed for testing
-		}
-		
-	}
-	
-	/**
-	 * Attribute type for the parent class
-	 */
-	class VisitAttributeType extends BaseAttributeType<Visit> {
-		
-		@Override
-		public Integer getId() {
-			// not needed for testing
-			return null;
-		}
-		
-		@Override
-		public void setId(Integer id) {
-			// not needed for testing
+		catch (APIException ex) {
+			// expected this
 		}
 	}
 	
-	/**
-	 * Attribute value for the parent class
-	 */
-	class VisitAttribute extends BaseAttribute<Visit> {
-		
-		@Override
-		public Integer getId() {
-			// not needed for testing
-			return null;
-		}
-		
-		@Override
-		public void setId(Integer id) {
-			// not needed for testing
-		}
-	}
 }

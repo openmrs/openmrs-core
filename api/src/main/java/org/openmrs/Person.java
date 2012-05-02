@@ -113,6 +113,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 			return;
 		
 		personId = person.getPersonId();
+		setUuid(person.getUuid());
 		addresses = person.getAddresses();
 		names = person.getNames();
 		attributes = person.getAttributes();
@@ -146,39 +147,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public Person(Integer personId) {
 		this.personId = personId;
-	}
-	
-	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @should equal person with same person id
-	 * @should not equal person with different person id
-	 * @should not equal on null
-	 * @should equal person objects with no person id
-	 * @should not equal person objects when one has null person id
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof Person) {
-			Person person = (Person) obj;
-			
-			if (getPersonId() != null && person.getPersonId() != null)
-				return personId.equals(person.getPersonId());
-		}
-		
-		// if personId is null for either object, for equality the
-		// two objects must be the same
-		return this == obj;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 * @should have same hashcode when equal
-	 * @should have different hash code when not equal
-	 * @should get hash code with null attributes
-	 */
-	public int hashCode() {
-		if (this.getPersonId() == null)
-			return super.hashCode();
-		return this.getPersonId().hashCode();
 	}
 	
 	// Property accessors

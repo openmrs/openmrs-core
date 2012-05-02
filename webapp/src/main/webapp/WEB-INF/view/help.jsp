@@ -20,6 +20,8 @@
 	<li><h4><spring:message code="help.guides.text"/></h4></li>
 	<br/>
 	<ul>
+	<li><a href="http://go.openmrs.org/guide"><spring:message code="help.getting.started.guide.text"/></a></li>
+	<br/>
 	<li><a href="https://wiki.openmrs.org/x/GwAJ"><spring:message code="help.user.text"/></a></li>
 	<br/>
 	<li><a href="https://wiki.openmrs.org/x/FgAJ"><spring:message code="help.developer.text"/></a></li>

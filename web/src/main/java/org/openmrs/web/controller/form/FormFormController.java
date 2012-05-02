@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller.form;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
@@ -35,7 +35,6 @@ import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
-import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -43,8 +42,6 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -87,23 +84,8 @@ public class FormFormController extends SimpleFormController {
 			} else {
 				if (action.equals(msa.getMessage("Form.save"))) {
 					try {
-						MultipartFile xsltFile = null;
-						
-						// retrieve xslt from request if it was uploaded
-						if (request instanceof MultipartHttpServletRequest) {
-							MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-							xsltFile = multipartRequest.getFile("xslt_file");
-						}
-						
 						// save form
 						form = Context.getFormService().saveForm(form);
-						
-						if (xsltFile != null && !xsltFile.isEmpty()) {
-							String xslt = IOUtils.toString(xsltFile.getInputStream());
-							Context.getFormService().saveFormResource(form, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
-							    FormConstants.FORM_RESOURCE_FORMENTRY_XSLT, xslt);
-						}
-						
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
 					}
 					catch (Exception e) {
@@ -166,7 +148,36 @@ public class FormFormController extends SimpleFormController {
 	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		return getForm(request);
+	}
+	
+	@Override
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		List<FieldType> fieldTypes = new Vector<FieldType>();
+		List<EncounterType> encTypes = new Vector<EncounterType>();
+		
+		if (Context.isAuthenticated()) {
+			fieldTypes = Context.getFormService().getAllFieldTypes();
+			encTypes = Context.getEncounterService().getAllEncounterTypes();
+		}
+		
+		map.put("fieldTypes", fieldTypes);
+		map.put("encounterTypes", encTypes);
+		map.put("isBasicForm", isBasicForm(getForm(request)));
+		
+		return map;
+	}
+	
+	/**
+	 * Gets the form for a given http request.
+	 * 
+	 * @param request the http request.
+	 * @return the form.
+	 */
+	private Form getForm(HttpServletRequest request) {
 		Form form = null;
 		
 		if (Context.isAuthenticated()) {
@@ -187,22 +198,23 @@ public class FormFormController extends SimpleFormController {
 		return form;
 	}
 	
-	@Override
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
-		
-		Map<String, Object> map = new HashMap<String, Object>();
-		
-		List<FieldType> fieldTypes = new Vector<FieldType>();
-		List<EncounterType> encTypes = new Vector<EncounterType>();
-		
-		if (Context.isAuthenticated()) {
-			fieldTypes = Context.getFormService().getAllFieldTypes();
-			encTypes = Context.getEncounterService().getAllEncounterTypes();
+	/**
+	 * Checks if a form is a read only basic form installed with demo data.
+	 * 
+	 * @param form the form.
+	 * @return true if this is the demo data basic form, else false.
+	 */
+	private boolean isBasicForm(Form form) {
+		if (form.getFormId() == null || form.getCreator() == null || form.getCreator().getUserId() == null
+		        || form.getChangedBy() == null || form.getDateChanged() == null || form.getBuild() == null) {
+			return false;
 		}
 		
-		map.put("fieldTypes", fieldTypes);
-		map.put("encounterTypes", encTypes);
+		Calendar calender = Calendar.getInstance();
+		calender.setTime(form.getDateCreated());
 		
-		return map;
+		return form.getFormId().intValue() == 1 && form.getCreator().getUserId().intValue() == 1
+		        && calender.get(Calendar.YEAR) == 2006 && calender.get(Calendar.MONTH) == 6
+		        && calender.get(Calendar.DAY_OF_MONTH) == 18 && form.getBuild().intValue() == 1;
 	}
 }

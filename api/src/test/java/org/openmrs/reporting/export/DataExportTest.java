@@ -627,7 +627,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
-		String expectedOutput = "PATIENT_ID	\"FOOD ASSISTANCE\"	\"DATE OF FOOD ASSISTANCE\"	\"FAVORITE FOOD, NON-CODED\"	\"WEIGHT\"\n7	1.0	14/08/2008	PB and J	50.0\n8				\n";
+		String expectedOutput = "PATIENT_ID	\"FOOD ASSISTANCE\"	\"DATE OF FOOD ASSISTANCE\"	\"FAVORITE FOOD, NON-CODED\"	\"WEIGHT\"\n7	YES	14/08/2008	PB and J	50.0\n8				\n";
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		

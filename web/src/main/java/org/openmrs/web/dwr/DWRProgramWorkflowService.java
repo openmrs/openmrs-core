@@ -23,6 +23,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
@@ -41,6 +42,18 @@ public class DWRProgramWorkflowService {
 	
 	public PatientProgramItem getPatientProgram(Integer patientProgramId) {
 		return new PatientProgramItem(Context.getProgramWorkflowService().getPatientProgram(patientProgramId));
+	}
+	
+	public Vector<ListItem> getPossibleOutcomes(Integer programId) {
+		Vector<ListItem> ret = new Vector<ListItem>();
+		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(programId);
+		for (Concept possibleOutcome : possibleOutcomes) {
+			ListItem li = new ListItem();
+			li.setName(possibleOutcome.getName().getName());
+			li.setId(possibleOutcome.getConceptId());
+			ret.add(li);
+		}
+		return ret;
 	}
 	
 	public Vector<PatientStateItem> getPatientStates(Integer patientProgramId, Integer programWorkflowId) {
@@ -108,55 +121,39 @@ public class DWRProgramWorkflowService {
 	}
 	
 	/**
-	 * Updates enrollment date and completion date for a PatientProgram. Compares @param
-	 * enrollmentDateYmd with {@link PatientProgram#getDateEnrolled()} and compares @param
-	 * completionDateYmd with {@link PatientProgram#getDateCompleted()} . At least one of these
-	 * comparisons must return true in order to update the PatientProgram. In other words, if
-	 * neither the @param enrollmentDateYmd or the @param completionDateYmd match with the persisted
-	 * object, then the PatientProgram will not be updated. Also, if the enrollment date comes after
-	 * the completion date, the PatientProgram will not be updated.
-	 * 
-	 * @deprecated use {@link #updatePatientProgram(Integer, String, String, Integer)}
-	 * @param patientProgramId
-	 * @param enrollmentDateYmd
-	 * @param completionDateYmd
-	 * @throws ParseException
-	 */
-	@Deprecated
-	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd)
-	        throws ParseException {
-		updatePatientProgram(patientProgramId, enrollmentDateYmd, completionDateYmd, null);
-	}
-	
-	/**
 	 * Updates enrollment date, completion date, and location for a PatientProgram. Compares @param
 	 * enrollmentDateYmd with {@link PatientProgram#getDateEnrolled()} compares @param
 	 * completionDateYmd with {@link PatientProgram#getDateCompleted()}, compares @param locationId
-	 * with {@link PatientProgram#getLocation()}. At least one of these comparisons must indicate a
-	 * change in order to update the PatientProgram. In other words, if neither the @param
-	 * enrollmentDateYmd, the @param completionDateYmd, or the
-	 * 
-	 * @param locationId match with the persisted object, then the PatientProgram will not be
-	 *            updated. Also, if the enrollment date comes after the completion date, the
-	 *            PatientProgram will not be updated.
+	 * with {@link PatientProgram#getLocation()}, compares @param outcomeId with {@link org.openmrs.PatientProgram#getOutcome()}.
+	 * At least one of these comparisons must indicate a change in order to update the PatientProgram. In other words, if neither the @param
+	 * enrollmentDateYmd, the @param completionDateYmd, or the @param locationId or the @param outcomeId
+	 * match with the persisted object, then the PatientProgram will not be updated.
+	 * <p>Also, if the enrollment date comes after the completion date, the PatientProgram will not be updated.</p>
+	 *
 	 * @param patientProgramId
 	 * @param enrollmentDateYmd
 	 * @param completionDateYmd
 	 * @param locationId
+	 * @param outcomeId
 	 * @throws ParseException
 	 */
 	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd,
-	        Integer locationId) throws ParseException {
+	        Integer locationId, Integer outcomeId) throws ParseException {
 		PatientProgram pp = Context.getProgramWorkflowService().getPatientProgram(patientProgramId);
 		Location loc = null;
 		if (locationId != null) {
 			loc = Context.getLocationService().getLocation(locationId);
+		}
+		Concept outcomeConcept = null;
+		if (outcomeId != null) {
+			outcomeConcept = Context.getConceptService().getConcept(outcomeId);
 		}
 		Date dateEnrolled = null;
 		Date dateCompleted = null;
 		Date ppDateEnrolled = null;
 		Date ppDateCompleted = null;
 		Location ppLocation = pp.getLocation();
+		Concept ppOutcome = pp.getOutcome();
 		// If persisted date enrolled is not null then parse to ymdDf format.
 		if (null != pp.getDateEnrolled()) {
 			String enrolled = ymdDf.format(pp.getDateEnrolled());
@@ -179,6 +176,7 @@ public class DWRProgramWorkflowService {
 		boolean anyChange = OpenmrsUtil.nullSafeEquals(dateEnrolled, ppDateEnrolled);
 		anyChange |= OpenmrsUtil.nullSafeEquals(dateCompleted, ppDateCompleted);
 		anyChange |= OpenmrsUtil.nullSafeEquals(loc, ppLocation);
+		anyChange |= OpenmrsUtil.nullSafeEquals(outcomeConcept, ppOutcome);
 		// Do not update if the enrollment date is after the completion date.
 		if (null != dateEnrolled && null != dateCompleted && dateCompleted.before(dateEnrolled)) {
 			anyChange = false;
@@ -187,6 +185,7 @@ public class DWRProgramWorkflowService {
 			pp.setDateEnrolled(dateEnrolled);
 			pp.setDateCompleted(dateCompleted);
 			pp.setLocation(loc);
+			pp.setOutcome(outcomeConcept);
 			Context.getProgramWorkflowService().savePatientProgram(pp);
 		}
 	}
@@ -196,6 +195,9 @@ public class DWRProgramWorkflowService {
 		Context.getProgramWorkflowService().voidPatientProgram(p, reason);
 	}
 	
+	/**
+	 * @should return a list consisting of active, not retired, states.
+	 */
 	public Vector<ListItem> getPossibleNextStates(Integer patientProgramId, Integer programWorkflowId) {
 		Vector<ListItem> ret = new Vector<ListItem>();
 		PatientProgram pp = Context.getProgramWorkflowService().getPatientProgram(patientProgramId);
@@ -205,10 +207,14 @@ public class DWRProgramWorkflowService {
 			ListItem li = new ListItem();
 			li.setId(state.getProgramWorkflowStateId());
 			li.setName(state.getConcept().getName(Context.getLocale(), false).getName());
-			ret.add(li);
+			if (!state.isRetired() && !state.getConcept().isRetired()) {
+				ret.add(li);
+			}
 		}
 		return ret;
 	}
+	
+	//TODO there doesn't seem to be any way in the administrator interface to retire a state, just a concept.
 	
 	public void changeToState(Integer patientProgramId, Integer programWorkflowId, Integer programWorkflowStateId,
 	        String onDateDMY) throws ParseException {

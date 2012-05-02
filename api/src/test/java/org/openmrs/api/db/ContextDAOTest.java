@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -344,15 +345,9 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should throw a ContextAuthenticationException if username is white space", method = "authenticate(String,String)")
-	public void authenticate_shouldThrowAContextAuthenticationExceptionIfUsernameIsWhiteSpace() throws Exception {
-		//update a user with a username that is an empty string for this test
-		UserService us = Context.getUserService();
-		
-		User u = us.getUser(1);
-		u.setUsername("  ");
-		u.getPerson().setGender("M");
-		
-		us.saveUser(u, "Openmr5xy");
+	public void authenticate_shouldThrowAPIExceptionIfUsernameIsWhiteSpace() throws Exception {
+		// it would be illegal to save this user (with a whitespace username) but we can get it in the db via xml
+		User u = Context.getUserService().getUser(507);
 		dao.authenticate("  ", "password");
 	}
 	

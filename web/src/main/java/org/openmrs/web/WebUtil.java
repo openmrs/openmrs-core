@@ -31,6 +31,7 @@ public class WebUtil {
 		
 		s = s.replace("<", "&lt;");
 		s = s.replace(">", "&gt;");
+		s = s.replace("\n", "<br/>");
 		
 		return s;
 	}

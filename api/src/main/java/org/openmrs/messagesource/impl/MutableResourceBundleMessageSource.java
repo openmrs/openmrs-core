@@ -308,12 +308,19 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				String namePrefix = basename.substring(nameIndex);
 				Resource propertiesDir = applicationContext.getResource(basedir);
 				boolean filesFound = false;
-				for (File possibleFile : propertiesDir.getFile().listFiles()) {
-					if (possibleFile.getName().startsWith(namePrefix) && possibleFile.getName().endsWith(".properties")) {
-						propertiesFiles.add(possibleFile);
-						filesFound = true;
+				if (propertiesDir.exists()) {
+					for (File possibleFile : propertiesDir.getFile().listFiles()) {
+						if (possibleFile.getName().startsWith(namePrefix) && possibleFile.getName().endsWith(".properties")) {
+							propertiesFiles.add(possibleFile);
+							filesFound = true;
+						}
+					}
+				} else {
+					if (log.isDebugEnabled()) {
+						log.debug("Parent directory " + propertiesDir + " does not exist");
 					}
 				}
+				
 				if (log.isDebugEnabled() && !filesFound) {
 					log.debug("No messages for basename " + basename);
 				}

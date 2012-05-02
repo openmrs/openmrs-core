@@ -458,7 +458,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public Cohort getAllPatients() {
 		
-		Query query = sessionFactory.getCurrentSession().createQuery("select patientId from Patient p where p.voided = 0");
+		Query query = sessionFactory.getCurrentSession().createQuery("select patientId from Patient p where p.voided = '0'");
 		
 		Set<Integer> ids = new HashSet<Integer>();
 		ids.addAll(query.list());
@@ -578,7 +578,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		String stringValue = null;
 		Concept codedValue = null;
 		Date dateValue = null;
-		Boolean booleanValue = null;
 		String valueSql = null;
 		if (value != null) {
 			if (concept == null) {
@@ -618,11 +617,18 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				}
 				valueSql = "o.value_datetime";
 			} else if (concept.getDatatype().isBoolean()) {
-				if (value instanceof Boolean)
-					booleanValue = (Boolean) value;
-				else
-					booleanValue = Boolean.valueOf(value.toString());
-				valueSql = "o.value_numeric";
+				if (value instanceof Concept) {
+					codedValue = (Concept) value;
+				} else {
+					boolean asBoolean = false;
+					if (value instanceof Boolean)
+						asBoolean = ((Boolean) value).booleanValue();
+					else
+						asBoolean = Boolean.valueOf(value.toString());
+					codedValue = asBoolean ? Context.getConceptService().getTrueConcept() : Context.getConceptService()
+					        .getFalseConcept();
+				}
+				valueSql = "o.value_coded";
 			}
 		}
 		
@@ -698,8 +704,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				query.setString("value", stringValue);
 			else if (dateValue != null)
 				query.setDate("value", dateValue);
-			else if (booleanValue != null)
-				query.setDouble("value", booleanValue ? 1.0 : 0.0);
 			else
 				throw new IllegalArgumentException(
 				        "useValue is true, but numeric, coded, string, boolean, and date values are all null");
@@ -805,7 +809,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		StringBuffer sb = new StringBuffer();
 		sb.append("select o.person_id from obs o " + "where concept_id = :concept_id ");
 		sb.append(" and o.value_datetime between :startValue and :endValue");
-		sb.append(" and o.voided = 0");
+		sb.append(" and o.voided = '0'");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
 		query.setCacheMode(CacheMode.IGNORE);
@@ -1115,6 +1119,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					conditional = true;
 				continue;
 				//log.debug("c: " + c.getConceptId() + " attribute: " + attribute);
+			} else if (attribute.equals("valueDate")) {
+				// pass -- same column name
+			} else if (attribute.equals("valueTime")) {
+				// pass -- same column name
 			} else if (attribute.equals("valueDatetime")) {
 				// pass -- same column name
 			} else if (attribute.equals("obsDatetime")) {
@@ -1231,7 +1239,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		List<String> columns = new Vector<String>();
 		
 		if (abbrev.equals("BIT"))
-			columns.add("valueNumeric");
+			columns.add("valueCoded");
 		else if (abbrev.equals("CWE")) {
 			columns.add("valueDrug");
 			columns.add("valueCoded");
@@ -2199,14 +2207,14 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	@Override
 	public Integer getCountOfPatients() {
-		Query query = sessionFactory.getCurrentSession().createQuery("select count(*) from Patient where voided = 0");
+		Query query = sessionFactory.getCurrentSession().createQuery("select count(*) from Patient where voided = '0'");
 		return new Integer(query.uniqueResult().toString());
 	}
 	
 	@Override
 	public Cohort getPatients(Integer start, Integer size) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "select distinct patientId from Patient p where p.voided = 0");
+		    "select distinct patientId from Patient p where p.voided = '0'");
 		
 		if (start != null)
 			query.setFirstResult(start);

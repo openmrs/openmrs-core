@@ -85,22 +85,6 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 		this.conceptDatatypeId = conceptDatatypeId;
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof ConceptDatatype) {
-			ConceptDatatype c = (ConceptDatatype) obj;
-			return (this.conceptDatatypeId.equals(c.getConceptDatatypeId()));
-		}
-		return false;
-	}
-	
-	@Override
-	public int hashCode() {
-		if (this.getConceptDatatypeId() == null)
-			return super.hashCode();
-		return this.getConceptDatatypeId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

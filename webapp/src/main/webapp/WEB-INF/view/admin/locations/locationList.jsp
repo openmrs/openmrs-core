@@ -44,9 +44,9 @@
 			<tr <c:if test="${location.retired}">class="retired"</c:if>>
 				<td valign="top"><input type="checkbox" name="locationId" value="${location.locationId}"></td>
 				<td valign="top">
-					<a href="location.form?locationId=${location.locationId}">${location.name}</a> (${location.locationId})
+					<a href="location.form?locationId=${location.locationId}"><c:out value="${location.name}"/></a> (${location.locationId})
 				</td>
-				<td valign="top">${location.description}</td>
+				<td valign="top"><c:out value="${location.description}"/></td>
 				<td valign="top">
 					<c:forEach var="tag" items="${location.tags}" varStatus="vs">
 						<openmrs:format locationTag="${tag}"/><c:if test="${!vs.last}">,</c:if>

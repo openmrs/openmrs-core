@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -28,7 +29,7 @@ import org.springframework.validation.Validator;
  * @since 1.5
  **/
 @Handler(supports = { Location.class }, order = 50)
-public class LocationValidator implements Validator {
+public class LocationValidator extends BaseCustomizableValidator implements Validator {
 	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -49,7 +50,6 @@ public class LocationValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null or empty
-	 * @should fail validation if description is null or empty
 	 * @should fail validation if retired and retireReason is null or empty
 	 * @should set retired to false if retireReason is null or empty
 	 * @should pass validation if all fields are correct
@@ -61,7 +61,6 @@ public class LocationValidator implements Validator {
 			errors.rejectValue("location", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 			
 			if (location.isRetired()) {
 				if (!StringUtils.hasLength(location.getRetireReason())) {
@@ -70,6 +69,8 @@ public class LocationValidator implements Validator {
 				}
 			}
 		}
+		
+		super.validateAttributes(location, errors, Context.getLocationService().getAllLocationAttributeTypes());
 	}
 	
 }

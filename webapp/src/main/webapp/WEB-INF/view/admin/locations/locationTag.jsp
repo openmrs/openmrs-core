@@ -6,11 +6,22 @@
 <%@ include file="localHeader.jsp" %>
 
 <script type="text/javascript">
+    var error_message = "<spring:message code="LocationTag.name.error" />";
 	$j(document).ready(function() {
 		$j('.toggleAddLocationTag').click(function(event) {
+			$j('#nameError').html('');
 			$j('#addLocationTag').slideToggle('fast');
 			event.preventDefault();
 		});
+
+        $j('#locationTagForm').submit(function() {
+            var tagName = $j('input[name="name"]').val();
+            if (tagName.trim() != '') {
+                $j(this).submit();
+            }
+            $j('#nameError').html(error_message);
+            return false;
+        });
 	});
 </script>
 
@@ -18,13 +29,14 @@
 
 <a class="toggleAddLocationTag" href="#"><spring:message code="LocationTag.add"/></a>
 <div id="addLocationTag" style="border: 1px black solid; background-color: #e0e0e0; display: none">
-	<form method="post" action="locationTagAdd.form">
+	<form method="post" action="locationTagAdd.form" id="locationTagForm">
 		<table>
 			<tr>
 				<th><spring:message code="LocationTag.name"/></th>
 				<td>
 					<input type="text" name="name"/>
 					<span class="required">*</span>
+                    <span class="required" id="nameError"></span>
 				</td>
 			</tr>
 			<tr>

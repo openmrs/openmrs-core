@@ -102,8 +102,8 @@ public class ObsFormControllerTest extends BaseWebContextSensitiveTest {
 		// make sure an obs was created
 		List<Obs> obsForPatient = os.getObservationsByPerson(new Person(2));
 		assertEquals(1, obsForPatient.size());
-		assertEquals(new Encounter(3), obsForPatient.get(0).getEncounter());
-		assertEquals(new Location(1), obsForPatient.get(0).getLocation());
+		assertEquals(3, obsForPatient.get(0).getEncounter().getId().intValue());
+		assertEquals(1, obsForPatient.get(0).getLocation().getId().intValue());
 	}
 	
 }

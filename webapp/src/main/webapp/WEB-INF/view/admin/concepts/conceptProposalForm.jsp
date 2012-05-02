@@ -152,7 +152,16 @@
 	</tr>
 	
 	<tr><td>&nbsp;</td><td></td></tr>
-	
+	<tr>
+		<th><spring:message code="general.locale"/></th>
+		<td>
+			<select name="conceptNamelocale">
+				<c:forEach items="${locales}" var="locale">
+					<option value="${locale}">${locale.displayName}</option>
+			    </c:forEach>
+			</select>
+		</td>
+	</tr>
 	<tr>
 		<th><spring:message code="ConceptProposal.finalText"/></th>
 		<td>

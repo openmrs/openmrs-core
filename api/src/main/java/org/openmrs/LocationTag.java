@@ -48,32 +48,6 @@ public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializ
 		setDescription(description);
 	}
 	
-	/**
-	 * Compares two LocationTag objects for similarity
-	 * 
-	 * @param obj The LocationTag object to be compared.
-	 * @return Returns true if the objects share the same locationTagId, false otherwise.
-	 */
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof LocationTag))
-			return false;
-		
-		LocationTag locationTag = (LocationTag) obj;
-		if (this.locationTagId != null && locationTag.getLocationTagId() != null)
-			return (this.locationTagId.equals(locationTag.getLocationTagId()));
-		else
-			return this == locationTag;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getLocationTagId() == null)
-			return super.hashCode();
-		return this.getLocationTagId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

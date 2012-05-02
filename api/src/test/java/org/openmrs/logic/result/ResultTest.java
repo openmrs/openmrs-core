@@ -33,12 +33,12 @@ public class ResultTest {
 	/**
 	 * @verifies {@link Result#toObject()} test = should return resultObject for single results
 	 */
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings( { "MismatchedQueryAndUpdateOfCollection" })
 	@Test
 	public void toObject_shouldReturnResultObjectForSingleResults() throws Exception {
-		Result firstResult = new Result(new Date("2008/08/12"), "some value", new Encounter(123));
+		Result firstResult = new Result(new Date(), "some value", new Encounter(123));
 		
-		Assert.assertEquals(new Encounter(123), firstResult.toObject());
+		Assert.assertEquals(123, ((Encounter) firstResult.toObject()).getId().intValue());
 	}
 	
 	/**

@@ -58,6 +58,18 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		
 		log.debug("Configuring hibernate sessionFactory properties");
 		
+		Properties moduleProperties = Context.getConfigProperties();
+		
+		// override or initialize config properties with module-provided ones
+		for (Object key : moduleProperties.keySet()) {
+			String prop = (String) key;
+			String value = (String) moduleProperties.get(key);
+			log.trace("Setting module property: " + prop + ":" + value);
+			config.setProperty(prop, value);
+			if (!prop.startsWith("hibernate"))
+				config.setProperty("hibernate." + prop, value);
+		}
+		
 		Properties properties = Context.getRuntimeProperties();
 		
 		// loop over runtime properties and override each in the configuration

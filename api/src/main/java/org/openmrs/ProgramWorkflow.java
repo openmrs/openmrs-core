@@ -243,18 +243,6 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 		return true;
 	}
 	
-	/** @see Object#equals(Object) */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof ProgramWorkflow) {
-			ProgramWorkflow p = (ProgramWorkflow) obj;
-			if (this.getProgramWorkflowId() != null) {
-				return (this.getProgramWorkflowId().equals(p.getProgramWorkflowId()));
-			}
-		}
-		return this == obj;
-	}
-	
 	/** @see Object#toString() */
 	@Override
 	public String toString() {
@@ -313,5 +301,15 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	public void setId(Integer id) {
 		setProgramWorkflowId(id);
 		
+	}
+	
+	/**
+	 * Gets the number of states which are not retired
+	 * 
+	 * @return the total number of non retired states
+	 * @Since 1.9
+	 */
+	public int getNonRetiredStateCount() {
+		return getStates(false).size();
 	}
 }

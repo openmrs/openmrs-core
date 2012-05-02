@@ -140,6 +140,8 @@ public class OpenmrsUtil {
 	
 	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
 	
+	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<Locale, SimpleDateFormat>();
+	
 	/**
 	 * @param idWithoutCheckdigit
 	 * @return int - the calculated check digit for the given string
@@ -546,12 +548,17 @@ public class OpenmrsUtil {
 	 */
 	public static void applyLogLevels() {
 		AdministrationService adminService = Context.getAdministrationService();
-		String logLevel = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
-		String logClass = OpenmrsConstants.LOG_CLASS_DEFAULT;
+		String logLevel = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "");
 		
-		// potentially have different levels here. only doing org.openmrs right
-		// now
-		applyLogLevel(logClass, logLevel);
+		String[] levels = logLevel.split(",");
+		for (String level : levels) {
+			String[] classAndLevel = level.split(":");
+			if (classAndLevel.length == 1)
+				applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, logLevel);
+			else
+				applyLogLevel(classAndLevel[0].trim(), classAndLevel[1].trim());
+		}
+		
 	}
 	
 	/**
@@ -890,7 +897,9 @@ public class OpenmrsUtil {
 	 * 
 	 * @param date date to adjust
 	 * @return a date that is the last possible time in the day
+	 * @deprecated use {@link #getLastMomentOfDay(Date)}
 	 */
+	@Deprecated
 	public static Date lastSecondOfDay(Date date) {
 		if (date == null)
 			return null;
@@ -903,6 +912,46 @@ public class OpenmrsUtil {
 		c.set(Calendar.SECOND, 0);
 		c.add(Calendar.DAY_OF_MONTH, 1);
 		c.add(Calendar.SECOND, -1);
+		return c.getTime();
+	}
+	
+	/**
+	 * Gets the date having the last millisecond of a given day. Meaning that the hours, seconds,
+	 * and milliseconds are the latest possible for that day.
+	 * 
+	 * @param day the day.
+	 * @return the date with the last millisecond of the day.
+	 */
+	public static Date getLastMomentOfDay(Date day) {
+		Calendar calender = Calendar.getInstance();
+		calender.setTime(day);
+		calender.set(Calendar.HOUR_OF_DAY, 23);
+		calender.set(Calendar.MINUTE, 59);
+		calender.set(Calendar.SECOND, 59);
+		calender.set(Calendar.MILLISECOND, 999);
+		
+		return calender.getTime();
+	}
+	
+	/**
+	 * Return a date that is the same day as the passed in date, but the hours and seconds are the
+	 * earliest possible for that day.
+	 * 
+	 * @param date date to adjust
+	 * @return a date that is the first possible time in the day
+	 * @since 1.9
+	 */
+	public static Date firstSecondOfDay(Date date) {
+		if (date == null)
+			return null;
+		
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		
 		return c.getTime();
 	}
 	
@@ -1306,6 +1355,54 @@ public class OpenmrsUtil {
 		dateFormatCache.put(locale, sdf);
 		
 		return (SimpleDateFormat) sdf.clone();
+	}
+	
+	/**
+	 * Get the current user's time format Will look similar to "hh:mm a". Depends on user's locale.
+	 * 
+	 * @return a simple time format
+	 * @should return a pattern with two h characters in it
+	 * @should not allow the returned SimpleDateFormat to be modified
+	 * @since 1.9
+	 */
+	public static SimpleDateFormat getTimeFormat(Locale locale) {
+		if (timeFormatCache.containsKey(locale))
+			return (SimpleDateFormat) timeFormatCache.get(locale).clone();
+		
+		SimpleDateFormat sdf = (SimpleDateFormat) DateFormat.getTimeInstance(DateFormat.SHORT, locale);
+		String pattern = sdf.toPattern();
+		
+		if (!(pattern.contains("hh") || pattern.contains("HH"))) {
+			// otherwise, change the pattern to be a two digit hour
+			pattern = pattern.replaceFirst("h", "hh").replaceFirst("H", "HH");
+			sdf.applyPattern(pattern);
+		}
+		
+		timeFormatCache.put(locale, sdf);
+		
+		return (SimpleDateFormat) sdf.clone();
+	}
+	
+	/**
+	 * Get the current user's datetime format Will look similar to "mm-dd-yyyy hh:mm a". Depends on
+	 * user's locale.
+	 * 
+	 * @return a simple date format
+	 * @should return a pattern with four y characters and two h characters in it
+	 * @should not allow the returned SimpleDateFormat to be modified
+	 * @since 1.9
+	 */
+	public static SimpleDateFormat getDateTimeFormat(Locale locale) {
+		SimpleDateFormat dateFormat;
+		SimpleDateFormat timeFormat;
+		
+		dateFormat = getDateFormat(locale);
+		timeFormat = getTimeFormat(locale);
+		
+		String pattern = dateFormat.toPattern() + " " + timeFormat.toPattern();
+		SimpleDateFormat sdf = new SimpleDateFormat();
+		sdf.applyPattern(pattern);
+		return sdf;
 	}
 	
 	/**
@@ -1909,7 +2006,7 @@ public class OpenmrsUtil {
 	 * characters. Currently the load method expects the inputStream to point to a latin1 encoded
 	 * file. <br/>
 	 * NOTE: In Java 6, you will be able to pass the load() and store() methods a UTF-8
-	 * Reader/Writer object as an argument, making this method unnecesary.
+	 * Reader/Writer object as an argument, making this method unnecessary.
 	 * 
 	 * @deprecated use {@link #loadProperties(Properties, File)}
 	 * @param props the properties object to write into
@@ -2260,9 +2357,9 @@ public class OpenmrsUtil {
 	 * <pre>
 	 * Finds and loads the runtime properties file for a specific OpenMRS application.
 	 * Searches for the file in this order:
-	 * 1) an environment variable called "{APPLICATIONNAME}_RUNTIME_PROPERTIES_FILE"
-	 * 2) {openmrs_app_dir}/{applicationName}_runtime.properties   // openmrs_app_dir is typically {user_home}/.OpenMRS
-	 * 3) {current directory}/{applicationname}_runtime.properties
+	 * 1) {current directory}/{applicationname}_runtime.properties
+	 * 2) an environment variable called "{APPLICATIONNAME}_RUNTIME_PROPERTIES_FILE"
+	 * 3) {openmrs_app_dir}/{applicationName}_runtime.properties   // openmrs_app_dir is typically {user_home}/.OpenMRS
 	 * </pre>
 	 * 
 	 * @see #getApplicationDataDirectory()
@@ -2275,66 +2372,27 @@ public class OpenmrsUtil {
 	public static Properties getRuntimeProperties(String applicationName) {
 		if (applicationName == null)
 			applicationName = "openmrs";
-		
-		String filepath = null;
+		String pathName = "";
+		pathName = getRuntimePropertiesFilePathName(applicationName);
 		FileInputStream propertyStream = null;
-		
-		// first look for an environment variable
-		{
-			String envVarName = applicationName.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
-			filepath = System.getenv(envVarName);
-			if (filepath != null) {
-				log.debug("Atempting to load runtime properties from: " + filepath);
-				try {
-					propertyStream = new FileInputStream(filepath);
-				}
-				catch (IOException e) {
-					log.warn("Unable to load properties file with path: " + filepath
-					        + ". (derived from environment variable " + envVarName + ")", e);
-				}
-			} else {
-				log.info("Couldn't find an environment variable named " + envVarName);
-				if (log.isDebugEnabled())
-					log.debug("Available environment variables are named: " + System.getenv().keySet());
+		try {
+			if (pathName != null) {
+				propertyStream = new FileInputStream(pathName);
 			}
 		}
-		
-		String filename = applicationName + "-runtime.properties";
-		
-		// next look in the OpenMRS application data directory
-		if (propertyStream == null) {
-			filepath = OpenmrsUtil.getApplicationDataDirectory() + filename;
-			log.debug("Attempting to load property file from: " + filepath);
-			try {
-				propertyStream = new FileInputStream(filepath);
-			}
-			catch (FileNotFoundException e) {
-				log.warn("Unable to find properties file: " + filepath);
-			}
-		}
-		
-		// last chance, look in the current directory (that java was started
-		// from)
-		if (propertyStream == null) {
-			filepath = filename;
-			log.debug("Attempting to load properties file in current directory: " + filepath);
-			try {
-				propertyStream = new FileInputStream(filepath);
-			}
-			catch (FileNotFoundException e) {
-				log.warn("Also unable to find a runtime properties file at " + new File(filepath).getAbsolutePath());
-			}
+		catch (FileNotFoundException e) {
+			log.warn("Unable to find a runtime properties file at " + new File(pathName).getAbsolutePath());
 		}
 		
 		try {
 			if (propertyStream == null)
-				throw new IOException("Could not find a runtime properties file named " + filename
+				throw new IOException("Could not find a runtime properties file named " + pathName
 				        + " in the OpenMRS application data directory, or the current directory");
 			
 			Properties props = new Properties();
 			OpenmrsUtil.loadProperties(props, propertyStream);
 			propertyStream.close();
-			log.info("Using runtime properties file: " + filepath);
+			log.info("Using runtime properties file: " + pathName);
 			return props;
 		}
 		catch (Exception ex) {
@@ -2343,6 +2401,88 @@ public class OpenmrsUtil {
 			        .warn("Unable to find a runtime properties file. Initial setup is needed. View the webapp to run the setup wizard.");
 			return null;
 		}
+	}
+	
+	/**
+	 * Checks whether the system is running in test mode
+	 * 
+	 * @return boolean
+	 */
+	
+	public static boolean isTestMode() {
+		return "true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"));
+	}
+	
+	/**
+	 * Gets the full path and name of the runtime properties file.
+	 * 
+	 * @param applicationName (defaults to "openmrs") the name of the running OpenMRS application,
+	 *            e.g. if you have deployed OpenMRS as a web application you would give the deployed
+	 *            context path here
+	 * @return runtime properties file path and name, or null if none can be found
+	 * @since 1.9
+	 */
+	public static String getRuntimePropertiesFilePathName(String applicationName) {
+		if (applicationName == null)
+			applicationName = "openmrs";
+		
+		String defaultFileName = applicationName + "-runtime.properties";
+		String fileNameInTestMode = getRuntimePropertiesFileNameInTestMode();
+		
+		// first look in the current directory (that java was started from)
+		String pathName = fileNameInTestMode != null ? fileNameInTestMode : defaultFileName;
+		log.debug("Attempting to look for properties file in current directory: " + pathName);
+		if (new File(pathName).exists()) {
+			return pathName;
+		} else {
+			log.warn("Unable to find a runtime properties file at " + new File(pathName).getAbsolutePath());
+		}
+		
+		// next look from environment variable
+		String envVarName = applicationName.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
+		String envFileName = System.getenv(envVarName);
+		if (envFileName != null) {
+			log.debug("Atempting to look for runtime properties from: " + pathName);
+			if (new File(envFileName).exists()) {
+				return envFileName;
+			} else {
+				log.warn("Unable to find properties file with path: " + pathName + ". (derived from environment variable "
+				        + envVarName + ")");
+			}
+		} else {
+			log.info("Couldn't find an environment variable named " + envVarName);
+			if (log.isDebugEnabled())
+				log.debug("Available environment variables are named: " + System.getenv().keySet());
+		}
+		
+		// next look in the OpenMRS application data directory
+		pathName = OpenmrsUtil.getApplicationDataDirectory() + pathName;
+		log.debug("Attempting to look for property file from: " + pathName);
+		if (new File(pathName).exists()) {
+			return pathName;
+		} else {
+			log.warn("Unable to find properties file: " + pathName);
+		}
+		
+		return null;
+	}
+	
+	public static String getRuntimePropertiesFileNameInTestMode() {
+		String filename = null;
+		if (isTestMode()) {
+			log.info("In functional testing mode. Ignoring the existing runtime properties file");
+			filename = getOpenMRSVersionInTestMode() + "-test-runtime.properties";
+		}
+		return filename;
+	}
+	
+	/**
+	 * Gets OpenMRS version name under test mode.
+	 * 
+	 * @return String openmrs version number
+	 */
+	public static String getOpenMRSVersionInTestMode() {
+		return System.getProperty("OPENMRS_VERSION", "openmrs");
 	}
 	
 	/**
@@ -2362,5 +2502,42 @@ public class OpenmrsUtil {
 			return false;
 		
 		return s1.equalsIgnoreCase(s2);
+	}
+	
+	/**
+	 * This method converts the given Long value to an Integer. If the Long value will not fit in an
+	 * Integer an exception is thrown
+	 * 
+	 * @param longValue the value to convert
+	 * @return the long value in integer form.
+	 * @throws IllegalArgumentException if the long value does not fit into an integer
+	 */
+	public static Integer convertToInteger(Long longValue) {
+		if (longValue < Integer.MIN_VALUE || longValue > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException(longValue + " cannot be cast to Integer without changing its value.");
+		}
+		return longValue.intValue();
+	}
+	
+	/**
+	 * Checks if the passed in date's day of the year is the one that comes immediately before that
+	 * of the current date
+	 * 
+	 * @param date the date to check
+	 * @since 1.9
+	 * @return true if the date comes immediately before the current date otherwise false
+	 */
+	public static boolean isYesterday(Date date) {
+		if (date == null)
+			return false;
+		
+		Calendar c1 = Calendar.getInstance();
+		c1.add(Calendar.DAY_OF_YEAR, -1); // yesterday
+		
+		Calendar c2 = Calendar.getInstance();
+		c2.setTime(date);
+		
+		return (c1.get(Calendar.ERA) == c2.get(Calendar.ERA) && c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1
+		        .get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR));
 	}
 }

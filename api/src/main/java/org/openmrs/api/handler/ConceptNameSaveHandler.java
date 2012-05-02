@@ -13,7 +13,10 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
@@ -52,15 +55,24 @@ public class ConceptNameSaveHandler implements SaveHandler<ConceptName> {
 		
 		// put Integer conceptNameTagIds onto ConceptNameTags that are missing them
 		if (conceptName.getTags() != null) {
-			for (ConceptNameTag tag : conceptName.getTags()) {
+			Collection<ConceptNameTag> replacementTags = new ArrayList<ConceptNameTag>();
+			
+			Iterator<ConceptNameTag> tagsIt = conceptName.getTags().iterator();
+			while (tagsIt.hasNext()) {
+				ConceptNameTag tag = tagsIt.next();
+				
 				if (tag.getConceptNameTagId() == null) {
-					ConceptNameTag possibleReplacementTag = Context.getConceptService()
-					        .getConceptNameTagByName(tag.getTag());
-					if (possibleReplacementTag != null) {
-						conceptName.removeTag(tag);
-						conceptName.addTag(possibleReplacementTag);
+					ConceptNameTag replacementTag = Context.getConceptService().getConceptNameTagByName(tag.getTag());
+					
+					if (replacementTag != null) {
+						tagsIt.remove();
+						replacementTags.add(replacementTag);
 					}
 				}
+			}
+			
+			if (!replacementTags.isEmpty()) {
+				conceptName.getTags().addAll(replacementTags);
 			}
 		}
 	}

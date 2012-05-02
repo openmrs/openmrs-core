@@ -69,39 +69,6 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	}
 	
 	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 * @should not fail when patient and identifier and type are null
-	 * @should return true if patient identifier ids are same
-	 * @should return false if one patient identifier id is null
-	 * @should return true if comparing same object with null ids
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof PatientIdentifier) {
-			PatientIdentifier p = (PatientIdentifier) obj;
-			if (this.getPatientIdentifierId() != null && p.getPatientIdentifierId() != null)
-				return (this.getPatientIdentifierId().equals(p.getPatientIdentifierId()));
-			return obj == this;
-		}
-		return false;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (this.getPatientIdentifierId() == null)
-			return super.hashCode();
-		int hash = 5;
-		hash += 31 * hash + this.getPatientIdentifierId().hashCode();
-		return hash;
-	}
-	
-	/**
 	 * Compares this PatientIdentifier object to the given otherIdentifier. This method differs from
 	 * {@link #equals(Object)} in that this method compares the inner fields of each identifier for
 	 * equality. Note: Null/empty fields on <code>otherIdentifier</code> /will not/ cause a false

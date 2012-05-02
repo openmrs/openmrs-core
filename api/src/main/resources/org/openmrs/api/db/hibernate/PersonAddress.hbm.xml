@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.openmrs">
 
 	<class name="PersonAddress" table="person_address">
 
-		<id name="personAddressId" type="int" column="person_address_id"
-			unsaved-value="none">
-			<generator class="native" />
+		<id name="personAddressId" type="int" column="person_address_id" unsaved-value="none">
+			<generator class="native">
+				<param name="sequence">person_address_person_address_id_seq</param>
+			</generator>
 		</id>
 
 		<discriminator column="person_address_id" insert="false" />

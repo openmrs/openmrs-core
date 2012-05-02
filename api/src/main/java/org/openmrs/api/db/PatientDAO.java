@@ -148,6 +148,6 @@ public interface PatientDAO {
 	/**
 	 * @see PatientService#getCountOfPatients(String)
 	 */
-	public Integer getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	public Long getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly);
 }

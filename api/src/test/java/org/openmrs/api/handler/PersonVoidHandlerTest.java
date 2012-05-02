@@ -19,12 +19,16 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for the {@link PersonVoidHandler} class.
  */
-public class PersonVoidHandlerTest {
+public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PersonVoidHandler#handle(Person,User,Date,String)}
@@ -48,7 +52,7 @@ public class PersonVoidHandlerTest {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
 		handler.handle(person, null, null, "THE REASON");
-		Assert.assertEquals("THE REASON", person.getPersonVoidReason());
+		assertEquals("THE REASON", person.getPersonVoidReason());
 	}
 	
 	/**
@@ -60,7 +64,7 @@ public class PersonVoidHandlerTest {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
 		handler.handle(person, new User(2), null, " ");
-		Assert.assertEquals(new User(2), person.getPersonVoidedBy());
+		assertEquals(2, person.getPersonVoidedBy().getId().intValue());
 	}
 	
 	/**
@@ -73,7 +77,7 @@ public class PersonVoidHandlerTest {
 		Person person = new Person();
 		person.setPersonVoidedBy(new User(3));
 		handler.handle(person, new User(2), null, " ");
-		Assert.assertEquals(new User(3), person.getPersonVoidedBy());
+		assertEquals(3, person.getPersonVoidedBy().getId().intValue());
 	}
 	
 	/**
@@ -87,7 +91,7 @@ public class PersonVoidHandlerTest {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
 		handler.handle(person, null, d, " ");
-		Assert.assertEquals(d, person.getPersonDateVoided());
+		assertEquals(d, person.getPersonDateVoided());
 	}
 	
 	/**
@@ -103,7 +107,7 @@ public class PersonVoidHandlerTest {
 		person.setPersonDateVoided(d); // make personDateVoided non null
 		
 		handler.handle(person, null, new Date(), " ");
-		Assert.assertEquals(d, person.getPersonDateVoided());
+		assertEquals(d, person.getPersonDateVoided());
 	}
 	
 	/**
@@ -118,6 +122,26 @@ public class PersonVoidHandlerTest {
 		
 		handler.handle(person, null, null, "THE REASON");
 		Assert.assertNull(person.getPersonVoidReason());
+	}
+	
+	/**
+	 * @see PersonVoidHandler#handle(Person,User,Date,String)
+	 * @verifies retire users
+	 */
+	@Test
+	public void handle_shouldRetireUsers() throws Exception {
+		//given
+		VoidHandler<Person> handler = new PersonVoidHandler();
+		Person person = Context.getPersonService().getPerson(2);
+		User user = new User(person);
+		Context.getUserService().saveUser(user, "Admin123");
+		Assert.assertFalse(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+		
+		//when
+		handler.handle(person, null, null, "reason");
+		
+		//then
+		Assert.assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
 	}
 	
 }

@@ -29,6 +29,7 @@ import java.util.WeakHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerException;
@@ -189,6 +190,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * Schedule the given task according to the given schedule.
 	 * 
 	 * @param taskDefinition the task to be scheduled
+	 * @should should handle zero repeat interval
 	 */
 	public Task scheduleTask(TaskDefinition taskDefinition) throws SchedulerException {
 		Task clientTask = null;
@@ -231,8 +233,14 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 						// Start task at fixed rate at given future date and repeat as directed 							
 						log.info("Starting task ... the task will execute for the first time at " + nextTime);
 						
-						// Schedule the task to run at a fixed rate
-						getTimer(taskDefinition).scheduleAtFixedRate(schedulerTask, nextTime, repeatInterval);
+						if (repeatInterval > 0) {
+							// Schedule the task to run at a fixed rate
+							getTimer(taskDefinition).scheduleAtFixedRate(schedulerTask, nextTime, repeatInterval);
+						} else {
+							// Schedule the task to be non-repeating
+							getTimer(taskDefinition).schedule(schedulerTask, nextTime);
+						}
+						
 					} else if (repeatInterval > 0) {
 						// Start task on repeating schedule, delay for SCHEDULER_DEFAULT_DELAY seconds	
 						log.info("Delaying start time by " + SchedulerConstants.SCHEDULER_DEFAULT_DELAY + " seconds");
@@ -377,8 +385,18 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * Save a task in the database.
 	 * 
 	 * @param task the <code>TaskDefinition</code> to save
+	 * @deprecated use saveTaskDefinition which follows correct naming standard
 	 */
 	public void saveTask(TaskDefinition task) {
+		Context.getSchedulerService().saveTaskDefinition(task);
+	}
+	
+	/**
+	 * Save a task in the database.
+	 *
+	 * @param task the <code>TaskDefinition</code> to save
+	 */
+	public void saveTaskDefinition(TaskDefinition task) {
 		if (task.getId() != null) {
 			getSchedulerDAO().updateTask(task);
 		} else {
@@ -393,15 +411,9 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 */
 	public void deleteTask(Integer id) {
 		
-		// try to stop the task (ignore errors)
 		TaskDefinition task = getTask(id);
 		if (task.getStarted()) {
-			try {
-				shutdownTask(task);
-			}
-			catch (SchedulerException e) {
-				log.error("Failed to remove task " + task.getName(), e);
-			}
+			throw new APIException("Started tasks should not be deleted. They should be stopped first, and then deleted.");
 		}
 		
 		// delete the task
@@ -427,10 +439,10 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 */
 	public OpenmrsMemento saveToMemento() {
 		
-		Set<TaskDefinition> tasks = new HashSet<TaskDefinition>();
+		Set<Integer> tasks = new HashSet<Integer>();
 		
 		for (TaskDefinition task : getScheduledTasks()) {
-			tasks.add(task);
+			tasks.add(task.getId());
 			try {
 				shutdownTask(task);
 			}
@@ -455,21 +467,23 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 		if (memento != null && memento instanceof TimerSchedulerMemento) {
 			TimerSchedulerMemento timerMemento = (TimerSchedulerMemento) memento;
 			
-			Set<TaskDefinition> tasks = (HashSet<TaskDefinition>) timerMemento.getState();
+			Set<Integer> taskIds = (HashSet<Integer>) timerMemento.getState();
 			
 			// try to start all of the tasks that were stopped right before this restore
-			for (TaskDefinition task : tasks) {
+			for (Integer taskId : taskIds) {
+				TaskDefinition task = getTask(taskId);
 				try {
 					scheduleTask(task);
 				}
 				catch (Exception e) {
 					// essentially swallow exceptions
-					log.debug("EXPECTED ERROR IF STOPPING THIS TASK'S MODULE: Unable to start task " + task, e);
+					log.debug("EXPECTED ERROR IF STOPPING THIS TASK'S MODULE: Unable to start task " + taskId, e);
 					
 					// save this errored task and try again next time we restore
-					timerMemento.addErrorTask(task);
+					timerMemento.addErrorTask(taskId);
 				}
 			}
+			timerMemento = null; // so the old cl can be gc'd
 		}
 	}
 	

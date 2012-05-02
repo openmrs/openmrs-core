@@ -112,6 +112,18 @@ function CreateCallback(options) {
 	
 	/**
 	 * Additional options:
+	 * none (yet)
+	 */
+	this.drugCallback = function() { var thisObject = this; return function(q, response) {
+		if (jQuery.trim(q).length == 0)
+			return response(false);
+		
+		thisObject.searchCounter += 1;
+		DWRConceptService.findDrugs(q, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayDrugObject));
+	}}
+
+	/**
+	 * Additional options:
 	 * showAnswersFor: a concept id. if non-null the search space is restricted to the answers to the given concept id
 	 */
 	this.conceptAnswersCallback = function() { var thisObject = this; return function(q, response) {
@@ -131,6 +143,32 @@ function CreateCallback(options) {
 		// do NOT return false if no text given, instead should return all answers
 		thisObject.searchCounter += 1;
 		DWREncounterService.findEncounters(q, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayEncounter));
+	}}
+	
+	/**
+	 * Use this method if searching for concept reference terms
+	 * @param sourceElement (optional) the element whose value is the conceptSourceId for the source to search for terms
+	 */
+	this.conceptReferenceTermCallback = function(sourceElement) { var thisObject = this; return function(q, response) {
+		if (jQuery.trim(q).length == 0)
+			return response(false);
+		var sourceId = null;
+		if(sourceElement)
+			sourceId = sourceElement.value;
+		
+		thisObject.searchCounter += 1;
+		DWRConceptService.findBatchOfConceptReferenceTerms(q, sourceId, null, maxresults, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayConceptReferenceTerm));
+	}}
+	
+	/**
+	 * Use this method if searching for provider objects
+	 */
+	this.providerCallback = function() { var thisObject = this; return function(q, response) {
+		if (jQuery.trim(q).length == 0)
+			return response(false);
+		
+		thisObject.searchCounter += 1;
+		DWRProviderService.findProvider(q, false, 0, 50, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayProvider));
 	}}
 	
 	/*
@@ -174,7 +212,12 @@ function CreateCallback(options) {
 			objs.push("(" + objectsSliced + " " + omsgs.resultsNotDisplayed +")");
 		}
 		
-		response(jQuery.map(objs, displayFunction(q)));
+		var responseVal = jQuery.map(objs, displayFunction(q)); 
+		if (options.afterResults) {
+			responseVal = responseVal.concat(options.afterResults);
+		}
+		
+		response(responseVal);
 	}; }
 	
 	// a 'private' method
@@ -183,7 +226,7 @@ function CreateCallback(options) {
 		// dwr methods sometimes put strings into the results, just display those
 		if (typeof person == 'string')
 			return { label: person, value: "" };
-			
+					
 		// item is a PersonListItem object
 		var imageText = "";
 		if (person.gender == 'M')
@@ -222,6 +265,28 @@ function CreateCallback(options) {
 		return { label: textShown, value: person.personName, id: person.personId, object: person };
 	}; }
 	
+	/**
+	 * This is what maps each ProviderListItem returned object to a name in the drop down
+	 */
+	this.displayProvider = function(origQuery) { return function(provider) {
+		
+		// dwr methods sometimes put strings into the results, just display those
+		if (typeof provider == 'string')
+			return { label: provider, value: "" };
+			
+		var textShown = "";
+		
+		if (provider.identifier)
+			textShown += provider.identifier + " ";
+		
+		textShown += provider.displayName;
+		
+		// wrap each result in a span tag (needed?)
+		textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
+		
+		return { label: textShown, value: provider.displayName, id: provider.providerId, object: provider };
+	}; }
+	
 	// a 'private' method
 	// This is what maps each ConceptListItem or LocationListItem returned object to a name in the dropdown
 	this.displayNamedObject = function(origQuery) { return function(item) {
@@ -246,21 +311,43 @@ function CreateCallback(options) {
 		
 		return { label: textShown, value: value, object: item};
 	}; };
-	
+
+	// a 'private' method
+	// This is what maps each ConceptDrugListItem returned object to a name in the dropdown
+	this.displayDrugObject = function(origQuery) { return function(item) {
+		// dwr sometimes puts strings into the results, just display those
+		if (typeof item == 'string')
+			return { label: item, value: "" };
+			
+		// add a space so the term highlighter below thinks the first word is a word
+		var textShown = " " + item.fullName;
+		
+		// highlight each search term in the results
+		textShown = highlightWords(textShown, origQuery);
+		
+		var value = item.fullName;
+		textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
+		
+		return { label: textShown, value: value, object: item};
+	}; };
+
 	// a 'private' method
 	// This is what maps each EncounterListItem returned object to a name in the dropdown
 	this.displayEncounter = function(origQuery) { return function(enc) {
 		// dwr sometimes puts strings into the results, just display those
 		if (typeof enc == 'string')
 			return { label: enc, value: "" };
-		
+			
 		// enc is an EncounterListenc
 		// add a space so the term highlighter below thinks the first word is a word
 		var textShown = " " + enc.encounterDateString;
 		textShown += " " + enc.encounterType;
 		textShown += " - " + enc.personName;
 		textShown += " - " + enc.providerName;
-		textShown += " - " + enc.location;
+		
+		if (enc.location) {
+			textShown += " - " + enc.location;
+		}
 		
 		// highlight each search term in the results
 		textShown = highlightWords(textShown, origQuery);
@@ -319,4 +406,22 @@ function CreateCallback(options) {
 		
 		return textShown;
 	}
+	
+	// a 'private' method
+	// This is what displays the ConceptReferenceTermListItem's code, name and concept source name in the dropdown
+	this.displayConceptReferenceTerm = function(origQuery) { return function(item) {
+		// dwr sometimes puts strings into the results, just display those
+		if (typeof item == 'string')
+			return { label: item, value: "" };
+			
+		var textShown = " " + item.code+((item.name != null && $j.trim(item.name) != '') ? " - "+item.name : "")+" ["+item.conceptSourceName+"]";
+		
+		// highlight each search term in the results
+		textShown = highlightWords(textShown, origQuery);
+		
+		var value = item.code;
+		textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
+		
+		return { label: textShown, value: value, object: item};
+	}; };
 }

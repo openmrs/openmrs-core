@@ -15,6 +15,7 @@ package org.openmrs.web.controller.patient;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 
@@ -28,6 +29,8 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.web.extension.ExtensionUtil;
+import org.openmrs.module.web.extension.provider.Link;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -95,6 +98,8 @@ public class PatientDashboardController {
 		// determine patient variation
 		
 		String patientVariation = "";
+		if (patient.isDead())
+			patientVariation = "Dead";
 		
 		Concept reasonForExitConcept = Context.getConceptService().getConcept(
 		    Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
@@ -125,6 +130,9 @@ public class PatientDashboardController {
 		map.put("emptyName", new PersonName());
 		map.put("emptyAddress", new PersonAddress());
 		map.put("causeOfDeathOther", causeOfDeathOther);
+		
+		Set<Link> links = ExtensionUtil.getAllAddEncounterToVisitLinks();
+		map.put("allAddEncounterToVisitLinks", links);
 		
 		return "patientDashboardForm";
 	}

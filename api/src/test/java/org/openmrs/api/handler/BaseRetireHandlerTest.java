@@ -61,7 +61,7 @@ public class BaseRetireHandlerTest {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
 		handler.handle(retireable, new User(2), null, " ");
-		Assert.assertEquals(new User(2), retireable.getRetiredBy());
+		Assert.assertEquals(2, retireable.getRetiredBy().getId().intValue());
 	}
 	
 	/**
@@ -74,7 +74,7 @@ public class BaseRetireHandlerTest {
 		Retireable retireable = new Location();
 		retireable.setRetiredBy(new User(3));
 		handler.handle(retireable, new User(2), null, " ");
-		Assert.assertEquals(new User(3), retireable.getRetiredBy());
+		Assert.assertEquals(3, retireable.getRetiredBy().getId().intValue());
 	}
 	
 	/**

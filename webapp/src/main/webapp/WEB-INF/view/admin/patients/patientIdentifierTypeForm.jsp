@@ -86,13 +86,29 @@
 		</spring:bind></td>
 	</tr>
 	<tr>
+		<td><spring:message code="PatientIdentifierType.uniquenessBehavior" /></td>
+		<td><spring:bind path="patientIdentifierType.uniquenessBehavior">
+			<select name="${status.expression}">
+				<option value=""></option>
+				<c:forEach var="uniquenessBehavior" items="${uniquenessBehaviors}">
+					<option value="${uniquenessBehavior}" <c:if test="${status.value == uniquenessBehavior}">selected</c:if>>
+						<spring:message code="PatientIdentifierType.uniquenessBehavior.${uniquenessBehavior}" />
+					</option>
+				</c:forEach>
+			</select>
+			<c:if test="${status.errorMessage != ''}">
+				<span class="error">${status.errorMessage}</span>
+			</c:if>
+		</spring:bind></td>
+	</tr>
+	<tr>
 		<td><spring:message code="PatientIdentifierType.validator" /></td>
 		<td><spring:bind path="patientIdentifierType.validator">
 			<select name="${status.expression}">
 				<option value="">None</option>
 				<c:forEach var="piv" items="${patientIdentifierValidators}">
-					<option value="${piv.class.name}" 
-						<c:if test="${status.value == piv.class.name}">selected</c:if> 
+					<option value="${piv['class'].name}" 
+						<c:if test="${status.value == piv['class'].name}">selected</c:if> 
 					/>
 					${piv.name}
 						<c:if test="${defaultValidatorName == piv.name}"> (default)</c:if>

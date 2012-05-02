@@ -37,10 +37,10 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.AttributeService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DataSetService;
+import org.openmrs.api.DatatypeService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
@@ -51,6 +51,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
@@ -146,6 +147,8 @@ public class Context {
 	private static ServiceContext serviceContext;
 	
 	private static Properties runtimeProperties = new Properties();
+	
+	private static Properties configProperties = new Properties();
 	
 	// A place to store data that will persist longer than a session, but won't
 	// persist beyond application restart
@@ -314,12 +317,25 @@ public class Context {
 	 * 
 	 * @param systemId
 	 * @throws ContextAuthenticationException
+	 * @should change locale when become another user
 	 */
 	public static void becomeUser(String systemId) throws ContextAuthenticationException {
 		if (log.isInfoEnabled())
 			log.info("systemId: " + systemId);
 		
-		getUserContext().becomeUser(systemId);
+		User user = getUserContext().becomeUser(systemId);
+		
+		// if assuming identity procedure finished successfully, we should change context locale parameter
+		Locale locale = null;
+		if (user.getUserProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
+			String localeString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
+			locale = LocaleUtility.fromSpecification(localeString);
+		}
+		// when locale parameter is not valid or does not exist
+		if (locale == null) {
+			locale = LocaleUtility.getDefaultLocale();
+		}
+		Context.setLocale(locale);
 	}
 	
 	/**
@@ -474,14 +490,6 @@ public class Context {
 	 */
 	public static AdministrationService getAdministrationService() {
 		return getServiceContext().getAdministrationService();
-	}
-	
-	/**
-	 * @return attribute-related services
-	 * @since 1.9
-	 */
-	public static AttributeService getAttributeService() {
-		return getServiceContext().getAttributeService();
 	}
 	
 	/**
@@ -1011,10 +1019,14 @@ public class Context {
 			Context.addProxyPrivilege(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES);
 			Set<String> currentPropNames = new HashSet<String>();
 			Map<String, GlobalProperty> propsMissingDescription = new HashMap<String, GlobalProperty>();
+			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<String, GlobalProperty>();
 			for (GlobalProperty prop : Context.getAdministrationService().getAllGlobalProperties()) {
 				currentPropNames.add(prop.getProperty().toUpperCase());
 				if (prop.getDescription() == null) {
 					propsMissingDescription.put(prop.getProperty().toUpperCase(), prop);
+				}
+				if (prop.getDatatypeClassname() == null) {
+					propsMissingDatatype.put(prop.getProperty().toUpperCase(), prop);
 				}
 			}
 			
@@ -1030,6 +1042,15 @@ public class Context {
 					GlobalProperty propToUpdate = propsMissingDescription.get(corePropName);
 					if (propToUpdate != null) {
 						propToUpdate.setDescription(coreProp.getDescription());
+						Context.getAdministrationService().saveGlobalProperty(propToUpdate);
+					}
+					// set missing datatypes
+					propToUpdate = propsMissingDatatype.get(corePropName);
+					if (propToUpdate != null && coreProp.getDatatypeClassname() != null) {
+						propToUpdate.setDatatypeClassname(coreProp.getDatatypeClassname());
+						propToUpdate.setDatatypeConfig(coreProp.getDatatypeConfig());
+						propToUpdate.setPreferredHandlerClassname(coreProp.getPreferredHandlerClassname());
+						propToUpdate.setHandlerConfig(coreProp.getHandlerConfig());
 						Context.getAdministrationService().saveGlobalProperty(propToUpdate);
 					}
 				}
@@ -1144,6 +1165,30 @@ public class Context {
 	}
 	
 	/**
+	 * Gets the simple time format for the current user's locale. The format will be similar
+	 * to hh:mm a
+	 *
+	 * @return SimpleDateFormat for the user's current locale
+	 * @see org.openmrs.util.OpenmrsUtil#getTimeFormat(Locale)
+	 * @should return a pattern with two h characters in it
+	 */
+	public static SimpleDateFormat getTimeFormat() {
+		return OpenmrsUtil.getTimeFormat(getLocale());
+	}
+	
+	/**
+	 * Gets the simple datetime format for the current user's locale. The format will be similar
+	 * to mm/dd/yyyy hh:mm a
+	 *
+	 * @return SimpleDateFormat for the user's current locale
+	 * @see org.openmrs.util.OpenmrsUtil#getDateTimeFormat(Locale)
+	 * @should return a pattern with four y characters and two h characters in it
+	 */
+	public static SimpleDateFormat getDateTimeFormat() {
+		return OpenmrsUtil.getDateTimeFormat(getLocale());
+	}
+	
+	/**
 	 * @return true/false whether the service context is currently being refreshed
 	 * @see org.openmrs.api.context.ServiceContext#isRefreshingContext()
 	 */
@@ -1173,5 +1218,54 @@ public class Context {
 	 */
 	public static VisitService getVisitService() {
 		return getServiceContext().getVisitService();
+	}
+	
+	/**
+	 * @since 1.9
+	 * @see ServiceContext#getProviderService()
+	 */
+	public static ProviderService getProviderService() {
+		return getServiceContext().getProviderService();
+	}
+	
+	/**
+	 * @since 1.9
+	 * @see ServiceCotext#getDatatypeService()
+	 */
+	public static DatatypeService getDatatypeService() {
+		return getServiceContext().getDatatypeService();
+	}
+	
+	/**
+	 * Add or replace a property in the config properties list
+	 * 
+	 * @param key name of the property
+	 * @param value value of the property
+	 * @since 1.9
+	 */
+	public static void addConfigProperty(Object key, Object value) {
+		configProperties.put(key, value);
+	}
+	
+	/**
+	 * Remove a property from the list of config properties
+	 * 
+	 * @param key name of the property
+	 * @since 1.9
+	 */
+	public static void removeConfigProperty(Object key) {
+		configProperties.remove(key);
+	}
+	
+	/**
+	 * Get the config properties that have been added to this OpenMRS instance
+	 * 
+	 * @return copy of the module properties
+	 * @since 1.9
+	 */
+	public static Properties getConfigProperties() {
+		Properties props = new Properties();
+		props.putAll(configProperties);
+		return props;
 	}
 }

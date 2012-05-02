@@ -13,16 +13,21 @@
  */
 package org.openmrs.api;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import org.junit.Assert;
@@ -32,9 +37,8 @@ import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
-import org.openmrs.Privilege;
+import org.openmrs.FormResource;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.DAOException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -48,6 +52,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	protected static final String INITIAL_FIELDS_XML = "org/openmrs/api/include/FormServiceTest-initialFieldTypes.xml";
 	
 	protected static final String FORM_FIELDS_XML = "org/openmrs/api/include/FormServiceTest-formFields.xml";
+	
+	protected static final String FORM_SAMPLE_RESOURCE = "org/openmrs/api/include/FormServiceTest-sampleResource.xslt";
 	
 	/**
 	 * Creates then updates a form FIXME Break this test case into separate tests
@@ -244,7 +250,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		List<Form> forms = formService.getForms(null, null, null, null, null, null, fields);
 		
-		Assert.assertEquals(3, forms.size());
+		assertEquals(3, forms.size());
 	}
 	
 	/**
@@ -282,7 +288,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		formService.saveFieldType(fieldType);
 		
 		FieldType refetchedFieldType = formService.getFieldType(1);
-		Assert.assertEquals("SOME OTHER NEW NAME", refetchedFieldType.getName());
+		assertEquals("SOME OTHER NEW NAME", refetchedFieldType.getName());
 	}
 	
 	/**
@@ -299,9 +305,9 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		// some of these assertions are affected by inserting resources after creating the form
 		//Assert.assertNull(dupForm.getChangedBy());
 		//Assert.assertNull(dupForm.getDateChanged());
-		Assert.assertEquals(Context.getAuthenticatedUser(), dupForm.getCreator());
+		assertEquals(Context.getAuthenticatedUser(), dupForm.getCreator());
 		long oneMinuteDelta = 60 * 1000;
-		Assert.assertEquals(new Date().getTime(), dupForm.getDateCreated().getTime(), oneMinuteDelta);
+		assertEquals(new Date().getTime(), dupForm.getDateCreated().getTime(), oneMinuteDelta);
 	}
 	
 	/**
@@ -356,7 +362,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void getFieldByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "db016b7d-39a5-4911-89da-0eefbfef7cb2";
 		Field field = Context.getFormService().getFieldByUuid(uuid);
-		Assert.assertEquals(1, (int) field.getFieldId());
+		assertEquals(1, (int) field.getFieldId());
 	}
 	
 	/**
@@ -376,7 +382,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void getFieldTypeByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "e7016b7d-39a5-4911-89da-0eefbfef7cb5";
 		FieldType fieldType = Context.getFormService().getFieldTypeByUuid(uuid);
-		Assert.assertEquals(2, (int) fieldType.getFieldTypeId());
+		assertEquals(2, (int) fieldType.getFieldTypeId());
 	}
 	
 	/**
@@ -396,7 +402,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void getFormByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "d9218f76-6c39-45f4-8efa-4c5c6c199f50";
 		Form form = Context.getFormService().getFormByUuid(uuid);
-		Assert.assertEquals(1, (int) form.getFormId());
+		assertEquals(1, (int) form.getFormId());
 	}
 	
 	/**
@@ -416,7 +422,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void getFormFieldByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "1c822b7b-7840-463d-ba70-e0c8338a4c2d";
 		FormField formField = Context.getFormService().getFormFieldByUuid(uuid);
-		Assert.assertEquals(2, (int) formField.getFormFieldId());
+		assertEquals(2, (int) formField.getFormFieldId());
 	}
 	
 	/**
@@ -459,7 +465,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void getFormsContainingConcept_shouldGetAllFormsForConcept() throws Exception {
 		Concept concept = Context.getConceptService().getConcept(3);
 		
-		Assert.assertEquals(1, Context.getFormService().getFormsContainingConcept(concept).size());
+		assertEquals(1, Context.getFormService().getFormsContainingConcept(concept).size());
 	}
 	
 	/**
@@ -478,7 +484,31 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(Context.getFormService().getFieldByUuid("b1843148-da2f-4349-c9c7-1164b98d91dd"));
 		
 		// duplicateField should be purged
-		Assert.assertEquals(2, Context.getFormService().getAllFields().size());
+		assertEquals(2, Context.getFormService().getAllFields().size());
+	}
+	
+	/**
+	 * @see FormService#saveFormResource(org.openmrs.FormResource)
+	 */
+	@Test
+	@Verifies(value = "should persist a FormResource", method = "saveFormResource()")
+	public void saveFormResource_shouldPersistAFormResource() throws Exception {
+		Form form = Context.getFormService().getForm(1);
+		FormResource resource = new FormResource();
+		resource.setForm(form);
+		resource.setName("Start Date");
+		resource.setDatatypeClassname("org.openmrs.customdatatype.datatype.DateDatatype");
+		Date expected = new SimpleDateFormat("yyyy-MM-dd").parse("2011-10-16");
+		resource.setValue(expected);
+		
+		Context.getFormService().saveFormResource(resource);
+		Integer resourceId = resource.getFormResourceId();
+		
+		Context.clearSession();
+		
+		FormResource actual = Context.getFormService().getFormResource(resourceId);
+		Assert.assertNotNull(actual);
+		Assert.assertEquals(expected, actual.getValue());
 	}
 	
 	/**
@@ -487,100 +517,28 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should copy resources for old form to new form", method = "duplicateForm(Form)")
 	public void duplicateForm_shouldCopyResourcesForOldFormToNewForm() throws Exception {
-		// save a resource
+		// save an original resource
 		Form form = Context.getFormService().getForm(1);
-		String owner = "towner";
-		String name = "tname";
-		byte[] expected = new String("whoopee").getBytes();
-		Context.getFormService().saveFormResource(form, owner, name, expected);
+		String name = "Start Date";
+		FormResource resource = new FormResource();
+		resource.setForm(form);
+		resource.setName(name);
+		resource.setDatatypeClassname("org.openmrs.customdatatype.datatype.DateDatatype");
+		Date expected = new SimpleDateFormat("yyyy-MM-dd").parse("2011-10-16");
+		resource.setValue(expected);
+		
+		resource = Context.getFormService().saveFormResource(resource);
+		Integer resourceId = resource.getFormResourceId();
 		
 		// duplicate the form
 		Form newForm = Context.getFormService().duplicateForm(form);
 		
 		// get the resource
-		byte[] actual = (byte[]) Context.getFormService().getFormResource(newForm, owner, name);
-		Assert.assertArrayEquals("resource not duplicated", expected, actual);
-	}
-	
-	/**
-	 * @see {@link FormService#getFormResource(Form,String,String)}
-	 */
-	@Test
-	@Verifies(value = "should return a saved form resource", method = "getFormResource(Form,String,String)")
-	public void getFormResource_shouldReturnASavedFormResource() throws Exception {
-		// save a resource
-		Form form = Context.getFormService().getForm(1);
-		String owner = "formentry";
-		String name = "xslt";
-		byte[] expected = null;
+		FormResource actual = Context.getFormService().getFormResource(newForm, name);
 		
-		// get the resource
-		byte[] actual = (byte[]) Context.getFormService().getFormResource(form, owner, name);
-		Assert.assertArrayEquals(expected, actual);
-	}
-	
-	/**
-	 * @see {@link FormService#getFormResource(Form,String,String)}
-	 */
-	@Test(expected = DAOException.class)
-	@Verifies(value = "should throw a DAOException if no form resource found", method = "getFormResource(Form,String,String)")
-	public void getFormResource_shouldThrowADAOExceptionIfNoFormResourceFound() throws Exception {
-		Form form = Context.getFormService().getForm(1);
-		Context.getFormService().getFormResource(form, "no", "resource");
-	}
-	
-	/**
-	 * @see {@link FormService#getFormResourceNamesByOwner(Form,String)}
-	 * 
-	 */
-	@Test
-	@Verifies(value = "should return a set of names of resources on a form for an owner", method = "getFormResourceNamesByOwner(Form,String)")
-	public void getFormResourceNamesByOwner_shouldReturnASetOfNamesOfResourcesOnAFormForAnOwner() throws Exception {
-		Form form = Context.getFormService().getForm(1);
-		Set<String> names = Context.getFormService().getFormResourceNamesByOwner(form, "formentry");
-		Assert.assertTrue(names.contains("xslt"));
-		Assert.assertTrue(names.contains("template"));
-		Assert.assertTrue(names.contains("other"));
-	}
-	
-	/**
-	 * @see {@link FormService#getFormResourceNamesByOwner(Form,String)}
-	 */
-	@Test
-	@Verifies(value = "should return an empty set if no resources exist for the owner", method = "getFormResourceNamesByOwner(Form,String)")
-	public void getFormResourceNamesByOwner_shouldReturnAnEmptySetIfNoResourcesExistForTheOwner() throws Exception {
-		Form form = Context.getFormService().getForm(1);
-		Set<String> names = Context.getFormService().getFormResourceNamesByOwner(form, "nothing");
-		Assert.assertTrue(names.isEmpty());
-	}
-	
-	/**
-	 * @see {@link FormService#getFormResourceOwners(Form)}
-	 */
-	@Test
-	@Verifies(value = "should return a set of owners of resources on a form", method = "getFormResourceOwners(Form)")
-	public void getFormResourceOwners_shouldReturnASetOfOwnersOfResourcesOnAForm() throws Exception {
-		Form form = Context.getFormService().getForm(1);
-		Set<String> owners = Context.getFormService().getFormResourceOwners(form);
-		Assert.assertTrue(owners.contains("formentry"));
-	}
-	
-	/**
-	 * @see {@link FormService#getFormResourceOwners(Form)}
-	 */
-	@Test
-	@Verifies(value = "should return an empty set if no resources exist for the form", method = "getFormResourceOwners(Form)")
-	public void getFormResourceOwners_shouldReturnAnEmptySetIfNoResourcesExistForTheForm() throws Exception {
-		// create a new form
-		Form form = new Form();
-		form.setName("form resource test form");
-		form.setVersion("42");
-		form.setDescription("bleh");
-		Context.getFormService().saveForm(form);
-		
-		// get the owners for the new form's resources
-		Set<String> owners = Context.getFormService().getFormResourceOwners(form);
-		Assert.assertTrue(owners.isEmpty());
+		// check it
+		Assert.assertNotNull(actual);
+		Assert.assertEquals(expected, actual.getValue());
 	}
 	
 	/**
@@ -589,69 +547,71 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should delete a form resource", method = "purgeFormResource(Form,String,String)")
 	public void purgeFormResource_shouldDeleteAFormResource() throws Exception {
+		// save an original resource
 		Form form = Context.getFormService().getForm(1);
-		Context.getFormService().purgeFormResource(form, "formentry", "other");
-		Set<String> names = Context.getFormService().getFormResourceNamesByOwner(form, "formentry");
-		Assert.assertFalse(names.contains("other"));
-	}
-	
-	/**
-	 * @see {@link FormService#saveFormResource(Form,String,String,null)}
-	 */
-	@Test
-	@Verifies(value = "should overwrite an existing resource with same parameters", method = "saveFormResource(Form,String,String,null)")
-	public void saveFormResource_shouldOverwriteAnExistingResourceWithSameParameters() throws Exception {
-		Form form = Context.getFormService().getForm(1);
-		String owner = "formentry";
-		String name = "other";
-		byte[] expected = new String("whoopee").getBytes();
-		byte[] previous = (byte[]) Context.getFormService().getFormResource(form, owner, name);
+		String name = "Start Date";
+		FormResource resource = new FormResource();
+		resource.setForm(form);
+		resource.setName(name);
+		resource.setDatatypeClassname("org.openmrs.customdatatype.datatype.DateDatatype");
+		Date previous = new SimpleDateFormat("yyyy-MM-dd").parse("2011-10-16");
+		resource.setValue(previous);
 		
-		// TODO figure out why this is necessary
+		resource = Context.getFormService().saveFormResource(resource);
+		Integer resourceId = resource.getFormResourceId();
+		
+		// clear the session
 		Context.clearSession();
 		
+		// find and delete the resource
+		resource = Context.getFormService().getFormResource(resourceId);
+		Context.getFormService().purgeFormResource(resource);
+		
+		// clear the session
+		Context.flushSession();
+		
+		// try to find the resource
+		resource = Context.getFormService().getFormResource(resourceId);
+		Assert.assertNull(resource);
+	}
+	
+	/**
+	 * @see {@link FormService#saveFormResource(FormResource)}
+	 */
+	@Test
+	@Verifies(value = "should overwrite an existing resource with same name", method = "saveFormResource(FormResource)")
+	public void saveFormResource_shouldOverwriteAnExistingResourceWithSameName() throws Exception {
+		String name = "Start Date";
+		
+		// save an original resource
+		Form form = Context.getFormService().getForm(1);
+		FormResource resource = new FormResource();
+		resource.setForm(form);
+		resource.setName(name);
+		resource.setDatatypeClassname("org.openmrs.customdatatype.datatype.DateDatatype");
+		Date previous = new SimpleDateFormat("yyyy-MM-dd").parse("2011-10-16");
+		resource.setValue(previous);
+		
+		Context.getFormService().saveFormResource(resource);
+		
+		// clear the session
+		Context.flushSession();
+		
+		// save a new resource with the same name
 		form = Context.getFormService().getForm(1);
-		Context.getFormService().saveFormResource(form, owner, name, expected);
-		byte[] actual = (byte[]) Context.getFormService().getFormResource(form, owner, name);
+		resource = new FormResource();
+		resource.setForm(form);
+		resource.setName(name);
+		resource.setDatatypeClassname("org.openmrs.customdatatype.datatype.DateDatatype");
+		Date expected = new SimpleDateFormat("yyyy-MM-dd").parse("2010-10-16");
+		resource.setValue(expected);
+		Context.getFormService().saveFormResource(resource);
 		
-		Assert.assertFalse(Arrays.equals(previous, actual));
-		Assert.assertArrayEquals(expected, actual);
-	}
-	
-	/**
-	 * @see {@link FormService#saveFormResource(Form,String,String,null)}
-	 */
-	@Test
-	@Verifies(value = "should save a form resource", method = "saveFormResource(Form,String,String,null)")
-	public void saveFormResource_shouldSaveAFormResource() throws Exception {
-		// save a resource
-		Form form = Context.getFormService().getForm(1);
-		String owner = "towner";
-		String name = "tname";
-		byte[] expected = new String("whoopee").getBytes();
-		Context.getFormService().saveFormResource(form, owner, name, expected);
+		// get the current value
+		FormResource actual = Context.getFormService().getFormResource(form, name);
 		
-		// get the resource
-		byte[] actual = (byte[]) Context.getFormService().getFormResource(form, owner, name);
-		Assert.assertArrayEquals(expected, actual);
-	}
-	
-	/**
-	 * @see {@link FormService#saveFormResource(Form,String,String,Object)}
-	 */
-	@Test
-	@Verifies(value = "should save any serializable value", method = "saveFormResource(Form,String,String,Object)")
-	public void saveFormResource_shouldSaveAnySerializableValue() throws Exception {
-		// save a resource
-		Form form = Context.getFormService().getForm(1);
-		String owner = "towner";
-		String name = "tname";
-		Privilege expected = new Privilege("hey", "that's cool");
-		Context.getFormService().saveFormResource(form, owner, name, expected);
-		
-		// get the resource
-		Privilege actual = (Privilege) Context.getFormService().getFormResource(form, owner, name);
-		Assert.assertEquals(expected, actual);
+		Assert.assertFalse(previous.equals(actual.getValue()));
+		Assert.assertEquals(expected, actual.getValue());
 	}
 	
 	/**
@@ -668,20 +628,79 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		form = Context.getFormService().saveForm(form);
 		
 		// save a resource
-		String owner = "towner";
-		String name = "tname";
-		String expected = "whoopee";
-		Context.getFormService().saveFormResource(form, owner, name, expected);
+		String name = "Start Date";
+		FormResource resource = new FormResource();
+		resource.setForm(form);
+		resource.setName(name);
+		resource.setDatatypeClassname("org.openmrs.customdatatype.datatype.DateDatatype");
+		Date expected = new SimpleDateFormat("yyyy-MM-dd").parse("2011-10-16");
+		resource.setValue(expected);
+		
+		Context.getFormService().saveFormResource(resource);
 		
 		// make sure the resource is saved
-		String actual = (String) Context.getFormService().getFormResource(form, owner, name);
-		Assert.assertEquals(expected, actual);
+		FormResource actual = Context.getFormService().getFormResource(form, name);
+		assertEquals(expected, actual.getValue());
+		
+		// retain the resource id
+		Integer savedId = actual.getFormResourceId();
 		
 		// delete the form
 		Context.getFormService().purgeForm(form);
 		
-		// check for resource owners
-		Assert.assertTrue(Context.getFormService().getFormResourceOwners(form).isEmpty());
+		// check for the resource
+		Assert.assertNull(Context.getFormService().getFormResource(savedId));
+	}
+	
+	/**
+	 * @see {@link FormService#saveFormResource(FormResource)}
+	 */
+	@Test
+	@Verifies(value = "should be able to save an XSLT", method = "saveFormResource(FormResource)")
+	public void saveFormResource_shouldBeAbleToSaveAnXSLT() throws Exception {
+		// set up new form
+		Form form = new Form();
+		form.setName("form resource test form");
+		form.setVersion("42");
+		form.setDescription("bleh");
+		form = Context.getFormService().saveForm(form);
+		
+		// save a resource
+		String name = "org.openmrs.module.formentry.xslt";
+		String expected = getResourceAsString(FORM_SAMPLE_RESOURCE);
+		
+		FormResource resource = new FormResource();
+		resource.setForm(form);
+		resource.setName(name);
+		resource.setDatatypeClassname("org.openmrs.customdatatype.datatype.LongFreeTextDatatype");
+		resource.setValue(expected);
+		Context.getFormService().saveFormResource(resource);
+		
+		// make sure the resource is saved
+		Collection<FormResource> formResourcesForForm = Context.getFormService().getFormResourcesForForm(form);
+		Assert.assertEquals(1, formResourcesForForm.size());
+		FormResource actual = formResourcesForForm.iterator().next();
+		Assert.assertEquals(expected, actual.getValue());
+	}
+	
+	/**
+	 * convert a resource path to a file into a string containing the file's contents
+	 * 
+	 * @param filename resource path to the file
+	 * @return the contents of the file in a String
+	 * @throws IOException 
+	 */
+	private String getResourceAsString(String filename) throws IOException {
+		InputStream resource = this.getClass().getClassLoader().getResourceAsStream(filename);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+		
+		while ((line = reader.readLine()) != null)
+			sb.append(line).append("\n");
+		
+		reader.close();
+		return sb.toString();
 	}
 	
 }

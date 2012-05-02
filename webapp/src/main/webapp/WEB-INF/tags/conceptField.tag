@@ -51,6 +51,13 @@
             placeholder:'<spring:message code="Concept.search.placeholder" javaScriptEscape="true"/>',
             autoSelect: true
 		});
+		
+		//Clear hidden value on losing focus with no valid entry
+		$j("#${displayNameInputId}").autocomplete().blur(function(event, ui) {
+			if (!event.target.value) {
+				jquerySelectEscaped('${formFieldId}').val('');
+			}
+		});
 
 		<c:if test="${not empty initialValue}">
 			// fetch the concept object they passed the value in of and do the normal "select" stuff
@@ -73,8 +80,10 @@
 		jquerySelectEscaped('${formFieldId}').val(concept.conceptId);
 
 		// if called with initialValue, show the name ourselves
-		if (!item)
+		if (!item) {
 			jquerySelectEscaped('${displayNameInputId}').val(concept.name);
+			jquerySelectEscaped('${displayNameInputId}').autocomplete("option", "initialValue", concept.name);
+		}
 
 		<c:if test="${not empty showOther}">
 			// if showOther is the concept that is selected, show a text field so user can enter that "other" data

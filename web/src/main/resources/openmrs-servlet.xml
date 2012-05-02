@@ -45,13 +45,24 @@
 		<property name="mediaTypes">
 			<map>
 				<entry key="json" value="application/json" />
+				<entry key="xml" value="application/xml" />
 			</map>
 		</property>
 		<property name="defaultViews">
 			<list>
 				<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+           			<property name="marshaller" ref="xStreamMarshaller"/>
+        		</bean>
 			</list>
 		</property>
+	</bean>
+	
+	<bean id="xStreamMarshaller" class="org.springframework.oxm.xstream.XStreamMarshaller" />
+
+	<bean id="xmlMarshallingHttpMessageConverter" class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+ 		<property name="marshaller" ref="xStreamMarshaller" />
+		<property name="unmarshaller" ref="xStreamMarshaller" />
 	</bean>
 	
 	<bean id="defaultMethodParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
@@ -98,6 +109,7 @@
 				<bean class="org.springframework.http.converter.FormHttpMessageConverter" />
 				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
 				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+				<ref bean="xmlMarshallingHttpMessageConverter" />
 			</list>
 		</property>
 	</bean>
@@ -130,7 +142,8 @@
 								
 				<prop key="admin/patients/patientIdentifierType.list">patientIdentifierTypeList</prop>
 				<prop key="admin/patients/patientIdentifierType.form">patientIdentifierTypeForm</prop>
-
+				
+				<prop key="admin/person/person.form">personForm</prop>
 				<prop key="admin/person/relationshipType.list">relationshipTypeList</prop>
 				<prop key="admin/person/relationshipType.form">relationshipTypeForm</prop>
 				<prop key="admin/person/relationshipTypeViews.form">relationshipTypeViewForm</prop>
@@ -180,7 +193,6 @@
 
 				<prop key="admin/forms/formSchemaDesign.form">formSchemaDesignForm</prop>
 				<prop key="admin/forms/formEdit.form">formEditForm</prop>
-				<prop key="admin/forms/formViewXslt.form">formViewXsltForm</prop>
 				<prop key="admin/forms/form.list">formList</prop>
 				<prop key="admin/forms/field.form">fieldForm</prop>
 				<prop key="admin/forms/field.list">fieldList</prop>
@@ -221,6 +233,7 @@
 				<prop key="**/patientRegimenAdd.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientEncounters.portlet">patientEncountersPortletController</prop>
+				<prop key="**/patientVisits.portlet">patientVisitsPortletController</prop>
 				<prop key="**/personFormEntry.portlet">personFormEntryPortletController</prop>
 				<prop key="**/activeListAllergy.portlet">activeListPortletController</prop>
 				<prop key="**/activeListProblem.portlet">activeListPortletController</prop>
@@ -229,11 +242,13 @@
 				<prop key="**/*.portlet">portletController</prop>
 				<prop key="**/*.field">fieldGenController</prop>
 				<prop key="**/*.htm">springController</prop>
-				
+
 				<prop key="admin/visits/visitType.list">visitTypeList</prop>
 				<prop key="admin/visits/visitType.form">visitTypeForm</prop>
 				<prop key="admin/visits/visitAttributeType.list">visitAttributeTypeList</prop>
 				<prop key="admin/visits/visitAttributeType.form">visitAttributeTypeForm</prop>
+				<prop key="admin/provider/providerAttributeType.list">providerAttributeTypeList</prop>
+				<prop key="admin/provider/providerAttributeType.form">providerAttributeTypeForm</prop>				
 			</props>
 		</property>
 	</bean>
@@ -245,6 +260,7 @@
 	<bean id="personRelationshipsPortletController" class="org.openmrs.web.controller.PersonRelationshipsPortletController" />
 	<bean id="patientRegimenPortletController" class="org.openmrs.web.controller.RegimenPortletController" />
 	<bean id="patientEncountersPortletController" class="org.openmrs.web.controller.PatientEncountersPortletController" />
+	<bean id="patientVisitsPortletController" class="org.openmrs.web.controller.PatientVisitsPortletController" />
 	<bean id="personFormEntryPortletController" class="org.openmrs.web.controller.PersonFormEntryPortletController" />
 	<bean id="addressLayoutPortletController" class="org.openmrs.web.controller.layout.AddressLayoutPortletController" />
 	<bean id="nameLayoutPortletController" class="org.openmrs.web.controller.layout.NameLayoutPortletController" />
@@ -405,6 +421,15 @@
 	<!-- ============================= -->
 	<!-- ======  Person Sector  ====== -->
 	<!-- ============================= -->
+	<!-- ** Person ** -->
+	<bean id="personForm" class="org.openmrs.web.controller.person.PersonFormController">
+		<property name="commandName"><value>person</value></property>
+		<property name="formView"><value>/admin/person/personForm</value></property>
+		<property name="successView"><value>person.form</value></property>
+		<property name="validator"><ref bean="personValidator" /></property>
+	</bean>
+	<!-- ** /Person ** -->
+	
 	<!-- **  Relationship Type   ** -->
 	<bean id="relationshipTypeList"
 		class="org.openmrs.web.controller.person.RelationshipTypeListController">
@@ -565,11 +590,11 @@
 	<!-- =====  Concept Sector  ===== -->
 	<!-- ============================ -->
 	<!-- ** Concept ** -->
-	<bean id="conceptValidator" class="org.openmrs.web.controller.ConceptFormValidator" />
+	<bean id="conceptFormValidator" class="org.openmrs.web.controller.ConceptFormValidator" />
 	<bean id="conceptForm" class="org.openmrs.web.controller.ConceptFormController">
 		<property name="commandName"><value>command</value></property>
 		<property name="validator">
-			<ref bean="conceptValidator" />
+			<ref bean="conceptFormValidator" />
 		</property>
 		<property name="formView"><value>/dictionary/conceptForm</value></property>
 		<property name="successView"><value>concept.form</value></property>
@@ -596,7 +621,6 @@
 
 	<bean id="conceptDrugForm"
 		class="org.openmrs.web.controller.concept.ConceptDrugFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>drug</value></property>
 		<property name="validator">
 			<ref bean="conceptDrugValidator" />
@@ -707,9 +731,6 @@
 	<!--  ** /Concept Source ** -->	
 
 	<!-- ============================ -->
-    <!-- ============================ -->
-		
-	<!-- ============================ -->
 	<!-- ===== Form Sector ===== -->
 	<!-- ============================ -->
 
@@ -734,12 +755,6 @@
 		</property>
 		<property name="successView"><value>form.list</value></property>
 	</bean>
-
-	<bean id="formViewXsltForm" class="org.openmrs.web.controller.form.FormFormController">
-		<property name="commandName"><value>form</value></property>
-		<property name="formView"><value>/admin/forms/formViewXsltForm</value></property>
-		<property name="successView"><value>form.list</value></property>
-	</bean>
 	<!-- ** /Form ** -->
 
 	<!-- ** Field  ** -->
@@ -751,6 +766,9 @@
 
 	<bean id="fieldForm" class="org.openmrs.web.controller.form.FieldFormController">
 		<property name="commandName"><value>field</value></property>
+		<property name="validator">
+			<ref bean="fieldValidator" />
+		</property>
 		<property name="formView"><value>/admin/forms/fieldForm</value></property>
 		<property name="successView"><value>field.list</value></property>
 	</bean>
@@ -933,7 +951,7 @@
 		<property name="formView"><value>/forgotPasswordForm</value></property>
 		<property name="successView"><value>forgotPassword.form</value></property>
 	</bean>
-	
+
 	<!-- ** Visit Type ** -->
 	<bean id="visitTypeList"
 		class="org.openmrs.web.controller.visit.VisitTypeListController">
@@ -953,9 +971,9 @@
 		<property name="successView"><value>visitType.list</value></property>
 	</bean>
 	<!-- ** /Visit Type ** -->
-	
+
 	<!-- ======================================== -->
-	
+
 	<!-- ** Visit Attribute Type ** -->
 	<bean id="visitAttributeTypeList"
 		class="org.openmrs.web.controller.visit.VisitAttributeTypeListController">
@@ -975,7 +993,26 @@
 		<property name="successView"><value>visitAttributeType.list</value></property>
 	</bean>
 	<!-- ** /Visit Attribute Type ** -->
-	
+
+	<!-- ** Provider Attribute Type ** -->
+	<bean id="providerAttributeTypeList"
+		class="org.openmrs.web.controller.provider.ProviderAttributeTypeListController">
+		<property name="commandName"><value>providerAttributeTypeList</value></property>
+		<property name="formView"><value>/admin/provider/providerAttributeTypeList</value></property>
+		<property name="successView"><value>providerAttributeType.list</value></property>
+	</bean>
+	<!--  Form Controller for the add/edit provider attribute types page -->
+	<bean id="providerAttributeTypeForm"
+		class="org.openmrs.web.controller.provider.ProviderAttributeTypeFormController">
+		<property name="commandName"><value>providerAttributeType</value></property>
+		<property name="validator">
+			<ref bean="providerAttributeTypeValidator" />
+		</property>
+		<property name="formView"><value>/admin/provider/providerAttributeTypeForm</value></property>
+		<property name="successView"><value>providerAttributeType.list</value></property>
+	</bean>	
+	<!-- ** /Provider Attribute Type ** -->
+
 	<!-- ======================================== -->
 
 
@@ -1070,384 +1107,14 @@
 				</prop>
 				<prop key="java.util.Date">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
 				<prop key="org.openmrs.util.AttributableDate">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
+				<prop key="org.openmrs.Provider">
+					org.openmrs.web.taglib.fieldgen.ProviderHandler
+				</prop>
 			</props>
 		</property>
 	</bean>
 
 
-	<!-- ADDRESS LAYOUT SUPPORT -->
-
-	<bean id="addressSupport" class="org.openmrs.layout.web.address.AddressSupport">
-		<property name="defaultLayoutFormat"><value>US</value></property>
-		<property name="layoutTemplates">
-			<list>
-				<ref bean="addressTemplateSpain" />
-				<ref bean="addressTemplateRwanda" />
-				<ref bean="addressTemplateUS" />
-				<ref bean="addressTemplateKenya" />
-				<ref bean="addressTemplateLesotho" />
-				<ref bean="addressTemplateMalawi" />
-				<ref bean="addressTemplateGeneral" />
-				<ref bean="addressTemplateTanzania" />
-			</list>
-		</property>
-		<property name="specialTokens">
-			<list>
-				<value>address1</value>
-				<value>address2</value>
-                <value>address3</value>
-                <value>address4</value>
-                <value>address5</value>
-                <value>address6</value>
-				<value>cityVillage</value>
-                <value>countyDistrict</value>
-				<value>stateProvince</value>
-				<value>country</value>
-				<value>latitude</value>
-				<value>longitude</value>
-                <value>postalCode</value>
-				<value>startDate</value>
-				<value>endDate</value>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="addressTemplateSpain" class="org.openmrs.layout.web.address.AddressTemplate">
-		<property name="displayName"><value>Formato de Direcciones en Espana</value></property>
-		<property name="codeName"><value>spain</value></property>
-		<property name="country"><value>Spain</value></property>
-		<property name="nameMappings">
-			<props>
-				<prop key="postalCode">Location.postalCode</prop>
-				<prop key="stateProvince">Location.stateProvince</prop>
-				<prop key="cityVillage">Location.cityVillage</prop>
-				<prop key="address1">Location.address1</prop>
-				<prop key="address2">Location.address2</prop>
-				<prop key="longitude">Location.longitude</prop>
-				<prop key="latitude">Location.latitude</prop>
-				<prop key="country">Location.country</prop>
-			</props>
-		</property>
-		<property name="sizeMappings">
-			<props>
-				<prop key="postalCode">10</prop>
-				<prop key="stateProvince">10</prop>
-				<prop key="cityVillage">10</prop>
-				<prop key="address1">40</prop>
-				<prop key="address2">40</prop>
-				<prop key="longitude">10</prop>
-				<prop key="latitude">10</prop>
-				<prop key="country">10</prop>
-			</props>
-		</property>
-		<property name="lineByLineFormat">
-			<list>
-				<value>address1</value>
-				<value>address2</value>
-				<value>cityVillage stateProvince country postalCode</value>
-				<value>latitude longitude</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="addressTemplateRwanda" class="org.openmrs.layout.web.address.AddressTemplate">
-		<property name="displayName"><value>Rwandan Address Format</value></property>
-		<property name="codeName"><value>rw</value></property>
-		<property name="country"><value>Rwanda</value></property>
-		<property name="nameMappings">
-			<props>
-				<prop key="stateProvince">Location.province</prop>
-				<prop key="countyDistrict">Location.district</prop>
-				<prop key="cityVillage">Location.sector</prop>
-				<prop key="address3">Location.cell</prop>
-				<prop key="address1">Location.rwandanNeighborhood</prop>
-			</props>
-		</property>
-		<property name="sizeMappings">
-			<props>
-				<prop key="stateProvince">40</prop>
-				<prop key="countyDistrict">40</prop>
-				<prop key="cityVillage">40</prop>
-				<prop key="address3">40</prop>
-				<prop key="address1">40</prop>
-			</props>
-		</property>
-		<property name="elementDefaults">
-			<props>
-				<prop key="country">Rwanda</prop>
-			</props>
-		</property>
-		<property name="lineByLineFormat">
-			<list>
-				<value>stateProvince</value>
-				<value>countyDistrict</value>
-				<value>cityVillage</value>
-				<value>address3</value>
-				<value>address1</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="addressTemplateUS" class="org.openmrs.layout.web.address.AddressTemplate">
-		<property name="displayName"><value>US Address Format</value></property>
-		<property name="codeName"><value>us</value></property>
-		<property name="country"><value>USA</value></property>
-		<property name="nameMappings">
-			<props>
-				<prop key="postalCode">Location.zipCode</prop>
-				<prop key="stateProvince">Location.state</prop>
-				<prop key="cityVillage">Location.city</prop>
-				<prop key="address1">Location.address1</prop>
-				<prop key="address2">Location.address2</prop>
-			</props>
-		</property>
-		<property name="sizeMappings">
-			<props>
-				<prop key="postalCode">10</prop>
-				<prop key="stateProvince">2</prop>
-				<prop key="cityVillage">20</prop>
-				<prop key="address1">50</prop>
-				<prop key="address2">50</prop>
-			</props>
-		</property>
-		<property name="elementDefaults">
-			<props>
-				<prop key="country">USA</prop>
-			</props>
-		</property>
-		<property name="lineByLineFormat">
-			<list>
-				<value>address1</value>
-				<value>address2</value>
-				<value>cityVillage stateProvince postalCode</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="addressTemplateGeneral" class="org.openmrs.layout.web.address.AddressTemplate">
-		<property name="displayName"><value>General Address Format</value></property>
-		<property name="codeName"><value>general</value></property>
-		<property name="country"><value></value></property>
-		<property name="nameMappings">
-			<props>
-				<prop key="postalCode">Location.postalCode</prop>
-				<prop key="stateProvince">Location.stateProvince</prop>
-				<prop key="cityVillage">Location.cityVillage</prop>
-				<prop key="address1">Location.address1</prop>
-				<prop key="address2">Location.address2</prop>
-				<prop key="longitude">Location.longitude</prop>
-				<prop key="latitude">Location.latitude</prop>
-				<prop key="country">Location.country</prop>
-				<prop key="startDate">PersonAddress.startDate</prop>
-				<prop key="endDate">personAddress.endDate</prop>
-			</props>
-		</property>
-		<property name="sizeMappings">
-			<props>
-				<prop key="postalCode">10</prop>
-				<prop key="stateProvince">10</prop>
-				<prop key="cityVillage">10</prop>
-				<prop key="address1">40</prop>
-				<prop key="address2">40</prop>
-				<prop key="longitude">10</prop>
-				<prop key="latitude">10</prop>
-				<prop key="country">10</prop>
-				<prop key="startDate">10</prop>
-				<prop key="endDate">10</prop>
-			</props>
-		</property>
-		<property name="lineByLineFormat">
-			<list>
-				<value>address1</value>
-				<value>address2</value>
-				<value>cityVillage stateProvince country postalCode</value>
-				<value>latitude longitude</value>
-				<value>startDate endDate</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="addressTemplateKenya" class="org.openmrs.layout.web.address.AddressTemplate">
-		<property name="displayName"><value>Kenyan Address Format</value></property>
-		<property name="codeName"><value>ka</value></property>
-		<property name="country"><value>Kenya</value></property>
-		<property name="nameMappings">
-			<props>
-				
-				<prop key="address1">Location.address1</prop>
-				
-				<prop key="address2">Location.sectionHomestead</prop>
-				
-				<prop key="address3">Location.estateNearestCentre</prop>
-				<prop key="cityVillage">Location.townVillage</prop>
-				
-				<prop key="address5">Location.sublocation</prop>
-				<prop key="address6">Location.location</prop>
-				
-				<prop key="address4">Location.division</prop>
-				<prop key="countyDistrict">Location.district</prop>
-				
-				<prop key="stateProvince">Location.province</prop>
-				<prop key="postalCode">Location.postalCode</prop>
-				<prop key="longitude">Location.longitude</prop>
-				<prop key="latitude">Location.latitude</prop>
-				<prop key="country">Location.country</prop>
-			</props>
-		</property>
-		<property name="sizeMappings">
-			<props>
-				<prop key="address1">55</prop>
-				
-				<prop key="address2">55</prop>
-				
-				<prop key="address3">24</prop>
-				<prop key="cityVillage">24</prop>
-				
-				<prop key="subregion">24</prop>
-				<prop key="region">24</prop>
-				
-				<prop key="townshipDivision">24</prop>
-				<prop key="countyDistrict">24</prop>
-				
-				<prop key="stateProvince">24</prop>
-				<prop key="postalCode">6</prop>
-				<prop key="longitude">10</prop>
-				<prop key="latitude">10</prop>
-				<prop key="country">10</prop>
-				
-			</props>
-		</property>
-		<property name="elementDefaults">
-			<props>
-				<prop key="country">Kenya</prop>
-			</props>
-		</property>
-        <property name="elementRegex">
-            <props>
-                <prop key="latitude">^(\\d{1,3}\\s)\\d\\d.(\\d{2,3})\\s*$</prop>
-                <prop key="longitude">^(\\d{1,3}\\s)\\d\\d.(\\d{2,3})\\s*$</prop>
-            </props>
-        </property>
-        <property name="elementRegexFormats">
-            <props>
-                 <prop key="latitude">123 45.000</prop>
-                 <prop key="longitude">123 45.000</prop>
-            </props>
-        </property>
-		<property name="lineByLineFormat">
-			<list>
-				<value>address1</value>
-				<value>address2</value>
-				<value>address3 cityVillage</value>
-				<value>address5 address6</value>
-				<value>address4 countyDistrict</value>
-				<value>stateProvince postalCode</value>
-				<value>latitude longitude</value>
-                <value>country</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="addressTemplateLesotho" class="org.openmrs.layout.web.address.AddressTemplate">
-		<property name="displayName"><value>Lesotho Address Format</value></property>
-		<property name="codeName"><value>ls</value></property>
-		<property name="country"><value>Lesotho</value></property>
-		<property name="nameMappings">
-			<props>
-				<prop key="countyDistrict">Location.district</prop>
-				<prop key="neighborhoodCell">Location.communityCouncil</prop>
-				<prop key="cityVillage">Location.village</prop>
-			</props>
-		</property>
-		<property name="sizeMappings">
-			<props>
-				<prop key="countyDistrict">40</prop>
-				<prop key="neighborhoodCell">40</prop>
-				<prop key="cityVillage">40</prop>
-			</props>
-		</property>
-		<property name="elementDefaults">
-			<props>
-				<prop key="country">Lesotho</prop>
-			</props>
-		</property>
-		<property name="lineByLineFormat">
-			<list>
-				<value>countyDistrict</value>
-				<value>neighborhoodCell</value>
-				<value>cityVillage</value>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="addressTemplateMalawi" class="org.openmrs.layout.web.address.AddressTemplate">
-		<property name="displayName"><value>Malawi Address Format</value></property>
-		<property name="codeName"><value>mw</value></property>
-		<property name="country"><value>Malawi</value></property>
-		<property name="nameMappings">
-			<props>
-				<prop key="stateProvince">Location.district</prop>
-				<prop key="countyDistrict">Location.traditionalAuthority</prop>
-				<prop key="cityVillage">Location.village</prop>
-				<prop key="address3">Location.neighborhood</prop>
-				<prop key="address1">Location.address1</prop>
-			</props>
-		</property>
-		<property name="sizeMappings">
-			<props>
-				<prop key="stateProvince">20</prop>
-				<prop key="countyDistrict">20</prop>
-				<prop key="cityVillage">20</prop>
-				<prop key="address3">20</prop>
-				<prop key="address1">40</prop>
-			</props>
-		</property>
-		<property name="elementDefaults">
-			<props>
-				<prop key="country">Malawi</prop>
-			</props>
-		</property>
-		<property name="lineByLineFormat">
-			<list>
-				<value>address1</value>
-				<value>address3</value>
-				<value>cityVillage</value>
-				<value>countyDistrict</value>
-				<value>stateProvince</value>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="addressTemplateTanzania" class="org.openmrs.layout.web.address.AddressTemplate">
-		<property name="displayName"><value>Tanzanian Address Format</value></property>
-		<property name="codeName"><value>tz</value></property>
-		<property name="country"><value>Tanzania</value></property>
-		<property name="nameMappings">
-			<props>
-				<prop key="cityVillage">Location.villageStreet</prop>
-				<prop key="address5">Location.ward</prop>
-				<prop key="countyDistrict">Location.district</prop>
-				<prop key="address6">Location.region</prop>
-			</props>
-		</property>
-		<property name="sizeMappings">
-			<props>
-				<prop key="cityVillage">50</prop>
-				<prop key="address5">22</prop>
-				<prop key="countyDistrict">17</prop>
-				<prop key="address6">14</prop>
-			</props>
-		</property>
-		<property name="lineByLineFormat">
-			<list>
-				<value>cityVillage</value>
-				<value>address5</value>
-				<value>countyDistrict</value>
-				<value>address6</value>
-			</list>
-		</property>
-	</bean>
-	
 	<!-- NAME LAYOUT SUPPORT -->
 	
 	<!-- specialTokens ordered so that the subset string 'familyName' is after 'familyName*'
@@ -1634,7 +1301,7 @@
 	<!-- Add global property listeners -->
 	<bean id="webEventListeners" parent="openmrsEventListeners">
 	    <property name="globalPropertyListeners">
-	        <list value-type="org.openmrs.api.GlobalPropertyListener" merge="true">
+	        <list value-type="org.openmrs.api.GlobalPropertyListener">
 	            <bean class="org.openmrs.web.controller.PseudoStaticContentController" />
 	            <bean class="org.openmrs.web.dwr.DWRPatientService" />
 	        </list>
@@ -1645,5 +1312,4 @@
 		>\r\n			<value>(.*)</value>\r\n		</property>
 		><value>$1</value></property>
 	-->
-
 </beans>

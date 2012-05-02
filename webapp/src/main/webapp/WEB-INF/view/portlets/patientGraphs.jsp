@@ -154,7 +154,7 @@ table#labTestTable th {
 		       }).appendTo("body").fadeIn(200);
 		}
 		
-		function formatDate(dateToFormat) {
+		function formatDateForGraph(dateToFormat) {
 			return "" + dateToFormat.getDate() + "/" + (dateToFormat.getMonth() + 1) + "/" + dateToFormat.getFullYear();
 		}
 		
@@ -221,7 +221,7 @@ table#labTestTable th {
 				 $j("#tooltip").remove();
 				 plot.unhighlight();
 				 if (item) {
-				  	showToolTip(item.pageX, item.pageY, "" + formatDate(new Date(item.datapoint[0])) + ": " + item.datapoint[1] + " " + json.units);
+				  	showToolTip(item.pageX, item.pageY, "" + formatDateForGraph(new Date(item.datapoint[0])) + ": " + item.datapoint[1] + " " + json.units);
 				  	plot.highlight(item.series, item.datapoint);
 				 }
 			  });

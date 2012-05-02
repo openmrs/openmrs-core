@@ -21,7 +21,7 @@ import org.hibernate.MappingException;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.SessionImplementor;
 import org.hibernate.id.Configurable;
-import org.hibernate.id.IdentifierGeneratorFactory;
+import org.hibernate.id.IdentifierGeneratorHelper;
 import org.hibernate.id.IdentityGenerator;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.type.Type;
@@ -47,11 +47,9 @@ public class NativeIfNotAssignedIdentityGenerator extends IdentityGenerator impl
 		Serializable id;
 		EntityPersister persister = session.getEntityPersister(entityName, entity);
 		// Determine if an ID has been assigned.
-		id = persister.getIdentifier(entity, session.getEntityMode());
+		id = persister.getIdentifier(entity, session);
 		if (id == null) {
-			// If the id was NOT assigned, return the POST_INSERT_INDICATOR,
-			// which will determine and use the natively generated identifier.
-			id = IdentifierGeneratorFactory.POST_INSERT_INDICATOR;
+			id = super.generate(session, entity);
 		}
 		return id;
 	}

@@ -50,6 +50,9 @@ public class PatientIdentifierTypeValidator implements Validator {
 	 * @should fail validation if name is null or empty or whitespace
 	 * @should fail validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation if regEx field length is not too long
+	 * @should fail validation if regEx field length is too long
+	 * @should fail validation if name field length is too long
 	 */
 	public void validate(Object obj, Errors errors) {
 		PatientIdentifierType identifierType = (PatientIdentifierType) obj;
@@ -58,7 +61,7 @@ public class PatientIdentifierTypeValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
+			ValidateUtil.validateFieldLengths(errors, identifierType.getClass(), "name", "description", "format");
 		}
 	}
-	
 }

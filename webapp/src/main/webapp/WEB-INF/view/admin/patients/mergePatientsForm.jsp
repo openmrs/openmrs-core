@@ -2,10 +2,19 @@
 
 <openmrs:require privilege="Edit Patients" otherwise="/login.htm" redirect="/admin/patients/mergePatients.form"/>
 
+<c:choose>
+<c:when test="${modalMode}">
+<%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
+</c:when>
+<c:otherwise>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
+</c:otherwise>
+</c:choose>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+
+<c:if test="${empty msg}">
 
 <script type="text/javascript">
 var dupSize=0;
@@ -91,7 +100,7 @@ function collectInfo(){
 			</c:forEach>
 			patientAddress.value = patientAddress.value+"#";
 
-			patientInfos.value = patientInfos.value+"${patient.patientId},${patient.gender},<openmrs:formatDate date='${patient.birthdate}' type='short' />,<openmrs:formatDate date='${patient.deathDate}' type='short' />,${patient.creator.personName} - <openmrs:formatDate date='${patient.dateCreated}' type='long' />,${patient.changedBy.personName} - <openmrs:formatDate date='${patient.dateChanged}' type='long' />,${patient.voided}#";
+			patientInfos.value = patientInfos.value+"${patient.patientId}|${patient.gender}|<openmrs:formatDate date='${patient.birthdate}' type='short' />|<openmrs:formatDate date='${patient.deathDate}' type='short' />|${patient.creator.personName} - <openmrs:formatDate date='${patient.dateCreated}' type='long' />|${patient.changedBy.personName} - <openmrs:formatDate date='${patient.dateChanged}' type='long' />|${patient.voided}#";
 			if(!isPreferred){
 				addPatientTab('${status.index}', notPreferredCount);
 			}
@@ -161,7 +170,7 @@ function display(obj, updateTabs){
 			address = address+"<li>"+patientAddress[j];
 		}//address print Ended
 		
-		var patientInfos = patientsInfos[i].split(',');
+		var patientInfos = patientsInfos[i].split('|');
 		var infos = "";
 		for(var j=0;j<patientInfos.length;j++){//info print Started
 			infos = patientInfos[j];
@@ -258,7 +267,7 @@ function unPrefPatient(i){
 			address = address+"<li>"+patientAddress[j];
 		}//address print Ended
 		
-		var patientInfos = patientsInfos[i].split(',');
+		var patientInfos = patientsInfos[i].split('|');
 		var infos = "";
 		for(var j=0;j<patientInfos.length;j++){//info print Started
 			infos = patientInfos[j];
@@ -351,7 +360,6 @@ function generateMergeList(){
 					nonPreferred.value = nonPreferred.value+patients[i].value+",";
 				}else preferred.value = patients[i].value;
 			}
-			return true;
 		}else{
 			var preferred = document.getElementById('pref');
 			var nonPreferred = document.getElementById('nonPref');
@@ -365,8 +373,24 @@ function generateMergeList(){
 				return false;
 			}
 		}
+		
+		<c:if test="${modalMode}">
+		var patientsFound = $j("#patientsFound table", parent.document);
+		if (patientsFound != null) {
+			$j("tr", patientsFound).each(function(i, tr) {
+				var patientId = $j("input[name='patientId']", tr);
+				var mergeList = nonPreferred.value.split(",");
+				if ($j.inArray(patientId.val(), mergeList) > -1) {
+					$j(patientId).attr("disabled", true);
+					$j("td", tr).css("text-decoration", "line-through");
+				}
+			});
+		}
+		</c:if>
+		
+		return true;
 
-	}else return false;
+	} else return false;
 }
 
 </script>
@@ -737,10 +761,20 @@ function generateMergeList(){
 		<input type="submit" name="action" value='<spring:message code="Patient.merge"/>' onclick="return generateMergeList();" >
 		<input type="hidden" id="pref" name="preferred" value=""/>
 		<input type="hidden" id="nonPref" name="nonPreferred" value=""/>
+		<input type="hidden" name="modalMode" value='${modalMode}' />
 		<input type="hidden" name="redirectURL" value='<request:header name="referer" />' />
 	</c:if>
 </form>
 
 <br/>
 
+</c:if>
+
+<c:choose>
+<c:when test="${modalMode}">
+<%@ include file="/WEB-INF/template/footerMinimal.jsp" %>
+</c:when>
+<c:otherwise>
 <%@ include file="/WEB-INF/template/footer.jsp" %>
+</c:otherwise>
+</c:choose>

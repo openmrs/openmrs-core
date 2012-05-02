@@ -6,6 +6,7 @@
 <%@ include file="localHeader.jsp" %>
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
 
 <script type="text/javascript">
 
@@ -34,7 +35,7 @@
 	}
 	
 	function updateObsValues(tmpConcept) {
-		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow', 'valueComplex'];
+		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueDateRow', 'valueTimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow', 'valueComplex'];
 		$j.each(values, function(x, val) { $j("#" + val).hide() });
 		
 		if (tmpConcept != null) {
@@ -73,8 +74,14 @@
 			else if (datatype == 'ST') {
 				$j('#valueTextRow').show();
 			}
-			else if (datatype == 'DT' || datatype == 'TS' || datatype == 'TM') {
+            else if (datatype == 'DT' ) {
+				$j('#valueDateRow').show();
+			}
+            else if ( datatype == 'TS' ) {
 				$j('#valueDatetimeRow').show();
+			}
+            else if ( datatype == 'TM') {
+				$j('#valueTimeRow').show();
 			}
 			// TODO move datatype 'TM' to own time box.  How to have them select?
 			else if (datatype == 'ED') {
@@ -342,14 +349,36 @@
 			</spring:bind>
 		</td>
 	</tr>
+	<tr id="valueDateRow" class="obsValue">
+		<th><spring:message code="Obs.dateAnswer"/></th>
+		<td>
+			<spring:bind path="valueDate">
+				<input type="text" name="${status.expression}" size="10" 
+					   value="${status.value}" onClick="showCalendar(this)" />
+				  (<spring:message code="general.format"/>: <openmrs:datePattern />)
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			</spring:bind>
+		</td>
+	</tr>
 	<tr id="valueDatetimeRow" class="obsValue">
 		<th><spring:message code="Obs.datetimeAnswer"/></th>
 		<td>
-			<spring:bind path="valueDatetime">			
-				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" onfocus="showCalendar(this)" />
-				  (<spring:message code="general.format"/>: <openmrs:datePattern />)
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			<spring:bind path="valueDatetime">
+				<input type="text" name="${status.expression}" size="15"
+					   value="${status.value}" onClick="showDateTimePicker(this)" />
+				  (<spring:message code="general.format"/>: <openmrs:datePattern /> <openmrs:timePattern format="jquery"/>)
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+    <tr id="valueTimeRow" class="obsValue">
+		<th><spring:message code="Obs.timeAnswer"/></th>
+		<td>
+			<spring:bind path="valueTime">
+				<input type="text" name="${status.expression}" size="10"
+					   value="${status.value}" onfocus="showTimePicker(this)" />
+				  (<spring:message code="general.format"/>: <openmrs:timePattern format="jquery"/>)
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -472,24 +501,25 @@
 
 <br/>
 <br/>
+<openmrs:hasPrivilege privilege="Delete Observations">
+	<c:if test="${not obs.voided && not empty obs.obsId}">
+		<form action="" method="post">
+			<fieldset>
+				<h4><spring:message code="Obs.voidObs"/></h4>
 
-<c:if test="${not obs.voided && not empty obs.obsId}">
-	<form action="" method="post">
-		<fieldset>
-			<h4><spring:message code="Obs.voidObs"/></h4>
-			
-			<b><spring:message code="general.reason"/></b>
-			<input type="text" value="" size="40" name="voidReason" />
-			<spring:hasBindErrors name="obs">
-				<c:forEach items="${errors.allErrors}" var="error">
-					<c:if test="${error.code == 'voidReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
-				</c:forEach>
-			</spring:hasBindErrors>
-			<br/>
-			<input type="submit" value='<spring:message code="Obs.voidObs"/>' name="voidObs"/>
-		</fieldset>
-	</form>
-</c:if>
+				<b><spring:message code="general.reason"/></b>
+				<input type="text" value="" size="40" name="voidReason" />
+				<spring:hasBindErrors name="obs">
+					<c:forEach items="${errors.allErrors}" var="error">
+						<c:if test="${error.code == 'voidReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+					</c:forEach>
+				</spring:hasBindErrors>
+				<br/>
+				<input type="submit" value='<spring:message code="Obs.voidObs"/>' name="voidObs"/>
+			</fieldset>
+		</form>
+	</c:if>
+</openmrs:hasPrivilege>
 
 <c:if test="${obs.obsId != null}">
 <br/>

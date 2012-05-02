@@ -99,36 +99,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @should compare on conceptNameId if non null
-	 * @should not return true with different objects and null ids
-	 * @should default to object equality
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof ConceptName)) {
-			return false;
-		}
-		ConceptName rhs = (ConceptName) obj;
-		if (this.conceptNameId != null && rhs.conceptNameId != null)
-			return (this.conceptNameId.equals(rhs.conceptNameId));
-		else
-			return this == obj;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (this.getConceptNameId() == null)
-			return super.hashCode();
-		int hash = 3;
-		hash = hash + 31 * this.getConceptNameId();
-		return hash;
-	}
-	
-	/**
 	 * @deprecated Use {@link Concept#getShortestName(Locale, Boolean)} instead.
 	 * @return Returns the appropriate short name
 	 */

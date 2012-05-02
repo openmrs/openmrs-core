@@ -88,6 +88,7 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 		Person p = Context.getPersonService().getPerson(1);
 		p.setVoided(true);
 		p.setVoidReason(null);
+		p.setVoidReason("voidReason");
 		Context.getPersonService().savePerson(p);
 	}
 }

@@ -4,7 +4,11 @@
     <script type="text/javascript" src="initfilter/scripts/initialsetup.js"></script>
 
     <style type="text/css" media="all">
-        .question {
+        * {
+			font-family: Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif;
+		}
+		
+		.question {
             text-align:left;
             background-color: #E9E4CC;
             -moz-border-radius: 5px;
@@ -38,7 +42,6 @@
             background-repeat:no-repeat;
             height:45px;
             width:100%;
-            font-family:Verdana, Geneva, sans-serif;
             font-size:24px;
         }
         .content {
@@ -60,7 +63,7 @@
         	<td width="100px"><div class="logo"></div></td>
         	<td>
             	<div class="bar-round">
-        			<div class="bar">The OpenMRS server is currently in maintenance mode.</div>
+        			<div class="bar">$l10n.get("update.header.title")</div>
         		</div>
             </td>
         </tr>
@@ -69,9 +72,13 @@
 	#if( ! $errors.isEmpty() )
 	<div style="color: red">
 		<ul>
-		#foreach ($error in $errors)
-			<li>${error}</li>
-		#end
+		#foreach ($error in $errors.entrySet())
+			#if (!$error.getValue()) 
+				<li>$l10n.get($error.getKey())</li>
+			#else
+				<li>$l10n.get($error.getKey()).insert($error.getValue())</li>
+			#end
+		#end		
 		</ul>
 	</div>
 	<br/>

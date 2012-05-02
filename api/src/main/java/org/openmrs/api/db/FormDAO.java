@@ -15,7 +15,6 @@ package org.openmrs.api.db;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
@@ -24,6 +23,7 @@ import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
+import org.openmrs.FormResource;
 import org.openmrs.api.FormService;
 
 /**
@@ -305,49 +305,39 @@ public interface FormDAO {
 	public List<FormField> getFormFieldsByField(Field field);
 	
 	/**
-	 * retrieves a resource for a given form based on owner and name
-	 * 
-	 * @param form
-	 * @param owner
-	 * @param name
-	 * @return
+	 * @see FormService#getFormResource(java.lang.Integer) 
+	 * @since 1.9
 	 */
-	public byte[] getFormResource(Form form, String owner, String name);
+	public FormResource getFormResource(Integer formResourceId);
 	
 	/**
-	 * saves a resource for a given form based on owner and name
-	 * 
-	 * @param form
-	 * @param owner
-	 * @param name
-	 * @param value
+	 * @see FormService#getFormResourceByUuid(java.lang.String) 
+	 * @since 1.9
 	 */
-	public void saveFormResource(Form form, String owner, String name, byte[] value);
+	public FormResource getFormResourceByUuid(String uuid);
 	
 	/**
-	 * permanently removes a resource for a given form based on owner and name
-	 * 
-	 * @param form
-	 * @param owner
-	 * @param name
+	 * @see FormService#getFormResource(org.openmrs.Form, java.lang.String)
+	 * @since 1.9
 	 */
-	public void purgeFormResource(Form form, String owner, String name);
+	public FormResource getFormResource(Form form, String name);
 	
 	/**
-	 * retrieves all resources for a given form based on owner
-	 * 
-	 * @param form
-	 * @param owner
-	 * @return
+	 * @see FormService#getFormResourcesForForm(org.openmrs.Form)
+	 * @since 1.9
 	 */
-	public Set<String> getFormResourceNamesByOwner(Form form, String owner);
+	public Collection<FormResource> getFormResourcesForForm(Form form);
 	
 	/**
-	 * retrieves all owners for resources for a given form
-	 * 
-	 * @param form
-	 * @return
+	 * @see FormService#saveFormResource(org.openmrs.FormResource)
+	 * @since 1.9
 	 */
-	public Set<String> getFormResourceOwners(Form form);
+	public FormResource saveFormResource(FormResource formResource);
+	
+	/**
+	 * @see FormService#purgeFormResource(org.openmrs.FormResource)
+	 * @since 1.9
+	 */
+	public void deleteFormResource(FormResource formResource);
 	
 }

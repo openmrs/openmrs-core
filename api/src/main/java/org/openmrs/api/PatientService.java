@@ -29,6 +29,8 @@ import org.openmrs.activelist.Problem;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.patient.IdentifierValidator;
+import org.openmrs.person.PersonMergeLogData;
+import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,11 @@ import org.springframework.transaction.annotation.Transactional;
  * Contains methods pertaining to Patients in the system Use:<br/>
  * 
  * <pre>
+ * 
+ * 
+ * 
+ * 
+ * 
  * 
  * List&lt;Patient&gt; patients = Context.getPatientService().getAllPatients();
  * </pre>
@@ -93,6 +100,18 @@ public interface PatientService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	@Transactional(readOnly = true)
 	public Patient getPatient(Integer patientId) throws APIException;
+	
+	/**
+	 * Get patient by internal identifier. If this id is for an existing person then instantiates a
+	 * new patient from that person, copying over all the fields.
+	 * 
+	 * @param patientOrPersonId
+	 * @return a new unsaved patient or null if person or patient is not found
+	 * @throws APIException
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
+	@Transactional(readOnly = true)
+	Patient getPatientOrPromotePerson(Integer patientOrPersonId) throws APIException;
 	
 	/**
 	 * Get patient by universally unique identifier.
@@ -192,6 +211,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should search familyName2 with name
 	 * @should support simple regex
 	 * @should support pattern using last digit as check digit
+	 * @should return empty list if name and identifier is empty
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
@@ -233,7 +253,8 @@ public interface PatientService extends OpenmrsService {
 	public List<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException;
 	
 	/**
-	 * Void patient record (functionally delete patient from system)
+	 * Void patient record (functionally delete patient from system). Voids Person and retires
+	 * Users.
 	 * 
 	 * @param patient patient to be voided
 	 * @param reason reason for voiding patient
@@ -242,17 +263,21 @@ public interface PatientService extends OpenmrsService {
 	 * @should void all patient identifiers associated with given patient
 	 * @should return voided patient with given reason
 	 * @should return null when patient is null
+	 * @should void person
+	 * @should retire users
 	 */
 	@Authorized( { PrivilegeConstants.DELETE_PATIENTS })
 	public Patient voidPatient(Patient patient, String reason) throws APIException;
 	
 	/**
-	 * Unvoid patient record
+	 * Unvoid patient record. Unvoids Person as well.
 	 * 
 	 * @param patient patient to be revived
 	 * @return the revived Patient
 	 * @should unvoid given patient
 	 * @should return unvoided patient
+	 * @should unvoid person
+	 * @should not unretire users
 	 */
 	@Authorized( { PrivilegeConstants.DELETE_PATIENTS })
 	public Patient unvoidPatient(Patient patient) throws APIException;
@@ -631,6 +656,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param preferred The Patient to merge to
 	 * @param notPreferred The Patient to merge from (and then void)
 	 * @throws APIException
+	 * @throws SerializationException
+	 * @see PersonMergeLogData
 	 * @should not merge the same patient to itself
 	 * @should copy nonvoided names to preferred patient
 	 * @should copy nonvoided identifiers to preferred patient
@@ -656,9 +683,26 @@ public interface PatientService extends OpenmrsService {
 	 * @should void non preferred patient
 	 * @should void all relationships for non preferred patient
 	 * @should not void relationships for same type and side with different relatives
+	 * @should audit moved encounters
+	 * @should audit created patient programs
+	 * @should audit voided relationships
+	 * @should audit created relationships
+	 * @should audit moved independent observations
+	 * @should audit created orders
+	 * @should audit created identifiers
+	 * @should audit created names
+	 * @should audit created addresses
+	 * @should audit created attributes
+	 * @should audit moved users
+	 * @should audit prior cause of death
+	 * @should audit prior date of death
+	 * @should audit prior date of birth
+	 * @should audit prior date of birth estimated
+	 * @should audit prior gender
+	 * @should not copy over duplicate patient identifiers
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
-	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException;
+	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException, SerializationException;
 	
 	/**
 	 * Convenience method to join multiple patients' information into one record.
@@ -666,9 +710,10 @@ public interface PatientService extends OpenmrsService {
 	 * @param preferred
 	 * @param notPreferred
 	 * @throws APIException
+	 * @throws SerializationException
 	 * @should merge all non Preferred patients in the the notPreferred list to preferred patient
 	 */
-	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException;
+	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException, SerializationException;
 	
 	/**
 	 * Convenience method to establish that a patient has left the care center. This API call is
@@ -779,6 +824,10 @@ public interface PatientService extends OpenmrsService {
 	 *         this id
 	 * @should ignore voided patientIdentifiers
 	 * @should ignore voided patients
+	 * @should return true if in use for a location and id type uniqueness is set to location
+	 * @should return false if in use for another location and id uniqueness is set to location
+	 * @should return true if in use and id type uniqueness is set to unique
+	 * @should return true if in use and id type uniqueness is null
 	 */
 	@Authorized(PrivilegeConstants.VIEW_PATIENTS)
 	@Transactional(readOnly = true)

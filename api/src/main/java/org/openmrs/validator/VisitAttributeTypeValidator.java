@@ -13,13 +13,8 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.annotation.Handler;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
 /**
  * Validates attributes on the {@link VisitAttributeType} object.
@@ -27,54 +22,15 @@ import org.springframework.validation.Validator;
  * @since 1.9
  */
 @Handler(supports = { VisitAttributeType.class }, order = 50)
-public class VisitAttributeTypeValidator implements Validator {
-	
-	/** Log for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+public class VisitAttributeTypeValidator extends BaseAttributeTypeValidator<VisitAttributeType> {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	public boolean supports(Class<?> c) {
 		return c.equals(VisitAttributeType.class);
 	}
 	
-	/**
-	 * Checks the form object for any inconsistencies/errors
-	 * 
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
-	 *      org.springframework.validation.Errors)
-	 * @should fail validation if name is null or empty or whitespace
-	 * @should fail validation if description is null or empty or whitespace
-	 * @should pass validation if all required fields have proper values
-	 */
-	public void validate(Object obj, Errors errors) {
-		VisitAttributeType visitAttributeType = (VisitAttributeType) obj;
-		if (visitAttributeType == null) {
-			errors.reject("error.general");
-		} else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "minOccurs", "error.null");
-			
-			Integer minOccurs = visitAttributeType.getMinOccurs();
-			Integer maxOccurs = visitAttributeType.getMaxOccurs();
-			
-			if (minOccurs != null) {
-				if (minOccurs < 0) {
-					errors.rejectValue("minOccurs", "AttributeType.minOccursShouldNotBeLessThanZero");
-				}
-			}
-			
-			if (maxOccurs != null) {
-				if (maxOccurs < 0) {
-					errors.rejectValue("maxOccurs", "AttributeType.maxOccursShouldNotBeLessThanZero");
-				} else if (maxOccurs < minOccurs) {
-					errors.rejectValue("maxOccurs", "AttributeType.maxOccursShouldNotBeLessThanMinOccurs");
-				}
-			}
-		}
-	}
 }

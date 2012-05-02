@@ -108,8 +108,13 @@ public class WebModuleUtil {
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		//register the module loggers
-		if (mod.getLog4j() != null) {
-			DOMConfigurator.configure(mod.getLog4j().getDocumentElement());
+		try {
+			if (mod.getLog4j() != null) {
+				DOMConfigurator.configure(mod.getLog4j().getDocumentElement());
+			}
+		}
+		catch (Exception e) {
+			log.error("unable to load module loggers " + e.getMessage());
 		}
 		
 		if (log.isDebugEnabled())
@@ -157,8 +162,16 @@ public class WebModuleUtil {
 					}
 				}
 				
-				// append the properties to the appropriate messages file
-				OpenmrsUtil.storeProperties(props, file, "Module: " + mod.getName() + " v" + mod.getVersion());
+				try {
+					//Copy to the module properties file replacing any keys that already exist
+					Properties allModulesProperties = new Properties();
+					OpenmrsUtil.loadProperties(allModulesProperties, file);
+					allModulesProperties.putAll(props);
+					OpenmrsUtil.storeProperties(allModulesProperties, new FileOutputStream(file), null);
+				}
+				catch (FileNotFoundException e) {
+					throw new ModuleException(file.getAbsolutePath(), e);
+				}
 			}
 			log.debug("Done copying messages");
 			
@@ -336,8 +349,8 @@ public class WebModuleUtil {
 						log.warn(msg + " for module: " + mod.getModuleId(), e);
 					
 					try {
-						ModuleFactory.stopModule(mod, true, true); //remove jar from classloader play
 						stopModule(mod, servletContext, true);
+						ModuleFactory.stopModule(mod, true, true); //remove jar from classloader play
 					}
 					catch (Exception e2) {
 						// exception expected with most modules here
@@ -345,10 +358,10 @@ public class WebModuleUtil {
 							log.warn("Error while stopping a module that had an error on refreshWAC", e2);
 					}
 					
-					notifySuperUsersAboutModuleFailure(mod);
-					
 					// try starting the application context again
 					refreshWAC(servletContext, false, mod);
+					
+					notifySuperUsersAboutModuleFailure(mod);
 				}
 				
 			}

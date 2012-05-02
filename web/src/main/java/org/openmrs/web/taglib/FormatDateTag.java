@@ -17,14 +17,17 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.tags.NestedPathTag;
@@ -65,6 +68,8 @@ public class FormatDateTag extends TagSupport {
 	private String type;
 	
 	private String format;
+	
+	private boolean showTodayOrYesterday = false;
 	
 	public int doStartTag() {
 		RequestContext requestContext = (RequestContext) this.pageContext
@@ -143,7 +148,19 @@ public class FormatDateTag extends TagSupport {
 				if (type.equals("milliseconds")) {
 					datestr = "" + date.getTime();
 				} else {
-					datestr = dateFormat.format(date);
+					if (showTodayOrYesterday
+					        && (DateUtils.isSameDay(Calendar.getInstance().getTime(), date) || OpenmrsUtil.isYesterday(date))) {
+						//print only time of day but maintaining the format(24 Vs 12) if any was specified
+						String timeFormatString = (format != null && !format.contains("a")) ? "HH:mm" : "h:mm a";
+						dateFormat = new SimpleDateFormat(timeFormatString);
+						if (DateUtils.isSameDay(Calendar.getInstance().getTime(), date))
+							datestr = Context.getMessageSourceService().getMessage("general.today") + " "
+							        + dateFormat.format(date);
+						else
+							datestr = Context.getMessageSourceService().getMessage("general.yesterday") + " "
+							        + dateFormat.format(date);
+					} else
+						datestr = dateFormat.format(date);
 				}
 			}
 		}
@@ -177,6 +194,7 @@ public class FormatDateTag extends TagSupport {
 		this.date = null;
 		this.format = null;
 		this.path = null;
+		this.showTodayOrYesterday = false;
 	}
 	
 	// variable access methods
@@ -214,4 +232,19 @@ public class FormatDateTag extends TagSupport {
 		this.type = type;
 	}
 	
+	/**
+	 * @return the showTodayOrYesterday
+	 * @since 1.9
+	 */
+	public boolean isShowTodayOrYesterday() {
+		return showTodayOrYesterday;
+	}
+	
+	/**
+	 * @param showTodayOrYesterday the showTodayOrYesterday to set
+	 * @since 1.9
+	 */
+	public void setShowTodayOrYesterday(boolean showTodayOrYesterday) {
+		this.showTodayOrYesterday = showTodayOrYesterday;
+	}
 }

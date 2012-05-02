@@ -56,7 +56,7 @@
 	
 	<target name="generate-offline-sql-create-mysql" description="Create the /dist/1-x-x-schema-and-core.sql file for running on systems that don't use the openmrs webapp">
 		<mkdir dir="${build.dir}/liquibase"/>
-		<unzip src="${metadata.dir}/model/liquibase-data.zip" dest="${build.dir}/liquibase"></unzip>
+		<unzip src="${metadata.dir}/model/liquibase-demo-data.zip" dest="${build.dir}/liquibase"></unzip>
 		
 		<property name="dbname" value="openmrs-ant-${openmrs.version}" />
 		<antcall target="-recreate-db"><param name="db" value="${dbname}"/></antcall>
@@ -80,7 +80,8 @@
 
 		<echo message="Created dist/${openmrs.version}-schema-and-core.sql"/>
 	</target>
-	
+
+	<!-- This target is broken since schema-only and core-data are no longer in the zip file. Rewrite it from scratch. -->
 	<target name="generate-data.zip-for-release" description="Create a new /metadata/model/liquibase-data.zip file using the latest liquibase-update-to-latest.sql file">
 		<mkdir dir="${build.dir}/liquibase"/>
 		<unzip src="${metadata.dir}/model/liquibase-data.zip" dest="${build.dir}/liquibase"></unzip>

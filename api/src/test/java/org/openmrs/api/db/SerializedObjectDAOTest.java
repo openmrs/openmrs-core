@@ -134,6 +134,7 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		List<ReportSchema> l = dao.getAllObjects(ReportSchema.class);
 		assertEquals(2, l.size());
 		dao.purgeObject(2);
+		Context.flushSession();
 		l = dao.getAllObjects(ReportSchema.class);
 		assertEquals(1, l.size());
 	}

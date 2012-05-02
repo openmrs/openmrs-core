@@ -45,6 +45,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -57,6 +58,7 @@ import org.openmrs.api.EventListeners;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
@@ -67,6 +69,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.Errors;
 
 /**
  * Default implementation of the administration services. This class should not be used on its own.
@@ -760,16 +763,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props) throws APIException {
 		log.debug("saving a list of global properties");
 		
-		// delete all properties not in this new list
-		for (GlobalProperty gp : getAllGlobalProperties()) {
-			if (!props.contains(gp))
-				purgeGlobalProperty(gp);
-		}
-		
 		// add all of the new properties
 		for (GlobalProperty prop : props) {
 			if (prop.getProperty() != null && prop.getProperty().length() > 0) {
-				saveGlobalProperty(prop);
+				Context.getAdministrationService().saveGlobalProperty(prop);
 			}
 		}
 		
@@ -780,9 +777,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException {
-		
 		// only try to save it if the global property has a key
 		if (gp.getProperty() != null && gp.getProperty().length() > 0) {
+			CustomDatatypeUtil.saveIfDirty(gp);
 			dao.saveGlobalProperty(gp);
 			notifyGlobalPropertyChange(gp);
 			return gp;
@@ -1200,4 +1197,29 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		return String.valueOf(bytes / ONE_KILO_BYTE / ONE_KILO_BYTE) + " MB";
 	}
 	
+	/**
+	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperties(java.util.List)
+	 */
+	@Override
+	public void purgeGlobalProperties(List<GlobalProperty> globalProperties) throws APIException {
+		for (GlobalProperty globalProperty : globalProperties) {
+			Context.getAdministrationService().purgeGlobalProperty(globalProperty);
+		}
+	}
+	
+	/**
+	 * @see AdministrationService#getMaximumPropertyLength(Class, String)
+	 */
+	@Override
+	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
+		return dao.getMaximumPropertyLength(aClass, fieldName);
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#validate(java.lang.Object, Errors)
+	 */
+	@Override
+	public void validate(Object object, Errors errors) throws APIException {
+		dao.validate(object, errors);
+	}
 }

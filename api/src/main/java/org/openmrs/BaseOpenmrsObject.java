@@ -74,9 +74,11 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 		if (!(obj instanceof BaseOpenmrsObject))
 			return false;
 		BaseOpenmrsObject other = (BaseOpenmrsObject) obj;
-		if (uuid == null)
+		// Need to call getUuid to make sure the hibernate proxy objects return the correct uuid.
+		// The private member may not be set for a hibernate proxy.
+		if (getUuid() == null)
 			return false;
-		return uuid.equals(other.uuid);
+		return getUuid().equals(other.getUuid());
 	}
 	
 	/**

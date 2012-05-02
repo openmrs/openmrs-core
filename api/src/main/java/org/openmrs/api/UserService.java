@@ -607,6 +607,7 @@ public interface UserService extends OpenmrsService {
 	 * @param length number of users to return in the batch
 	 * @return list of matching users of a size based on the specified arguments
 	 * @since 1.8
+	 * @should return users whose roles inherit requested roles
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_USERS })

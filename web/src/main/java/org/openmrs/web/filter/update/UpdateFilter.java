@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
@@ -34,7 +35,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import liquibase.ChangeSet;
+import liquibase.changelog.ChangeSet;
+import liquibase.exception.LockException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -44,15 +46,20 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
-import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.web.Listener;
+import org.openmrs.web.WebDaemon;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.initialization.InitializationFilter;
+import org.openmrs.web.filter.util.CustomResourceLoader;
+import org.openmrs.web.filter.util.ErrorMessageConstants;
+import org.openmrs.web.filter.util.FilterUtil;
 import org.springframework.web.context.ContextLoader;
 
 /**
@@ -96,10 +103,17 @@ public class UpdateFilter extends StartupFilter {
 	private UpdateFilterCompletion updateJob;
 	
 	/**
-	 * Variable set to true as soon as the update begins and set to false when the process ends This
-	 * thread should only be accesses thorugh the sychronized method.
+	 * Variable set to true as soon as the update begins and set to false when the process ends.
+	 * This thread should only be accesses through the synchronized method.
 	 */
 	private static boolean isDatabaseUpdateInProgress = false;
+	
+	/**
+	 * Variable set to true when the db lock is released. It's needed to prevent repeatedly
+	 * releasing this lock by other threads. This var should only be accessed through
+	 * the synchronized method.
+	 */
+	private static Boolean lockReleased = false;
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
@@ -112,7 +126,13 @@ public class UpdateFilter extends StartupFilter {
 	        ServletException {
 		
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
-		
+		checkLocaleAttributesForFirstTime(httpRequest);
+		// we need to save current user language in references map since it will be used when template
+		// will be rendered
+		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
+			referenceMap
+			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+		}
 		// do step one of the wizard
 		renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 	}
@@ -129,6 +149,9 @@ public class UpdateFilter extends StartupFilter {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
+		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null)
+			referenceMap
+			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 		
 		// step one
 		if (DEFAULT_PAGE.equals(page)) {
@@ -141,8 +164,42 @@ public class UpdateFilter extends StartupFilter {
 				log.debug("Authentication successful.  Redirecting to 'reviewupdates' page.");
 				// set a variable so we know that the user started here
 				authenticatedSuccessfully = true;
+				
 				//Set variable to tell us whether updates are already in progress
 				referenceMap.put("isDatabaseUpdateInProgress", isDatabaseUpdateInProgress);
+				
+				// if another super user has already launched database update
+				// allow current super user to review update progress
+				if (isDatabaseUpdateInProgress) {
+					referenceMap.put("updateJobStarted", true);
+					httpResponse.setContentType("text/html");
+					renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
+					return;
+				}
+				
+				// we will only get here if the db update is NOT running. 
+				// so if we find a db lock, we should release it because
+				// it was leftover from a previous db update crash
+				
+				if (!isLockReleased() && DatabaseUpdater.isLocked()) {
+					// first we trying to release db lock if it exists
+					try {
+						DatabaseUpdater.releaseDatabaseLock();
+						setLockReleased(true);
+					}
+					catch (LockException e) {
+						// do nothing
+					}
+					// if lock was released successfully we need to get unrun changes
+					model.updateChanges();
+				}
+				
+				// need to configure velocity tool box for using user's preferred locale
+				// so we should store it for further using when configuring velocity tool context
+				String localeParameter = FilterUtil.restoreLocale(username);
+				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
+				referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
+				
 				renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
 			} else {
 				// if not authenticated, show main page again
@@ -154,11 +211,11 @@ public class UpdateFilter extends StartupFilter {
 					log.error("Unable to sleep", e);
 					throw new ServletException("Got interrupted while trying to sleep thread", e);
 				}
-				errors.add("Unable to authenticate as a User with the " + RoleConstants.SUPERUSER
-				        + " role. Invalid username or password");
+				errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
 				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 			}
-		} // step two
+		}
+		// step two of wizard in case if there were some warnings
 		else if (REVIEW_CHANGES.equals(page)) {
 			
 			if (!authenticatedSuccessfully) {
@@ -173,10 +230,16 @@ public class UpdateFilter extends StartupFilter {
 				updateJob = new UpdateFilterCompletion();
 				updateJob.start();
 				
+				// allows current user see progress of running update
+				// and also will hide the "Run Updates" button
+				
 				referenceMap.put("updateJobStarted", true);
 			} else {
 				referenceMap.put("isDatabaseUpdateInProgress", true);
-				referenceMap.put("updateJobStarted", false);
+				// as well we need to allow current user to
+				// see progress of already started updates
+				// and also will hide the "Run Updates" button
+				referenceMap.put("updateJobStarted", true);
 			}
 			
 			renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
@@ -189,7 +252,7 @@ public class UpdateFilter extends StartupFilter {
 			if (updateJob != null) {
 				result.put("hasErrors", updateJob.hasErrors());
 				if (updateJob.hasErrors()) {
-					errors.addAll(updateJob.getErrors());
+					errors.putAll(updateJob.getErrors());
 				}
 				
 				if (updateJob.hasWarnings() && updateJob.getExecutingChangesetId() == null) {
@@ -230,6 +293,29 @@ public class UpdateFilter extends StartupFilter {
 	}
 	
 	/**
+	 * It sets locale attribute for current session when user is making first GET http request
+	 * to application. It retrieves user locale from request object and checks if this locale is
+	 * supported by application. If not, it tries to load system default locale. If it's not specified it 
+	 * uses {@link Locale#ENGLISH} by default
+	 * 
+	 * @param httpRequest the http request object
+	 */
+	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
+		Locale locale = httpRequest.getLocale();
+		String systemDefaultLocale = FilterUtil.readSystemDefaultLocale(null);
+		if (CustomResourceLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
+			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, locale.toString());
+			log.info("Used client's locale " + locale.toString());
+		} else if (StringUtils.isNotBlank(systemDefaultLocale)) {
+			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, systemDefaultLocale);
+			log.info("Used system default locale " + systemDefaultLocale);
+		} else {
+			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, Locale.ENGLISH.toString());
+			log.info("Used default locale " + Locale.ENGLISH.toString());
+		}
+	}
+	
+	/**
 	 * Look in the users table for a user with this username and password and see if they have a
 	 * role of {@link OpenmrsConstants#SUPERUSER_ROLE}.
 	 * 
@@ -248,7 +334,7 @@ public class UpdateFilter extends StartupFilter {
 		try {
 			connection = DatabaseUpdater.getConnection();
 			
-			String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and retired = 0";
+			String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and retired = '0'";
 			PreparedStatement statement = connection.prepareStatement(select);
 			statement.setString(1, usernameOrSystemId);
 			statement.setString(2, usernameOrSystemId);
@@ -274,7 +360,7 @@ public class UpdateFilter extends StartupFilter {
 			// we may not have upgraded User to have retired instead of voided yet, so if the query above fails, we try
 			// again the old way
 			try {
-				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = 0";
+				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = '0'";
 				PreparedStatement statement = connection.prepareStatement(select);
 				statement.setString(1, usernameOrSystemId);
 				statement.setString(2, usernameOrSystemId);
@@ -336,7 +422,7 @@ public class UpdateFilter extends StartupFilter {
 		return false;
 	}
 	
-	/**
+	/**``
 	 * Do everything to get openmrs going.
 	 * 
 	 * @param servletContext the servletContext from the filterconfig
@@ -350,7 +436,7 @@ public class UpdateFilter extends StartupFilter {
 		contextLoader.initWebApplicationContext(servletContext);
 		
 		try {
-			Listener.startOpenmrs(servletContext);
+			WebDaemon.startOpenmrs(servletContext);
 		}
 		catch (ServletException servletException) {
 			contextLoader.closeWebApplicationContext(servletContext);
@@ -374,11 +460,16 @@ public class UpdateFilter extends StartupFilter {
 			 * so no need to reset Context's RuntimeProperties again, because of Listener.contextInitialized has set it.
 			 */
 			try {
-				if (model.changes == null)
+				// this pings the DatabaseUpdater.updatesRequired which also
+				// considers a db lock to be a 'required update'
+				if (model.updateRequired)
+					updatesRequired = true;
+				else if (model.changes == null)
 					updatesRequired = false;
 				else {
-					log.debug("Setting updates required to " + (model.changes.size() > 0)
-					        + " because of the size of unrun changes");
+					if (log.isDebugEnabled())
+						log.debug("Setting updates required to " + (model.changes.size() > 0)
+						        + " because of the size of unrun changes");
 					updatesRequired = model.changes.size() > 0;
 				}
 			}
@@ -432,6 +523,19 @@ public class UpdateFilter extends StartupFilter {
 	}
 	
 	/**
+	 * Indicates if database lock was released. It will also used to prevent releasing
+	 * existing lock of liquibasechangeloglock table by another user, when he also tries
+	 * to run database update when another user is currently running it
+	 */
+	public static Boolean isLockReleased() {
+		return lockReleased;
+	}
+	
+	public static synchronized void setLockReleased(Boolean lockReleased) {
+		UpdateFilter.lockReleased = lockReleased;
+	}
+	
+	/**
 	 * @see org.openmrs.web.filter.StartupFilter#getTemplatePrefix()
 	 */
 	@Override
@@ -451,7 +555,7 @@ public class UpdateFilter extends StartupFilter {
 		
 		private List<String> changesetIds = new ArrayList<String>();
 		
-		private List<String> errors = new ArrayList<String>();
+		private Map<String, Object[]> errors = new HashMap<String, Object[]>();
 		
 		private String message = null;
 		
@@ -461,14 +565,14 @@ public class UpdateFilter extends StartupFilter {
 		
 		private List<String> updateWarnings = new LinkedList<String>();
 		
-		synchronized public void reportError(String error) {
-			List<String> errors = new ArrayList<String>();
-			errors.add(error);
+		synchronized public void reportError(String error, Object... params) {
+			Map<String, Object[]> errors = new HashMap<String, Object[]>();
+			errors.put(error, params);
 			reportErrors(errors);
 		}
 		
-		synchronized public void reportErrors(List<String> errs) {
-			errors.addAll(errs);
+		synchronized public void reportErrors(Map<String, Object[]> errs) {
+			errors.putAll(errs);
 			erroneous = true;
 		}
 		
@@ -476,7 +580,7 @@ public class UpdateFilter extends StartupFilter {
 			return erroneous;
 		}
 		
-		synchronized public List<String> getErrors() {
+		synchronized public Map<String, Object[]> getErrors() {
 			return errors;
 		}
 		
@@ -488,12 +592,12 @@ public class UpdateFilter extends StartupFilter {
 			thread.start();
 		}
 		
+		@SuppressWarnings("unused")
 		public void waitForCompletion() {
 			try {
 				thread.join();
 			}
 			catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				log.error("Error generated", e);
 			}
 		}
@@ -563,6 +667,7 @@ public class UpdateFilter extends StartupFilter {
 							 * @see org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback#executing(liquibase.ChangeSet,
 							 *      int)
 							 */
+							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
 								addChangesetId(changeSet.getId());
 								setMessage(message);
@@ -585,15 +690,16 @@ public class UpdateFilter extends StartupFilter {
 							// the user would be stepped through the questions returned here.
 							log.error("Not implemented", inputRequired);
 							model.updateChanges();
-							reportError("Input during database updates is not yet implemented. "
-							        + inputRequired.getMessage());
+							reportError(ErrorMessageConstants.UPDATE_ERROR_INPUT_NOT_IMPLEMENTED, inputRequired.getMessage());
 							return;
 						}
 						catch (DatabaseUpdateException e) {
 							log.error("Unable to update the database", e);
-							List<String> errors = new ArrayList<String>();
-							errors.add("Unable to update the database.  See server error logs for the full stacktrace.");
-							errors.addAll(Arrays.asList(e.getMessage().split("\n")));
+							Map<String, Object[]> errors = new HashMap<String, Object[]>();
+							errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE, null);
+							for (String message : Arrays.asList(e.getMessage().split("\n"))) {
+								errors.put(message, null);
+							}
 							model.updateChanges();
 							reportErrors(errors);
 							return;
@@ -605,8 +711,7 @@ public class UpdateFilter extends StartupFilter {
 						}
 						catch (Throwable t) {
 							log.error("Unable to complete the startup.", t);
-							reportError("Unable to complete the startup.  See the server error log for the complete stacktrace."
-							        + t.getMessage());
+							reportError(ErrorMessageConstants.UPDATE_ERROR_COMPLETE_STARTUP, t.getMessage());
 							return;
 						}
 						

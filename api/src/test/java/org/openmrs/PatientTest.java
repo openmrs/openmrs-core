@@ -111,6 +111,35 @@ public class PatientTest {
 	}
 	
 	/**
+	 * Regression test for TRUNK-3118
+	 */
+	@Test
+	public void addIdentifier_shouldAddNewIdentifierForExistingVoidedIdentifier() {
+		Patient p = new Patient();
+		PatientIdentifier pa1 = new PatientIdentifier();
+		PatientIdentifierType identifierType = new PatientIdentifierType(1);
+		Location location = new Location(1);
+		
+		pa1.setIdentifier("theid");
+		pa1.setIdentifierType(identifierType);
+		pa1.setLocation(location);
+		pa1.setVoided(true);
+		p.addIdentifier(pa1);
+		
+		PatientIdentifier pa2 = new PatientIdentifier();
+		pa2.setIdentifier("theid");
+		pa2.setIdentifierType(identifierType);
+		pa1.setLocation(location);
+		pa2.setVoided(false);
+		
+		// this should not fail
+		p.addIdentifier(pa2);
+		
+		// make sure we still have it in there
+		assertTrue("The second identifier has not been added as a new identifier", p.getActiveIdentifiers().contains(pa2));
+	}
+	
+	/**
 	 * @see {@link Patient#addIdentifier(PatientIdentifier)}
 	 */
 	@Test
@@ -254,5 +283,49 @@ public class PatientTest {
 		p.addIdentifier(pa3);
 		pis = p.getIdentifiers().toArray(pis); //pis is sorted correctly
 		assertTrue(p.getIdentifiers().contains(pa3)); //this works too
+	}
+	
+	/**
+	 * @see {@link Patient#getActiveIdentifiers()}
+	 */
+	@Test
+	@Verifies(value = "should return preferred identifiers first in the list", method = "getActiveIdentifiers()")
+	public void getActiveIdentifiers_shouldReturnPreferredIdentifiersFirstInTheList() throws Exception {
+		Patient p = new Patient();
+		p.setIdentifiers(null);
+		PatientIdentifier pa1 = new PatientIdentifier();
+		PatientIdentifier pa2 = new PatientIdentifier();
+		PatientIdentifier pa3 = new PatientIdentifier();
+		
+		pa1.setIdentifier("first");
+		pa1.setIdentifierType(new PatientIdentifierType(1));
+		pa1.setDateCreated(new Date());
+		pa1.setVoided(false);
+		pa1.setPreferred(true);
+		
+		pa2.setIdentifier("second");
+		pa2.setIdentifierType(new PatientIdentifierType(1));
+		pa2.setDateCreated(new Date());
+		pa2.setVoided(false);
+		pa2.setPreferred(false);
+		
+		pa3.setIdentifier("third");
+		pa3.setIdentifierType(new PatientIdentifierType(1));
+		pa3.setDateCreated(new Date());
+		pa3.setVoided(false);
+		pa3.setPreferred(false);
+		
+		p.addIdentifier(pa1);
+		p.addIdentifier(pa2);
+		p.addIdentifier(pa3);
+		
+		pa1.setPreferred(false);
+		pa2.setPreferred(true);
+		pa3.setVoided(true);
+		
+		assertTrue("With the third identifier voided, there should only be 2 identifiers",
+		    p.getActiveIdentifiers().size() == 2);
+		assertTrue("Preferred identifier should be first in the list", p.getActiveIdentifiers().get(0) == pa2);
+		assertTrue("Non-preferred identifier should be last in the list", p.getActiveIdentifiers().get(1) == pa1);
 	}
 }

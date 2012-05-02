@@ -23,6 +23,7 @@
 		<td>
 			<spring:bind path="conversion.programWorkflow">
 				<openmrs:fieldGen type="org.openmrs.ProgramWorkflow" formFieldName="programWorkflow" val="${status.editor.value}" parameters="onChange=updateStates()|optionHeader=[blank]|programPrefix=true" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -31,17 +32,22 @@
 		<td>
 			<spring:bind path="conversion.concept">
 				<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="concept" val="${status.editor.value}" parameters="" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
 		<td><spring:message code="Program.conversion.programWorkflowState"/>:</td>
 		<td>
-			<select name="programWorkflowState" id="programWorkflowState"></select>
+			<spring:bind path="conversion.programWorkflowState">
+				<select name="programWorkflowState" id="programWorkflowState"></select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>	
 		</td>
 	</tr>
 </table>
 <br />
+
 <input type="submit" value='<spring:message code="Program.conversion.save"/>' onClick="$('theForm').submit()" />
 </form>
 

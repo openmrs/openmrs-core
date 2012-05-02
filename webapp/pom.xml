@@ -1,13 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <parent>
       <groupId>org.openmrs</groupId>
-      <artifactId>openmrsorderentry</artifactId>
-      <version>1.9.0-SNAPSHOT</version>
+      <artifactId>openmrs</artifactId>
+      <version>1.10.0-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.openmrs.web</groupId>
-   <artifactId>openmrsorderentry-webapp</artifactId>
+   <artifactId>openmrs-webapp</artifactId>
    <packaging>war</packaging>
    <name>openmrs-webapp</name>
    <description>The web application of openmrs</description>
@@ -15,13 +14,13 @@
    <dependencies>
       <dependency>
          <groupId>org.openmrs.api</groupId>
-         <artifactId>openmrsorderentry-api</artifactId>
+         <artifactId>openmrs-api</artifactId>
          <version>${project.version}</version>
          <type>jar</type>
       </dependency>
       <dependency>
          <groupId>org.openmrs.web</groupId>
-         <artifactId>openmrsorderentry-web</artifactId>
+         <artifactId>openmrs-web</artifactId>
          <version>${project.version}</version>
          <type>jar</type>
          <exclusions>
@@ -43,7 +42,7 @@
          <resource>
             <directory>src/main/resources</directory>
             <excludes>
-               <exclude>liquibase-data.zip</exclude>
+               <exclude>liquibase-demo-data.zip</exclude>
             </excludes>
          </resource>
          <resource>
@@ -68,7 +67,7 @@
                   </goals>
                   <configuration>
                      <tasks>
-                        <unzip src="src/main/resources/liquibase-data.zip" dest="${project.build.outputDirectory}"/>
+                        <unzip src="src/main/resources/liquibase-demo-data.zip" dest="${project.build.outputDirectory}" />
                      </tasks>
                   </configuration>
                </execution>
@@ -109,6 +108,23 @@
                   <scanTarget>../web/target/classes</scanTarget>
                </scanTargets>
             </configuration>
+         </plugin>
+         <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.9.1</version>
+                <configuration>
+                    <includes>**/*.jsp</includes>
+                    <sourceDirectory>../webapp</sourceDirectory>
+                    <configLocation>checkstyle/webapp-checkstyle.xml</configLocation>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.openmrs.tools</groupId>
+                        <artifactId>openmrs-tools</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
          </plugin>
       </plugins>
    </build>
@@ -188,6 +204,34 @@
             </plugins>
          </build>
       </profile>
+      <profile>
+            <id>integration-test</id>
+             <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>5.1.8</version>
+                    <scope>runtime</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-mxj</artifactId>
+                    <version>5.0.11</version>
+                    <scope>compile</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-mxj-dbfiles</artifactId>
+                    <version>5.0.11</version>
+                    <scope>compile</scope>
+                </dependency>
+            </dependencies>
+        </profile>
    </profiles>
 
    <properties>

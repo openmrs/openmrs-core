@@ -50,7 +50,7 @@ public class LogicAssignment {
 		String value = getVariableValue();
 		try {
 			w.append("\t\t\t//preprocess any || operator ;\n");
-			w.append("\t\t\tString val = doAction(\"" + value + "\");\n");
+			w.append("\t\t\tString val = doAction(\"" + value + "\", userVarMap, resultLookup);\n");
 			//	w.append("\t\t\tuserVarMap.put(\"" + name + "\", \"" + value + "\");\n");
 			w.append("\t\t\tuserVarMap.put(\"" + name + "\",  val);\n");
 		}

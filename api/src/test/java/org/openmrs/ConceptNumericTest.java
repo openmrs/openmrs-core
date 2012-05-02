@@ -23,6 +23,8 @@ import org.openmrs.test.Verifies;
 public class ConceptNumericTest {
 	
 	/**
+	 * Regression test for TRUNK-82 (old TRAC-1511)
+	 * 
 	 * @see {@link ConceptNumeric#equals(Object)}
 	 */
 	@Test

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -38,11 +39,14 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PersonService;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PersonDAO;
+import org.openmrs.person.PersonMergeLog;
+import org.openmrs.person.PersonMergeLogData;
+import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.util.Assert;
 
 /**
@@ -419,63 +423,20 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#voidPerson(org.openmrs.Person, java.lang.String)
 	 */
 	public Person voidPerson(Person person, String reason) throws APIException {
-		for (PersonName pn : person.getNames()) {
-			if (!pn.isVoided()) {
-				pn.setVoided(true);
-				pn.setVoidReason(reason);
-			}
-		}
-		for (PersonAddress pa : person.getAddresses()) {
-			if (!pa.isVoided()) {
-				pa.setVoided(true);
-				pa.setVoidReason(reason);
-			}
-		}
+		if (person == null)
+			return null;
 		
-		person.setPersonVoided(true);
-		person.setPersonVoidedBy(Context.getAuthenticatedUser());
-		person.setPersonDateVoided(new Date());
-		person.setPersonVoidReason(reason);
-		savePerson(person);
-		Context.getPatientService().voidPatient(Context.getPatientService().getPatient(person.getPersonId()), reason);
-		UserService us = Context.getUserService();
-		for (User user : us.getUsersByPerson(person, false))
-			us.retireUser(user, reason);
-		
-		return person;
+		return dao.savePerson(person);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#unvoidPerson(org.openmrs.Person)
 	 */
 	public Person unvoidPerson(Person person) throws APIException {
-		String voidReason = person.getPersonVoidReason();
-		if (voidReason == null)
-			voidReason = "";
+		if (person == null)
+			return null;
 		
-		for (PersonName pn : person.getNames()) {
-			if (voidReason.equals(pn.getVoidReason())) {
-				pn.setVoided(false);
-				pn.setVoidReason(null);
-			}
-		}
-		for (PersonAddress pa : person.getAddresses()) {
-			if (voidReason.equals(pa.getVoidReason())) {
-				pa.setVoided(false);
-				pa.setVoidReason(null);
-			}
-		}
-		
-		person.setPersonVoided(false);
-		person.setPersonVoidedBy(null);
-		person.setPersonDateVoided(null);
-		person.setPersonVoidReason(null);
-		savePerson(person);
-		
-		Context.getPatientService().unvoidPatient(Context.getPatientService().getPatient(person.getPersonId()));
-		Context.getUserService().unvoidUser(Context.getUserService().getUser(person.getPersonId()));
-		
-		return person;
+		return dao.savePerson(person);
 	}
 	
 	/**
@@ -560,7 +521,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getRelationshipsByPerson(org.openmrs.Person, java.util.Date)
+	 * @see org.openmrs.api.PersonService#getRelationshipsByPerson(org.openmrs.Person,
+	 *      java.util.Date)
 	 */
 	public List<Relationship> getRelationshipsByPerson(Person p, Date effectiveDate) throws APIException {
 		
@@ -696,6 +658,11 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType)
 	 */
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException {
+		if (StringUtils.isBlank(relationshipType.getDescription())) {
+			throw new APIException(Context.getMessageSourceService().getMessage("error.required",
+			    new Object[] { Context.getMessageSourceService().getMessage("general.description") }, Context.getLocale()));
+		}
+		
 		return dao.saveRelationshipType(relationshipType);
 	}
 	
@@ -884,7 +851,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#voidPersonName(org.openmrs.PersonName, String)
 	 */
 	public PersonName voidPersonName(PersonName personName, String voidReason) throws APIException {
-		
 		return Context.getPersonService().savePersonName(personName);
 	}
 	
@@ -892,7 +858,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#unvoidPersonName(org.openmrs.PersonName)
 	 */
 	public PersonName unvoidPersonName(PersonName personName) throws APIException {
-		
 		return Context.getPersonService().savePersonName(personName);
 		
 	}
@@ -901,21 +866,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#savePersonName(org.openmrs.PersonName)
 	 */
 	public PersonName savePersonName(PersonName personName) throws APIException {
-		
-		boolean atLeastOneNonVoidPersonNameLeft = false;
-		for (PersonName pn : personName.getPerson().getNames()) {
-			if (!pn.equals(personName) && !pn.isVoided()) {
-				atLeastOneNonVoidPersonNameLeft = true;
-				break;
-			}
-		}
-		
-		if (atLeastOneNonVoidPersonNameLeft) {
-			return dao.savePersonName(personName);
-		} else {
-			throw new APIException("At least one non-voided PersonName should be left on Person");
-		}
-		
+		ValidateUtil.validate(personName.getPerson());
+		return dao.savePersonName(personName);
 	}
 	
 	/**
@@ -975,8 +927,116 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		return dao.getPersonAttributeByUuid(uuid);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PersonService#getPersonName(java.lang.Integer)
+	 */
+	@Override
+	public PersonName getPersonName(Integer personNameId) {
+		return dao.getPersonName(personNameId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getPersonNameByUuid(java.lang.String)
+	 */
 	public PersonName getPersonNameByUuid(String uuid) throws APIException {
 		return dao.getPersonNameByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#savePersonMergeLog(PersonMergeLog)
+	 */
+	@Override
+	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws SerializationException, APIException {
+		//verify required fields
+		if (Context.getSerializationService().getDefaultSerializer() == null)
+			throw new APIException(
+			        "A default serializer was not found. Cannot proceed without at least one installed serializer");
+		log.debug("Auditing merging of non-preferred person " + personMergeLog.getLoser().getUuid()
+		        + " with preferred person " + personMergeLog.getWinner().getId());
+		//populate the mergedData XML from the PersonMergeLogData object
+		String serialized = Context.getSerializationService().getDefaultSerializer().serialize(
+		    personMergeLog.getPersonMergeLogData());
+		personMergeLog.setSerializedMergedData(serialized);
+		log.debug(serialized);
+		//save the bean to the database
+		return dao.savePersonMergeLog(personMergeLog);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getPersonMergeLogByUuid(String, boolean)
+	 */
+	@Override
+	public PersonMergeLog getPersonMergeLogByUuid(String uuid, boolean deserialize) throws SerializationException,
+	        APIException {
+		if (uuid == null)
+			throw new APIException("UUID cannot be null");
+		PersonMergeLog personMergeLog = dao.getPersonMergeLogByUuid(uuid);
+		//deserialize if requested
+		if (deserialize) {
+			deserialize(personMergeLog);
+		}
+		return personMergeLog;
+	}
+	
+	/**
+	 * Deserializes a List of <code>PersonMErgeLog</code> objects
+	 * 
+	 * @param lst the List of <code> PersonMergeLog</code> objects to deserialize
+	 * @throws SerializationException
+	 */
+	private void deserializeList(List<PersonMergeLog> lst) throws SerializationException {
+		for (PersonMergeLog personMergeLog : lst) {
+			deserialize(personMergeLog);
+		}
+	}
+	
+	/**
+	 * Deserializes a <code>PersonMErgeLog</code> object
+	 * 
+	 * @param personMergeLog the <code> PersonMergeLog</code> object to deserialize
+	 * @throws SerializationException
+	 */
+	private void deserialize(PersonMergeLog personMergeLog) throws SerializationException {
+		PersonMergeLogData data = Context.getSerializationService().getDefaultSerializer().deserialize(
+		    personMergeLog.getSerializedMergedData(), PersonMergeLogData.class);
+		personMergeLog.setPersonMergeLogData(data);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getAllPersonMergeLogs(boolean)
+	 */
+	@Override
+	public List<PersonMergeLog> getAllPersonMergeLogs(boolean deserialize) throws SerializationException {
+		List<PersonMergeLog> lst = dao.getAllPersonMergeLogs();
+		//deserialize if requested
+		if (deserialize) {
+			deserializeList(lst);
+		}
+		return lst;
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getWinningPersonMergeLogs(org.openmrs.Person)
+	 */
+	@Override
+	public List<PersonMergeLog> getWinningPersonMergeLogs(Person person, boolean deserialize) throws SerializationException {
+		List<PersonMergeLog> lst = dao.getWinningPersonMergeLogs(person);
+		if (deserialize) {
+			deserializeList(lst);
+		}
+		return lst;
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getLosingPersonMergeLog(org.openmrs.Person)
+	 */
+	@Override
+	public PersonMergeLog getLosingPersonMergeLog(Person person, boolean deserialize) throws SerializationException {
+		PersonMergeLog personMergeLog = dao.getLosingPersonMergeLogs(person);
+		if (deserialize) {
+			deserialize(personMergeLog);
+		}
+		return personMergeLog;
 	}
 	
 	/**
@@ -1017,6 +1077,17 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
+	 * @see org.openmrs.api.PersonService#unretireRelationshipType(org.openmrs.RelationshipType)
+	 */
+	public RelationshipType unretireRelationshipType(RelationshipType relationshipType) {
+		relationshipType.setRetired(false);
+		relationshipType.setRetiredBy(null);
+		relationshipType.setDateRetired(null);
+		relationshipType.setRetireReason(null);
+		return saveRelationshipType(relationshipType);
+	}
+	
+	/**
 	 * @see org.openmrs.api.PersonService#voidPersonAddress(org.openmrs.PersonAddress, String)
 	 */
 	public PersonAddress voidPersonAddress(PersonAddress personAddress, String voidReason) {
@@ -1036,5 +1107,4 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public PersonAddress savePersonAddress(PersonAddress personAddress) {
 		return dao.savePersonAddress(personAddress);
 	}
-	
 }

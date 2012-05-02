@@ -13,9 +13,12 @@
  */
 package org.openmrs.validator;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.Visit;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
@@ -55,6 +58,9 @@ public class EncounterValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail if the patients for the visit and the encounter dont match
 	 * @should fail if patient is not set
+	 * @should fail if encounter dateTime is after current dateTime
+	 * @should fail if encounter dateTime is before visit startDateTime
+	 * @should fail if encounter dateTime is after visit stopDateTime
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled())
@@ -70,6 +76,26 @@ public class EncounterValidator implements Validator {
 			if (encounter.getVisit() != null && !encounter.getVisit().getPatient().equals(encounter.getPatient())) {
 				errors.rejectValue("visit", "Encounter.visit.patients.dontMatch",
 				    "The patient for the encounter and visit should be the same");
+			}
+			
+			Date encounterDateTime = encounter.getEncounterDatetime();
+			
+			if (encounterDateTime != null && encounterDateTime.after(new Date())) {
+				errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeBeforeCurrent",
+				    "The encounter datetime should be before the current date.");
+			}
+			
+			Visit visit = encounter.getVisit();
+			if (visit != null && encounterDateTime != null) {
+				if (visit.getStartDatetime() != null && encounterDateTime.before(visit.getStartDatetime())) {
+					errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeInVisitDatesRange",
+					    "The encounter datetime should be between the visit start and stop dates.");
+				}
+				
+				if (visit.getStopDatetime() != null && encounterDateTime.after(visit.getStopDatetime())) {
+					errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeInVisitDatesRange",
+					    "The encounter datetime should be between the visit start and stop dates.");
+				}
 			}
 		}
 	}

@@ -14,7 +14,8 @@
 package org.openmrs.attribute;
 
 import org.openmrs.OpenmrsData;
-import org.openmrs.attribute.handler.AttributeHandler;
+import org.openmrs.customdatatype.Customizable;
+import org.openmrs.customdatatype.SingleCustomValue;
 
 /**
  * Common interface for user-defined attribute that is are added to a base class.
@@ -24,62 +25,30 @@ import org.openmrs.attribute.handler.AttributeHandler;
  * table in a less generic system. 
  * For example Visit has VisitAttributes (which implements Attribute<Visit>) that are defined by
  * VisitAttributeTypes.
- * @param <OwningType> the type this attribute can belong to
+ * @param <AT> the AttributeType for this Attribute
+ * @param <OT> the type this attribute can belong to
  * @see AttributeType
  * @see Customizable
  * @see AttributeHandler
  * @since 1.9
  */
-public interface Attribute<OwningType extends Customizable<?>> extends OpenmrsData {
+public interface Attribute<AT extends AttributeType, OT extends Customizable<?>> extends OpenmrsData, SingleCustomValue<AT> {
 	
 	/**
 	 * @return the owner that this attribute belongs to
 	 */
-	OwningType getOwner();
+	OT getOwner();
 	
 	/**
 	 * Sets the owner of this attribute
 	 * 
 	 * @param owner
 	 */
-	void setOwner(OwningType owner);
+	void setOwner(OT owner);
 	
 	/**
 	 * @return the AttributeType that controls this attribute's behavior
 	 */
-	AttributeType<OwningType> getAttributeType();
-	
-	/**
-	 * @return the serialized String representation of the attribute, suitable for storing in a database.
-	 */
-	String getSerializedValue();
-	
-	/**
-	 * Sets the value of this attribute directly to a pre-serialized value. Implementations should
-	 * validate this value, rather than setting it blindly, otherwise fetching the value back may throw
-	 * an {@link InvalidAttributeValueException}
-	 * If you are coding against the OpenMRS API, you probably want to use {@link #setObjectValue(Object)}
-	 * instead of this method.
-	 * @param serializedValue
-	 */
-	void setSerializedValue(String serializedValue);
-	
-	/**
-	 * Convenience method to get the typed value of an attribute. (This will result in a background call
-	 * to the attribute's type's handler.)
-	 * @return the typed value of an attribute
-	 * @throws InvalidAttributeValueException 
-	 * @see {@link AttributeHandler}
-	 */
-	Object getObjectValue() throws InvalidAttributeValueException;
-	
-	/**
-	 * Sets the value of this attribute. (This will result in a background call to the attribute's type's
-	 * handler's validate and serialize methods.)
-	 * @param typedValue
-	 * @throws InvalidAttributeValueException
-	 * @see {@link AttributeHandler} 
-	 */
-	<S, T extends S> void setObjectValue(T typedValue) throws InvalidAttributeValueException;
+	AT getAttributeType();
 	
 }

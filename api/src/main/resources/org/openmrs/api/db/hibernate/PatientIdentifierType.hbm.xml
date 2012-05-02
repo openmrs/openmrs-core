@@ -1,19 +1,16 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">   
 <hibernate-mapping package="org.openmrs">
 
 <class name="PatientIdentifierType" table="patient_identifier_type">
 
-    <id
-        name="patientIdentifierTypeId"
-        type="java.lang.Integer"
-        column="patient_identifier_type_id"
-        unsaved-value="0"
-    >
-        <generator class="native" />
+	<id name="patientIdentifierTypeId" type="java.lang.Integer" column="patient_identifier_type_id"
+        unsaved-value="0">
+		<generator class="native">
+			<param name="sequence">patient_identifier_type_patient_identifier_type_id_seq</param>
+		</generator>
     </id>
 
     <discriminator column="patient_identifier_type_id" insert="false" />
@@ -36,7 +33,7 @@
     <property
         name="format"
         type="java.lang.String"
-        length="50"
+        length="255"
     />
 
     <property
@@ -65,6 +62,12 @@
 			<param name="enumClassName">org.openmrs.PatientIdentifierType$LocationBehavior</param>
 		</type>
 	</property>
+    
+    <property name="uniquenessBehavior" column="uniqueness_behavior" length="50">
+    	<type name="org.openmrs.util.HibernateEnumType">
+    		<param name="enumClassName">org.openmrs.PatientIdentifierType$UniquenessBehavior</param>
+    	</type>
+    </property>
 	
     <!-- Associations -->
   

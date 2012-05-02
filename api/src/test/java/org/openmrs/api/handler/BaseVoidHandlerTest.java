@@ -61,7 +61,7 @@ public class BaseVoidHandlerTest {
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
 		Voidable voidable = new Person();
 		handler.handle(voidable, new User(2), null, " ");
-		Assert.assertEquals(new User(2), voidable.getVoidedBy());
+		Assert.assertEquals(2, voidable.getVoidedBy().getId().intValue());
 	}
 	
 	/**
@@ -74,7 +74,7 @@ public class BaseVoidHandlerTest {
 		Voidable voidable = new Person();
 		voidable.setVoidedBy(new User(3));
 		handler.handle(voidable, new User(2), null, " ");
-		Assert.assertEquals(new User(3), voidable.getVoidedBy());
+		Assert.assertEquals(3, voidable.getVoidedBy().getId().intValue());
 	}
 	
 	/**

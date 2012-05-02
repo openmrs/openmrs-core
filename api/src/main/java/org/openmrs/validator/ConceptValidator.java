@@ -19,17 +19,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.LocaleUtility;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -46,9 +48,9 @@ public class ConceptValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public boolean supports(Class c) {
-		return c.equals(Concept.class);
+		return Concept.class.isAssignableFrom(c);
 	}
 	
 	/**
@@ -62,6 +64,7 @@ public class ConceptValidator implements Validator {
 	 * @should fail if there is a duplicate unretired fully specified name in the same locale
 	 * @should fail if any names in the same locale for this concept are similar
 	 * @should pass if the concept with a duplicate name is retired
+	 * @should pass if the concept being validated is retired and has a duplicate name
 	 * @should fail if any name is an empty string
 	 * @should fail if the object parameter is null
 	 * @should pass if the concept is being updated with no name change
@@ -72,6 +75,12 @@ public class ConceptValidator implements Validator {
 	 * @should not allow an index term to be a locale preferred name
 	 * @should fail if there is no name explicitly marked as fully specified
 	 * @should pass if the duplicate ConceptName is neither preferred nor fully Specified
+	 * @should pass if the concept has a synonym that is also a short name
+	 * @should fail if a term is mapped multiple times to the same concept
+	 * @should fail if there is a duplicate unretired concept name in the same locale different than
+	 *         the system locale
+	 * @should pass for a new concept with a map created with deprecated concept map methods
+	 * @should pass for an edited concept with a map created with deprecated concept map methods
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -87,12 +96,6 @@ public class ConceptValidator implements Validator {
 		
 		boolean hasFullySpecifiedName = false;
 		for (Locale conceptNameLocale : conceptToValidate.getAllConceptNameLocales()) {
-			//The concept's locale should be among the allowed locales listed in global properties
-			if (!LocaleUtility.getLocalesInOrder().contains(conceptNameLocale)) {
-				log.warn("The locale '" + conceptNameLocale.toString() + "' is not listed among allowed locales");
-				errors.reject("Concept.error.invalid.locale");
-			}
-			
 			boolean fullySpecifiedNameForLocaleFound = false;
 			boolean preferredNameForLocaleFound = false;
 			boolean shortNameForLocaleFound = false;
@@ -154,28 +157,41 @@ public class ConceptValidator implements Validator {
 						errors.reject("Concept.error.multipleShortNames");
 					}
 				}
-				if (nameInLocale.isLocalePreferred() || nameInLocale.isFullySpecifiedName()) {
-					List<Concept> conceptsWithPossibleDuplicateNames = Context.getConceptService().getConceptsByName(
-					    nameInLocale.getName());
-					if (conceptsWithPossibleDuplicateNames.size() > 0) {
-						for (Concept concept : conceptsWithPossibleDuplicateNames) {
-							//skip past the concept being edited and retired ones
-							if (concept.isRetired()
-							        || (conceptToValidate.getConceptId() != null && conceptToValidate.getConceptId().equals(
-							            concept.getConceptId())))
-								continue;
-							//should be a unique name amongst all preferred and fully specified names in its locale system wide
-							if ((concept.getFullySpecifiedName(conceptNameLocale) != null && concept.getFullySpecifiedName(
-							    conceptNameLocale).getName().equalsIgnoreCase(nameInLocale.getName()))
-							        || (concept.getPreferredName(conceptNameLocale) != null && concept.getPreferredName(
-							            conceptNameLocale).getName().equalsIgnoreCase(nameInLocale.getName()))) {
-								throw new DuplicateConceptNameException("'" + nameInLocale.getName()
-								        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "'");
+				
+				//find duplicate names for a non-retired concept
+				if (!conceptToValidate.isRetired()) {
+					if (nameInLocale.isLocalePreferred() || nameInLocale.isFullySpecifiedName()) {
+						//must be unique among all country specific locals
+						Locale languageLocale = new Locale(nameInLocale.getLocale().getLanguage());
+						
+						List<Concept> conceptsWithPossibleDuplicateNames = Context.getConceptService().getConceptsByName(
+						    nameInLocale.getName(), languageLocale, false);
+						if (conceptsWithPossibleDuplicateNames.size() > 0) {
+							for (Concept concept : conceptsWithPossibleDuplicateNames) {
+								//skip retired
+								if (concept.isRetired())
+									continue;
+								
+								//skip same
+								if (conceptToValidate.getConceptId() != null
+								        && conceptToValidate.getConceptId().equals(concept.getConceptId()))
+									continue;
+								
+								//should be a unique name amongst all preferred and fully specified names in its locale system wide
+								if ((concept.getFullySpecifiedName(conceptNameLocale) != null && concept
+								        .getFullySpecifiedName(conceptNameLocale).getName().equalsIgnoreCase(
+								            nameInLocale.getName()))
+								        || (concept.getPreferredName(conceptNameLocale) != null && concept.getPreferredName(
+								            conceptNameLocale).getName().equalsIgnoreCase(nameInLocale.getName()))) {
+									throw new DuplicateConceptNameException("'" + nameInLocale.getName()
+									        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "'");
+								}
 							}
 						}
 					}
 				}
 				
+				//
 				if (errors.hasErrors()) {
 					log.debug("Concept name '" + nameInLocale.getName() + "' for locale '" + conceptNameLocale
 					        + "' is invalid");
@@ -186,9 +202,14 @@ public class ConceptValidator implements Validator {
 				}
 				
 				//No duplicate names allowed for the same locale and concept, keep the case the same
-				if (!validNamesFoundInLocale.add(nameInLocale.getName().toLowerCase()))
-					throw new DuplicateConceptNameException("'" + nameInLocale.getName()
-					        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "' for the same concept");
+				//except for short names
+				if (!nameInLocale.isShort()) {
+					if (!validNamesFoundInLocale.add(nameInLocale.getName().toLowerCase()))
+						throw new DuplicateConceptNameException("'" + nameInLocale.getName()
+						        + "' is a duplicate name in locale '" + conceptNameLocale.toString()
+						        + "' for the same concept");
+				}
+				
 				if (log.isDebugEnabled())
 					log.debug("Valid name found: " + nameInLocale.getName());
 			}
@@ -198,6 +219,50 @@ public class ConceptValidator implements Validator {
 		if (!hasFullySpecifiedName) {
 			log.debug("Concept has no fully specified name");
 			errors.reject("Concept.error.no.FullySpecifiedName");
+		}
+		
+		if (CollectionUtils.isNotEmpty(conceptToValidate.getConceptMappings())) {
+			//validate all the concept maps
+			int index = 0;
+			Set<Integer> mappedTermIds = null;
+			for (ConceptMap map : conceptToValidate.getConceptMappings()) {
+				if (map.getConceptReferenceTerm() == null) {
+					errors.rejectValue("conceptMappings[" + index + "].conceptReferenceTerm", "Concept.map.termRequired",
+					    "The concept reference term property is required for a concept map");
+					return;
+				} else if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {
+					//if this term is getting created on the fly e.g. from old legacy code, validate it
+					try {
+						errors.pushNestedPath("conceptMappings[" + index + "].conceptReferenceTerm");
+						ValidationUtils.invokeValidator(new ConceptReferenceTermValidator(), map.getConceptReferenceTerm(),
+						    errors);
+					}
+					finally {
+						errors.popNestedPath();
+					}
+					
+				}
+				/*if (map.getConceptMapType() == null) {
+					errors.rejectValue("conceptMappings[" + index + "].conceptMapType", "Concept.map.typeRequired",
+					    "The concept map type is required for a concept map");
+					return;
+				}*/
+
+				//don't proceed to the next maps since the current one already has errors
+				if (errors.hasErrors())
+					return;
+				
+				if (mappedTermIds == null)
+					mappedTermIds = new HashSet<Integer>();
+				
+				//if we already have a mapping to this term, reject it this map
+				if (!mappedTermIds.add(map.getConceptReferenceTerm().getId())) {
+					errors.rejectValue("conceptMappings[" + index + "]", "ConceptReferenceTerm.term.alreadyMapped",
+					    "Cannot map a reference term multiple times to the same concept");
+				}
+				
+				index++;
+			}
 		}
 	}
 }

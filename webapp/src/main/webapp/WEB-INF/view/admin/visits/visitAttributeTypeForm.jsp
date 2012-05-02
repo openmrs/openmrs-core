@@ -6,7 +6,6 @@
 <%@ include file="localHeader.jsp" %>
 
 <script type="text/javascript">
-
 	function confirmPurge() {
 		if (confirm("<spring:message code='VisitAttributeType.purgeConfirmMessage' />")) {
 			return true;
@@ -15,14 +14,26 @@
 		}
 	}
 	
-</script>
-
-<script type="text/javascript">
    function forceMaxLength(object, maxLength) {
       if( object.value.length >= maxLength) {
          object.value = object.value.substring(0, maxLength); 
       }
    }
+   
+   $j(function() {
+	  $j('select[name="datatypeClassname"]').change(function() {
+		 $j('#datatypeDescription').load(openmrsContextPath + '/q/message.form', { key: $j(this).val() + '.description' });
+	  });
+	  $j('select[name="preferredHandlerClassname"]').change(function() {
+		 $j('#handlerDescription').load(openmrsContextPath + '/q/message.form', { key: $j(this).val() + '.description' });  
+	  });
+	  <c:if test="${ not empty visitAttributeType.datatypeClassname }">
+	  	$j('#datatypeDescription').load(openmrsContextPath + '/q/message.form', { key: '${ visitAttributeType.datatypeClassname }.description' });
+	  </c:if>
+	  <c:if test="${ not empty visitAttributeType.preferredHandlerClassname }">
+	  	$j('#handlerDescription').load(openmrsContextPath + '/q/message.form', { key: '${ visitAttributeType.preferredHandlerClassname }.description' });
+	  </c:if>
+   });
 </script>
 
 <h2><spring:message code="VisitAttributeType.title"/></h2>
@@ -55,7 +66,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="FormField.minOccurs"/></td>
+		<td><spring:message code="AttributeType.minOccurs"/></td>
 		<td>
 			<spring:bind path="visitAttributeType.minOccurs">
 				<input type="text" name="minOccurs" value="${status.value}" size="10" />
@@ -64,7 +75,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="FormField.maxOccurs"/></td>
+		<td><spring:message code="AttributeType.maxOccurs"/></td>
 		<td>
 			<spring:bind path="visitAttributeType.maxOccurs">
 				<input type="text" name="maxOccurs" value="${status.value}" size="10" />
@@ -73,17 +84,44 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="AttributeType.datatype"/></td>
+		<td><spring:message code="AttributeType.datatypeClassname"/></td>
 		<td>
-			<spring:bind path="visitAttributeType.datatype">
-				<select name="datatype">
+			<spring:bind path="visitAttributeType.datatypeClassname">
+				<select name="datatypeClassname">
 					<option value=""></option>
 					<c:forEach items="${datatypes}" var="datatype">
-						<option value="${datatype}" <c:if test="${datatype == status.value}">selected</c:if>>${datatype}</option>
+						<option value="${datatype}" <c:if test="${datatype == status.value}">selected</c:if>><spring:message code="${datatype}.name"/></option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<br/>
+				<span id="datatypeDescription"></span>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="AttributeType.datatypeConfig"/></td>
+		<td>
+			<spring:bind path="visitAttributeType.datatypeConfig">
+				<textarea name="datatypeConfig" rows="3" cols="40" >${status.value}</textarea>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="AttributeType.preferredHandlerClassname"/></td>
+		<td>
+			<spring:bind path="visitAttributeType.preferredHandlerClassname">
+				<select name="preferredHandlerClassname">
+					<option value=""><spring:message code="general.default"/></option>
+					<c:forEach items="${handlers}" var="handler">
+						<option value="${handler}" <c:if test="${handler == status.value}">selected</c:if>><spring:message code="${handler}.name"/></option>
 					</c:forEach>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
+			<br/>
+			<span id="handlerDescription"></span>
 		</td>
 	</tr>
 	<tr>
@@ -91,6 +129,7 @@
 		<td>
 			<spring:bind path="visitAttributeType.handlerConfig">
 				<textarea name="handlerConfig" rows="3" cols="40" >${status.value}</textarea>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>

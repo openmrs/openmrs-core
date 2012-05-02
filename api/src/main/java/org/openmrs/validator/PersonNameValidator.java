@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonName;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -35,7 +36,6 @@ public class PersonNameValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
 		return PersonName.class.isAssignableFrom(c);
 	}
@@ -104,6 +104,16 @@ public class PersonNameValidator implements Validator {
 	 * @should fail validation if PersonName.degree is too long
 	 * @should pass validation if PersonName.degree is exactly max length
 	 * @should pass validation if PersonName.degree is less than maximum field length
+	 * @should fail validation if PersonName.givenName is invalid
+	 * @should pass validation if PersonName.givenName is valid
+	 * @should fail validation if PersonName.middleName is invalid
+	 * @should pass validation if PersonName.middleName is valid
+	 * @should fail validation if PersonName.familyName is invalid
+	 * @should pass validation if PersonName.familyName is valid
+	 * @should fail validation if PersonName.familyName2 is invalid
+	 * @should pass validation if PersonName.familyName2 is valid
+	 * @should pass validation if regex string is null
+	 * @should pass validation if regex string is empty
 	 */
 	public void validatePersonName(PersonName personName, Errors errors, boolean arrayInd, boolean testInd) {
 		
@@ -116,28 +126,39 @@ public class PersonNameValidator implements Validator {
 		if (StringUtils.isBlank(personName.getFamilyName())
 		        || StringUtils.isBlank(personName.getFamilyName().replaceAll("\"", "")))
 			errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "Patient.names.required.given.family");
-		
+		// Make sure the entered name value is sensible 
+		String namePattern = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
+		if (namePattern != null && namePattern != "") {
+			if (personName.getGivenName() != null && !personName.getGivenName().matches(namePattern))
+				errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "GivenName.invalid");
+			if (personName.getMiddleName() != null && !personName.getMiddleName().matches(namePattern))
+				errors.rejectValue(getFieldKey("middleName", arrayInd, testInd), "MiddleName.invalid");
+			if (personName.getFamilyName() != null && !personName.getFamilyName().matches(namePattern))
+				errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "FamilyName.invalid");
+			if (personName.getFamilyName2() != null && !personName.getFamilyName2().matches(namePattern))
+				errors.rejectValue(getFieldKey("familyName2", arrayInd, testInd), "FamilyName2.invalid");
+		}
 		// Make sure the length does not exceed database column size
 		if (StringUtils.length(personName.getPrefix()) > 50)
-			rejectPersonName(errors, "prefix", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "prefix", arrayInd, testInd);
 		if (StringUtils.length(personName.getGivenName()) > 50)
-			rejectPersonName(errors, "givenName", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "givenName", arrayInd, testInd);
 		if (StringUtils.length(personName.getMiddleName()) > 50)
-			rejectPersonName(errors, "middleName", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "middleName", arrayInd, testInd);
 		if (StringUtils.length(personName.getFamilyNamePrefix()) > 50)
-			rejectPersonName(errors, "familyNamePrefix", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "familyNamePrefix", arrayInd, testInd);
 		if (StringUtils.length(personName.getFamilyName()) > 50)
-			rejectPersonName(errors, "familyName", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "familyName", arrayInd, testInd);
 		if (StringUtils.length(personName.getFamilyName2()) > 50)
-			rejectPersonName(errors, "familyName2", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "familyName2", arrayInd, testInd);
 		if (StringUtils.length(personName.getFamilyNameSuffix()) > 50)
-			rejectPersonName(errors, "familyNameSuffix", arrayInd, testInd);
+			rejectPersonNameOnLength(errors, "familyNameSuffix", arrayInd, testInd);
 		if (StringUtils.length(personName.getDegree()) > 50)
-			rejectPersonName(errors, "degree", arrayInd, testInd);
-		
+			rejectPersonNameOnLength(errors, "degree", arrayInd, testInd);
 	}
 	
-	private void rejectPersonName(Errors errors, String fieldKey, boolean arrayInd, boolean testInd) {
+	private void rejectPersonNameOnLength(Errors errors, String fieldKey, boolean arrayInd, boolean testInd) {
 		errors.rejectValue(getFieldKey(fieldKey, arrayInd, testInd), "error.name.max.length", new Object[] {
 		        getInternationizedFieldName("PersonName." + fieldKey), 50 }, "error.name");
 	}

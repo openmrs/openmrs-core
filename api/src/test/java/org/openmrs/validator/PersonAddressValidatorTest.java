@@ -50,23 +50,6 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail if the endDate is in the future", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheEndDateIsInTheFuture() throws Exception {
-		PersonAddress personAddress = new PersonAddress();
-		Calendar c = Calendar.getInstance();
-		personAddress.setStartDate(c.getTime());
-		// put the time into the future by a minute
-		c.add(Calendar.MINUTE, 1);
-		personAddress.setEndDate(c.getTime());
-		Errors errors = new BindException(personAddress, "personAddress");
-		validator.validate(personAddress, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors());
-	}
-	
-	/**
-	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
-	 */
-	@Test
 	@Verifies(value = "should fail if the startDate is in the future", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfTheStartDateIsInTheFuture() throws Exception {
 		PersonAddress personAddress = new PersonAddress();

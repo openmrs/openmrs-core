@@ -272,33 +272,6 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	// ==================================   Metadata ============================
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof TaskDefinition) {
-			TaskDefinition other = (TaskDefinition) obj;
-			if (this.getId() != null) {
-				this.getId().equals(other.getId());
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (this.getId() == null) {
-			return super.hashCode();
-		}
-		
-		Integer hash = 5;
-		return (this.getId() * hash);
-	}
-	
-	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

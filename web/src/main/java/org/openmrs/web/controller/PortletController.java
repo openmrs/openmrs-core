@@ -126,8 +126,10 @@ public class PortletController implements Controller {
 				
 				// remove cached parameters 
 				List<String> parameterKeys = (List<String>) model.get("parameterKeys");
-				for (String key : parameterKeys) {
-					model.remove(key);
+				if (parameterKeys != null) {
+					for (String key : parameterKeys) {
+						model.remove(key);
+					}
 				}
 			}
 			if (model == null) {
@@ -186,6 +188,8 @@ public class PortletController implements Controller {
 					if (Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)) {
 						Patient p = Context.getPatientService().getPatient(patientId);
 						model.put("patient", p);
+						if (p.isDead())
+							patientVariation = "Dead";
 						
 						// add encounters if this user can view them
 						if (Context.hasPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS))
@@ -193,6 +197,8 @@ public class PortletController implements Controller {
 						
 						// add visits if this user can view them
 						if (Context.hasPrivilege(PrivilegeConstants.VIEW_VISITS)) {
+							model.put("person", p);
+							PortletControllerUtil.addFormToEditAndViewUrlMaps(model);
 							model.put("patientVisits", Context.getVisitService().getVisitsByPatient(p));
 							model.put("activeVisits", Context.getVisitService().getActiveVisitsByPatient(p));
 						}
@@ -341,12 +347,15 @@ public class PortletController implements Controller {
 				}
 			}
 			if (personId != null) {
-				if (!model.containsKey("person")) {
-					Person p = (Person) model.get("patient");
+				Person p = (Person) model.get("person");
+				if (p == null) {
+					p = (Person) model.get("patient");
 					if (p == null)
 						p = Context.getPersonService().getPerson(personId);
 					model.put("person", p);
-					
+				}
+				
+				if (!model.containsKey("personRelationships")) {
 					if (Context.hasPrivilege(PrivilegeConstants.VIEW_RELATIONSHIPS)) {
 						List<Relationship> relationships = new ArrayList<Relationship>();
 						relationships.addAll(Context.getPersonService().getRelationshipsByPerson(p));

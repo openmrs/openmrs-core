@@ -42,6 +42,7 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
@@ -125,6 +126,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			// unset the creation stats
 			newObs.setCreator(null);
 			newObs.setDateCreated(null);
+			newObs.setPreviousVersion(obs);
 			
 			RequiredDataAdvice.recursivelyHandle(SaveHandler.class, newObs, changeMessage);
 			
@@ -136,7 +138,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			// historical purposes
 			try {
 				Context.addProxyPrivilege(PrivilegeConstants.DELETE_OBS);
-				String reason = changeMessage + " (new obsId: " + newObs.getObsId() + ")";
+				String reason = changeMessage + "voidReason looks like" + " (new obsId: " + newObs.getObsId() + ")";
 				
 				// fetch a clean copy of this obs from the database so that
 				// we don't write the changes to the database when we save
@@ -266,7 +268,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Deprecated
 	public MimeType voidMimeType(MimeType mimeType, String reason) throws APIException {
-		// TODO implement voidMimeType
 		throw new APIException("Not yet implemented");
 	}
 	
@@ -315,8 +316,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, boolean includeVoidedObs) throws APIException {
-		return dao.getObservationCount(whom, encounters, questions, answers, personTypes, locations, obsGroupId, fromDate,
-		    toDate, null, includeVoidedObs);
+		return OpenmrsUtil.convertToInteger(dao.getObservationCount(whom, encounters, questions, answers, personTypes,
+		    locations, obsGroupId, fromDate, toDate, null, includeVoidedObs));
 	}
 	
 	/**
@@ -812,7 +813,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Override
 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided) {
-		return dao.getObservationCount(null, null, null, null, null, null, null, null, null, conceptNames, true);
+		return OpenmrsUtil.convertToInteger(dao.getObservationCount(null, null, null, null, null, null, null, null, null,
+		    conceptNames, true));
 	}
 	
 	/**

@@ -22,7 +22,11 @@ import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Location;
+import org.openmrs.LocationAttribute;
+import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LocationDAO;
@@ -184,7 +188,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 * @see org.openmrs.api.db.LocationDAO#getCountOfLocations(String, Boolean)
 	 */
 	@Override
-	public Integer getCountOfLocations(String nameFragment, Boolean includeRetired) {
+	public Long getCountOfLocations(String nameFragment, Boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
 		if (!includeRetired)
 			criteria.add(Expression.eq("retired", false));
@@ -194,7 +198,7 @@ public class HibernateLocationDAO implements LocationDAO {
 		
 		criteria.setProjection(Projections.rowCount());
 		
-		return (Integer) criteria.uniqueResult();
+		return (Long) criteria.uniqueResult();
 	}
 	
 	/**
@@ -207,10 +211,10 @@ public class HibernateLocationDAO implements LocationDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
 		if (!includeRetired)
-			criteria.add(Expression.eq("retired", false));
+			criteria.add(Restrictions.eq("retired", false));
 		
 		if (StringUtils.isNotBlank(nameFragment))
-			criteria.add(Expression.ilike("name", nameFragment, MatchMode.START));
+			criteria.add(Restrictions.ilike("name", nameFragment, MatchMode.START));
 		
 		criteria.addOrder(Order.asc("name"));
 		if (start != null)
@@ -238,4 +242,55 @@ public class HibernateLocationDAO implements LocationDAO {
 		return criteria.list();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getAllLocationAttributeTypes()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<LocationAttributeType> getAllLocationAttributeTypes() {
+		return sessionFactory.getCurrentSession().createCriteria(LocationAttributeType.class).list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationAttributeType(java.lang.Integer)
+	 */
+	@Override
+	public LocationAttributeType getLocationAttributeType(Integer id) {
+		return (LocationAttributeType) sessionFactory.getCurrentSession().get(LocationAttributeType.class, id);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationAttributeTypeByUuid(java.lang.String)
+	 */
+	@Override
+	public LocationAttributeType getLocationAttributeTypeByUuid(String uuid) {
+		return (LocationAttributeType) sessionFactory.getCurrentSession().createCriteria(LocationAttributeType.class).add(
+		    Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#saveLocationAttributeType(org.openmrs.LocationAttributeType)
+	 */
+	@Override
+	public LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType) {
+		sessionFactory.getCurrentSession().saveOrUpdate(locationAttributeType);
+		return locationAttributeType;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#deleteLocationAttributeType(org.openmrs.LocationAttributeType)
+	 */
+	@Override
+	public void deleteLocationAttributeType(LocationAttributeType locationAttributeType) {
+		sessionFactory.getCurrentSession().delete(locationAttributeType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationAttributeByUuid(java.lang.String)
+	 */
+	@Override
+	public LocationAttribute getLocationAttributeByUuid(String uuid) {
+		return (LocationAttribute) sessionFactory.getCurrentSession().createCriteria(LocationAttribute.class).add(
+		    Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
 }

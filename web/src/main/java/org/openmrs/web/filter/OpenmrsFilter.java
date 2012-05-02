@@ -65,7 +65,7 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		HttpSession httpSession = httpRequest.getSession();
 		
 		// used by htmlInclude tag
-		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(new Date().getTime()));
+		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(System.currentTimeMillis()));
 		
 		if (log.isDebugEnabled()) {
 			log.debug("requestURI " + httpRequest.getRequestURI());

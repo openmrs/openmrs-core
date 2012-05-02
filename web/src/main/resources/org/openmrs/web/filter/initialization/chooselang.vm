@@ -1,0 +1,30 @@
+#parse($headerTemplate)
+            <form method="post" autocomplete="off">
+                <input type="hidden" name="page" value="chooselang.vm" />
+                <div class="content">
+                    <table align="center" cellspacing="5" cellpadding="9">
+                        <tr>
+                            <td colspan="2"><strong>$l10n.get("install.prefer")</strong></td>
+                        </tr>
+                        <tr>
+                        <td>
+	                        <select name="locale" id="locale">
+				  				<option value="en" #if( $locale == "en" ) selected #end >English</option>
+				  				<option value="en_GB" #if( $locale == "en_GB" ) selected #end >English (GB)</option>
+				  				<option value="es" #if( $locale == "es" ) selected #end >Español</option>
+				  				<option value="fr" #if( $locale == "fr" ) selected #end >Français</option>
+				  				<option value="it"  #if( $locale == "it" ) selected #end >Italiano</option>
+				  				<option value="pt" #if( $locale == "pt" ) selected #end >Português</option>
+							</select>
+						</td>
+                        </tr>
+							<tr>
+								<td colspan="2"><input type="checkbox" value="Remember" name="remember"  #if( $remember == true ) checked="checked" #end />$l10n.get("install.choice")</td>
+							</tr>
+                        <tr>
+                            <td colspan="2" align="center"><input type="image" src="images/forward_button.png" name="continue"/></td>
+                        </tr>                        
+                    </table>
+                </div>
+            </form>
+#parse($footerTemplate)

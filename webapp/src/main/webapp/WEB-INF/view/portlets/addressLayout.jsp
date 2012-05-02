@@ -248,6 +248,9 @@
 									  </c:if>
 									</td>
 								</c:if>
+								<c:if test="${token.isToken == model.layoutTemplate.nonLayoutToken}">
+									<td>${token.displayText}</td>
+								</c:if>
 							</c:forEach>
 						</tr>
 					</c:forEach>
@@ -283,11 +286,11 @@
 											<input type="checkbox" name="${status.expression}" 
 												   <c:if test="${status.value == true}">checked="checked"</c:if> 
 										</spring:bind>
-												   onClick="toggleLayer('<spring:bind path="personAddressId">voidReasonRow-${status.value}</spring:bind>'); if (voidedBoxClicked) voidedBoxClicked(this); "
+												   onClick="toggleLayer('<spring:bind path="personAddressId">voidReasonAddressRow-${status.value}</spring:bind>'); if (voidedBoxClicked) voidedBoxClicked(this); "
 											/>
 									</td>
 								</tr>
-								<tr id="<spring:bind path="personAddressId">voidReasonRow-${status.value}</spring:bind>"
+								<tr id="<spring:bind path="personAddressId">voidReasonAddressRow-${status.value}</spring:bind>"
 									style="<spring:bind path="voided"><c:if test="${status.value == false}">display: none;</c:if></spring:bind>">
 									<td><spring:message code="general.voidReason"/></td>
 									<spring:bind path="voidReason">

@@ -105,6 +105,20 @@ public class RequireTag extends TagSupport {
 		if (!hasPrivilege) {
 			errorOccurred = true;
 			if (userContext.isAuthenticated()) {
+				String referer = request.getHeader("Referer");
+				// If the user has just authenticated, but is still not authorized to see the page.
+				if (referer != null && referer.contains("login.")) {
+					try {
+						httpResponse.sendRedirect(request.getContextPath()); // Redirect to the home page.
+						return SKIP_PAGE;
+					}
+					catch (IOException e) {
+						// oops, cannot redirect
+						log.error("Unable to redirect to the home page", e);
+						throw new APIException(e);
+					}
+				}
+				
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.unauthorized");
 				log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + redirect
 				        + " which requires privilege: " + privilege + " or one of: " + allPrivileges + " or any of "
@@ -145,7 +159,6 @@ public class RequireTag extends TagSupport {
 		log.debug("session ip addr: " + session_ip_addr);
 		
 		if (errorOccurred) {
-			
 			String url = "";
 			if (redirect != null && !redirect.equals(""))
 				url = request.getContextPath() + redirect;

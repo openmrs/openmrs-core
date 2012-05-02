@@ -40,22 +40,6 @@ public class ConceptSetDerived extends BaseOpenmrsObject implements java.io.Seri
 		setSortWeight(weight);
 	}
 	
-	public boolean equals(Object obj) {
-		if (obj instanceof ConceptSetDerived) {
-			ConceptSetDerived c = (ConceptSetDerived) obj;
-			return (this.concept.equals(c.getConcept()) && this.conceptSet.equals(c.getConceptSet()));
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getConcept() == null || this.getConceptSet() == null)
-			return super.hashCode();
-		return this.getConcept().hashCode() + this.getConceptSet().hashCode();
-	}
-	
-	// Property accessors
-	
 	/**
 	 * 
 	 */

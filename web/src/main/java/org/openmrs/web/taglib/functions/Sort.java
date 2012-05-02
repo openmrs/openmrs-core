@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.event.ListSelectionEvent;
+
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
 
@@ -71,6 +73,14 @@ public class Sort {
 		if (sortProperty == null || sortProperty.equals("")) {
 			throw new IllegalArgumentException("sortProperty = " + sortProperty);
 		}
+		// fail early if the passed collection is null
+		if (c == null)
+			return null;
+		
+		// fail early if the passed collection is empty
+		if (c.size() == 0)
+			return Collections.emptyList();
+		
 		List<T> l = new ArrayList<T>(c);
 		Comparator comp = new BeanComparator(sortProperty, new ComparableComparator());
 		Collections.sort(l, comp);

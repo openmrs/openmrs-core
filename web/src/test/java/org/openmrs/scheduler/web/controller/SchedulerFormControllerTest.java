@@ -28,8 +28,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
-import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.validation.BindException;
@@ -38,7 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * Contains tests for the SchedulerFormController
  */
-public class SchedulerFormControllerTest extends BaseContextSensitiveTest {
+public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	private static final String INITIAL_SCHEDULER_TASK_CONFIG_XML = "org/openmrs/web/include/SchedulerServiceTest.xml";
 	

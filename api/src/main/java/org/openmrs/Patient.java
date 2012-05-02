@@ -15,6 +15,7 @@ package org.openmrs;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -74,31 +75,6 @@ public class Patient extends Person implements java.io.Serializable {
 	public Patient(Integer patientId) {
 		super(patientId);
 		this.patientId = patientId;
-	}
-	
-	/**
-	 * Compares two objects for similarity This must pass through to the parent object
-	 * (org.openmrs.Person) in order to get similarity of person/patient objects
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 * @see org.openmrs.Person#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		return super.equals(obj);
-	}
-	
-	/**
-	 * The hashcode for a patient/person is used to index the objects in a tree This must pass
-	 * through to the parent object (org.openmrs.Person) in order to get similarity of
-	 * person/patient objects
-	 * 
-	 * @see org.openmrs.Person#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return super.hashCode();
 	}
 	
 	// Property accessors
@@ -206,7 +182,7 @@ public class Patient extends Person implements java.io.Serializable {
 		if (patientIdentifier != null) {
 			// make sure the set doesn't already contain an identifier with the same
 			// identifier, identifierType
-			for (PatientIdentifier currentId : getIdentifiers()) {
+			for (PatientIdentifier currentId : getActiveIdentifiers()) {
 				if (currentId.equalsContent(patientIdentifier)) {
 					return; // fail silently if someone tries to add a duplicate
 				}
@@ -323,14 +299,22 @@ public class Patient extends Person implements java.io.Serializable {
 	 * 
 	 * @return list of non-voided identifiers for this patient
 	 * @see #getIdentifiers()
+	 * @should return preferred identifiers first in the list
 	 */
 	public List<PatientIdentifier> getActiveIdentifiers() {
 		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
 		if (getIdentifiers() != null) {
+			List<PatientIdentifier> nonPreferred = new LinkedList<PatientIdentifier>();
 			for (PatientIdentifier pi : getIdentifiers()) {
-				if (pi.isVoided() == false)
-					ids.add(pi);
+				if (pi.isVoided() == false) {
+					if (pi.isPreferred())
+						ids.add(pi);
+					else
+						nonPreferred.add(pi);
+				}
 			}
+			for (PatientIdentifier pi : nonPreferred)
+				ids.add(pi);
 		}
 		return ids;
 	}

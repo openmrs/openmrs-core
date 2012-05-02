@@ -4,39 +4,36 @@
 		<div class="content">
 			<table cellpadding="9" align="center" cellspacing="5">
 		  		<tr>
-					<td colspan="3"><strong>Step 5 of 5</strong></td>
+					<td colspan="3"><strong>$l10n.get("install.advanced.implid")</strong></td>
 				</tr>
 				<tr>
-					<td colspan="3" class="question">Optional. Leave ID field blank to skip.</td>
+					<td colspan="3" class="question">$l10n.get("install.advanced.implid.skip")</td>
 				</tr>
 				<tr>
-					<td>Implementation Name</td>
-					<td><input type="text" name="implementation_name" value="${implementationIdName}" /></td>
-					<td>A descriptive name for this implementation (e.g. AMRS installation in Eldoret, Kenya)</td>
+					<td>$l10n.get("install.complete.impl.name")</td>
+					<td><input type="text" name="implementation_name" value="${implementationIdName}" onKeyPress="return submitenter(this,event);" /></td>
+					<td>$l10n.get("install.advanced.implid.name")</td>
 				</tr>
 				<tr>
-					<td>Implementation Id</td>
-					<td><input type="text" name="implementation_id" size="8" maxlength="20" value="${implementationId}" /></td>
-					<td>This is the unique id for this implementation. Used as the HL7_CODE. Must be limited to 20 characters and numbers. The characters "^" and "|" are not allowed.</td>
+					<td>$l10n.get("install.complete.impl.id")</td>
+					<td><input type="text" name="implementation_id" size="8" maxlength="20" value="${implementationId}" onKeyPress="return submitenter(this,event);" /></td>
+					<td>$l10n.get("install.advanced.implid.id")</td>
 				</tr>
 				<tr>
-					<td>Pass Phrase</td>
-					<td><input type="text" name="pass_phrase" value="${implementationIdPassPhrase}"/></td>
-					<td>This text is a long text string that is used to validate who uses your implementation id. 
-						Multiple installations of openmrs can use the same implmentation id, but they must all know the passphrase. 
-			   			(Note that if an implementation id is shared, it is assumed that those installations are the same implementation).</td>
+					<td>$l10n.get("install.complete.impl.pass")</td>
+					<td><input type="text" name="pass_phrase" value="${implementationIdPassPhrase}" onKeyPress="return submitenter(this,event);" /></td>
+					<td>$l10n.get("install.advanced.implid.passphrase")</td>
 				</tr>
 				<tr>
-					<td>Description</td>
+					<td>$l10n.get("install.complete.impl.desc")</td>
 					<td><textarea cols="43" rows="3" name="description">${implementationIdDescription}</textarea></td>
-					<td>Text describing this implementation. (e.g. Source for the AMPATH program in Kenya. Created by Paul Biondich)</td>
+					<td>$l10n.get("install.advanced.implid.desc")</td>
 				</tr>
 				<tr>
-					<td colspan= "3">
-						<input type="submit" style="display: none"/> <!-- the first submit button that will be used when the user pushed the "enter" key in the form -->
-                        <input class="button" name="back" type="submit" value="Back"/> &nbsp; &nbsp;
-						<input class="button" type="submit" value="Continue"/>
-			 		</td>
+					<td colspan="2" align="center">
+						<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+						<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
+					</td>
 				</tr>
 		</table>
 		</div>

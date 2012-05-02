@@ -88,7 +88,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 			lockedOut = true;
 			
 			Date lockedOutTime = lockoutDateByIP.get(ipAddress);
-			if (lockedOutTime != null && new Date().getTime() - lockedOutTime.getTime() > 300000) {
+			if (lockedOutTime != null && System.currentTimeMillis() - lockedOutTime.getTime() > 300000) {
 				lockedOut = false;
 				forgotPasswordAttempts = 0;
 				lockoutDateByIP.put(ipAddress, null);

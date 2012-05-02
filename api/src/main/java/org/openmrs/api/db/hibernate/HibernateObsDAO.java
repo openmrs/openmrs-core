@@ -159,14 +159,14 @@ public class HibernateObsDAO implements ObsDAO {
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
 	 *      java.util.Date, java.util.Date, boolean)
 	 */
-	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs)
 	        throws DAOException {
 		Criteria criteria = createGetObservationsCriteria(whom, encounters, questions, answers, personTypes, locations,
 		    null, null, obsGroupId, fromDate, toDate, valueCodedNameAnswers, includeVoidedObs);
 		criteria.setProjection(Projections.rowCount());
-		return (Integer) criteria.list().get(0);
+		return (Long) criteria.list().get(0);
 	}
 	
 	/**

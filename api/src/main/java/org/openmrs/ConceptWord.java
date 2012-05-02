@@ -109,43 +109,6 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof ConceptWord) {
-			ConceptWord c = (ConceptWord) obj;
-			boolean matches = true;
-			if (getConcept() != null && c.getConcept() != null)
-				matches = matches && concept.equals(c.getConcept());
-			if (getWord() != null && c.getWord() != null)
-				matches = matches && word.equalsIgnoreCase(c.getWord());
-			if (getLocale() != null && c.getLocale() != null)
-				matches = matches && locale.equals(c.getLocale());
-			if (getConceptName() != null && c.getConceptName() != null)
-				matches = matches && conceptName.equals(c.getConceptName());
-			return (matches);
-		}
-		return false;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		int hash = 3;
-		if (concept != null)
-			hash = 37 * hash + this.getConcept().hashCode();
-		if (word != null)
-			hash = 37 * hash + this.getWord().toLowerCase().hashCode(); // ABKTODO: MySQL searches are case insensitive 
-		if (locale != null)
-			hash = 37 * hash + this.getLocale().hashCode();
-		if (conceptName != null)
-			hash = 37 * hash + this.getConceptName().hashCode();
-		
-		return hash;
-	}
-	
-	/**
 	 * @return Returns the locale.
 	 */
 	public Locale getLocale() {
@@ -284,7 +247,6 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	 * @since 1.8
 	 */
 	public static List<String> getUniqueWords(String phrase, Locale locale) {
-		
 		String[] parts = splitPhrase(phrase);
 		List<String> uniqueParts = new Vector<String>();
 		

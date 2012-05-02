@@ -63,13 +63,13 @@ public class PersonAttributeTypeListControllerTest extends BaseWebContextSensiti
 	public void moveDown_shouldMoveSelectedIdsDownInTheList() throws Exception {
 		// sanity check
 		List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
-		Assert.assertEquals(new PersonAttributeType(1), allTypes.get(0));
+		Assert.assertEquals(1, allTypes.get(0).getId().intValue());
 		
 		// the test
 		Integer[] ids = new Integer[] { 1 };
 		new PersonAttributeTypeListController().moveDown(ids, new MockHttpSession());
 		allTypes = Context.getPersonService().getAllPersonAttributeTypes();
-		Assert.assertEquals("The types didn't move correctly", new PersonAttributeType(8), allTypes.get(0));
+		Assert.assertEquals("The types didn't move correctly", 8, allTypes.get(0).getId().intValue());
 	}
 	
 	/**
@@ -80,13 +80,13 @@ public class PersonAttributeTypeListControllerTest extends BaseWebContextSensiti
 	public void moveDown_shouldNotFailIfGivenLastId() throws Exception {
 		// sanity check
 		List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
-		Assert.assertEquals(new PersonAttributeType(2), allTypes.get(allTypes.size() - 1));
+		Assert.assertEquals(2, allTypes.get(allTypes.size() - 1).getId().intValue());
 		
 		// the test
 		Integer[] ids = new Integer[] { 2 };
 		new PersonAttributeTypeListController().moveDown(ids, new MockHttpSession());
 		allTypes = Context.getPersonService().getAllPersonAttributeTypes();
-		Assert.assertEquals(new PersonAttributeType(2), allTypes.get(allTypes.size() - 1));
+		Assert.assertEquals(2, allTypes.get(allTypes.size() - 1).getId().intValue());
 	}
 	
 	/**
@@ -105,17 +105,16 @@ public class PersonAttributeTypeListControllerTest extends BaseWebContextSensiti
 	@Test
 	@Verifies(value = "should move selected ids up one in the list", method = "moveUp(null,HttpSession)")
 	public void moveUp_shouldMoveSelectedIdsUpOneInTheList() throws Exception {
-		Integer ID_TO_MOVE = 8;
 		
 		// sanity check
 		List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
-		Assert.assertEquals(new PersonAttributeType(ID_TO_MOVE), allTypes.get(1));
+		Assert.assertEquals(8, allTypes.get(1).getId().intValue());
 		
 		// the test
-		Integer[] ids = new Integer[] { ID_TO_MOVE };
+		Integer[] ids = new Integer[] { 8 };
 		new PersonAttributeTypeListController().moveUp(ids, new MockHttpSession());
 		allTypes = Context.getPersonService().getAllPersonAttributeTypes();
-		Assert.assertEquals("The types didn't move correctly", new PersonAttributeType(ID_TO_MOVE), allTypes.get(0));
+		Assert.assertEquals("The types didn't move correctly", 8, allTypes.get(0).getId().intValue());
 	}
 	
 	/**
@@ -126,7 +125,7 @@ public class PersonAttributeTypeListControllerTest extends BaseWebContextSensiti
 	public void moveUp_shouldNotFailIfGivenFirstId() throws Exception {
 		// sanity check
 		List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
-		Assert.assertEquals(new PersonAttributeType(1), allTypes.get(0));
+		Assert.assertEquals(1, allTypes.get(0).getId().intValue());
 		
 		// the test
 		new PersonAttributeTypeListController().moveUp(new Integer[] { 1 }, new MockHttpSession());

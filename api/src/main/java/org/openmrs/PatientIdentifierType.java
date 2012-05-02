@@ -16,12 +16,13 @@ package org.openmrs;
 /**
  * PatientIdentifierType
  */
-public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.io.Serializable, Comparable<PatientIdentifierType> {
 	
 	public static final long serialVersionUID = 211231L;
 	
 	/**
-	 * Enumerates the possible ways that location may be applicable for a particular Patient Identifer Type
+	 * Enumerates the possible ways that location may be applicable for a particular Patient
+	 * Identifer Type
 	 */
 	public enum LocationBehavior {
 		/**
@@ -31,7 +32,29 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 		/**
 		 * Indicates that location is not used for the current identifier type
 		 */
-		NOT_USED;
+		NOT_USED
+	}
+	
+	/**
+	 * Enumeration for the way to handle uniqueness among identifiers for a given identifier type
+	 */
+	public enum UniquenessBehavior {
+		
+		/**
+		 * Indicates that identifiers should be globally unique
+		 */
+		UNIQUE,
+
+		/**
+		 * Indicates that duplicates identifiers are allowed
+		 */
+		NON_UNIQUE,
+
+		/**
+		 * Indicates that identifiers should be unique only across a location if the identifier's
+		 * location property is not null
+		 */
+		LOCATION
 	}
 	
 	// Fields	
@@ -49,6 +72,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	
 	private LocationBehavior locationBehavior;
 	
+	private UniquenessBehavior uniquenessBehavior;
+	
 	/** default constructor */
 	public PatientIdentifierType() {
 	}
@@ -56,27 +81,6 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	/** constructor with id */
 	public PatientIdentifierType(Integer patientIdentifierTypeId) {
 		this.patientIdentifierTypeId = patientIdentifierTypeId;
-	}
-	
-	public int hashCode() {
-		if (this.getPatientIdentifierTypeId() == null)
-			return super.hashCode();
-		return this.getPatientIdentifierTypeId().hashCode();
-	}
-	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof PatientIdentifierType) {
-			PatientIdentifierType p = (PatientIdentifierType) obj;
-			if (getPatientIdentifierTypeId() != null && p != null)
-				return (patientIdentifierTypeId.equals(p.getPatientIdentifierTypeId()));
-		}
-		return this == obj;
 	}
 	
 	// Property accessors
@@ -121,6 +125,22 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	 */
 	public void setLocationBehavior(LocationBehavior locationBehavior) {
 		this.locationBehavior = locationBehavior;
+	}
+	
+	/**
+	 * @return the uniquenessBehavior
+	 * @since 1.10
+	 */
+	public UniquenessBehavior getUniquenessBehavior() {
+		return uniquenessBehavior;
+	}
+	
+	/**
+	 * @param uniquenessBehavior the uniquenessBehavior to set
+	 * @since 1.10
+	 */
+	public void setUniquenessBehavior(UniquenessBehavior uniquenessBehavior) {
+		this.uniquenessBehavior = uniquenessBehavior;
 	}
 	
 	/**
@@ -217,6 +237,33 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	public void setId(Integer id) {
 		setPatientIdentifierTypeId(id);
 		
+	}
+	
+	/**
+	 * @since 1.8 order for display in pulldown list so the default choice is first.
+	 */
+	@Override
+	public int compareTo(PatientIdentifierType o) {
+		
+		/* retired last */
+		if (!this.getRetired() && o.getRetired())
+			return -1;
+		
+		/* required first */
+		if (this.getRequired() && !o.getRequired())
+			return -1;
+		
+		if (!this.getRequired() && o.getRequired())
+			return 1;
+		
+		/* lex order, case insensitive */
+		int result = this.getName().compareToIgnoreCase(o.getName());
+		if (result != 0)
+			return result;
+		
+		/* id order, finally */
+		result = this.getPatientIdentifierTypeId().compareTo(o.getPatientIdentifierTypeId());
+		return result;
 	}
 	
 }

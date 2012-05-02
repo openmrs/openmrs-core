@@ -14,23 +14,33 @@
 package org.openmrs.attribute;
 
 import org.openmrs.BaseOpenmrsData;
-import org.openmrs.api.context.Context;
-import org.openmrs.attribute.handler.AttributeHandler;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.Customizable;
+import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.customdatatype.NotYetPersistedException;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Abstract base implementation of {@link Attribute}. Actual implementations should be able to extend this
  * class, and have very little of their own code.  
+ * @param <AT>
  * @param <OwningType>
  * @since 1.9
  */
-public abstract class BaseAttribute<OwningType extends Customizable<?>> extends BaseOpenmrsData implements Attribute<OwningType>, Comparable<Attribute<?>> {
+@SuppressWarnings("rawtypes")
+public abstract class BaseAttribute<AT extends AttributeType, OwningType extends Customizable<?>> extends BaseOpenmrsData implements Attribute<AT, OwningType>, Comparable<Attribute> {
 	
 	private OwningType owner;
 	
-	private AttributeType<OwningType> attributeType;
+	private AT attributeType;
 	
-	private String serializedValue;
+	// value pulled from the database
+	private String valueReference;
+	
+	// temporarily holds a typed value, either when getValue() is called the first time (causing valueReference to be converted) or when setValue has been called, but this attribute has not yet been committed to persistent storage
+	private transient Object value;
+	
+	private transient boolean dirty = false;
 	
 	/**
 	 * @see org.openmrs.attribute.Attribute#getOwner()
@@ -41,7 +51,7 @@ public abstract class BaseAttribute<OwningType extends Customizable<?>> extends 
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.Attribute#setOwner(org.openmrs.attribute.Customizable)
+	 * @see org.openmrs.attribute.Attribute#setOwner(org.openmrs.customdatatype.Customizable)
 	 */
 	public void setOwner(OwningType owner) {
 		this.owner = owner;
@@ -50,7 +60,7 @@ public abstract class BaseAttribute<OwningType extends Customizable<?>> extends 
 	/**
 	 * @param attributeType the attributeType to set
 	 */
-	public void setAttributeType(AttributeType<OwningType> attributeType) {
+	public void setAttributeType(AT attributeType) {
 		this.attributeType = attributeType;
 	}
 	
@@ -58,64 +68,75 @@ public abstract class BaseAttribute<OwningType extends Customizable<?>> extends 
 	 * @see org.openmrs.attribute.Attribute#getAttributeType()
 	 */
 	@Override
-	public AttributeType<OwningType> getAttributeType() {
+	public AT getAttributeType() {
 		return attributeType;
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.Attribute#getSerializedValue()
+	 * @see org.openmrs.customdatatype.SingleCustomValue#getDescriptor()
 	 */
 	@Override
-	public String getSerializedValue() {
-		return serializedValue;
+	public AT getDescriptor() {
+		return getAttributeType();
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.Attribute#setSerializedValue(java.lang.String)
+	 * @see org.openmrs.customdatatype.SingleCustomValue#getValueReference()
 	 */
 	@Override
-	public void setSerializedValue(String serializedValue) {
-		this.serializedValue = serializedValue;
+	public String getValueReference() {
+		if (valueReference == null)
+			throw new NotYetPersistedException();
+		else
+			return valueReference;
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.Attribute#getObjectValue()
+	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReferenceInternal(java.lang.String)
 	 */
 	@Override
-	public Object getObjectValue() throws InvalidAttributeValueException {
-		return getHandler().deserialize(serializedValue);
+	public void setValueReferenceInternal(String valueReference) throws InvalidCustomValueException {
+		this.valueReference = valueReference;
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.Attribute#setObjectValue(java.lang.Object)
+	 * @see org.openmrs.attribute.Attribute#getValue()
 	 */
 	@Override
-	public <S, T extends S> void setObjectValue(T typedValue) throws InvalidAttributeValueException {
-		@SuppressWarnings("unchecked")
-		AttributeHandler<S> handler = (AttributeHandler<S>) getHandler();
-		handler.validate(typedValue);
-		setSerializedValue(handler.serialize(typedValue));
+	public Object getValue() throws InvalidCustomValueException {
+		if (value == null)
+			value = CustomDatatypeUtil.getDatatype(getAttributeType()).fromReferenceString(getValueReference());
+		return value;
 	}
 	
 	/**
-	 * private convenience method to instantiate the handler defined by this class's attribute type
+	 * @see org.openmrs.attribute.Attribute#setValue(java.lang.Object)
 	 */
-	private AttributeHandler<?> getHandler() {
-		return Context.getAttributeService().getHandler(getAttributeType());
+	@Override
+	public <T> void setValue(T typedValue) throws InvalidCustomValueException {
+		dirty = true;
+		value = typedValue;
+	}
+	
+	/**
+	 * @return the dirty
+	 */
+	public boolean isDirty() {
+		return dirty;
 	}
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(Attribute<?> other) {
+	public int compareTo(Attribute other) {
 		if (other == null)
 			return -1;
 		int retValue = isVoided().compareTo(other.isVoided());
 		if (retValue == 0)
 			retValue = OpenmrsUtil.compareWithNullAsGreatest(getAttributeType().getId(), other.getAttributeType().getId());
 		if (retValue == 0)
-			retValue = OpenmrsUtil.compareWithNullAsGreatest(getSerializedValue(), other.getSerializedValue());
+			retValue = OpenmrsUtil.compareWithNullAsGreatest(getValueReference(), other.getValueReference());
 		if (retValue == 0)
 			retValue = OpenmrsUtil.compareWithNullAsGreatest(getId(), other.getId());
 		return retValue;

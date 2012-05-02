@@ -36,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders and DrugOrders Use:<br/>
  * 
+ * @deprecated Will be removed in version 1.10
+ * 
  * <pre>
  *   Order order = new Order();
  *   order.set___(___);
@@ -44,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
  * </pre>
  */
 @Transactional
+@Deprecated
 public interface OrderService extends OpenmrsService {
 	
 	public String DC_REASON_REVISE = "REVISE";
@@ -229,12 +232,12 @@ public interface OrderService extends OpenmrsService {
 	 * @param activatedBy the user activating the order.
 	 * @param activationDate the date to activate the order on
 	 * @return the activated order.
+	 * @should return list of drug orders with given status
 	 */
 	public Order activateOrder(Order order, User activatedBy, Date activationDate) throws APIException;
 	
 	/**
-	 * TO DO document how this converts filler to a String
-	 * Fills an order.
+	 * TO DO document how this converts filler to a String Fills an order.
 	 * 
 	 * @param order the order object.
 	 * @param filler the filling person.

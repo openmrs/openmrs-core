@@ -28,8 +28,10 @@ import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
+import org.openmrs.validator.ValidateUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.util.StringUtils;
@@ -104,7 +106,13 @@ public class PatientProgramFormController implements Controller {
 						pp.transitionToState(state, enrollmentDate);
 					}
 				}
-				Context.getProgramWorkflowService().savePatientProgram(pp);
+				try {
+					ValidateUtil.validate(pp);
+					Context.getProgramWorkflowService().savePatientProgram(pp);
+				}
+				catch (APIException e) {
+					request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+				}
 			}
 		}
 		return new ModelAndView(new RedirectView(returnPage));
@@ -128,7 +136,13 @@ public class PatientProgramFormController implements Controller {
 		
 		PatientProgram p = Context.getProgramWorkflowService().getPatientProgram(Integer.valueOf(patientProgramIdStr));
 		p.setDateCompleted(dateCompleted);
-		Context.getProgramWorkflowService().savePatientProgram(p);
+		try {
+			ValidateUtil.validate(p);
+			Context.getProgramWorkflowService().savePatientProgram(p);
+		}
+		catch (APIException e) {
+			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+		}
 		
 		return new ModelAndView(new RedirectView(returnPage));
 	}

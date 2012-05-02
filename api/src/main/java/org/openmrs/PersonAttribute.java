@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -102,36 +103,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
 		return target;
-	}
-	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 * @should return true if personAttributeIds match
-	 * @should return false if personAttributeIds do not match
-	 * @should match on object equality if a personAttributeId is null
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof PersonAttribute) {
-			PersonAttribute attr = (PersonAttribute) obj;
-			if (attr.getPersonAttributeId() != null && getPersonAttributeId() != null)
-				return attr.getPersonAttributeId().equals(getPersonAttributeId());
-			
-		}
-		return this == obj;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getPersonAttributeId() == null)
-			return super.hashCode();
-		int hash = 5;
-		hash += 29 * hash + this.getPersonAttributeId().hashCode();
-		return hash;
 	}
 	
 	/**
@@ -271,6 +242,10 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	@SuppressWarnings("unchecked")
 	public Object getHydratedObject() {
+		
+		if (getValue() == null)
+			return null;
+		
 		try {
 			Class c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
 			try {
@@ -288,6 +263,12 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 			}
 		}
 		catch (Throwable t) {
+			
+			// No need to warn if the input was blank
+			if (StringUtils.isBlank(getValue())) {
+				return null;
+			}
+			
 			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
 		}
 		

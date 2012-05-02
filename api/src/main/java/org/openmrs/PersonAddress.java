@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
@@ -95,23 +96,6 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	/**
-	 * Compares this address to the given object/address for similarity. Uses the very basic
-	 * comparison of just the PersonAddress.personAddressId
-	 * 
-	 * @param obj Object (Usually PersonAddress) with which to compare
-	 * @return boolean true/false whether or not they are the same objects
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof PersonAddress) {
-			PersonAddress p = (PersonAddress) obj;
-			if (this.getPersonAddressId() != null && p.getPersonAddressId() != null)
-				return (this.getPersonAddressId().equals(p.getPersonAddressId()));
-		}
-		return false;
-	}
-	
-	/**
 	 * Compares this PersonAddress object to the given otherAddress. This method differs from
 	 * {@link #equals(Object)} in that this method compares the inner fields of each address for
 	 * equality. Note: Null/empty fields on <code>otherAddress</code> /will not/ cause a false value
@@ -156,15 +140,6 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 		}
 		
 		return returnValue;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		if (this.getPersonAddressId() == null)
-			return super.hashCode();
-		return this.getPersonAddressId().hashCode();
 	}
 	
 	/**
@@ -405,13 +380,19 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * Convenience method to test whether any of the fields in this address are set
 	 * 
 	 * @return whether any of the address fields (address1, address2, cityVillage, stateProvince,
-	 *         country, countyDistrict, neighborhoodCell, postalCode, latitude, longitude) are
-	 *         non-null
+	 *         country, countyDistrict, neighborhoodCell, postalCode, latitude, longitude, etc) are
+	 *         whitespace, empty ("") or null.
 	 */
 	public boolean isBlank() {
-		return getAddress1() == null && getAddress2() == null && getCityVillage() == null && getStateProvince() == null
-		        && getCountry() == null && getCountyDistrict() == null && getAddress3() == null && getPostalCode() == null
-		        && getLatitude() == null && getLongitude() == null;
+		
+		return StringUtils.isBlank(getAddress1()) && StringUtils.isBlank(getAddress2())
+		        && StringUtils.isBlank(getAddress3()) && StringUtils.isBlank(getAddress4())
+		        && StringUtils.isBlank(getAddress5()) && StringUtils.isBlank(getAddress6())
+		        && StringUtils.isBlank(getCityVillage()) && StringUtils.isBlank(getStateProvince())
+		        && StringUtils.isBlank(getCountry()) && StringUtils.isBlank(getCountyDistrict())
+		        && StringUtils.isBlank(getPostalCode()) && StringUtils.isBlank(getLatitude())
+		        && StringUtils.isBlank(getLongitude());
+		
 	}
 	
 	/**

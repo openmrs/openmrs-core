@@ -15,16 +15,20 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -32,12 +36,13 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.User;
+import org.openmrs.Provider;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.EncounterService;
@@ -110,8 +115,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 *      java.util.Collection, boolean)
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
 	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
@@ -135,7 +141,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			crit.add(Expression.in("encounterType", encounterTypes));
 		}
 		if (providers != null && providers.size() > 0) {
-			crit.add(Expression.in("provider", providers));
+			crit.createAlias("encounterProviders", "ep");
+			crit.add(Expression.in("ep.provider", providers));
 		}
 		if (visitTypes != null && visitTypes.size() > 0) {
 			crit.createAlias("visit", "v");
@@ -226,16 +233,14 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterDAO#getEncounterByUuid(java.lang.String)
 	 */
 	public Encounter getEncounterByUuid(String uuid) {
-		return (Encounter) sessionFactory.getCurrentSession().createQuery("from Encounter e where e.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
+		return getClassByUuid(Encounter.class, uuid);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getEncounterTypeByUuid(java.lang.String)
 	 */
 	public EncounterType getEncounterTypeByUuid(String uuid) {
-		return (EncounterType) sessionFactory.getCurrentSession().createQuery("from EncounterType et where et.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
+		return getClassByUuid(EncounterType.class, uuid);
 	}
 	
 	/**
@@ -243,7 +248,11 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided) {
-		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided);
+		if (StringUtils.isBlank(query)) {
+			return Collections.emptyList();
+		}
+		
+		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, true);
 		
 		if (start != null)
 			criteria.setFirstResult(start);
@@ -315,11 +324,11 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterDAO#getCountOfEncounters(java.lang.String, boolean)
 	 */
 	@Override
-	public Integer getCountOfEncounters(String query, boolean includeVoided) {
-		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided);
+	public Long getCountOfEncounters(String query, boolean includeVoided) {
+		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, false);
 		
 		criteria.setProjection(Projections.countDistinct("enc.encounterId"));
-		return (Integer) criteria.uniqueResult();
+		return (Long) criteria.uniqueResult();
 	}
 	
 	/**
@@ -328,9 +337,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * 
 	 * @param query patient name or identifier
 	 * @param includeVoided Specifies whether voided encounters should be included
-	 * @return
+	 * @param orderByNames specifies whether the encounters should be ordered by person names
+	 * @return Criteria
 	 */
-	private Criteria createEncounterByQueryCriteria(String query, boolean includeVoided) {
+	private Criteria createEncounterByQueryCriteria(String query, boolean includeVoided, boolean orderByNames) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class, "enc");
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("voided", false));
@@ -345,20 +355,208 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			name = query;
 		}
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-		    new ArrayList<PatientIdentifierType>(), false, true);
+		    new ArrayList<PatientIdentifierType>(), false, orderByNames);
 		return criteria;
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO##getEncountersByVisit(Visit)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByVisit(Visit)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Encounter> getEncountersByVisit(Visit visit) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createAlias("visit", "visit")
-		        .add(Expression.eq("visit", visit)).add(Expression.eq("voided", false)).addOrder(
-		            Order.asc("encounterDatetime"));
+	public List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class)
+		        .add(Expression.eq("visit", visit));
+		if (!includeVoided) {
+			crit.add(Expression.eq("voided", false));
+		}
+		crit.addOrder(Order.asc("encounterDatetime"));
 		
 		return crit.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterDAO#saveEncounterRole(EncounterRole encounterRole)
+	 */
+	@Override
+	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(encounterRole);
+		return encounterRole;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterDAO#deleteEncounterRole(org.openmrs.EncounterRole)
+	 */
+	@Override
+	public void deleteEncounterRole(EncounterRole encounterRole) throws DAOException {
+		sessionFactory.getCurrentSession().delete(encounterRole);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounterRole(Integer)
+	 */
+	@Override
+	public EncounterRole getEncounterRole(Integer encounterRoleId) throws DAOException {
+		return (EncounterRole) sessionFactory.getCurrentSession().get(EncounterRole.class, encounterRoleId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounterRoleByUuid(String)
+	 */
+	@Override
+	public EncounterRole getEncounterRoleByUuid(String uuid) {
+		return getClassByUuid(EncounterRole.class, uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterDAO#getAllEncounterRoles(boolean)
+	 */
+	@Override
+	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EncounterRole.class);
+		return includeRetired ? criteria.list() : criteria.add(Restrictions.eq("retired", includeRetired)).list();
+	}
+	
+	/**
+	 * Convenience method since this DAO fetches several different domain objects by uuid
+	 * 
+	 * @param uuid uuid to fetch
+	 * @param table a simple classname (e.g. "Encounter")
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> T getClassByUuid(Class<T> clazz, String uuid) {
+		return (T) sessionFactory.getCurrentSession().createCriteria(clazz).add(Restrictions.eq("uuid", uuid))
+		        .uniqueResult();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws DAOException {
+		return sessionFactory.getCurrentSession().createCriteria(Encounter.class).add(Restrictions.eq("patient", patient))
+		        .add(Restrictions.isNull("visit")).add(Restrictions.eq("voided", false)).addOrder(
+		            Order.desc("encounterDatetime")).setMaxResults(100).list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByVisitsAndPatient(org.openmrs.Patient,
+	 *      boolean, java.lang.String, java.lang.Integer, java.lang.Integer)
+	 */
+	@Override
+	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
+	        Integer start, Integer length) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+		addEncountersByPatientCriteria(criteria, patient, includeVoided, query);
+		
+		@SuppressWarnings("unchecked")
+		List<Encounter> encounters = criteria.list();
+		
+		criteria = sessionFactory.getCurrentSession().createCriteria(Visit.class);
+		addEmptyVisitsByPatientCriteria(criteria, patient, includeVoided, query);
+		
+		@SuppressWarnings("unchecked")
+		List<Visit> emptyVisits = criteria.list();
+		
+		if (!emptyVisits.isEmpty()) {
+			for (Visit emptyVisit : emptyVisits) {
+				Encounter mockEncounter = new Encounter();
+				mockEncounter.setVisit(emptyVisit);
+				encounters.add(mockEncounter);
+			}
+			
+			Collections.sort(encounters, new Comparator<Encounter>() {
+				
+				@Override
+				public int compare(Encounter o1, Encounter o2) {
+					Date o1Date = (o1.getVisit() != null) ? o1.getVisit().getStartDatetime() : o1.getEncounterDatetime();
+					Date o2Date = (o2.getVisit() != null) ? o2.getVisit().getStartDatetime() : o2.getEncounterDatetime();
+					return o2Date.compareTo(o1Date);
+				}
+			});
+		}
+		
+		if (start == null) {
+			start = 0;
+		}
+		if (length == null) {
+			length = encounters.size();
+		}
+		int end = start + length;
+		if (end > encounters.size()) {
+			end = encounters.size();
+		}
+		
+		return encounters.subList(start, end);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByVisitsAndPatientCount(org.openmrs.Patient,
+	 *      boolean, java.lang.String)
+	 */
+	@Override
+	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Visit.class);
+		addEmptyVisitsByPatientCriteria(criteria, patient, includeVoided, query);
+		
+		criteria.setProjection(Projections.rowCount());
+		Integer count = ((Number) criteria.uniqueResult()).intValue();
+		
+		criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+		addEncountersByPatientCriteria(criteria, patient, includeVoided, query);
+		
+		criteria.setProjection(Projections.rowCount());
+		count = count + ((Number) criteria.uniqueResult()).intValue();
+		
+		return count;
+	}
+	
+	private void addEmptyVisitsByPatientCriteria(Criteria criteria, Patient patient, boolean includeVoided, String query) {
+		criteria.add(Restrictions.eq("patient", patient));
+		criteria.add(Restrictions.isEmpty("encounters"));
+		
+		if (!includeVoided) {
+			criteria.add(Restrictions.eq("voided", includeVoided));
+		}
+		
+		if (query != null && !StringUtils.isBlank(query)) {
+			criteria.createAlias("visitType", "visitType", Criteria.LEFT_JOIN);
+			criteria.createAlias("location", "location", Criteria.LEFT_JOIN);
+			
+			Disjunction or = Restrictions.disjunction();
+			criteria.add(or);
+			or.add(Restrictions.ilike("visitType.name", query, MatchMode.ANYWHERE));
+			or.add(Restrictions.ilike("location.name", query, MatchMode.ANYWHERE));
+		}
+		
+		criteria.addOrder(Order.desc("startDatetime"));
+		criteria.addOrder(Order.desc("visitId"));
+	}
+	
+	private void addEncountersByPatientCriteria(Criteria criteria, Patient patient, boolean includeVoided, String query) {
+		criteria.add(Restrictions.eq("patient", patient));
+		criteria.createAlias("visit", "visit", Criteria.LEFT_JOIN);
+		
+		if (!includeVoided) {
+			criteria.add(Restrictions.eq("voided", includeVoided));
+		}
+		
+		if (query != null && !StringUtils.isBlank(query)) {
+			criteria.createAlias("visit.visitType", "visitType", Criteria.LEFT_JOIN);
+			criteria.createAlias("visit.location", "visitLocation", Criteria.LEFT_JOIN);
+			criteria.createAlias("location", "location", Criteria.LEFT_JOIN);
+			criteria.createAlias("encounterType", "encounterType", Criteria.LEFT_JOIN);
+			
+			Disjunction or = Restrictions.disjunction();
+			criteria.add(or);
+			or.add(Restrictions.ilike("visitType.name", query, MatchMode.ANYWHERE));
+			or.add(Restrictions.ilike("visitLocation.name", query, MatchMode.ANYWHERE));
+			or.add(Restrictions.ilike("location.name", query, MatchMode.ANYWHERE));
+			or.add(Restrictions.ilike("encounterType.name", query, MatchMode.ANYWHERE));
+		}
+		
+		criteria.addOrder(Order.desc("visit.startDatetime"));
+		criteria.addOrder(Order.desc("visit.visitId"));
+		criteria.addOrder(Order.desc("encounterDatetime"));
+		criteria.addOrder(Order.desc("encounterId"));
 	}
 }

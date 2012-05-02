@@ -89,6 +89,22 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see Daemon#executeScheduledTask(Task)
+	 * @verifies daemon user should have an associated person.
+	 */
+	@Test
+	public void daemonUser_shouldHaveAssociatedPerson() throws Throwable {
+		try {
+			TestTask task = new TestTask();
+			new PrivateSchedulerTask(task).runTask();
+			Assert.assertTrue(true);
+		}
+		catch (NullPointerException e) {
+			Assert.fail("Daemon user should have an associated person");
+		}
+	}
+	
+	/**
 	 * A TimerSchedulerTask that can call the daemon thread
 	 * 
 	 * @see DaemonTest#executeScheduledTask_shouldNotThrowErrorIfCalledFromATimerSchedulerTaskClass()
@@ -110,6 +126,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		public boolean runTheTest() throws Throwable {
 			Daemon.executeScheduledTask(this.task);
 			return ((PrivateTask) task).wasRun;
+		}
+		
+		public void runTask() throws Throwable {
+			Daemon.executeScheduledTask(this.task);
 		}
 	}
 	
@@ -149,4 +169,13 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		}
 	}
 	
+	/**
+	 * A task for testing to ensure that a daemon user always has an associated person.
+	 */
+	private class TestTask extends AbstractTask {
+		
+		public void execute() {
+			Context.getAuthenticatedUser().getPersonName().toString();
+		}
+	}
 }

@@ -3,85 +3,102 @@
 		<input type="hidden" name="page" value="wizardcomplete.vm" /> 
 		<div class="content">
 		<!-- TODO list off all collected properties here -->
-            <table cellpadding="9" align="center" cellspacing="5" >
-                <tr>
-                    <td colspan="2"><strong>Review</strong></td>
+		 	<table cellpadding="9" align="center" cellspacing="5" >
+            	<tr>
+                    <td colspan="2"><h3>$l10n.get("install.complete.review")</h3></td>
                 </tr>
                 <tr>
-                    <td colspan="2">All required input has been collected and is ready to be processed.
-                    <br />Click the "finish" button to create tables, data, etc.
-                    <br/>This could take up to several minutes.  When complete you will be taken to the OpenMRS main screen.
+                    <td colspan="2">$l10n.get("install.complete.info")
                     </td>
                 </tr>
-
                 <tr>
-                    <td colspan="2" class="question">Database</td>
+                    <td colspan="2" class="question">$l10n.get("install.complete.db")</td>
                 </tr>
                 <tr>
-                    <td>Database connection (@DBNAME@ will be replaced by the database name.)</td>
+                    <th class="label">$l10n.get("install.complete.db.connection")</th>
                     <td>${databaseConnection}</td>
                 </tr>
                 <tr>
-                    <td>Database name</td>
+                    <th class="label">$l10n.get("install.db.name")</th>
                     <td>${databaseName}</td>
                 </tr>
+                #if($installMethod != $INSTALL_METHOD_TESTING)
                 <tr>
-                    <td>Create database</td>
-                    <td>#if( $hasCurrentOpenmrsDatabase == false ) Yes #else No #end</td>
+                    <th class="label">$l10n.get("install.complete.db.create")</th>
+                    <td>#if( $hasCurrentOpenmrsDatabase == false ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
                 </tr>
                 <tr>
-                    <td>Create database user account</td>
-                    <td>#if( $createDatabaseUser == true ) Yes #else No #end</td>
+                    <th class="label">$l10n.get("install.complete.db.userAccount")</th>
+                    <td>#if( $createDatabaseUser == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
                 </tr>
                 <tr>
-                    <td>Create tables</td>
-                    <td>#if( $createTables == true ) Yes #else No #end</td>
+                    <th class="label">$l10n.get("install.complete.db.tables")</th>
+                    <td>#if( $createTables == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
                 </tr>
                 <tr>
-                    <td>Add demo data</td>
-                    <td>#if( $addDemoData == true ) Yes #else No #end</td>
+                    <th class="label">$l10n.get("install.complete.db.demo")</th>
+                    <td>#if( $addDemoData == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
                 </tr>
 
                 <tr>
-                    <td colspan="2" class="question">Implementation information</td>
+                    <td colspan="2" class="question">$l10n.get("install.complete.impl")</td>
                 </tr>
                 <tr>
-                    <td>Implementation name</td>
+                    <th class="label">$l10n.get("install.complete.impl.name")</th>
                     <td>${implementationIdName}</td>
                 </tr>
                 <tr>
-                    <td>Implementation ID</td>
+                    <th class="label">$l10n.get("install.complete.impl.id")</th>
                     <td>${implementationId}</td>
                 </tr>
                 <tr>
-                    <td>Implementation pass phrase</td>
+                    <th class="label">$l10n.get("install.complete.impl.pass")</th>
                     <td>${implementationIdPassPhrase}</td>
                 </tr>
                 <tr>
-                    <td>Implementation description</td>
+                    <th class="label">$l10n.get("install.complete.impl.desc")</th>
                     <td>${implementationIdDescription}</td>
                 </tr>
-
                 <tr>
-                    <td colspan="2" class="question">Runtime properties</td>
+                    <td colspan="2" class="question">$l10n.get("install.complete.rp")</td>
                 </tr>
                 <tr>
-                    <td>Enable uploading modules from the web interface</td>
-                    <td>#if( $moduleWebAdmin == true ) Yes #else No #end</td>
+                    <th class="label">$l10n.get("install.complete.rp.mod")</th>
+                    <td>#if( $moduleWebAdmin == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
                 </tr>
                 <tr>
-                    <td>Update the database automatically on start up when a new release is deployed</td>
-                    <td>#if( $autoUpdateDatabase == true ) Yes #else No #end</td>
-                </tr>                <tr>
-                    <td>Runtime properties file path</td>
+                    <th class="label">$l10n.get("install.complete.rp.up")</th>
+                    <td>#if( $autoUpdateDatabase == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
+                </tr>
+                #end
+                #if($localeToSave)
+                <tr>
+                    <th class="label">$l10n.get("LocalesAndThemes.locale")</th>
+                    <td>${localeToSave}</td>
+                </tr>
+                #end
+                <tr>
+                    <th class="label">$l10n.get("install.complete.rp.path")</th>
                     <td>${runtimePropertiesPath}</td>
                 </tr>
-
+                #if($installMethod == $INSTALL_METHOD_TESTING)
                 <tr>
-                    <td colspan= "2">
-                        <input class="button" name="back" type="submit" value="Back"/>&nbsp; &nbsp;
-                        <input class="button" id="start" type="submit" value="Finish"/>
-                    </td>
+                    <td colspan="2" class="question">$l10n.get("install.complete.settings")</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.testing.remoteUrl")</th>
+                    <td>${remoteUrl}</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.testing.remote.username")</th>
+                    <td>${remoteUsername}</td>
+                </tr>
+                #end
+                <tr>
+                	<td colspan="2" align="center">
+						<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+						<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
+					</td>
                 </tr>
             </table>
         </div>

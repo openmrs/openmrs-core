@@ -13,7 +13,6 @@
  */
 package org.openmrs;
 
-import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 
 /**
@@ -59,8 +58,9 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 	
 	/**
-	 * Optional constructor for turning a Concept into a ConceptNumeric Note: This cannot copy over
-	 * numeric specific values
+	 * Optional constructor for turning a Concept into a ConceptNumeric <br/>
+	 * <br/>
+	 * Note: This cannot copy over numeric specific values
 	 * 
 	 * @param c
 	 */
@@ -80,6 +80,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		this.setConceptMappings(c.getConceptMappings());
 		this.setRetired(c.isRetired());
 		this.setVersion(c.getVersion());
+		this.setUuid(c.getUuid());
 		
 		this.hiAbsolute = null;
 		this.hiCritical = null;
@@ -89,38 +90,6 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		this.lowNormal = null;
 		this.units = "";
 		this.precise = false;
-	}
-	
-	/**
-	 * @see org.openmrs.Concept#equals(java.lang.Object)
-	 * @should not return true if obj is concept
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
-		
-		// now do the standard equals comparison
-		if (obj instanceof ConceptNumeric) {
-			ConceptNumeric c = (ConceptNumeric) obj;
-			return OpenmrsUtil.nullSafeEquals(this.getConceptId(), c.getConceptId());
-		} else if (obj instanceof Concept) {
-			// use the reverse .equals in case we have hibernate proxies - #1511
-			return OpenmrsUtil.nullSafeEquals(((Concept) obj).getConceptId(), this.getConceptId());
-		}
-		return obj == this;
-	}
-	
-	/**
-	 * @see org.openmrs.Concept#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (getConceptId() == null)
-			return super.hashCode();
-		int hash = 6;
-		hash = hash + getConceptId().hashCode() * 31;
-		return hash;
 	}
 	
 	// Property accessors

@@ -28,10 +28,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.AttributeService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DataSetService;
+import org.openmrs.api.DatatypeService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
@@ -42,6 +42,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
@@ -140,7 +141,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 * Null out the current instance of the ServiceContext. This should be used when modules are
 	 * refreshing (being added/removed) and/or openmrs is shutting down
 	 */
-	@SuppressWarnings("unchecked")
 	public static void destroyInstance() {
 		if (instance != null && instance.services != null) {
 			if (log.isDebugEnabled()) {
@@ -169,6 +169,9 @@ public class ServiceContext implements ApplicationContextAware {
 				instance.addedAdvice = null;
 			}
 		}
+		
+		if (instance != null)
+			instance.applicationContext = null;
 		
 		if (log.isDebugEnabled())
 			log.debug("Destroying ServiceContext instance: " + instance);
@@ -262,14 +265,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public AdministrationService getAdministrationService() {
 		return getService(AdministrationService.class);
-	}
-	
-	/**
-	 * @return attribute-related services
-	 * @since 1.9
-	 */
-	public AttributeService getAttributeService() {
-		return getService(AttributeService.class);
 	}
 	
 	/**
@@ -380,14 +375,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setAdministrationService(AdministrationService administrationService) {
 		setService(AdministrationService.class, administrationService);
-	}
-	
-	/**
-	 * @param attributeService the attributeService to set
-	 * @since 1.9
-	 */
-	public void setAttributeService(AttributeService attributeService) {
-		setService(AttributeService.class, attributeService);
 	}
 	
 	/**
@@ -902,7 +889,8 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	public <T> List<T> getRegisteredComponents(Class<T> type) {
 		Map<String, T> m = getRegisteredComponents(applicationContext, type);
-		log.debug("getRegisteredComponents(" + type + ") = " + m);
+		if (log.isTraceEnabled())
+			log.trace("getRegisteredComponents(" + type + ") = " + m);
 		return new ArrayList<T>(m.values());
 	}
 	
@@ -918,7 +906,8 @@ public class ServiceContext implements ApplicationContextAware {
 	private <T> Map<String, T> getRegisteredComponents(ApplicationContext context, Class<T> type) {
 		Map<String, T> components = new HashMap<String, T>();
 		Map registeredComponents = context.getBeansOfType(type);
-		log.debug("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
+		if (log.isTraceEnabled())
+			log.trace("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
 		if (registeredComponents != null) {
 			components.putAll(registeredComponents);
 		}
@@ -1003,4 +992,47 @@ public class ServiceContext implements ApplicationContextAware {
 	public void setVisitService(VisitService visitService) {
 		setService(VisitService.class, visitService);
 	}
+	
+	/**
+	 * Gets the provider service.
+	 * 
+	 * @return provider service.
+	 * @since 1.9
+	 **/
+	
+	public ProviderService getProviderService() {
+		return getService(ProviderService.class);
+	}
+	
+	/**
+	 * Sets the provider service.
+	 * 
+	 * @param providerService the providerService to set
+	 * @since 1.9
+	 **/
+	public void setProviderService(ProviderService providerService) {
+		setService(ProviderService.class, providerService);
+	}
+	
+	/**
+	 * Gets the datatype service
+	 * 
+	 * @return custom datatype service
+	 * @since 1.9
+	 */
+	public DatatypeService getDatatypeService() {
+		return getService(DatatypeService.class);
+	}
+	
+	/**
+	 * Sets the datatype service
+	 * 
+	 * @param datatypeService the datatypeService to set
+	 * @since 1.9
+	 * 
+	 */
+	public void setDatatypeService(DatatypeService datatypeService) {
+		setService(DatatypeService.class, datatypeService);
+	}
+	
 }

@@ -50,6 +50,7 @@ import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.hl7.HL7InQueue;
+import org.openmrs.hl7.HL7QueueItem;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.hl7.HL7Source;
 import org.openmrs.hl7.HL7Util;
@@ -58,6 +59,7 @@ import org.openmrs.hl7.Hl7InArchivesMigrateThread.Status;
 import org.openmrs.hl7.db.HL7DAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 
 import ca.uhn.hl7v2.HL7Exception;
@@ -323,6 +325,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		return dao.getHL7InQueue(hl7InQueueId);
 	}
 	
+	@Override
+	public HL7InQueue getHL7InQueueByUuid(String uuid) throws APIException {
+		return dao.getHL7InQueueByUuid(uuid);
+	}
+	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InQueues()
 	 * @deprecated
@@ -475,6 +482,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		return dao.getHL7InError(hl7InErrorId);
 	}
 	
+	@Override
+	public HL7InError getHL7InErrorByUuid(String uuid) throws APIException {
+		return dao.getHL7InErrorByUuid(uuid);
+	}
+	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InErrors()
 	 * @deprecated
@@ -600,13 +612,13 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		// location.location_id
 		String pointOfCare = pl.getPointOfCare().getValue();
 		String facility = pl.getFacility().getUniversalID().getValue();
-		
 		// HACK: try to treat the first component (which should be "Point of
 		// Care" as an internal openmrs location_id
 		try {
 			Integer locationId = new Integer(pointOfCare);
 			Location l = Context.getLocationService().getLocation(locationId);
-			return l == null ? null : l.getLocationId();
+			if (l != null)
+				return l.getLocationId();
 		}
 		catch (Exception ex) {
 			if (facility == null) { // we have no tricks left up our sleeve, so
@@ -852,7 +864,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		}
 		Context.getHL7Service().saveHL7InError(hl7InError);
 		Context.getHL7Service().purgeHL7InQueue(hl7InQueue);
-		log.error(error, cause);
+		log.info(error, cause);
 	}
 	
 	/**
@@ -1000,6 +1012,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			}
 		}
 		if (!goodIdentifiers.isEmpty()) {
+			//If we have one identifier, set it as the preferred to make the validator happy.
+			if (goodIdentifiers.size() == 1) {
+				goodIdentifiers.get(0).setPreferred(true);
+			}
+			
 			// cast the person as a Patient and add identifiers
 			person = new Patient(person);
 			((Patient) person).addIdentifiers(goodIdentifiers);
@@ -1226,6 +1243,26 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			if (writer != null)
 				writer.close();
 		}
+	}
+	
+	@Override
+	public HL7QueueItem getHl7QueueItemByUuid(String uuid) throws APIException {
+		HL7QueueItem result = getHL7InQueueByUuid(uuid);
+		if (result != null) {
+			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_QUEUE);
+			return result;
+		}
+		result = getHL7InErrorByUuid(uuid);
+		if (result != null) {
+			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_EXCEPTION);
+			return result;
+		}
+		result = getHL7InArchiveByUuid(uuid);
+		if (result != null) {
+			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_ARCHIVE);
+			return result;
+		}
+		return null;
 	}
 	
 }

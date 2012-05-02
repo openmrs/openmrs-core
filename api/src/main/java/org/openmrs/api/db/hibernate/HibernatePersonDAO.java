@@ -39,6 +39,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PersonDAO;
+import org.openmrs.person.PersonMergeLog;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -615,11 +616,76 @@ public class HibernatePersonDAO implements PersonDAO {
 		        .setString("uuid", uuid).uniqueResult();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#savePersonMergeLog(PersonMergeLog)
+	 */
+	@Override
+	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(personMergeLog);
+		return personMergeLog;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getPersonMergeLog(java.lang.Integer)
+	 */
+	@Override
+	public PersonMergeLog getPersonMergeLog(Integer id) throws DAOException {
+		return (PersonMergeLog) sessionFactory.getCurrentSession().get(PersonMergeLog.class, id);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getPersonMergeLogByUuid(String)
+	 */
+	@Override
+	public PersonMergeLog getPersonMergeLogByUuid(String uuid) throws DAOException {
+		return (PersonMergeLog) sessionFactory.getCurrentSession().createQuery("from PersonMergeLog p where p.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getWinningPersonMergeLogs(org.openmrs.Person)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<PersonMergeLog> getWinningPersonMergeLogs(Person person) throws DAOException {
+		return (List<PersonMergeLog>) sessionFactory.getCurrentSession().createQuery(
+		    "from PersonMergeLog p where p.winner.id = :winnerId").setInteger("winnerId", person.getId()).list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getLosingPersonMergeLogs(org.openmrs.Person)
+	 */
+	@Override
+	public PersonMergeLog getLosingPersonMergeLogs(Person person) throws DAOException {
+		return (PersonMergeLog) sessionFactory.getCurrentSession().createQuery(
+		    "from PersonMergeLog p where p.loser.id = :loserId").setInteger("loserId", person.getId()).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getPersonMergeLogsByWinner(Person)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<PersonMergeLog> getAllPersonMergeLogs() throws DAOException {
+		return (List<PersonMergeLog>) sessionFactory.getCurrentSession().createQuery("from PersonMergeLog p").list();
+	}
+	
 	public PersonAttribute getPersonAttributeByUuid(String uuid) {
 		return (PersonAttribute) sessionFactory.getCurrentSession().createQuery(
 		    "from PersonAttribute p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getPersonName(Integer)
+	 */
+	@Override
+	public PersonName getPersonName(Integer personNameId) {
+		return (PersonName) sessionFactory.getCurrentSession().get(PersonName.class, personNameId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getPersonNameByUuid(String)
+	 */
 	public PersonName getPersonNameByUuid(String uuid) {
 		return (PersonName) sessionFactory.getCurrentSession().createQuery("from PersonName p where p.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();

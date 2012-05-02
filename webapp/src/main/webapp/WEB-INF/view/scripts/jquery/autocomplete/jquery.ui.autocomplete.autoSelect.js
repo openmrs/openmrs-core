@@ -6,8 +6,9 @@
 *
 * http://github.com/scottgonzalez/jquery-ui-extensions
 * 
-* Modified like 24 to have separate matcher calls
-* Added line 30 to set the value of the text box like jq does for us
+* Modified like 25 to have separate matcher calls
+* Added line 31 to set the value of the text box like jq does for us
+* Modified line 35 to prevent clearing initial value on losing focus
 */
 (function( jQuery ) {
 
@@ -31,7 +32,7 @@ jQuery( this ).val(autocomplete.selectedItem.value);
 /*alert("triggering select");*/
 autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
 }
-else {
+else if (jQuery(this).val() != autocomplete.options.initialValue) {
 	/* Nothing valid was selected */
 	jQuery( this ).val("");
 }

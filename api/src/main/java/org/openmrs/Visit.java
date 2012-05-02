@@ -14,8 +14,9 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.Set;
 
-import org.openmrs.attribute.Customizable;
+import org.openmrs.customdatatype.Customizable;
 
 /**
  * A 'visit' is a contiguous time period where encounters occur between patients and healthcare
@@ -39,6 +40,8 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	private Date startDatetime;
 	
 	private Date stopDatetime;
+	
+	private Set<Encounter> encounters;
 	
 	/**
 	 * Default Constructor
@@ -185,38 +188,25 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Visit)) {
-			return false;
-		}
-		Visit rhs = (Visit) obj;
-		if (this.visitId != null && rhs.visitId != null)
-			return (this.visitId.equals(rhs.visitId));
-		
-		return this == obj;
-	}
-	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (this.visitId == null)
-			return super.hashCode();
-		int hash = 3;
-		hash = hash + 31 * this.visitId;
-		return hash;
-	}
-	
-	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "Visit #" + visitId;
+	}
+	
+	/**
+	 * @return the encounters
+	 */
+	public Set<Encounter> getEncounters() {
+		return encounters;
+	}
+	
+	/**
+	 * @param encounters the encounters to set
+	 */
+	public void setEncounters(Set<Encounter> encounters) {
+		this.encounters = encounters;
 	}
 	
 }

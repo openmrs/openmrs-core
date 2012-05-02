@@ -23,7 +23,9 @@
 <c:if test="${form.formId != null && empty param.duplicate}">
 <br/>
 <a href="#designSchema"><spring:message code="Form.designSchema" /></a>
-<c:if test="${form.formId != 1}">
+|
+<a href="formResources.form?formId=${ form.formId }"><spring:message code="Form.manageResources"/></a>
+<c:if test="${not isBasicForm}">
 	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formHeader" type="html" parameters="formId=${form.formId}">
 		<c:forEach items="${extension.links}" var="link">
 			| <a href="${pageContext.request.contextPath}/${link.key}"><spring:message code="${link.value}"/></a>
@@ -86,16 +88,6 @@
 					</c:forEach>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="Form.xslt"/></td>
-		<td>
-			<spring:bind path="form.xslt">
-				<c:if test="${form.xslt != ''}"><a target="_new" href="formViewXslt.form?formId=${form.formId}"><spring:message code="Form.xslt.view"/></a><br/></c:if>
-				<spring:message code="Form.xslt.upload"/> <input type="file" name="xslt_file" size="25" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -165,7 +157,7 @@
 <c:if test="${empty param.duplicate}">
 	<input type="submit" name="action" value="<spring:message code="Form.save"/>">
 	
-	<c:if test="${form.formId != null && form.formId != 1}">
+	<c:if test="${form.formId != null && not isBasicForm}">
 		<openmrs:hasPrivilege privilege="Delete Forms">
 			 &nbsp; &nbsp; &nbsp;
 			<input type="submit" name="action" value="<spring:message code="Form.delete"/>" onclick="return confirm('<spring:message code="Form.confirmation"/>')"/>
@@ -266,7 +258,7 @@
 <script type="text/javascript">
 	var formPublished = ${form.published};
 	var formId = <request:parameter name="formId"/>;
-	<c:if test="${form.formId == 1}"> formPublished = true; </c:if>
+	<c:if test="${isBasicForm}"> formPublished = true; </c:if>
 </script>
 
 <br/>
@@ -304,7 +296,7 @@
 		</td>
 		<td valign="top" style="padding-left: 5px;" id="fieldSearch" width="40%">
 			<div id="fieldSearchDiv">
-				<c:if test="${form.published != true && form.formId != 1}">
+				<c:if test="${form.published != true && not isBasicForm}">
 					<div dojoType="FieldSearch" widgetId="fieldSearch" searchLabel='<spring:message code="Field.find" />' showHeaderRow="false" alsoSearchConcepts="true"></div>
 				</c:if>
 			</div>
@@ -318,7 +310,7 @@
 	<form xonsubmit="save(selectedNode)" style="padding: 0px; margin: 0px; overflow: auto">
 		<%@ include file="include/formFieldEdit.jsp" %>
 	
-		<c:if test="${form.published != true && form.formId != 1}">
+		<c:if test="${form.published != true && not isBasicForm}">
 			<input type="submit" id="saveFormField" onclick="return save(selectedNode);" value="<spring:message code="general.save"/>" />
 		</c:if>
 		<input type="button" id="cancelFormField" onclick="cancelClicked()" value="<spring:message code="general.cancel"/>" />

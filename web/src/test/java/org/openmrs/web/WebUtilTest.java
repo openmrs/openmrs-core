@@ -13,10 +13,12 @@
  */
 package org.openmrs.web;
 
+import java.util.Collection;
 import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.BaseOpenmrsObject;
 
 /**
  * Tests methods on the {@link WebUtil} class.
@@ -85,5 +87,20 @@ public class WebUtilTest {
 	@Test
 	public void sanitizeLocales_shouldNotFailWithEmptyString() throws Exception {
 		Assert.assertNull(null, WebUtil.sanitizeLocales(""));
+	}
+	
+	/**
+	 * Utility method to check if a list contains a BaseOpenmrsObject using the id
+	 * @param list
+	 * @param id
+	 * @return true if list contains object with the id else false
+	 */
+	public static boolean containsId(Collection<? extends BaseOpenmrsObject> list, Integer id) {
+		for (BaseOpenmrsObject baseOpenmrsObject : list) {
+			if (baseOpenmrsObject.getId().equals(id)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

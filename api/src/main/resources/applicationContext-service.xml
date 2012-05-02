@@ -51,9 +51,15 @@
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 	
 	<!--  **************************  EVENT LISTENERS ***************************** -->
-	<bean id="openmrsEventListeners" class="org.openmrs.api.EventListeners">
+
+	<!--  Clear out the global property listeners list first -->
+	<bean id="clearOpenmrsEventListeners" class="org.openmrs.api.EventListeners">
+		<property name="globalPropertyListenersToEmpty"><value>false</value></property>
+	</bean>
+	
+	<bean id="openmrsEventListeners" class="org.openmrs.api.EventListeners" depends-on="clearOpenmrsEventListeners">
 		<property name="globalPropertyListeners">
-			<list value-type="org.openmrs.api.GlobalPropertyListener" merge="true">
+			<list value-type="org.openmrs.api.GlobalPropertyListener">
 				<bean class="org.openmrs.util.LocaleUtility" />
 				<bean class="org.openmrs.util.LocationUtility" />
 				<ref bean="globalLocaleList" />
@@ -76,7 +82,7 @@
         <property name="orderService"><ref bean="orderService"/></property>
         <property name="formService"><ref bean="formService"/></property>
         <property name="administrationService"><ref bean="adminService"/></property>
-        <property name="attributeService"><ref bean="attributeService"/></property>
+        <property name="datatypeService"><ref bean="datatypeService"/></property>
         <property name="programWorkflowService"><ref bean="programWorkflowService"/></property>
         <property name="patientSetService"><ref bean="patientSetService"/></property>
         <property name="cohortService"><ref bean="cohortService"/></property>
@@ -92,6 +98,7 @@
         <property name="messageSourceService"><ref bean="messageSourceService"/></property>
         <property name="activeListService"><ref bean="activeListService"/></property>
         <property name="visitService"><ref bean="visitService"/></property>
+        <property name="providerService"><ref bean="providerService"/></property>
 	</bean>	
 	
 	<bean id="context" class="org.openmrs.api.context.Context">
@@ -155,7 +162,10 @@
 		<property name="supportedTypes">
 			<list></list>
 		</property>
-	</bean>	
+	</bean>
+	<bean id="datatypeDAO" class="org.openmrs.api.db.hibernate.HibernateDatatypeDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
 	<bean id="schedulerDAO" class="org.openmrs.scheduler.db.hibernate.HibernateSchedulerDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
@@ -175,6 +185,9 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="visitDAO" class="org.openmrs.api.db.hibernate.HibernateVisitDAO">
+        <property name="sessionFactory"><ref bean="sessionFactory"/></property>
+    </bean>
+	<bean id="providerDAO" class="org.openmrs.api.db.hibernate.HibernateProviderDAO">
         <property name="sessionFactory"><ref bean="sessionFactory"/></property>
     </bean>
 	
@@ -220,6 +233,14 @@
                     <key><value>TextHandler</value></key>
                     <bean class="org.openmrs.obs.handler.TextHandler"/>
                 </entry>
+                 <entry>
+                    <key><value>BinaryDataHandler</value></key>
+                    <bean class="org.openmrs.obs.handler.BinaryDataHandler"/>
+                </entry>
+                 <entry>
+                    <key><value>BinaryStreamHandler</value></key>
+                    <bean class="org.openmrs.obs.handler.BinaryStreamHandler"/>
+                </entry>
             </map>
         </property>
 	</bean>
@@ -240,7 +261,9 @@
 		<property name="eventListeners"><ref bean="openmrsEventListeners"/></property>
 		<property name="globalLocaleList"><ref bean="globalLocaleList"/></property>
 	</bean>
-	<bean id="attributeServiceTarget" class="org.openmrs.api.impl.AttributeServiceImpl"/>
+	<bean id="datatypeServiceTarget" class="org.openmrs.api.impl.DatatypeServiceImpl">
+		<property name="dao"><ref bean="datatypeDAO"/></property>
+	</bean>
 	<bean id="programWorkflowServiceTarget" class="org.openmrs.api.impl.ProgramWorkflowServiceImpl">
 		<property name="programWorkflowDAO"><ref bean="programWorkflowDAO"/></property>	
 	</bean>
@@ -253,7 +276,9 @@
 	<bean id="visitServiceTarget" class="org.openmrs.api.impl.VisitServiceImpl">
         <property name="visitDAO"><ref bean="visitDAO"/></property>
 	</bean>
-	
+	<bean id="providerServiceTarget" class="org.openmrs.api.impl.ProviderServiceImpl">
+        <property name="providerDAO"><ref bean="providerDAO"/></property>
+	</bean>	
 	
 	<!-- Cohort Service setup -->
 	<bean id="cohortServiceTarget" class="org.openmrs.api.impl.CohortServiceImpl">
@@ -445,9 +470,9 @@
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
-	<bean id="attributeService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<bean id="datatypeService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
         <property name="transactionManager"><ref local="transactionManager"/></property>
-        <property name="target"><ref local="attributeServiceTarget"/></property>
+        <property name="target"><ref local="datatypeServiceTarget"/></property>
         <property name="preInterceptors">
             <ref local="serviceInterceptors" />
         </property>
@@ -571,6 +596,14 @@
 	<bean id="visitService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 	    <property name="transactionManager"><ref local="transactionManager"/></property>
 	    <property name="target"><ref local="visitServiceTarget"/></property>
+	    <property name="preInterceptors">
+	        <ref local="serviceInterceptors"/>
+	    </property>
+	    <property name="transactionAttributeSource"><ref local="transactionAttributeSource"/></property>
+    </bean>
+	<bean id="providerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	    <property name="transactionManager"><ref local="transactionManager"/></property>
+	    <property name="target"><ref local="providerServiceTarget"/></property>
 	    <property name="preInterceptors">
 	        <ref local="serviceInterceptors"/>
 	    </property>
@@ -701,6 +734,7 @@
 	<!--  **************************  VALIDATOR CONFIGURATION  *************************  -->
 	<!--  Configuration for all openmrs validators                                        -->
 	
+	<bean id="personValidator" class="org.openmrs.validator.PersonValidator" />
 	<bean id="patientValidator" class="org.openmrs.validator.PatientValidator" />
 	<bean id="locationValidator" class="org.openmrs.validator.LocationValidator"/>
 	<bean id="personNameValidator" class="org.openmrs.validator.PersonNameValidator" />
@@ -727,9 +761,16 @@
 	<bean id="personAddressValidator" class="org.openmrs.validator.PersonAddressValidator"/>
 	<bean id="visitTypeValidator" class="org.openmrs.validator.VisitTypeValidator" />
 	<bean id="visitAttributeTypeValidator" class="org.openmrs.validator.VisitAttributeTypeValidator" />
+	<bean id="providerAttributeTypeValidator" class="org.openmrs.validator.ProviderAttributeTypeValidator" />	
 	<bean id="encounterValidator" class="org.openmrs.validator.EncounterValidator" />
-	<bean id="orderGroupValidator" class="org.openmrs.validator.OrderGroupValidator" />
-	
+    <bean id="orderGroupValidator" class="org.openmrs.validator.OrderGroupValidator" />
+	<bean id="locationAttributeTypeValidator" class="org.openmrs.validator.LocationAttributeTypeValidator" />
+	<bean id="providerValidator" class="org.openmrs.validator.ProviderValidator" />
+	<bean id="patientProgramValidator" class="org.openmrs.validator.PatientProgramValidator" />
+	<bean id="conceptValidator" class="org.openmrs.validator.ConceptValidator" />
+	<bean id="personMergeLogValidator" class="org.openmrs.validator.PersonMergeLogValidator" />
+	<bean id="conceptReferenceTermValidator" class="org.openmrs.validator.ConceptReferenceTermValidator" />
+	<bean id="conceptMapTypeValidator" class="org.openmrs.validator.ConceptMapTypeValidator" />
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 	

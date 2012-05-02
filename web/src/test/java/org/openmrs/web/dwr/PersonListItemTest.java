@@ -13,8 +13,6 @@
  */
 package org.openmrs.web.dwr;
 
-import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Person;
@@ -22,10 +20,78 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 
+import java.util.Map;
+
 /**
  * Tests the {@link PersonListItem} class.
  */
 public class PersonListItemTest extends BaseWebContextSensitiveTest {
+	
+	/**
+	 * @see {@link PersonListItem#PersonListItem(Person, String)}
+	 */
+	@Test
+	@Verifies(value = "should identify best matching name for the family name", method = "PersonListItem(Person, String)")
+	public void PersonListItem_shouldIdentifyBestMatchingNameForTheFamilyName() throws Exception {
+		
+		PersonListItem listItem = new PersonListItem(Context.getPersonService().getPerson(2), "hornblower3");
+		Assert.assertEquals("Hornblower3", listItem.getFamilyName());
+		Assert.assertEquals("John", listItem.getGivenName());
+		Assert.assertEquals("Peeter", listItem.getMiddleName());
+	}
+	
+	/**
+	 * @see {@link PersonListItem#PersonListItem(Person, String)}
+	 */
+	@Test
+	@Verifies(value = "identify best matching name as preferred name even if other names match", method = "PersonListItem(Person, String)")
+	public void PersonListItem_shouldIdentifyBestMatchingNameForTheGivenPreferredNameEvenIfOtherNamesMatch()
+	        throws Exception {
+		
+		PersonListItem listItem = new PersonListItem(Context.getPersonService().getPerson(2), "Horatio");
+		Assert.assertEquals("Hornblower", listItem.getFamilyName());
+		Assert.assertEquals("Horatio", listItem.getGivenName());
+		Assert.assertEquals("Test", listItem.getMiddleName());
+	}
+	
+	/**
+	 * @see {@link PersonListItem#PersonListItem(Person, String)}
+	 */
+	@Test
+	@Verifies(value = "identify best matching name as other name for the middle name", method = "PersonListItem(Person, String)")
+	public void PersonListItem_shouldIdentifyBestMatchingNameAsOtherNameForTheMiddleName() throws Exception {
+		
+		PersonListItem listItem = new PersonListItem(Context.getPersonService().getPerson(2), "Peeter");
+		Assert.assertEquals("Hornblower2", listItem.getFamilyName());
+		Assert.assertEquals("Horatio", listItem.getGivenName());
+		Assert.assertEquals("Peeter", listItem.getMiddleName());
+	}
+	
+	/**
+	 * @see {@link PersonListItem#PersonListItem(Person, String)}
+	 */
+	@Test
+	@Verifies(value = "identify best matching name as other name for the given name", method = "PersonListItem(Person, String)")
+	public void PersonListItem_shouldIdentifyBestMatchingNameAsOtherNameForTheGivenName() throws Exception {
+		
+		PersonListItem listItem = new PersonListItem(Context.getPersonService().getPerson(2), "joh");
+		Assert.assertEquals("Hornblower3", listItem.getFamilyName());
+		Assert.assertEquals("John", listItem.getGivenName());
+		Assert.assertEquals("Peeter", listItem.getMiddleName());
+	}
+	
+	/**
+	 * @see {@link PersonListItem#PersonListItem(Person, String)}
+	 */
+	@Test
+	@Verifies(value = "identify best matching name in multiple search names", method = "PersonListItem(Person, String)")
+	public void PersonListItem_shouldIdentifyBestMatchingNameInMultipleSearchNames() throws Exception {
+		
+		PersonListItem listItem = new PersonListItem(Context.getPersonService().getPerson(2), "Horn peet john");
+		Assert.assertEquals("Hornblower3", listItem.getFamilyName());
+		Assert.assertEquals("John", listItem.getGivenName());
+		Assert.assertEquals("Peeter", listItem.getMiddleName());
+	}
 	
 	/**
 	 * @see {@link PersonListItem#PersonListItem(Person)}

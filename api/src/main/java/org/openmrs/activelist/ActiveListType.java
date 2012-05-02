@@ -58,9 +58,4 @@ public class ActiveListType extends BaseOpenmrsMetadata {
 	public void setActiveListTypeId(Integer activeListTypeId) {
 		this.activeListTypeId = activeListTypeId;
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		return (obj instanceof ActiveListType) && ((ActiveListType) obj).getId() == getId();
-	}
 }

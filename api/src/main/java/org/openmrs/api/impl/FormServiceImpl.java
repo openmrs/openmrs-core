@@ -13,13 +13,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,12 +35,14 @@ import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
+import org.openmrs.FormResource;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.FormDAO;
 import org.openmrs.api.handler.SaveHandler;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.FormValidator;
 import org.springframework.validation.BindException;
@@ -155,14 +150,8 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		//TreeMap<Integer, FormField> formFieldMap = new TreeMap<Integer, FormField>();
 		//formFieldMap.put(null, null); //for parentless formFields
 		
-		// get form resources from the old form
-		Map<String, Map<String, Serializable>> resources = new HashMap<String, Map<String, Serializable>>();
-		for (String owner : getFormResourceOwners(form)) {
-			resources.put(owner, new HashMap<String, Serializable>());
-			Set<String> names = getFormResourceNamesByOwner(form, owner);
-			for (String name : names)
-				resources.get(owner).put(name, Context.getFormService().getFormResource(form, owner, name));
-		}
+		// get original form id for reference later
+		Integer originalFormId = form.getFormId();
 		
 		for (FormField formField : form.getFormFields()) {
 			//formFieldMap.put(formField.getFormFieldId(), formField);
@@ -185,10 +174,8 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, form, null);
 		Form newForm = dao.duplicateForm(form);
 		
-		// add the form resources obtained earlier
-		for (String owner : resources.keySet())
-			for (String name : resources.get(owner).keySet())
-				Context.getFormService().saveFormResource(newForm, owner, name, resources.get(owner).get(name));
+		// duplicate form resources from the old form to the new one
+		duplicateFormResources(Context.getFormService().getForm(originalFormId), newForm);
 		
 		return newForm;
 	}
@@ -651,10 +638,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		if (cascade == true)
 			throw new APIException("Not Yet Implemented");
 		
-		// remove resources; TODO make hibernate cascade delete to form resources
-		for (String owner : Context.getFormService().getFormResourceOwners(form))
-			for (String name : Context.getFormService().getFormResourceNamesByOwner(form, owner))
-				Context.getFormService().purgeFormResource(form, owner, name);
+		// remove resources
+		for (FormResource resource : Context.getFormService().getFormResourcesForForm(form))
+			Context.getFormService().purgeFormResource(resource);
 		
 		dao.deleteForm(form);
 	}
@@ -833,71 +819,75 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#getFormResource(Form, String, String)
+	 * @see org.openmrs.api.FormService#getFormResource(java.lang.Integer) 
 	 */
 	@Override
-	public Serializable getFormResource(Form form, String owner, String name) {
-		byte[] data = dao.getFormResource(form, owner, name);
-		if (data.length == 0)
+	public FormResource getFormResource(Integer formResourceId) throws APIException {
+		return dao.getFormResource(formResourceId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#getFormResourceByUuid(java.lang.String) 
+	 */
+	@Override
+	public FormResource getFormResourceByUuid(String uuid) throws APIException {
+		return dao.getFormResourceByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#getFormResource(org.openmrs.Form, java.lang.String) 
+	 */
+	@Override
+	public FormResource getFormResource(Form form, String name) throws APIException {
+		return dao.getFormResource(form, name);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#saveFormResource(org.openmrs.FormResource) 
+	 */
+	@Override
+	public FormResource saveFormResource(FormResource formResource) throws APIException {
+		if (formResource == null)
 			return null;
 		
-		try {
-			ObjectInputStream obj = new ObjectInputStream(new ByteArrayInputStream(data));
-			return (Serializable) obj.readObject();
-		}
-		catch (ClassNotFoundException e) {
-			throw new APIException("could not convert form resource", e);
-		}
-		catch (IOException e) {
-			throw new APIException("could not deserialize form resource", e);
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#saveFormResource(Form, String, String,
-	 *      byte[])
-	 */
-	@Override
-	public void saveFormResource(Form form, String owner, String name, Serializable value) {
-		if (value == null)
-			dao.saveFormResource(form, owner, name, null);
+		// purge the original if it is being overridden (same name)
+		FormResource original = Context.getFormService().getFormResource(formResource.getForm(), formResource.getName());
+		if (original != null)
+			Context.getFormService().purgeFormResource(original);
 		
-		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutput out;
-			out = new ObjectOutputStream(bos);
-			out.writeObject(value);
-			out.close();
-			byte[] data = bos.toByteArray();
-			dao.saveFormResource(form, owner, name, data);
+		CustomDatatypeUtil.saveIfDirty(formResource);
+		return dao.saveFormResource(formResource);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#purgeFormResource(org.openmrs.FormResource) 
+	 */
+	@Override
+	public void purgeFormResource(FormResource formResource) throws APIException {
+		dao.deleteFormResource(formResource);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#getFormResourcesForForm(org.openmrs.Form) 
+	 */
+	@Override
+	public Collection<FormResource> getFormResourcesForForm(Form form) throws APIException {
+		return dao.getFormResourcesForForm(form);
+	}
+	
+	/**
+	 * duplicates form resources from one form to another
+	 *
+	 * @param source the form to copy resources from
+	 * @param destination the form to copy resources to
+	 */
+	private void duplicateFormResources(Form source, Form destination) {
+		FormService service = Context.getFormService();
+		for (FormResource resource : service.getFormResourcesForForm(source)) {
+			FormResource newResource = new FormResource(resource);
+			newResource.setForm(destination);
+			service.saveFormResource(newResource);
 		}
-		catch (IOException e) {
-			throw new APIException("could not serialize form resource", e);
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#purgeFormResource(Form, String, String)
-	 */
-	@Override
-	public void purgeFormResource(Form form, String owner, String name) {
-		dao.purgeFormResource(form, owner, name);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getFormResourceNamesByOwner(Form, String)
-	 */
-	@Override
-	public Set<String> getFormResourceNamesByOwner(Form form, String owner) {
-		return dao.getFormResourceNamesByOwner(form, owner);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getFormResourceNamesByOwner(Form, String)
-	 */
-	@Override
-	public Set<String> getFormResourceOwners(Form form) {
-		return dao.getFormResourceOwners(form);
 	}
 	
 }

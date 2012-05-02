@@ -26,15 +26,14 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This service contains methods relating to visits.
  * 
  * @since 1.9
  */
-@Transactional
 public interface VisitService extends OpenmrsService {
 	
 	/**
@@ -43,7 +42,6 @@ public interface VisitService extends OpenmrsService {
 	 * @return a list of visit type objects.
 	 * @should get all visit types
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_VISIT_TYPES })
 	List<VisitType> getAllVisitTypes();
 	
@@ -54,7 +52,6 @@ public interface VisitService extends OpenmrsService {
 	 * @return the visit type object found with the given id, else null.
 	 * @should get correct visit type
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_VISIT_TYPES })
 	VisitType getVisitType(Integer visitTypeId);
 	
@@ -65,7 +62,6 @@ public interface VisitService extends OpenmrsService {
 	 * @return the visit type object found with the given uuid, else null.
 	 * @should get correct visit type
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_VISIT_TYPES })
 	VisitType getVisitTypeByUuid(String uuid);
 	
@@ -76,7 +72,6 @@ public interface VisitService extends OpenmrsService {
 	 * @return a list of all visit types with names similar to or containing the given phrase
 	 * @should get correct visit types
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_VISIT_TYPES })
 	List<VisitType> getVisitTypes(String fuzzySearchPhrase);
 	
@@ -130,7 +125,6 @@ public interface VisitService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return all unvoided visits
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
 	public List<Visit> getAllVisits() throws APIException;
 	
@@ -141,7 +135,6 @@ public interface VisitService extends OpenmrsService {
 	 * @return the visit object found with the given id, else null.
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
 	public Visit getVisit(Integer visitId) throws APIException;
 	
@@ -153,7 +146,6 @@ public interface VisitService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return a visit matching the specified uuid
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
 	public Visit getVisitByUuid(String uuid) throws APIException;
 	
@@ -168,9 +160,27 @@ public interface VisitService extends OpenmrsService {
 	 * @should fail if validation errors are found
 	 * @should pass if no validation errors are found
 	 * @should be able to add an attribute to a visit
+	 * @should void an attribute if max occurs is 1 and same attribute type already exists
+	 * @should save a visit though changedBy and dateCreated are not set for VisitAttribute
+	 *         explicitly
+	 * @should should save new visit with encounters successfully
 	 */
 	@Authorized( { PrivilegeConstants.ADD_VISITS, PrivilegeConstants.EDIT_VISITS })
 	public Visit saveVisit(Visit visit) throws APIException;
+	
+	/**
+	 * Sets the stopDate of a given visit.
+	 * 
+	 * @param visit the visit whose stopDate is to be set
+	 * @param stopDate the date and time the visit is ending. if null, current date is used
+	 * @return the visit that was ended
+	 * @should set the stopDateTime of visit
+	 * @should set stopdatetime as current date if stopdate is null
+	 * @should not fail if no validation errors are found
+	 * @should fail if validation errors are found
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_VISITS })
+	public Visit endVisit(Visit visit, Date stopDate) throws APIException;
 	
 	/**
 	 * Voids the given visit.
@@ -180,6 +190,7 @@ public interface VisitService extends OpenmrsService {
 	 * @return the visit that has been voided
 	 * @throws APIException
 	 * @should void the visit and set the voidReason
+	 * @should void encounters with visit
 	 */
 	@Authorized(PrivilegeConstants.DELETE_VISITS)
 	public Visit voidVisit(Visit visit, String reason) throws APIException;
@@ -191,6 +202,7 @@ public interface VisitService extends OpenmrsService {
 	 * @return the unvoided visit
 	 * @throws APIException
 	 * @should unvoid the visit and unset all the void related fields
+	 * @should unvoid encounters voided with visit
 	 */
 	@Authorized(PrivilegeConstants.DELETE_VISITS)
 	public Visit unvoidVisit(Visit visit) throws APIException;
@@ -216,6 +228,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param maxStartDatetime the maximum visit start date to match against
 	 * @param minEndDatetime the minimum visit end date to match against
 	 * @param maxEndDatetime the maximum visit end date to match against
+	 * @param includeInactive if false, the min/maxEndDatetime parameters are ignored and only open
+	 *            visits are returned
 	 * @param includeVoided specifies if voided visits should also be returned
 	 * @return a list of visits
 	 * @see #getActiveVisitsByPatient(Patient)
@@ -230,12 +244,11 @@ public interface VisitService extends OpenmrsService {
 	 * @should get all visits with given attribute values
 	 * @should not find any visits if none have given attribute values
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues, boolean includeVoided)
-	        throws APIException;
+	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues,
+	        boolean includeInactive, boolean includeVoided) throws APIException;
 	
 	/**
 	 * Gets all unvoided visits for the specified patient
@@ -245,27 +258,39 @@ public interface VisitService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return all unvoided visits for the specified patient
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
 	public List<Visit> getVisitsByPatient(Patient patient) throws APIException;
 	
 	/**
-	 * Gets all active unvoided visits for the specified patient i.e visits whose end date is null
+	 * Convenience method that delegates to getVisitsByPatient(patient, false, false)
 	 * 
 	 * @param patient the patient whose visits to get
 	 * @return a list of visits
 	 * @throws APIException
-	 * @should return all unvoided active visits for the specified patient
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
 	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException;
+	
+	/**
+	 * Gets all visits for the specified patient
+	 * 
+	 * @param patient the patient whose visits to get
+	 * @param includeInactive
+	 * @param includeVoided
+	 * @return a list of visits
+	 * @throws APIException
+	 * @should return all active unvoided visits for the specified patient
+	 * @should return all unvoided visits for the specified patient
+	 * @should return all active visits for the specified patient
+	 */
+	@Authorized(PrivilegeConstants.VIEW_VISITS)
+	public List<Visit> getVisitsByPatient(Patient patient, boolean includeInactive, boolean includeVoided)
+	        throws APIException;
 	
 	/**
 	 * @return all {@link VisitAttributeType}s
 	 * @should return all visit attribute types including retired ones
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISIT_ATTRIBUTE_TYPES)
 	List<VisitAttributeType> getAllVisitAttributeTypes();
 	
@@ -275,7 +300,6 @@ public interface VisitService extends OpenmrsService {
 	 * @should return the visit attribute type with the given id
 	 * @should return null if no visit attribute type exists with the given id
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISIT_ATTRIBUTE_TYPES)
 	VisitAttributeType getVisitAttributeType(Integer id);
 	
@@ -285,7 +309,6 @@ public interface VisitService extends OpenmrsService {
 	 * @should return the visit attribute type with the given uuid
 	 * @should return null if no visit attribute type exists with the given uuid
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISIT_ATTRIBUTE_TYPES)
 	VisitAttributeType getVisitAttributeTypeByUuid(String uuid);
 	
@@ -293,7 +316,7 @@ public interface VisitService extends OpenmrsService {
 	 * Creates or updates the given visit attribute type in the database
 	 * 
 	 * @param visitAttributeType
-	 * @return the visitAttribute created/saved
+	 * @return the VisitAttributeType created/saved
 	 * @should create a new visit attribute type
 	 * @should edit an existing visit attribute type
 	 */
@@ -314,7 +337,7 @@ public interface VisitService extends OpenmrsService {
 	 * Restores a visit attribute type that was previous retired in the database
 	 * 
 	 * @param visitAttributeType
-	 * @return the visitAttribute unretired
+	 * @return the VisitAttributeType unretired
 	 * @should unretire a retired visit attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_VISIT_ATTRIBUTE_TYPES)
@@ -335,8 +358,17 @@ public interface VisitService extends OpenmrsService {
 	 * @should get the visit attribute with the given uuid
 	 * @should return null if no visit attribute has the given uuid
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
 	VisitAttribute getVisitAttributeByUuid(String uuid);
 	
+	/**
+	 * Stops all active visits started before or on the specified date which match any of the visit
+	 * types specified by the {@link OpenmrsConstants#GP_VISIT_TYPES_TO_AUTO_CLOSE} global property.
+	 * If startDatetime is null, the default will be end of the current day.
+	 * 
+	 * @param maximumStartDate Visits started on or before this date time value will get stopped
+	 * @should close all unvoided active visit matching the specified visit types
+	 */
+	@Authorized(PrivilegeConstants.EDIT_VISITS)
+	public void stopVisits(Date maximumStartDate);
 }

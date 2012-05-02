@@ -18,15 +18,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.EncounterType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
@@ -307,18 +310,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#saveGlobalProperties(List)
 	 */
 	@Test
-	@Verifies(value = "should delete property from database if not in list", method = "saveGlobalProperties(List<QGlobalProperty;>)")
-	public void saveGlobalProperties_shouldDeletePropertyFromDatabaseIfNotInList() throws Exception {
-		List<GlobalProperty> globalProperties = Context.getAdministrationService().getAllGlobalProperties();
-		GlobalProperty firstGlobalProperty = globalProperties.remove(0);
-		Context.getAdministrationService().saveGlobalProperties(globalProperties);
-		Assert.assertNull(Context.getAdministrationService().getGlobalProperty(firstGlobalProperty.getProperty()));
-	}
-	
-	/**
-	 * @see AdministrationService#saveGlobalProperties(List)
-	 */
-	@Test
 	@Verifies(value = "should not fail with empty list", method = "saveGlobalProperties(List<QGlobalProperty;>)")
 	public void saveGlobalProperties_shouldNotFailWithEmptyList() throws Exception {
 		Context.getAdministrationService().saveGlobalProperties(new ArrayList<GlobalProperty>());
@@ -366,7 +357,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return all global properties in the database", method = "getAllGlobalProperties()")
 	public void getAllGlobalProperties_shouldReturnAllGlobalPropertiesInTheDatabase() throws Exception {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
-		Assert.assertEquals(10, Context.getAdministrationService().getAllGlobalProperties().size());
+		Assert.assertEquals(13, Context.getAdministrationService().getAllGlobalProperties().size());
 	}
 	
 	/**
@@ -438,9 +429,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		AdministrationService as = Context.getAdministrationService();
 		
-		Assert.assertEquals(10, as.getAllGlobalProperties().size());
+		Assert.assertEquals(13, as.getAllGlobalProperties().size());
 		as.purgeGlobalProperty(as.getGlobalPropertyObject("a_valid_gp_key"));
-		Assert.assertEquals(9, as.getAllGlobalProperties().size());
+		Assert.assertEquals(12, as.getAllGlobalProperties().size());
 	}
 	
 	/**
@@ -531,8 +522,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link AdministrationService#getGlobalProperty(String)}
 	 */
 	@Test
-	@Verifies(value = "should get property in case sensitive way", method = "getGlobalProperty(String)")
-	public void getGlobalProperty_shouldGetPropertyInCaseSensitiveWay() throws Exception {
+	@Verifies(value = "should get property in case insensitive way", method = "getGlobalProperty(String)")
+	public void getGlobalProperty_shouldGetPropertyInCaseInsensitiveWay() throws Exception {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
 		// sanity check
@@ -540,27 +531,30 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("anothervalue", orig);
 		
 		// try to get a global property with invalid case
-		String noprop = adminService.getGlobalProperty("ANOTher-global-property", "boo");
-		Assert.assertEquals("boo", noprop);
+		String noprop = adminService.getGlobalProperty("ANOTher-global-property");
+		Assert.assertEquals(orig, noprop);
 	}
 	
 	/**
 	 * @see {@link AdministrationService#saveGlobalProperty(GlobalProperty)}
 	 */
 	@Test
-	@Verifies(value = "should allow different properties to have the same string with different case", method = "saveGlobalProperty(GlobalProperty)")
-	public void saveGlobalProperty_shouldAllowDifferentPropertiesToHaveTheSameStringWithDifferentCase() throws Exception {
+	@Verifies(value = "should not allow different properties to have the same string with different case", method = "saveGlobalProperty(GlobalProperty)")
+	public void saveGlobalProperty_shouldNotAllowDifferentPropertiesToHaveTheSameStringWithDifferentCase() throws Exception {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
 		// sanity check
 		String orig = adminService.getGlobalProperty("another-global-property");
 		Assert.assertEquals("anothervalue", orig);
 		
-		// should match current gp
+		// should match current gp and update
 		GlobalProperty gp = new GlobalProperty("ANOTher-global-property", "somethingelse");
 		adminService.saveGlobalProperty(gp);
 		String prop = adminService.getGlobalProperty("ANOTher-global-property", "boo");
 		Assert.assertEquals("somethingelse", prop);
+		
+		orig = adminService.getGlobalProperty("another-global-property");
+		Assert.assertEquals("somethingelse", orig);
 	}
 	
 	/**
@@ -569,6 +563,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should save properties with case difference only", method = "saveGlobalProperties(List<QGlobalProperty;>)")
 	public void saveGlobalProperties_shouldSavePropertiesWithCaseDifferenceOnly() throws Exception {
+		int originalSize = adminService.getAllGlobalProperties().size();
+		
 		List<GlobalProperty> props = new ArrayList<GlobalProperty>();
 		props.add(new GlobalProperty("a.property.key", "something"));
 		props.add(new GlobalProperty("a.property.KEY", "somethingelse"));
@@ -576,6 +572,44 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		// make sure that we now have two properties
 		props = adminService.getAllGlobalProperties();
-		Assert.assertEquals(2, props.size());
+		Assert.assertEquals(originalSize + 1, props.size());
+		
+		Assert.assertTrue(props.contains(adminService.getGlobalPropertyObject("a.property.KEY")));
+	}
+	
+	/**
+	 * @see AdministrationService#purgeGlobalProperties(List)
+	 * @verifies delete global properties from database
+	 */
+	@Test
+	public void purgeGlobalProperties_shouldDeleteGlobalPropertiesFromDatabase() throws Exception {
+		int originalSize = adminService.getAllGlobalProperties().size();
+		
+		List<GlobalProperty> props = new ArrayList<GlobalProperty>();
+		props.add(new GlobalProperty("a.property.key", "something"));
+		props.add(new GlobalProperty("a.property.KEY", "somethingelse"));
+		adminService.saveGlobalProperties(props);
+		int afterSaveSize = adminService.getAllGlobalProperties().size();
+		
+		Assert.assertEquals(originalSize + 1, afterSaveSize);
+		
+		adminService.purgeGlobalProperties(props);
+		int afterPurgeSize = adminService.getAllGlobalProperties().size();
+		
+		Assert.assertEquals(originalSize, afterPurgeSize);
+	}
+	
+	/**
+	 * @see AdministrationService#saveGlobalProperty(GlobalProperty)
+	 * @verifies save a global property whose typed value is handled by a custom datatype
+	 */
+	@Test
+	public void saveGlobalProperty_shouldSaveAGlobalPropertyWhoseTypedValueIsHandledByACustomDatatype() throws Exception {
+		GlobalProperty gp = new GlobalProperty();
+		gp.setProperty("What time is it?");
+		gp.setDatatypeClassname(DateDatatype.class.getName());
+		gp.setValue(new Date());
+		adminService.saveGlobalProperty(gp);
+		Assert.assertNotNull(gp.getValueReference());
 	}
 }

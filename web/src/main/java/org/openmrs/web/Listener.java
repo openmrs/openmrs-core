@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,13 +49,15 @@ import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.EntityResolver;
@@ -67,8 +70,8 @@ import org.xml.sax.SAXException;
  * Context.startup) Basic startup needs specific to the web layer: 1) Do the web startup of the
  * modules 2) Copy the custom look/images/messages over into the web layer
  */
-public final class Listener extends ContextLoaderListener {
-	
+public final class Listener extends ContextLoader implements ServletContextListener { // extends ContextLoaderListener {
+
 	private static boolean runtimePropertiesFound = false;
 	
 	private static Throwable errorAtStartup = null;
@@ -144,8 +147,19 @@ public final class Listener extends ContextLoaderListener {
 				// found but before the database update is done
 				copyCustomizationIntoWebapp(servletContext, props);
 				
-				super.contextInitialized(event);
-				startOpenmrs(event.getServletContext());
+				//super.contextInitialized(event);
+				// also see commented out line in contextDestroyed
+				
+				/** This logic is from ContextLoader.initWebApplicationContext.
+				 * Copied here instead of calling that so that the context is not cached
+				 * and hence not garbage collected
+				 */
+				ApplicationContext parent = loadParentContext(servletContext);
+				WebApplicationContext context = createWebApplicationContext(servletContext, parent);
+				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
+				/** */
+				
+				WebDaemon.startOpenmrs(event.getServletContext());
 			}
 			
 		}
@@ -177,6 +191,13 @@ public final class Listener extends ContextLoaderListener {
 	 * @throws ServletException
 	 */
 	public static void startOpenmrs(ServletContext servletContext) throws ServletException {
+		
+		//Ensure that we are being called from WebDaemon
+		//TODO this did not work because callerClass was org.openmrs.web.WebDaemon$1 instead of org.openmrs.web.WebDaemon
+		/*Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
+		if (!WebDaemon.class.isAssignableFrom(callerClass))
+			throw new APIException("This method can only be called from the WebDaemon class, not " + callerClass.getName());*/
+
 		// start openmrs
 		try {
 			Context.openSession();
@@ -479,18 +500,26 @@ public final class Listener extends ContextLoaderListener {
 		}
 		catch (Throwable t) {
 			// don't print the unhelpful "contextDAO is null" message
-			if (!t.getMessage().equals("contextDAO is null")) {
+			if (!"contextDAO is null".equals(t.getMessage())) {
 				// not using log.error here so it can be garbage collected
 				System.out.println("Listener.contextDestroyed: Error while shutting down openmrs: ");
 				t.printStackTrace();
 			}
 		}
 		finally {
+			if ("true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"))) {
+				//Delete the temporary file created for functional testing and shutdown the mysql daemon
+				String filename = WebConstants.WEBAPP_NAME + "-test-runtime.properties";
+				File file = new File(OpenmrsUtil.getApplicationDataDirectory(), filename);
+				System.out.println(filename + " delete=" + file.delete());
+				//new com.mysql.management.MysqldResource(new File("../openmrs/target/database")).shutdown();
+			}
 			// remove the user context that we set earlier
 			Context.closeSession();
 		}
 		
-		super.contextDestroyed(event);
+		// commented out because we are not init'ing it in the contextInitialization anymore
+		// super.contextDestroyed(event);
 		
 		try {
 			for (Enumeration<Driver> e = DriverManager.getDrivers(); e.hasMoreElements();) {
@@ -566,8 +595,16 @@ public final class Listener extends ContextLoaderListener {
 				try {
 					WebModuleUtil.shutdownModules(servletContext);
 					for (Module mod : ModuleFactory.getLoadedModules()) {// use loadedModules to avoid a concurrentmodificationexception
-						if (!mod.isCoreModule() && !mod.isMandatory())
-							ModuleFactory.stopModule(mod, true, true);
+						if (!mod.isCoreModule() && !mod.isMandatory()) {
+							try {
+								ModuleFactory.stopModule(mod, true, true);
+							}
+							catch (Throwable t3) {
+								// just keep going if we get an error shutting down.  was probably caused by the module 
+								// that actually got us to this point!
+								log.trace("Unable to shutdown module:" + mod, t3);
+							}
+						}
 					}
 					WebModuleUtil.refreshWAC(servletContext, true, null);
 				}

@@ -398,7 +398,7 @@ tr td#patientHeaderObsReturnVisit {
 	font-weight: bold;
 }
 
-#patientSubheaderExited th {
+#patientSubheaderExited th, #patientSubheaderDead th {
 	color: #555555;
 	font-weight: bold;
 }
@@ -506,16 +506,29 @@ table.patientTreatmentPrograms td {
 .patientIdentifier {
 	width: 7em;
 }
-.box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited {
+.box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited, .boxDead, .boxHeaderDead {
 	border: 1px solid #1aac9b;
-	width: 99%;
+	width: 100%;
 	padding: 5px 2px 5px 2px;
 	text-align: left;
 	margin-left: auto;
 	margin-right: auto;
 }
 
-.box>*, .boxRed>*, .boxExited>* {
+.box .noBorder {
+	border: 0px;
+}
+
+.column {
+	float: left;
+	padding: 2px 5px 2px 5px;
+}
+
+.columnEnd {
+	clear: both;
+}
+
+.box>*, .boxRed>*, .boxExited>*, .boxDead>* {
 	font-size: .9em;
 }
 
@@ -530,7 +543,7 @@ table.patientTreatmentPrograms td {
 	border: 1px solid #b82619;
 }
 
-.boxExited {
+.boxExited,.boxDead {
 	border: 1px solid #999999;
 }
 
@@ -542,7 +555,7 @@ table.patientTreatmentPrograms td {
 	background-color: #b82619;
 }
 
-.boxHeaderExited {
+.boxHeaderExited, .boxHeaderDead {
 	color: white;
 	display: block;
 	padding: 2px;
@@ -769,6 +782,12 @@ fieldset {
 .tableTitle {
 	text-align: center;
 	background-color: whitesmoke;
+}
+
+.tableGroup {
+	border-top: 1px solid #1aac9b;
+    background: #e0e0f0;
+    border-bottom: 1px solid #1aac9b;
 }
 
 .oddRow {
@@ -1089,12 +1108,12 @@ th.smallHeader {
 }
 
 .highlighted, .highlight {
-	background-color: yellow;
+	background-color: #FFFF6E;
 }
 
 .dashedAndHighlighted {
 	border: 1px black dashed;
-	background-color: yellow;
+	background-color: #FFFF6E;
 }
 
 .datePatternHint {
@@ -1163,7 +1182,7 @@ table td#summaryHeaderPatientGender {
 	border: 1px dotted #ffffff;
 }
 
-#patientTabsExited {
+#patientTabs.Exited, #patientTabs.Dead {
 	margin: 10px auto 7px auto;
 	padding-top: 5px;
 	padding-left: 5px;
@@ -1172,13 +1191,13 @@ table td#summaryHeaderPatientGender {
 	width: 99%;
 }
 
-#patientTabsExited ul, #patientTabsExited li {
+#patientTabs.Exited ul, #patientTabs.Exited li, #patientTabs.Dead ul, #patientTabs.Dead li {
 	display: inline;
 	list-style-type: none;
 	padding: 0px 0px 0px 0px;
 }
 
-#patientTabsExited a:link, #patientTabsExited a:visited {
+#patientTabs.Exited a:link, #patientTabs.Exited a:visited, #patientTabs.Dead a:link, #patientTabs.Dead a:visited {
 	border: 1px solid #555555;
 	font-size: small;
 	font-weight: bold;
@@ -1188,16 +1207,16 @@ table td#summaryHeaderPatientGender {
 	color: #555555;
 	background: #bbbbbb;
 }
-#patientTabsExited a:link.active, #patientTabsExited a:visited.active {
+#patientTabs.Exited a:link.active, #patientTabs.Exited a:visited.active, #patientTabs.Dead a:link.active, #patientTabs.Dead a:visited.active {
 	border-bottom: 1px solid #FFFFFF;
 }
-#patientTabsExited a.current, #patientTabsExited a:link.current, #patientTabsExited a:visited.current, #patientTabsExited a.current:hover {
+#patientTabs.Exited a.current, #patientTabs.Exited a:link.current, #patientTabs.Exited a:visited.current, #patientTabs.Exited a.current:hover, #patientTabs.Dead a.current, #patientTabs.Dead a:link.current, #patientTabs.Dead a:visited.current, #patientTabs.Dead a.current:hover {
 	background: #FFFFFF;
 	border-bottom: 1px solid #FFFFFF;
 	color: #555555;
 	text-decoration: none;
 }
-#patientTabsExited a:hover {
+#patientTabs.Exited a:hover, #patientTabs.Dead a:hover {
 	text-decoration: underline;
 }
 
@@ -1260,17 +1279,23 @@ table td#summaryHeaderPatientGender {
 #openmrsSearchTable tbody tr.odd.row_highlight {
 	 background-color: #F0E68C;
 }
+.row_highlight {
+	 background-color: #F0E68C !important;
+}
+.verbose{
+	text-align: left; padding-left: 15px;
+}
+.verbose:hover{
+	background-color: #F0E68C !important;
+}
 img#spinner{
 	vertical-align: middle;
 }
-#openmrsSearchTable .tr_row_highlight {
-	 background-color: #F0E68C;
-}
-#openmrsSearchTable .tr_row_highlight_hover {
-	 background-color: #F0E68C;
+#openmrsSearchTable tbody tr:hover {
+	background-color: #F0E68C; cursor: pointer;
 }
 #pageInfo{
-	float:right; margin-right: 20px; font-style: italic; margin-bottom: 5px;
+	text-align:right; font-style: italic;
 }
 #openmrsSearchTable{
 	padding-bottom: 10px;
@@ -1341,6 +1366,33 @@ span.otherHit{
 .mergePatientsTabDiv{
 	width:85px;
 }
+.form_align_left{
+	text-align: left;
+}
 .hidden{
 	display: none
+}
+.lightBorderBox{
+	border: 1px solid lightgrey
+}
+.content_align_center{
+	text-align: center;
+}
+.alignRight{
+	text-align: right;
+}
+div#openmrsSearchTable_length{
+	text-align: left; float: left; padding-top: 5px;
+}
+tr.headerRow{
+	background-color: #CCCCCC;
+}
+table.left-aligned-th th {
+	text-align: left
+}
+td.dataTables_empty{
+	background-color: #BBCCF7;
+}
+td.dataTables_empty:hover{
+	background-color: #BBCCF7;
 }

@@ -17,11 +17,14 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -34,8 +37,10 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientIdentifierType.UniquenessBehavior;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 
@@ -92,9 +97,9 @@ public class HibernatePatientDAO implements PatientDAO {
 			// things up
 			insertPatientStubIfNeeded(patient);
 			
-			// TODO: A merge is necessary here because hibernate thinks that Patients and
-			// 		Persons are the same objects.  So it sees a Person object in the
-			//      cache and claims it is a duplicate of this Patient object.
+			// Note: A merge might be necessary here because hibernate thinks that Patients
+			// and Persons are the same objects.  So it sees a Person object in the
+			// cache and claims it is a duplicate of this Patient object.
 			//patient = (Patient) sessionFactory.getCurrentSession().merge(patient);
 			sessionFactory.getCurrentSession().saveOrUpdate(patient);
 			
@@ -147,7 +152,13 @@ public class HibernatePatientDAO implements PatientDAO {
 				        .prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
 				
 				ps.setInt(1, patient.getPatientId());
+				if (patient.getCreator() == null) { //If not yet persisted
+					patient.setCreator(Context.getAuthenticatedUser());
+				}
 				ps.setInt(2, patient.getCreator().getUserId());
+				if (patient.getDateCreated() == null) { //If not yet persisted
+					patient.setDateCreated(new java.sql.Date(new Date().getTime()));
+				}
 				ps.setDate(3, new java.sql.Date(patient.getDateCreated().getTime()));
 				
 				ps.executeUpdate();
@@ -178,6 +189,11 @@ public class HibernatePatientDAO implements PatientDAO {
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException {
+		if (StringUtils.isBlank(name) && StringUtils.isBlank(identifier)
+		        && (identifierTypes == null || identifierTypes.isEmpty())) {
+			return Collections.emptyList();
+		}
+		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
 		    matchIdentifierExactly, true);
@@ -281,13 +297,14 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+	 * @should not return null excluding retired
+	 * @should not return retired
+	 * @should not return null including retired
+	 * @should return all
 	 * @see org.openmrs.api.db.PatientDAO#getAllPatientIdentifierTypes(boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired) throws DAOException {
-		
-		// TODO test this method
-		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
 		criteria.addOrder(Order.asc("name"));
 		
@@ -485,6 +502,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
 		boolean checkPatient = patientIdentifier.getPatient() != null
 		        && patientIdentifier.getPatient().getPatientId() != null;
+		boolean checkLocation = patientIdentifier.getLocation() != null
+		        && patientIdentifier.getIdentifierType().getUniquenessBehavior() == UniquenessBehavior.LOCATION;
 		
 		// switched this to an hql query so the hibernate cache can be considered as well as the database
 		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patient.patientId "
@@ -493,12 +512,18 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (checkPatient) {
 			hql += " and p.patientId != :ptId";
 		}
+		if (checkLocation) {
+			hql += " and pi.location = :locationId";
+		}
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		query.setString("identifier", patientIdentifier.getIdentifier());
 		query.setInteger("idType", patientIdentifier.getIdentifierType().getPatientIdentifierTypeId());
 		if (checkPatient) {
 			query.setInteger("ptId", patientIdentifier.getPatient().getPatientId());
+		}
+		if (checkLocation) {
+			query.setInteger("locationId", patientIdentifier.getLocation().getLocationId());
 		}
 		return !query.uniqueResult().toString().equals("0");
 	}
@@ -535,7 +560,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean)
 	 */
-	public Integer getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	public Long getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		//Skip the ordering of names because H2(and i think PostgreSQL) will require one of the ordered
@@ -544,6 +569,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
 		    matchIdentifierExactly, false);
 		criteria.setProjection(Projections.countDistinct("patientId"));
-		return (Integer) criteria.uniqueResult();
+		return (Long) criteria.uniqueResult();
 	}
 }

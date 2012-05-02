@@ -82,26 +82,6 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 		return target;
 	}
 	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof Relationship) {
-			Relationship m = (Relationship) obj;
-			return (relationshipId.equals(m.getRelationshipId()));
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getRelationshipId() == null)
-			return super.hashCode();
-		return this.getRelationshipId().hashCode();
-	}
-	
 	// Property accessors
 	
 	/**

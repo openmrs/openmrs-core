@@ -30,7 +30,7 @@
 					<h3><spring:message code="User.createNewPerson"/></h3>
 					<form method="get" action="user.form">
 						<input type="hidden" name="createNewPerson" value="true"/>
-						<input type="submit" value="<spring:message code="general.next"/>"/>
+						<input id="createNewPersonButton" type="submit" value="<spring:message code="general.next"/>"/>
 					</form>
 				</td>
 				<td style="padding-left: 5em">

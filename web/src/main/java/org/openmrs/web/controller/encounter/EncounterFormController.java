@@ -13,10 +13,12 @@
  */
 package org.openmrs.web.controller.encounter;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -26,18 +28,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
+import org.openmrs.validator.EncounterValidator;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Provider;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.propertyeditor.FormEditor;
@@ -54,6 +61,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -79,7 +87,7 @@ public class EncounterFormController extends SimpleFormController {
 		super.initBinder(request, binder);
 		
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
-		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateTimeFormat(), true));
 		binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor());
 		binder.registerCustomEditor(Location.class, new LocationEditor());
 		binder.registerCustomEditor(Form.class, new FormEditor());
@@ -105,16 +113,47 @@ public class EncounterFormController extends SimpleFormController {
 				if (StringUtils.hasText(request.getParameter("patientId")))
 					encounter.setPatient(Context.getPatientService().getPatient(
 					    Integer.valueOf(request.getParameter("patientId"))));
-				if (StringUtils.hasText(request.getParameter("providerId")))
-					encounter.setProvider(Context.getPersonService().getPerson(
-					    Integer.valueOf(request.getParameter("providerId"))));
 				if (encounter.isVoided())
 					ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 				
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "patient", "error.null");
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "provider", "error.null");
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "error.null");
+				String[] providerIdsArray = ServletRequestUtils.getStringParameters(request, "providerIds");
+				if (ArrayUtils.isEmpty(providerIdsArray))
+					errors.reject("Encounter.provider.atleastOneProviderRequired");
 				
+				String[] roleIdsArray = ServletRequestUtils.getStringParameters(request, "encounterRoleIds");
+				
+				ProviderService ps = Context.getProviderService();
+				EncounterService es = Context.getEncounterService();
+				if (providerIdsArray != null && roleIdsArray != null) {
+					//list to store role provider mappings to be used below to detect removed providers
+					ArrayList<String> unremovedRoleAndProviders = new ArrayList<String>();
+					for (int i = 0; i < providerIdsArray.length; i++) {
+						if (StringUtils.hasText(providerIdsArray[i]) && StringUtils.hasText(roleIdsArray[i])) {
+							unremovedRoleAndProviders.add(roleIdsArray[i] + "-" + providerIdsArray[i]);
+							Provider provider = ps.getProvider(Integer.valueOf(providerIdsArray[i]));
+							EncounterRole encounterRole = es.getEncounterRole(Integer.valueOf(roleIdsArray[i]));
+							//if this is an existing provider, don't create a new one to avoid losing existing
+							//details like dateCreated, creator, uuid etc in the encounter_provider table
+							if (encounter.getProvidersByRole(encounterRole).contains(provider))
+								continue;
+							
+							//this is a new provider
+							encounter.addProvider(encounterRole, provider);
+						}
+					}
+					//Get rid of the removed ones
+					for (Map.Entry<EncounterRole, Set<Provider>> entry : encounter.getProvidersByRoles().entrySet()) {
+						for (Provider p : entry.getValue()) {
+							if (!unremovedRoleAndProviders.contains(entry.getKey().getEncounterRoleId() + "-"
+							        + p.getProviderId()))
+								encounter.removeProvider(entry.getKey(), p);
+						}
+					}
+				}
+				
+				ValidationUtils.invokeValidator(new EncounterValidator(), encounter, errors);
 			}
 		}
 		finally {
@@ -152,10 +191,6 @@ public class EncounterFormController extends SimpleFormController {
 				if (request.getParameter("patientId") != null)
 					encounter.setPatient(Context.getPatientService().getPatient(
 					    Integer.valueOf(request.getParameter("patientId"))));
-				
-				// set the provider if they changed it
-				encounter.setProvider(Context.getPersonService().getPerson(
-				    Integer.valueOf(request.getParameter("providerId"))));
 				
 				if (encounter.isVoided() && encounter.getVoidedBy() == null)
 					// if this is a "new" voiding, call voidEncounter to set appropriate attributes
@@ -251,23 +286,15 @@ public class EncounterFormController extends SimpleFormController {
 			Form form = encounter.getForm();
 			
 			map.put("encounterTypes", es.getAllEncounterTypes());
+			map.put("encounterRoles", es.getAllEncounterRoles(false));
 			map.put("forms", Context.getFormService().getAllForms());
 			// loop over the encounter's observations to find the edited obs
 			String reason = "";
 			for (Obs o : encounter.getObsAtTopLevel(true)) {
 				
-				// only the voided obs have been edited
-				if (o.isVoided()) {
-					// assumes format of: ".* (new obsId: \d*)"
-					reason = o.getVoidReason();
-					int start = reason.lastIndexOf(" ") + 1;
-					int end = reason.length() - 1;
-					try {
-						reason = reason.substring(start, end);
-						editedObs.add(Integer.valueOf(reason));
-					}
-					catch (Exception e) {}
-				}
+				// only edited obs has previous version
+				if (o.hasPreviousVersion())
+					editedObs.add(o.getObsId());
 				
 				// get the formfield for this obs
 				FormField ff = fs.getFormField(form, o.getConcept(), obsMapToReturn.keySet(), false);

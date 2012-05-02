@@ -24,7 +24,6 @@ import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
-import org.openmrs.util.PrivilegeConstants;
 
 public class TimerSchedulerTask extends TimerTask {
 	
@@ -48,11 +47,6 @@ public class TimerSchedulerTask extends TimerTask {
 	public void run() {
 		try {
 			Daemon.executeScheduledTask(task);
-			
-			if (!Context.isSessionOpen()) {
-				Context.openSession();
-			}
-			saveLastExecutionTime();
 		}
 		catch (Throwable t) {
 			// Fix #862: IllegalStateException: Timer already cancelled.
@@ -61,21 +55,14 @@ public class TimerSchedulerTask extends TimerTask {
 			    "FATAL ERROR: Task [" + task.getClass() + "] failed due to exception [" + t.getClass().getName() + "]", t);
 			SchedulerUtil.sendSchedulerError(t);
 		}
-		finally {
-			if (Context.isSessionOpen()) {
-				Context.closeSession();
-			}
-		}
 	}
 	
 	/**
 	 * Save the last execution time in the TaskDefinition
 	 */
-	private void saveLastExecutionTime() {
+	private static void saveLastExecutionTime(Task task) {
 		TaskDefinition taskDefinition = null;
 		try {
-			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
-			
 			// We re-get the task definition in case the copy set during the
 			// task initialization has become stale.  NOTE: If a task does not
 			// extend the abstract class AbstractTask, then it's possible the
@@ -94,9 +81,6 @@ public class TimerSchedulerTask extends TimerTask {
 		catch (Exception e) {
 			log.warn("Unable to save the last execution time for task ", e);
 		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
-		}
 	}
 	
 	/**
@@ -107,4 +91,11 @@ public class TimerSchedulerTask extends TimerTask {
 		task.shutdown();
 	}
 	
+	/**
+	 * Executes the given task.
+	 */
+	public static void execute(Task task) {
+		task.execute();
+		saveLastExecutionTime(task);
+	}
 }

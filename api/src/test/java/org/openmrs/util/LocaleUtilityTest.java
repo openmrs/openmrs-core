@@ -160,11 +160,6 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "ja"));
 		
 		Assert.assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
-		
-		// reset the locale
-		gp.setProperty("");
-		Context.getAdministrationService().saveGlobalProperty(gp);
-		
 	}
 	
 	/**
@@ -205,6 +200,18 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	public void getLocalesInOrder_shouldAlwaysHaveEnglishIncludedInTheReturnedCollection() throws Exception {
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
 		Assert.assertEquals(true, localesInOrder.contains(Locale.ENGLISH));
+	}
+	
+	/**
+	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 */
+	@Test
+	@Verifies(value = "should always have default locale default value included in the returned collection", method = "getLocalesInOrder()")
+	public void getLocalesInOrder_shouldAlwaysHaveDefaultLocaleDefaultValueIncludedInTheReturnedCollection()
+	        throws Exception {
+		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
+		Assert.assertEquals(true, localesInOrder.contains(LocaleUtility
+		        .fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE)));
 	}
 	
 	/**
@@ -270,7 +277,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Locale lu_UG = new Locale("lu", "UG");
 		Context.setLocale(lu_UG);
 		//note that unique list of locales should be lu_UG, lu, sw_KE, en_US, en
-		Assert.assertEquals(5, LocaleUtility.getLocalesInOrder().size());
+		Assert.assertEquals(6, LocaleUtility.getLocalesInOrder().size());
 	}
 	
 	/**
@@ -289,5 +296,36 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		GlobalProperty defaultLocale = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "",
 		        "blanking out default locale");
 		Context.getAdministrationService().saveGlobalProperty(defaultLocale);
+	}
+	
+	/**
+	 * @see LocaleUtility#getDefaultLocale()
+	 * @verifies not cache locale when session is not open
+	 */
+	@Test
+	public void getDefaultLocale_shouldNotCacheLocaleWhenSessionIsNotOpen() throws Exception {
+		// set GP default locale to valid locale that is not the OpenmrsConstant default locale
+		GlobalProperty gp = Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "ja"));
+		
+		// close session
+		Context.closeSession();
+		
+		// This might fail if default locale is called before this test is run and so the static defaultLocale is cached
+		//
+		// verify that default locale is the OpenmrsConstant default locale
+		Assert.assertEquals(LocaleUtility.fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE),
+		    LocaleUtility.getDefaultLocale());
+		
+		// open a session
+		Context.openSession();
+		authenticate();
+		
+		// verify that the default locale is the GP default locale
+		Assert.assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
+		
+		// clear GP default locale
+		gp.setPropertyValue("");
+		Context.getAdministrationService().saveGlobalProperty(gp);
 	}
 }

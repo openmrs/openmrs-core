@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptStateConversion;
+import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
@@ -46,6 +48,8 @@ import org.openmrs.test.Verifies;
 public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String CREATE_PATIENT_PROGRAMS_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-createPatientProgram.xml";
+	
+	protected static final String PROGRAM_WITH_OUTCOMES_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-initialData.xml";
 	
 	protected ProgramWorkflowService pws = null;
 	
@@ -332,6 +336,79 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 				Assert.fail("Wha?!");
 			x++;
 		}
+	}
+	
+	@Test
+	@Verifies(value = "should get possible outcomes for a program", method = "getPossibleOutcomes()")
+	public void getPossibleOutcomes_shouldGetOutcomesForASet() throws Exception {
+		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
+		
+		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(4);
+		assertEquals(2, possibleOutcomes.size());
+	}
+	
+	@Test
+	@Verifies(value = "should get possible outcomes for a program with outcome questions", method = "getPossibleOutcomes()")
+	public void getPossibleOutcomes_shouldGetOutcomesForAQuestion() throws Exception {
+		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
+		
+		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(5);
+		assertEquals(2, possibleOutcomes.size());
+	}
+	
+	@Test
+	@Verifies(value = "should get no possible outcomes for a program that does not exist", method = "getPossibleOutcomes()")
+	public void getPossibleOutcomes_shouldReturnEmptyListWhenNoProgramExists() throws Exception {
+		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
+		
+		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(999);
+		assertTrue(possibleOutcomes.isEmpty());
+	}
+	
+	@Test
+	@Verifies(value = "should get no possible outcomes for a program with no outcome", method = "getPossibleOutcomes()")
+	public void getPossibleOutcomes_shouldReturnEmptyListWhenProgramHasNoOutcome() throws Exception {
+		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
+		
+		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(1);
+		assertTrue(possibleOutcomes.isEmpty());
+	}
+	
+	/**
+	 * @see ProgramWorkflowService#saveProgram(Program)
+	 * @verifies update detached program
+	 */
+	@Test
+	public void saveProgram_shouldUpdateDetachedProgram() throws Exception {
+		Program program = Context.getProgramWorkflowService().getProgramByUuid("eae98b4c-e195-403b-b34a-82d94103b2c0");
+		program.setDescription("new description");
+		Context.evictFromSession(program);
+		
+		program = Context.getProgramWorkflowService().saveProgram(program);
+		Assert.assertEquals("new description", program.getDescription());
+	}
+	
+	/**
+	 * @see {@link ProgramWorkflowService#triggerStateConversion(Patient,Concept,Date)}
+	 */
+	@Test
+	@Verifies(value = "should skip past patient programs that are already completed", method = "triggerStateConversion(Patient,Concept,Date)")
+	public void triggerStateConversion_shouldSkipPastPatientProgramsThatAreAlreadyCompleted() throws Exception {
+		Integer patientProgramId = 1;
+		PatientProgram pp = pws.getPatientProgram(patientProgramId);
+		Date originalDateCompleted = new Date();
+		pp.setDateCompleted(originalDateCompleted);
+		pp = pws.savePatientProgram(pp);
+		
+		Concept diedConcept = cs.getConcept(16);
+		//sanity check to ensure the patient died is a possible state in one of the work flows
+		Assert.assertNotNull(pp.getProgram().getWorkflow(1).getState(diedConcept));
+		
+		Thread.sleep(10);//delay so that we have a time difference
+		pws.triggerStateConversion(pp.getPatient(), diedConcept, new Date());
+		
+		pp = pws.getPatientProgram(patientProgramId);
+		Assert.assertEquals(originalDateCompleted, pp.getDateCompleted());
 	}
 	
 	//	/**

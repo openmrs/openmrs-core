@@ -205,9 +205,12 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 							retStr += "\n\t\tResult aList = new Result();";
 							retStr += "\n\t\taList.add(new Result(" + answer + "));";
 						} else {
-							retStr += "\n\t\tConceptService conceptService = Context.getConceptService();";
 							retStr += "\n\t\tResult aList = new Result();";
-							retStr += "\n\t\taList.add(new Result(conceptService.getConcept(\"" + answer + "\")));";
+							retStr += "\n\t\tConcept concept = new Concept();";
+							retStr += "\n\t\tConceptName conceptName = new ConceptName(\"" + answer
+							        + "\", Context.getLocale());";
+							retStr += "concept.addName(conceptName);";
+							retStr += "\n\t\taList.add(new Result(concept));";
 						}
 					}
 					

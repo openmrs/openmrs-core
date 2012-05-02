@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Order;
 import org.openmrs.Person;
 import org.openmrs.activelist.ActiveListItem;
@@ -68,9 +68,9 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	public <T extends ActiveListItem> List<T> getActiveListItems(Class<T> clazz, Person p, ActiveListType type)
 	        throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clazz);
-		criteria.add(Expression.eq("activeListType", type));
-		criteria.add(Expression.eq("person", p));
-		criteria.add(Expression.eq("voided", Boolean.FALSE));
+		criteria.add(Restrictions.eq("activeListType", type));
+		criteria.add(Restrictions.eq("person", p));
+		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
 		criteria.addOrder(Order.desc("startDate"));
 		return criteria.list();
 	}
@@ -81,7 +81,7 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	@SuppressWarnings("unchecked")
 	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clazz);
-		criteria.add(Expression.eq("activeListId", activeListItemId));
+		criteria.add(Restrictions.eq("activeListId", activeListItemId));
 		return (T) criteria.uniqueResult();
 	}
 	
@@ -90,7 +90,7 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	 */
 	public ActiveListItem getActiveListItemByUuid(String uuid) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ActiveListItem.class);
-		criteria.add(Expression.eq("uuid", uuid));
+		criteria.add(Restrictions.eq("uuid", uuid));
 		return (ActiveListItem) criteria.uniqueResult();
 	}
 	

@@ -1,16 +1,17 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.openmrs">
 
 	<class name="Location" table="location">
 
-        <cache usage="read-write"/>
+		<cache usage="read-write"/>
 
 		<id name="locationId" type="int" column="location_id">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">location_location_id_seq</param>
+			</generator>
 		</id>
 
 		<discriminator column="location_id" insert="false" />
@@ -59,19 +60,19 @@
 		<set name="childLocations" inverse="true" cascade="all" order-by="name" batch-size="100">
 			<key column="parent_location" />
 			<one-to-many class="Location" />
- 		</set>
+		</set>
 		
 		<set name="tags" table="location_tag_map" lazy="true" cascade="none">
 			<key column="location_id" />
 			<many-to-many class="org.openmrs.LocationTag">
- 				<column name="location_tag_id" />
+				<column name="location_tag_id" />
 			</many-to-many>
 		</set>
 
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="creator" class="User" not-null="true">
-			<column name="creator" />
-		</many-to-one>
+        <many-to-one name="creator" class="User" not-null="true">
+            <column name="creator" />
+        </many-to-one>
 
         <many-to-one name="retiredBy" class="org.openmrs.User"
             column="retired_by" />
@@ -81,6 +82,12 @@
             column="retire_reason" length="255" />
         <property name="retired" type="boolean" column="retired"
             length="1" not-null="true" />
+            
+        <set name="attributes" lazy="true" inverse="true" batch-size="100"
+            cascade="all-delete-orphan" order-by="voided asc">
+            <key column="location_id" />
+            <one-to-many class="LocationAttribute" />
+        </set>
 
-	</class>
+    </class>
 </hibernate-mapping>

@@ -15,48 +15,69 @@ package org.openmrs.hl7;
 
 import java.util.Hashtable;
 
+import org.openmrs.util.PrivilegeConstants;
+
 /**
  * Constants used by the hl7 package
  */
 public class HL7Constants {
 	
-	public static final String PRIV_ADD_HL7_SOURCE = "Add HL7 Source";
+	@Deprecated
+	public static final String PRIV_ADD_HL7_SOURCE = PrivilegeConstants.PRIV_ADD_HL7_SOURCE;
 	
-	public static final String PRIV_VIEW_HL7_SOURCE = "View HL7 Source";
+	@Deprecated
+	public static final String PRIV_VIEW_HL7_SOURCE = PrivilegeConstants.PRIV_VIEW_HL7_SOURCE;
 	
-	public static final String PRIV_MANAGE_HL7_SOURCE = "Update HL7 Source";
+	@Deprecated
+	public static final String PRIV_MANAGE_HL7_SOURCE = PrivilegeConstants.PRIV_UPDATE_HL7_SOURCE;
 	
-	public static final String PRIV_PURGE_HL7_SOURCE = "Purge HL7 Source";
+	@Deprecated
+	public static final String PRIV_PURGE_HL7_SOURCE = PrivilegeConstants.PRIV_PURGE_HL7_SOURCE;
 	
-	public static final String PRIV_ADD_HL7_IN_QUEUE = "Add HL7 Inbound Queue";
+	@Deprecated
+	public static final String PRIV_ADD_HL7_IN_QUEUE = PrivilegeConstants.PRIV_ADD_HL7_IN_QUEUE;
 	
-	public static final String PRIV_VIEW_HL7_IN_QUEUE = "View HL7 Inbound Queue";
+	@Deprecated
+	public static final String PRIV_VIEW_HL7_IN_QUEUE = PrivilegeConstants.PRIV_VIEW_HL7_IN_QUEUE;
 	
-	public static final String PRIV_UPDATE_HL7_IN_QUEUE = "Update HL7 Inbound Queue";
+	@Deprecated
+	public static final String PRIV_UPDATE_HL7_IN_QUEUE = PrivilegeConstants.PRIV_UPDATE_HL7_IN_QUEUE;
 	
-	public static final String PRIV_DELETE_HL7_IN_QUEUE = "Delete HL7 Inbound Queue";
+	@Deprecated
+	public static final String PRIV_DELETE_HL7_IN_QUEUE = PrivilegeConstants.PRIV_DELETE_HL7_IN_QUEUE;
 	
-	public static final String PRIV_PURGE_HL7_IN_QUEUE = "Purge HL7 Inbound Queue";
+	@Deprecated
+	public static final String PRIV_PURGE_HL7_IN_QUEUE = PrivilegeConstants.PRIV_PURGE_HL7_IN_QUEUE;
 	
-	public static final String PRIV_ADD_HL7_IN_ARCHIVE = "Add HL7 Inbound Archive";
+	@Deprecated
+	public static final String PRIV_ADD_HL7_IN_ARCHIVE = PrivilegeConstants.PRIV_ADD_HL7_IN_ARCHIVE;
 	
-	public static final String PRIV_VIEW_HL7_IN_ARCHIVE = "View HL7 Inbound Archive";
+	@Deprecated
+	public static final String PRIV_VIEW_HL7_IN_ARCHIVE = PrivilegeConstants.PRIV_VIEW_HL7_IN_ARCHIVE;
 	
-	public static final String PRIV_UPDATE_HL7_IN_ARCHIVE = "Update HL7 Inbound Archive";
+	@Deprecated
+	public static final String PRIV_UPDATE_HL7_IN_ARCHIVE = PrivilegeConstants.PRIV_UPDATE_HL7_IN_ARCHIVE;
 	
-	public static final String PRIV_DELETE_HL7_IN_ARCHIVE = "Delete HL7 Inbound Archive";
+	@Deprecated
+	public static final String PRIV_DELETE_HL7_IN_ARCHIVE = PrivilegeConstants.PRIV_DELETE_HL7_IN_ARCHIVE;
 	
-	public static final String PRIV_PURGE_HL7_IN_ARCHIVE = "Purge HL7 Inbound Archive";
+	@Deprecated
+	public static final String PRIV_PURGE_HL7_IN_ARCHIVE = PrivilegeConstants.PRIV_PURGE_HL7_IN_ARCHIVE;
 	
-	public static final String PRIV_ADD_HL7_IN_EXCEPTION = "Add HL7 Inbound Exception";
+	@Deprecated
+	public static final String PRIV_ADD_HL7_IN_EXCEPTION = PrivilegeConstants.PRIV_ADD_HL7_IN_EXCEPTION;
 	
-	public static final String PRIV_VIEW_HL7_IN_EXCEPTION = "View HL7 Inbound Exception";
+	@Deprecated
+	public static final String PRIV_VIEW_HL7_IN_EXCEPTION = PrivilegeConstants.PRIV_VIEW_HL7_IN_EXCEPTION;
 	
-	public static final String PRIV_UPDATE_HL7_IN_EXCEPTION = "Update HL7 Inbound Exception";
+	@Deprecated
+	public static final String PRIV_UPDATE_HL7_IN_EXCEPTION = PrivilegeConstants.PRIV_UPDATE_HL7_IN_EXCEPTION;
 	
-	public static final String PRIV_DELETE_HL7_IN_EXCEPTION = "Delete HL7 Inbound Exception";
+	@Deprecated
+	public static final String PRIV_DELETE_HL7_IN_EXCEPTION = PrivilegeConstants.PRIV_DELETE_HL7_IN_EXCEPTION;
 	
-	public static final String PRIV_PURGE_HL7_IN_EXCEPTION = "Purge HL7 Inbound Exception";
+	@Deprecated
+	public static final String PRIV_PURGE_HL7_IN_EXCEPTION = PrivilegeConstants.PRIV_PURGE_HL7_IN_EXCEPTION;
 	
 	public static final Integer HL7_STATUS_PENDING = 0;
 	
@@ -121,6 +142,13 @@ public class HL7Constants {
 	public static final String HL7_ARCHIVE_DIRECTORY_NAME = "hl7_archives";
 	
 	/**
+	 * @since 1.10
+	 */
+	public static final String HL7_FORM_ID = "AMRS.ELD.FORMID";
+	
+	public static final String HL7_FORM_UUID = "AMRS.ELD.FORMUUID";
+	
+	/**
 	 * the key to be used for numberTransferred archives in the progressStatusMap
 	 * 
 	 * @since 1.7
@@ -162,4 +190,22 @@ public class HL7Constants {
 		// to get InfoPath to treat booleans properly
 		simpleDatatypes.put(HL7_BOOLEAN, "_infopath_boolean");
 	}
+	
+	/**
+	 * Assigning authority for an id for a provider in an HL7 message that specifies that it is a
+	 * provider identifier
+	 */
+	public static final String PROVIDER_ASSIGNING_AUTH_IDENTIFIER = "PROVIDER.IDENTIFIER";
+	
+	/**
+	 * Assigning authority for an id for a provider in an HL7 message that specifies that it is a
+	 * provider id
+	 */
+	public static final String PROVIDER_ASSIGNING_AUTH_PROV_ID = "PROVIDER.ID";
+	
+	/**
+	 * Assigning authority for an id for a provider in an HL7 message that specifies that it is a
+	 * provider uuid
+	 */
+	public static final String PROVIDER_ASSIGNING_AUTH_PROV_UUID = "PROVIDER.UUID";
 }

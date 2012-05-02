@@ -6,6 +6,7 @@
 <%@ include file="localHeader.jsp" %>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 
 <script type="text/javascript">
 	var idToNameMap = new Array();
@@ -13,8 +14,17 @@
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
 	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 
+    dojo.addOnLoad( function() {
+		dojo.event.topic.subscribe("oSearch/select",
+			function(msg) {
+				var popup = dojo.widget.manager.getWidgetById("outcomeConceptSelection");
+				popup.hiddenInputNode.value = msg.objs[0].conceptId;
+				popup.displayNode.innerHTML = msg.objs[0].name;
+			}
+		);
+	});
 	dojo.addOnLoad( function() {
-		dojo.event.topic.subscribe("cSearch/select", 
+		dojo.event.topic.subscribe("cSearch/select",
 			function(msg) {
 				var popup = dojo.widget.manager.getWidgetById("conceptSelection");
 				popup.hiddenInputNode.value = msg.objs[0].conceptId;
@@ -43,18 +53,18 @@
 	}
 	
 	function cleanupWorkflowsValue() {
-		var value = $('workflowsValue').value;
+		var value = $j('#workflowsValue').val();
 		if (value == '' || value == 'null') value = ':';
-		$('workflowsValue').value = value;
+		$j('#workflowsValue').val(value);
 	}
 	
 	function addWorkflow(conceptId) {
-		$('workflowsValue').value = $('workflowsValue').value + ' ' + conceptId;
+		$j('#workflowsValue').val($j('#workflowsValue').val() + ' ' + conceptId);
 		refreshWorkflowsDisplay();
 	}
 	
 	function removeWorkflow(conceptId) {
-		var value = $('workflowsValue').value;
+		var value = $j('#workflowsValue').val();
 		if (value == '' || value == 'null') value = ':';
 		var progId = value.substring(0, value.indexOf(":"));
 		value = value.substring(value.indexOf(":") + 1);
@@ -65,13 +75,13 @@
 				ret += values[i] + ' ';
 			}
 		}
-		$('workflowsValue').value = ret;
+		$j('#workflowsValue').val(ret);
 		refreshWorkflowsDisplay();
 	}
 	
 	function refreshWorkflowsDisplay() {
 		var tableId = 'workflowsDisplay';
-		var value = $('workflowsValue').value;
+		var value = $j('#workflowsValue').val();
 		value = value.substring(value.indexOf(":") + 1);
 		values = helper(value);
 		dwr.util.removeAllRows(tableId);
@@ -162,6 +172,21 @@
 			
 		</td>
 	</tr>
+    <tr>
+		<th><spring:message code="Program.outcomes"/></th>
+		<td>
+			<spring:bind path="program.outcomesConcept">
+				<div dojoType="ConceptSearch" widgetId="oSearch" conceptId="${status.value}" showVerboseListing="false" conceptClasses="Program"></div>
+				<div dojoType="OpenmrsPopup" widgetId="outcomeConceptSelection" hiddenInputName="${status.expression}" searchWidget="oSearch" searchTitle='<spring:message code="Concept.find" />'></div>
+
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">
+						${status.errorMessage}
+					</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
 </table>
 <br />
 <input type="submit" value='<spring:message code="Program.save"/>' onClick="$('theForm').submit()" />
@@ -169,8 +194,15 @@
 
 <script type="text/javascript">
 	cleanupWorkflowsValue();
-	<c:forEach var="workflow" items="${program.workflows}">
-		idToNameMap[${workflow.concept.conceptId}] = '<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>';
+	<c:forEach var="workflow" items="${program.allWorkflows}">
+		<c:choose>
+		<c:when test="${!workflow.retired}">
+			idToNameMap[${workflow.concept.conceptId}] = '<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>';
+		</c:when>
+		<c:otherwise>
+			removeWorkflow(${workflow.concept.conceptId});
+		</c:otherwise>
+		</c:choose>
 	</c:forEach>
 	refreshWorkflowsDisplay();
 </script>

@@ -100,8 +100,7 @@ public interface VisitDAO {
 	 * @param maxStartDatetime the maximum visit start date to match against
 	 * @param minEndDatetime the minimum visit end date to match against
 	 * @param maxEndDatetime the maximum visit end date to match against
-	 * @param includeEnded specifies if ended visits should be returned or not, ended visits are
-	 *            visits whose end date is not null.
+	 * @param includeInactive specifies if inactive visits should be returned or not
 	 * @param includeVoided specifies if voided visits should also be returned
 	 * @return a list of visits
 	 * @throws DAOException
@@ -110,7 +109,7 @@ public interface VisitDAO {
 	 */
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, String> serializedAttributeVAlues,
+	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, String> serializedAttributeValues,
 	        boolean includeInactive, boolean includeVoided) throws DAOException;
 	
 	/**
@@ -144,5 +143,16 @@ public interface VisitDAO {
 	 * @see VisitService#getVisitAttributeByUuid(String)
 	 */
 	VisitAttribute getVisitAttributeByUuid(String uuid);
+	
+	/**
+	 * Gets the next active visit which matches the specified visit types
+	 * 
+	 * @param previousVisit the visit that precedes the one we are fetching
+	 * @param visitTypes a collection of visit types to match against
+	 * @param maximumStartDate the next visit should have been created before or at this date time
+	 * @return a {@link Visit}
+	 * @should return the next unvoided active visit matching the specified types and startDate
+	 */
+	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes, Date maximumStartDate);
 	
 }

@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -65,7 +64,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Longer running class used to demonstrate tasks running concurrently
 	 */
-	static class ExecutePrintingTask extends AbstractTask {
+	public static class ExecutePrintingTask extends AbstractTask {
 		
 		public void execute() {
 			synchronized (outputForConcurrentTasks) {
@@ -106,6 +105,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t1.setTaskClass(ExecutePrintingTask.class.getName());
 		t1.setProperty("id", "TASK-1");
 		t1.setProperty("delay", "400"); // must be longer than t2's delay
+		t1.setName("name");
+		t1.setRepeatInterval(5000l);
 		
 		TaskDefinition t2 = new TaskDefinition();
 		t2.setId(2);
@@ -114,11 +115,13 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t2.setTaskClass(ExecutePrintingTask.class.getName());
 		t2.setProperty("id", "TASK-2");
 		t2.setProperty("delay", "100"); // must be shorter than t1's delay
+		t2.setName("name");
+		t2.setRepeatInterval(5000l);
 		
 		schedulerService.scheduleTask(t1);
 		Thread.sleep(50); // so t2 doesn't start before t1 due to random millisecond offsets
 		schedulerService.scheduleTask(t2);
-		Thread.sleep(600); // must be longer than t2's delay
+		Thread.sleep(2500); // must be longer than t2's delay
 		assertEquals(Arrays.asList("TASK-1", "TASK-2", "TASK-2", "TASK-1"), outputForConcurrentTasks);
 	}
 	
@@ -127,7 +130,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Longer init'ing class for concurrent init test
 	 */
-	static class SimpleTask extends AbstractTask {
+	public static class SimpleTask extends AbstractTask {
 		
 		public void initialize(TaskDefinition config) {
 			synchronized (outputForConcurrentInit) {
@@ -173,6 +176,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t3.setTaskClass(SimpleTask.class.getName());
 		t3.setProperty("id", "TASK-3");
 		t3.setProperty("delay", "300"); // must be longer than t4's delay
+		t3.setName("name");
+		t3.setRepeatInterval(5000l);
 		
 		TaskDefinition t4 = new TaskDefinition();
 		t4.setId(4);
@@ -181,6 +186,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t4.setTaskClass(SimpleTask.class.getName());
 		t4.setProperty("id", "TASK-4");
 		t4.setProperty("delay", "100");
+		t4.setName("name");
+		t4.setRepeatInterval(5000l);
 		
 		// both of these tasks start immediately
 		schedulerService.scheduleTask(t3); // starts first, ends last
@@ -195,7 +202,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	private static List<String> outputForInitExecSync = new ArrayList<String>();
 	
-	static class SampleTask5 extends AbstractTask {
+	public static class SampleTask5 extends AbstractTask {
 		
 		public void initialize(TaskDefinition config) {
 			synchronized (outputForInitExecSync) {
@@ -242,9 +249,11 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t5.setStartOnStartup(false);
 		t5.setStartTime(null); // immediate start
 		t5.setTaskClass(SampleTask5.class.getName());
+		t5.setName("name");
+		t5.setRepeatInterval(5000l);
 		
 		schedulerService.scheduleTask(t5);
-		Thread.sleep(1200);
+		Thread.sleep(2500);
 		assertEquals(Arrays.asList("INIT-START-5", "INIT-END-5", "IN EXECUTE"), outputForInitExecSync);
 	}
 	
@@ -269,7 +278,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Sample task that does not extend AbstractTask
 	 */
-	static class BareTask implements Task {
+	public static class BareTask implements Task {
 		
 		public static ArrayList outputList = new ArrayList();
 		
@@ -295,7 +304,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Task which does not return TaskDefinition in getTaskDefinition should run without throwing exceptions.
+	 * Task which does not return TaskDefinition in getTaskDefinition should run without throwing
+	 * exceptions.
 	 * 
 	 * @throws Exception
 	 */
@@ -309,6 +319,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		td.setStartOnStartup(false);
 		td.setTaskClass(BareTask.class.getName());
 		td.setStartTime(null);
+		td.setName("name");
+		td.setRepeatInterval(5000l);
 		
 		schedulerService.scheduleTask(td);
 		Thread.sleep(500);
@@ -319,7 +331,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Task opens a session and stores the execution time.
 	 */
-	static class SessionTask extends AbstractTask {
+	public static class SessionTask extends AbstractTask {
 		
 		public void execute() {
 			try {
@@ -337,13 +349,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Check saved last execution time.
-	 * 
-	 * TODO: Fix this test so that it doesn't depend on timing.  
-	 *   See http://tickets.openmrs.org/browse/TRUNK-1964
-	 * 
 	 */
 	@Test
-	@Ignore
 	public void shouldSaveLastExecutionTime() throws Exception {
 		final String NAME = "Session Task";
 		SchedulerService service = Context.getSchedulerService();
@@ -353,6 +360,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		td.setStartOnStartup(false);
 		td.setTaskClass(SessionTask.class.getName());
 		td.setStartTime(null);
+		td.setRepeatInterval(new Long(0));//0 indicates single execution
 		service.saveTask(td);
 		
 		service.scheduleTask(td);

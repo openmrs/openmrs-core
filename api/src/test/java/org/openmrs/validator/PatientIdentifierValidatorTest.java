@@ -19,10 +19,12 @@ import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientIdentifierType.UniquenessBehavior;
 import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.InvalidIdentifierFormatException;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
@@ -165,6 +167,24 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	public void validateIdentifier_shouldFailValidationIfIdentifierIsBlank() throws Exception {
 		PatientIdentifier identifier = new PatientIdentifier("", new PatientIdentifierType(1), new Location(1));
 		PatientIdentifierValidator.validateIdentifier(identifier);
+	}
+	
+	/**
+	 * @see {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should pass if in use and id type uniqueness is set to non unique", method = "validateIdentifier(PatientIdentifier)")
+	public void validateIdentifier_shouldPassIfInUseAndIdTypeUniquenessIsSetToNonUnique() throws Exception {
+		PatientService patientService = Context.getPatientService();
+		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
+		Assert.assertNotNull(duplicateId.getLocation());
+		
+		PatientIdentifierType idType = duplicateId.getIdentifierType();
+		idType.setUniquenessBehavior(UniquenessBehavior.NON_UNIQUE);
+		patientService.savePatientIdentifierType(idType);
+		
+		PatientIdentifier pi = new PatientIdentifier(duplicateId.getIdentifier(), idType, duplicateId.getLocation());
+		PatientIdentifierValidator.validateIdentifier(pi);
 	}
 	
 }

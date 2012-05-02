@@ -14,19 +14,23 @@
 package org.openmrs.web;
 
 import java.text.NumberFormat;
+import java.util.Date;
 
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Location;
+import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.Order;
 import org.openmrs.Patient;
@@ -48,13 +52,17 @@ import org.openmrs.propertyeditor.ConceptAnswerEditor;
 import org.openmrs.propertyeditor.ConceptClassEditor;
 import org.openmrs.propertyeditor.ConceptDatatypeEditor;
 import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.ConceptMapTypeEditor;
 import org.openmrs.propertyeditor.ConceptNameEditor;
 import org.openmrs.propertyeditor.ConceptNumericEditor;
+import org.openmrs.propertyeditor.ConceptReferenceTermEditor;
 import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.propertyeditor.DataExportReportObjectEditor;
+import org.openmrs.propertyeditor.DateOrDatetimeEditor;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
 import org.openmrs.propertyeditor.FormEditor;
+import org.openmrs.propertyeditor.LocationAttributeTypeEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.LocationTagEditor;
 import org.openmrs.propertyeditor.OrderEditor;
@@ -76,7 +84,6 @@ import org.openmrs.propertyeditor.VisitTypeEditor;
 import org.openmrs.report.ReportSchemaXml;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.reporting.report.ReportDefinition;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
@@ -108,6 +115,7 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(Form.class, new FormEditor());
 		wdb.registerCustomEditor(Location.class, new LocationEditor());
 		wdb.registerCustomEditor(LocationTag.class, new LocationTagEditor());
+		wdb.registerCustomEditor(LocationAttributeType.class, new LocationAttributeTypeEditor());
 		wdb.registerCustomEditor(Order.class, new OrderEditor());
 		wdb.registerCustomEditor(Patient.class, new PatientEditor());
 		wdb.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
@@ -124,7 +132,11 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(User.class, new UserEditor());
 		wdb.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, NumberFormat
 		        .getInstance(Context.getLocale()), true));
-		wdb.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
+		wdb.registerCustomEditor(Date.class, new DateOrDatetimeEditor());
+		wdb.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
+		wdb.registerCustomEditor(ConceptMapType.class, new ConceptMapTypeEditor());
+		wdb.registerCustomEditor(ConceptSource.class, new ConceptSourceEditor());
+		wdb.registerCustomEditor(ConceptReferenceTerm.class, new ConceptReferenceTermEditor());
 		wdb.registerCustomEditor(VisitType.class, new VisitTypeEditor());
 		wdb.registerCustomEditor(Visit.class, new VisitEditor());
 		

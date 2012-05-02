@@ -5,18 +5,18 @@
 	<div class="content">
 		<table align="center" cellspacing="5" cellpadding="9">
 			<tr>
-				<td colspan="2" class="question">Log in as a User that has the $superuserrole role to continue.</td>
+				<td colspan="2" class="question">$l10n.get("update.maintenance.login").insert($superuserrole)</td>
 			</tr>
             <tr>
-                <td>OpenMRS Username</td>
+                <td>$l10n.get("update.maintenance.username")</td>
                 <td><input type="text" name="username"/></td>
             </tr>
             <tr>
-                <td>Password</td>
+                <td>$l10n.get("install.simple.passwd")</td>
                 <td><input type="password" name="password"/></td>
             </tr>
             <tr>
-                <td colspan="2"><input class="button" type="submit" value="Continue"/></td>
+                <td colspan="2" align="center"><input type="image" src="images/forward_button.png" name="continue"/></td>
             </tr>
 		</table>
 	</div>

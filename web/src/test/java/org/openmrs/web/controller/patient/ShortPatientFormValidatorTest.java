@@ -3,7 +3,6 @@ package org.openmrs.web.controller.patient;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -242,7 +241,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	@Test
 	@Verifies(value = "should reject a duplicate name", method = "validate(Object,Errors)")
 	public void validate_shouldRejectADuplicateName() throws Exception {
-		Patient patient = ps.getPatient(2);
+		Patient patient = ps.getPatient(7);
 		PersonName oldName = patient.getPersonName();
 		Assert.assertEquals(1, patient.getNames().size());//sanity check
 		//add a name for testing purposes

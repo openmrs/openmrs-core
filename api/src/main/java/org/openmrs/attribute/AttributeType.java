@@ -14,46 +14,19 @@
 package org.openmrs.attribute;
 
 import org.openmrs.OpenmrsMetadata;
-import org.openmrs.attribute.handler.AttributeHandler;
+import org.openmrs.customdatatype.Customizable;
+import org.openmrs.customdatatype.RepeatingCustomValueDescriptor;
 
 /**
  * Common interface for user-defined extensions to core domain objects, which would be handled by adding
  * custom database columns in a less generic system. 
  * For example Visit has VisitAttributes that are defined by VisitAttributeTypes (that implement
  * AttributeType<Visit>).
- * @param <OwningType> the type this attribute type can belong to
  * @see Attribute
  * @see Customizable
  * @see AttributeHandler
  * @since 1.9
  */
-public interface AttributeType<OwningType extends Customizable<?>> extends OpenmrsMetadata {
-	
-	/**
-	 * Implementations should never return null. Positive return values indicate a "required" attribute type.
-	 * @return the minimum number of times that attributes of this type must be present on the OwningType.
-	 */
-	Integer getMinOccurs();
-	
-	/**
-	 * Implementation should never return a number <= 0.
-	 * @return 
-	 */
-	Integer getMaxOccurs();
-	
-	/**
-	 * The complete list of available datatypes are defined by subclasses of {@link AttributeHandler}.
-	 * @return the datatype represented by this attribute type, for example "regex-validated-string"
-	 * @see AttributeHandler
-	 */
-	String getDatatype();
-	
-	/**
-	 * May be null.
-	 * @return the configuration to be passed to the handler for a datatype. For example if the
-	 * datatype is "regex-validated-string", the handlerConfig would be the regular expression.
-	 * @see AttributeHandler#setConfiguration(String)
-	 */
-	String getHandlerConfig();
-	
+public interface AttributeType<OwningType extends Customizable<?>> extends RepeatingCustomValueDescriptor, OpenmrsMetadata {
+
 }

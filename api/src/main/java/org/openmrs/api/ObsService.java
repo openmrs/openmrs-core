@@ -176,6 +176,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should set creator and dateCreated on new obs
 	 * @should cascade save to child obs groups
 	 * @should cascade update to new child obs groups
+	 * @should link original and updated obs
 	 */
 	@Authorized( { PrivilegeConstants.ADD_OBS, PrivilegeConstants.EDIT_OBS })
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException;
@@ -708,4 +709,5 @@ public interface ObsService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided);
+	
 }

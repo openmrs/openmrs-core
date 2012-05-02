@@ -105,7 +105,6 @@ public class DWROrderService {
 				throw new APIException(e.getMessage());
 			}
 		}
-		
 		Order o = Context.getOrderService().getOrder(orderId);
 		try {
 			Context.getOrderService().discontinueOrder(o,

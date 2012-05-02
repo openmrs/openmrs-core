@@ -20,15 +20,18 @@ import java.util.Map;
 
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.EncounterDAO;
+import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +67,13 @@ public interface EncounterService extends OpenmrsService {
 	 * @should not overwrite creator if non null
 	 * @should not overwrite dateCreated if non null
 	 * @should not overwrite obs and orders creator or dateCreated
-	 * @should cascade creator and dateCreated to orders
+	 * @should not assign encounter to visit if no handler is registered
+	 * @should not assign encounter to visit if the no assign handler is registered
+	 * @should assign encounter to visit if the assign to existing handler is registered
+	 * @should assign encounter to visit if the assign to existing or new handler is registered
+	 * @should cascade save encounter providers
+	 * @should cascade delete encounter providers
+	 * @should void and create new obs when saving encounter
 	 */
 	@Authorized( { PrivilegeConstants.ADD_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter saveEncounter(Encounter encounter) throws APIException;
@@ -203,7 +212,7 @@ public interface EncounterService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
 	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided);
 	
 	/**
@@ -634,6 +643,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @since 1.8
 	 * @should get all the unique encounters that match the specified parameter values
 	 * @should not return voided encounters if includeVoided is set to true
+	 * @should return empty list for empty query
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
@@ -668,11 +678,170 @@ public interface EncounterService extends OpenmrsService {
 	 * Gets all encounters grouped within a given visit.
 	 * 
 	 * @param visit the visit.
+	 * @param includeVoided whether voided encounters should be returned
 	 * @return list of encounters in the given visit.
-	 * @should get encounters by visit
+	 * @should get active encounters by visit
+	 * @should include voided encounters when includeVoided is true
 	 * @since 1.9
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
-	List<Encounter> getEncountersByVisit(Visit visit);
+	List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided);
+	
+	/**
+	 * @return list of handlers for determining if an encounter should go into a visit. If none are
+	 *         found, an empty list.
+	 * @see EncounterVisitHandler
+	 * @since 1.9
+	 * @should return the no assignment handler
+	 * @should return the existing visit only assignment handler
+	 * @should return the existing or new visit assignment handler
+	 */
+	@Transactional(readOnly = true)
+	public List<EncounterVisitHandler> getEncounterVisitHandlers();
+	
+	/**
+	 * Gets the active handler for assigning visits to encounters.
+	 * 
+	 * @see EncounterVisitHandler
+	 * @since 1.9
+	 * @return the active handler class.
+	 * @throws APIException thrown if something goes wrong during the retrieval of the handler.
+	 */
+	@Transactional(readOnly = true)
+	public EncounterVisitHandler getActiveEncounterVisitHandler() throws APIException;
+	
+	/**
+	 * Saves a new encounter role or updates an existing encounter role.
+	 * 
+	 * @param encounterRole to be saved
+	 * @throws APIException
+	 * @return EncounterRole
+	 * @since 1.9
+	 * @should save encounter role with basic details
+	 * @should update encounter role successfully
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws APIException;
+	
+	/**
+	 * Gets an encounter role when and internal encounter role id is provided.
+	 * 
+	 * @param encounterRoleId to be retrieved
+	 * @throws APIException
+	 * @return EncounterRole
+	 * @since 1.9
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTER_ROLES })
+	public EncounterRole getEncounterRole(Integer encounterRoleId) throws APIException;
+	
+	/**
+	 * Completely remove an encounter role from database. For super users only. If dereferencing
+	 * encounter roles, use
+	 * <code>retireEncounterRole(org.openmrs.Encounter, java.lang.String)</code>
+	 * 
+	 * @param encounterRole encounter role object to be purged
+	 * @since 1.9
+	 * @should purge Encounter Role
+	 */
+	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTER_ROLES })
+	public void purgeEncounterRole(EncounterRole encounterRole) throws APIException;
+	
+	/**
+	 * Get all encounter roles based on includeRetired flag
+	 * 
+	 * @param includeRetired
+	 * @return List of all encounter roles
+	 * @since 1.9
+	 * @should get all encounter roles based on include retired flag.
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired);
+	
+	/**
+	 * Get EncounterRole by its UUID
+	 * 
+	 * @param uuid
+	 * @return EncounterRole
+	 * @since 1.9
+	 * @should find encounter role based on uuid
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	public EncounterRole getEncounterRoleByUuid(String uuid) throws APIException;
+	
+	/**
+	 * Retire an EncounterRole. This essentially marks the given encounter role as a non-current
+	 * type that shouldn't be used anymore.
+	 * 
+	 * @param encounterRole the encounter role to retire
+	 * @param reason required non-null purpose for retiring this encounter role
+	 * @throws APIException
+	 * @since 1.9
+	 * @should retire type and set attributes
+	 * @should throw error if given null reason parameter
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	public EncounterRole retireEncounterRole(EncounterRole encounterRole, String reason) throws APIException;
+	
+	/**
+	 * Unretire an EncounterRole. This brings back the given encounter role and says that it can be
+	 * used again
+	 * 
+	 * @param encounterRole the encounter role to unretire
+	 * @throws APIException
+	 * @since 1.9
+	 * @should unretire type and unmark attributes
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	public EncounterRole unretireEncounterRole(EncounterRole encounterType) throws APIException;
+	
+	/**
+	 * Gets the unvoided encounters for the specified patient that are not assigned to any visit.
+	 * Note that this method will return a maximum of 100 encounters.
+	 * 
+	 * @param patient the patient to match against
+	 * @return a list of {@link Encounter}s
+	 * @throws APIException
+	 * @should return the unvoided encounters not assigned to any visit
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws APIException;
+	
+	/**
+	 * Gets encounters for the given patient. It populates results with empty encounters to include
+	 * visits that have no assigned encounters.
+	 * <p>
+	 * The empty encounters have only visit set.
+	 * 
+	 * @param patient the patient to match
+	 * @param includeVoided if voided encounters or visits should be included
+	 * @param query filters results (defaults to return all results if <code>null<code>)
+	 * @param start index to start with (defaults to 0 if <code>null<code>)
+	 * @param length number of results to return (default to return all results if <code>null<code>)
+	 * @return encounters and empty encounters with only visit set
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_VISITS })
+	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
+	        Integer start, Integer length) throws APIException;
+	
+	/**
+	 * Returns result count for
+	 * {@link #getEncountersByVisitsAndPatient(Patient, boolean, String, Integer, Integer)}.
+	 * 
+	 * @param patient
+	 * @param includeVoided
+	 * @param query
+	 * @return number of results
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_VISITS })
+	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query)
+	        throws APIException;
 }

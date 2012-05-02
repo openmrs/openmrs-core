@@ -58,67 +58,6 @@ public class ConceptSourceListController extends SimpleFormController {
 	}
 	
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
-	 * 
-	 * @should retire concept source
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
-	 *      org.springframework.validation.BindException)
-	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
-		
-		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
-		if (Context.isAuthenticated()) {
-			
-			String[] conceptSourceIdList = request.getParameterValues("conceptSourceId");
-			ConceptService cs = Context.getConceptService();
-			
-			String success = "";
-			String error = "";
-			
-			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String deleted = msa.getMessage("general.retired");
-			String notDeleted = msa.getMessage("general.cannot.retire");
-			String retireReason = request.getParameter("retireReason");
-			if (retireReason == null || retireReason.length() == 0) {
-				error = getMessageSourceAccessor().getMessage("general.retiredReason.empty");
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
-				return showForm(request, response, errors);
-			}
-			
-			if (conceptSourceIdList != null) {
-				for (String conceptSourceId : conceptSourceIdList) {
-					try {
-						ConceptSource source = cs.getConceptSource(Integer.valueOf(conceptSourceId));
-						cs.retireConceptSource(source, retireReason);
-						if (!success.equals(""))
-							success += "<br>";
-						success += conceptSourceId + " " + deleted;
-					}
-					catch (APIException e) {
-						log.warn("Error deleting concept source", e);
-						if (!error.equals(""))
-							error += "<br>";
-						error += conceptSourceId + " " + notDeleted;
-					}
-				}
-			}
-			
-			view = getSuccessView();
-			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
-			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
-		}
-		
-		return new ModelAndView(new RedirectView(view));
-	}
-	
-	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
 	 * 
@@ -132,7 +71,7 @@ public class ConceptSourceListController extends SimpleFormController {
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
-			conceptSourceList = cs.getAllConceptSources();
+			conceptSourceList = cs.getAllConceptSources(true);
 		}
 		
 		return conceptSourceList;
@@ -153,7 +92,7 @@ public class ConceptSourceListController extends SimpleFormController {
 		// make available the source that corresponds to the implementation id 
 		if (implId != null) {
 			for (ConceptSource conceptSource : conceptSources) {
-				if (conceptSource.getHl7Code().equals(implId.getImplementationId()))
+				if (conceptSource.getHl7Code() != null && conceptSource.getHl7Code().equals(implId.getImplementationId()))
 					map.put("implIdSource", conceptSource);
 			}
 		}

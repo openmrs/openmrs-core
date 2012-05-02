@@ -161,8 +161,8 @@ public class MLMObject {
 	
 	public void WriteAction(Writer w) throws Exception {
 		try {
-			w.append("\tpublic void initAction() {\n");
-			w.append("\t\tthis.actions = new ArrayList<String>();\n");
+			w.append("\tpublic ArrayList<String> initAction() {\n");
+			w.append("\t\tArrayList<String> actions = new ArrayList<String>();\n");
 			
 			int pos = 1;
 			for (Action action : this.actions) {
@@ -174,10 +174,12 @@ public class MLMObject {
 				pos++;
 			}
 			
+			w.append("\n\n\t\treturn actions;\n");
 			w.append("\t}\n\n"); // End of this function
 			w.flush();
 			
-			w.append("\tprivate String substituteString(String variable,String outStr){\n");
+			w
+			        .append("\tprivate String substituteString(String variable,String outStr, HashMap<String, String> userVarMap, HashMap<String, Result> resultLookup){\n");
 			w.append("\t\t//see if the variable is in the user map\n");
 			w.append("\t\tString value = userVarMap.get(variable);\n");
 			w.append("\t\tif (value != null)\n");
@@ -215,7 +217,8 @@ public class MLMObject {
 			w.append("\t\treturn outStr;\n");
 			w.append("\t}\n");
 			
-			w.append("\tpublic String doAction(String inStr)\n");
+			w
+			        .append("\tpublic String doAction(String inStr, HashMap<String, String> userVarMap, HashMap<String, Result> resultLookup)\n");
 			w.append("\t{\n");
 			w.append("\t\tint startindex = -1;\n");
 			w.append("\t\tint endindex = -1;\n");
@@ -230,7 +233,7 @@ public class MLMObject {
 			w.append("\t\t\t}else if(endindex == -1){\n");
 			w.append("\t\t\t\tendindex = index-1;\n");
 			w.append("\t\t\t\tString variable = inStr.substring(startindex, endindex).trim();\n");
-			w.append("\t\t\t\toutStr = substituteString(variable,outStr);\n");
+			w.append("\t\t\t\toutStr = substituteString(variable,outStr,userVarMap,resultLookup);\n");
 			
 			w.append("\t\t\t\tstartindex = -1;\n");
 			w.append("\t\t\t\tendindex = -1;\n");
@@ -245,7 +248,7 @@ public class MLMObject {
 		}
 		catch (Exception e) {
 			System.err.println("Write Action: " + e);
-			e.printStackTrace(); // so we can get stack trace		
+			e.printStackTrace(); // so we can get stack trace
 		}
 	}
 	
@@ -265,15 +268,18 @@ public class MLMObject {
 				return false;
 			}
 			
-			w.append("\n\tpublic Result eval(LogicContext context, Patient patient,\n"
+			w.append("\n\tpublic Result eval(LogicContext context, Integer patientId,\n"
 			        + "\t\t\tMap<String, Object> parameters) throws LogicException {\n\n");
 			w.append("\t\tString actionStr = \"\";\n");
-			w.append("\t\tresultLookup = new HashMap <String, Result>();\n");
+			w.append("\t\tPatientService patientService = Context.getPatientService();\n");
+			w.append("\t\tPatient patient = patientService.getPatient(patientId);\n");
+			w.append("\t\tHashMap<String, Result> resultLookup = new HashMap <String, Result>();\n");
 			w.append("\t\tBoolean ageOK = null;\n\n\t\ttry {\n");
 			
-			w.append("\t\t\tthis.patient=patient;\n");
-			w.append("\t\t\tuserVarMap = new HashMap <String, String>();\n");
-			w.append("\t\t\tfirstname = patient.getPersonName().getGivenName();\n");
+			w.append("\t\t\tRuleProvider ruleProvider = (RuleProvider)parameters.get(\"ruleProvider\");\n");
+			
+			w.append("\t\t\tHashMap<String, String> userVarMap = new HashMap <String, String>();\n");
+			w.append("\t\t\tString firstname = patient.getPersonName().getGivenName();\n");
 			w.append("\t\t\tuserVarMap.put(\"firstname\", toProperCase(firstname));\n");
 			w.append("\t\t\tString lastName = patient.getFamilyName();\n");
 			w.append("\t\t\tuserVarMap.put(\"lastName\", lastName);\n");
@@ -286,13 +292,17 @@ public class MLMObject {
 			w.append("\t\t\t\tuserVarMap.put(\"gender\",\"her\");\n");
 			w.append("\t\t\t\tuserVarMap.put(\"hisher\",\"her\");\n");
 			w.append("\t\t\t}\n");
-			w.append("\t\t\tLogicService logicService = Context.getLogicService();\n");
 			
-			w.append("\t\t\tinitAction();\n");
+			w.append("\t\t\tArrayList<String> actions = initAction();\n");
 			/***************************************************************************************
 			 * Do the LogicCriteria here
 			 */
 			
+			if (this.calls.get("data") != null) {
+				for (Call currCall : this.calls.get("data")) {
+					currCall.write(w);
+				}
+			}
 			Iterator<Map.Entry<String, Comparison>> comparisonIterator = null;
 			if (this.comparisons.get("data") != null) {
 				comparisonIterator = this.comparisons.get("data").entrySet().iterator();
@@ -307,13 +317,60 @@ public class MLMObject {
 			Set<String> uniqueKeys = this.conceptMap.keySet();
 			uniqueKeys.remove("Gender");
 			
-			/**
-			 * *************************************************************************************
-			 * *******
+			/** ******************************************************************************************** */
+			
+			w
+			        .append("\n\n\t\t\tif(evaluate_logic(parameters, context, ruleProvider, patient, userVarMap, resultLookup)){\n");
+			w.append("\t\t\t\tResult ruleResult = new Result();\n");
+			
+			/*******************
+			 * Code for implementing If() then in Action
+			 * 
+			 */
+			for (String uniqueKey : uniqueKeys) {
+				if (uniqueKey.startsWith("Box") || uniqueKey.startsWith("mode")) // Needs improvement - for now we allow if(variable not like Box1,...
+				{	
+
+				} else {
+					w.append("\t\tResult " + uniqueKey + " = (Result) resultLookup.get(\"" + uniqueKey + "\");\n");
+				}
+			}
+			w.append("\n");
+			
+			Iterator<Map.Entry<String, Comparison>> comparisonIteratorAction = null;
+			if (this.comparisons.get("action") != null) {
+				comparisonIteratorAction = this.comparisons.get("action").entrySet().iterator();
+			}
+			evalListBySection = evaluateList.get("action");
+			if (evalListBySection == null) {
+				evalListBySection = new LinkedList<MLMEvaluateElement>();
+				this.evaluateList.put("action", evalListBySection);
+			}
+			thisList = evalListBySection.listIterator(0);
+			ArrayList<Call> callBySectionAction = this.calls.get("action");
+			Iterator<Call> callIteratorAction = null;
+			
+			if (callBySectionAction != null) {
+				callIteratorAction = callBySectionAction.iterator();
+				w.append("\t\t\t\tObject value = null;\n");
+				w.append("\t\t\t\tString variable = null;\n");
+				w.append("\t\t\t\tint varLen = 0;\n");
+			}
+			
+			while (thisList.hasNext()) {
+				
+				WriteAction(thisList.next(), w, comparisonIteratorAction, callIteratorAction);
+				w.append("\n");
+				w.flush();
+				
+			}
+			
+			/*****
+			 * 
+			 * End of code for implementing If() then in Action
 			 */
 			
-			w.append("\n\n\t\t\tif(evaluate_logic(parameters)){\n");
-			w.append("\t\t\t\tResult ruleResult = new Result();\n");
+			/*********** DO NOT NEED THIS because the above code does it
 			if (this.calls.get("action") != null) {
 				w.append("\t\t\t\tString value = null;\n");
 				w.append("\t\t\t\tString variable = null;\n");
@@ -322,8 +379,10 @@ public class MLMObject {
 					currCall.write(w);
 				}
 			}
+			 **************/
+			
 			w.append("\t\t\t\tfor(String currAction:actions){\n");
-			w.append("\t\t\t\t\tcurrAction = doAction(currAction);\n");
+			w.append("\t\t\t\t\tcurrAction = doAction(currAction, userVarMap, resultLookup);\n");
 			w.append("\t\t\t\t\truleResult.add(new Result(currAction));\n");
 			w.append("\t\t\t\t}\n");
 			
@@ -349,12 +408,10 @@ public class MLMObject {
 					comparison.writeComparisonList(w); // write a list helper method only if the operator is IN
 				}
 			}
-			/**
-			 * *************************************************************************************
-			 * **************************************
-			 */
+			/** *************************************************************************************************************************** */
 			
-			w.append("\tprivate boolean evaluate_logic(Map<String, Object> parameters) throws LogicException {\n\n");
+			w
+			        .append("\tprivate boolean evaluate_logic(Map<String, Object> parameters, LogicContext context, RuleProvider ruleProvider, Patient patient, HashMap<String, String> userVarMap, HashMap<String, Result> resultLookup) throws LogicException {\n\n");
 			evalListBySection = evaluateList.get("logic");
 			if (evalListBySection == null) {
 				evalListBySection = new LinkedList<MLMEvaluateElement>();
@@ -381,10 +438,11 @@ public class MLMObject {
 			
 			if (callBySection != null) {
 				callIterator = callBySection.iterator();
-				w.append("\t\t\t\tString value = null;\n");
+				w.append("\t\tObject value = null;\n");
 				w.append("\t\t\t\tString variable = null;\n");
 				w.append("\t\t\t\tint varLen = 0;\n");
 			}
+			
 			Iterator<Conclude> concludeIterator = this.concludes.iterator();
 			comparisonIteratorLogic = compListBySection.entrySet().iterator();
 			
@@ -643,7 +701,7 @@ public class MLMObject {
 					}
 					
 					//if we conclude with no open brackets
-					//then it is the final return of the 
+					//then it is the final return of the
 					//logic method
 					if (openBracket == 0) {
 						skipReturn = true;
@@ -689,6 +747,134 @@ public class MLMObject {
 		}
 		
 		return skipReturn;
+	}
+	
+	private void WriteAction(MLMEvaluateElement el, Writer w,
+	//		Comparison comparison
+	        Iterator<Map.Entry<String, Comparison>> comparisonIterator, Iterator<Call> callIterator) {
+		boolean skipReturn = false;
+		LinkedList<Integer> openParens = new LinkedList<Integer>();
+		LinkedList<Integer> openBrackets = new LinkedList<Integer>();
+		Integer openParen = 0;
+		Integer openBracket = 0;
+		
+		try {
+			
+			String key = "";
+			Iterator iter = el.iterator();
+			Comparison comparison;
+			
+			while (iter.hasNext()) { // IF
+				key = (String) iter.next();
+				
+				if (openParens.size() > 0) {
+					openParen = openParens.getLast();
+				}
+				if (openBrackets.size() > 0) {
+					openBracket = openBrackets.getLast();
+					if (!(key.equalsIgnoreCase("ELSEIF") || key.startsWith("ELSE"))) {
+						if (openBracket == 0) {
+							openBrackets.removeLast();
+							if (openBrackets.size() > 0) {
+								openBracket = openBrackets.getLast();
+							}
+						}
+					}
+				}
+				
+				if (key.equalsIgnoreCase("IF")) {
+					w.append("\t\tif(");
+					openParen = 1;
+					openParens.add(openParen);
+				} else if (key.equalsIgnoreCase("ELSEIF")) {
+					
+					while (openBracket > 0) {
+						w.append("}");
+						openBracket--;
+					}
+					if (openBrackets.size() > 0) {
+						openBrackets.removeLast();
+					}
+					w.append("\t\telse if(");
+					openParen = 1;
+					openParens.add(openParen);
+				} else if (key.startsWith("ENDIF")) {
+					while (openBracket > 0) {
+						w.append("}");
+						openBracket--;
+					}
+					if (openBrackets.size() > 0) {
+						openBrackets.removeLast();
+					}
+				} else if (key.startsWith("ELSE")) {
+					
+					while (openBracket > 0) {
+						w.append("}");
+						openBracket--;
+					}
+					if (openBrackets.size() > 0) {
+						openBrackets.removeLast();
+					}
+					if (openBrackets.size() > 0) {
+						openBracket = openBrackets.getLast();
+						if (openBracket == 0) {
+							skipReturn = true;
+						}
+					} else {
+						skipReturn = true;
+					}
+					openBracket = 1;
+					openBrackets.add(openBracket);
+					w.append("\t\telse{\n");
+					
+				} else if (key.equalsIgnoreCase("THEN")) {
+					while (openParen > 0) {
+						w.append(")");
+						openParen--;
+					}
+					if (openParens.size() > 0) {
+						openParens.removeLast();
+					}
+					w.append("{\n");
+					openBracket = 1;
+					openBrackets.add(openBracket);
+				} else if (key.equalsIgnoreCase("AND")) {
+					w.append("&&\n\t\t\t");
+				} else if (key.equalsIgnoreCase("OR")) {
+					w.append("||\n\t\t\t");
+				} else if (key.equalsIgnoreCase("NOT")) {
+					w.append("!");
+				} else if (key.equalsIgnoreCase("Call")) {
+					Call call = callIterator.next();
+					call.write(w);
+				} else {
+					
+					MLMObjectElement objElement = this.conceptMap.get(key);
+					if (comparisonIterator.hasNext()) {
+						comparison = comparisonIterator.next().getValue();
+					} else {
+						comparison = null;
+					}
+					if (comparison != null) {
+						comparison.write(w, objElement, this.isVarCallorDataRead(comparison.getAnswer()));
+					}
+					
+				}
+			}
+			
+			while (openBrackets.size() > 0 && openBrackets.getLast() != null) {
+				openBracket = openBrackets.removeLast();
+				while (openBracket > 0) {
+					w.append("}");
+					openBracket--;
+				}
+			}
+		}
+		catch (Exception e) {
+			System.err.println("Write Evaluate: " + e);
+			e.printStackTrace(); // so we can get stack trace
+		}
+		
 	}
 	
 	public int GetSize() {

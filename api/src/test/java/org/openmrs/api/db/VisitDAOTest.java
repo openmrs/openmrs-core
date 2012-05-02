@@ -13,9 +13,13 @@
  */
 package org.openmrs.api.db;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.VisitType;
 import org.openmrs.api.VisitService;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -27,6 +31,8 @@ import org.openmrs.test.Verifies;
 public class VisitDAOTest extends BaseContextSensitiveTest {
 	
 	protected static final String VISITS_WITH_DATES_XML = "org/openmrs/api/include/VisitServiceTest-otherVisits.xml";
+	
+	protected static final String VISITS_INCLUDE_VISITS_TO_AUTO_CLOSE_XML = "org/openmrs/api/include/VisitServiceTest-includeVisitsAndTypeToAutoClose.xml";
 	
 	private VisitDAO dao = null;
 	
@@ -61,5 +67,20 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	public void getVisits_shouldReturnOnlyActiveVisitsIfIncludeEndedIsSetToFalse() throws Exception {
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Assert.assertEquals(6, dao.getVisits(null, null, null, null, null, null, null, null, null, false, false).size());
+	}
+	
+	/**
+	 * @see {@link VisitDAO#getNextVisit(Visit,Collection<VisitType>,Date)}
+	 */
+	@Test
+	@Verifies(value = "should return the next unvoided active visit matching the specified types and startDate", method = "getNextVisit(Visit,Collection<VisitType>,Date)")
+	public void getNextVisit_shouldReturnTheNextUnvoidedActiveVisitMatchingTheSpecifiedTypesAndStartDate() throws Exception {
+		executeDataSet(VISITS_INCLUDE_VISITS_TO_AUTO_CLOSE_XML);
+		ArrayList<VisitType> visitTypes = new ArrayList<VisitType>();
+		visitTypes.add(dao.getVisitType(4));
+		Calendar cal = Calendar.getInstance();
+		cal.set(2005, 0, 4, 23, 59, 59);
+		cal.set(Calendar.MILLISECOND, 999);
+		Assert.assertEquals(105, dao.getNextVisit(dao.getVisit(1), visitTypes, cal.getTime()).getVisitId().intValue());
 	}
 }

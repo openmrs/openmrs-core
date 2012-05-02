@@ -14,12 +14,15 @@
 package org.openmrs.validator;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.Encounter;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
 import org.openmrs.api.APIException;
@@ -87,10 +90,10 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		return visit;
 	}
 	
-	private VisitAttribute makeAttribute(String serializedValue) {
+	private VisitAttribute makeAttribute(Object typedValue) {
 		VisitAttribute attr = new VisitAttribute();
 		attr.setAttributeType(service.getVisitAttributeType(1));
-		attr.setSerializedValue(serializedValue);
+		attr.setValue(typedValue);
 		return attr;
 	}
 	
@@ -154,4 +157,68 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(true, errors.hasFieldErrors("stopDatetime"));
 	}
 	
+	/**
+	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if the startDatetime is after any encounter", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfTheStartDatetimeIsAfterAnyEncounter() throws Exception {
+		Visit visit = Context.getVisitService().getVisit(1);
+		
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		visit.setPatient(encounter.getPatient());
+		encounter.setVisit(visit);
+		encounter.setEncounterDatetime(visit.getStartDatetime());
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		//Set visit start date to after the encounter date.
+		Date date = new Date(encounter.getEncounterDatetime().getTime() + 1);
+		visit.setStartDatetime(date);
+		
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("startDatetime"));
+	}
+	
+	/**
+	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if the stopDatetime is before any encounter", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfTheStopDatetimeIsBeforeAnyEncounter() throws Exception {
+		Visit visit = Context.getVisitService().getVisit(1);
+		
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		visit.setPatient(encounter.getPatient());
+		encounter.setVisit(visit);
+		encounter.setEncounterDatetime(visit.getStartDatetime());
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		//Set visit stop date to before the encounter date.
+		Date date = new Date(encounter.getEncounterDatetime().getTime() - 1);
+		visit.setStopDatetime(date);
+		
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("stopDatetime"));
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 * @verifies fail if an attribute is bad
+	 */
+	@Test
+	// This test will throw org.hibernate.PropertyValueException: not-null property references a null or transient value: org.openmrs.VisitAttribute.valueReference
+	// This is a general problem, i.e. that validators on Customizable can't really be called unless you set Hibernate's flushMode to MANUAL.  
+	// Once we figure it out, this test can be un-Ignored
+	@Ignore
+	public void validate_shouldFailIfAnAttributeIsBad() throws Exception {
+		Visit visit = service.getVisit(1);
+		visit.addAttribute(makeAttribute(new Date()));
+		visit.addAttribute(makeAttribute("not a date"));
+		Collection<VisitAttribute> activeAttributes = visit.getActiveAttributes();
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("attributes"));
+	}
 }

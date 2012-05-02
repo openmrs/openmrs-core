@@ -69,6 +69,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should save program successfully
 	 * @should save workflows associated with program
 	 * @should save states associated with program
+	 * @should update detached program
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program saveProgram(Program program) throws APIException;
@@ -349,6 +350,18 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.DELETE_PATIENT_PROGRAMS })
 	public PatientProgram unvoidPatientProgram(PatientProgram patientProgram) throws APIException;
 	
+	/**
+	 * Get all possible outcome concepts for a program. Will return all concept answers
+	 * {@link org.openmrs.Concept#getAnswers()} if they exist, then all concept set members
+	 * {@link org.openmrs.Concept#getSetMembers()} if they exist, then empty List.
+	 * 
+	 * @param programId
+	 * @return outcome concepts or empty List if none exist
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
+	@Transactional(readOnly = true)
+	public List<Concept> getPossibleOutcomes(Integer programId);
+	
 	// **************************
 	// CONCEPT STATE CONVERSION
 	// **************************
@@ -438,6 +451,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should fail if patient is invalid
 	 * @should fail if trigger is invalid
 	 * @should fail if date converted is invalid
+	 * @should skip past patient programs that are already completed
 	 */
 	public void triggerStateConversion(Patient patient, Concept reasonForExit, Date dateConverted) throws APIException;
 	

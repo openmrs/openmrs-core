@@ -2,14 +2,14 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
-	<openmrs:hasPrivilege privilege="Add Concepts,Edit Concepts,Delete Concepts,View Concepts">
+	<openmrs:hasPrivilege privilege="Manage Concepts,View Concepts">
 		<li <c:if test='<%= request.getRequestURI().contains("concepts/index") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/dictionary">
 				<spring:message code="Concept.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Add Concepts,Edit Concepts">
+	<openmrs:hasPrivilege privilege="Manage Concepts">
 		<li <c:if test='<%= request.getRequestURI().contains("conceptDrug") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/concepts/conceptDrug.list">
 				<spring:message code="ConceptDrug.manage"/>
@@ -23,7 +23,7 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Edit Concepts">
+	<openmrs:hasPrivilege privilege="Manage Concepts">
 		<li <c:if test='<%= request.getRequestURI().contains("conceptIndex") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/concepts/conceptIndex.form">
 				<spring:message code="ConceptWord.manage"/>
@@ -60,6 +60,23 @@
 		<li <c:if test='<%= request.getRequestURI().contains("conceptStopWord") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/concepts/conceptStopWord.list">
 				<spring:message code="ConceptStopWord.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	<openmrs:globalProperty key="concept_map_type_management.enable" defaultValue="false" var="allowConceptMapTypeManagement"/>
+	<c:if test='${allowConceptMapTypeManagement}'>
+	<openmrs:hasPrivilege privilege="Manage Concept Map Types">
+		<li <c:if test='<%= request.getRequestURI().contains("conceptMapType") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/concepts/conceptMapTypeList.list">
+				<spring:message code="ConceptMapType.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	</c:if>
+	<openmrs:hasPrivilege privilege="Manage Concept Reference Terms">
+		<li <c:if test='<%= request.getRequestURI().contains("conceptReferenceTerm") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/concepts/conceptReferenceTerms.htm">
+				<spring:message code="ConceptReferenceTerm.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>

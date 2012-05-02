@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.web.WebConstants;
@@ -111,8 +112,12 @@ public class SchedulerListController extends SimpleFormController {
 					}
 					
 					if (action.equals(msa.getMessage("Scheduler.taskList.delete"))) {
-						schedulerService.deleteTask(Integer.valueOf(taskId));
-						success.append(msa.getMessage("Scheduler.taskList.deleted", args));
+						if (!task.getStarted()) {
+							schedulerService.deleteTask(Integer.valueOf(taskId));
+							success.append(msa.getMessage("Scheduler.taskList.deleted", args));
+						} else {
+							error.append(msa.getMessage("Scheduler.taskList.deleteNotAllowed", args));
+						}
 					} else if (action.equals(msa.getMessage("Scheduler.taskList.stop"))) {
 						schedulerService.shutdownTask(task);
 						success.append(msa.getMessage("Scheduler.taskList.stopped", args));
@@ -125,7 +130,13 @@ public class SchedulerListController extends SimpleFormController {
 					log.warn("Error processing schedulerlistcontroller task", e);
 					error.append(msa.getMessage("Scheduler.taskList.error", args));
 				}
+				catch (SchedulerException ex) {
+					log.error("Error processing schedulerlistcontroller task", ex);
+					error.append(msa.getMessage("Scheduler.taskList.error", args));
+				}
 			}
+		} else {
+			error.append(msa.getMessage("Scheduler.taskList.requireTask"));
 		}
 		
 		view = getSuccessView();

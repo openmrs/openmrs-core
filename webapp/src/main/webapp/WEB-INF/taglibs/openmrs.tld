@@ -178,6 +178,16 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+		<description>
+			Specifies if text like 'Today' or 'Yesterday' can be prepended to the date in case the day of the year 
+			of the passed in date instance is the same as that of the current date instance or the day of the year 
+			of the passed in date instance is immediately before that of the current date instance respectively
+		</description>
+		<name>showTodayOrYesterday</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
 </tag>
 
 <tag>
@@ -843,6 +853,39 @@
 
 <tag>
 	<description>
+		Gets the datetime pattern for the current user's locale
+	</description>
+	<name>dateTimePattern</name>
+	<tag-class>org.openmrs.web.taglib.DateTimePatternTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>localize</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Gets the time pattern for the current user's locale
+	</description>
+	<name>timePattern</name>
+	<tag-class>org.openmrs.web.taglib.TimePatternTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>localize</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+		<name>format</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
 		Makes an html table of obs that belong to specified concepts/concept-sets
 	</description>
 	<name>obsTable</name>
@@ -1159,6 +1202,11 @@
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
 	<attribute>
+		<name>object</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
 		<name>concept</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
@@ -1167,6 +1215,20 @@
 		<name>conceptId</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<description>when formatting a concept, tries to print a name of the given type</description>
+		<name>withConceptNameType</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<description>when formatting a concept, tries to print a name with the given tag</description>
+		<name>withConceptNameTag</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
 	</attribute>
 	<attribute>
 		<name>obsValue</name>
@@ -1266,6 +1328,31 @@
 	</attribute>
 	<attribute>
 		<name>visitId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>providerId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>provider</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>encounterProviders</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>singleCustomValue</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>form</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>

@@ -36,6 +36,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
@@ -135,13 +136,13 @@ public class ConceptProposalFormController extends SimpleFormController {
 			
 			// The users to be alerted of this change
 			Set<User> uniqueProposers = new HashSet<User>();
-			
+			Locale conceptNameLocale = new Locale(request.getParameter("conceptNamelocale"));
 			// map the proposals to the concept (creating obs along the way)
 			for (ConceptProposal conceptProposal : allProposals) {
 				uniqueProposers.add(conceptProposal.getCreator());
 				conceptProposal.setFinalText(finalText);
 				conceptProposal.setState(cp.getState());
-				cs.mapConceptProposalToConcept(conceptProposal, c);
+				cs.mapConceptProposalToConcept(conceptProposal, c, conceptNameLocale);
 			}
 			
 			String msg = "";
@@ -238,6 +239,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		map.put("states", OpenmrsConstants.CONCEPT_PROPOSAL_STATES());
 		map.put("matchingProposals", matchingProposals);
+		map.put("locales", LocaleUtility.getLocalesInOrder());
 		
 		return map;
 	}

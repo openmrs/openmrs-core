@@ -105,7 +105,12 @@ public class UserValidator implements Validator {
 	 * @should not validate when username is whitespace only
 	 */
 	public boolean isUserNameValid(String username) {
-		//Initialize reg ex for userName pattern 
+		//Initialize reg ex for userName pattern
+		// ^ = start of line
+		// \w = [a-zA-Z_0-9]
+		// \Q = quote everything until \E 
+		// $ = end of line
+		// complete meaning = 2-50 characters, the first must be a letter, digit, or _, and the rest may also be - or .
 		String expression = "^[\\w][\\Q_\\E\\w-\\.]{1,49}$";
 		
 		// empty usernames are allowed

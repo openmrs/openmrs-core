@@ -44,7 +44,7 @@ import org.openmrs.api.db.PatientSetDAO;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-public interface PatientSetService {
+public interface PatientSetService extends OpenmrsService {
 	
 	public void setPatientSetDAO(PatientSetDAO dao);
 	

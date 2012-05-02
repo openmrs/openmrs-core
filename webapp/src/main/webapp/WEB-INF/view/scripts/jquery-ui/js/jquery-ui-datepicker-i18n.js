@@ -15,7 +15,6 @@ jQuery(function($){
 		dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','S&aacute;'],
 		weekHeader: 'Sm',
 		dateFormat: 'dd/mm/yy',
-		firstDay: 1,
 		isRTL: false,
 		showMonthAfterYear: false,
 		yearSuffix: ''};
@@ -33,25 +32,22 @@ jQuery(function($){
 		dayNamesMin: ['Su','Mo','Tu','We','Th','Fr','Sa'],
 		weekHeader: 'Wk',
 		dateFormat: 'dd/mm/yy',
-		firstDay: 1,
 		isRTL: false,
 		showMonthAfterYear: false,
 		yearSuffix: ''};
 	$j.datepicker.regional['fr'] = {
 		closeText: 'Fermer',
-		prevText: '&#x3c;Préc',
+		prevText: '&#x3c;PrÃ©c',
 		nextText: 'Suiv&#x3e;',
 		currentText: 'Courant',
-		monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin',
-		    'Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
-		monthNamesShort: ['Jan','Fév','Mar','Avr','Mai','Jun',
-		    'Jul','Aoû','Sep','Oct','Nov','Déc'],
+		monthNames: ['Janvier','FÃ©vrier','Mars','Avril','Mai','Juin',
+			'Juillet','AoÃ»t','Septembre','Octobre','Novembre','DÃ©cembre'],
+		monthNamesShort: ['Jan','FÃ©v','Mar','Avr','Mai','Jun','Jul','AoÃ»','Sep','Oct','Nov','DÃ©c'],
 		dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
 		dayNamesShort: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
 		dayNamesMin: ['Di','Lu','Ma','Me','Je','Ve','Sa'],
 		weekHeader: 'Sm',
 		dateFormat: 'dd/mm/yy',
-		firstDay: 1,
 		isRTL: false,
 		showMonthAfterYear: false,
 		yearSuffix: ''};
@@ -69,7 +65,6 @@ jQuery(function($){
 		dayNamesMin: ['Do','Lu','Ma','Me','Gi','Ve','Sa'],
 		weekHeader: 'Sm',
 		dateFormat: 'dd/mm/yy',
-		firstDay: 1,
 		isRTL: false,
 		showMonthAfterYear: false,
 		yearSuffix: ''};
@@ -87,7 +82,6 @@ jQuery(function($){
 		dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
 		weekHeader: 'Sm',
 		dateFormat: 'dd/mm/yy',
-		firstDay: 0,
 		isRTL: false,
 		showMonthAfterYear: false,
 		yearSuffix: ''};

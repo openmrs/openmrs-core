@@ -27,11 +27,16 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.mapping.Column;
+import org.hibernate.mapping.PersistentClass;
 import org.openmrs.GlobalProperty;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
@@ -40,7 +45,14 @@ import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
 /**
  * Hibernate specific database methods for the AdministrationService
@@ -49,7 +61,7 @@ import org.openmrs.util.OpenmrsConstants;
  * @see org.openmrs.api.db.AdministrationDAO
  * @see org.openmrs.api.AdministrationService
  */
-public class HibernateAdministrationDAO implements AdministrationDAO {
+public class HibernateAdministrationDAO implements AdministrationDAO, ApplicationContextAware {
 	
 	protected Log log = LogFactory.getLog(getClass());
 	
@@ -57,6 +69,10 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
+	
+	private Configuration configuration;
+	
+	private ApplicationContext applicationContext;
 	
 	public HibernateAdministrationDAO() {
 	}
@@ -115,7 +131,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 			
 			ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
 			
-			ps.setTimestamp(1, new Timestamp(new Date().getTime()));
+			ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
 			ps.setInt(2, Context.getAuthenticatedUser().getUserId());
 			ps.setString(3, site);
 			ps.setInt(4, start);
@@ -245,7 +261,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 */
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
-		GlobalProperty gp = (GlobalProperty) criteria.add(Restrictions.eq("property", propertyName)).uniqueResult();
+		GlobalProperty gp = (GlobalProperty) criteria.add(Restrictions.eq("property", propertyName).ignoreCase())
+		        .uniqueResult();
 		
 		// if no gp exists, hibernate returns a null value
 		
@@ -274,7 +291,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix) {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).add(
-		    Restrictions.like("property", prefix, MatchMode.START)).list();
+		    Restrictions.ilike("property", prefix, MatchMode.START)).list();
 	}
 	
 	/**
@@ -283,7 +300,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix) {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).add(
-		    Restrictions.like("property", suffix, MatchMode.END)).list();
+		    Restrictions.ilike("property", suffix, MatchMode.END)).list();
 	}
 	
 	/**
@@ -297,8 +314,16 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 * @see org.openmrs.api.db.AdministrationDAO#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(gp);
-		return gp;
+		GlobalProperty gpObject = getGlobalPropertyObject(gp.getProperty());
+		if (gpObject != null) {
+			gpObject.setPropertyValue(gp.getPropertyValue());
+			gpObject.setDescription(gp.getDescription());
+			sessionFactory.getCurrentSession().update(gpObject);
+			return gpObject;
+		} else {
+			sessionFactory.getCurrentSession().save(gp);
+			return gp;
+		}
 	}
 	
 	/**
@@ -315,4 +340,60 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		return DatabaseUtil.executeSQL(sessionFactory.getCurrentSession().connection(), sql, selectOnly);
 	}
 	
+	@Override
+	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
+		if (configuration == null) {
+			LocalSessionFactoryBean sessionFactoryBean = (LocalSessionFactoryBean) applicationContext
+			        .getBean("&sessionFactory");
+			configuration = sessionFactoryBean.getConfiguration();
+		}
+		
+		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName());
+		if (persistentClass == null)
+			log.error("Uh oh, couldn't find a class in the hibernate configuration named: " + aClass.getName());
+		
+		return persistentClass.getTable().getColumn(new Column(fieldName)).getLength();
+	}
+	
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#validate(java.lang.Object, Errors)
+	 */
+	@Override
+	public void validate(Object object, Errors errors) throws DAOException {
+		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getFlushMode();
+		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+		try {
+			for (Validator validator : getValidators(object)) {
+				validator.validate(object, errors);
+			}
+		}
+		finally {
+			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
+		}
+	}
+	
+	/**
+	 * Fetches all validators that are registered
+	 * 
+	 * @param obj the object that will be validated
+	 * @return list of compatibile validators
+	 */
+	protected List<Validator> getValidators(Object obj) {
+		List<Validator> matchingValidators = new Vector<Validator>();
+		
+		List<Validator> validators = HandlerUtil.getHandlersForType(Validator.class, obj.getClass());
+		
+		for (Validator validator : validators) {
+			if (validator.supports(obj.getClass())) {
+				matchingValidators.add(validator);
+			}
+		}
+		
+		return matchingValidators;
+	}
 }

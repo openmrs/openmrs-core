@@ -28,6 +28,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 
 /**
@@ -69,7 +70,8 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 			Assert.assertNotNull(order.getVoidReason());
 		}
 		
-		new PatientDataUnvoidHandler().handle(patient, new User(1), patient.getDateVoided(), null);
+		User user = Context.getUserService().getUser(1);
+		new PatientDataUnvoidHandler().handle(patient, user, patient.getDateVoided(), null);
 		
 		//check that the voided related fields were set null 
 		for (Encounter encounter : encounters) {
@@ -117,6 +119,9 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		
 		os.voidOrder(testOrder, "random reason");
 		Assert.assertTrue(testOrder.isVoided());
+		
+		//wait a bit so that the patient isn't voided on the same millisecond
+		TestUtil.waitForClockTick();
 		
 		//now void the patient for testing purposes
 		patient = Context.getPatientService().voidPatient(patient, "Void Reason");

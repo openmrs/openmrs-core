@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.openmrs">
 
 	<class name="Obs" table="obs" batch-size="25">
 
 		<id name="obsId" type="int" column="obs_id" unsaved-value="null">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">obs_obs_id_seq</param>
+			</generator>
 		</id>
 
 		<discriminator column="obs_id" insert="false" />
@@ -31,7 +32,7 @@
 		<property name="valueModifier" type="java.lang.String"
 			column="value_modifier" length="2" />
 		<property name="valueText" type="java.lang.String"
-			column="value_text" length="50" />
+			column="value_text" length="65535" />
 		<property name="valueComplex" type="java.lang.String"
 		    column="value_complex" length="255" />
 			
@@ -73,7 +74,7 @@
 			<key column="obs_group_id" />
 			<one-to-many class="Obs" />
 		</set> 
-		
+		<many-to-one name="previousVersion" class="Obs" column="previous_version" unique="true" />
 	</class>
 	
 </hibernate-mapping>

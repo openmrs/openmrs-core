@@ -46,7 +46,6 @@ public class PersonAddressValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should pass if all the dates are valid
 	 * @should fail if the startDate is in the future
-	 * @should fail if the endDate is in the future
 	 * @should fail if the endDate is before the startDate
 	 * @should pass if startDate and endDate are both null
 	 * @should pass if startDate is null
@@ -76,9 +75,6 @@ public class PersonAddressValidator implements Validator {
 		if (OpenmrsUtil.compareWithNullAsEarliest(personAddress.getStartDate(), new Date()) > 0)
 			errors.rejectValue("startDate", "PersonAddress.error.startDateInFuture", new Object[] { "'" + addressString
 			        + "'" }, "The Start Date for address '" + addressString + "' shouldn't be in the future");
-		if (OpenmrsUtil.compareWithNullAsEarliest(personAddress.getEndDate(), new Date()) > 0)
-			errors.rejectValue("endDate", "PersonAddress.error.endDateInFuture", new Object[] { "'" + addressString + "'" },
-			    "The EndDate for address '" + addressString + "' shouldn't be in the future");
 		
 		if (personAddress.getStartDate() != null
 		        && OpenmrsUtil.compareWithNullAsLatest(personAddress.getStartDate(), personAddress.getEndDate()) > 0)

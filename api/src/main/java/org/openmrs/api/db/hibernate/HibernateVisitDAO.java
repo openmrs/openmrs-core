@@ -13,12 +13,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -35,6 +35,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.VisitDAO;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Hibernate specific visit related functions This class should not be used directly. All calls
@@ -58,6 +59,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#getAllVisitTypes()
 	 */
 	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
 	public List<VisitType> getAllVisitTypes() throws APIException {
 		return getCurrentSession().createCriteria(VisitType.class).list();
 	}
@@ -65,6 +67,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitType(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public VisitType getVisitType(Integer visitTypeId) {
 		return (VisitType) sessionFactory.getCurrentSession().get(VisitType.class, visitTypeId);
 	}
@@ -72,6 +75,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitTypeByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public VisitType getVisitTypeByUuid(String uuid) {
 		return (VisitType) sessionFactory.getCurrentSession().createQuery("from VisitType vt where vt.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
@@ -81,6 +85,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#getVisitTypes(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
 	public List<VisitType> getVisitTypes(String fuzzySearchPhrase) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(VisitType.class);
 		criteria.add(Restrictions.ilike("name", fuzzySearchPhrase, MatchMode.ANYWHERE));
@@ -91,6 +96,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#saveVisitType(org.openmrs.VisitType)
 	 */
+	@Transactional
 	public VisitType saveVisitType(VisitType visitType) {
 		sessionFactory.getCurrentSession().saveOrUpdate(visitType);
 		return visitType;
@@ -99,6 +105,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#purgeVisitType(org.openmrs.VisitType)
 	 */
+	@Transactional
 	public void purgeVisitType(VisitType visitType) {
 		sessionFactory.getCurrentSession().delete(visitType);
 	}
@@ -107,6 +114,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#getVisit(java.lang.Integer)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Visit getVisit(Integer visitId) throws DAOException {
 		return (Visit) getCurrentSession().get(Visit.class, visitId);
 	}
@@ -115,6 +123,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#getVisitByUuid(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Visit getVisitByUuid(String uuid) throws DAOException {
 		return (Visit) getCurrentSession().createQuery("from Visit v where v.uuid = :uuid").setString("uuid", uuid)
 		        .uniqueResult();
@@ -124,6 +133,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#saveVisit(org.openmrs.Visit)
 	 */
 	@Override
+	@Transactional
 	public Visit saveVisit(Visit visit) throws DAOException {
 		getCurrentSession().saveOrUpdate(visit);
 		return visit;
@@ -133,6 +143,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#deleteVisit(org.openmrs.Visit)
 	 */
 	@Override
+	@Transactional
 	public void deleteVisit(Visit visit) throws DAOException {
 		getCurrentSession().delete(visit);
 	}
@@ -140,13 +151,14 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisits(java.util.Collection, java.util.Collection,
 	 *      java.util.Collection, java.util.Collection, java.util.Date, java.util.Date,
-	 *      java.util.Date, java.util.Date, boolean)
+	 *      java.util.Date, java.util.Date, java.util.Map, boolean, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
+	@Transactional(readOnly = true)
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, String> serializedAttributeValues,
+	        Date minEndDatetime, Date maxEndDatetime, final Map<VisitAttributeType, String> serializedAttributeValues,
 	        boolean includeInactive, boolean includeVoided) throws DAOException {
 		
 		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
@@ -165,10 +177,11 @@ public class HibernateVisitDAO implements VisitDAO {
 		if (maxStartDatetime != null)
 			criteria.add(Restrictions.le("startDatetime", maxStartDatetime));
 		
-		//active visits have null end date, so it doesn't make sense to search against it if include inactive it set to false
-		if (!includeInactive)
-			criteria.add(Restrictions.isNull("stopDatetime"));
-		else {
+		// active visits have null end date, so it doesn't make sense to search against it if include inactive is set to false
+		if (!includeInactive) {
+			// the user only asked for currently active visits, so stop time needs to be null or after right now
+			criteria.add(Restrictions.or(Restrictions.isNull("stopDatetime"), Restrictions.gt("stopDatetime", new Date())));
+		} else {
 			if (minEndDatetime != null)
 				criteria.add(Restrictions.ge("stopDatetime", minEndDatetime));
 			if (maxEndDatetime != null)
@@ -178,29 +191,17 @@ public class HibernateVisitDAO implements VisitDAO {
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("voided", false));
 		
-		if (serializedAttributeValues == null)
-			return criteria.list();
+		criteria.addOrder(Order.desc("startDatetime"));
+		criteria.addOrder(Order.desc("visitId"));
 		
-		List<Visit> ret = new ArrayList<Visit>();
-		for (Visit visit : (List<Visit>) criteria.list()) {
-			boolean allMatch = true;
-			for (Map.Entry<VisitAttributeType, String> e : serializedAttributeValues.entrySet()) {
-				boolean match = false;
-				for (VisitAttribute attr : visit.getActiveAttributes(e.getKey())) {
-					if (attr.getSerializedValue().equals(e.getValue())) {
-						match = true;
-						break;
-					}
-				}
-				if (!match) {
-					allMatch = false;
-					break;
-				}
-			}
-			if (allMatch)
-				ret.add(visit);
+		List<Visit> visits = criteria.list();
+		
+		if (serializedAttributeValues != null) {
+			CollectionUtils.filter(visits, new AttributeMatcherPredicate<Visit, VisitAttributeType>(
+			        serializedAttributeValues));
 		}
-		return ret;
+		
+		return visits;
 	}
 	
 	/**
@@ -208,6 +209,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
+	@Transactional(readOnly = true)
 	public List<VisitAttributeType> getAllVisitAttributeTypes() {
 		return getCurrentSession().createCriteria(VisitAttributeType.class).list();
 	}
@@ -216,6 +218,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#getVisitAttributeType(java.lang.Integer)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public VisitAttributeType getVisitAttributeType(Integer id) {
 		return (VisitAttributeType) getCurrentSession().get(VisitAttributeType.class, id);
 	}
@@ -224,6 +227,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#getVisitAttributeTypeByUuid(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public VisitAttributeType getVisitAttributeTypeByUuid(String uuid) {
 		return (VisitAttributeType) getCurrentSession().createCriteria(VisitAttributeType.class).add(
 		    Restrictions.eq("uuid", uuid)).uniqueResult();
@@ -233,6 +237,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#saveVisitAttributeType(org.openmrs.VisitAttributeType)
 	 */
 	@Override
+	@Transactional
 	public VisitAttributeType saveVisitAttributeType(VisitAttributeType visitAttributeType) {
 		getCurrentSession().saveOrUpdate(visitAttributeType);
 		return visitAttributeType;
@@ -242,6 +247,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#deleteVisitAttributeType(org.openmrs.VisitAttributeType)
 	 */
 	@Override
+	@Transactional
 	public void deleteVisitAttributeType(VisitAttributeType visitAttributeType) {
 		getCurrentSession().delete(visitAttributeType);
 	}
@@ -250,9 +256,27 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#getVisitAttributeByUuid(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public VisitAttribute getVisitAttributeByUuid(String uuid) {
 		return (VisitAttribute) getCurrentSession().createCriteria(VisitAttribute.class).add(Restrictions.eq("uuid", uuid))
 		        .uniqueResult();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getNextVisit(Visit, Collection, Date)
+	 */
+	@Override
+	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes, Date maximumStartDate) {
+		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
+		criteria.add(Restrictions.eq("voided", false)).add(
+		    Restrictions.gt("visitId", (previousVisit != null) ? previousVisit.getVisitId() : 0)).addOrder(
+		    Order.asc("visitId")).add(Restrictions.isNull("stopDatetime")).setMaxResults(1);
+		if (maximumStartDate != null)
+			criteria.add(Restrictions.le("startDatetime", maximumStartDate));
+		
+		if (CollectionUtils.isNotEmpty(visitTypes))
+			criteria.add(Restrictions.in("visitType", visitTypes));
+		
+		return (Visit) criteria.uniqueResult();
+	}
 }

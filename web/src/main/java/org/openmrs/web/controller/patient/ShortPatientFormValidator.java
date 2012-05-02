@@ -146,6 +146,10 @@ public class ShortPatientFormValidator implements Validator {
 		else {
 			boolean nonVoidedIdentifierFound = false;
 			for (PatientIdentifier pId : shortPatientModel.getIdentifiers()) {
+				//no need to validate unsaved identifiers that have been removed
+				if (pId.getPatientIdentifierId() == null && pId.isVoided())
+					continue;
+				
 				if (!pId.isVoided())
 					nonVoidedIdentifierFound = true;
 				

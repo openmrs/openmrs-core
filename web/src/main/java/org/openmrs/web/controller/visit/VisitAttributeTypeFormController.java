@@ -27,6 +27,7 @@ import org.openmrs.VisitAttributeType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.StringUtils;
@@ -41,6 +42,7 @@ import org.springframework.web.servlet.view.RedirectView;
  * 
  * @since 1.9
  */
+@SuppressWarnings("deprecation")
 public class VisitAttributeTypeFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
@@ -147,10 +149,9 @@ public class VisitAttributeTypeFormController extends SimpleFormController {
 	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
-		
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("datatypes", Context.getAttributeService().getDatatypes());
-		
+		map.put("datatypes", CustomDatatypeUtil.getDatatypeClassnames());
+		map.put("handlers", CustomDatatypeUtil.getHandlerClassnames());
 		return map;
 	}
 }

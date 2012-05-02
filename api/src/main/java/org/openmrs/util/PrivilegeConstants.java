@@ -20,6 +20,7 @@ import org.openmrs.annotation.AddOnStartup;
  * AddOnStartup annotation.
  * 
  * @see org.openmrs.annotation.AddOnStartup
+ * @since 1.8
  */
 public class PrivilegeConstants {
 	
@@ -87,6 +88,9 @@ public class PrivilegeConstants {
 	
 	public static final String PURGE_ENCOUNTER_TYPES = "Purge Encounter Types";
 	
+	@AddOnStartup(description = "Able to choose encounter visit handler and enable/disable encounter visits")
+	public static final String CONFIGURE_VISITS = "Configure Visits";
+	
 	@AddOnStartup(description = "Able to view locations")
 	public static final String VIEW_LOCATIONS = "View Locations";
 	
@@ -97,6 +101,9 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to add/edit/delete location tags")
 	public static final String MANAGE_LOCATION_TAGS = "Manage Location Tags";
+	
+	@AddOnStartup(description = "Able to add/edit/delete address templates")
+	public static final String MANAGE_ADDRESS_TEMPLATES = "Manage Address Templates";
 	
 	public static final String PURGE_LOCATION_TAGS = "Purge Location Tags";
 	
@@ -256,6 +263,24 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to view concept sources")
 	public static final String VIEW_CONCEPT_SOURCES = "View Concept Sources";
 	
+	@AddOnStartup(description = "Able to view concept map types")
+	public static final String VIEW_CONCEPT_MAP_TYPES = "View Concept Map Types";
+	
+	@AddOnStartup(description = "Able to add/edit/retire concept map types")
+	public static final String MANAGE_CONCEPT_MAP_TYPES = "Manage Concept Map Types";
+	
+	public static final String PURGE_CONCEPT_MAP_TYPES = "Purge Concept Map Types";
+	
+	@AddOnStartup(description = "Able to view concept reference terms")
+	public static final String VIEW_CONCEPT_REFERENCE_TERMS = "View Concept Reference Terms";
+	
+	@AddOnStartup(description = "Able to add/edit/retire reference terms")
+	public static final String MANAGE_CONCEPT_REFERENCE_TERMS = "Manage Concept Reference Terms";
+	
+	public static final String CREATE_REFERENCE_TERMS_WHILE_EDITING_CONCEPTS = "Create Reference Terms While Editing Concepts";
+	
+	public static final String PURGE_CONCEPT_REFERENCE_TERMS = "Purge Concept Reference Terms";
+	
 	public static final String PURGE_CONCEPT_SOURCES = "Purge Concept Sources";
 	
 	@AddOnStartup(description = "Able to view the navigation menu (Home, View Patients, Dictionary, Administration, My Profile")
@@ -393,6 +418,59 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to view/add/remove the concept stop words")
 	public static final String MANAGE_CONCEPT_STOP_WORDS = "Manage Concept Stop Words";
 	
+	@AddOnStartup(description = "Able to add an HL7 Source")
+	public static final String PRIV_ADD_HL7_SOURCE = "Add HL7 Source";
+	
+	@AddOnStartup(description = "Able to view an HL7 Source")
+	public static final String PRIV_VIEW_HL7_SOURCE = "View HL7 Source";
+	
+	@AddOnStartup(description = "Able to update an HL7 Source")
+	public static final String PRIV_UPDATE_HL7_SOURCE = "Update HL7 Source";
+	
+	public static final String PRIV_PURGE_HL7_SOURCE = "Purge HL7 Source";
+	
+	@AddOnStartup(description = "Able to add an HL7 Queue item")
+	public static final String PRIV_ADD_HL7_IN_QUEUE = "Add HL7 Inbound Queue";
+	
+	@AddOnStartup(description = "Able to view an HL7 Queue item")
+	public static final String PRIV_VIEW_HL7_IN_QUEUE = "View HL7 Inbound Queue";
+	
+	@AddOnStartup(description = "Able to update an HL7 Queue item")
+	public static final String PRIV_UPDATE_HL7_IN_QUEUE = "Update HL7 Inbound Queue";
+	
+	@AddOnStartup(description = "Able to delete an HL7 Queue item")
+	public static final String PRIV_DELETE_HL7_IN_QUEUE = "Delete HL7 Inbound Queue";
+	
+	public static final String PRIV_PURGE_HL7_IN_QUEUE = "Purge HL7 Inbound Queue";
+	
+	@AddOnStartup(description = "Able to add an HL7 archive item")
+	public static final String PRIV_ADD_HL7_IN_ARCHIVE = "Add HL7 Inbound Archive";
+	
+	@AddOnStartup(description = "Able to view an HL7 archive item")
+	public static final String PRIV_VIEW_HL7_IN_ARCHIVE = "View HL7 Inbound Archive";
+	
+	@AddOnStartup(description = "Able to update an HL7 archive item")
+	public static final String PRIV_UPDATE_HL7_IN_ARCHIVE = "Update HL7 Inbound Archive";
+	
+	@AddOnStartup(description = "Able to delete/retire an HL7 archive item")
+	public static final String PRIV_DELETE_HL7_IN_ARCHIVE = "Delete HL7 Inbound Archive";
+	
+	public static final String PRIV_PURGE_HL7_IN_ARCHIVE = "Purge HL7 Inbound Archive";
+	
+	@AddOnStartup(description = "Able to add an HL7 error item")
+	public static final String PRIV_ADD_HL7_IN_EXCEPTION = "Add HL7 Inbound Exception";
+	
+	@AddOnStartup(description = "Able to view an HL7 archive item")
+	public static final String PRIV_VIEW_HL7_IN_EXCEPTION = "View HL7 Inbound Exception";
+	
+	@AddOnStartup(description = "Able to update an HL7 archive item")
+	public static final String PRIV_UPDATE_HL7_IN_EXCEPTION = "Update HL7 Inbound Exception";
+	
+	@AddOnStartup(description = "Able to delete an HL7 archive item")
+	public static final String PRIV_DELETE_HL7_IN_EXCEPTION = "Delete HL7 Inbound Exception";
+	
+	public static final String PRIV_PURGE_HL7_IN_EXCEPTION = "Purge HL7 Inbound Exception";
+	
 	@AddOnStartup(description = "Able to view visit types")
 	public static final String VIEW_VISIT_TYPES = "View Visit Types";
 	
@@ -411,7 +489,6 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to delete visits")
 	public static final String DELETE_VISITS = "Delete Visits";
 	
-	@AddOnStartup(description = "Able to purge visits")
 	public static final String PURGE_VISITS = "Purge Visits";
 	
 	@AddOnStartup(description = "Able to view visit attribute types")
@@ -420,7 +497,6 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to add/edit/retire visit attribute types")
 	public static final String MANAGE_VISIT_ATTRIBUTE_TYPES = "Manage Visit Attribute Types";
 	
-	@AddOnStartup(description = "Able to purge visit attribute types")
 	public static final String PURGE_VISIT_ATTRIBUTE_TYPES = "Purge Visit Attribute Types";
 	
 	@AddOnStartup(description = "Able to view the 'Visits' tab on the patient dashboard")
@@ -432,4 +508,27 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to add/edit/retire order sets")
 	public static final String MANAGE_ORDER_SETS = "Manage Order Sets";
 	
+	@AddOnStartup(description = "Able to view location attribute types")
+	public static final String VIEW_LOCATION_ATTRIBUTE_TYPES = "View Location Attribute Types";
+	
+	@AddOnStartup(description = "Able to add/edit/retire location attribute types")
+	public static final String MANAGE_LOCATION_ATTRIBUTE_TYPES = "Manage Location Attribute Types";
+	
+	public static final String PURGE_LOCATION_ATTRIBUTE_TYPES = "Purge Location Attribute Types";
+	
+	@AddOnStartup(description = "Able to view Provider")
+	public static final String VIEW_PROVIDERS = "View Providers";
+	
+	@AddOnStartup(description = "Able to edit Provider")
+	public static final String MANAGE_PROVIDERS = "Manage Providers";
+	
+	public static final String PURGE_PROVIDERS = "Purge Providers";
+	
+	@AddOnStartup(description = "Able to view encounter roles")
+	public static final String VIEW_ENCOUNTER_ROLES = "View Encounter Roles";
+	
+	public static final String PURGE_ENCOUNTER_ROLES = "Purge Encounter Roles";
+	
+	@AddOnStartup(description = "Able to add/edit/retire encounter roles")
+	public static final String MANAGE_ENCOUNTER_ROLES = "Manage Encounter Roles";
 }

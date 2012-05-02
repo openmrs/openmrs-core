@@ -499,7 +499,8 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		PersonAttribute pa1 = new PersonAttribute();
 		pa1.setValue("ack");
-		pa1.setAttributeType(new PersonAttributeType(1));
+		PersonAttributeType attributeType = new PersonAttributeType(1);
+		pa1.setAttributeType(attributeType);
 		pa1.setVoided(false);
 		pa1.setCreator(new User(1));
 		p.addAttribute(pa1);
@@ -510,7 +511,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		// add another one
 		PersonAttribute pa2 = new PersonAttribute();
 		pa2.setValue(null);
-		pa2.setAttributeType(new PersonAttributeType(1));
+		pa2.setAttributeType(attributeType);
 		pa2.setVoided(false);
 		p.addAttribute(pa2);
 		

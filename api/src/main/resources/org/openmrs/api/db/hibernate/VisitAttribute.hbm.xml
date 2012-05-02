@@ -1,15 +1,17 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping package="org.openmrs">
 
     <class name="VisitAttribute" table="visit_attribute">
 
-        <id name="visitAttributeId" type="int" column="visit_attribute_id">
-            <generator class="native" />
-        </id>
+		<id name="visitAttributeId" type="int" column="visit_attribute_id">
+			<generator class="native">
+				<param name="sequence">visit_attribute_visit_attribute_id_seq</param>
+			</generator>
+		</id>
 
         <discriminator column="visit_attribute_id" insert="false" />
         
@@ -17,8 +19,7 @@
         
         <many-to-one name="attributeType" class="VisitAttributeType" not-null="true" column="attribute_type_id" />
         
-        <!-- TODO CHECK LENGTH -->
-        <property name="serializedValue" type="text" not-null="true" column="serialized_value" length="16777215" />
+        <property name="valueReference" type="text" not-null="true" access="field" column="value_reference" length="65535" />
         
         <many-to-one name="creator" class="User" not-null="true" column="creator" />
         

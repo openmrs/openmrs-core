@@ -92,7 +92,7 @@ public interface ObsDAO {
 	 *      java.util.Date, java.util.Date, boolean)
 	 * @see ObsService#getObservationCount(org.openmrs.ConceptName, boolean)
 	 */
-	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs)
 	        throws DAOException;

@@ -15,12 +15,14 @@ package org.openmrs.web.controller;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,8 +38,10 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSet;
 import org.openmrs.Form;
 import org.openmrs.api.APIException;
@@ -49,6 +53,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.propertyeditor.ConceptClassEditor;
 import org.openmrs.propertyeditor.ConceptDatatypeEditor;
+import org.openmrs.propertyeditor.ConceptMapTypeEditor;
+import org.openmrs.propertyeditor.ConceptReferenceTermEditor;
 import org.openmrs.propertyeditor.ConceptSetsEditor;
 import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.util.OpenmrsConstants;
@@ -103,6 +109,8 @@ public class ConceptFormController extends SimpleFormController {
 		binder.registerCustomEditor(java.util.Collection.class, "concept.answers", new ConceptAnswersEditor(commandObject
 		        .getConcept().getAnswers(true)));
 		binder.registerCustomEditor(org.openmrs.ConceptSource.class, new ConceptSourceEditor());
+		binder.registerCustomEditor(ConceptMapType.class, new ConceptMapTypeEditor());
+		binder.registerCustomEditor(ConceptReferenceTerm.class, new ConceptReferenceTermEditor());
 	}
 	
 	/**
@@ -146,6 +154,10 @@ public class ConceptFormController extends SimpleFormController {
 	 * @should return a concept with a null id if no match is found
 	 * @should void a synonym marked as preferred when it is removed
 	 * @should set the local preferred name
+	 * @should add a new Concept map to an existing concept
+	 * @should remove a concept map from an existing concept
+	 * @should ignore new concept map row if the user did not select a term
+	 * @should add a new Concept map when creating a concept
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
@@ -356,7 +368,7 @@ public class ConceptFormController extends SimpleFormController {
 		
 		public Map<Locale, List<ConceptName>> indexTermsByLocale = new HashMap<Locale, List<ConceptName>>();
 		
-		public List<ConceptMap> mappings; // a "lazy list" version of the concept.getMappings() list
+		public List<ConceptMap> conceptMappings; // a "lazy list" version of the concept.getMappings() list
 		
 		public Double hiAbsolute;
 		
@@ -412,7 +424,7 @@ public class ConceptFormController extends SimpleFormController {
 			}
 			
 			// turn the list objects into lazy lists
-			mappings = ListUtils.lazyList(new Vector(concept.getConceptMappings()), FactoryUtils
+			conceptMappings = ListUtils.lazyList(new ArrayList<ConceptMap>(concept.getConceptMappings()), FactoryUtils
 			        .instantiateFactory(ConceptMap.class));
 			
 			if (concept.isNumeric()) {
@@ -504,16 +516,27 @@ public class ConceptFormController extends SimpleFormController {
 			}
 			
 			// add in all the mappings
-			for (ConceptMap map : mappings) {
-				if (map != null) {
-					if (map.getSourceCode() == null) {
-						// because of the _mappings[x].sourceCode input name in the jsp, the sourceCode will be empty for
-						// deleted mappings.  remove those from the concept object now.
-						concept.removeConceptMapping(map);
-					} else if (!concept.getConceptMappings().contains(map)) {
-						// assumes null sources also don't get here
-						concept.addConceptMapping(map);
-					}
+			//store ids of already mapped terms so that we don't map a term multiple times
+			Set<Integer> mappedTermIds = null;
+			for (ConceptMap map : conceptMappings) {
+				if (mappedTermIds == null)
+					mappedTermIds = new HashSet<Integer>();
+				
+				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {
+					//if the user didn't select an existing term via the reference term autocomplete
+					// OR the user added a new row but entered nothing, ignore
+					if (map.getConceptMapId() == null)
+						continue;
+					
+					// because of the _mappings[x].conceptReferenceTerm input name in the jsp, the ids for 
+					// terms will be empty for deleted mappings, remove those from the concept object now.
+					concept.removeConceptMapping(map);
+				} else if (!mappedTermIds.add(map.getConceptReferenceTerm().getConceptReferenceTermId())) {
+					//skip past this mapping because its term is already in use by another mapping for this concept
+					continue;
+				} else if (!concept.getConceptMappings().contains(map)) {
+					// assumes null sources also don't get here
+					concept.addConceptMapping(map);
 				}
 			}
 			
@@ -635,17 +658,17 @@ public class ConceptFormController extends SimpleFormController {
 		}
 		
 		/**
-		 * @return the mappings
+		 * @return the conceptMappings
 		 */
-		public List<ConceptMap> getMappings() {
-			return mappings;
+		public List<ConceptMap> getConceptMappings() {
+			return conceptMappings;
 		}
 		
 		/**
-		 * @param mappings the mappings to set
+		 * @param conceptMappings the conceptMappings to set
 		 */
-		public void setMappings(List<ConceptMap> mappings) {
-			this.mappings = mappings;
+		public void setConceptMappings(List<ConceptMap> conceptMappings) {
+			this.conceptMappings = conceptMappings;
 		}
 		
 		/**

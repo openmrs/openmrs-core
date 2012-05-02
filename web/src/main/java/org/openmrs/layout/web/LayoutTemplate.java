@@ -14,6 +14,7 @@
 package org.openmrs.layout.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,24 @@ public abstract class LayoutTemplate {
 	protected List<String> lineByLineFormat;
 	
 	protected int maxTokens = 0; // The largest number of tokens on one given line
+	
+	protected String startDate;
+	
+	protected String endDate;
+	
+	public LayoutTemplate() {
+	}
+	
+	/**
+	 * Very crude way of setting just one line of template. This just puts
+	 * something on {@link #setLineByLineFormat(List)} with this string
+	 * 
+	 * @param simpleTemplate
+	 *            first template line
+	 */
+	public LayoutTemplate(String simpleTemplate) {
+		setLineByLineFormat(Arrays.asList(simpleTemplate));
+	}
 	
 	public abstract String getLayoutToken();
 	

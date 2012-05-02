@@ -21,8 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Auditable;
 import org.openmrs.ConceptNumeric;
-import org.openmrs.GlobalProperty;
-import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
@@ -41,15 +39,12 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	public void onFlushDirty_shouldReturnFalseForNonAuditableObjects() throws Exception {
 		AuditableInterceptor interceptor = new AuditableInterceptor();
 		
-		GlobalProperty o = new GlobalProperty();
-		
-		// sanity check to make sure we're using the right object for this test
-		Assert.assertTrue(o instanceof OpenmrsObject);
-		Assert.assertFalse(o instanceof Auditable);
+		Object o = new Object();
 		
 		boolean returnValue = interceptor.onFlushDirty(o, null, null, null, null, null);
 		
-		Assert.assertFalse("false should have been returned because we didn't pass in an Auditable", returnValue);
+		Assert.assertFalse("false should have been returned because we didn't pass in an Auditable or OpenmrsObject",
+		    returnValue);
 	}
 	
 	/**
@@ -169,4 +164,73 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 			return true;
 		}
 	}
+	
+	/**
+	 * @see AuditableInterceptor#onSave(Object,Serializable,Object[],String[],Type[])
+	 * @verifies return true if dateCreated was null
+	 */
+	@Test
+	public void onSave_shouldReturnTrueIfDateCreatedWasNull() throws Exception {
+		AuditableInterceptor interceptor = new AuditableInterceptor();
+		
+		User u = new User();
+		
+		String[] propertyNames = new String[] { "creator", "dateCreated" };
+		Object[] currentState = new Object[] { 0, null };
+		
+		boolean result = interceptor.onSave(u, 0, currentState, propertyNames, null);
+		Assert.assertTrue(result);
+	}
+	
+	/**
+	 * @see AuditableInterceptor#onSave(Object,Serializable,Object[],String[],Type[])
+	 * @verifies return true if creator was null
+	 */
+	@Test
+	public void onSave_shouldReturnTrueIfCreatorWasNull() throws Exception {
+		AuditableInterceptor interceptor = new AuditableInterceptor();
+		
+		User u = new User();
+		
+		String[] propertyNames = new String[] { "creator", "dateCreated" };
+		Object[] currentState = new Object[] { null, new Date() };
+		
+		boolean result = interceptor.onSave(u, 0, currentState, propertyNames, null);
+		Assert.assertTrue(result);
+	}
+	
+	/**
+	 * @see AuditableInterceptor#onSave(Object,Serializable,Object[],String[],Type[])
+	 * @verifies return false if dateCreated and creator was not null
+	 */
+	@Test
+	public void onSave_shouldReturnFalseIfDateCreatedAndCreatorWasNotNull() throws Exception {
+		AuditableInterceptor interceptor = new AuditableInterceptor();
+		
+		User u = new User();
+		
+		String[] propertyNames = new String[] { "creator", "dateCreated" };
+		Object[] currentState = new Object[] { 0, new Date() };
+		
+		boolean result = interceptor.onSave(u, 0, currentState, propertyNames, null);
+		Assert.assertFalse(result);
+	}
+	
+	/**
+	 * @see AuditableInterceptor#onSave(Object,Serializable,Object[],String[],Type[])
+	 * @verifies be called when saving OpenmrsObject
+	 */
+	@Test
+	public void onSave_shouldBeCalledWhenSavingOpenmrsObject() throws Exception {
+		User u = new User();
+		
+		u.setSystemId("user");
+		u.setPerson(Context.getPersonService().getPerson(1));
+		
+		Context.getUserService().saveUser(u, "Admin123");
+		
+		Assert.assertSame(Context.getAuthenticatedUser(), u.getCreator());
+		Assert.assertNotNull(u.getDateCreated());
+	}
+	
 }

@@ -13,7 +13,6 @@
  */
 package org.openmrs.api;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +24,7 @@ import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
+import org.openmrs.FormResource;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
@@ -797,92 +797,59 @@ public interface FormService extends OpenmrsService {
 	public void purgeFieldType(FieldType fieldType) throws APIException;
 	
 	/**
-	 * Retrieves a resource for a given form based on owner and name.
-	 * 
-	 * The return value of this method must be cast to the desired type, for
-	 * example:
-	 * 
-	 * String xslt = (String) getFormResource(form, "formentry", "xslt");
-	 * 
-	 * @see #saveFormResource(Form, String, String, Serializable) for details
-	 *      about owner and name.
-	 * 
-	 * @param form
-	 *            the Form associated with the desired resource
-	 * @param owner
-	 *            the owner of the resource (e.g. formentry)
-	 * @param name
-	 *            the name of the resource (e.g. xslt)
-	 * @return the raw data representation of the resource
+	 * Finds a FormResource by its id
+	 *
+	 * @param formResourceId the id of the resource
+	 * @should find a saved FormResource
+	 * @should return null if no FormResource found
 	 * @since 1.9
-	 * @should return a saved form resource
-	 * @should throw a DAOException if no form resource found
 	 */
-	public Serializable getFormResource(Form form, String owner, String name);
+	public FormResource getFormResource(Integer formResourceId) throws APIException;
 	
 	/**
-	 * Saves a resource for a given form based on owner and name. The
-	 * <i>owner</i> must be unique and should refer to a particular service or
-	 * module claiming ownership of the resource. The <i>name</i> of a resource
-	 * specifies one of many resources that can be stored for a particular
-	 * owner, and can be the same name as a resource used by another owner. Only
-	 * one resource for each <i>owner:name</i> combination will ever be saved.
-	 * 
-	 * @param form the Form associated with the desired resource
-	 * @param owner the owner of the resource (e.g. formentry)
-	 * @param name the name of the resource (e.g. xslt)
-	 * @param value the raw data representation of the resource
+	 * Finds a FormResource by its uuid
+	 *
+	 * @param uuid the uuid of the resource
 	 * @since 1.9
-	 * @should save a form resource
-	 * @should save any serializable value
-	 * @should overwrite an existing resource with same parameters
 	 */
-	public void saveFormResource(Form form, String owner, String name, Serializable value);
+	public FormResource getFormResourceByUuid(String uuid) throws APIException;
 	
 	/**
-	 * Permanently removes a resource for a given form based on owner and name.
+	 * Finds a FormResource based on a given Form and name
 	 * 
-	 * @see #saveFormResource(Form, String, String, Serializable) for details
-	 *      about owner and name.
+	 * @param form the Form that the resource belongs to
+	 * @param name the name of the resource
+	 * @since 1.9
+	 */
+	public FormResource getFormResource(Form form, String name) throws APIException;
+	
+	/**
+	 * Finds all FormResources tied to a given form
 	 * 
 	 * @param form
-	 *            the Form associated with the desired resource
-	 * @param owner
-	 *            the owner of the resource (e.g. formentry)
-	 * @param name
-	 *            the name of the resource (e.g. xslt)
+	 * @return the resources attached to the form
+	 * @throws APIException 
 	 * @since 1.9
+	 */
+	public Collection<FormResource> getFormResourcesForForm(Form form) throws APIException;
+	
+	/**
+	 * Saves or updates the given form resource
+	 *
+	 * @param formResource the resource to be saved
+	 * @should persist a FormResource
+	 * @should overwrite an existing resource with same name
+	 * @should be able to save an XSLT
+	 * @since 1.9
+	 */
+	public FormResource saveFormResource(FormResource formResource) throws APIException;
+	
+	/**
+	 * Purges a form resource
+	 *
+	 * @param formResource the resource to be purged
 	 * @should delete a form resource
-	 */
-	public void purgeFormResource(Form form, String owner, String name);
-	
-	/**
-	 * Retrieves all resource names for a given form based on owner.
-	 * 
-	 * @see #saveFormResource(Form, String, String, Serializable) for details
-	 *      about owner and name.
-	 * 
-	 * @param form the Form associated with the desired resource
-	 * @param owner the owner of the resource (e.g. formentry)
-	 * @return a list of names
 	 * @since 1.9
-	 * @should return a set of names of resources on a form for an owner
-	 * @should return an empty set if no resources exist for the owner
 	 */
-	public Set<String> getFormResourceNamesByOwner(Form form, String owner);
-	
-	/**
-	 * Retrieves all unique owners for resources for a given form.
-	 * 
-	 * @see #saveFormResource(Form, String, String, Serializable) for details
-	 *      about owner and name.
-	 * 
-	 * @param form the Form associated with the desired resource owners
-	 * @return a set of owners
-	 * @since 1.9
-	 * @should return a set of owners of resources on a form
-	 * @should return an empty set if no resources exist for the form
-	 */
-	public Set<String> getFormResourceOwners(Form form);
-	
+	public void purgeFormResource(FormResource formResource) throws APIException;
 }

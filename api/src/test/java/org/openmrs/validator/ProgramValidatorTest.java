@@ -58,6 +58,21 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ProgramValidator#validate(Object,Errors)}
 	 */
 	@Test
+	@Verifies(value = "should fail validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+		Program prog = new Program();
+		prog.setName("Hypochondriasis program");
+		prog.setConcept(Context.getConceptService().getConcept(3));
+		
+		Errors errors = new BindException(prog, "prog");
+		new ProgramValidator().validate(prog, errors);
+		Assert.assertTrue(errors.hasFieldErrors("description"));
+	}
+	
+	/**
+	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
 	@Verifies(value = "should fail validation if concept is null or empty or whitespace", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfConceptIsNullOrEmptyOrWhitespace() throws Exception {
 		Program prog = new Program();
@@ -77,6 +92,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
 		Program prog = new Program();
 		prog.setName("Hypochondriasis program");
+		prog.setDescription("This is Hypochondriasis program");
 		prog.setConcept(Context.getConceptService().getConcept(3));
 		
 		Errors errors = new BindException(prog, "prog");

@@ -27,7 +27,6 @@ import org.openmrs.aop.RequiredDataAdvice;
  * 
  * @see RequiredDataAdvice
  * @see OpenmrsObjectSaveHandler
- * @see AuditableSaveHandler
  * @see ConceptNameSaveHandler
  * @since 1.5
  */

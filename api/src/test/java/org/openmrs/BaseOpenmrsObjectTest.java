@@ -161,4 +161,18 @@ public class BaseOpenmrsObjectTest {
 		//then
 		o.toString();
 	}
+	
+	@Test
+	public void shouldNotBeEqualWhenDifferentClassesAndSameId() throws Exception {
+		Encounter encounter = new Encounter(2);
+		Order order = new Order(2);
+		
+		Assert.assertFalse(encounter.equals(order));
+	}
+	
+	@Test
+	public void shouldNotBeEqualWhenFirstIsNull() throws Exception {
+		Encounter encounter = new Encounter(2);
+		Assert.assertFalse(encounter.equals(null));
+	}
 }

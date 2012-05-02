@@ -1,18 +1,19 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 	<class name="org.openmrs.Drug" table="drug">
 
 		<id name="drugId" type="java.lang.Integer" column="drug_id">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">drug_drug_id_seq</param>
+			</generator>
 		</id>
 
 		<discriminator column="drug_id" insert="false" />
 
-		<property name="name" type="java.lang.String" length="50" />
+		<property name="name" type="java.lang.String" length="255" />
 		<property name="combination" type="java.lang.Boolean" length="1"
 			not-null="true" />
 		<property name="doseStrength" type="java.lang.Double"
@@ -31,7 +32,7 @@
 			column="date_retired" not-null="false" length="19" />
 		<property name="retireReason" type="java.lang.String"
 			column="retire_reason" length="255" />
-    
+
 		<many-to-one name="concept" class="org.openmrs.Concept"
 			not-null="true" column="concept_id" />
 		<many-to-one name="dosageForm" class="org.openmrs.Concept"

@@ -29,6 +29,9 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PersonDAO;
+import org.openmrs.person.PersonMergeLog;
+import org.openmrs.serialization.SerializationException;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +40,10 @@ import org.springframework.transaction.annotation.Transactional;
  * Contains methods pertaining to Persons in the system Use:<br/>
  * 
  * <pre>
+ * 
+ * 
+ * 
+ * 
  * List&lt;Person&gt; personObjects = Context.getPersonService().getAllPersons();
  * </pre>
  * 
@@ -44,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.Patient
  */
 @Transactional
-public interface PersonService {
+public interface PersonService extends OpenmrsService {
 	
 	/**
 	 * These enumerations are used when determining which person attr types to display. If listing
@@ -192,6 +199,15 @@ public interface PersonService {
 	public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException;
 	
 	/**
+	 * Unretire a Person Relationship Type
+	 * 
+	 * @param relationshipType, retiredReason
+	 * @Since 1.9
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
+	public RelationshipType unretireRelationshipType(RelationshipType relationshipType);
+	
+	/**
 	 * @deprecated {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
 	@Deprecated
@@ -227,23 +243,26 @@ public interface PersonService {
 	public void unretirePersonAttributeType(PersonAttributeType type) throws APIException;
 	
 	/**
-	 * Effectively removes this person from the system. UserService.voidUser(person) and
-	 * PatientService.voidPatient(person) are also called
+	 * Effectively removes this person from the system. Voids Patient and retires Users as well.
 	 * 
 	 * @param person person to be voided
 	 * @param reason reason for voiding person
 	 * @return the person that was voided
 	 * @should return voided person with given reason
+	 * @should void patient
+	 * @should retire users
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public Person voidPerson(Person person, String reason) throws APIException;
 	
 	/**
-	 * Effectively resurrects this person in the db. Unvoids the associated Patient and User as well
+	 * Effectively resurrects this person in the db. Unvoids Patient as well.
 	 * 
 	 * @param person person to be revived
 	 * @return the person that was unvoided
 	 * @should unvoid the given person
+	 * @should unvoid patient
+	 * @should not unretire users
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public Person unvoidPerson(Person person) throws APIException;
@@ -446,11 +465,10 @@ public interface PersonService {
 	public List<Relationship> getRelationshipsByPerson(Person p) throws APIException;
 	
 	/**
-	 * Get list of relationships that include Person in person_id or relative_id.
-	 * Does not include voided relationships. 
-	 * Accepts an effectiveDate parameter which, if supplied, will limit the returned
-	 * relationships to those that were active on the given date.  Such active relationships
-	 * include those that have a startDate that is null or less than or equal to the effectiveDate, 
+	 * Get list of relationships that include Person in person_id or relative_id. Does not include
+	 * voided relationships. Accepts an effectiveDate parameter which, if supplied, will limit the
+	 * returned relationships to those that were active on the given date. Such active relationships
+	 * include those that have a startDate that is null or less than or equal to the effectiveDate,
 	 * and that have an endDate that is null or greater than or equal to the effectiveDate.
 	 * 
 	 * @param p person object listed on either side of the relationship
@@ -534,8 +552,10 @@ public interface PersonService {
 	 * @param fromPerson (optional) Person to in the person_id column
 	 * @param toPerson (optional) Person in the relative_id column
 	 * @param relType (optional) The RelationshipType to match
-	 * @param startEffectiveDate (optional) The date during which the relationship was effective (lower bound)
-	 * @param endEffectiveDate (optional) The date during which the relationship was effective (upper bound)
+	 * @param startEffectiveDate (optional) The date during which the relationship was effective
+	 *            (lower bound)
+	 * @param endEffectiveDate (optional) The date during which the relationship was effective
+	 *            (upper bound)
 	 * @return relationships matching the given parameters
 	 * @throws APIException
 	 * @should fetch relationships matching the given from person
@@ -798,6 +818,18 @@ public interface PersonService {
 	public PersonAttribute getPersonAttributeByUuid(String uuid) throws APIException;
 	
 	/**
+	 * Get PersonName by its personNameId
+	 * 
+	 * @param personNameId
+	 * @return
+	 * @should find PersonName given valid personNameId
+	 * @should return null if no object found with given personNameId
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	PersonName getPersonName(Integer personNameId);
+	
+	/**
 	 * Get PersonName by its UUID
 	 * 
 	 * @param uuid
@@ -858,6 +890,7 @@ public interface PersonService {
 	 * @throws APIException
 	 * @should create new object when relationship type id is null
 	 * @should update existing object when relationship type id is not null
+	 * @should fail if the description is not specified
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException;
@@ -921,7 +954,7 @@ public interface PersonService {
 	
 	/**
 	 * Voids the given PersonName, effectively deleting the name, from the end-user's point of view.
-	 *
+	 * 
 	 * @param personName PersonName to void
 	 * @param voidReason String reason the personName is being voided.
 	 * @return the newly saved personName
@@ -933,7 +966,7 @@ public interface PersonService {
 	
 	/**
 	 * Unvoid PersonName in the database, effectively marking this as a valid personName again
-	 *
+	 * 
 	 * @param personName PersonName to unvoid
 	 * @return the newly unvoided personName
 	 * @throws APIException
@@ -944,7 +977,7 @@ public interface PersonService {
 	
 	/**
 	 * Inserts or updates the given personName object in the database
-	 *
+	 * 
 	 * @param personName to be created or updated
 	 * @return personName that was created or updated
 	 * @throws APIException
@@ -987,8 +1020,72 @@ public interface PersonService {
 	public Map<Person, List<Person>> getRelationships(RelationshipType relationshipType) throws APIException;
 	
 	/**
-	 * Voids the given PersonAddress, effectively deleting the personAddress, from the end-user's point of view.
-	 *
+	 * Builds the serialized data from
+	 * {@link org.openmrs.person.PersonMergeLog#getPersonMergeLogData}, sets the mergedData String,
+	 * and the creator and date if null. It then saves the <code>PersonMergeLog</code> object to the
+	 * model.
+	 * 
+	 * @param personMergeLog the <code>PersonMergeLog</code> object to save.
+	 * @return the persisted <code>PersonMergeLog</code> object
+	 * @see org.openmrs.person.PersonMergeLog
+	 * @see org.openmrs.api.handler.OpenmrsObjectSaveHandler
+	 * @should require PersonMergeLogData
+	 * @should require winner
+	 * @should require loser
+	 * @should set date created if null
+	 * @should set creator if null
+	 * @should serialize PersonMergeLogData
+	 * @should save PersonMergeLog
+	 */
+	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws SerializationException, APIException;
+	
+	/**
+	 * Gets a PersonMergeLog object from the model using the UUID identifier. Deserializes the
+	 * 
+	 * @param uuid
+	 * @param deserialize
+	 * @return
+	 * @throws SerializationException
+	 * @throws APIException
+	 * @should require uuid
+	 * @should retrieve personMergeLog without deserializing data
+	 * @should retrieve personMergeLog and deserialize data
+	 */
+	public PersonMergeLog getPersonMergeLogByUuid(String uuid, boolean deserialize) throws SerializationException,
+	        APIException;
+	
+	/**
+	 * Gets all the <code>PersonMergeLog</code> objects from the model
+	 * 
+	 * @return list of PersonMergeLog objects
+	 * @throws SerializationException
+	 * @should retrieve all PersonMergeLogs from the model
+	 * @should retrieve all PersonMergeLogs and deserialize them
+	 */
+	public List<PersonMergeLog> getAllPersonMergeLogs(boolean deserialize) throws SerializationException;
+	
+	/**
+	 * Gets <code>PersonMergeLog</code> objects by winning person p. Useful for to getting all persons merged into p.
+	 * @param person the winning person
+	 * @return List of <code>PersonMergeLog</code> objects
+	 * @throws SerializationException
+	 * @should retrieve PersonMergeLogs by winner
+	 */
+	public List<PersonMergeLog> getWinningPersonMergeLogs(Person person, boolean deserialize) throws SerializationException;
+	
+	/**
+	 * Gets the <code>PersonMergeLog</code> where person p is the loser. Useful for getting the person that p was merged into.
+	 * @param person the losing person
+	 * @return The <code>PersonMergeLog</code> object
+	 * @throws SerializationException
+	 * @should find PersonMergeLog by loser
+	 */
+	public PersonMergeLog getLosingPersonMergeLog(Person person, boolean deserialize) throws SerializationException;
+	
+	/**
+	 * Voids the given PersonAddress, effectively deleting the personAddress, from the end-user's
+	 * point of view.
+	 * 
 	 * @param personAddress PersonAddress to void
 	 * @param voidReason String reason the personAddress is being voided.
 	 * @return the newly saved personAddress
@@ -1000,7 +1097,7 @@ public interface PersonService {
 	
 	/**
 	 * Unvoid PersonAddress in the database, effectively marking this as a valid PersonAddress again
-	 *
+	 * 
 	 * @param personAddress PersonAddress to unvoid
 	 * @return the newly unvoided personAddress
 	 * @throws APIException
@@ -1011,9 +1108,10 @@ public interface PersonService {
 	
 	/**
 	 * Inserts or updates the given personAddress object in the database
-	 *
+	 * 
 	 * @param personAddress PersonAddress to be created or updated
 	 * @return personAddress that was created or updated
+	 * @since 1.9
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public PersonAddress savePersonAddress(PersonAddress personAddress);

@@ -54,13 +54,29 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	
 	private String var;
 	
+	/**
+	 * @see javax.servlet.jsp.tagext.BodyTagSupport#doStartTag()
+	 * @should sort encounters by encounterDatetime in descending order
+	 * @should pass for a patient with no encounters
+	 */
+	@SuppressWarnings( { "rawtypes", "unchecked" })
 	@Override
 	public int doStartTag() {
 		if (encounters == null || encounters.isEmpty()) {
 			log.debug("ForEachEncounterTag skipping body due to 'encounters' param = " + encounters);
 			return SKIP_BODY;
 		}
-		// First retrieve all encounters matching the passed encounter type id, if provided.
+		
+		//First, sort the encounters
+		if (sortBy == null || sortBy.equals("")) {
+			sortBy = "encounterDatetime";
+		}
+		
+		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator())
+		        : new ComparableComparator()));
+		Collections.sort((List) encounters, comp);
+		
+		// Next, retrieve all encounters matching the passed encounter type id, if provided.
 		// If not provided, return all encounters
 		matchingEncs = new ArrayList<Encounter>();
 		for (Iterator<Encounter> i = encounters.iterator(); i.hasNext();) {
@@ -72,14 +88,6 @@ public class ForEachEncounterTag extends BodyTagSupport {
 			}
 		}
 		log.debug("ForEachEncounterTag found " + matchingEncs.size() + " encounters matching type = " + type);
-		
-		// Next, sort the encounters
-		if (sortBy == null || sortBy.equals("")) {
-			sortBy = "encounterDatetime";
-		}
-		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator())
-		        : new ComparableComparator()));
-		Collections.sort(matchingEncs, comp);
 		
 		// Return appropriate number of results
 		if (matchingEncs.isEmpty()) {

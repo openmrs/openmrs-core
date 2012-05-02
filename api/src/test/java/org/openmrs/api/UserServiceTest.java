@@ -18,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.TestUtil.containsId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -154,7 +155,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 		
 		List<User> allUsers = userService.getAllUsers();
-		assertEquals(9, allUsers.size());
+		assertEquals(10, allUsers.size());
 		
 		// there should still only be the one patient we created in the xml file
 		Cohort allPatientsSet = Context.getPatientSetService().getAllPatients();
@@ -327,9 +328,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		List<User> users = Context.getUserService().getUsers("Johnson", null, false);
 		Assert.assertEquals(3, users.size());
-		Assert.assertTrue(users.contains(new User(2)));
-		Assert.assertTrue(users.contains(new User(4)));
-		Assert.assertTrue(users.contains(new User(5)));
+		Assert.assertTrue(containsId(users, 2));
+		Assert.assertTrue(containsId(users, 4));
+		Assert.assertTrue(containsId(users, 5));
 	}
 	
 	/**
@@ -493,7 +494,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		
 		List<Role> roles = Context.getUserService().getAllRoles();
-		Assert.assertEquals(5, roles.size());
+		Assert.assertEquals(7, roles.size());
 	}
 	
 	/**
@@ -503,7 +504,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fetch all users in the system", method = "getAllUsers()")
 	public void getAllUsers_shouldFetchAllUsersInTheSystem() throws Exception {
 		List<User> users = Context.getUserService().getAllUsers();
-		Assert.assertEquals(3, users.size());
+		Assert.assertEquals(4, users.size());
 	}
 	
 	/**
@@ -514,7 +515,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getAllUsers_shouldNotContainsAnyDuplicateUsers() throws Exception {
 		executeDataSet(XML_FILENAME);
 		List<User> users = Context.getUserService().getAllUsers();
-		Assert.assertEquals(10, users.size());
+		Assert.assertEquals(11, users.size());
 		// TODO Need to test with duplicate data in the dataset (not sure if that's possible)
 		
 	}
@@ -698,8 +699,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should fetch all users if nameSearch is empty or null", method = "getUsers(String,List,null)")
 	public void getUsers_shouldFetchAllUsersIfNameSearchIsEmptyOrNull() throws Exception {
-		Assert.assertEquals(3, Context.getUserService().getUsers("", null, true).size());
-		Assert.assertEquals(3, Context.getUserService().getUsers(null, null, true).size());
+		Assert.assertEquals(4, Context.getUserService().getUsers("", null, true).size());
+		Assert.assertEquals(4, Context.getUserService().getUsers(null, null, true).size());
 	}
 	
 	/**
@@ -731,7 +732,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getUsersByRole_shouldFetchUsersAssignedGivenRole() throws Exception {
 		executeDataSet(XML_FILENAME);
 		
-		Assert.assertEquals(1, Context.getUserService().getUsersByRole(new Role("Some Role")).size());
+		Assert.assertEquals(2, Context.getUserService().getUsersByRole(new Role("Some Role")).size());
 	}
 	
 	/**
@@ -811,9 +812,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should delete given role from database", method = "purgeRole(Role)")
 	public void purgeRole_shouldDeleteGivenRoleFromDatabase() throws Exception {
 		executeDataSet(XML_FILENAME);
-		Role role = Context.getUserService().getRole("Some Role");
+		Role role = Context.getUserService().getRole("Some Role To Delete");
 		Context.getUserService().purgeRole(role);
-		Assert.assertNull(Context.getUserService().getRole("Some Role"));
+		Assert.assertNull(Context.getUserService().getRole("Some Role To Delete"));
 	}
 	
 	/**
@@ -1111,4 +1112,18 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(2, Context.getUserService().getUsers("", roles, true).size());
 	}
+	
+	/**
+	 * @see {@link UserService#getUsers(String, List, boolean, Integer, Integer)}
+	 */
+	@Test
+	@Verifies(value = "return users whose roles inherit requested roles", method = "getUsers(String,List,boolean,Integer,Integer)")
+	public void getUsers_shouldReturnUsersWhoseRolesInheritRequestedRoles() throws Exception {
+		executeDataSet(XML_FILENAME);
+		
+		List<Role> roles = new ArrayList<Role>();
+		roles.add(Context.getUserService().getRole("Parent"));
+		Assert.assertEquals(3, Context.getUserService().getUsers(null, roles, true, null, null).size());
+	}
+	
 }

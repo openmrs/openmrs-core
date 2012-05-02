@@ -6,7 +6,10 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.api.ConceptNameType;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -206,5 +209,142 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(anotherConcept, "concept");
 		new ConceptValidator().validate(anotherConcept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies pass if the concept being validated is retired and has a duplicate name
+	 */
+	@Test
+	public void validate_shouldPassIfTheConceptBeingValidatedIsRetiredAndHasADuplicateName() throws Exception {
+		Context.setLocale(new Locale("en"));
+		Concept concept = Context.getConceptService().getConcept(5497);
+		Context.getConceptService().saveConcept(concept);
+		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
+		
+		Concept anotherConcept = Context.getConceptService().getConcept(5089);
+		anotherConcept.setRetired(true);
+		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
+		Errors errors = new BindException(anotherConcept, "concept");
+		new ConceptValidator().validate(anotherConcept, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass if the concept has a synonym that is also a short name", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("CD4", Context.getLocale()));
+		// Add the short name. Because the short name is not counted as a Synonym. 
+		// ConceptValidator will not record any errors.
+		ConceptName name = new ConceptName("CD4", Context.getLocale());
+		name.setConceptNameType(ConceptNameType.SHORT);
+		concept.addName(name);
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if a term is mapped multiple times to the same concept", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfATermIsMappedMultipleTimesToTheSameConcept() throws Exception {
+		Concept concept = new Concept();
+		ConceptService cs = Context.getConceptService();
+		concept.addName(new ConceptName("my name", Context.getLocale()));
+		ConceptMap map1 = new ConceptMap(cs.getConceptReferenceTerm(1), cs.getConceptMapType(1));
+		concept.addConceptMapping(map1);
+		ConceptMap map2 = new ConceptMap(cs.getConceptReferenceTerm(1), cs.getConceptMapType(1));
+		concept.addConceptMapping(map2);
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		
+		//the second mapping should be rejected
+		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[1]"));
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass if the duplicate name in the locale for the concept being validated is voided", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfTheDuplicateNameInTheLocaleForTheConceptBeingValidatedIsVoided() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		ConceptName otherName = cs.getConceptName(1439);
+		//sanity check since names should only be unique amongst preferred and fully specified names
+		Assert.assertTrue(otherName.isFullySpecifiedName() || otherName.isPreferred());
+		Assert.assertFalse(otherName.isVoided());
+		Assert.assertFalse(otherName.getConcept().isRetired());
+		
+		//change to a duplicate name in the same locale
+		ConceptName duplicateName = cs.getConceptName(2477);
+		duplicateName.setName(otherName.getName());
+		Concept concept = duplicateName.getConcept();
+		concept.setPreferredName(duplicateName);
+		//ensure that the name has been marked as preferred in its locale
+		Assert.assertEquals(duplicateName, concept.getPreferredName(duplicateName.getLocale()));
+		Assert.assertTrue(duplicateName.isPreferred());
+		duplicateName.setVoided(true);
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies fail if there is a duplicate unretired concept name in the same locale different
+	 *           than the system locale
+	 */
+	@Test(expected = DuplicateConceptNameException.class)
+	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheSameLocaleDifferentThanTheSystemLocale()
+	        throws Exception {
+		Context.setLocale(new Locale("pl"));
+		Locale en = new Locale("en");
+		Concept concept = Context.getConceptService().getConcept(5497);
+		Assert.assertEquals(true, concept.getFullySpecifiedName(en).isFullySpecifiedName());
+		String duplicateName = concept.getFullySpecifiedName(en).getName();
+		
+		Concept anotherConcept = Context.getConceptService().getConcept(5089);
+		anotherConcept.getFullySpecifiedName(en).setName(duplicateName);
+		Errors errors = new BindException(anotherConcept, "concept");
+		new ConceptValidator().validate(anotherConcept, errors);
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass for a new concept with a map created with deprecated concept map methods", method = "validate(Object,Errors)")
+	public void validate_shouldPassForANewConceptWithAMapCreatedWithDeprecatedConceptMapMethods() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("test name", Context.getLocale()));
+		ConceptMap map = new ConceptMap();
+		map.setSourceCode("unique code");
+		map.setSource(cs.getConceptSource(1));
+		concept.addConceptMapping(map);
+		ValidateUtil.validate(concept);
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass for an edited concept with a map created with deprecated concept map methods", method = "validate(Object,Errors)")
+	public void validate_shouldPassForAnEditedConceptWithAMapCreatedWithDeprecatedConceptMapMethods() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		Concept concept = cs.getConcept(5497);
+		ConceptMap map = new ConceptMap();
+		map.setSourceCode("unique code");
+		map.setSource(cs.getConceptSource(1));
+		concept.addConceptMapping(map);
+		ValidateUtil.validate(concept);
 	}
 }

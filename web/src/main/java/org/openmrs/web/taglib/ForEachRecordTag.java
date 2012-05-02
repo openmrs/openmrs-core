@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptSource;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -107,16 +108,19 @@ public class ForEachRecordTag extends BodyTagSupport {
 		} else if (name.equals("role")) {
 			List<Role> roles = Context.getUserService().getAllRoles();
 			records = roles.iterator();
+		} else if (name.equals("conceptMapType")) {
+			List<ConceptMapType> mapTypes = Context.getConceptService().getActiveConceptMapTypes();
+			records = mapTypes.iterator();
 		} else if (name.equals("civilStatus")) {
 			ConceptService cs = Context.getConceptService();
 			Concept civilStatus = cs.getConcept(OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID);
 			if (civilStatus == null)
 				log.error("OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID is defined incorrectly.");
 			
-			records = civilStatus.getAnswers().iterator();
+			records = civilStatus.getAnswers(false).iterator();
 			
 			Map<String, String> opts = new HashMap<String, String>();
-			for (ConceptAnswer a : civilStatus.getAnswers()) {
+			for (ConceptAnswer a : civilStatus.getAnswers(false)) {
 				opts.put(a.getAnswerConcept().getConceptId().toString(), a.getAnswerConcept().getBestName(locale).getName());
 			}
 			records = opts.entrySet().iterator();
@@ -151,8 +155,8 @@ public class ForEachRecordTag extends BodyTagSupport {
 			if (c == null) {
 				log.error("Can't find concept with name or id of: " + concept + " and so no answers will be returned");
 				records = null;
-			} else if (c.getAnswers() != null)
-				records = c.getAnswers().iterator();
+			} else if (c.getAnswers(false) != null)
+				records = c.getAnswers(false).iterator();
 			else
 				records = new ArrayList<Concept>().iterator();
 		} else {
@@ -219,7 +223,6 @@ public class ForEachRecordTag extends BodyTagSupport {
 	}
 	
 	/**
-	 *
 	 * @param locationAndDepths
 	 * @param locations
 	 * @param i counter

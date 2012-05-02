@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,23 +31,25 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.util.Set;
 
-import liquibase.ChangeSet;
-import liquibase.CompositeFileOpener;
-import liquibase.DatabaseChangeLog;
-import liquibase.FileOpener;
-import liquibase.FileSystemFileOpener;
 import liquibase.Liquibase;
+import liquibase.changelog.ChangeLogIterator;
+import liquibase.changelog.ChangeLogParameters;
+import liquibase.changelog.ChangeSet;
+import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.filter.ContextChangeSetFilter;
+import liquibase.changelog.filter.DbmsChangeSetFilter;
+import liquibase.changelog.filter.ShouldRunChangeSetFilter;
+import liquibase.changelog.visitor.UpdateVisitor;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.LockException;
-import liquibase.lock.LockHandler;
-import liquibase.parser.ChangeLogIterator;
-import liquibase.parser.ChangeLogParser;
-import liquibase.parser.filter.ContextChangeSetFilter;
-import liquibase.parser.filter.DbmsChangeSetFilter;
-import liquibase.parser.filter.ShouldRunChangeSetFilter;
-import liquibase.parser.visitor.UpdateVisitor;
+import liquibase.lockservice.LockService;
+import liquibase.parser.core.xml.XMLChangeLogSAXParser;
+import liquibase.resource.CompositeResourceAccessor;
+import liquibase.resource.FileSystemResourceAccessor;
+import liquibase.resource.ResourceAccessor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -191,10 +192,11 @@ public class DatabaseUpdater {
 			}
 			
 			@Override
-			public void visit(ChangeSet changeSet, Database database) throws LiquibaseException {
+			public void visit(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database)
+			        throws LiquibaseException {
 				if (callback != null)
 					callback.executing(changeSet, numChangeSetsToRun);
-				super.visit(changeSet, database);
+				super.visit(changeSet, databaseChangeLog, database);
 			}
 		}
 		
@@ -204,23 +206,23 @@ public class DatabaseUpdater {
 		log.debug("Setting up liquibase object to run changelog: " + changeLogFile);
 		Liquibase liquibase = getLiquibase(changeLogFile, cl);
 		int numChangeSetsToRun = liquibase.listUnrunChangeSets(contexts).size();
-		Database database = liquibase.getDatabase();
-		
-		LockHandler lockHandler = LockHandler.getInstance(database);
-		lockHandler.waitForLock();
+		Database database = null;
+		LockService lockHandler = null;
 		
 		try {
-			database.checkDatabaseChangeLogTable();
+			database = liquibase.getDatabase();
+			lockHandler = LockService.getInstance(database);
+			lockHandler.waitForLock();
 			
-			FileOpener openmrsFO = new ClassLoaderFileOpener(cl);
-			FileOpener fsFO = new FileSystemFileOpener();
+			ResourceAccessor openmrsFO = new ClassLoaderFileOpener(cl);
+			ResourceAccessor fsFO = new FileSystemResourceAccessor();
 			
-			DatabaseChangeLog changeLog = new ChangeLogParser(new HashMap<String, Object>()).parse(changeLogFile,
-			    new CompositeFileOpener(openmrsFO, fsFO));
+			DatabaseChangeLog changeLog = new XMLChangeLogSAXParser().parse(changeLogFile, new ChangeLogParameters(),
+			    new CompositeResourceAccessor(openmrsFO, fsFO));
 			changeLog.validate(database);
 			ChangeLogIterator logIterator = new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
 			        new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
-			
+			database.checkDatabaseChangeLogTable(true, changeLog, new String[] { contexts });
 			logIterator.run(new OpenmrsUpdateVisitor(database, callback, numChangeSetsToRun), database);
 		}
 		catch (LiquibaseException e) {
@@ -230,8 +232,8 @@ public class DatabaseUpdater {
 			try {
 				lockHandler.releaseLock();
 			}
-			catch (LockException e) {
-				log.error("Could not release lock", e);
+			catch (Throwable t) {
+				log.error("Could not release lock", t);
 			}
 			try {
 				database.getConnection().close();
@@ -245,15 +247,41 @@ public class DatabaseUpdater {
 	}
 	
 	/**
-	 * Ask Liquibase if it needs to do any updates
+	 * Ask Liquibase if it needs to do any updates. Only looks at the {@link #CHANGE_LOG_FILE}
 	 * 
 	 * @return true/false whether database updates are required
 	 * @should always have a valid update to latest file
 	 */
 	public static boolean updatesRequired() throws Exception {
 		log.debug("checking for updates");
-		
 		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges();
+		
+		// if the db is locked, it means there was a crash
+		// or someone is executing db updates right now. either way
+		// returning true here stops the openmrs startup and shows
+		// the user the maintenance wizard for updates
+		if (isLocked() && changesets.size() == 0) {
+			// if there is a db lock but there are no db changes we undo the
+			// lock
+			DatabaseUpdater.releaseDatabaseLock();
+			log.debug("db lock found and released automatically");
+			return false;
+		}
+		
+		return changesets.size() > 0;
+	}
+	
+	/**
+	 * Ask Liquibase if it needs to do any updates
+	 * 
+	 * @param changeLogFilenames the filenames of all files to search for unrun changesets
+	 * @return true/false whether database updates are required
+	 * @should always have a valid update to latest file
+	 */
+	public static boolean updatesRequired(String... changeLogFilenames) throws Exception {
+		log.debug("checking for updates");
+		
+		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges(changeLogFilenames);
 		return changesets.size() > 0;
 	}
 	
@@ -342,7 +370,8 @@ public class DatabaseUpdater {
 			cl = OpenmrsClassLoader.getInstance();
 		
 		try {
-			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
+			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(
+			    new JdbcConnection(connection));
 			database.setDatabaseChangeLogTableName("liquibasechangelog");
 			database.setDatabaseChangeLogLockTableName("liquibasechangeloglock");
 			
@@ -353,14 +382,15 @@ public class DatabaseUpdater {
 				database.setDatabaseChangeLogLockTableName(database.getDatabaseChangeLogLockTableName().toUpperCase());
 			}
 			
-			FileOpener openmrsFO = new ClassLoaderFileOpener(cl);
-			FileOpener fsFO = new FileSystemFileOpener();
+			ResourceAccessor openmrsFO = new ClassLoaderFileOpener(cl);
+			ResourceAccessor fsFO = new FileSystemResourceAccessor();
 			
 			if (changeLogFile == null)
 				changeLogFile = CHANGE_LOG_FILE;
 			
-			return new Liquibase(changeLogFile, new CompositeFileOpener(openmrsFO, fsFO), database);
+			database.checkDatabaseChangeLogTable(false, null, null);
 			
+			return new Liquibase(changeLogFile, new CompositeResourceAccessor(openmrsFO, fsFO), database);
 		}
 		catch (Exception e) {
 			// if an error occurs, close the connection
@@ -524,7 +554,7 @@ public class DatabaseUpdater {
 		try {
 			Liquibase liquibase = getLiquibase(CHANGE_LOG_FILE, null);
 			database = liquibase.getDatabase();
-			DatabaseChangeLog changeLog = new ChangeLogParser(new HashMap<String, Object>()).parse(CHANGE_LOG_FILE,
+			DatabaseChangeLog changeLog = new XMLChangeLogSAXParser().parse(CHANGE_LOG_FILE, new ChangeLogParameters(),
 			    liquibase.getFileOpener());
 			List<ChangeSet> changeSets = changeLog.getChangeSets();
 			
@@ -549,25 +579,45 @@ public class DatabaseUpdater {
 	}
 	
 	/**
-	 * Looks at the current liquibase-update-to-latest.xml file returns all changesets in that file
-	 * that have not been run on the database yet.
-	 * 
-	 * @return list of changesets that haven't been run
+	 * @see DatabaseUpdater#getUnrunDatabaseChanges(String...)
 	 */
 	@Authorized(PrivilegeConstants.VIEW_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges() throws Exception {
+		return getUnrunDatabaseChanges(CHANGE_LOG_FILE);
+	}
+	
+	/**
+	 * Looks at the specified liquibase change log files and returns all changesets in the files
+	 * that have not been run on the database yet. If no argument is specified, then it looks at the
+	 * current liquibase-update-to-latest.xml file
+	 * 
+	 * @param changeLogFilenames the filenames of all files to search for unrun changesets
+	 * @return
+	 * @throws Exception
+	 */
+	@Authorized(PrivilegeConstants.VIEW_DATABASE_CHANGES)
+	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges(String... changeLogFilenames) throws Exception {
 		log.debug("Getting unrun changesets");
 		
 		Database database = null;
 		try {
-			Liquibase liquibase = getLiquibase(null, null);
-			database = liquibase.getDatabase();
-			List<ChangeSet> changeSets = liquibase.listUnrunChangeSets(CONTEXT);
+			if (changeLogFilenames == null)
+				throw new IllegalArgumentException("changeLogFilenames cannot be null");
+			
+			//if no argument, look ONLY in liquibase-update-to-latest.xml
+			if (changeLogFilenames.length == 0)
+				changeLogFilenames = new String[] { CHANGE_LOG_FILE };
 			
 			List<OpenMRSChangeSet> results = new ArrayList<OpenMRSChangeSet>();
-			for (ChangeSet changeSet : changeSets) {
-				OpenMRSChangeSet omrschangeset = new OpenMRSChangeSet(changeSet, database);
-				results.add(omrschangeset);
+			for (String changelogFile : changeLogFilenames) {
+				Liquibase liquibase = getLiquibase(changelogFile, null);
+				database = liquibase.getDatabase();
+				List<ChangeSet> changeSets = liquibase.listUnrunChangeSets(CONTEXT);
+				
+				for (ChangeSet changeSet : changeSets) {
+					OpenMRSChangeSet omrschangeset = new OpenMRSChangeSet(changeSet, database);
+					results.add(omrschangeset);
+				}
 			}
 			
 			return results;
@@ -662,6 +712,69 @@ public class DatabaseUpdater {
 				writer.close();
 			if (scanner != null)
 				scanner.close();
+		}
+	}
+	
+	/**
+	 * This method releases the liquibase db lock after a crashed database update. First, it
+	 * checks whether "liquibasechangeloglock" table exists in db. If so, it will check
+	 * whether the database is locked. If thats also true, this means that last attempted db
+	 * update crashed.<br/>
+	 * <br/>
+	 * This should only be called if the user is sure that no one else is currently running
+	 * database updates. This method should be used if there was a db crash while updates
+	 * were being written and the lock table was never cleaned up.
+	 * 
+	 * @throws LockException
+	 */
+	public static synchronized void releaseDatabaseLock() throws LockException {
+		Database database = null;
+		
+		try {
+			Liquibase liquibase = getLiquibase(null, null);
+			database = liquibase.getDatabase();
+			if (database.hasDatabaseChangeLogLockTable()) {
+				if (isLocked()) {
+					LockService.getInstance(database).forceReleaseLock();
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new LockException(e);
+		}
+		finally {
+			try {
+				database.getConnection().close();
+			}
+			catch (Throwable t) {
+				// pass
+			}
+		}
+	}
+	
+	/**
+	 * This method currently checks the liquibasechangeloglock table to see if there is a row
+	 * with a lock in it.  This uses the liquibase API to do this
+	 * 
+	 * @return true if database is currently locked
+	 */
+	public static boolean isLocked() {
+		Database database = null;
+		try {
+			Liquibase liquibase = getLiquibase(null, null);
+			database = liquibase.getDatabase();
+			return LockService.getInstance(database).listLocks().length > 0;
+		}
+		catch (Exception e) {
+			return false;
+		}
+		finally {
+			try {
+				database.getConnection().close();
+			}
+			catch (Throwable t) {
+				// pass
+			}
 		}
 	}
 }

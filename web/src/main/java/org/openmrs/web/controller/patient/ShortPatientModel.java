@@ -21,6 +21,7 @@ import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.ListUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
@@ -30,6 +31,7 @@ import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocationUtility;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -65,23 +67,32 @@ public class ShortPatientModel {
 			this.personName = patient.getPersonName();
 			this.personAddress = patient.getPersonAddress();
 			List<PatientIdentifier> activeIdentifiers = patient.getActiveIdentifiers();
-			if (activeIdentifiers.isEmpty())
-				activeIdentifiers.add(new PatientIdentifier(null, null,
+			if (activeIdentifiers.isEmpty()) {
+				final PatientIdentifierType defit = getDefaultIdentifierType();
+				activeIdentifiers.add(new PatientIdentifier(null, defit,
 				        (LocationUtility.getUserDefaultLocation() != null) ? LocationUtility.getUserDefaultLocation()
 				                : LocationUtility.getDefaultLocation()));
+			}
 			
 			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(activeIdentifiers), FactoryUtils
 			        .instantiateFactory(PatientIdentifier.class));
 			
 			List<PersonAttributeType> viewableAttributeTypes = Context.getPersonService().getPersonAttributeTypes(
 			    PERSON_TYPE.PATIENT, ATTR_VIEW_TYPE.VIEWING);
-			List<PersonAttribute> activePatientAttributes = patient.getActiveAttributes();
 			
 			personAttributes = new ArrayList<PersonAttribute>();
 			if (!CollectionUtils.isEmpty(viewableAttributeTypes)) {
-				for (PersonAttribute personAttribute : activePatientAttributes) {
-					if (viewableAttributeTypes.contains(personAttribute.getAttributeType()))
-						personAttributes.add(personAttribute);
+				for (PersonAttributeType personAttributeType : viewableAttributeTypes) {
+					PersonAttribute persistedAttribute = patient.getAttribute(personAttributeType);
+					//This ensures that empty attributes are added for those we want to display 
+					//in the view, but have no values
+					PersonAttribute formAttribute = new PersonAttribute(personAttributeType, null);
+					
+					//send a clone to the form so that we can use the original to track changes in the values
+					if (persistedAttribute != null)
+						BeanUtils.copyProperties(persistedAttribute, formAttribute);
+					
+					personAttributes.add(formAttribute);
 				}
 			}
 		}
@@ -92,6 +103,29 @@ public class ShortPatientModel {
 	 */
 	public List<PatientIdentifier> getIdentifiers() {
 		return identifiers;
+	}
+	
+	/**
+	 * @return the default patient identifier type (lexically first required id type)
+	 */
+	private PatientIdentifierType getDefaultIdentifierType() {
+		PatientIdentifierType defit = null;
+		PatientIdentifierType firstit = null;
+		for (PatientIdentifierType pit : Context.getPatientService().getAllPatientIdentifierTypes()) {
+			if (pit.getRequired()) {
+				/* find lexically first required identifier type */
+				defit = defit != null ? defit : pit;
+				if (defit.getName().compareToIgnoreCase(pit.getName()) > 0) {
+					defit = pit;
+				}
+			}
+			/* find lexically first identifier type */
+			firstit = firstit != null ? firstit : pit;
+			if (firstit.getName().compareToIgnoreCase(pit.getName()) > 0) {
+				firstit = pit;
+			}
+		}
+		return defit != null ? defit : firstit;
 	}
 	
 	/**
