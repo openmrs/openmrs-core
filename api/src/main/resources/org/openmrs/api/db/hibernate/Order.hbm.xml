@@ -190,10 +190,6 @@
 			<param name="enumClassName">org.openmrs.Order$OrderAction</param>
 		</type>
 	</property>
-	
-	<many-to-one name="orderGroup" class="org.openmrs.OrderGroup" not-null="false">
-        	<column name="order_group" />
-   	</many-to-one>
 
 	<subclass name="org.openmrs.DrugOrder" discriminator-value="DRUG">
 		<join table="drug_order">

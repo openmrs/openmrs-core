@@ -87,13 +87,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private String previousOrderNumber;
 	
 	/**
-	 * Allows orders to be grouped. e.g., drug regimens. Orders may be placed within groups to
-	 * assist with subsequent management or reporting of the orders (e.g., a drug regimen of three
-	 * drugs may be placed within an order group).
-	 */
-	private OrderGroup orderGroup;
-	
-	/**
 	 * Represents the action being taken on an order.
 	 * 
 	 * @see OrderAction
@@ -161,7 +154,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * Represents an enumeration of the actions that can be taken on an order
 	 * 
-	 * @since 1.9
+	 * @since 1.10
 	 */
 	public enum OrderAction {
 		/**
@@ -242,7 +235,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setDiscontinuedReasonNonCoded(getDiscontinuedReasonNonCoded());
 		target.setOrderNumber(getOrderNumber());
 		target.setPreviousOrderNumber(getPreviousOrderNumber());
-		target.setOrderGroup(getOrderGroup());
 		target.setOrderAction(getOrderAction());
 		target.setNonCodedName(getNonCodedName());
 		target.setUrgency(getUrgency());
@@ -596,26 +588,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Gets the order group.
-	 * 
-	 * @return the order group.
-	 */
-	public OrderGroup getOrderGroup() {
-		return orderGroup;
-	}
-	
-	/**
-	 * Sets the order group.
-	 * 
-	 * @param orderGroup the order group to set.
-	 */
-	public void setOrderGroup(OrderGroup orderGroup) {
-		this.orderGroup = orderGroup;
-	}
-	
-	/**
 	 * @return the orderAction
-	 * @since 1.9
+	 * @since 1.10
 	 */
 	public OrderAction getOrderAction() {
 		return orderAction;
@@ -623,7 +597,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @param orderAction the orderAction to set
-	 * @since 1.9
+	 * @since 1.10
 	 */
 	public void setOrderAction(OrderAction orderAction) {
 		this.orderAction = orderAction;
@@ -703,7 +677,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @return the indication
-	 * @since 1.9
+	 * @since 1.10
 	 */
 	public Concept getIndication() {
 		return indication;
@@ -711,7 +685,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @param indication the indication to set
-	 * @since 1.9
+	 * @since 1.10
 	 */
 	public void setIndication(Concept indication) {
 		this.indication = indication;

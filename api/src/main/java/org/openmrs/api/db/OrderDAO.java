@@ -20,12 +20,8 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderSet;
 import org.openmrs.Patient;
-import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
-import org.openmrs.api.OrderService;
 
 /**
  * Order-related database functions
@@ -77,26 +73,6 @@ public interface OrderDAO {
 	public Order getOrderByOrderNumber(String orderNumber);
 	
 	/**
-	 * @see org.openmrs.api.OrderService#saveOrderGroup(OrderGroup)
-	 */
-	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroup(Integer)
-	 */
-	public OrderGroup getOrderGroup(Integer orderGroupId) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupByUuid(String)
-	 */
-	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupsByPatient(Patient)
-	 */
-	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws DAOException;
-	
-	/**
 	 * Determines whether the given order is marked as 'activated' in the database (ignoring caches)
 	 * 
 	 * @param order
@@ -104,36 +80,6 @@ public interface OrderDAO {
 	 * @should return value from database ignoring session
 	 */
 	public boolean isActivatedInDatabase(Order order);
-	
-	/**
-	 * @see OrderService#getOrderSet(Integer)
-	 */
-	public OrderSet getOrderSet(Integer orderSetId);
-	
-	/**
-	 * @see OrderService#getOrderSetByUuid(String)
-	 */
-	public OrderSet getOrderSetByUuid(String uuid);
-	
-	/**
-	 * @see OrderService#saveOrderSet(OrderSet)
-	 */
-	public OrderSet saveOrderSet(OrderSet orderSet);
-	
-	/**
-	 * @see OrderService#publishOrderSet(Concept, OrderSet)
-	 */
-	public PublishedOrderSet publishOrderSet(Concept asConcept, OrderSet content);
-	
-	/**
-	 * @see OrderService#getPublishedOrderSet(Concept)
-	 */
-	public PublishedOrderSet getPublishedOrderSet(Concept concept);
-	
-	/**
-	 * @see OrderService#getPublishedOrderSets(String)
-	 */
-	public List<PublishedOrderSet> getPublishedOrderSets(String query);
 	
 	/**
 	 * Determine the order number of this order as saved in the database (ignoring caches)

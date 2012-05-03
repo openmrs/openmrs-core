@@ -31,11 +31,8 @@ import org.openmrs.Encounter;
 import org.openmrs.GenericDrug;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderSet;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
-import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
@@ -46,7 +43,6 @@ import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ValidateUtil;
-
 import org.springframework.util.StringUtils;
 
 /**
@@ -459,9 +455,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		List<Orderable<?>> result = new ArrayList<Orderable<?>>();
 		
-		// first look for order sets
-		result.addAll(Context.getOrderService().getPublishedOrderSets(query));
-		
 		// then look for concepts that are drugs
 		List<Concept> concepts = Context.getConceptService().getConceptsByName(query);
 		if (concepts != null) {
@@ -481,132 +474,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		return result;
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#signAndActivateOrdersInGroup(org.openmrs.OrderGroup,
-	 *      org.openmrs.User, java.util.Date)
-	 */
-	@Override
-	public OrderGroup signAndActivateOrdersInGroup(OrderGroup group, User user, Date activated) throws APIException {
-		
-		if (group.getOrderGroupId() != null)
-			throw new APIException(
-			        "signAndActivateOrderGroup Can not be called for an existing orders group. Please use a new orders group.");
-		
-		for (Order order : group.getMembers())
-			Context.getOrderService().signAndActivateOrder(order, user, activated);
-		
-		ValidateUtil.validate(group);
-		group = Context.getOrderService().saveOrderGroup(group);
-		
-		return group;
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#saveOrderGroup(org.openmrs.OrderGroup)
-	 */
-	@Override
-	public OrderGroup saveOrderGroup(OrderGroup group) throws APIException {
-		ValidateUtil.validate(group);
-		return dao.saveOrderGroup(group);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#voidOrderGroup(org.openmrs.OrderGroup)
-	 */
-	@Override
-	public OrderGroup voidOrderGroup(OrderGroup group, String voidReason) throws APIException {
-		// fail early if this order group is already voided
-		if (group.getVoided())
-			return group;
-		
-		if (!StringUtils.hasLength(voidReason))
-			throw new IllegalArgumentException("voidReason cannot be empty or null");
-		
-		return dao.saveOrderGroup(group);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#unvoidOrderGroup(org.openmrs.OrderGroup)
-	 */
-	@Override
-	public OrderGroup unvoidOrderGroup(OrderGroup group) throws APIException {
-		return dao.saveOrderGroup(group);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroup(java.lang.Integer)
-	 */
-	@Override
-	public OrderGroup getOrderGroup(Integer orderGroupId) throws APIException {
-		return dao.getOrderGroup(orderGroupId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupByUuid(java.lang.String)
-	 */
-	@Override
-	public OrderGroup getOrderGroupByUuid(String uuid) throws APIException {
-		return dao.getOrderGroupByUuid(uuid);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupsByPatient(org.openmrs.Patient)
-	 */
-	@Override
-	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws APIException {
-		if (patient == null)
-			throw new IllegalArgumentException("patient is required");
-		return dao.getOrderGroupsByPatient(patient);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderSet(java.lang.Integer)
-	 */
-	@Override
-	public OrderSet getOrderSet(Integer orderSetId) {
-		return dao.getOrderSet(orderSetId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderSetByUuid(java.lang.String)
-	 */
-	@Override
-	public OrderSet getOrderSetByUuid(String uuid) {
-		return dao.getOrderSetByUuid(uuid);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getPublishedOrderSet(org.openmrs.Concept)
-	 */
-	@Override
-	public PublishedOrderSet getPublishedOrderSet(Concept concept) {
-		return dao.getPublishedOrderSet(concept);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getPublishedOrderSets(java.lang.String)
-	 */
-	@Override
-	public List<PublishedOrderSet> getPublishedOrderSets(String query) {
-		return dao.getPublishedOrderSets(query);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#publishOrderSet(org.openmrs.Concept, org.openmrs.OrderSet)
-	 */
-	@Override
-	public PublishedOrderSet publishOrderSet(Concept asConcept, OrderSet content) {
-		return dao.publishOrderSet(asConcept, content);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#saveOrderSet(org.openmrs.OrderSet)
-	 */
-	@Override
-	public OrderSet saveOrderSet(OrderSet orderSet) {
-		return dao.saveOrderSet(orderSet);
 	}
 	
 	/**

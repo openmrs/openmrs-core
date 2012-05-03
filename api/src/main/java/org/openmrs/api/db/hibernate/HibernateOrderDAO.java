@@ -20,24 +20,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderSet;
 import org.openmrs.Patient;
-import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
-import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
@@ -170,44 +162,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#saveOrderGroup(org.openmrs.OrderGroup)
-	 */
-	@Override
-	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(orderGroup);
-		
-		return orderGroup;
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrderGroup(java.lang.Integer)
-	 */
-	@Override
-	public OrderGroup getOrderGroup(Integer orderGroupId) throws DAOException {
-		return (OrderGroup) sessionFactory.getCurrentSession().get(OrderGroup.class, orderGroupId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupByUuid(java.lang.String)
-	 */
-	@Override
-	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException {
-		return (OrderGroup) sessionFactory.getCurrentSession().createQuery("from OrderGroup where uuid = :uuid").setString(
-		    "uuid", uuid).uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupsByPatient(org.openmrs.Patient)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws DAOException {
-		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(OrderGroup.class);
-		searchCriteria.add(Expression.eq("patient", patient));
-		return (List<OrderGroup>) searchCriteria.list();
-	}
-	
-	/**
 	 * @see org.openmrs.api.db.OrderDAO#isActivatedInDatabase(org.openmrs.Order)
 	 */
 	@Override
@@ -231,82 +185,6 @@ public class HibernateOrderDAO implements OrderDAO {
 		    "select order_number from orders where order_id = :orderId");
 		query.setInteger("orderId", order.getOrderId());
 		return (String) query.uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrderSet(java.lang.Integer)
-	 */
-	@Override
-	public OrderSet getOrderSet(Integer orderSetId) {
-		return (OrderSet) sessionFactory.getCurrentSession().get(OrderSet.class, orderSetId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrderSetByUuid(java.lang.String)
-	 */
-	@Override
-	public OrderSet getOrderSetByUuid(String uuid) {
-		return (OrderSet) sessionFactory.getCurrentSession().createQuery("from OrderSet where uuid = :uuid").setString(
-		    "uuid", uuid).uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#saveOrderSet(org.openmrs.OrderSet)
-	 */
-	@Override
-	public OrderSet saveOrderSet(OrderSet orderSet) {
-		sessionFactory.getCurrentSession().save(orderSet);
-		return orderSet;
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#publishOrderSet(org.openmrs.Concept, org.openmrs.OrderSet)
-	 */
-	@Override
-	public PublishedOrderSet publishOrderSet(Concept asConcept, OrderSet content) {
-		Session session = sessionFactory.getCurrentSession();
-		// see if there's already an order set published for this concept
-		PublishedOrderSet already = getPublishedOrderSet(asConcept);
-		if (already != null) {
-			if (already.getOrderSet().equals(content)) {
-				return already;
-			} else {
-				session.delete(already);
-			}
-		} else {
-			// see if this order set is already published as another concept
-			already = (PublishedOrderSet) session.createCriteria(PublishedOrderSet.class).add(
-			    Restrictions.eq("orderSet", content)).uniqueResult();
-			if (already != null) {
-				// we know since we're in the else block this isn't what we want
-				session.delete(already);
-			}
-		}
-		
-		PublishedOrderSet published = new PublishedOrderSet();
-		published.setConcept(asConcept);
-		published.setOrderSet(content);
-		session.save(published);
-		return published;
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#getPublishedOrderSet(org.openmrs.Concept)
-	 */
-	@Override
-	public PublishedOrderSet getPublishedOrderSet(Concept concept) {
-		return (PublishedOrderSet) sessionFactory.getCurrentSession().createCriteria(PublishedOrderSet.class).add(
-		    Restrictions.eq("concept", concept)).uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#getPublishedOrderSets(java.lang.String)
-	 */
-	@Override
-	public List<PublishedOrderSet> getPublishedOrderSets(String query) {
-		// TODO fix this hacky implementation once we decide what we want to do
-		return sessionFactory.getCurrentSession().createCriteria(PublishedOrderSet.class).createCriteria("orderSet").add(
-		    Restrictions.ilike("name", query, MatchMode.START)).list();
 	}
 	
 	/**

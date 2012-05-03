@@ -21,11 +21,8 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderSet;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
-import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
@@ -332,144 +329,6 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException when error occurred
 	 */
 	List<Orderable<?>> getOrderables(String query) throws APIException;
-	
-	/**
-	 * Saves, Signs, and Activates all orders within group.
-	 * 
-	 * @param group the orders group.
-	 * @param user the user in charge of the orders group.
-	 * @param activated the date of order activation
-	 * @return the saved, signed and activated orders group.
-	 * @should sign and activate orders in group
-	 * @throws APIException when error occurred
-	 */
-	public OrderGroup signAndActivateOrdersInGroup(OrderGroup group, User user, Date activated) throws APIException;
-	
-	/**
-	 * Creates or updates an OrderGroup
-	 * 
-	 * @param group the order group to save
-	 * @return saved order group entity
-	 * @should save new order group
-	 * @should update existing order group
-	 * @throws APIException when error occurred
-	 */
-	public OrderGroup saveOrderGroup(OrderGroup group) throws APIException;
-	
-	/**
-	 * Marks an OrderGroup as deleted, also cascading this down to the orders within the group.
-	 * 
-	 * @param group the order group to be voided
-	 * @param voidReason the cause why order is to be voided
-	 * @return voided order group entity
-	 * @should void order group
-	 * @throws APIException when error occurred
-	 */
-	public OrderGroup voidOrderGroup(OrderGroup group, String voidReason) throws APIException;
-	
-	/**
-	 * Restores an OrderGroup that had been marked as being deleted.
-	 * 
-	 * @param group the order group to be unvoided
-	 * @return unvoid order group entity
-	 * @throws APIException when error occurred
-	 */
-	public OrderGroup unvoidOrderGroup(OrderGroup group) throws APIException;
-	
-	/**
-	 * Gets order group by its primary key
-	 * 
-	 * @param orderGroupId the id of order group
-	 * @return order group entity if success, null otherwise
-	 * @should return order group entity by id
-	 * @should return null if order group doesn't exist
-	 * @throws APIException when error occurred
-	 */
-	public OrderGroup getOrderGroup(Integer orderGroupId) throws APIException;
-	
-	/**
-	 * Gets an OrderGroup by its uuid
-	 * 
-	 * @param uuid the unique identifier of order group
-	 * @return order group entity if success, null otherwise
-	 * @should get order group by uuid
-	 * @throws APIException when error occurred
-	 */
-	public OrderGroup getOrderGroupByUuid(String uuid) throws APIException;
-	
-	/**
-	 * Gets all non-voided OrderGroups for the specified patient
-	 * 
-	 * @param patient the patient, whose order groups will be retrieved
-	 * @return list of patients order groups in case of success or null otherwise
-	 * @should return not empty list of order groups
-	 * @throws APIException when error occurred
-	 */
-	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws APIException;
-	
-	/**
-	 * Creates or updates an OrderSet
-	 * 
-	 * @param orderSet
-	 * @return the saved OrderSet
-	 * @since 1.9
-	 * @should create new order set
-	 * @should update existing order set
-	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_SETS)
-	public OrderSet saveOrderSet(OrderSet orderSet);
-	
-	/**
-	 * @param orderSetId
-	 * @return the OrderSet with the given id
-	 * @since 1.9
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDER_SETS)
-	public OrderSet getOrderSet(Integer orderSetId);
-	
-	/**
-	 * @param uuid
-	 * @return the OrderSet with the given uuid
-	 * @since 1.9
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDER_SETS)
-	public OrderSet getOrderSetByUuid(String uuid);
-	
-	/**
-	 * Associates the given Concept with the given OrderSet in the database
-	 * 
-	 * @param asConcept
-	 * @param content
-	 * @return the published entity
-	 * @since 1.9
-	 * @should publish an order set as a concept
-	 * @should publish an order set as a concept overwriting the previous entity
-	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_SETS)
-	public PublishedOrderSet publishOrderSet(Concept asConcept, OrderSet content);
-	
-	/**
-	 * @param concept
-	 * @return the {@link PublishedOrderSet} associated with the given Concept, or null if none is
-	 *         associated
-	 * @since 1.9
-	 * @should get a published order set by concept
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDER_SETS)
-	public PublishedOrderSet getPublishedOrderSet(Concept concept);
-	
-	/**
-	 * @param query
-	 * @return all {@link PublishedOrderSet}s that fuzzy-match the given query string
-	 * @since 1.9
-	 * @should get all published order sets by query
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDER_SETS)
-	public List<PublishedOrderSet> getPublishedOrderSets(String query);
 	
 	/**
 	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
