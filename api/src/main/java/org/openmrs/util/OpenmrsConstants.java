@@ -971,6 +971,16 @@ public final class OpenmrsConstants {
 	public static final String GP_DEFAULT_CONCEPT_MAP_TYPE = "concept.defaultConceptMapType";
 	
 	/**
+	 * Global property name of the allowed concept classes for the dosage form field of the concept drug management form.
+	 */
+	public static final String GP_CONCEPT_DRUG_DOSAGE_FORM_CONCEPT_CLASSES = "conceptDrug.dosageForm.conceptClasses";
+	
+	/**
+	 * Global property name of the allowed concept classes for the route field of the concept drug management form.
+	 */
+	public static final String GP_CONCEPT_DRUG_ROUTE_CONCEPT_CLASSES = "conceptDrug.route.conceptClasses";
+	
+	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
 	 */
 	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/CBC/PKCS5Padding";
@@ -1396,6 +1406,12 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "NARROWER-THAN",
 		        "Default concept map type which is used when no other is set"));
 		
+		props.add(new GlobalProperty(GP_CONCEPT_DRUG_DOSAGE_FORM_CONCEPT_CLASSES, "",
+                "A comma-separated list of the allowed concept classes for the dosage form field of the concept drug management form."));
+
+		props.add(new GlobalProperty(GP_CONCEPT_DRUG_ROUTE_CONCEPT_CLASSES, "",
+                "A comma-separated list of the allowed concept classes for the route field of the concept drug management form."));
+
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
