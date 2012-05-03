@@ -60,6 +60,9 @@
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.afterTitle" type="html" parameters="drugId=${drug.drugId}" />
 
+<openmrs:globalProperty var="dosageFormConceptClasses" key="conceptDrug.dosageForm.conceptClasses" defaultValue=""/>
+<openmrs:globalProperty var="routeConceptClasses" key="conceptDrug.route.conceptClasses" defaultValue=""/>
+
 <c:if test="${drug.retired}">
 <form action="" method="post">
 	<div class="retiredMessage">
@@ -98,8 +101,7 @@
 		<th><spring:message code="ConceptDrug.concept"/></th>
 		<td>
 			<spring:bind path="drug.concept">
-				<div dojoType="ConceptSearch" widgetId="conceptSearch" conceptId="${status.value}" showVerboseListing="true" includeClasses="Drug;"></div>
-				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="${status.expression}" hiddenInputId="concept" searchWidget="conceptSearch" searchTitle='<spring:message code="ConceptDrug.find"/>'></div>
+				<openmrs_tag:conceptField formFieldName="${status.expression}" formFieldId="concept" initialValue="${status.value}" includeClasses="Drug" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>				
 			</spring:bind>
 		</td>
@@ -119,8 +121,7 @@
 		<th><spring:message code="ConceptDrug.dosageForm"/></th>
 		<td>
 			<spring:bind path="drug.dosageForm">
-				<div dojoType="ConceptSearch" widgetId="dosageFormSearch" conceptId="${status.value}" showVerboseListing="true"></div>
-				<div dojoType="OpenmrsPopup" widgetId="dosageFormSelection" hiddenInputName="${status.expression}" hiddenInputId="dosageForm" searchWidget="dosageFormSearch" searchTitle='<spring:message code="Concept.find"/>'></div>
+				<openmrs_tag:conceptField formFieldName="${status.expression}" formFieldId="dosageForm" initialValue="${status.value}" includeClasses="${dosageFormConceptClasses}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>				
 			</spring:bind>
 		</td>
@@ -169,8 +170,7 @@
 		<th><spring:message code="ConceptDrug.route"/></th>
 		<td>
 			<spring:bind path="drug.route">
-				<div dojoType="ConceptSearch" widgetId="routeSearch" conceptId="${status.value}" showVerboseListing="true"></div>
-				<div dojoType="OpenmrsPopup" widgetId="routeSelection" hiddenInputName="${status.expression}" hiddenInputId="route" searchWidget="routeSearch" searchTitle='<spring:message code="Concept.find"/>'></div>
+				<openmrs_tag:conceptField formFieldName="${status.expression}" formFieldId="route" initialValue="${status.value}" includeClasses="${routeConceptClasses}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>				
 			</spring:bind>
 		</td>
