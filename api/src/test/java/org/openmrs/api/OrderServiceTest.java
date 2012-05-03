@@ -124,73 +124,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#signOrder(Order, User)}
-	 */
-	@Ignore
-	// re-enable test when we allow orders to be persisted when not activated and signed
-	@Test
-	@Verifies(value = "should sign given order", method = "signOrder(Order, User)")
-	public void signOrder_shouldSignGivenOrder() throws Exception {
-		User provider = Context.getUserService().getUser(501);
-		
-		Order order = Context.getOrderService().getOrder(10);
-		Assert.assertTrue(!order.isSigned());
-		Assert.assertTrue(order.getDateSigned() == null);
-		
-		Context.getOrderService().signOrder(order, provider, null);
-		
-		order = Context.getOrderService().getOrder(10);
-		Assert.assertTrue(order.isSigned());
-		Assert.assertTrue(order.getDateSigned() != null);
-	}
-	
-	/**
-	 * @see {@link OrderService#signOrder(Order, User)}
-	 */
-	@Ignore
-	// re-enable test when we allow orders to be persisted when not activated and signed
-	@Test
-	@Verifies(value = "should activate given order", method = "activateOrder(Order, User)")
-	public void activateOrder_shouldActivateGivenOrder() throws Exception {
-		User provider = Context.getUserService().getUser(501);
-		
-		Order order = Context.getOrderService().getOrder(10);
-		Assert.assertTrue(order.getActivatedBy() == null);
-		Assert.assertTrue(order.getDateActivated() == null);
-		
-		Context.getOrderService().activateOrder(order, provider, null);
-		
-		order = Context.getOrderService().getOrder(10);
-		Assert.assertTrue(order.getActivatedBy() != null);
-		Assert.assertTrue(order.getDateActivated() != null);
-	}
-	
-	/**
-	 * @see {@link OrderService#fillOrder(Order, User)}
-	 */
-	@Ignore
-	// re-enable test when we allow orders to be persisted when not activated and signed
-	@Test(expected = APIException.class)
-	@Verifies(value = "should not fill order with user if not signed", method = "fillOrder(Order, User)")
-	public void fillOrder_shouldNotFillOrderWithUserIfNotSigned() throws Exception {
-		Order order = Context.getOrderService().getOrder(10);
-		User provider = Context.getUserService().getUser(501);
-		Context.getOrderService().fillOrder(order, provider, null);
-	}
-	
-	/**
-	 * @see {@link OrderService#fillOrder(Order, String)}
-	 */
-	@Ignore
-	// re-enable test when we allow orders to be persisted when not activated and signed
-	@Test(expected = APIException.class)
-	@Verifies(value = "should not fill order with non user if not signed", method = "fillOrder(Order, String)")
-	public void fillOrder_shouldNotFillOrderWithNonUserIfNotSigned() throws Exception {
-		Order order = Context.getOrderService().getOrder(10);
-		Context.getOrderService().fillOrder(order, "url", null);
-	}
-	
-	/**
 	 * @see {@link OrderService#fillOrder(Order, User)}
 	 */
 	@Test
@@ -610,27 +543,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		catch (APIException ex) {
 			// test this way rather than @Test(expected...) so we can verify it's the right APIException
 			Assert.assertTrue(ex.getMessage().contains("orderNumber"));
-		}
-	}
-	
-	/**
-	 * @see OrderService#saveOrder(Order)
-	 * @verifies not allow you to edit an order after it has been activated
-	 */
-	@Test
-	public void saveOrder_shouldNotAllowYouToEditAnOrderAfterItHasBeenActivated() throws Exception {
-		DrugOrder existing = service.getOrder(1, DrugOrder.class);
-		//service.activateOrder(existing, null, null);
-		//Context.flushSession();
-		existing = service.getOrder(1, DrugOrder.class);
-		existing.setDose(999d);
-		try {
-			service.saveOrder(existing);
-			Assert.fail("the previous line should have thrown an exception");
-		}
-		catch (APIException ex) {
-			// test this way rather than @Test(expected...) so we can verify it's the right APIException
-			Assert.assertTrue(ex.getMessage().contains("activated"));
 		}
 	}
 	

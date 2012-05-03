@@ -36,8 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders and DrugOrders Use:<br/>
  * 
- * @deprecated Will be removed in version 1.10
- * 
  * <pre>
  *   Order order = new Order();
  *   order.set___(___);
@@ -46,7 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
  * </pre>
  */
 @Transactional
-@Deprecated
 public interface OrderService extends OpenmrsService {
 	
 	public String DC_REASON_REVISE = "REVISE";

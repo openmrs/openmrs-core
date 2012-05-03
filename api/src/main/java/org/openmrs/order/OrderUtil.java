@@ -61,12 +61,15 @@ public class OrderUtil {
 			        + discontinueDate);
 		
 		OrderService orderService = Context.getOrderService();
-		
+		//Shouldn't the type parameter value be Order
 		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatient(patient);
 		
 		// loop over all of this patient's drug orders to discontinue each
 		if (drugOrders != null) {
 			for (DrugOrder drugOrder : drugOrders) {
+				if (drugOrder.getDiscontinued())
+					continue;
+				
 				if (log.isDebugEnabled())
 					log.debug("discontinuing order: " + drugOrder);
 				// do the stuff to the database
