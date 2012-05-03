@@ -197,6 +197,15 @@
 			</td>
 		</tr>
 	</c:if>
+	<c:if test="${drug.changedBy != null}">
+		<tr>
+			<th><spring:message code="general.changedBy" /></th>
+			<td>
+				<a href="#View User" onclick="return gotoUser(null, '${drug.changedBy.userId}')">${drug.changedBy.personName}</a> 
+				<openmrs:formatDate date="${drug.dateChanged}" type="medium" />
+			</td>
+		</tr>
+	</c:if>
 </table>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.inForm" type="html" parameters="drugId=${drug.drugId}" />
