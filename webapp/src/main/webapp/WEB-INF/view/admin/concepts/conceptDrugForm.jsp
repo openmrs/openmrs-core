@@ -51,9 +51,9 @@
 </script>
 
 <style>
-	#table th {
-		text-align: left;
-	}
+	#table { width: 100%; }
+	#table th { text-align: left; }
+	#table input[name=name], input#concept_selection { width: 99%; }
 </style>
 
 <h2><spring:message code="ConceptDrug.manage.title"/></h2>
