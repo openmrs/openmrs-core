@@ -43,6 +43,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSet;
+import org.openmrs.Drug;
 import org.openmrs.Form;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
@@ -58,6 +59,7 @@ import org.openmrs.propertyeditor.ConceptReferenceTermEditor;
 import org.openmrs.propertyeditor.ConceptSetsEditor;
 import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ConceptValidator;
 import org.openmrs.web.WebConstants;
@@ -370,6 +372,9 @@ public class ConceptFormController extends SimpleFormController {
 		
 		public List<ConceptMap> conceptMappings; // a "lazy list" version of the concept.getMappings() list
 		
+		/** The list of drugs for its concept object */
+		public List<Drug> conceptDrugList = new ArrayList<Drug>();
+		
 		public Double hiAbsolute;
 		
 		public Double lowAbsolute;
@@ -440,6 +445,10 @@ public class ConceptFormController extends SimpleFormController {
 			} else if (concept.isComplex()) {
 				ConceptComplex complex = (ConceptComplex) concept;
 				this.handlerKey = complex.getHandler();
+			}
+			
+			if (concept.getConceptClass() != null && OpenmrsUtil.nullSafeEquals(concept.getConceptClass().getName(), "Drug")) {
+				this.conceptDrugList.addAll(Context.getConceptService().getDrugsByConcept(concept));
 			}
 		}
 		
@@ -893,6 +902,22 @@ public class ConceptFormController extends SimpleFormController {
 		 */
 		public void setPreferredNamesByLocale(Map<Locale, String> preferredNamesByLocale) {
 			this.preferredNamesByLocale = preferredNamesByLocale;
+		}
+		
+		/**
+		 * @return the not-null list of its concept drugs
+		 */
+		public List<Drug> getConceptDrugList() {
+			return conceptDrugList;
+		}
+		
+		/**
+		 * Sets the list of drugs for its concept object
+		 * 
+		 * @param conceptDrugList the value to be set
+		 */
+		public void setConceptDrugList(List<Drug> conceptDrugList) {
+			this.conceptDrugList = conceptDrugList;
 		}
 	}
 	
