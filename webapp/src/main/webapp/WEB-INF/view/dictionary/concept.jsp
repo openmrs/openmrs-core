@@ -379,6 +379,60 @@
 		
 		<tr><td colspan="2"><br/></td></tr>
 		
+		<openmrs:hasPrivilege privilege="Edit Concepts">
+			<c:if test="${ not empty command.conceptDrugList and fn:length(command.conceptDrugList) > 0}">
+				<tr>
+					<td colspan="2">
+						<spring:message code="Concept.drugFormulations" />:<br/>
+						<ul>
+							<c:forEach var="drug" items="${command.conceptDrugList}">
+								<c:choose>
+									<c:when test="${not empty drug.dosageForm}">
+										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.doseStrength} ${drug.units} ${drug.dosageForm.name}</li>
+									</c:when>
+									<c:otherwise>
+										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.doseStrength} ${drug.units}</li>
+									</c:otherwise>
+								</c:choose>
+							</c:forEach>
+							<li>
+								<a href="${pageContext.request.contextPath}/admin/concepts/conceptDrug.list?conceptId=${command.concept.conceptId}"><spring:message code="Concept.manageDrugFormulary" /></a><br/>
+							</li>
+						</ul> 
+					</td>
+				</tr>
+			</c:if>
+		</openmrs:hasPrivilege>
+		
+		<tr><td colspan="2"><br/></td></tr>
+		
+		<openmrs:hasPrivilege privilege="Edit Concepts">
+			<c:if test="${ not empty command.conceptDrugList and fn:length(command.conceptDrugList) > 0}">
+				<tr>
+					<td colspan="2">
+						<spring:message code="Concept.drugFormulations" />:<br/>
+						<ul>
+							<c:forEach var="drug" items="${command.conceptDrugList}">
+								<c:choose>
+									<c:when test="${not empty drug.dosageForm}">
+										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.doseStrength} ${drug.units} ${drug.dosageForm.name}</li>
+									</c:when>
+									<c:otherwise>
+										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.doseStrength} ${drug.units}</li>
+									</c:otherwise>
+								</c:choose>
+							</c:forEach>
+							<li>
+								<a href="${pageContext.request.contextPath}/admin/concepts/conceptDrug.list?conceptId=${command.concept.conceptId}"><spring:message code="Concept.manageDrugFormulary" /></a><br/>
+							</li>
+						</ul> 
+					</td>
+				</tr>
+			</c:if>
+		</openmrs:hasPrivilege>
+		
+		<tr><td colspan="2"><br/></td></tr>
+		
 		<tr>	
 			<th valign="top">
 				<b><spring:message code="Concept.resources" /></b>
