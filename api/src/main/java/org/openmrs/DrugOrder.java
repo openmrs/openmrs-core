@@ -13,8 +13,6 @@
  */
 package org.openmrs;
 
-import org.openmrs.api.APIException;
-
 /**
  * This is a type of order that adds drug specific attributes.
  * 
@@ -22,45 +20,45 @@ import org.openmrs.api.APIException;
  */
 public class DrugOrder extends Order implements java.io.Serializable {
 	
-	public static final long serialVersionUID = 72232L;
+	public static final long serialVersionUID = 1L;
 	
 	// Fields
 	
-	private Double dose;
-	
-	private Double equivalentDailyDose;
-	
-	private String units;
-	
-	private Boolean asNeeded = Boolean.FALSE;
-	
-	private Integer quantity;
-	
-	private String quantityUnits;
-	
 	private Drug drug;
 	
-	private String brandName;
+	private Double dose;
 	
-	private Double strength;
+	private String doseUnits;
 	
-	private String strengthUnits;
+	Boolean isStructuredDosing = false;
 	
-	private String dosageForm;
+	Double strength;
 	
-	private String route;
+	String strengthUnits;
 	
-	private String asNeededCondition;
+	Integer quantity;
 	
-	private String additionalInstructions;
+	String quantityUnits;
 	
-	private Integer numRefills;
+	String frequency;
 	
-	private String unstructuredDosing;
+	String brandName;
 	
-	private Integer duration;
+	String dosageForm;
 	
-	private String durationUnits;
+	String route;
+	
+	Boolean asNeeded = false; // - Indicates PRN
+	
+	String asNeededCondition;
+	
+	String additionalInstructions;
+	
+	Integer duration;
+	
+	String durationUnits;
+	
+	Integer numRefills;
 	
 	// Constructors
 	
@@ -79,18 +77,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	/**
-	 * Constructor that takes an {@link Orderable} or any of its subclasses, it only copies the
-	 * concept from the {@link Orderable} and sets it on this {@link DrugOrder}
-	 * 
-	 * @param drugOrder
-	 */
-	public DrugOrder(Orderable<DrugOrder> drugOrder) {
-		this.setConcept(drugOrder.getConcept());
-		if (drugOrder.getClass().isAssignableFrom(Drug.class))
-			this.setDrug((Drug) drugOrder);
-	}
-	
-	/**
 	 * @see org.openmrs.Order#copy()
 	 */
 	public DrugOrder copy() {
@@ -103,15 +89,14 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	protected DrugOrder copyHelper(DrugOrder target) {
 		super.copyHelper(target);
 		target.dose = getDose();
-		target.equivalentDailyDose = getEquivalentDailyDose();
-		target.units = getUnits();
+		target.doseUnits = getDoseUnits();
 		target.asNeeded = getAsNeeded();
 		target.quantity = getQuantity();
 		target.quantityUnits = getQuantityUnits();
 		target.drug = getDrug();
 		
 		target.brandName = getBrandName();
-		target.unstructuredDosing = getUnstructuredDosing();
+		target.isStructuredDosing = getIsStructuredDosing();
 		target.strength = getStrength();
 		target.strengthUnits = getStrengthUnits();
 		target.dosageForm = getDosageForm();
@@ -132,44 +117,21 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	// Property accessors
 	
 	/**
-	 * Gets the units of this drug order
+	 * Gets the dose units of this drug order
 	 * 
-	 * @return units
+	 * @return doseUnits
 	 */
-	public String getUnits() {
-		return this.units;
+	public String getDoseUnits() {
+		return this.doseUnits;
 	}
 	
 	/**
-	 * Sets the units of this drug order
+	 * Sets the dose units of this drug order
 	 * 
 	 * @param units
 	 */
-	public void setUnits(String units) {
-		this.units = units;
-	}
-	
-	/**
-	 * Returns true/false whether the drug is a "pro re nata" (as needed) drug
-	 * 
-	 * @deprecated use {@link #getAsNeeded()}
-	 * @return Boolean
-	 */
-	@Deprecated
-	public Boolean getPrn() {
-		return getAsNeeded();
-	}
-	
-	/**
-	 * Sets the prn
-	 * 
-	 * @deprecated use {@link #setAsNeeded(Boolean)}
-	 * @param prn
-	 * @see use {@link #setAsNeeded(Boolean)}
-	 */
-	@Deprecated
-	public void setPrn(Boolean prn) {
-		setAsNeeded(prn);
+	public void setDoseUnits(String doseUnits) {
+		this.doseUnits = doseUnits;
 	}
 	
 	/**
@@ -184,28 +146,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setAsNeeded(Boolean asNeeded) {
 		this.asNeeded = asNeeded;
-	}
-	
-	/**
-	 * Gets whether this drug is complex
-	 * 
-	 * @deprecated instead use {@link #getUnstructuredDosing()}
-	 * @return Boolean
-	 */
-	@Deprecated
-	public Boolean getComplex() {
-		return this.getUnstructuredDosing() != null;
-	}
-	
-	/**
-	 * Sets whether this drug is complex
-	 * 
-	 * @deprecated instead use {@link #setUnstructuredDosing(String)}
-	 * @param complex
-	 */
-	@Deprecated
-	public void setComplex(Boolean complex) {
-		throw new APIException("This operation is not supported anymore");
 	}
 	
 	/**
@@ -228,7 +168,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * @return the quantityUnits
-	 * @since 1.9
 	 */
 	public String getQuantityUnits() {
 		return quantityUnits;
@@ -236,10 +175,23 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * @param quantityUnits the quantityUnits to set
-	 * @since 1.9
 	 */
 	public void setQuantityUnits(String quantityUnits) {
 		this.quantityUnits = quantityUnits;
+	}
+	
+	/**
+	 * @return the frequency
+	 */
+	public String getFrequency() {
+		return frequency;
+	}
+	
+	/**
+	 * @param frequency the frequency to set
+	 */
+	public void setFrequency(String frequency) {
+		this.frequency = frequency;
 	}
 	
 	/**
@@ -261,24 +213,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	/**
-	 * Gets the equivalent daily dose.
-	 * 
-	 * @return the equivalent daily dose.
-	 */
-	public Double getEquivalentDailyDose() {
-		return equivalentDailyDose;
-	}
-	
-	/**
-	 * Sets the equivalent daily dose.
-	 * 
-	 * @param equivalentDailyDose the equivalent daily dose to set.
-	 */
-	public void setEquivalentDailyDose(Double equivalentDailyDose) {
-		this.equivalentDailyDose = equivalentDailyDose;
-	}
-	
-	/**
 	 * Sets the dose.
 	 * 
 	 * @param dose the dose to set.
@@ -297,7 +231,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	public String toString() {
-		return "DrugOrder(" + getDose() + getUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]")
+		return "DrugOrder(" + getDose() + getDoseUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]")
 		        + " from " + getStartDate() + " to " + (getDiscontinued() ? getDiscontinuedDate() : getAutoExpireDate())
 		        + " orderNumber " + getOrderNumber() + " brandName " + getBrandName() + ")";
 	}
@@ -461,26 +395,23 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	/**
-	 * Sets unstructured dosing text attribute of drug order
+	 * Sets isStructuredDosing dosing of drug order
 	 * 
-	 * @param unstructuredDosing the value to set
+	 * @param isStructuredDosing the value to set
 	 */
-	public void setUnstructuredDosing(String unstructuredDosing) {
-		this.unstructuredDosing = unstructuredDosing;
+	public void setIsStructuredDosing(Boolean isStructuredDosing) {
+		this.isStructuredDosing = isStructuredDosing;
 	}
 	
 	/**
-	 * Reads unstructured dosing text attribute of drug order
-	 * 
 	 * @return unstructured dosing
 	 */
-	public String getUnstructuredDosing() {
-		return unstructuredDosing;
+	public Boolean getIsStructuredDosing() {
+		return isStructuredDosing;
 	}
 	
 	/**
 	 * @return the duration
-	 * @since 1.9
 	 */
 	public Integer getDuration() {
 		return duration;
@@ -488,7 +419,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * @param duration the duration to set
-	 * @since 1.9
 	 */
 	public void setDuration(Integer duration) {
 		this.duration = duration;
@@ -496,7 +426,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * @return the durationUnits
-	 * @since 1.9
 	 */
 	public String getDurationUnits() {
 		return durationUnits;
@@ -504,7 +433,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * @param durationUnits the durationUnits to set
-	 * @since 1.9
 	 */
 	public void setDurationUnits(String durationUnits) {
 		this.durationUnits = durationUnits;

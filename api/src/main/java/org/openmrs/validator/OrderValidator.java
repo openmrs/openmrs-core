@@ -40,8 +40,7 @@ public class OrderValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	public boolean supports(Class<?> c) {
 		return Order.class.isAssignableFrom(c);
 	}
 	
@@ -91,23 +90,13 @@ public class OrderValidator implements Validator {
 				}
 			}
 			
-			// As a temporary restriction, until we properly implement Draft orders, all persisted orders must be both signed and activated
-			ValidationUtils.rejectIfEmpty(errors, "signedBy", "Order.error.mustBeSignedAndActivated");
-			ValidationUtils.rejectIfEmpty(errors, "dateSigned", "Order.error.mustBeSignedAndActivated");
-			ValidationUtils.rejectIfEmpty(errors, "activatedBy", "Order.error.mustBeSignedAndActivated");
-			ValidationUtils.rejectIfEmpty(errors, "dateActivated", "Order.error.mustBeSignedAndActivated");
-			
 			if (order.getDiscontinued() == null) {
 				errors.rejectValue("discontinued", "error.null");
 			} else if (order.getDiscontinued()) {
 				ValidationUtils.rejectIfEmpty(errors, "discontinuedDate", "Order.error.discontinueNeedsDateAndPerson");
 				ValidationUtils.rejectIfEmpty(errors, "discontinuedBy", "Order.error.discontinueNeedsDateAndPerson");
 				if (order.getDiscontinuedDate() != null) {
-					// must be >= activatedDate, <= now(), and <= autoExpireDate
-					if (!order.isActivated())
-						errors.rejectValue("discontinuedDate", "Order.error.discontinuedDateButNotActivated");
-					else if (OpenmrsUtil.compare(order.getDiscontinuedDate(), order.getDateActivated()) < 0)
-						errors.rejectValue("discontinuedDate", "Order.error.discontinuedDateBeforeActivated");
+					// must be <= now(), and <= autoExpireDate
 					if (OpenmrsUtil.compare(order.getDiscontinuedDate(), new Date()) > 0)
 						errors.rejectValue("discontinuedDate", "Order.error.discontinuedDateInFuture");
 					if (order.getAutoExpireDate() != null
@@ -115,15 +104,6 @@ public class OrderValidator implements Validator {
 						errors.rejectValue("discontinuedDate", "Order.error.discontinuedAfterAutoExpireDate");
 				}
 			}
-			
-			if ((order.getActivatedBy() == null) != (order.getDateActivated() == null))
-				errors.rejectValue("activatedBy", "error.inconsistent");
-			
-			if ((order.getSignedBy() == null) != (order.getDateSigned() == null))
-				errors.rejectValue("signedBy", "error.inconsistent");
-			
-			if ((order.getFiller() == null) != (order.getDateFilled() == null))
-				errors.rejectValue("filler", "error.inconsistent");
 		}
 	}
 }

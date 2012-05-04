@@ -48,7 +48,7 @@ public class DrugOrderListItem {
 	
 	private String discontinuedDate;
 	
-	private Integer discontinueReason;
+	private String discontinueReason;
 	
 	private Integer drugId;
 	
@@ -56,11 +56,11 @@ public class DrugOrderListItem {
 	
 	private Double dose;
 	
-	private String units;
+	private String doseUnits;
 	
 	private String frequency;
 	
-	private Boolean prn;
+	private Boolean asNeeded;
 	
 	private String unstructuredDosing;
 	
@@ -102,23 +102,22 @@ public class DrugOrderListItem {
 		if (drugOrder.getEncounter() != null)
 			encounterId = drugOrder.getEncounter().getEncounterId();
 		if (drugOrder.getOrderer() != null)
-			ordererId = drugOrder.getOrderer().getUserId();
+			ordererId = drugOrder.getOrderer().getProviderId();
 		discontinued = drugOrder.getDiscontinued();
 		if (drugOrder.getDiscontinuedBy() != null)
 			discontinuerId = drugOrder.getDiscontinuedBy().getUserId();
 		if (drugOrder.getDiscontinuedDate() != null)
 			discontinuedDate = df.format(drugOrder.getDiscontinuedDate());
 		if (drugOrder.getDiscontinuedReason() != null)
-			discontinueReason = drugOrder.getDiscontinuedReason().getConceptId();
+			discontinueReason = drugOrder.getDiscontinuedReason();
 		if (drugOrder.getDrug() != null)
 			drugId = drugOrder.getDrug().getDrugId();
 		if (drugOrder.getDrug() != null)
 			drugName = drugOrder.getDrug().getName();
 		dose = drugOrder.getDose();
-		units = drugOrder.getUnits();
+		doseUnits = drugOrder.getDoseUnits();
 		frequency = drugOrder.getFrequency();
-		prn = drugOrder.getPrn();
-		unstructuredDosing = drugOrder.getUnstructuredDosing();
+		asNeeded = drugOrder.getAsNeeded();
 		quantity = drugOrder.getQuantity();
 		voided = drugOrder.getVoided();
 		if (drugOrder.getVoidedBy() != null)
@@ -175,20 +174,6 @@ public class DrugOrderListItem {
 	}
 	
 	/**
-	 * @return Returns the discontinueReason.
-	 */
-	public Integer getDiscontinueReason() {
-		return discontinueReason;
-	}
-	
-	/**
-	 * @param discontinueReason The discontinueReason to set.
-	 */
-	public void setDiscontinueReason(Integer discontinueReason) {
-		this.discontinueReason = discontinueReason;
-	}
-	
-	/**
 	 * @return Returns the discontinuerId.
 	 */
 	public Integer getDiscontinuerId() {
@@ -214,6 +199,20 @@ public class DrugOrderListItem {
 	 */
 	public void setDose(Double dose) {
 		this.dose = dose;
+	}
+	
+	/**
+	 * @return the doseUnits
+	 */
+	public String getDoseUnits() {
+		return doseUnits;
+	}
+	
+	/**
+	 * @param doseUnits the doseUnits to set
+	 */
+	public void setDoseUnits(String doseUnits) {
+		this.doseUnits = doseUnits;
 	}
 	
 	/**
@@ -270,6 +269,20 @@ public class DrugOrderListItem {
 	 */
 	public void setFrequency(String frequency) {
 		this.frequency = frequency;
+	}
+	
+	/**
+	 * @return the asNeeded
+	 */
+	public Boolean getAsNeeded() {
+		return asNeeded;
+	}
+	
+	/**
+	 * @param asNeeded the asNeeded to set
+	 */
+	public void setAsNeeded(Boolean asNeeded) {
+		this.asNeeded = asNeeded;
 	}
 	
 	/**
@@ -332,20 +345,6 @@ public class DrugOrderListItem {
 	}
 	
 	/**
-	 * @return Returns the prn.
-	 */
-	public Boolean getPrn() {
-		return prn;
-	}
-	
-	/**
-	 * @param prn The prn to set.
-	 */
-	public void setPrn(Boolean prn) {
-		this.prn = prn;
-	}
-	
-	/**
 	 * @return Returns the quantity.
 	 */
 	public Integer getQuantity() {
@@ -357,20 +356,6 @@ public class DrugOrderListItem {
 	 */
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
-	}
-	
-	/**
-	 * @return Returns the units.
-	 */
-	public String getUnits() {
-		return units;
-	}
-	
-	/**
-	 * @param units The units to set.
-	 */
-	public void setUnits(String units) {
-		this.units = units;
 	}
 	
 	/**
@@ -461,6 +446,20 @@ public class DrugOrderListItem {
 	 */
 	public void setDiscontinuedDate(String discontinuedDate) {
 		this.discontinuedDate = discontinuedDate;
+	}
+	
+	/**
+	 * @return the discontinueReason
+	 */
+	public String getDiscontinueReason() {
+		return discontinueReason;
+	}
+	
+	/**
+	 * @param discontinueReason the discontinueReason to set
+	 */
+	public void setDiscontinueReason(String discontinueReason) {
+		this.discontinueReason = discontinueReason;
 	}
 	
 	/**

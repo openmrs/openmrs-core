@@ -73,15 +73,6 @@ public interface OrderDAO {
 	public Order getOrderByOrderNumber(String orderNumber);
 	
 	/**
-	 * Determines whether the given order is marked as 'activated' in the database (ignoring caches)
-	 * 
-	 * @param order
-	 * @return
-	 * @should return value from database ignoring session
-	 */
-	public boolean isActivatedInDatabase(Order order);
-	
-	/**
 	 * Determine the order number of this order as saved in the database (ignoring caches)
 	 * 
 	 * @param order

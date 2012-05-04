@@ -120,8 +120,6 @@ public class HibernateOrderDAO implements OrderDAO {
 			
 			crit.add(Expression.or(Expression.isNull("autoExpireDate"), Expression.ge("autoExpireDate", asOfDate)));
 			
-			crit.add(Expression.or(Expression.isNull("dateActivated"), Expression.le("dateActivated", asOfDate)));
-			
 		}
 		
 		// we are not checking the other status's here because they are 
@@ -159,19 +157,6 @@ public class HibernateOrderDAO implements OrderDAO {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Order.class, "order");
 		searchCriteria.add(Expression.eq("order.orderNumber", orderNumber));
 		return (Order) searchCriteria.uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#isActivatedInDatabase(org.openmrs.Order)
-	 */
-	@Override
-	public boolean isActivatedInDatabase(Order order) {
-		if (order.getOrderId() == null)
-			return false;
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(
-		    "select count(*) from orders where order_id = :orderId and date_activated is not null");
-		query.setInteger("orderId", order.getOrderId());
-		return ((Number) query.uniqueResult()).intValue() == 1;
 	}
 	
 	/**

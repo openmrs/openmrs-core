@@ -30,48 +30,17 @@ import java.util.Date;
  */
 public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
-	public static final long serialVersionUID = 4334343L;
+	public static final long serialVersionUID = 1L;
 	
-	// Fields
+	public enum OrderAction {
+		ORDER, DISCONTINUE
+	}
 	
 	private Integer orderId;
 	
 	private Patient patient;
 	
 	private Concept concept;
-	
-	/**
-	 * Free text instructions for the order (e.g., details about a referral, justification for a
-	 * cardiac stress test, etc.)
-	 */
-	private String instructions;
-	
-	/** When the order should begin. */
-	private Date startDate;
-	
-	/** When the order should be discontinued if it hasn't already. */
-	private Date autoExpireDate;
-	
-	private Encounter encounter;
-	
-	private User orderer;
-	
-	private Boolean discontinued = false;
-	
-	private User discontinuedBy;
-	
-	/** When the order was discontinued. */
-	private Date discontinuedDate;
-	
-	/**
-	 * This is optional text that would go on the D/C order (this was a coded answer in previous
-	 * versions of openmrs).
-	 */
-	private Concept discontinuedReason;
-	
-	private String accessionNumber;
-	
-	private String discontinuedReasonNonCoded;
 	
 	/**
 	 * This is an identifier generated for a given order and shared by all revisions (if any) of
@@ -91,94 +60,34 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @see OrderAction
 	 */
-	private OrderAction orderAction = OrderAction.NEW;
+	private OrderAction orderAction = OrderAction.ORDER;
+	
+	/** When the order should begin. */
+	private Date startDate;
+	
+	/** When the order should be discontinued if it hasn't already. */
+	private Date autoExpireDate;
+	
+	private Encounter encounter;
 	
 	/**
-	 * Allows for orders to be created for items that are not yet in the dictionary. e.g., OTHER
-	 * DRUG ORDER #1 with non-coded name "CANE".
+	 * Free text instructions for the order (e.g., details about a referral, justification for a
+	 * cardiac stress test, etc.)
 	 */
-	private String nonCodedName;
+	private String instructions;
 	
-	/**
-	 * Specifies when the order should first occur (e.g., stat/immediately, routine, on a specific
-	 * date, etc.)
-	 */
-	private String urgency;
+	private Provider orderer;
 	
-	/**
-	 * For orders with a CONDITIONAL urgency, this property contains free text describing the
-	 * condition(s) under which the order should be performed, e.g.,
-	 * "when the patient returns from surgery"
-	 */
-	private String conditionality;
+	private Boolean discontinued = false;
 	
-	/**
-	 * Describes the frequency of repeats for an order (note: eventually, we may want to draw these
-	 * from a table of possible values)
-	 */
-	private String frequency;
+	private User discontinuedBy;
 	
-	/** The reason for the order. */
-	private Concept indication;
+	/** When the order was discontinued. */
+	private Date discontinuedDate;
 	
-	/** Free text comments. */
-	private String comment;
+	private String discontinuedReason;
 	
-	/** User responsible for the order. */
-	private User signedBy;
-	
-	/** When order was signed. */
-	private Date dateSigned;
-	
-	/**
-	 * User who activates the order so that it could be carried out (may be different from signing
-	 * user in some cases).
-	 */
-	private User activatedBy;
-	
-	/** When order was activated. */
-	private Date dateActivated;
-	
-	/**
-	 * This is an optional URI to a person or process that fulfilled the order - possibly even a
-	 * pointer to the object/resource that represents the result. Unique reference to the party
-	 * responsible for filling or carrying out the order, e.g., the lab that reported the result or
-	 * the pharmacy the filled the prescription (note: we will need a convention for formatting
-	 * this)
-	 */
-	private String filler;
-	
-	/** When order was filled. */
-	private Date dateFilled;
-	
-	/**
-	 * Represents an enumeration of the actions that can be taken on an order
-	 * 
-	 * @since 1.10
-	 */
-	public enum OrderAction {
-		/**
-		 * Creating a new order
-		 */
-		NEW,
-
-		/**
-		 * Modifying an existing order (e.g. changing dose of a medication, edits to instructions,
-		 * etc.)
-		 */
-		REVISE,
-
-		/**
-		 * Continue an existing order (e.g., providing another prescription for a chronic medication
-		 * when refills run out)
-		 */
-		CONTINUE,
-
-		/**
-		 * Stopping an order
-		 */
-		DISCONTINUE
-	}
+	private String accessionNumber;
 	
 	// Constructors
 	
@@ -232,24 +141,34 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setVoidedBy(getVoidedBy());
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
-		target.setDiscontinuedReasonNonCoded(getDiscontinuedReasonNonCoded());
 		target.setOrderNumber(getOrderNumber());
 		target.setPreviousOrderNumber(getPreviousOrderNumber());
 		target.setOrderAction(getOrderAction());
-		target.setNonCodedName(getNonCodedName());
-		target.setUrgency(getUrgency());
-		target.setConditionality(getConditionality());
-		target.setFrequency(getFrequency());
-		target.setIndication(getIndication());
-		target.setComment(getComment());
-		target.setSignedBy(getSignedBy());
-		target.setDateSigned(getDateSigned());
-		target.setActivatedBy(getActivatedBy());
-		target.setDateActivated(getDateActivated());
-		target.setFiller(getFiller());
-		target.setDateFilled(getDateFilled());
 		
 		return target;
+	}
+	
+	/**
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
+	public boolean equals(Object obj) {
+		if (obj instanceof Order) {
+			Order o = (Order) obj;
+			if (this.getOrderId() != null && o.getOrderId() != null) {
+				return (this.getOrderId().equals(o.getOrderId()));
+			}
+		}
+		return false;
+	}
+	
+	public int hashCode() {
+		if (this.getOrderId() == null) {
+			return super.hashCode();
+		}
+		return this.getOrderId().hashCode();
 	}
 	
 	/**
@@ -335,14 +254,14 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return Returns the discontinuedReason.
 	 */
-	public Concept getDiscontinuedReason() {
+	public String getDiscontinuedReason() {
 		return discontinuedReason;
 	}
 	
 	/**
 	 * @param discontinuedReason The discontinuedReason to set.
 	 */
-	public void setDiscontinuedReason(Concept discontinuedReason) {
+	public void setDiscontinuedReason(String discontinuedReason) {
 		this.discontinuedReason = discontinuedReason;
 	}
 	
@@ -391,14 +310,14 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return Returns the orderer.
 	 */
-	public User getOrderer() {
+	public Provider getOrderer() {
 		return orderer;
 	}
 	
 	/**
 	 * @param orderer The orderer to set.
 	 */
-	public void setOrderer(User orderer) {
+	public void setOrderer(Provider orderer) {
 		this.orderer = orderer;
 	}
 	
@@ -431,28 +350,15 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return the discontinuedReasonNonCoded
-	 */
-	public String getDiscontinuedReasonNonCoded() {
-		return discontinuedReasonNonCoded;
-	}
-	
-	/**
-	 * @param discontinuedReasonNonCoded the discontinuedReasonNonCoded to set
-	 */
-	public void setDiscontinuedReasonNonCoded(String discontinuedReasonNonCoded) {
-		this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
-	}
-	
-	/**
 	 * Convenience method to determine if order is current
 	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was current on the input date
 	 */
 	public boolean isCurrent(Date checkDate) {
-		if (isVoided())
+		if (isVoided()) {
 			return false;
+		}
 		
 		if (checkDate == null) {
 			checkDate = new Date();
@@ -463,16 +369,18 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		}
 		
 		if (discontinued != null && discontinued) {
-			if (discontinuedDate == null)
+			if (discontinuedDate == null) {
 				return checkDate.equals(startDate);
-			else
+			} else {
 				return checkDate.before(discontinuedDate);
+			}
 			
 		} else {
-			if (autoExpireDate == null)
+			if (autoExpireDate == null) {
 				return true;
-			else
+			} else {
 				return checkDate.before(autoExpireDate);
+			}
 		}
 	}
 	
@@ -481,10 +389,13 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	public boolean isFuture(Date checkDate) {
-		if (isVoided())
+		if (isVoided()) {
 			return false;
-		if (checkDate == null)
+		}
+		
+		if (checkDate == null) {
 			checkDate = new Date();
+		}
 		
 		return startDate != null && checkDate.before(startDate);
 	}
@@ -500,13 +411,16 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return boolean indicating whether the order was discontinued on the input date
 	 */
 	public boolean isDiscontinued(Date checkDate) {
-		if (isVoided())
+		if (isVoided()) {
 			return false;
-		if (checkDate == null)
+		}
+		if (checkDate == null) {
 			checkDate = new Date();
+		}
 		
-		if (discontinued == null || !discontinued)
+		if (discontinued == null || !discontinued) {
 			return false;
+		}
 		
 		if (startDate == null || checkDate.before(startDate)) {
 			return false;
@@ -604,220 +518,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Gets the non coded name.
-	 * 
-	 * @return the non coded name.
-	 */
-	public String getNonCodedName() {
-		return nonCodedName;
-	}
-	
-	/**
-	 * Sets the non coded name.
-	 * 
-	 * @param nonCodedName the non coded name to set.
-	 */
-	public void setNonCodedName(String nonCodedName) {
-		this.nonCodedName = nonCodedName;
-	}
-	
-	/**
-	 * Gets the urgency.
-	 * 
-	 * @return the urgency.
-	 */
-	public String getUrgency() {
-		return urgency;
-	}
-	
-	/**
-	 * Sets the urgency.
-	 * 
-	 * @param urgency the urgency to set.
-	 */
-	public void setUrgency(String urgency) {
-		this.urgency = urgency;
-	}
-	
-	/**
-	 * Gets the conditionality.
-	 * 
-	 * @return the conditionality.
-	 */
-	public String getConditionality() {
-		return conditionality;
-	}
-	
-	/**
-	 * Sets the conditionality.
-	 * 
-	 * @param conditionality the conditionality to set.
-	 */
-	public void setConditionality(String conditionality) {
-		this.conditionality = conditionality;
-	}
-	
-	/**
-	 * Gets the frequency.
-	 * 
-	 * @return the frequency.
-	 */
-	public String getFrequency() {
-		return frequency;
-	}
-	
-	/**
-	 * Sets the frequency.
-	 * 
-	 * @param frequency the frequency to set.
-	 */
-	public void setFrequency(String frequency) {
-		this.frequency = frequency;
-	}
-	
-	/**
-	 * @return the indication
-	 * @since 1.10
-	 */
-	public Concept getIndication() {
-		return indication;
-	}
-	
-	/**
-	 * @param indication the indication to set
-	 * @since 1.10
-	 */
-	public void setIndication(Concept indication) {
-		this.indication = indication;
-	}
-	
-	/**
-	 * Gets the comment.
-	 * 
-	 * @return the comment.
-	 */
-	public String getComment() {
-		return comment;
-	}
-	
-	/**
-	 * Sets the comment.
-	 * 
-	 * @param comment the comment.
-	 */
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-	
-	/**
-	 * Gets the user who signed the order.
-	 * 
-	 * @return the user who signed the order.
-	 */
-	public User getSignedBy() {
-		return signedBy;
-	}
-	
-	/**
-	 * Sets the user who signed the order.
-	 * 
-	 * @param signedBy the user who signed the order.
-	 */
-	public void setSignedBy(User signedBy) {
-		this.signedBy = signedBy;
-	}
-	
-	/**
-	 * Gets the date when the order was signed.
-	 * 
-	 * @return the date when the order was signed.
-	 */
-	public Date getDateSigned() {
-		return dateSigned;
-	}
-	
-	/**
-	 * Sets the date when the order was signed.
-	 * 
-	 * @param dateSigned the date when the order was signed.
-	 */
-	public void setDateSigned(Date dateSigned) {
-		this.dateSigned = dateSigned;
-	}
-	
-	/**
-	 * Gets the user who activated the order.
-	 * 
-	 * @return the user who activated the order.
-	 */
-	public User getActivatedBy() {
-		return activatedBy;
-	}
-	
-	/**
-	 * Sets the user who activated the order.
-	 * 
-	 * @param activatedBy the user who activated the order.
-	 */
-	public void setActivatedBy(User activatedBy) {
-		this.activatedBy = activatedBy;
-	}
-	
-	/**
-	 * Gets the date when order was activated.
-	 * 
-	 * @return the date activated.
-	 */
-	public Date getDateActivated() {
-		return dateActivated;
-	}
-	
-	/**
-	 * Sets the date activated.
-	 * 
-	 * @param dateActivated the date activated to set.
-	 */
-	public void setDateActivated(Date dateActivated) {
-		this.dateActivated = dateActivated;
-	}
-	
-	/**
-	 * Gets the filler.
-	 * 
-	 * @return the filler.
-	 */
-	public String getFiller() {
-		return filler;
-	}
-	
-	/**
-	 * Sets the filler.
-	 * 
-	 * @param filler the filler to set.
-	 */
-	public void setFiller(String filler) {
-		this.filler = filler;
-	}
-	
-	/**
-	 * Gets the date filled.
-	 * 
-	 * @return the date filled.
-	 */
-	public Date getDateFilled() {
-		return dateFilled;
-	}
-	
-	/**
-	 * Sets the date filled.
-	 * 
-	 * @param dateFilled the date filled to set.
-	 */
-	public void setDateFilled(Date dateFilled) {
-		this.dateFilled = dateFilled;
-	}
-	
-	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -838,24 +538,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setId(Integer id) {
 		setOrderId(id);
-	}
-	
-	/**
-	 * Checks if an order is signed.
-	 * 
-	 * @return true if signed, else false.
-	 */
-	public boolean isSigned() {
-		return getSignedBy() != null && getDateSigned() != null;
-	}
-	
-	/**
-	 * Checks if an order is activated.
-	 * 
-	 * @return true if activated, else false.
-	 */
-	public boolean isActivated() {
-		return getActivatedBy() != null && getDateActivated() != null;
 	}
 	
 	/**

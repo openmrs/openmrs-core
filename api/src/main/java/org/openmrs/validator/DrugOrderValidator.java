@@ -19,7 +19,6 @@ import org.openmrs.DrugOrder;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
 /**
  * Validates the {@link DrugOrder} class.
@@ -27,7 +26,7 @@ import org.springframework.validation.Validator;
  * @since 1.5
  */
 @Handler(supports = { DrugOrder.class }, order = 50)
-public class DrugOrderValidator extends OrderValidator implements Validator {
+public class DrugOrderValidator extends OrderValidator {
 	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -37,8 +36,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	public boolean supports(Class<?> c) {
 		return DrugOrder.class.isAssignableFrom(c);
 	}
 	
@@ -47,9 +45,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if prn is null
-	 * @should fail validation if complex is null
-	 * @should fail validation if drug is null
+	 * @should fail not fail validation if drug is null
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -59,19 +55,6 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 		if (order == null) {
 			errors.rejectValue("order", "error.general");
 		} else {
-			// for the following elements Order.hbm.xml says: not-null="true"
-			ValidationUtils.rejectIfEmpty(errors, "prn", "error.null");
-			
-			if (order.isSigned()) {
-				ValidationUtils.rejectIfEmpty(errors, "signedBy", "error.null");
-				ValidationUtils.rejectIfEmpty(errors, "dateSigned", "error.null");
-			}
-			
-			if (order.isActivated()) {
-				ValidationUtils.rejectIfEmpty(errors, "activatedBy", "error.null");
-				ValidationUtils.rejectIfEmpty(errors, "dateActivated", "error.null");
-			}
-			
 			if (order.getDuration() != null)
 				ValidationUtils.rejectIfEmpty(errors, "durationUnits", "DrugOrder.add.error.missingDurationUnits");
 			
@@ -80,6 +63,9 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			
 			if (order.getStrength() != null)
 				ValidationUtils.rejectIfEmpty(errors, "strengthUnits", "DrugOrder.add.error.missingStrengthUnits");
+			
+			if (order.getDose() != null)
+				ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.add.error.missingDoseUnits");
 			
 		}
 	}

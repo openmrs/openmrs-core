@@ -80,9 +80,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order saveOrder(Order order) throws APIException {
-		if (dao.isActivatedInDatabase(order))
-			throw new APIException("Cannot modify an activated order");
-		
 		return saveOrderWithLesserValidation(order);
 	}
 	
@@ -268,118 +265,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#signAndActivateOrder(org.openmrs.Order)
-	 */
-	@Override
-	public Order signAndActivateOrder(Order order) throws APIException {
-		return Context.getOrderService().signAndActivateOrder(order, null, null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#saveActivatedOrder(org.openmrs.Order, org.openmrs.User,
-	 *      java.util.Date)
-	 */
-	@Override
-	public Order signAndActivateOrder(Order order, User user, Date date) throws APIException {
-		if (user == null)
-			user = Context.getAuthenticatedUser();
-		if (date == null)
-			date = new Date();
-		
-		//If the order to sign and activate has a previous order, then discontinue the previous order.
-		if (order.getPreviousOrderNumber() != null) {
-			Order previousOrder = dao.getOrderByOrderNumber(order.getPreviousOrderNumber());
-			if (!previousOrder.isActivated())
-				throw new APIException("Previous order should already be actived");
-			
-			Context.getOrderService().discontinueOrder(previousOrder, OrderService.DC_REASON_REVISE, user, date);
-		}
-		
-		// sign
-		if (order.isSigned())
-			throw new APIException("Order is already signed");
-		order.setSignedBy(user);
-		order.setDateSigned(date);
-		
-		// activate
-		if (order.isActivated())
-			throw new APIException("Order is already activated");
-		order.setActivatedBy(user);
-		order.setDateActivated(date);
-		
-		return Context.getOrderService().saveOrder(order);
-		
-		// Once we allow orders to be signed, activated, and persisted all independently, we should delegate to these instead:
-		// order = Context.getOrderService().signOrder(order, user, date);
-		// return Context.getOrderService().activateOrder(order, user, date);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#signOrder(org.openmrs.Order, org.openmrs.User,
-	 *      java.util.Date)
-	 */
-	@Override
-	public Order signOrder(Order order, User provider, Date date) throws APIException {
-		if (order.isSigned())
-			throw new APIException("Order is already signed");
-		
-		if (provider == null)
-			provider = Context.getAuthenticatedUser();
-		if (date == null)
-			date = new Date();
-		order.setSignedBy(provider);
-		order.setDateSigned(date);
-		return Context.getOrderService().saveOrder(order); // TODO will probably fail if we try to sign an already-activated order
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#activateOrder(org.openmrs.Order, org.openmrs.User)
-	 */
-	@Override
-	public Order activateOrder(Order order, User activatedBy, Date activationDate) throws APIException {
-		if (order.isActivated())
-			throw new APIException("Order is already activated");
-		
-		if (activatedBy == null)
-			activatedBy = Context.getAuthenticatedUser();
-		if (activationDate == null)
-			activationDate = new Date();
-		order.setActivatedBy(activatedBy);
-		order.setDateActivated(activationDate);
-		return Context.getOrderService().saveOrder(order);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, org.openmrs.User,
-	 *      java.util.Date)
-	 */
-	@Override
-	public Order fillOrder(Order order, User filler, Date dateFilled) throws APIException {
-		return fillOrder(order, filler.getUserId() + filler.getSystemId(), dateFilled);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, java.lang.String,
-	 *      java.util.Date)
-	 */
-	@Override
-	public Order fillOrder(Order order, String filler, Date dateFilled) throws APIException {
-		if (!order.isSigned())
-			throw new APIException("Can not fill an order which has not been signed");
-		
-		if (!order.isActivated())
-			throw new APIException("Can not fill an order which has not been activated");
-		
-		if (dateFilled == null)
-			dateFilled = new Date();
-		else if (dateFilled.after(new Date()))
-			throw new APIException("Cannot fill an order in the future");
-		order.setDateFilled(dateFilled);
-		order.setFiller(filler);
-		return dao.saveOrder(order);
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
 	 */
 	@Override
@@ -482,7 +367,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order order, String reason, User user, Date discontinueDate) throws APIException {
-		order.setDiscontinuedReasonNonCoded(reason);
+		order.setDiscontinuedReason(reason);
 		return doDiscontinueOrder(order, user, discontinueDate);
 	}
 	
@@ -512,10 +397,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			discontinueDate = new Date();
 		else if (discontinueDate.after(new Date()))
 			throw new APIException("Cannot discontinue an order in the future");
-		if (!oldOrder.isActivated())
-			throw new APIException("Cannot discontinue an order that was never activated");
-		if (OpenmrsUtil.compare(discontinueDate, oldOrder.getDateActivated()) < 0)
-			throw new APIException("Cannot discontinue an order before it was activated");
 		if (oldOrder.getDiscontinued())
 			throw new APIException("Cannot discontinue an order that is already discontinued");
 		if (oldOrder.getAutoExpireDate() != null && OpenmrsUtil.compare(discontinueDate, oldOrder.getAutoExpireDate()) > 0)
@@ -532,13 +413,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		newOrder.setPatient(oldOrder.getPatient());
 		newOrder.setPreviousOrderNumber(oldOrder.getOrderNumber());
 		newOrder.setOrderAction(OrderAction.DISCONTINUE);
-		//should assign these from here manually instead of delagating to signAndActivateOrder which ends up
-		//calling this one again and always fails on 'if (oldOrder.getDiscontinued())' on a subsequent call
-		//in the attempt to discontinue olderOrder since it would be the previous one
-		newOrder.setSignedBy(user);
-		newOrder.setActivatedBy(user);
-		newOrder.setDateSigned(discontinueDate);
-		newOrder.setDateActivated(discontinueDate);
+		newOrder.setStartDate(new Date());
 		newOrder.setUuid(UUID.randomUUID().toString());
 		
 		Context.getOrderService().saveOrder(newOrder);

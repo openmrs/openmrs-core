@@ -59,8 +59,8 @@ public class DWROrderService {
 		drugOrder.setConcept(concept);
 		drugOrder.setPatient(patient);
 		drugOrder.setDose(dose);
-		drugOrder.setUnits(units);
-		drugOrder.setFrequency(frequency);
+		drugOrder.setDoseUnits(units);
+		//drugOrder.setFrequency(frequency);
 		drugOrder.setInstructions(instructions);
 		
 		Date dStartDate = null;
