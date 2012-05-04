@@ -624,13 +624,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatientAndIngredient(org.openmrs.Patient,
 	 *      org.openmrs.Concept)
 	 */
-	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept concept) throws APIException {
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient) throws APIException {
 		if (patient == null)
 			throw new IllegalArgumentException("patient is required");
 		
-		if (concept == null)
-			throw new IllegalArgumentException("concept is required");
+		if (ingredient == null)
+			throw new IllegalArgumentException("ingredient is required");
 		
-		return dao.getDrugOrdersByPatientAndIngredient(patient, concept);
+		return dao.getDrugOrdersByPatientAndIngredient(patient, ingredient);
 	}
 }

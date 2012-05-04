@@ -104,6 +104,6 @@ public interface OrderDAO {
 	/**
 	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient, Concept)
 	 */
-	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept concept);
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient);
 	
 }
