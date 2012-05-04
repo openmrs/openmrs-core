@@ -198,16 +198,16 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept concept) {
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient) {
 		Criteria searchDrugOrderCriteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class, "order");
 		
 		searchDrugOrderCriteria.add(Restrictions.eq("order.patient", patient));
 		
 		searchDrugOrderCriteria.createAlias("drug", "drug");
-		Criterion lhs = Restrictions.eq("drug.concept", concept);
+		Criterion lhs = Restrictions.eq("drug.concept", ingredient);
 		
 		searchDrugOrderCriteria.createAlias("drug.ingredients", "ingredients");
-		Criterion rhs = Restrictions.eq("ingredients.ingredient", concept);
+		Criterion rhs = Restrictions.eq("ingredients.ingredient", ingredient);
 		
 		searchDrugOrderCriteria.add(Restrictions.or(lhs, rhs));
 		

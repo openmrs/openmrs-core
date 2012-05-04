@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @deprecated Will be removed in version 1.10
  * 
- * <pre>
+ *             <pre>
  *   Order order = new Order();
  *   order.set___(___);
  *   ...etc
@@ -557,14 +557,16 @@ public interface OrderService extends OpenmrsService {
 	 * itself or any ingredient.
 	 * 
 	 * @param patient
-	 * @param concept
+	 * @param ingredient
 	 * @return the list of drug orders
 	 * @should return drug orders matched by patient and intermediate concept
 	 * @should return drug orders matched by patient and drug concept
 	 * @should return empty list if no concept matched
 	 * @should return empty list if no patient matched
+	 * @since 1.10
 	 */
 	@Transactional(readOnly = true)
-	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept concept);
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient);
 	
 }

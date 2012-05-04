@@ -174,8 +174,8 @@
   <drug_order order_id="3" drug_inventory_id="2" dose="2.0" units="tab(s)" frequency="1/day x 7 days/week" prn="false" complex="false"/>
   <drug_order order_id="4" drug_inventory_id="3" dose="325.0" units="mg" frequency="1/day x 7 days/week" prn="false" complex="false"/>
   <drug_order order_id="5" drug_inventory_id="3" dose="325.0" units="mg" frequency="1/day x 7 days/week" prn="false" complex="false"/>
-  <drug_ingredient drug_id="2" ingredient_id="88" uuid="6519d653-393d-4118-9c83-a3715b82d4dc" quantity="20.0" units="mm"/>
-  <drug_ingredient drug_id="3" ingredient_id="88" uuid="6519d653-393e-4118-9c83-a3715b82d4de" quantity="20.0" units="mm"/>
+  <drug_ingredient drug_id="2" ingredient_id="88" uuid="6519d653-393d-4118-9c83-a3715b82d4dc" quantity="20.0" units="3"/>
+  <drug_ingredient drug_id="3" ingredient_id="88" uuid="6519d653-393e-4118-9c83-a3715b82d4de" quantity="20.0" units="3"/>
   <encounter_role encounter_role_id="1" name="Unknown" description="Unknown encounter role for legacy providers with no encounter role set" creator="1" retired="false" date_created="2011-08-18 14:00:00.0" uuid="a0b03050-c99b-11e0-9572-0800200c9a66" />
   <provider provider_id="1" person_id="1" identifier="Test" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c2299800-cca9-11e0-9572-0800200c9a66" />
   <encounter encounter_id="3" encounter_type="2" patient_id="7" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="6519d653-393b-4118-9c83-a3715b82d4ac"/>
