@@ -433,6 +433,8 @@
             <column defaultValueNumeric="0" name="retired" type="tinyint">
                 <constraints nullable="false"/>
             </column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="DATETIME"/>
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="DATETIME"/>
@@ -1916,6 +1918,9 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-159">
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="drug" constraintName="drug_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet author="dkayiwa" id="1227123456789-100">
+        <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="drug" constraintName="drug_changed_by" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-160">
         <addForeignKeyConstraint baseColumnNames="dosage_form" baseTableName="drug" constraintName="dosage_form_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>

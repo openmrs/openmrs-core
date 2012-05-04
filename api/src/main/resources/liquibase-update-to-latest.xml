@@ -4019,6 +4019,38 @@
 				OR child_role NOT IN (SELECT role FROM role);
 		</sql>
 	</changeSet>
+	
+	<changeSet id="200912141000-drug-add-date-changed" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug" columnName="date_changed" />
+			</not>
+		</preConditions>
+		<comment>
+			Add date_changed column to drug table
+		</comment>
+		<addColumn tableName="drug">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="200912141001-drug-add-changed-by" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug" columnName="changed_by" />
+			</not>
+		</preConditions>
+		<comment>
+			Add changed_by column to drug table
+		</comment>
+		<addColumn tableName="drug">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="drug_changed_by"
+			baseTableName="drug" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+	
 
 	<changeSet id="20120330-0954old" author="jkeiper">
 		<comment>Increase size of drug name column to 255 characters</comment>

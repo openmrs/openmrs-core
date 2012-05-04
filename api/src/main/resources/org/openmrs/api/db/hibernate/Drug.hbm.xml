@@ -24,6 +24,13 @@
 		<property name="units" type="java.lang.String" length="50" />
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
+			
+		<many-to-one name="changedBy" class="org.openmrs.User">
+			<column name="changed_by" />
+		</many-to-one>
+
+		<property name="dateChanged" type="java.util.Date" 
+			column="date_changed" length="19" />
 		
 		<property name="retired" type="java.lang.Boolean" length="1"
 			not-null="true" />
