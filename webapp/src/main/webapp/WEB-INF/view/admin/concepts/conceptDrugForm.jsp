@@ -51,9 +51,9 @@
 </script>
 
 <style>
-	#table th {
-		text-align: left;
-	}
+	#table { width: 100%; }
+	#table th { text-align: left; }
+	#table input[name=name], input#concept_selection { width: 99%; }
 </style>
 
 <h2><spring:message code="ConceptDrug.manage.title"/></h2>
@@ -91,7 +91,7 @@
 		<th><spring:message code="general.name"/></th>
 		<td>
 			<spring:bind path="drug.name">			
-				<input type="text" name="${status.expression}" size="40" 
+				<input type="text" name="${status.expression}" size="40"
 					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
