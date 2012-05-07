@@ -2,162 +2,84 @@
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
+
 <hibernate-mapping package="org.openmrs">
 
-<class 
-    name="Order" 
-    table="orders"
->
+	<class name="Order" table="orders">
 
-    <id
-        name="orderId"
-        type="int"
-        column="order_id"
-        unsaved-value="0"
-    >
-        <generator class="native" />
-    </id>
-    
-    <discriminator column="order_id" insert="false" />
+		<id name="orderId" type="int" column="order_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<discriminator column="order_id" insert="false" />
+
+		<property name="uuid" type="java.lang.String" column="uuid"	length="38" unique="true" not-null="true" />
+
+		<property name="instructions" type="java.lang.String" column="instructions"	length="65535" />
+		
+		<property name="startDate" type="java.util.Date" column="start_date" not-null="true" length="19" />
+		
+		<property name="autoExpireDate" type="java.util.Date" column="auto_expire_date" length="19" />
+		
+		<property name="discontinued" type="java.lang.Boolean" column="discontinued" length="1" />
+		
+		<property name="discontinuedReason" type="java.lang.String" column="discontinued_reason" length="255" />
+		
+		<property name="discontinuedDate" type="java.util.Date" column="discontinued_date" length="19" />
+		
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+		
+		<property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true" />
+		
+		<property name="dateVoided" type="java.util.Date" column="date_voided" length="19" />
+		
+		<property name="voidReason" type="java.lang.String" column="void_reason" length="255" />
+
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-one association to Concept -->
+		<many-to-one name="concept" class="Concept" not-null="true">
+			<column name="concept_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to Encounter -->
+		<many-to-one name="encounter" class="Encounter" not-null="true">
+			<column name="encounter_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to Encounter -->
+		<many-to-one name="patient" class="Patient" not-null="true">
+			<column name="patient_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="orderer" class="Provider" not-null="true">
+			<column name="orderer" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="voidedBy" class="User">
+			<column name="voided_by" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="discontinuedBy" class="User">
+			<column name="discontinued_by" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="creator" class="User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
 	
-	<property name="uuid" type="java.lang.String"
-		column="uuid" length="38" unique="true" not-null="true"/>
-
-    <property
-        name="instructions"
-        type="java.lang.String"
-        column="instructions"
-        length="65535"
-    />
-    <property
-        name="startDate"
-        type="java.util.Date"
-        column="start_date"
-        not-null="true"
-        length="19"
-    />
-    <property
-        name="autoExpireDate"
-        type="java.util.Date"
-        column="auto_expire_date"
-        length="19"
-    />
-	<property
-		name="discontinued"
-		type="java.lang.Boolean"
-		column="discontinued"
-		length="1"
-	/>
-	 <property
-        name="discontinuedReason"
-        type="java.lang.String"
-        column="discontinued_reason"
-        length="255"
-    />
-    <property
-        name="discontinuedDate"
-        type="java.util.Date"
-        column="discontinued_date"
-        length="19"
-    />
-    <property
-        name="dateCreated"
-        type="java.util.Date"
-        column="date_created"
-        not-null="true"
-        length="19"
-    />
-	<property 
-		name="voided" 
-		type="java.lang.Boolean" 
-		column="voided"
-		length="1" 
-		not-null="true"
-	/>
-	<property
-        name="dateVoided"
-        type="java.util.Date"
-        column="date_voided"
-        length="19"
-    />
-    <property
-        name="voidReason"
-        type="java.lang.String"
-        column="void_reason"
-        length="255"
-    />
-
-    <!-- Associations -->
-  
-    <!-- bi-directional many-to-one association to Concept -->
-    <many-to-one
-        name="concept"
-        class="Concept"
-        not-null="true"
-    >
-        <column name="concept_id" />
-    </many-to-one>
-    <!-- bi-directional many-to-one association to Encounter -->
-    <many-to-one
-        name="encounter"
-        class="Encounter"
-        not-null="true"
-    >
-        <column name="encounter_id" />
-    </many-to-one>
-
-    <!-- bi-directional many-to-one association to Encounter -->
-    <many-to-one
-        name="patient"
-        class="Patient"
-        not-null="true"
-    >
-        <column name="patient_id" />
-    </many-to-one>
-
-    <!-- bi-directional many-to-one association to User -->
-    <many-to-one
-        name="orderer"
-        class="Provider"
-        not-null="true"
-    >
-        <column name="orderer" />
-    </many-to-one>
-
-    <!-- bi-directional many-to-one association to User -->
-    <many-to-one
-        name="voidedBy"
-        class="User"
-    >
-        <column name="voided_by" />
-    </many-to-one>
-    <!-- bi-directional many-to-one association to User -->
-    <many-to-one
-        name="discontinuedBy"
-        class="User"
-    >
-        <column name="discontinued_by" />
-    </many-to-one>
-    <!-- bi-directional many-to-one association to User -->
-    <many-to-one
-        name="creator"
-        class="User"
-        not-null="true"
-    >
-        <column name="creator" />
-    </many-to-one>
+		<property name="orderNumber" type="java.lang.String" column="order_number" length="50" not-null="true"/>
+		
+    	<property name="previousOrderNumber" type="java.lang.String" column="previous_order_number" length="50" />
 	
-    <property name="orderNumber" type="java.lang.String" column="order_number" length="50" not-null="true"/>
-    <property name="previousOrderNumber" type="java.lang.String" column="previous_order_number" length="50" />
-	
-	<property name="orderAction" column="order_action" length="50" not-null="true">
-		<type name="org.openmrs.util.HibernateEnumType">
-			<param name="enumClassName">org.openmrs.Order$OrderAction</param>
-		</type>
-	</property>
+		<property name="orderAction" column="order_action" length="50" not-null="true">
+			<type name="org.openmrs.util.HibernateEnumType">
+				<param name="enumClassName">org.openmrs.Order$OrderAction</param>
+			</type>
+		</property>
 
-	<joined-subclass name="DrugOrder" table="drug_order" extends="Order" lazy="false">
+		<joined-subclass name="DrugOrder" table="drug_order" extends="Order" lazy="false">
 			<key column="order_id" not-null="true" on-delete="cascade" />
 	    
 			<!-- bi-directional many-to-one association to Drug -->
@@ -182,15 +104,15 @@
     		<property name="duration" type="int" column="duration" length="11" />
     		<property name="durationUnits" type="java.lang.String" column="duration_units" length="50" />
     		<property name="numRefills" type="int" column="num_refills" /> 
-	</joined-subclass>
+		</joined-subclass>
 	
-	<joined-subclass name="TestOrder" table="test_order" extends="Order" lazy="false">
+		<joined-subclass name="TestOrder" table="test_order" extends="Order" lazy="false">
 			<key column="order_id" not-null="true" on-delete="cascade" />
     	
     		<property name="specimenSource" type="int" column="specimen_source" length="11" />    	
     		<property name="laterality" type="int" column="laterality" length="11" />    	
     		<property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
-	</joined-subclass>
+		</joined-subclass>
 
-</class>
+	</class>
 </hibernate-mapping>
