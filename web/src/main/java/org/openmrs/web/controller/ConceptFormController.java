@@ -16,6 +16,7 @@ package org.openmrs.web.controller;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -45,12 +46,17 @@ import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSet;
 import org.openmrs.Drug;
 import org.openmrs.Form;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.web.extension.ConceptUsage;
+import org.openmrs.module.web.extension.ConceptUsageExtension;
 import org.openmrs.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.propertyeditor.ConceptClassEditor;
 import org.openmrs.propertyeditor.ConceptDatatypeEditor;
@@ -841,6 +847,71 @@ public class ConceptFormController extends SimpleFormController {
 		 */
 		public List<Form> getFormsInUse() {
 			return Context.getFormService().getFormsContainingConcept(concept);
+		}
+		
+		/**
+		 * Get the list of extensions/metadata and the specific instances of
+		 * them that use this concept.
+		 * 
+		 * @return list of {@link ConceptUsageExtension}
+		 */
+		public List<ConceptUsageExtension> getConceptUsage() {
+			
+			List<ConceptUsageExtension> togo = new ArrayList<ConceptUsageExtension>();
+			
+			// Forms
+			List<ConceptUsage> forms = new ArrayList<ConceptUsage>();
+			for (Form form : Context.getFormService().getFormsContainingConcept(concept)) {
+				forms.add(new ConceptUsage(form.getName(), "/admin/forms/formSchemaDesign.form?formId=" + form.getFormId()));
+			}
+			togo.add(new ConceptUsageExtension("dictionary.forms", forms, PrivilegeConstants.VIEW_FORMS));
+			
+			// Drugs
+			List<ConceptUsage> drugs = new ArrayList<ConceptUsage>();
+			for (Drug drug : Context.getConceptService().getDrugsByConcept(concept)) {
+				drugs.add(new ConceptUsage(drug.getName(), "/admin/concepts/conceptDrug.form?drugId=" + drug.getId()));
+			}
+			togo.add(new ConceptUsageExtension("dictionary.drugs", drugs, PrivilegeConstants.VIEW_CONCEPTS));
+			
+			// Programs
+			List<ConceptUsage> programs = new ArrayList<ConceptUsage>();
+			for (Program program : Context.getProgramWorkflowService().getProgramsByConcept(concept)) {
+				programs
+				        .add(new ConceptUsage(program.getName(), "/admin/programs/program.form?programId=" + program.getId()));
+			}
+			togo.add(new ConceptUsageExtension("dictionary.programs", programs, PrivilegeConstants.VIEW_PROGRAMS));
+			
+			// ProgramWorkflows
+			List<ConceptUsage> programWorkflows = new ArrayList<ConceptUsage>();
+			for (ProgramWorkflow programWorkflow : Context.getProgramWorkflowService().getProgramWorkflowsByConcept(concept)) {
+				programWorkflows.add(new ConceptUsage(programWorkflow.getProgram().getName(),
+				        "/admin/programs/workflow.form?programWorkflowId=" + programWorkflow.getId()));
+			}
+			togo.add(new ConceptUsageExtension("dictionary.programworkflows", programWorkflows,
+			        PrivilegeConstants.VIEW_PROGRAMS));
+			
+			// ProgramWorkflowStates
+			List<ConceptUsage> programWorkflowStates = new ArrayList<ConceptUsage>();
+			for (ProgramWorkflowState programWorkflowState : Context.getProgramWorkflowService()
+			        .getProgramWorkflowStatesByConcept(concept)) {
+				programWorkflowStates.add(new ConceptUsage(programWorkflowState.getProgramWorkflow().getProgram().getName(),
+				        ""));
+			}
+			togo.add(new ConceptUsageExtension("dictionary.programworkflowstates", programWorkflowStates,
+			        PrivilegeConstants.VIEW_PROGRAMS));
+			
+			return togo;
+		}
+		
+		/**
+		 * Get the number of observations that use this concept.
+		 * 
+		 * @return number of obs using this concept
+		 */
+		public int getNumberOfObsUsingThisConcept() {
+			List<Concept> searchConcepts = Arrays.asList(concept);
+			return Context.getObsService().getObservationCount(null, null, searchConcepts, null, null, null, null, null,
+			    null, true);
 		}
 		
 		/**

@@ -239,4 +239,28 @@ public interface ProgramWorkflowDAO {
 	 * @return
 	 */
 	public ProgramWorkflow getWorkflowByUuid(String uuid);
+	
+	/**
+	 * Returns a list of Programs that are using a particular concept.
+	 * 
+	 * @param concept - The Concept being used.
+	 * @return - A List of Programs
+	 */
+	public List<Program> getProgramsByConcept(Concept concept);
+	
+	/**
+	 * Returns a list of ProgramWorkflows that are using a particular concept.
+	 * 
+	 * @param concept - The Concept being used.
+	 * @return - A List of ProgramWorkflows
+	 */
+	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept);
+	
+	/**
+	 * Returns a list of ProgramWorkflowStates that are using a particular concept.
+	 * 
+	 * @param concept - The Concept being used.
+	 * @return - A List of ProgramWorkflowStates
+	 */
+	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
 }

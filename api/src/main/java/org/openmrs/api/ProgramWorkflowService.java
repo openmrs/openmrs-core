@@ -912,6 +912,33 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public void voidLastState(PatientProgram patientProgram, ProgramWorkflow wf, String voidReason) throws APIException;
 	
+	/**
+	 * Returns a list of Programs that are using a particular concept.
+	 * 
+	 * @param concept - The Concept being used.
+	 * @return - A List of Programs
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
+	public List<Program> getProgramsByConcept(Concept concept);
+	
+	/**
+	 * Returns a list of ProgramWorkflows that are using a particular concept.
+	 * 
+	 * @param concept - The Concept being used.
+	 * @return - A List of ProgramWorkflows
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
+	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept);
+	
+	/**
+	 * Returns a list of ProgramWorkflowStates that are using a particular concept.
+	 * 
+	 * @param concept - The Concept being used.
+	 * @return - A List of ProgramWorkflowStates
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
+	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
+	
 	// **************************
 	// DEPRECATED CONCEPT STATE CONVERSION
 	// **************************
