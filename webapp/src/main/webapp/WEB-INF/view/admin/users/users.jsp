@@ -82,7 +82,7 @@
 			<td><c:out value="${user.familyName}"/></td>
 			<td><c:out value="${user.roles}"/></td>
 			<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
-				<td>${user.attributes[attrType.name]}</td>
+				<td><c:if test="${user.person != null}">${user.person.attributeMap[attrType.name]}</c:if></td>
 			</openmrs:forEachDisplayAttributeType>
 		</tr>
 	</c:forEach>
