@@ -754,6 +754,30 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		changeToState(patientProgram, finalState.getProgramWorkflow(), finalState, terminatedOn);
 	}
 	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getProgramsByConcept(org.openmrs.Concept)
+	 */
+	@Override
+	public List<Program> getProgramsByConcept(Concept concept) {
+		return dao.getProgramsByConcept(concept);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getProgramWorkflowsByConcept(org.openmrs.Concept)
+	 */
+	@Override
+	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept) {
+		return dao.getProgramWorkflowsByConcept(concept);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getProgramWorkflowStatesByConcept(org.openmrs.Concept)
+	 */
+	@Override
+	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept) {
+		return dao.getProgramWorkflowStatesByConcept(concept);
+	}
+	
 	// **************************
 	// DEPRECATED CONCEPT STATE CONVERSION
 	// **************************

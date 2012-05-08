@@ -299,4 +299,37 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		return (ProgramWorkflow) sessionFactory.getCurrentSession().createQuery(
 		    "from ProgramWorkflow pw where pw.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getProgramsByConcept(org.openmrs.Concept)
+	 */
+	@Override
+	public List<Program> getProgramsByConcept(Concept concept) {
+		String pq = "select distinct p from Program p where p.concept = :concept";
+		Query pquery = sessionFactory.getCurrentSession().createQuery(pq);
+		pquery.setEntity("concept", concept);
+		return pquery.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getProgramWorkflowsByConcept(org.openmrs.Concept)
+	 */
+	@Override
+	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept) {
+		String wq = "select distinct w from ProgramWorkflow w where w.concept = :concept";
+		Query wquery = sessionFactory.getCurrentSession().createQuery(wq);
+		wquery.setEntity("concept", concept);
+		return wquery.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getProgramWorkflowStatesByConcept(org.openmrs.Concept)
+	 */
+	@Override
+	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept) {
+		String sq = "select distinct s from ProgramWorkflowState s where s.concept = :concept";
+		Query squery = sessionFactory.getCurrentSession().createQuery(sq);
+		squery.setEntity("concept", concept);
+		return squery.list();
+	}
 }

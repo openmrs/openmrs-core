@@ -1396,3 +1396,27 @@ td.dataTables_empty{
 td.dataTables_empty:hover{
 	background-color: #BBCCF7;
 }
+
+#conceptSidebar ul {
+	list-style-type: none;
+	margin-left: 0px;
+	padding-left: 0px;
+	margin-top: 0px;
+	padding-top: 0px;
+}
+#conceptMainarea {
+	float:left;
+	width: 70%;
+}
+#conceptSidebar {
+	float:right;
+	width: 28%;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+#conceptSidebar fieldset:not(:first-child) {
+	margin-top: 15px;
+}
+#conceptSidebar fieldset {
+	padding: 10px;
+}
