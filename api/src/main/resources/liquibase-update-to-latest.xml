@@ -5207,6 +5207,7 @@
 		<validCheckSum><comment>Corrected version with predefined UUIDs</comment>3:5faead5506cbcde69490fef985711d66</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_map_type" />
+			<sqlCheck expectedResult="0">select count(*) from concept_map_type</sqlCheck>
 		</preConditions>
 		<comment>Inserting core concept map types</comment>
 		<customChange class="org.openmrs.util.databasechange.AddConceptMapTypesChangeset">
@@ -5327,34 +5328,12 @@
 			baseTableName="concept_reference_term_map" baseColumnNames="changed_by" />
 	</changeSet>
 		
-	<changeSet id="2011121-1030k" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030k" author="raff" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<and>
-				<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_map</sqlCheck></not>
-				<dbms type="mysql" />
-			</and>
+			<sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_term</sqlCheck>
 		</preConditions>
-		<comment>Creating concept reference terms from existing rows in the concept_map table</comment>
-		<sql>
-			INSERT INTO concept_reference_term (concept_reference_term_id, concept_source_id, code, description, creator, date_created, uuid) 
-			SELECT cm.concept_map_id, cm.source, cm.source_code, cm.comment, cm.creator, cm.date_created, UUID() 
-			FROM concept_reference_map cm, concept_reference_source crs
-			WHERE cm.source = crs.concept_source_id
-		</sql>
-	</changeSet>
-
-	<changeSet id="20110301-1030m" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<and>
-				<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_map</sqlCheck></not>
-			</and>
-		</preConditions>
-		<comment>
-			Copying concept_map_id column to concept_reference_map.concept_reference_term_id column
-		</comment>
-		<sql>
-			UPDATE concept_reference_map SET concept_reference_term_id = concept_map_id
-		</sql>
+		<comment>Creating concept reference terms from existing rows in the concept_reference_map table</comment>
+		<customChange class="org.openmrs.util.databasechange.MigrateConceptReferenceTermChangeSet" />
 	</changeSet>
 	
 	<changeSet id="20110301-1030n" author="wyclif" dbms="mysql">
