@@ -5331,6 +5331,7 @@
 	<changeSet id="20110301-1030k" author="raff" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_term</sqlCheck>
+			<columnExists tableName="concept_reference_map" columnName="source"/>
 		</preConditions>
 		<comment>Creating concept reference terms from existing rows in the concept_reference_map table</comment>
 		<customChange class="org.openmrs.util.databasechange.MigrateConceptReferenceTermChangeSet" />
