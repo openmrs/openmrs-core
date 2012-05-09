@@ -226,6 +226,10 @@
 									<name>OPENMRS_VERSION</name>
 									<value>${openMRSVersion}</value>
 								</systemProperty>
+                                <systemProperty>
+                                    <name>jetty.port</name>
+                                    <value>8000</value>
+                                </systemProperty>
 							</systemProperties>
 
 						</configuration>
