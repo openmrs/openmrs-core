@@ -41,8 +41,10 @@ public class LoginSteps extends Steps {
 		return f.findFrom(getWebDriver()).size() > 0;
 	}
 
-	@Given("I am on the login page of OpenMRS with url $url")
-	public void onLoginPage(String url) {
+	@Given("I am on the login page of OpenMRS")
+	public void onLoginPage() {
+        String port = System.getProperty("jetty.port","8080");
+        String url = "http://localhost:"+port+"/openmrs/initialsetup";
 		goTo(url);
 		
 		// the login button will only be there if the user hasn't logged in yet.

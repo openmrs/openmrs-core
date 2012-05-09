@@ -33,7 +33,8 @@ public class InstallationWizardSteps extends Steps {
 
     @Given("I am on the $wizard")
     public void beginInstallation(String wizard) {
-        goTo("http://localhost:8080/openmrs/initialsetup");
+        String port = System.getProperty("jetty.port","8080");
+        goTo("http://localhost:"+port+"/openmrs/initialsetup");
         assertPresenceOf(div().with(text(containsString(wizard))));
     }
 
