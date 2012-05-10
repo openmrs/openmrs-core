@@ -48,9 +48,9 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	 */
 	@Override
 	public int hashCode() {
-		if (uuid == null)
+		if (getUuid() == null)
 			return super.hashCode();
-		return uuid.hashCode();
+		return getUuid().hashCode();
 	}
 	
 	/**
@@ -100,8 +100,8 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	 */
 	@Override
 	public String toString() {
-		if (uuid != null) {
-			return getClass().getName() + "[" + uuid + "]";
+		if (getUuid() != null) {
+			return getClass().getName() + "[" + getUuid() + "]";
 		} else {
 			return super.toString();
 		}
