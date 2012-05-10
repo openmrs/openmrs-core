@@ -618,7 +618,7 @@ public class RequiredDataAdviceTest {
 		
 		requiredDataAdvice.before(m, new Object[] { openmrsObject, "void reason" }, new WithAppropriatelyNamedMethod());
 		
-		// verify that the handle method was never called on this object
+		// verify that the handle method was called on this object
 		verify(voidHandler, times(1)).handle(eq(person), Matchers.<User> anyObject(), Matchers.<Date> anyObject(),
 		    anyString());
 		
