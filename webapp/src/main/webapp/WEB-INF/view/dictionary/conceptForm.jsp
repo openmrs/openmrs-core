@@ -816,9 +816,12 @@
 </div>
 
 </div>
-<div id="conceptSidebar">
-<%@ include file="/WEB-INF/view/dictionary/conceptSidebar.jsp"%>
-</div>
+
+<c:if test="${command.concept.conceptId != null}">
+	<div id="conceptSidebar">
+	<%@ include file="/WEB-INF/view/dictionary/conceptSidebar.jsp"%>
+	</div>
+</c:if>
 <script type="text/javascript">
 $j(document).ready( function() {
 	$j("#create-new-term-dialog").dialog({
