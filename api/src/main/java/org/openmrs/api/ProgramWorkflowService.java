@@ -918,6 +918,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param concept - The Concept being used.
 	 * @return - A List of Programs
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	public List<Program> getProgramsByConcept(Concept concept);
 	
@@ -927,6 +928,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param concept - The Concept being used.
 	 * @return - A List of ProgramWorkflows
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept);
 	
@@ -936,6 +938,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param concept - The Concept being used.
 	 * @return - A List of ProgramWorkflowStates
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
 	
