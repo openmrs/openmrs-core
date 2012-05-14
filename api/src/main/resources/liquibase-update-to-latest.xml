@@ -5328,10 +5328,11 @@
 			baseTableName="concept_reference_term_map" baseColumnNames="changed_by" />
 	</changeSet>
 		
-	<changeSet id="20110301-1030k" author="raff" dbms="mysql">
+	<changeSet id="20110301-1030m" author="wyclif" dbms="mysql">
+		<validCheckSum><comment>Initial SQL version</comment>3:523b32f95b74186733ebf2be0ef4ba7f</validCheckSum>
+		<validCheckSum><comment>Changed to Java</comment>3:b286407bfcdf3853512cb15009c816f1</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_term</sqlCheck>
-			<columnExists tableName="concept_reference_map" columnName="comment"/>
 		</preConditions>
 		<comment>Creating concept reference terms from existing rows in the concept_reference_map table</comment>
 		<customChange class="org.openmrs.util.databasechange.MigrateConceptReferenceTermChangeSet" />

@@ -17,6 +17,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import liquibase.change.custom.CustomTaskChange;
@@ -41,6 +43,8 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	public static final String DEFAULT_CONCEPT_MAP_TYPE = "NARROWER-THAN";
+	
 	/**
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
@@ -49,6 +53,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 		final JdbcConnection connection = (JdbcConnection) database.getConnection();
 		Boolean prevAutoCommit = null;
 		
+		PreparedStatement selectTypes = null;
 		PreparedStatement batchUpdateMap = null;
 		PreparedStatement selectMap = null;
 		PreparedStatement updateMapTerm = null;
@@ -58,6 +63,19 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 		try {
 			prevAutoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
+			
+			//Prepare a list of types and their ids.
+			Map<String, Integer> typesToIds = new HashMap<String, Integer>();
+			
+			selectTypes = connection.prepareStatement("select * from concept_map_type");
+			selectTypes.execute();
+			ResultSet selectTypeResult = selectTypes.getResultSet();
+			
+			while (selectTypeResult.next()) {
+				typesToIds.put(selectTypeResult.getString("name").trim().toUpperCase(), selectTypeResult
+				        .getInt("concept_map_type_id"));
+			}
+			selectTypes.close();
 			
 			//The FK on concept_reference_term_id is not yet created so we are safe to copy over IDs. 
 			//The trims are done to be able to compare properly.
@@ -97,8 +115,8 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 				final Date dateCreated = selectMapResult.getDate("date_created");
 				final String uuid = selectMapResult.getString("uuid");
 				
-				final int mapTypeId = determineMapTypeId(comment);
-				final int updatedMapTypeId = (mapTypeId < 0) ? 2 : mapTypeId; //2 = NARROWER-THAN
+				final Integer mapTypeId = determineMapTypeId(comment, typesToIds);
+				final int updatedMapTypeId = (mapTypeId == null) ? typesToIds.get(DEFAULT_CONCEPT_MAP_TYPE) : mapTypeId;
 				updateMapType.setInt(1, updatedMapTypeId);
 				updateMapType.setInt(2, conceptMapId);
 				updateMapType.execute();
@@ -109,7 +127,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 				
 				if (source == prevSource
 				        && (sourceCode == prevSourceCode || (sourceCode != null && sourceCode.equals(prevSourceCode)))) {
-					if (mapTypeId < 0 && comment != null && !comment.equals(prevComment)) {
+					if (mapTypeId == null && comment != null && !comment.equals(prevComment)) {
 						log.warn("Lost comment '" + comment + "' for map " + conceptMapId + ". Preserved comment "
 						        + prevComment);
 					}
@@ -131,7 +149,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 					insertTerm.setString(4, sourceCode);
 					insertTerm.setInt(5, creator);
 					insertTerm.setDate(6, dateCreated);
-					if (mapTypeId < 0) {
+					if (mapTypeId == null) {
 						insertTerm.setString(7, comment);
 					} else {
 						insertTerm.setString(7, null);
@@ -166,6 +184,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 			throw new CustomChangeException(e);
 		}
 		finally {
+			closeStatementQuietly(selectTypes);
 			closeStatementQuietly(batchUpdateMap);
 			closeStatementQuietly(selectMap);
 			closeStatementQuietly(updateMapTerm);
@@ -203,25 +222,23 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 	 * Determines the map type based on the given comment.
 	 * 
 	 * @param comment
-	 * @return map type id or -1 if not recognized
+	 * @param typesToIds 
+	 * @return map type id or null if not recognized
 	 */
-	protected int determineMapTypeId(String comment) {
-		int mapTypeId;
-		if (StringUtils.isBlank(comment)) {
-			mapTypeId = -1;
-		} else {
-			if (comment.startsWith("Map Type:")) {
+	protected Integer determineMapTypeId(String comment, Map<String, Integer> typesToIds) {
+		Integer mapTypeId = null;
+		
+		if (!StringUtils.isBlank(comment)) {
+			comment = comment.toUpperCase();
+			
+			if (comment.startsWith("MAP TYPE:")) {
 				comment = comment.substring(9).trim();
-				try {
-					mapTypeId = Integer.parseInt(comment);
+				
+				if (comment.equals("SAME-AS FROM RXNORM")) {
+					comment = "SAME-AS";
 				}
-				catch (NumberFormatException e) {
-					mapTypeId = 2; // NARROWER-THAN
-				}
-			} else if (comment.equals("From Excel") || comment.equals("From UMLS RxNORM Map")) {
-				mapTypeId = 1; // SAME-AS
-			} else {
-				mapTypeId = -1;
+				
+				mapTypeId = typesToIds.get(comment);
 			}
 		}
 		return mapTypeId;
