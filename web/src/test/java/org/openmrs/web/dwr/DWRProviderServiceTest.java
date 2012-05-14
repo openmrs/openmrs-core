@@ -70,7 +70,7 @@ public class DWRProviderServiceTest extends BaseWebContextSensitiveTest {
 			
 			@Override
 			public boolean evaluate(Object object) {
-				return ((ProviderListItem) object).getDisplayName().equals("provider6");
+				return ((ProviderListItem) object).getDisplayName().equals("Jimmy Manana Chemalit");
 			}
 		}));
 	}
@@ -95,7 +95,7 @@ public class DWRProviderServiceTest extends BaseWebContextSensitiveTest {
 			}
 		});
 		
-		Assert.assertTrue(providerNames.containsAll(Arrays.asList("provider8", "provider7"))); //"Bruno Otterbourg", "Hippocrates of Cos"
+		Assert.assertTrue(providerNames.containsAll(Arrays.asList("Bruno Otterbourg", "Hippocrates of Cos")));
 	}
 	
 	/**

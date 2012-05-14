@@ -14,6 +14,8 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Represents a person who may provide care to a patient during an encounter
@@ -21,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
  * @since 1.9
  */
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
+	
+	private final Log log = LogFactory.getLog(getClass());
 	
 	private Integer providerId;
 	
@@ -127,9 +131,9 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	public void setName(String name) {
 		super.setName(name);
 		
-		//If we are setting a name, blank out the person
+		//Trace message if we are setting a name when already attached to a person.
 		if (getPerson() != null && !StringUtils.isBlank(super.getName())) {
-			setPerson(null);
+			log.trace("Setting name for a provider who is already attached to a person");
 		}
 	}
 }
