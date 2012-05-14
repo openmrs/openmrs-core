@@ -17,7 +17,7 @@
 		<many-to-one name="person" class="Person" column="person_id"
 			cascade="save-update" />
 
-		<property name="name" type="java.lang.String" length="255" />
+		<property name="name" type="java.lang.String" length="255" access="field"/>
 
 		<property name="identifier" type="java.lang.String" length="255" not-null="true" />
 
