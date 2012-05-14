@@ -24,8 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openmrs.EncounterProvider;
+import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.handler.VoidHandler;
 
 /**
  * An Encounter represents one visit or interaction of a patient with a healthcare worker. Every
@@ -62,6 +63,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Visit visit;
 	
+	@DisableHandlers(handlerTypes = { VoidHandler.class })
 	private Set<EncounterProvider> encounterProviders = new LinkedHashSet<EncounterProvider>();
 	
 	// Constructors
