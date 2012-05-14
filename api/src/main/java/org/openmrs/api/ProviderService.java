@@ -22,6 +22,7 @@ import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.9
  */
 @Transactional
+@Handler(supports = Provider.class)
 public interface ProviderService extends OpenmrsService {
 	
 	/**
