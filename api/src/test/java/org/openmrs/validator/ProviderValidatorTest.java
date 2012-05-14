@@ -130,10 +130,10 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderValidator#validate(Object,Errors)
-	 * @verifies be invalid if both person and name are set
+	 * @verifies never have both person and name set
 	 */
 	@Test
-	public void validate_shouldBeInvalidIfBothPersonAndNameAreSet() throws Exception {
+	public void validate_shouldNeverHaveBothPersonAndNameSet() throws Exception {
 		//given
 		provider.setIdentifier("id");
 		provider.setPerson(new Person(1));
@@ -143,9 +143,8 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		providerValidator.validate(provider, errors);
 		
 		//then
-		Assert.assertTrue(errors.hasErrors());
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertEquals("Provider.error.personOrName.required", errors.getFieldError("name").getCode());
+		Assert.assertFalse(errors.hasErrors());
+		Assert.assertFalse(errors.hasFieldErrors("name"));
 	}
 	
 	/**
