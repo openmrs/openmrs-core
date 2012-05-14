@@ -22,6 +22,7 @@ import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.9
  */
 @Transactional
+@Handler(supports = Provider.class)
 public interface ProviderService extends OpenmrsService {
 	
 	/**
@@ -42,7 +44,7 @@ public interface ProviderService extends OpenmrsService {
 	 */
 	
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized({ PrivilegeConstants.VIEW_PROVIDERS })
 	public List<Provider> getAllProviders();
 	
 	/**
@@ -52,7 +54,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should get all providers that are unretired
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized({ PrivilegeConstants.VIEW_PROVIDERS })
 	public List<Provider> getAllProviders(boolean includeRetired);
 	
 	/**
@@ -62,7 +64,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @param String reason why the provider is retired
 	 * @should retire a provider
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
+	@Authorized({ PrivilegeConstants.MANAGE_PROVIDERS })
 	public void retireProvider(Provider provider, String reason);
 	
 	/**
@@ -71,7 +73,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @param Provider provider to unretire
 	 * @should unretire a provider
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
+	@Authorized({ PrivilegeConstants.MANAGE_PROVIDERS })
 	public Provider unretireProvider(Provider provider);
 	
 	/**
@@ -80,7 +82,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @param Provider provider to be deleted
 	 * @should delete a provider
 	 */
-	@Authorized( { PrivilegeConstants.PURGE_PROVIDERS })
+	@Authorized({ PrivilegeConstants.PURGE_PROVIDERS })
 	public void purgeProvider(Provider provider);
 	
 	/**
@@ -91,7 +93,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should get provider given ID
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized({ PrivilegeConstants.VIEW_PROVIDERS })
 	public Provider getProvider(Integer providerId);
 	
 	/**
@@ -102,7 +104,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should not save a Provider with both name and person
 	 * @should not save a Provider with both name and person being null
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
+	@Authorized({ PrivilegeConstants.MANAGE_PROVIDERS })
 	public Provider saveProvider(Provider provider);
 	
 	/**
@@ -111,7 +113,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should get provider given Uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized({ PrivilegeConstants.VIEW_PROVIDERS })
 	public Provider getProviderByUuid(String uuid);
 	
 	/**
@@ -123,7 +125,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should fail if person is null
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized({ PrivilegeConstants.VIEW_PROVIDERS })
 	public Collection<Provider> getProvidersByPerson(Person person);
 	
 	/**
@@ -146,7 +148,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should find provider by identifier
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized({ PrivilegeConstants.VIEW_PROVIDERS })
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributes, boolean includeRetired);
 	
@@ -169,7 +171,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should not return retired providers
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized({ PrivilegeConstants.VIEW_PROVIDERS })
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributes);
 	
@@ -179,7 +181,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should fetch number of provider matching given query.
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized({ PrivilegeConstants.VIEW_PROVIDERS })
 	public Integer getCountOfProviders(String query);
 	
 	/**
@@ -284,7 +286,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should return false if the identifier is a duplicate
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized({ PrivilegeConstants.VIEW_PROVIDERS })
 	public boolean isProviderIdentifierUnique(Provider provider) throws APIException;
 	
 	/**
@@ -295,6 +297,6 @@ public interface ProviderService extends OpenmrsService {
 	 * @should get a provider matching the specified identifier ignoring case
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized({ PrivilegeConstants.VIEW_PROVIDERS })
 	public Provider getProviderByIdentifier(String identifier);
 }
