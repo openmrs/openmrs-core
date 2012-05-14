@@ -186,10 +186,12 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 		this.minimumDailyDose = minimumDailyDose;
 	}
 	
+	@Deprecated
 	public Concept getRoute() {
 		return route;
 	}
 	
+	@Deprecated
 	public void setRoute(Concept route) {
 		this.route = route;
 	}
