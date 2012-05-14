@@ -19,9 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -79,12 +77,11 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	private void runBatchInsert(JdbcConnection connection) throws CustomChangeException {
 		PreparedStatement pStmt = null;
 		ResultSet rs = null;
-		List<String> existingMapTypes = new ArrayList<String>();
 		try {
 			connection.setAutoCommit(false);
 			
 			Integer userId = DatabaseUpdater.getAuthenticatedUserId();
-			//is we have no authenticated user(for API users), set as Daemon
+			//if we have no authenticated user(for API users), set as Daemon
 			if (userId == null || userId < 1) {
 				userId = getInt(connection, "SELECT min(user_id) FROM users");
 				//leave it as null rather than setting it to 0
@@ -92,29 +89,27 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 					userId = null;
 			}
 			
-			pStmt = connection.prepareStatement("SELECT name FROM concept_map_type");
-			rs = pStmt.executeQuery();
-			while (rs.next())
-				existingMapTypes.add(rs.getString("name").trim().toUpperCase());
+			//userId is not a param, because it's easier this way if it's null
+			pStmt = connection.prepareStatement("INSERT INTO concept_map_type "
+			        + "(concept_map_type_id, name, is_hidden, retired, creator, date_created, uuid) VALUES(?,?,?,?,"
+			        + userId + ",?,?)");
 			
-			pStmt = connection
-			        .prepareStatement("INSERT INTO concept_map_type (name, is_hidden, retired, creator, date_created, uuid) VALUES(?,?,?,"
-			                + userId + ", ?,?)");
+			int mapTypeId = 1;
 			
 			for (String map : visibleConceptMapTypeArray) {
 				String[] mapTypeAndUuid = map.trim().split("\\|");
 				String mapType = mapTypeAndUuid[0];
 				String mapUuid = mapTypeAndUuid[1];
 				
-				if (mapType.length() < 1 || existingMapTypes.contains(mapType.toUpperCase()))
-					continue;
-				
-				pStmt.setString(1, mapType);
-				pStmt.setBoolean(2, false);
+				pStmt.setInt(1, mapTypeId);
+				pStmt.setString(2, mapType);
 				pStmt.setBoolean(3, false);
-				pStmt.setDate(4, new Date(Calendar.getInstance().getTimeInMillis()));
-				pStmt.setString(5, mapUuid);
+				pStmt.setBoolean(4, false);
+				pStmt.setDate(5, new Date(Calendar.getInstance().getTimeInMillis()));
+				pStmt.setString(6, mapUuid);
 				pStmt.addBatch();
+				
+				mapTypeId++;
 			}
 			
 			for (String map : hiddenConceptMapTypeArray) {
@@ -122,15 +117,15 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				String mapType = mapTypeAndUuid[0];
 				String mapUuid = mapTypeAndUuid[1];
 				
-				if (mapType.length() < 1 || existingMapTypes.contains(mapType.toUpperCase()))
-					continue;
-				
-				pStmt.setString(1, mapType);
-				pStmt.setBoolean(2, true);
-				pStmt.setBoolean(3, false);
-				pStmt.setDate(4, new Date(Calendar.getInstance().getTimeInMillis()));
-				pStmt.setString(5, mapUuid);
+				pStmt.setInt(1, mapTypeId);
+				pStmt.setString(2, mapType);
+				pStmt.setBoolean(3, true);
+				pStmt.setBoolean(4, false);
+				pStmt.setDate(5, new Date(Calendar.getInstance().getTimeInMillis()));
+				pStmt.setString(6, mapUuid);
 				pStmt.addBatch();
+				
+				mapTypeId++;
 			}
 			
 			try {
