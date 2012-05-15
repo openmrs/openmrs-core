@@ -196,6 +196,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	* @Deprecated moving it to order entry where it belongs.
 	*/
+	@Deprecated
 	public Concept getRoute() {
 		return route;
 	}
@@ -203,6 +204,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	* @Deprecated moving it to order entry where it belongs.
 	*/
+	@Deprecated
 	public void setRoute(Concept route) {
 		this.route = route;
 	}
