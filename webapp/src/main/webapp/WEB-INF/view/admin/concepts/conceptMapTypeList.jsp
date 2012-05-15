@@ -13,7 +13,6 @@
 
 <b class="boxHeader"><spring:message code="ConceptMapType.list.title"/></b>
 <div class="box">
-	<i style="font-size: small"><spring:message code="ConceptMapType.hidden.message"/></i><br/>
 	<table cellpadding="3" cellspacing="3">
 		<tr>
 			<th><spring:message code="general.name"/></th>
