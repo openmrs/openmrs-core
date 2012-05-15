@@ -224,6 +224,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should cascade to obs
 	 * @should cascade to orders
 	 * @should throw error with null reason parameter
+	 * @should not void providers
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter voidEncounter(Encounter encounter, String reason);
