@@ -1897,4 +1897,37 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, encounter.getAllObs().size());
 	}
 	
+	/**
+	 * @see {@link EncounterService#voidEncounter(Encounter, String)}
+	 */
+	@Test
+	@Verifies(value = "should not void providers", method = "voidEncounter(Encounter, String)")
+	public void voidEncounter_shouldNotVoidProviders() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(3));
+		
+		EncounterRole role = new EncounterRole();
+		role.setName("role");
+		role = encounterService.saveEncounterRole(role);
+		
+		Provider provider = new Provider();
+		provider.setName("provider");
+		provider.setIdentifier("id1");
+		provider = Context.getProviderService().saveProvider(provider);
+				
+		encounter.addProvider(role, provider);
+		encounterService.saveEncounter(encounter);
+
+		assertEquals(1, encounter.getProvidersByRoles().size());
+		
+		encounterService.voidEncounter(encounter, "reason");
+		
+		encounter = encounterService.getEncounter(encounter.getEncounterId());
+		assertEquals(1, encounter.getProvidersByRoles().size());
+	}
 }
