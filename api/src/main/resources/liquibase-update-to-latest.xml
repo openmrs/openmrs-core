@@ -5335,6 +5335,9 @@
 		<validCheckSum><comment>Changed to Java</comment>3:b286407bfcdf3853512cb15009c816f1</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_term</sqlCheck>
+			<columnExists tableName="concept_reference_map" columnName="source_code"/>
+			<columnExists tableName="concept_reference_map" columnName="source"/>
+			<columnExists tableName="concept_reference_map" columnName="comment"/>
 		</preConditions>
 		<comment>Creating concept reference terms from existing rows in the concept_reference_map table</comment>
 		<customChange class="org.openmrs.util.databasechange.MigrateConceptReferenceTermChangeSet" />
