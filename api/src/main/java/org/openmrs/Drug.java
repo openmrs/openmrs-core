@@ -13,11 +13,9 @@
  */
 package org.openmrs;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Locale;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 
 /**
  * Drug
@@ -194,16 +192,16 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	* @deprecated moving it to order entry where it belongs.
-	*/
+	 * @deprecated moving it to order entry where it belongs.
+	 */
 	@Deprecated
 	public Concept getRoute() {
 		return route;
 	}
 	
 	/**
-	* @deprecated moving it to order entry where it belongs.
-	*/
+	 * @deprecated moving it to order entry where it belongs.
+	 */
 	@Deprecated
 	public void setRoute(Concept route) {
 		this.route = route;
