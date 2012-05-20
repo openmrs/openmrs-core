@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmrs.module.Extension;
+import org.openmrs.module.web.extension.provider.Link;
 
 /**
  * <p>
@@ -37,7 +38,7 @@ public class ConceptUsageExtension extends Extension {
 	
 	private String header = "";
 	
-	private List<ConceptUsage> conceptUsage = new ArrayList<ConceptUsage>();
+	private List<Link> conceptUsage = new ArrayList<Link>();
 	
 	private MEDIA_TYPE mediaType;
 	
@@ -47,20 +48,20 @@ public class ConceptUsageExtension extends Extension {
 		this.mediaType = Extension.MEDIA_TYPE.html;
 	}
 	
-	public ConceptUsageExtension(String header, List<ConceptUsage> conceptUsage) {
+	public ConceptUsageExtension(String header, List<Link> conceptUsage) {
 		this.header = header;
 		this.conceptUsage = conceptUsage;
 		this.mediaType = Extension.MEDIA_TYPE.html;
 	}
 	
-	public ConceptUsageExtension(String header, List<ConceptUsage> conceptUsage, String requiredPrivilege) {
+	public ConceptUsageExtension(String header, List<Link> conceptUsage, String requiredPrivilege) {
 		this.header = header;
 		this.conceptUsage = conceptUsage;
 		this.requiredPrivilege = requiredPrivilege;
 		this.mediaType = Extension.MEDIA_TYPE.html;
 	}
 	
-	public List<ConceptUsage> getConceptUsage() {
+	public List<Link> getConceptUsage() {
 		return conceptUsage;
 	}
 	
@@ -81,7 +82,7 @@ public class ConceptUsageExtension extends Extension {
 		this.header = header;
 	}
 	
-	public void setConceptUsage(List<ConceptUsage> conceptUsage) {
+	public void setConceptUsage(List<Link> conceptUsage) {
 		this.conceptUsage = conceptUsage;
 	}
 	
