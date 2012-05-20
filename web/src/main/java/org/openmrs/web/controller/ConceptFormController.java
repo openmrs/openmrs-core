@@ -55,8 +55,8 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.web.extension.ConceptUsage;
 import org.openmrs.module.web.extension.ConceptUsageExtension;
+import org.openmrs.module.web.extension.provider.Link;
 import org.openmrs.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.propertyeditor.ConceptClassEditor;
 import org.openmrs.propertyeditor.ConceptDatatypeEditor;
@@ -860,42 +860,40 @@ public class ConceptFormController extends SimpleFormController {
 			List<ConceptUsageExtension> togo = new ArrayList<ConceptUsageExtension>();
 			
 			// Forms
-			List<ConceptUsage> forms = new ArrayList<ConceptUsage>();
+			List<Link> forms = new ArrayList<Link>();
 			for (Form form : Context.getFormService().getFormsContainingConcept(concept)) {
-				forms.add(new ConceptUsage(form.getName(), "/admin/forms/formSchemaDesign.form?formId=" + form.getFormId()));
+				forms.add(new Link(form.getName(), "/admin/forms/formSchemaDesign.form?formId=" + form.getFormId()));
 			}
 			togo.add(new ConceptUsageExtension("dictionary.forms", forms, PrivilegeConstants.VIEW_FORMS));
 			
 			// Drugs
-			List<ConceptUsage> drugs = new ArrayList<ConceptUsage>();
+			List<Link> drugs = new ArrayList<Link>();
 			for (Drug drug : Context.getConceptService().getDrugsByConcept(concept)) {
-				drugs.add(new ConceptUsage(drug.getName(), "/admin/concepts/conceptDrug.form?drugId=" + drug.getId()));
+				drugs.add(new Link(drug.getName(), "/admin/concepts/conceptDrug.form?drugId=" + drug.getId()));
 			}
 			togo.add(new ConceptUsageExtension("dictionary.drugs", drugs, PrivilegeConstants.VIEW_CONCEPTS));
 			
 			// Programs
-			List<ConceptUsage> programs = new ArrayList<ConceptUsage>();
+			List<Link> programs = new ArrayList<Link>();
 			for (Program program : Context.getProgramWorkflowService().getProgramsByConcept(concept)) {
-				programs
-				        .add(new ConceptUsage(program.getName(), "/admin/programs/program.form?programId=" + program.getId()));
+				programs.add(new Link(program.getName(), "/admin/programs/program.form?programId=" + program.getId()));
 			}
 			togo.add(new ConceptUsageExtension("dictionary.programs", programs, PrivilegeConstants.VIEW_PROGRAMS));
 			
 			// ProgramWorkflows
-			List<ConceptUsage> programWorkflows = new ArrayList<ConceptUsage>();
+			List<Link> programWorkflows = new ArrayList<Link>();
 			for (ProgramWorkflow programWorkflow : Context.getProgramWorkflowService().getProgramWorkflowsByConcept(concept)) {
-				programWorkflows.add(new ConceptUsage(programWorkflow.getProgram().getName(),
+				programWorkflows.add(new Link(programWorkflow.getProgram().getName(),
 				        "/admin/programs/workflow.form?programWorkflowId=" + programWorkflow.getId()));
 			}
 			togo.add(new ConceptUsageExtension("dictionary.programworkflows", programWorkflows,
 			        PrivilegeConstants.VIEW_PROGRAMS));
 			
 			// ProgramWorkflowStates
-			List<ConceptUsage> programWorkflowStates = new ArrayList<ConceptUsage>();
+			List<Link> programWorkflowStates = new ArrayList<Link>();
 			for (ProgramWorkflowState programWorkflowState : Context.getProgramWorkflowService()
 			        .getProgramWorkflowStatesByConcept(concept)) {
-				programWorkflowStates.add(new ConceptUsage(programWorkflowState.getProgramWorkflow().getProgram().getName(),
-				        ""));
+				programWorkflowStates.add(new Link(programWorkflowState.getProgramWorkflow().getProgram().getName(), ""));
 			}
 			togo.add(new ConceptUsageExtension("dictionary.programworkflowstates", programWorkflowStates,
 			        PrivilegeConstants.VIEW_PROGRAMS));

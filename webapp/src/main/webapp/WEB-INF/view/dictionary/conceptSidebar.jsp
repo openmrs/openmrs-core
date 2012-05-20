@@ -40,7 +40,7 @@
 		<c:if test="${fn:length(conceptUsageExt.conceptUsage) > 0}">
 			<h4><spring:message code="${conceptUsageExt.header}" /></h4>
 			<ul><c:forEach items="${conceptUsageExt.conceptUsage}" var="usage">
-			<li><a href="${pageContext.request.contextPath}${usage.href}">${usage.shortLabel}</a></li>
+			<li><a href="${pageContext.request.contextPath}${usage.url}">${usage.label}</a></li>
 			</c:forEach></ul>
 		</c:if>
 		</openmrs:hasPrivilege>
@@ -51,7 +51,7 @@
 		<c:if test="${fn:length(extension.conceptUsage) > 0}">
 			<h4>${extension.header}</h4>
 			<ul><c:forEach items="${extension.conceptUsage}" var="usage">
-			<li><a href="${pageContext.request.contextPath}${usage.href}">${usage.shortLabel}</a></br></li>
+			<li><a href="${pageContext.request.contextPath}${usage.url}">${usage.label}</a></br></li>
 			</c:forEach></ul>
 		</c:if>
 		</openmrs:hasPrivilege>
