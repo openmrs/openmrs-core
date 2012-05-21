@@ -16,9 +16,15 @@ package org.openmrs.api.db;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
+import java.util.Locale;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -62,4 +68,17 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		assertNotNull(dao.getConcept(5497));
 	}
 	
+	/**
+	 * @see {@link
+	 *      ConceptDAO#getConcepts(String,Locale,null,List<QConceptClass;>,List<QConceptDatatype;>)}
+	 */
+	@Test
+	@Verifies(value = "should not return concepts with matching names that are voided", method = "getConcepts(String,Locale,null,List<QConceptClass;>,List<QConceptDatatype;>)")
+	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() throws Exception {
+		Assert.assertEquals(
+		    0,
+		    dao.getConcepts("VOIDED", Locale.ENGLISH, false, new ArrayList<ConceptClass>(), new ArrayList<ConceptDatatype>())
+		            .size());
+	}
+
 }

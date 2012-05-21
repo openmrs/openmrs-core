@@ -587,6 +587,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				matchmode = MatchMode.ANYWHERE;
 			
 			criteria.add(Expression.ilike("names.name", name, matchmode));
+			criteria.add(Restrictions.eq("names.voided", false));
 			
 			String language = loc.getLanguage();
 			if (language.length() > 2) {
