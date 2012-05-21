@@ -1240,11 +1240,13 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME, "Unknown Location",
 		        "The name of the location to use as a system default"));
 		
-		props.add(new GlobalProperty(GP_CONCEPT_DRUG_DOSAGE_FORM_CONCEPT_CLASSES, "",
-                "A comma-separated list of the allowed concept classes for the dosage form field of the concept drug management form."));
-
-		props.add(new GlobalProperty(GP_CONCEPT_DRUG_ROUTE_CONCEPT_CLASSES, "",
-                "A comma-separated list of the allowed concept classes for the route field of the concept drug management form."));
+		props
+		        .add(new GlobalProperty(GP_CONCEPT_DRUG_DOSAGE_FORM_CONCEPT_CLASSES, "",
+		                "A comma-separated list of the allowed concept classes for the dosage form field of the concept drug management form."));
+		
+		props
+		        .add(new GlobalProperty(GP_CONCEPT_DRUG_ROUTE_CONCEPT_CLASSES, "",
+		                "A comma-separated list of the allowed concept classes for the route field of the concept drug management form."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
