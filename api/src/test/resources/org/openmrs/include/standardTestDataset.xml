@@ -117,6 +117,7 @@
   <concept_name concept_id="8" name="N" locale="en" creator="1" date_created="2008-08-15 13:53:31.0" concept_name_id="2479" concept_name_type="" locale_preferred="0" voided="false" uuid="0ae52990-0c41-4591-8caa-31ed6a3dffa8"/>
   <concept_name concept_id="792" name="TRIOMUNE-30" locale="en" creator="1" date_created="2008-08-15 14:05:56.0" concept_name_id="2480" concept_name_type="" locale_preferred="0" voided="false" uuid="726f9e6d-bc7e-4a78-8741-c7d644d704cc"/>
   <concept_name concept_id="7" name="Y" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2481" concept_name_type="" locale_preferred="0" voided="false" uuid="0631be3b-e338-4505-a876-ef3310f65896"/>
+  <concept_name concept_id="7" name="VOIDED" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2482" locale_preferred="0" voided="true" uuid="d84fb534-9f57-11e1-815b-00248140a5eb"/>
   <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="9e9df183-2328-4117-acd8-fb9bf400911d"/>
   <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="57396ec9-fb90-44b2-b59a-21bc5631bf3d"/>
   <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="cb6bc7cf-d5d3-4d51-a05b-5ea656c7413a"/>

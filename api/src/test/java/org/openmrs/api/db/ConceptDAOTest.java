@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,10 +12,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.api.ConceptNameType;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -56,8 +60,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		fullySpecName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		fullySpecName.setLocalePreferred(true);
 		
-		Assert.assertTrue("A shorter word should weigh more than a longer one if both words match their concept names", dao
-		        .weighConceptWord(shorterWord) > dao.weighConceptWord(longerWord));
+		Assert.assertTrue("A shorter word should weigh more than a longer one if both words match their concept names",
+		    dao.weighConceptWord(shorterWord) > dao.weighConceptWord(longerWord));
 	}
 	
 	/**
@@ -78,8 +82,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		fullySpecName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		fullySpecName.setLocalePreferred(true);
 		Assert.assertTrue(
-		    "A shorter word should weigh more than a longer one if both words are at the start of their concept names", dao
-		            .weighConceptWord(shorterWord) > dao.weighConceptWord(longerWord));
+		    "A shorter word should weigh more than a longer one if both words are at the start of their concept names",
+		    dao.weighConceptWord(shorterWord) > dao.weighConceptWord(longerWord));
 	}
 	
 	/**
@@ -109,8 +113,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		ConceptWord fullySpecWord = new ConceptWord("MY", c, fullySpecName, Locale.ENGLISH);
 		fullySpecName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		
-		Assert.assertTrue("A word for a fully specified name should weigh higher than that of a syonym", dao
-		        .weighConceptWord(fullySpecWord) > dao.weighConceptWord(synonymWord));
+		Assert.assertTrue("A word for a fully specified name should weigh higher than that of a syonym",
+		    dao.weighConceptWord(fullySpecWord) > dao.weighConceptWord(synonymWord));
 	}
 	
 	/**
@@ -132,8 +136,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		fullySpecName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		
 		Assert.assertTrue(
-		    "A word for a preferred fully specified name should weigh higher than that of a plain fully specified name", dao
-		            .weighConceptWord(prefFullSpecWord) > dao.weighConceptWord(fullySpecWord));
+		    "A word for a preferred fully specified name should weigh higher than that of a plain fully specified name",
+		    dao.weighConceptWord(prefFullSpecWord) > dao.weighConceptWord(fullySpecWord));
 	}
 	
 	/**
@@ -155,8 +159,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		prefName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		
 		Assert.assertTrue(
-		    "A word for a preferred fully specified name should weigh higher than that of a plain preferred name", dao
-		            .weighConceptWord(prefFullSpecWord) > dao.weighConceptWord(prefWord));
+		    "A word for a preferred fully specified name should weigh higher than that of a plain preferred name",
+		    dao.weighConceptWord(prefFullSpecWord) > dao.weighConceptWord(prefWord));
 	}
 	
 	/**
@@ -175,8 +179,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		ConceptWord fullySpecWord = new ConceptWord("MY", c, fullySpecName, Locale.ENGLISH);
 		fullySpecName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		
-		Assert.assertTrue("A word for a preferred name should weigh higher than that of a fully specified name", dao
-		        .weighConceptWord(prefWord) > dao.weighConceptWord(fullySpecWord));
+		Assert.assertTrue("A word for a preferred name should weigh higher than that of a fully specified name",
+		    dao.weighConceptWord(prefWord) > dao.weighConceptWord(fullySpecWord));
 	}
 	
 	/**
@@ -197,8 +201,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		longerName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		longerName.setLocalePreferred(true);
 		
-		Assert.assertTrue("A word for shorter concept name should weigh more than that of a longer concept name", dao
-		        .weighConceptWord(shorterNameWord) > dao.weighConceptWord(longerNameWord));
+		Assert.assertTrue("A word for shorter concept name should weigh more than that of a longer concept name",
+		    dao.weighConceptWord(shorterNameWord) > dao.weighConceptWord(longerNameWord));
 	}
 	
 	/**
@@ -216,8 +220,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		ConceptWord shortWord = new ConceptWord("MY", c, shortName, Locale.ENGLISH);
 		shortName.setConceptNameType(ConceptNameType.SHORT);
 		
-		Assert.assertTrue("A word for a synonym should weigh higher than that of a short name", dao
-		        .weighConceptWord(synonymWord) > dao.weighConceptWord(shortWord));
+		Assert.assertTrue("A word for a synonym should weigh higher than that of a short name",
+		    dao.weighConceptWord(synonymWord) > dao.weighConceptWord(shortWord));
 	}
 	
 	/**
@@ -236,8 +240,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		ConceptWord fullySpecWord = new ConceptWord("MY", c, fullySpecName, Locale.ENGLISH);
 		fullySpecName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		
-		Assert.assertTrue("A word for an index term should weigh higher than that of a fully specified name", dao
-		        .weighConceptWord(indexTermWord) > dao.weighConceptWord(fullySpecWord));
+		Assert.assertTrue("A word for an index term should weigh higher than that of a fully specified name",
+		    dao.weighConceptWord(indexTermWord) > dao.weighConceptWord(fullySpecWord));
 	}
 	
 	/**
@@ -256,8 +260,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		ConceptWord prefWord = new ConceptWord("MY", c, prefName, Locale.ENGLISH);
 		prefName.setLocalePreferred(true);
 		
-		Assert.assertTrue("A word for an index term should weigh higher than that of a preferred name", dao
-		        .weighConceptWord(indexTermWord) > dao.weighConceptWord(prefWord));
+		Assert.assertTrue("A word for an index term should weigh higher than that of a preferred name",
+		    dao.weighConceptWord(indexTermWord) > dao.weighConceptWord(prefWord));
 	}
 	
 	/**
@@ -279,8 +283,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		cn2.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		cn2.setLocalePreferred(true);
 		
-		Assert.assertTrue("A word closer to the start of its concept name should weigh more than one closer to the end", dao
-		        .weighConceptWord(word1) > dao.weighConceptWord(word2));
+		Assert.assertTrue("A word closer to the start of its concept name should weigh more than one closer to the end",
+		    dao.weighConceptWord(word1) > dao.weighConceptWord(word2));
 	}
 	
 	/**
@@ -301,8 +305,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		cn2.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		cn2.setLocalePreferred(true);
 		
-		Assert.assertTrue("A word matching the concept name should weigh more than other words that don't", dao
-		        .weighConceptWord(word1) > dao.weighConceptWord(word2));
+		Assert.assertTrue("A word matching the concept name should weigh more than other words that don't",
+		    dao.weighConceptWord(word1) > dao.weighConceptWord(word2));
 	}
 	
 	/**
@@ -351,5 +355,20 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		dao.updateConceptWord(concept);
 		
 		assertNotNull(dao.getConcept(5497));
+	}
+	
+	/**
+	 * @see {@link
+	 *      ConceptDAO#getConcepts(String,Locale,null,List<QConceptClass;>,List<QConceptDatatype;>)}
+	 */
+	@Test
+	@Verifies(value = "should not return concepts with matching names that are voided", method = "getConcepts(String,Locale,null,List<QConceptClass;>,List<QConceptDatatype;>)")
+	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() throws Exception {
+		Concept concept = dao.getConcept(7);
+		Context.getConceptService().updateConceptIndex(concept);
+		Assert.assertEquals(
+		    0,
+		    dao.getConcepts("VOIDED", Locale.ENGLISH, false, new ArrayList<ConceptClass>(), new ArrayList<ConceptDatatype>())
+		            .size());
 	}
 }
