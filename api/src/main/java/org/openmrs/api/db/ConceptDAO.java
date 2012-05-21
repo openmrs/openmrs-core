@@ -100,6 +100,7 @@ public interface ConceptDAO {
 	 * @param searchOnPhrase This puts wildcard characters around the concept name search criteria
 	 * @return List<Concept>
 	 * @throws DAOException
+	 * @should not return concepts with matching names that are voided
 	 */
 	public List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
 	                                 List<ConceptDatatype> datatypes) throws DAOException;
