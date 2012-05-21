@@ -107,7 +107,7 @@ public class RequireTag extends TagSupport {
 			if (userContext.isAuthenticated()) {
 				String referer = request.getHeader("Referer");
 				// If the user has just authenticated, but is still not authorized to see the page.
-				if (referer != null && referer.contains("login."))  {
+				if (referer != null && referer.contains("login.")) {
 					try {
 						httpResponse.sendRedirect(request.getContextPath()); // Redirect to the home page.
 						return SKIP_PAGE;
