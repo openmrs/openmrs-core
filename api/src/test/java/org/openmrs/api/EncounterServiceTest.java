@@ -1919,10 +1919,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		provider.setName("provider");
 		provider.setIdentifier("id1");
 		provider = Context.getProviderService().saveProvider(provider);
-				
+		
 		encounter.addProvider(role, provider);
 		encounterService.saveEncounter(encounter);
-
+		
 		assertEquals(1, encounter.getProvidersByRoles().size());
 		
 		encounterService.voidEncounter(encounter, "reason");

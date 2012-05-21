@@ -74,8 +74,8 @@ public class ShortPatientModel {
 				                : LocationUtility.getDefaultLocation()));
 			}
 			
-			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(activeIdentifiers),
-			    FactoryUtils.instantiateFactory(PatientIdentifier.class));
+			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(activeIdentifiers), FactoryUtils
+			        .instantiateFactory(PatientIdentifier.class));
 			
 			List<PersonAttributeType> viewableAttributeTypes = Context.getPersonService().getPersonAttributeTypes(
 			    PERSON_TYPE.PATIENT, ATTR_VIEW_TYPE.VIEWING);

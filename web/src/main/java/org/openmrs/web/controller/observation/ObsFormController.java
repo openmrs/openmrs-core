@@ -145,7 +145,7 @@ public class ObsFormController extends SimpleFormController {
 					if (obs.getConcept().isComplex()) {
 						if (request instanceof MultipartHttpServletRequest) {
 							InputStream complexDataInputStream = setComplexData(obs, request);
-								
+							
 							// the handler on the obs.concept is called with the given complex data
 							newlySavedObs = os.saveObs(obs, reason);
 							
@@ -291,8 +291,7 @@ public class ObsFormController extends SimpleFormController {
 			if (complexDataFile != null && !complexDataFile.isEmpty()) {
 				complexDataInputStream = complexDataFile.getInputStream();
 				
-				ComplexData complexData = new ComplexData(complexDataFile.getOriginalFilename(),
-				        complexDataInputStream);
+				ComplexData complexData = new ComplexData(complexDataFile.getOriginalFilename(), complexDataInputStream);
 				
 				obs.setComplexData(complexData);
 			}
