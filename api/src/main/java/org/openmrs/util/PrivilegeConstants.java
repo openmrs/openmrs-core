@@ -14,6 +14,7 @@
 package org.openmrs.util;
 
 import org.openmrs.annotation.AddOnStartup;
+import org.openmrs.annotation.HasAddOnStartupPrivileges;
 
 /**
  * Contains all privilege names and their descriptions. Some of privilege names may be marked with
@@ -22,6 +23,7 @@ import org.openmrs.annotation.AddOnStartup;
  * @see org.openmrs.annotation.AddOnStartup
  * @since 1.8
  */
+@HasAddOnStartupPrivileges
 public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to view concept entries")
@@ -312,24 +314,52 @@ public class PrivilegeConstants {
 	
 	public static final String PURGE_PATIENT_PROGRAMS = "Purge Patient Programs";
 	
+	/**
+	 * @deprecated Use org.openmrs.web.ApplicationPrivilegeConstants.DASHBOARD_OVERVIEW
+	 */
+	@Deprecated
 	@AddOnStartup(description = "Able to view the 'Overview' tab on the patient dashboard")
 	public static final String DASHBOARD_OVERVIEW = "Patient Dashboard - View Overview Section";
 	
+	/**
+	 * @deprecated Use org.openmrs.web.ApplicationPrivilegeConstants.DASHBOARD_REGIMEN
+	 */
+	@Deprecated
 	@AddOnStartup(description = "Able to view the 'Regimen' tab on the patient dashboard")
 	public static final String DASHBOARD_REGIMEN = "Patient Dashboard - View Regimen Section";
 	
+	/**
+	 * @deprecated Use org.openmrs.web.ApplicationPrivilegeConstants.DASHBOARD_ENCOUNTERS
+	 */
+	@Deprecated
 	@AddOnStartup(description = "Able to view the 'Encounters' tab on the patient dashboard")
 	public static final String DASHBOARD_ENCOUNTERS = "Patient Dashboard - View Encounters Section";
 	
+	/**
+	 * @deprecated Use org.openmrs.web.ApplicationPrivilegeConstants.DASHBOARD_DEMOGRAPHICS
+	 */
+	@Deprecated
 	@AddOnStartup(description = "Able to view the 'Demographics' tab on the patient dashboard")
 	public static final String DASHBOARD_DEMOGRAPHICS = "Patient Dashboard - View Demographics Section";
 	
+	/**
+	 * @deprecated Use org.openmrs.web.ApplicationPrivilegeConstants.DASHBOARD_GRAPHS
+	 */
+	@Deprecated
 	@AddOnStartup(description = "Able to view the 'Graphs' tab on the patient dashboard")
 	public static final String DASHBOARD_GRAPHS = "Patient Dashboard - View Graphs Section";
 	
+	/**
+	 * @deprecated Use org.openmrs.web.ApplicationPrivilegeConstants.DASHBOARD_FORMS
+	 */
+	@Deprecated
 	@AddOnStartup(description = "Able to view the 'Forms' tab on the patient dashboard")
 	public static final String DASHBOARD_FORMS = "Patient Dashboard - View Forms Section";
 	
+	/**
+	 * @deprecated Use org.openmrs.web.ApplicationPrivilegeConstants.DASHBOARD_SUMMARY
+	 */
+	@Deprecated
 	@AddOnStartup(description = "Able to view the 'Summary' tab on the patient dashboard")
 	public static final String DASHBOARD_SUMMARY = "Patient Dashboard - View Patient Summary";
 	
@@ -499,6 +529,10 @@ public class PrivilegeConstants {
 	
 	public static final String PURGE_VISIT_ATTRIBUTE_TYPES = "Purge Visit Attribute Types";
 	
+	/**
+	 * @deprecated Use org.openmrs.web.ApplicationPrivilegeConstants.DASHBOARD_VISITS
+	 */
+	@Deprecated
 	@AddOnStartup(description = "Able to view the 'Visits' tab on the patient dashboard")
 	public static final String DASHBOARD_VISITS = "Patient Dashboard - View Visits Section";
 	
