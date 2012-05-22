@@ -640,8 +640,8 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link PersonNameValidator#validatePersonName(PersonName,Errors,null,null)}
 	 */
 	@Test
-	@Verifies(value = "should not validate against regex for a blank names", method = "validatePersonName(PersonName,Errors,null,null)")
-	public void validatePersonName_shouldNotValidateAgainstRegexForABlankNames() throws Exception {
+	@Verifies(value = "should not validate against regex for blank names", method = "validatePersonName(PersonName,Errors,null,null)")
+	public void validatePersonName_shouldNotValidateAgainstRegexForBlankNames() throws Exception {
 		String regex = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
 		//the regex string should be set for the test to be valid

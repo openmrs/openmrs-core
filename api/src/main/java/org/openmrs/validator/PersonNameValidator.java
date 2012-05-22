@@ -114,7 +114,7 @@ public class PersonNameValidator implements Validator {
 	 * @should pass validation if PersonName.familyName2 is valid
 	 * @should pass validation if regex string is null
 	 * @should pass validation if regex string is empty
-	 * @should not validate against regex for a blank names
+	 * @should not validate against regex for blank names
 	 */
 	public void validatePersonName(PersonName personName, Errors errors, boolean arrayInd, boolean testInd) {
 		
