@@ -331,14 +331,6 @@ public class WebModuleUtil {
 				
 				try {
 					refreshWAC(servletContext, false, mod);
-					
-					try {
-						if (mod.getModuleActivator() != null)// if extends BaseModuleActivator
-							mod.getModuleActivator().started();
-					}
-					catch (Throwable t) {
-						log.warn("Unable to call module's Activator.started() method", t);
-					}
 					log.debug("Done Refreshing WAC");
 				}
 				catch (Exception e) {
