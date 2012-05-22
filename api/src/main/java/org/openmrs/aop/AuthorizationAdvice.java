@@ -15,14 +15,16 @@ package org.openmrs.aop;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-
+import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.PrivilegeListener;
 import org.openmrs.User;
 import org.openmrs.annotation.AuthorizedAnnotationAttributes;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.springframework.aop.MethodBeforeAdvice;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class provides the authorization AOP advice performed before every service layer method
@@ -33,7 +35,10 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	protected static final Log log = LogFactory.getLog(AuthorizationAdvice.class);
+	protected final Log log = LogFactory.getLog(AuthorizationAdvice.class);
+	
+	@Autowired
+	List<PrivilegeListener> privilegeListeners;
 	
 	/**
 	 * Allows us to check whether a user is authorized to access a particular method.
@@ -42,6 +47,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param args
 	 * @param target
 	 * @throws Throwable
+	 * @should notify listeners about checked privileges
 	 */
 	@SuppressWarnings( { "unchecked" })
 	public void before(Method method, Object[] args, Object target) throws Throwable {
@@ -58,32 +64,36 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 		}
 		
 		AuthorizedAnnotationAttributes attributes = new AuthorizedAnnotationAttributes();
-		Collection<String> attrs = attributes.getAttributes(method);
+		Collection<String> privileges = attributes.getAttributes(method);
 		boolean requireAll = attributes.getRequireAll(method);
 		
 		// Only execute if the "secure" method has authorization attributes
 		// Iterate through required privileges and return only if the user has
 		// one of them
-		if (attrs.size() > 0) {
-			for (String privilege : attrs) {
+		if (!privileges.isEmpty()) {
+			for (String privilege : privileges) {
 				
 				// skip null privileges
-				if (privilege == null || privilege.length() < 1)
+				if (privilege == null || privilege.isEmpty())
 					return;
 				
 				if (log.isDebugEnabled())
 					log.debug("User has privilege " + privilege + "? " + Context.hasPrivilege(privilege));
 				
 				if (Context.hasPrivilege(privilege)) {
-					if (requireAll == false) {
+					notifyPrivilegeListeners(user, privilege, true);
+					if (!requireAll) {
 						// if not all required, the first one that they have
 						// causes them to "pass"
 						return;
 					}
-				} else if (requireAll == true) {
-					// if all are required, the first miss causes them
-					// to "fail"
-					throwUnauthorized(user, method, privilege);
+				} else {
+					notifyPrivilegeListeners(user, privilege, false);
+					if (requireAll) {
+						// if all are required, the first miss causes them
+						// to "fail"
+						throwUnauthorized(user, method, privilege);
+					}
 				}
 			}
 			
@@ -91,7 +101,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 				// If there's no match, then we know there are privileges and
 				// that the user didn't have any of them. The user is not
 				// authorized to access the method
-				throwUnauthorized(user, method, attrs);
+				throwUnauthorized(user, method, privileges);
 			}
 			
 		} else if (attributes.hasAuthorizedAnnotation(method)) {
@@ -99,6 +109,12 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 			// the user be authenticated
 			if (Context.isAuthenticated() == false)
 				throwUnauthorized(user, method);
+		}
+	}
+	
+	protected void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
+		for (PrivilegeListener privilegeListener : privilegeListeners) {
+			privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
 		}
 	}
 	
