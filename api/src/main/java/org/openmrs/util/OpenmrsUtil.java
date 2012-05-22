@@ -92,6 +92,7 @@ import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
 import org.openmrs.annotation.AddOnStartup;
+import org.openmrs.annotation.HasAddOnStartupPrivileges;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
@@ -418,23 +419,28 @@ public class OpenmrsUtil {
 	public static Map<String, String> getCorePrivileges() {
 		Map<String, String> corePrivileges = new HashMap<String, String>();
 		
-		Field flds[] = PrivilegeConstants.class.getDeclaredFields();
-		for (Field fld : flds) {
-			String fieldValue = null;
-			
-			AddOnStartup privilegeAnnotation = fld.getAnnotation(AddOnStartup.class);
-			if (null == privilegeAnnotation)
-				continue;
-			if (!privilegeAnnotation.core())
-				continue;
-			
-			try {
-				fieldValue = (String) fld.get(null);
+		// TODO getCorePrivileges() is called so so many times that getClassesWithAnnotation() better do some catching.
+		List<Class<?>> classes = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(HasAddOnStartupPrivileges.class);
+
+		for (Class cls : classes) {
+			Field flds[] = cls.getDeclaredFields();
+			for (Field fld : flds) {
+				String fieldValue = null;
+				
+				AddOnStartup privilegeAnnotation = fld.getAnnotation(AddOnStartup.class);
+				if (null == privilegeAnnotation)
+					continue;
+				if (!privilegeAnnotation.core())
+					continue;
+				
+				try {
+					fieldValue = (String) fld.get(null);
+				}
+				catch (IllegalAccessException e) {
+					log.error("Field is inaccessible.", e);
+				}
+				corePrivileges.put(fieldValue, privilegeAnnotation.description());
 			}
-			catch (IllegalAccessException e) {
-				log.error("Field is inaccessible.", e);
-			}
-			corePrivileges.put(fieldValue, privilegeAnnotation.description());
 		}
 		
 		// always add the module core privileges back on
