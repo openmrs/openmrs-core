@@ -37,7 +37,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 */
 	protected final Log log = LogFactory.getLog(AuthorizationAdvice.class);
 	
-	@Autowired
+	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
 	
 	/**
@@ -113,8 +113,10 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	}
 	
 	protected void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
-		for (PrivilegeListener privilegeListener : privilegeListeners) {
-			privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
+		if (privilegeListeners != null) {
+			for (PrivilegeListener privilegeListener : privilegeListeners) {
+				privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
+			}
 		}
 	}
 	
