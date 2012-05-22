@@ -5968,23 +5968,24 @@
      	<validCheckSum>3:d0da8b0b930623f6c62e2bd02bc2523b</validCheckSum>
      	<validCheckSum><comment>Changing identifier from person.person_id to user.system_id</comment>3:cccc02519a766bd8fde048cea13d307c</validCheckSum>
      	<validCheckSum><comment>Changing now() to CURRENT_TIMESTAMP</comment>3:a70d8897d05364a0a4398f2b90542fd4</validCheckSum>
+     	<validCheckSum><comment>Copying user.retired to person.voided so that generated providers for retired users are retired</comment>3:f338c9ea12ce38b0695db335d983b4e1</validCheckSum>
      	<preConditions onFail="MARK_RAN">
  			<columnExists tableName="encounter" columnName="provider_id"/>
  		</preConditions>
  		<comment>Creating providers for persons from the encounter table</comment>
  		<sql>
- 			insert into provider(person_id, identifier, creator, date_created, retired, uuid)
- 				select distinct person.person_id, person.uuid, 1, CURRENT_TIMESTAMP, person.voided, person.uuid 
+ 			insert into provider(person_id, identifier, creator, date_created, retired, retired_by, date_retired, retire_reason, uuid)
+ 				select distinct person.person_id, person.uuid, 1, CURRENT_TIMESTAMP, user.retired, user.retired_by, user.date_retired, user.retire_reason, person.uuid 
  				from person as person
  					inner join encounter as encounter on encounter.provider_id = person.person_id
  					left join users as user on user.person_id = person.person_id
  				where user.person_id is null and encounter.provider_id not in (select person_id from provider);
  				
- 			insert into provider(person_id, identifier, creator, date_created, retired, uuid)
- 				select distinct person.person_id, user.system_id, 1, CURRENT_TIMESTAMP, person.voided, person.uuid
+ 			insert into provider(person_id, identifier, creator, date_created, retired, retired_by, date_retired, retire_reason, uuid)
+ 				select distinct person.person_id, user.system_id, 1, CURRENT_TIMESTAMP, user.retired, user.retired_by, user.date_retired, user.retire_reason, person.uuid
  				from person as person
  					inner join encounter as encounter on encounter.provider_id = person.person_id
- 					left join (select max(users.user_id) as user_id, users.system_id, users.person_id 
+ 					left join (select max(users.user_id) as user_id, users.system_id, users.person_id, users.retired, users.retired_by, users.date_retired, users.retire_reason 
  							from users as users group by users.person_id) as user 
  						on person.person_id = user.person_id
  				where user.user_id is not null and encounter.provider_id not in (select person_id from provider);
