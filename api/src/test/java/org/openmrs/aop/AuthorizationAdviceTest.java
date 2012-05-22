@@ -31,6 +31,12 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "notify listeners about checked privileges", method = "before(Method, Object[], Object)")
 	public void before_shouldNotifyListenersAboutCheckedPrivileges() {
+		listener1.hasPrivileges.clear();
+		listener1.lacksPrivileges.clear();
+		
+		listener2.hasPrivileges.clear();
+		listener2.lacksPrivileges.clear();
+		
 		Concept concept = Context.getConceptService().getConcept(3);
 		
 		Assert.assertArrayEquals("listener 1 get concept", new String[] { "View Concepts" }, listener1.hasPrivileges
