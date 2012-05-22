@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -315,14 +315,6 @@ public class WebModuleUtil {
 				
 				try {
 					refreshWAC(servletContext, false, mod);
-					
-					try {
-						if (mod.getModuleActivator() != null)// if extends BaseModuleActivator
-							mod.getModuleActivator().started();
-					}
-					catch (Throwable t) {
-						log.warn("Unable to call module's Activator.started() method", t);
-					}
 					log.debug("Done Refreshing WAC");
 				}
 				catch (Exception e) {
