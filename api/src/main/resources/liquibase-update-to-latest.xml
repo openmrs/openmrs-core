@@ -6497,5 +6497,220 @@
 		</sql>
 	</changeSet>
 	
+	<changeSet id="2-role-assign-new-api-privileges-to-renamed-ones" author="dkayiwa">
+		<comment>Assigning the new API-level privileges to roles that used to have the renamed privileges</comment>
+		<sql>
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concepts' from role_privilege rp
+			where rp.privilege = 'View Concepts'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concepts' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Proposals' from role_privilege rp
+			where rp.privilege = 'View Concept Proposals'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Proposals' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Users' from role_privilege rp
+			where rp.privilege = 'View Users'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Users' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Encounters' from role_privilege rp
+			where rp.privilege = 'View Encounters'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Encounters' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Encounter Types' from role_privilege rp
+			where rp.privilege = 'View Encounter Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Encounter Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Locations' from role_privilege rp
+			where rp.privilege = 'View Locations'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Locations' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Observations' from role_privilege rp
+			where rp.privilege = 'View Observations'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Observations' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Patients' from role_privilege rp
+			where rp.privilege = 'View Patients'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patients' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Patient Identifiers' from role_privilege rp
+			where rp.privilege = 'View Patient Identifiers'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patient Identifiers' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Patient Cohorts' from role_privilege rp
+			where rp.privilege = 'View Patient Cohorts'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patient Cohorts' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Orders' from role_privilege rp
+			where rp.privilege = 'View Orders'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Orders' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Forms' from role_privilege rp
+			where rp.privilege = 'View Forms'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Forms' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Identifier Types' from role_privilege rp
+			where rp.privilege = 'View Identifier Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Identifier Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Classes' from role_privilege rp
+			where rp.privilege = 'View Concept Classes'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Classes' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Datatypes' from role_privilege rp
+			where rp.privilege = 'View Concept Datatypes'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Datatypes' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Privileges' from role_privilege rp
+			where rp.privilege = 'View Privileges'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Privileges' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Roles' from role_privilege rp
+			where rp.privilege = 'View Roles'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Roles' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Field Types' from role_privilege rp
+			where rp.privilege = 'View Field Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Field Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Order Types' from role_privilege rp
+			where rp.privilege = 'View Order Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Order Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Relationship Types' from role_privilege rp
+			where rp.privilege = 'View Relationship Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Relationship Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Sources' from role_privilege rp
+			where rp.privilege = 'View Concept Sources'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Sources' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Map Types' from role_privilege rp
+			where rp.privilege = 'View Concept Map Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Map Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Reference Terms' from role_privilege rp
+			where rp.privilege = 'View Concept Reference Terms'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Reference Terms' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Programs' from role_privilege rp
+			where rp.privilege = 'View Programs'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Programs' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Patient Programs' from role_privilege rp
+			where rp.privilege = 'View Patient Programs'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patient Programs' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Global Properties' from role_privilege rp
+			where rp.privilege = 'View Global Properties'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Global Properties' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Person Attribute Types' from role_privilege rp
+			where rp.privilege = 'View Person Attribute Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Person Attribute Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get People' from role_privilege rp
+			where rp.privilege = 'View People'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get People' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Relationships' from role_privilege rp
+			where rp.privilege = 'View Relationships'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Relationships' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Database Changes' from role_privilege rp
+			where rp.privilege = 'View Database Changes'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Database Changes' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Problems' from role_privilege rp
+			where rp.privilege = 'View Problems'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Problems' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Allergies' from role_privilege rp
+			where rp.privilege = 'View Allergies'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Allergies' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get HL7 Source' from role_privilege rp
+			where rp.privilege = 'View HL7 Source'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Source' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get HL7 Inbound Queue' from role_privilege rp
+			where rp.privilege = 'View HL7 Inbound Queue'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Inbound Queue' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get HL7 Inbound Archive' from role_privilege rp
+			where rp.privilege = 'View HL7 Inbound Archive'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Inbound Archive' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get HL7 Inbound Exception' from role_privilege rp
+			where rp.privilege = 'View HL7 Inbound Exception'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Inbound Exception' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Visit Types' from role_privilege rp
+			where rp.privilege = 'View Visit Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Visit Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Visits' from role_privilege rp
+			where rp.privilege = 'View Visits'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Visits' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Visit Attribute Types' from role_privilege rp
+			where rp.privilege = 'View Visit Attribute Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Visit Attribute Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Location Attribute Types' from role_privilege rp
+			where rp.privilege = 'View Location Attribute Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Location Attribute Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Providers' from role_privilege rp
+			where rp.privilege = 'View Providers'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Providers' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Encounter Roles' from role_privilege rp
+			where rp.privilege = 'View Encounter Roles'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Encounter Roles' and rp2.role=rp.role);
+		</sql>
+	</changeSet>
+	
 </databaseChangeLog>
 
