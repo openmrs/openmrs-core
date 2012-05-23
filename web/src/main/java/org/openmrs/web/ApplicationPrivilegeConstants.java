@@ -49,4 +49,22 @@ public class ApplicationPrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to view the 'Visits' tab on the patient dashboard")
 	public static final String DASHBOARD_VISITS = "Patient Dashboard - View Visits Section";
+	
+	@AddOnStartup(description = "Able to view the 'Patient Flags' portlet on the patient dashboard's overview tab")
+	public static final String DASHBOARD_OVERVIEW_PATIENT_FLAGS = "Patient Dashboard Overview - View Patient Flags";
+	
+	@AddOnStartup(description = "Able to view the 'Patient Actions' portlet on the patient dashboard's overview tab")
+	public static final String DASHBOARD_OVERVIEW_PATIENT_ACTIONS = "Patient Dashboard Overview - View Patient Actions";
+	
+	@AddOnStartup(description = "Able to view the 'Programs' portlet on the patient dashboard's overview tab")
+	public static final String DASHBOARD_OVERVIEW_PROGRAMS = "Patient Dashboard Overview - View Programs";
+	
+	@AddOnStartup(description = "Able to view the 'Relationships' portlet on the patient dashboard's overview tab")
+	public static final String DASHBOARD_OVERVIEW_RELATIONSHIPS = "Patient Dashboard Overview - View Relationships";
+	
+	@AddOnStartup(description = "Able to view the 'Allergies' portlet on the patient dashboard's overview tab")
+	public static final String DASHBOARD_OVERVIEW_ALLERGIES = "Patient Dashboard Overview - View Allergies";
+	
+	@AddOnStartup(description = "Able to view the 'Problem List' portlet on the patient dashboard's overview tab")
+	public static final String DASHBOARD_OVERVIEW_PROBLEM_LIST = "Patient Dashboard Overview - View Problem List";
 }
