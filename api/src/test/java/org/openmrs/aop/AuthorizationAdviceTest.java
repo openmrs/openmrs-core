@@ -39,9 +39,9 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 		
 		Concept concept = Context.getConceptService().getConcept(3);
 		
-		Assert.assertArrayEquals("listener 1 get concept", new String[] { "View Concepts" }, listener1.hasPrivileges
+		Assert.assertArrayEquals("listener 1 get concept", new String[] { "Get Concepts" }, listener1.hasPrivileges
 		        .toArray());
-		Assert.assertArrayEquals("listener 2 get concept", new String[] { "View Concepts" }, listener2.hasPrivileges
+		Assert.assertArrayEquals("listener 2 get concept", new String[] { "Get Concepts" }, listener2.hasPrivileges
 		        .toArray());
 		Assert.assertEquals(0, listener1.lacksPrivileges.size());
 		Assert.assertEquals(0, listener2.lacksPrivileges.size());
@@ -52,10 +52,10 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 		Context.getConceptService().saveConcept(concept);
 		
 		Assert.assertArrayEquals("listener 1 save concept: " + listener1.hasPrivileges.toString(), new String[] {
-		        "Manage Concepts", "View Concepts", "View Observations", "View Concepts" }, listener1.hasPrivileges
+		        "Manage Concepts", "Get Concepts", "Get Observations", "Get Concepts" }, listener1.hasPrivileges
 		        .toArray());
 		Assert.assertArrayEquals("listener 2 save concept: " + listener2.hasPrivileges.toString(), new String[] {
-		        "Manage Concepts", "View Concepts", "View Observations", "View Concepts" }, listener2.hasPrivileges
+		        "Manage Concepts", "Get Concepts", "Get Observations", "Get Concepts" }, listener2.hasPrivileges
 		        .toArray());
 		Assert.assertEquals(0, listener1.lacksPrivileges.size());
 		Assert.assertEquals(0, listener2.lacksPrivileges.size());
