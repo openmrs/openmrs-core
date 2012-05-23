@@ -34,9 +34,11 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.PrivilegeListener;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
@@ -47,9 +49,12 @@ import org.openmrs.util.RoleConstants;
  */
 public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
-	private static Log log = LogFactory.getLog(UserServiceImpl.class);
+	protected final Log log = LogFactory.getLog(UserServiceImpl.class);
 	
 	protected UserDAO dao;
+	
+	@Autowired(required = false)
+	List<PrivilegeListener> privilegeListeners;
 	
 	public UserServiceImpl() {
 	}
@@ -617,6 +622,18 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			return dao.getUsers(name, new Vector<Role>(), includeRetired, start, length);
 		
 		return dao.getUsers(name, new ArrayList<Role>(allRoles), includeRetired, start, length);
+	}
+	
+	/**
+	 * @see UserService#notifyPrivilegeListeners(User, String, boolean)  
+	 */
+	@Override
+	public void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
+		if (privilegeListeners != null) {
+			for (PrivilegeListener privilegeListener : privilegeListeners) {
+				privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
+			}
+		}
 	}
 	
 }

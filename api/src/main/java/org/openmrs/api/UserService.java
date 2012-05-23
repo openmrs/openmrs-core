@@ -17,10 +17,13 @@ import java.util.List;
 
 import org.openmrs.Person;
 import org.openmrs.Privilege;
+import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
@@ -628,4 +631,16 @@ public interface UserService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired);
 	
+	/**
+	 * Notifies privilege listener beans about any privilege check.
+	 * <p>
+	 * It is called by {@link UserContext#hasPrivilege(java.lang.String)}.
+	 * 
+	 * @see PrivilegeListener
+	 * @param user the authenticated user or <code>null</code> if not authenticated
+	 * @param privilege the checked privilege
+	 * @param hasPrivilege <code>true</code> if the authenticated user has the required privilege or if it is a proxy privilege
+	 * @since 1.10
+	 */
+	public void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege);
 }

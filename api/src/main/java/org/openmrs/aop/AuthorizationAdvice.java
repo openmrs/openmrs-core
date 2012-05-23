@@ -15,16 +15,13 @@ package org.openmrs.aop;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.PrivilegeListener;
 import org.openmrs.User;
 import org.openmrs.annotation.AuthorizedAnnotationAttributes;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.springframework.aop.MethodBeforeAdvice;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class provides the authorization AOP advice performed before every service layer method
@@ -36,9 +33,6 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * Logger for this class and subclasses
 	 */
 	protected final Log log = LogFactory.getLog(AuthorizationAdvice.class);
-	
-	@Autowired(required = false)
-	List<PrivilegeListener> privilegeListeners;
 	
 	/**
 	 * Allows us to check whether a user is authorized to access a particular method.
@@ -81,14 +75,12 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 					log.debug("User has privilege " + privilege + "? " + Context.hasPrivilege(privilege));
 				
 				if (Context.hasPrivilege(privilege)) {
-					notifyPrivilegeListeners(user, privilege, true);
 					if (!requireAll) {
 						// if not all required, the first one that they have
 						// causes them to "pass"
 						return;
 					}
 				} else {
-					notifyPrivilegeListeners(user, privilege, false);
 					if (requireAll) {
 						// if all are required, the first miss causes them
 						// to "fail"
@@ -109,14 +101,6 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 			// the user be authenticated
 			if (Context.isAuthenticated() == false)
 				throwUnauthorized(user, method);
-		}
-	}
-	
-	protected void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
-		if (privilegeListeners != null) {
-			for (PrivilegeListener privilegeListener : privilegeListeners) {
-				privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
-			}
 		}
 	}
 	
