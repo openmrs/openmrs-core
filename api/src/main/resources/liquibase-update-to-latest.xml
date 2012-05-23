@@ -6467,5 +6467,35 @@
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 	
+	<changeSet id="1-grant-new-dashboard-overview-tab-app-privileges" author="dkayiwa">
+		<comment>Granting the new dashboard overview tab application privileges</comment>
+		<sql>
+			insert into role_privilege (role, privilege) 
+			select role, 'Patient Dashboard Overview - View Patient Actions' from role_privilege rp
+			where rp.privilege = 'Patient Dashboard - View Overview Section'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard Overview - View Patient Actions' and rp2.role=rp.role);
+		
+			insert into role_privilege (role, privilege) 
+			select role, 'Patient Dashboard Overview - View Programs' from role_privilege rp
+			where rp.privilege = 'View Patient Programs'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard Overview - View Programs' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Patient Dashboard Overview - View Relationships' from role_privilege rp
+			where rp.privilege = 'View Relationships'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard Overview - View Relationships' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Patient Dashboard Overview - View Allergies' from role_privilege rp
+			where rp.privilege = 'View Allergies'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard Overview - View Allergies' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Patient Dashboard Overview - View Problem List' from role_privilege rp
+			where rp.privilege = 'View Problems'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard Overview - View Problem List' and rp2.role=rp.role);
+		</sql>
+	</changeSet>
+	
 </databaseChangeLog>
 
