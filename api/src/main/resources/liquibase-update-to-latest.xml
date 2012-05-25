@@ -6468,6 +6468,251 @@
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 	
+	<changeSet id="10-insert-new-app-privileges" author="dkayiwa">
+		<comment>Inserting the new application privileges</comment>
+		<sql>
+			insert into privilege (privilege, description) 
+			select 'Patient Dashboard Overview - View Patient Actions', 'Able to view the Patient Actions portlet on the patient dashboard overview tab'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Patient Actions') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Patient Dashboard Overview - View Programs', 'Able to view the Programs portlet on the patient dashboard overview tab'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Programs') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Patient Dashboard Overview - View Relationships', 'Able to view the Relationships portlet on the patient dashboard overview tab'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Relationships') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Patient Dashboard Overview - View Allergies', 'Able to view the Allergies portlet on the patient dashboard overview tab'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Allergies') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Patient Dashboard Overview - View Problem List', 'Able to view the Problem List portlet on the patient dashboard overview tab'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Problem List') limit 1;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="11-insert-new-api-privileges" author="dkayiwa">
+		<comment>Inserting the new API privileges</comment>
+		<sql>
+			insert into privilege (privilege, description) 
+			select 'Get Concepts', 'Able to get concept entries'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concepts') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Concept Proposals', 'Able to get concept proposals to the system'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Proposals') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Users', 'Able to get users in OpenMRS'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Users') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Encounters', 'Able to get patient encounters'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Encounters') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Encounter Types', 'Able to get encounter types'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Encounter Types') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Locations', 'Able to get locations'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Locations') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Observations', 'Able to get patient observations'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Observations') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Patients', 'Able to get patients'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Patients') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Patient Identifiers', 'Able to get patient identifiers'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Patient Identifiers') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Patient Cohorts', 'Able to get patient cohorts'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Patient Cohorts') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Orders', 'Able to get orders'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Orders') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Forms', 'Able to get forms'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Forms') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Identifier Types', 'Able to get patient identifier types'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Identifier Types') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Concept Classes', 'Able to get concept classes'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Classes') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Concept Datatypes', 'Able to get concept datatypes'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Datatypes') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Privileges', 'Able to get user privileges'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Privileges') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Roles', 'Able to get user roles'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Roles') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Field Types', 'Able to get field types'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Field Types') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Order Types', 'Able to get order types'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Order Types') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Relationship Types', 'Able to get relationship types'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Relationship Types') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Concept Sources', 'Able to get concept sources'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Sources') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Concept Map Types', 'Able to get concept map types'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Map Types') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Concept Reference Terms', 'Able to get concept reference terms'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Reference Terms') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Programs', 'Able to get patient programs'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Programs') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Patient Programs', 'Able to get which programs that patients are in'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Patient Programs') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Global Properties', 'Able to get global properties on the administration screen'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Global Properties') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Person Attribute Types', 'Able to get person attribute types'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Person Attribute Types') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get People', 'Able to get person objects'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get People') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Relationships', 'Able to get relationships'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Relationships') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Database Changes', 'Able to get database changes from the admin screen'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Database Changes') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Problems', 'Able to get problems'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Problems') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Allergies', 'Able to get allergies'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Allergies') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get HL7 Source', 'Able to get an HL7 Source'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get HL7 Source') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get HL7 Inbound Queue', 'Able to get an HL7 Queue item'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Queue') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get HL7 Inbound Archive', 'Able to get an HL7 archive item'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Archive') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get HL7 Inbound Exception', 'Able to get an HL7 error item'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Exception') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Visit Types', 'Able to get visit types'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Visit Types') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Visits', 'Able to get visits'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Visits') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Visit Attribute Types', 'Able to get visit attribute types'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Visit Attribute Types') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Location Attribute Types', 'Able to get location attribute types'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Location Attribute Types') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Providers', 'Able to get Providers'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Providers') limit 1;
+			
+			insert into privilege (privilege, description) 
+			select 'Get Encounter Roles', 'Able to get encounter roles'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Encounter Roles') limit 1;
+		</sql>
+	</changeSet>
+	
 	<changeSet id="1-grant-new-dashboard-overview-tab-app-privileges" author="dkayiwa">
 		<comment>Granting the new dashboard overview tab application privileges</comment>
 		<sql>
@@ -6712,6 +6957,7 @@
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Encounter Roles' and rp2.role=rp.role);
 		</sql>
 	</changeSet>
+	
 	
 </databaseChangeLog>
 
