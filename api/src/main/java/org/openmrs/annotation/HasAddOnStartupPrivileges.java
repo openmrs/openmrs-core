@@ -20,7 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
  * Annotation used to show that a class has privileges to add on startup.
  * For each privilege you want to add on startup, use the @AddOnStartup
