@@ -421,7 +421,7 @@ public class OpenmrsUtil {
 		
 		// TODO getCorePrivileges() is called so so many times that getClassesWithAnnotation() better do some catching.
 		List<Class<?>> classes = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(HasAddOnStartupPrivileges.class);
-
+		
 		for (Class cls : classes) {
 			Field flds[] = cls.getDeclaredFields();
 			for (Field fld : flds) {

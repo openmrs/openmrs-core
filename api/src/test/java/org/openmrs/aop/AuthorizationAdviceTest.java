@@ -52,11 +52,9 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 		Context.getConceptService().saveConcept(concept);
 		
 		Assert.assertArrayEquals("listener 1 save concept: " + listener1.hasPrivileges.toString(), new String[] {
-		        "Manage Concepts", "Get Concepts", "Get Observations", "Get Concepts" }, listener1.hasPrivileges
-		        .toArray());
+		        "Manage Concepts", "Get Concepts", "Get Observations", "Get Concepts" }, listener1.hasPrivileges.toArray());
 		Assert.assertArrayEquals("listener 2 save concept: " + listener2.hasPrivileges.toString(), new String[] {
-		        "Manage Concepts", "Get Concepts", "Get Observations", "Get Concepts" }, listener2.hasPrivileges
-		        .toArray());
+		        "Manage Concepts", "Get Concepts", "Get Observations", "Get Concepts" }, listener2.hasPrivileges.toArray());
 		Assert.assertEquals(0, listener1.lacksPrivileges.size());
 		Assert.assertEquals(0, listener2.lacksPrivileges.size());
 	}
