@@ -22,6 +22,7 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
 import org.openmrs.util.OpenmrsSecurityManager;
+import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
 /**
  * This class allows certain tasks to run with elevated privileges. Primary use is scheduling and
@@ -37,15 +38,27 @@ public class Daemon {
 	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
 	
 	/**
+	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
+	 */
+	public static Module startModule(Module module) throws ModuleException {
+		return startModule(module, false, null);
+	}
+	
+	/**
 	 * This method should not be called directly. The {@link ModuleFactory#startModule(Module)}
 	 * method uses this to start the given module in a new thread that is authenticated as the
-	 * daemon user
+	 * daemon user. <br/>
+	 * If a non null application context is passed in, it gets refreshed to make the module's
+	 * services available
 	 * 
 	 * @param module the module to start
+	 * @param isOpenmrsStartup Specifies whether this module is being started at application startup
+	 *            or not
+	 * @param applicationContext the spring application context instance to refresh
 	 * @returns the module returned from {@link ModuleFactory#startModuleInternal(Module)}
 	 */
-	public static Module startModule(final Module module) throws ModuleException {
-		
+	public static Module startModule(final Module module, final boolean isOpenmrsStartup,
+	        final AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
 		// create a new thread and execute that task in it
 		DaemonThread startModuleThread = new DaemonThread() {
 			
@@ -54,7 +67,7 @@ public class Daemon {
 				isDaemonThread.set(true);
 				try {
 					Context.openSession();
-					returnedObject = ModuleFactory.startModuleInternal(module);
+					returnedObject = ModuleFactory.startModuleInternal(module, isOpenmrsStartup, applicationContext);
 				}
 				catch (Throwable t) {
 					exceptionThrown = t;
@@ -83,7 +96,6 @@ public class Daemon {
 		}
 		
 		return (Module) startModuleThread.returnedObject;
-		
 	}
 	
 	/**
