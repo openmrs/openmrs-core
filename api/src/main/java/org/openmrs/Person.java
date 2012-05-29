@@ -628,13 +628,14 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * address doesn't exist already.
 	 * 
 	 * @param address
+	 * @should not add a person address with blank fields
 	 */
 	public void addAddress(PersonAddress address) {
 		if (address != null) {
 			address.setPerson(this);
 			if (addresses == null)
 				addresses = new TreeSet<PersonAddress>();
-			if (!OpenmrsUtil.collectionContains(addresses, address))
+			if (!OpenmrsUtil.collectionContains(addresses, address) && !address.isBlank())
 				addresses.add(address);
 		}
 	}
