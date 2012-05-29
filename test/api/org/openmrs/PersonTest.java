@@ -517,6 +517,23 @@ public class PersonTest extends BaseContextSensitiveTest {
 		// make sure the new attribute effectively voided the original
 		Assert.assertTrue("The original attribute is not voided",
 		    ((PersonAttribute) p.getAttributes().toArray()[0]).isVoided());
-
+		
+	}
+	
+	/**
+	 * @see {@link Person#addAddress(PersonAddress)}
+	 */
+	@Test
+	@Verifies(value = "should not add a person address with blank fields", method = "addAddress(PersonAddress)")
+	public void addAddress_shouldNotAddAPersonAddressWithBlankFields() throws Exception {
+		Person p = new Person();
+		PersonAddress pa1 = new PersonAddress();
+		pa1.setAddress1("address1");
+		p.addAddress(pa1);
+		PersonAddress pa2 = new PersonAddress();
+		pa2.setAddress1("");
+		p.addAddress(pa2);
+		
+		Assert.assertEquals(1, p.getAddresses().size());
 	}
 }
