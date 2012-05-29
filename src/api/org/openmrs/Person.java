@@ -158,7 +158,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should not equal person objects when one has null person id
 	 */
 	@Override
-    public boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (obj instanceof Person) {
 			Person person = (Person) obj;
 			
@@ -178,7 +178,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should get hash code with null attributes
 	 */
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		if (this.getPersonId() == null)
 			return super.hashCode();
 		return this.getPersonId().hashCode();
@@ -630,13 +630,14 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * address doesn't exist already.
 	 * 
 	 * @param address
+	 * @should not add a person address with blank fields
 	 */
 	public void addAddress(PersonAddress address) {
 		if (address != null) {
 			address.setPerson(this);
 			if (addresses == null)
 				addresses = new TreeSet<PersonAddress>();
-			if (!OpenmrsUtil.collectionContains(addresses, address))
+			if (!OpenmrsUtil.collectionContains(addresses, address) && !address.isBlank())
 				addresses.add(address);
 		}
 	}
@@ -906,7 +907,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated use {@link UserService#getUsersByPerson(Person, boolean)}
 	 */
 	@Deprecated
-    public boolean isUser() {
+	public boolean isUser() {
 		return false;
 	}
 
@@ -914,7 +915,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-    public String toString() {
+	public String toString() {
 		return "Person(personId=" + personId + ")";
 	}
 	

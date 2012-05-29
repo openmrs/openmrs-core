@@ -16,6 +16,7 @@ package org.openmrs;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
@@ -82,6 +83,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:" + getCityVillage() + ", sp:" + getStateProvince()
 		        + ", c:" + getCountry() + ", cd:" + getCountyDistrict() + ", nc:" + getNeighborhoodCell() + ", pc:"
@@ -96,6 +98,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @return boolean true/false whether or not they are the same objects
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof PersonAddress) {
 			PersonAddress p = (PersonAddress) obj;
@@ -155,6 +158,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
 		if (this.getPersonAddressId() == null)
 			return super.hashCode();
@@ -168,6 +172,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * 
 	 * @return New PersonAddress object
 	 */
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();
@@ -399,9 +404,13 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 *         non-null
 	 */
 	public boolean isBlank() {
-		return getAddress1() == null && getAddress2() == null && getCityVillage() == null && getStateProvince() == null
-		        && getCountry() == null && getCountyDistrict() == null && getNeighborhoodCell() == null
-		        && getPostalCode() == null && getLatitude() == null && getLongitude() == null;
+		return StringUtils.isBlank(getAddress1()) && StringUtils.isBlank(getAddress2())
+		        && StringUtils.isBlank(getAddress3()) && StringUtils.isBlank(getAddress4())
+		        && StringUtils.isBlank(getAddress5()) && StringUtils.isBlank(getAddress6())
+		        && StringUtils.isBlank(getCityVillage()) && StringUtils.isBlank(getStateProvince())
+		        && StringUtils.isBlank(getCountry()) && StringUtils.isBlank(getCountyDistrict())
+		        && StringUtils.isBlank(getPostalCode()) && StringUtils.isBlank(getLatitude())
+		        && StringUtils.isBlank(getLongitude());
 	}
 	
 	/**
