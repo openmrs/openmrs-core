@@ -54,7 +54,7 @@ public class PatientVisitsPortletController extends PortletController {
 		// determine whether it's need to show disclaimer on jsp page or not
 		// as current user does not have enough permissions to view at least one
 		// type of encounters
-		model.put("showDisclaimer", Context.getEncounterService().canViewAllEncounterTypes(Context.getAuthenticatedUser()));
+		model.put("showDisclaimer", !Context.getEncounterService().canViewAllEncounterTypes(Context.getAuthenticatedUser()));
 	}
 	
 }
