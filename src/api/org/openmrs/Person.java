@@ -35,9 +35,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * A Person in the system. This can be either a small person stub, or indicative of an actual
- * Patient in the system. This class holds the generic person things that both the stubs
- * and patients share. Things like birthdate, names, addresses, and attributes are all generified
- * into the person table (and hence this super class)
+ * Patient in the system. This class holds the generic person things that both the stubs and
+ * patients share. Things like birthdate, names, addresses, and attributes are all generified into
+ * the person table (and hence this super class)
  * 
  * @see org.openmrs.Patient
  */
@@ -85,7 +85,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	private String personVoidReason;
 	
 	private boolean isPatient;
-		
+
 	/**
 	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br/>
 	 * <br/>
@@ -157,7 +157,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should equal person objects with no person id
 	 * @should not equal person objects when one has null person id
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof Person) {
 			Person person = (Person) obj;
 			
@@ -176,7 +177,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should have different hash code when not equal
 	 * @should get hash code with null attributes
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getPersonId() == null)
 			return super.hashCode();
 		return this.getPersonId().hashCode();
@@ -735,11 +737,11 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to calculate this person's age based on the birthdate
-	 * For a person who lived 1990 to 2000, age would be -5 in 1985, 5 in 1995, 10 in 2000, and 10 2010.
-     *
+	 * Convenience method to calculate this person's age based on the birthdate For a person who
+	 * lived 1990 to 2000, age would be -5 in 1985, 5 in 1995, 10 in 2000, and 10 2010.
+	 * 
 	 * @return Returns age as an Integer.
-     * @should get correct age after death
+	 * @should get correct age after death
 	 */
 	public Integer getAge() {
 		return getAge(null);
@@ -747,7 +749,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method: calculates the person's age on a given date based on the birthdate
-	 *
+	 * 
 	 * @param onDate (null defaults to today)
 	 * @return int value of the person's age
 	 * @should get age before birthday
@@ -762,19 +764,19 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	public Integer getAge(Date onDate) {
 		if (birthdate == null)
 			return null;
-
-        // Use default end date as today.
-        Calendar today = Calendar.getInstance();
-        // But if given, use the given date.
-        if (onDate != null)
+		
+		// Use default end date as today.
+		Calendar today = Calendar.getInstance();
+		// But if given, use the given date.
+		if (onDate != null)
 			today.setTime(onDate);
-
-        // If date given is after date of death then use date of death as end date
-        if(getDeathDate() != null && today.getTime().after(getDeathDate())) {
-            today.setTime(getDeathDate());
-        }
-
-        Calendar bday = Calendar.getInstance();
+		
+		// If date given is after date of death then use date of death as end date
+		if (getDeathDate() != null && today.getTime().after(getDeathDate())) {
+			today.setTime(getDeathDate());
+		}
+		
+		Calendar bday = Calendar.getInstance();
 		bday.setTime(birthdate);
 		
 		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
@@ -903,14 +905,16 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return true/false whether this person is a user or not
 	 * @deprecated use {@link UserService#getUsersByPerson(Person, boolean)}
 	 */
-	public boolean isUser() {
+	@Deprecated
+    public boolean isUser() {
 		return false;
 	}
-		
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		return "Person(personId=" + personId + ")";
 	}
 	
