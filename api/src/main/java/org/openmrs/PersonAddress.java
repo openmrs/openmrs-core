@@ -16,6 +16,7 @@ package org.openmrs;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
@@ -403,9 +404,13 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 *         non-null
 	 */
 	public boolean isBlank() {
-		return getAddress1() == null && getAddress2() == null && getCityVillage() == null && getStateProvince() == null
-		        && getCountry() == null && getCountyDistrict() == null && getAddress3() == null && getPostalCode() == null
-		        && getLatitude() == null && getLongitude() == null;
+		return StringUtils.isBlank(getAddress1()) && StringUtils.isBlank(getAddress2())
+		        && StringUtils.isBlank(getAddress3()) && StringUtils.isBlank(getAddress4())
+		        && StringUtils.isBlank(getAddress5()) && StringUtils.isBlank(getAddress6())
+		        && StringUtils.isBlank(getCityVillage()) && StringUtils.isBlank(getStateProvince())
+		        && StringUtils.isBlank(getCountry()) && StringUtils.isBlank(getCountyDistrict())
+		        && StringUtils.isBlank(getPostalCode()) && StringUtils.isBlank(getLatitude())
+		        && StringUtils.isBlank(getLongitude());
 	}
 	
 	/**
