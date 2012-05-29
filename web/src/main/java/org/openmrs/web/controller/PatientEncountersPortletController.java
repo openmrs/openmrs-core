@@ -17,6 +17,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.openmrs.api.context.Context;
+
 /**
  * Controller for the patientEncounters portlet. Provides a map telling which forms have their view
  * and edit links overridden by form entry modules
@@ -30,6 +32,11 @@ public class PatientEncountersPortletController extends PortletController {
 	@Override
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		PortletControllerUtil.addFormToEditAndViewUrlMaps(model);
+		
+		// determine whether it's need to show disclaimer on jsp page or not
+		// as current user does not have enough permissions to view at least one
+		// type of encounters
+		model.put("showDisclaimer", Context.getEncounterService().canViewAllEncounterTypes(Context.getAuthenticatedUser()));
 	}
 	
 }

@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -845,4 +846,30 @@ public interface EncounterService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_VISITS })
 	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query)
 	        throws APIException;
+	
+	/**
+	 * Filters out all encounters to which given user does not have access. If user is not specified
+	 * then implementations should treat authenticated user from context as given user by default
+	 * 
+	 * @param encounters the list of encounters to be filtered
+	 * @param user the user instance to filter "visible" encounters for
+	 * @return list, that does not include encounters, which can not be shown to given user due to
+	 *         permissions check
+	 */
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
+	public List<Encounter> filterEncountersByViewPermissions(List<Encounter> encounters, User user);
+	
+	/**
+	 * Determines whether given user is granted to view all encounter types or not
+	 * @param subject the user whose permission to view all encounter types will be checked
+	 * @return true if user has access to view all types of encounters 
+	 */
+	public boolean canViewAllEncounterTypes(User subject);
+	
+	/**
+	 * Determines whether given user is granted to edit all encounter types or not
+	 * @param subject the user whose permission to edit all encounter types will be checked
+	 * @return true if user has access to edit all types of encounters 
+	 */
+	public boolean canEditAllEncounterTypes(User subject);
 }

@@ -229,6 +229,12 @@ tr.bottom-encounter-in-visit td:last-child {
 <div id="portlet${model.portletUUID}">
 
 	<div id="visitPortlet">
+		<c:if test="${ not empty model.showDisclaimer and model.showDisclaimer }">
+			<span class="error">
+				<spring:message code="EncounterType.privilege.disclaimer"/>
+			</span>
+			<br/><br/>
+		</c:if>
 		<openmrs:hasPrivilege privilege="View Visits, View Encounters">
 			<openmrs:hasPrivilege privilege="Add Visits">
 				&nbsp;<a

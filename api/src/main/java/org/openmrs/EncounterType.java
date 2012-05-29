@@ -24,6 +24,10 @@ public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serial
 	
 	private Integer encounterTypeId;
 	
+	private Privilege viewPrivilege;
+	
+	private Privilege editPrivilege;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -82,6 +86,38 @@ public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serial
 	public void setId(Integer id) {
 		setEncounterTypeId(id);
 		
+	}
+	
+	/**
+	 * Gets privilege which can view this type of encounters
+	 * @return the viewPrivilege the privilege instance
+	 */
+	public Privilege getViewPrivilege() {
+		return viewPrivilege;
+	}
+	
+	/**
+	 * Sets privilege which can view this type of encounters
+	 * @param viewPrivilege the viewPrivilege to set
+	 */
+	public void setViewPrivilege(Privilege viewPrivilege) {
+		this.viewPrivilege = viewPrivilege;
+	}
+	
+	/**
+	 * Gets privilege which can edit this type of encounters
+	 * @return the editPrivilege the privilege instance
+	 */
+	public Privilege getEditPrivilege() {
+		return editPrivilege;
+	}
+	
+	/**
+	 * Sets privilege which can edit this type of encounters
+	 * @param editPrivilege the editPrivilege to set
+	 */
+	public void setEditPrivilege(Privilege editPrivilege) {
+		this.editPrivilege = editPrivilege;
 	}
 	
 }

@@ -6986,5 +6986,39 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
+	<changeSet id="201205241728-1" author="mvorobey">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="encounter_type" columnName="view_privilege"/></not>
+		</preConditions>
+		<comment>
+			Add optional property view_privilege to encounter_type table
+		</comment>		
+		<addColumn tableName="encounter_type">
+			<column name="view_privilege" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="privilege_which_can_view_encounter_type"
+			baseTableName="encounter_type" baseColumnNames="view_privilege"
+			referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
+	
+	<changeSet id="201205241728-2" author="mvorobey">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="encounter_type" columnName="edit_privilege"/></not>
+		</preConditions>
+		<comment>
+			Add optional property edit_privilege to encounter_type table
+		</comment>		
+		<addColumn tableName="encounter_type">
+			<column name="edit_privilege" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="privilege_which_can_edit_encounter_type"
+			baseTableName="encounter_type" baseColumnNames="edit_privilege"
+			referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
+	
 </databaseChangeLog>
 

@@ -79,7 +79,13 @@ Parameters
 
 <div id="portlet${model.portletUUID}">
 <div id="encounterPortlet">
-
+	<c:if test="${ not empty model.showDisclaimer and model.showDisclaimer }">
+		<span class="error">
+			<spring:message code="EncounterType.privilege.disclaimer"/>
+		</span>
+		<br/><br/>
+	</c:if>
+	
 	<openmrs:globalProperty var="enableFormEntryInEncounters" key="FormEntry.enableOnEncounterTab" defaultValue="false"/>
 
 	<c:if test="${enableFormEntryInEncounters && !model.hideFormEntry}">
