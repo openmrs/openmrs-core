@@ -1627,6 +1627,20 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 */
+	@Test
+	@Verifies(value = "should return concept search results that contain all search words", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnConceptSearchResultsThatContainAllSearchWords() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust now", Collections
+		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		//"trust now" is name for conceptid=4000. 
+		//So we should see 1 results only
+		Assert.assertEquals(1, searchResults.size());
+	}
+	
+	/**
 	 * @see {@link ConceptService#getConceptReferenceTermByName(String,ConceptSource)}
 	 */
 	@Test
@@ -2250,5 +2264,29 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT));
 		Concept falseConceptLoadedByServiceMethod = Context.getConceptService().getFalseConcept();
 		Assert.assertTrue(falseConceptLoadedManually.equals(falseConceptLoadedByServiceMethod));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 */
+	@Test
+	@Verifies(value = "should return a search result whose concept name contains all word tokens", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAllWordTokens() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		Concept conceptWithMultipleMatchingNames = conceptService.getConcept(798);
+		
+		//recalculate the weights just in case the logic for calculating the weights is changed
+		conceptService.updateConceptIndex(conceptWithMultipleMatchingNames);
+		conceptService.updateConceptIndex(conceptService.getConcept(240));
+		conceptService.updateConceptIndex(conceptService.getConcept(357));
+		conceptService.updateConceptIndex(conceptService.getConcept(328));
+		conceptService.updateConceptIndex(conceptService.getConcept(1240));
+		
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("SALBUTAMOL INHALER", Collections
+		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		
+		Assert.assertEquals(1, searchResults.size());
+		Assert.assertEquals(conceptWithMultipleMatchingNames, searchResults.get(0).getConcept());
+		Assert.assertEquals("SALBUTAMOL INHALER", searchResults.get(0).getConceptName().getName());
 	}
 }

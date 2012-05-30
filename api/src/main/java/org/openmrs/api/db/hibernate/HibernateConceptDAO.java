@@ -1433,8 +1433,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 					if (log.isDebugEnabled())
 						log.debug("Current word: " + w);
 					
-					DetachedCriteria crit = DetachedCriteria.forClass(ConceptWord.class).setProjection(
-					    Property.forName("concept")).add(Restrictions.eqProperty("concept", "cw1.concept")).add(
+					DetachedCriteria crit = DetachedCriteria.forClass(ConceptWord.class, "cw2").setProjection(
+					    Property.forName("concept")).add(Restrictions.eqProperty("cw2.concept", "cw1.concept")).add(
+					    Restrictions.eqProperty("cw2.conceptName", "cw1.conceptName")).add(
 					    Restrictions.like("word", w, MatchMode.START)).add(Restrictions.in("locale", locales));
 					junction.add(Subqueries.exists(crit));
 				}
