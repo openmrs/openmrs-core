@@ -1427,7 +1427,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-            <column name="edit_privilege" type="varchar(50)"/>
+            <column name="edit_privilege" type="varchar(255)"/>
             <column name="sort_weight" type="double precision"/>
             <column name="uuid" type="char(38)" />
         </createTable>
@@ -1476,7 +1476,7 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-56">
         <createTable tableName="privilege">
-            <column defaultValue="" name="privilege" type="varchar(50)">
+            <column defaultValue="" name="privilege" type="varchar(255)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column defaultValue="" name="description" type="varchar(250)">
@@ -1729,7 +1729,7 @@
             <column defaultValue="" name="role" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="" name="privilege" type="varchar(50)">
+            <column defaultValue="" name="privilege" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

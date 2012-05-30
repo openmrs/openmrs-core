@@ -7020,5 +7020,17 @@
 			referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
 	
+	<changeSet id="3-increase-privilege-col-size-person_attribute_type" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="person_attribute_type" columnName="edit_privilege"/>
+		</preConditions>
+		<comment>
+			Increasing the size of the edit_privilege column in the person_attribute_type table
+		</comment>
+		<ext:modifyColumn tableName="person_attribute_type">
+		    <column name="edit_privilege" type="varchar(255)" />
+		</ext:modifyColumn>
+	</changeSet>
+	
 </databaseChangeLog>
 
