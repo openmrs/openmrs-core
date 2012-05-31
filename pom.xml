@@ -695,6 +695,7 @@
 				<executions>
 					<execution>
 						<id>parse-version</id>
+						<phase>initialize</phase>
 						<goals>
 							<goal>parse-version</goal>
 						</goals>
