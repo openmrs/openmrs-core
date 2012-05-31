@@ -82,6 +82,7 @@ public class RequireTag extends TagSupport {
 	 * @should reject user without any of the privileges
 	 * @should reject user without all of the privileges
 	 * @should set the right session attributes if the authenticated user misses some privileges
+	 * @should set the referer as the denied page url if no redirect url is specified
 	 */
 	public int doStartTag() {
 		
@@ -136,11 +137,9 @@ public class RequireTag extends TagSupport {
 					
 					if (StringUtils.hasText(redirect)) {
 						httpSession.setAttribute(WebConstants.DENIED_PAGE, redirect);
-					} else if (request.getAttribute("javax.servlet.error.request_uri") != null) {
+					} else if (StringUtils.hasText(referer)) {
 						//This is not exactly correct all the time
-						Object requestedUrl = request.getAttribute("javax.servlet.error.request_uri");
-						if (StringUtils.hasText(requestedUrl.toString()))
-							httpSession.setAttribute(WebConstants.DENIED_PAGE, requestedUrl.toString());
+						httpSession.setAttribute(WebConstants.DENIED_PAGE, referer);
 					}
 				} else {
 					//Why would there be no missing privileges yet the hasPrivileges(String priv) returned false
