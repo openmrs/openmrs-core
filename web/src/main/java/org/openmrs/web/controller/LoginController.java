@@ -45,8 +45,8 @@ public class LoginController {
 	@RequestMapping(LOGIN_FORM)
 	public String handleRequest(WebRequest webRequest, ModelMap model) {
 		if (Context.getAuthenticatedUser() != null) {
-			model.addAttribute("foundMissingPrivileges",
-			    webRequest.getAttribute(WebConstants.FOUND_MISSING_PRIVILEGES, WebRequest.SCOPE_SESSION));
+			model.addAttribute("foundMissingPrivileges", webRequest.getAttribute(WebConstants.FOUND_MISSING_PRIVILEGES,
+			    WebRequest.SCOPE_SESSION));
 			webRequest.removeAttribute(WebConstants.FOUND_MISSING_PRIVILEGES, WebRequest.SCOPE_SESSION);
 			
 			String deniedPage = null;
