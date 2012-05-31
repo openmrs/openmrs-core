@@ -1,3 +1,5 @@
+<%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="org.openmrs.api.context.ContextAuthenticationException"%>
 <%@page isErrorPage="true" %>
 <%@ page import="org.openmrs.web.WebUtil" %>
 <%@ page import="org.openmrs.web.WebConstants" %>
@@ -54,9 +56,33 @@ try {
         if(Context.getAuthenticatedUser() != null) {
                 log.error("Exception was thrown by user with id="+
                         Context.getAuthenticatedUser().getUserId(), exception);
+
+               if (ContextAuthenticationException.class.equals(exception.getClass()) 
+            		   || APIAuthenticationException.class.equals(exception.getClass())) {
+
+               		session.setAttribute(WebConstants.FOUND_MISSING_PRIVILEGES, true);
+            		String errorCodeOrMsg = exception.getMessage();
+                	if(StringUtils.isBlank(errorCodeOrMsg))
+                		errorCodeOrMsg = "require.unauthorized";
+                	else
+                		session.setAttribute(WebConstants.UNCAUGHT_EXCEPTION_MESSAGE, errorCodeOrMsg);
+                	
+                	session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, errorCodeOrMsg);
+                	
+                	String referer = request.getHeader("Referer");
+        			if (StringUtils.isNotBlank(referer))
+        				session.setAttribute(WebConstants.DENIED_PAGE, referer);
+        			
+                	response.sendRedirect(request.getContextPath()+"/login.htm");
+        		}
         } else {
                 log.error("Exception was thrown by not authenticated user",
                         exception);
+                
+                if (ContextAuthenticationException.class.equals(exception.getClass()) 
+                		|| APIAuthenticationException.class.equals(exception.getClass())){
+                	response.sendRedirect(request.getContextPath()+"/login.htm");
+                }
         }
         
 		out.println("<b>" + exception.getClass().getName() + "</b>");

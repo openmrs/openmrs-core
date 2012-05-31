@@ -88,4 +88,26 @@ public class WebConstants {
 	 * ServletContext under this key
 	 */
 	public static final String CURRENT_USERS = "CURRENT_USERS";
+	
+	/**
+	 * Session attribute name that specifies if there are any privilege checks the currently
+	 * authenticated user failed
+	 */
+	public static final String FOUND_MISSING_PRIVILEGES = "found_missing_privileges";
+	
+	/**
+	 * Session attribute name for the url of the page the user was trying to access when they failed
+	 * a privilege check
+	 */
+	public static final String DENIED_PAGE = "denied_page";
+	
+	/**
+	 * Session attribute name for the privileges the user was didn't have
+	 */
+	public static final String REQUIRED_PRIVILEGES = "required_privileges";
+	
+	/**
+	 * Session attribute name for the uncaught exception message
+	 */
+	public static final String UNCAUGHT_EXCEPTION_MESSAGE = "uncaught_exception_message";
 }

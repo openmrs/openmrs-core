@@ -28,7 +28,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
 import org.springframework.util.StringUtils;
@@ -65,6 +65,9 @@ public class RequireTag extends TagSupport {
 	
 	private boolean errorOccurred;
 	
+	//these can only be multiple if the anyPrivilege attribute has more than one value
+	private StringBuffer missingPrivilegesBuffer;
+	
 	/**
 	 * This is where all the magic happens. The privileges are checked and the user is redirected if
 	 * need be. <br/>
@@ -78,6 +81,7 @@ public class RequireTag extends TagSupport {
 	 * @should reject user without the privilege
 	 * @should reject user without any of the privileges
 	 * @should reject user without all of the privileges
+	 * @should set the right session attributes if the authenticated user misses some privileges
 	 */
 	public int doStartTag() {
 		
@@ -119,7 +123,26 @@ public class RequireTag extends TagSupport {
 					}
 				}
 				
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.unauthorized");
+				String errorCodeOrMsg = "";
+				if (missingPrivilegesBuffer != null) {
+					String requiredPrivileges = missingPrivilegesBuffer.toString();
+					MessageSourceService mss = Context.getMessageSourceService();
+					errorCodeOrMsg = mss.getMessage("general.authentication.unableToViewPage",
+					    new Object[] { requiredPrivileges }, null);
+					errorCodeOrMsg += "<br />" + mss.getMessage("general.authentication.accountHasNoPrivilege");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, errorCodeOrMsg);
+					httpSession.setAttribute(WebConstants.FOUND_MISSING_PRIVILEGES, true);
+					httpSession.setAttribute(WebConstants.REQUIRED_PRIVILEGES, requiredPrivileges);
+					
+					if (StringUtils.hasText(referer))
+						httpSession.setAttribute(WebConstants.DENIED_PAGE, referer);
+					
+				} else {
+					//Why would there be no missing privileges yet the hasPrivileges(String priv) returned false
+					errorCodeOrMsg = "require.unauthorized";
+				}
+				
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, errorCodeOrMsg);
 				log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + redirect
 				        + " which requires privilege: " + privilege + " or one of: " + allPrivileges + " or any of "
 				        + anyPrivilege);
@@ -227,8 +250,10 @@ public class RequireTag extends TagSupport {
 	 */
 	private boolean hasPrivileges(UserContext userContext, String privilege, String[] allPrivilegesArray,
 	        String[] anyPrivilegeArray) {
-		if (privilege != null && !userContext.hasPrivilege(privilege.trim()))
+		if (privilege != null && !userContext.hasPrivilege(privilege.trim())) {
+			addMissingPrivilege(privilege);
 			return false;
+		}
 		if (allPrivilegesArray.length > 0 && !hasAllPrivileges(userContext, allPrivilegesArray))
 			return false;
 		if (anyPrivilegeArray.length > 0 && !hasAnyPrivilege(userContext, anyPrivilegeArray))
@@ -245,8 +270,10 @@ public class RequireTag extends TagSupport {
 	 */
 	private boolean hasAllPrivileges(UserContext userContext, String[] allPrivilegesArray) {
 		for (String p : allPrivilegesArray)
-			if (!userContext.hasPrivilege(p.trim()))
+			if (!userContext.hasPrivilege(p.trim())) {
+				addMissingPrivilege(p);
 				return false;
+			}
 		return true;
 	}
 	
@@ -258,10 +285,25 @@ public class RequireTag extends TagSupport {
 	 * @return true if user has at least one of the privileges
 	 */
 	private boolean hasAnyPrivilege(UserContext userContext, String[] anyPriviegeArray) {
-		for (String p : anyPriviegeArray)
+		for (String p : anyPriviegeArray) {
 			if (userContext.hasPrivilege(p.trim()))
 				return true;
+			else
+				addMissingPrivilege(p);
+		}
 		return false;
+	}
+	
+	private void addMissingPrivilege(String p) {
+		if (!StringUtils.hasText(p))
+			return;
+		
+		if (missingPrivilegesBuffer == null) {
+			missingPrivilegesBuffer = new StringBuffer();
+			missingPrivilegesBuffer.append(p.trim());
+			return;
+		}
+		missingPrivilegesBuffer.append("," + p.trim());
 	}
 	
 	/**

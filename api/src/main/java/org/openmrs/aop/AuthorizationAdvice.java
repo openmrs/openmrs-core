@@ -15,6 +15,8 @@ package org.openmrs.aop;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
@@ -114,7 +116,8 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private void throwUnauthorized(User user, Method method, Collection<String> attrs) {
 		if (log.isDebugEnabled())
 			log.debug("User " + user + " is not authorized to access " + method.getName());
-		throw new APIAuthenticationException("Privileges required: " + attrs);
+		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
+		    new Object[] { StringUtils.join(attrs, ",") }, null));
 	}
 	
 	/**
@@ -127,7 +130,8 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private void throwUnauthorized(User user, Method method, String attr) {
 		if (log.isDebugEnabled())
 			log.debug("User " + user + " is not authorized to access " + method.getName());
-		throw new APIAuthenticationException("Privilege required: " + attr);
+		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
+		    new Object[] { attr }, null));
 	}
 	
 	/**
@@ -139,6 +143,6 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private void throwUnauthorized(User user, Method method) {
 		if (log.isDebugEnabled())
 			log.debug("User " + user + " is not authorized to access " + method.getName());
-		throw new APIAuthenticationException("Basic authentication required");
+		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.aunthenticationRequired"));
 	}
 }
