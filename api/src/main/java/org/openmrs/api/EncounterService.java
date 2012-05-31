@@ -855,6 +855,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param user the user instance to filter "visible" encounters for
 	 * @return list, that does not include encounters, which can not be shown to given user due to
 	 *         permissions check
+	 *         
+	 * @should filter encounters if user is not allowed to see some encounters
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> filterEncountersByViewPermissions(List<Encounter> encounters, User user);
@@ -862,14 +864,18 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Determines whether given user is granted to view all encounter types or not
 	 * @param subject the user whose permission to view all encounter types will be checked
-	 * @return true if user has access to view all types of encounters 
+	 * @return true if user has access to view all types of encounters
+	 * 
+	 * @should return true if user is granted to view all encounters
 	 */
 	public boolean canViewAllEncounterTypes(User subject);
 	
 	/**
 	 * Determines whether given user is granted to edit all encounter types or not
 	 * @param subject the user whose permission to edit all encounter types will be checked
-	 * @return true if user has access to edit all types of encounters 
+	 * @return true if user has access to edit all types of encounters
+	 * 
+	 * @should return true if user is granted to edit all encounters
 	 */
 	public boolean canEditAllEncounterTypes(User subject);
 }

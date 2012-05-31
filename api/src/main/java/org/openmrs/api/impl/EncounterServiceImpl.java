@@ -258,8 +258,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
 	        boolean includeVoided) {
-		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, usersToProviders(providers),
-		    null, null, includeVoided);
+		return filterEncountersByViewPermissions(dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms,
+		    encounterTypes, usersToProviders(providers), null, null, includeVoided), null);
 	}
 	
 	/**
