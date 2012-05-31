@@ -69,9 +69,11 @@ try {
                 	
                 	session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, errorCodeOrMsg);
                 	
-                	String referer = request.getHeader("Referer");
-        			if (StringUtils.isNotBlank(referer))
-        				session.setAttribute(WebConstants.DENIED_PAGE, referer);
+                	Object requestedUrl =  request.getAttribute("javax.servlet.error.request_uri");
+                	if(requestedUrl != null){
+        				if (StringUtils.isNotBlank(requestedUrl.toString()))
+        					session.setAttribute(WebConstants.DENIED_PAGE, requestedUrl.toString());
+                	}
         			
                 	response.sendRedirect(request.getContextPath()+"/login.htm");
         		}

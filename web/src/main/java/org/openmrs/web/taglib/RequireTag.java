@@ -134,9 +134,14 @@ public class RequireTag extends TagSupport {
 					httpSession.setAttribute(WebConstants.FOUND_MISSING_PRIVILEGES, true);
 					httpSession.setAttribute(WebConstants.REQUIRED_PRIVILEGES, requiredPrivileges);
 					
-					if (StringUtils.hasText(referer))
-						httpSession.setAttribute(WebConstants.DENIED_PAGE, referer);
-					
+					if (StringUtils.hasText(redirect)) {
+						httpSession.setAttribute(WebConstants.DENIED_PAGE, redirect);
+					} else if (request.getAttribute("javax.servlet.error.request_uri") != null) {
+						//This is not exactly correct all the time
+						Object requestedUrl = request.getAttribute("javax.servlet.error.request_uri");
+						if (StringUtils.hasText(requestedUrl.toString()))
+							httpSession.setAttribute(WebConstants.DENIED_PAGE, requestedUrl.toString());
+					}
 				} else {
 					//Why would there be no missing privileges yet the hasPrivileges(String priv) returned false
 					errorCodeOrMsg = "require.unauthorized";
