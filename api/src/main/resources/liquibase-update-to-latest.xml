@@ -6471,28 +6471,28 @@
 	<changeSet id="10-insert-new-app-privileges" author="dkayiwa">
 		<comment>Inserting the new application privileges</comment>
 		<sql>
-			insert into privilege (privilege, description) 
-			select 'Patient Dashboard Overview - View Patient Actions', 'Able to view the Patient Actions portlet on the patient dashboard overview tab'
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Dashboard Overview - View Patient Actions', 'Able to view the Patient Actions portlet on the patient dashboard overview tab', 'd05118c6-2490-4d78-a41a-390e3596a264'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Patient Actions') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Patient Dashboard Overview - View Programs', 'Able to view the Programs portlet on the patient dashboard overview tab'
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Dashboard Overview - View Programs', 'Able to view the Programs portlet on the patient dashboard overview tab', 'd05118c6-2490-4d78-a41a-390e3596a263'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Programs') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Patient Dashboard Overview - View Relationships', 'Able to view the Relationships portlet on the patient dashboard overview tab'
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Dashboard Overview - View Relationships', 'Able to view the Relationships portlet on the patient dashboard overview tab', 'd05118c6-2490-4d78-a41a-390e3596a262'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Relationships') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Patient Dashboard Overview - View Allergies', 'Able to view the Allergies portlet on the patient dashboard overview tab'
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Dashboard Overview - View Allergies', 'Able to view the Allergies portlet on the patient dashboard overview tab', 'd05118c6-2490-4d78-a41a-390e3596a261'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Allergies') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Patient Dashboard Overview - View Problem List', 'Able to view the Problem List portlet on the patient dashboard overview tab'
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Dashboard Overview - View Problem List', 'Able to view the Problem List portlet on the patient dashboard overview tab', 'd05118c6-2490-4d78-a41a-390e3596a260'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Problem List') limit 1;
 		</sql>
@@ -6501,213 +6501,213 @@
 	<changeSet id="11-insert-new-api-privileges" author="dkayiwa">
 		<comment>Inserting the new API privileges</comment>
 		<sql>
-			insert into privilege (privilege, description) 
-			select 'Get Concepts', 'Able to get concept entries'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concepts', 'Able to get concept entries', 'd05118c6-2490-4d78-a41a-390e3596a251'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concepts') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Concept Proposals', 'Able to get concept proposals to the system'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Proposals', 'Able to get concept proposals to the system', 'd05118c6-2490-4d78-a41a-390e3596a250'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Proposals') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Users', 'Able to get users in OpenMRS'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Users', 'Able to get users in OpenMRS', 'd05118c6-2490-4d78-a41a-390e3596a249'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Users') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Encounters', 'Able to get patient encounters'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Encounters', 'Able to get patient encounters', 'd05118c6-2490-4d78-a41a-390e3596a248'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Encounters') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Encounter Types', 'Able to get encounter types'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Encounter Types', 'Able to get encounter types', 'd05118c6-2490-4d78-a41a-390e3596a247'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Encounter Types') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Locations', 'Able to get locations'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Locations', 'Able to get locations', 'd05118c6-2490-4d78-a41a-390e3596a246'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Locations') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Observations', 'Able to get patient observations'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Observations', 'Able to get patient observations', 'd05118c6-2490-4d78-a41a-390e3596a245'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Observations') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Patients', 'Able to get patients'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Patients', 'Able to get patients', 'd05118c6-2490-4d78-a41a-390e3596a244'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Patients') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Patient Identifiers', 'Able to get patient identifiers'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Patient Identifiers', 'Able to get patient identifiers', 'd05118c6-2490-4d78-a41a-390e3596a243'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Patient Identifiers') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Patient Cohorts', 'Able to get patient cohorts'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Patient Cohorts', 'Able to get patient cohorts', 'd05118c6-2490-4d78-a41a-390e3596a242'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Patient Cohorts') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Orders', 'Able to get orders'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Orders', 'Able to get orders', 'd05118c6-2490-4d78-a41a-390e3596a241'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Orders') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Forms', 'Able to get forms'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Forms', 'Able to get forms', 'd05118c6-2490-4d78-a41a-390e3596a240'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Forms') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Identifier Types', 'Able to get patient identifier types'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Identifier Types', 'Able to get patient identifier types', 'd05118c6-2490-4d78-a41a-390e3596a239'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Identifier Types') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Concept Classes', 'Able to get concept classes'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Classes', 'Able to get concept classes', 'd05118c6-2490-4d78-a41a-390e3596a238'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Classes') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Concept Datatypes', 'Able to get concept datatypes'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Datatypes', 'Able to get concept datatypes', 'd05118c6-2490-4d78-a41a-390e3596a237'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Datatypes') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Privileges', 'Able to get user privileges'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Privileges', 'Able to get user privileges', 'd05118c6-2490-4d78-a41a-390e3596a236'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Privileges') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Roles', 'Able to get user roles'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Roles', 'Able to get user roles', 'd05118c6-2490-4d78-a41a-390e3596a235'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Roles') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Field Types', 'Able to get field types'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Field Types', 'Able to get field types', 'd05118c6-2490-4d78-a41a-390e3596a234'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Field Types') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Order Types', 'Able to get order types'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Order Types', 'Able to get order types', 'd05118c6-2490-4d78-a41a-390e3596a233'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Order Types') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Relationship Types', 'Able to get relationship types'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Relationship Types', 'Able to get relationship types', 'd05118c6-2490-4d78-a41a-390e3596a232'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Relationship Types') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Concept Sources', 'Able to get concept sources'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Sources', 'Able to get concept sources', 'd05118c6-2490-4d78-a41a-390e3596a231'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Sources') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Concept Map Types', 'Able to get concept map types'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Map Types', 'Able to get concept map types', 'd05118c6-2490-4d78-a41a-390e3596a230'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Map Types') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Concept Reference Terms', 'Able to get concept reference terms'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Reference Terms', 'Able to get concept reference terms', 'd05118c6-2490-4d78-a41a-390e3596a229'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Reference Terms') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Programs', 'Able to get patient programs'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Programs', 'Able to get patient programs', 'd05118c6-2490-4d78-a41a-390e3596a228'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Programs') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Patient Programs', 'Able to get which programs that patients are in'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Patient Programs', 'Able to get which programs that patients are in', 'd05118c6-2490-4d78-a41a-390e3596a227'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Patient Programs') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Global Properties', 'Able to get global properties on the administration screen'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Global Properties', 'Able to get global properties on the administration screen', 'd05118c6-2490-4d78-a41a-390e3596a226'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Global Properties') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Person Attribute Types', 'Able to get person attribute types'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Person Attribute Types', 'Able to get person attribute types', 'd05118c6-2490-4d78-a41a-390e3596a225'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Person Attribute Types') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get People', 'Able to get person objects'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get People', 'Able to get person objects', 'd05118c6-2490-4d78-a41a-390e3596a224'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get People') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Relationships', 'Able to get relationships'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Relationships', 'Able to get relationships', 'd05118c6-2490-4d78-a41a-390e3596a223'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Relationships') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Database Changes', 'Able to get database changes from the admin screen'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Database Changes', 'Able to get database changes from the admin screen', 'd05118c6-2490-4d78-a41a-390e3596a222'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Database Changes') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Problems', 'Able to get problems'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Problems', 'Able to get problems', 'd05118c6-2490-4d78-a41a-390e3596a221'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Problems') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Allergies', 'Able to get allergies'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Allergies', 'Able to get allergies', 'd05118c6-2490-4d78-a41a-390e3596a220'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Allergies') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get HL7 Source', 'Able to get an HL7 Source'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get HL7 Source', 'Able to get an HL7 Source', 'd05118c6-2490-4d78-a41a-390e3596a219'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get HL7 Source') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get HL7 Inbound Queue', 'Able to get an HL7 Queue item'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get HL7 Inbound Queue', 'Able to get an HL7 Queue item', 'd05118c6-2490-4d78-a41a-390e3596a218'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Queue') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get HL7 Inbound Archive', 'Able to get an HL7 archive item'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get HL7 Inbound Archive', 'Able to get an HL7 archive item', 'd05118c6-2490-4d78-a41a-390e3596a217'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Archive') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get HL7 Inbound Exception', 'Able to get an HL7 error item'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get HL7 Inbound Exception', 'Able to get an HL7 error item', 'd05118c6-2490-4d78-a41a-390e3596a216'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Exception') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Visit Types', 'Able to get visit types'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Visit Types', 'Able to get visit types', 'd05118c6-2490-4d78-a41a-390e3596a215'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Visit Types') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Visits', 'Able to get visits'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Visits', 'Able to get visits', 'd05118c6-2490-4d78-a41a-390e3596a214'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Visits') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Visit Attribute Types', 'Able to get visit attribute types'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Visit Attribute Types', 'Able to get visit attribute types', 'd05118c6-2490-4d78-a41a-390e3596a213'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Visit Attribute Types') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Location Attribute Types', 'Able to get location attribute types'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Location Attribute Types', 'Able to get location attribute types', 'd05118c6-2490-4d78-a41a-390e3596a212'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Location Attribute Types') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Providers', 'Able to get Providers'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Providers', 'Able to get Providers', 'd05118c6-2490-4d78-a41a-390e3596a211'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Providers') limit 1;
 			
-			insert into privilege (privilege, description) 
-			select 'Get Encounter Roles', 'Able to get encounter roles'
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Encounter Roles', 'Able to get encounter roles', 'd05118c6-2490-4d78-a41a-390e3596a210'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Encounter Roles') limit 1;
 		</sql>
