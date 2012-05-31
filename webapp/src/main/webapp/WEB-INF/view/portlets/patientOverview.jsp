@@ -22,7 +22,7 @@
 	</openmrs:hasPrivilege>
 </openmrs:extensionPoint>
 
-<openmrs:hasPrivilege privilege="Patient Dashboard Overview - View Patient Actions">
+<openmrs:hasPrivilege privilege="Patient Overview - View Patient Actions">
 <div id="patientActionsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Patient.actions" /></div>
 <div id="patientActionsBox" class="box${model.patientVariation}">
 	<table id="patientActions">
@@ -183,7 +183,7 @@
 </c:if>
 </openmrs:hasPrivilege>
 
-<openmrs:hasPrivilege privilege="Patient Dashboard Overview - View Programs">
+<openmrs:hasPrivilege privilege="Patient Overview - View Programs">
 	<div id="patientProgramsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Program.title"/></div>
 	<div id="patientProgramsBox" class="box${model.patientVariation}">
 		<openmrs:portlet url="patientPrograms" id="patientPrograms" patientId="${patient.patientId}" parameters="allowEdits=true"/>
@@ -200,7 +200,7 @@
 </c:if>
 </openmrs:hasPrivilege>
 
-<openmrs:hasPrivilege privilege="Patient Dashboard Overview - View Relationships">
+<openmrs:hasPrivilege privilege="Patient Overview - View Relationships">
 	<div id="patientRelationshipsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Relationship.relationships" /></div>
 	<div id="patientRelationshipsBox" class="box${model.patientVariation}">
 		<openmrs:portlet url="personRelationships" size="normal" patientId="${patient.patientId}" />
@@ -208,7 +208,7 @@
 	<br/>
 </openmrs:hasPrivilege>
 
-<openmrs:hasPrivilege privilege="Patient Dashboard Overview - View Allergies">
+<openmrs:hasPrivilege privilege="Patient Overview - View Allergies">
 	<div id="patientActiveListsAllergyBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="ActiveLists.allergy.title" /></div>
 	<div id="patientActiveListsAllergyBox" class="box${model.patientVariation}">
 		<openmrs:portlet url="activeListAllergy" patientId="${patient.patientId}" parameters="type=allergy"/>
@@ -216,7 +216,7 @@
 	<br/>
 </openmrs:hasPrivilege>
 
-<openmrs:hasPrivilege privilege="Patient Dashboard Overview - View Problem List">
+<openmrs:hasPrivilege privilege="Patient Overview - View Problem List">
 	<div id="patientActiveListsProblemBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="ActiveLists.problem.title" /></div>
 	<div id="patientActiveListsProblemBox" class="box${model.patientVariation}">
 		<openmrs:portlet url="activeListProblem" patientId="${patient.patientId}" parameters="type=problem"/>

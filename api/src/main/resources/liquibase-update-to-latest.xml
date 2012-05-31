@@ -6472,29 +6472,29 @@
 		<comment>Inserting the new application privileges</comment>
 		<sql>
 			insert into privilege (privilege, description, uuid) 
-			select 'Patient Dashboard Overview - View Patient Actions', 'Able to view the Patient Actions portlet on the patient dashboard overview tab', 'd05118c6-2490-4d78-a41a-390e3596a264'
+			select 'Patient Overview - View Patient Actions', 'Able to view the Patient Actions portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a264'
 			from privilege
-			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Patient Actions') limit 1;
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Patient Actions') limit 1;
 			
 			insert into privilege (privilege, description, uuid) 
-			select 'Patient Dashboard Overview - View Programs', 'Able to view the Programs portlet on the patient dashboard overview tab', 'd05118c6-2490-4d78-a41a-390e3596a263'
+			select 'Patient Overview - View Programs', 'Able to view the Programs portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a263'
 			from privilege
-			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Programs') limit 1;
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Programs') limit 1;
 			
 			insert into privilege (privilege, description, uuid) 
-			select 'Patient Dashboard Overview - View Relationships', 'Able to view the Relationships portlet on the patient dashboard overview tab', 'd05118c6-2490-4d78-a41a-390e3596a262'
+			select 'Patient Overview - View Relationships', 'Able to view the Relationships portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a262'
 			from privilege
-			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Relationships') limit 1;
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Relationships') limit 1;
 			
 			insert into privilege (privilege, description, uuid) 
-			select 'Patient Dashboard Overview - View Allergies', 'Able to view the Allergies portlet on the patient dashboard overview tab', 'd05118c6-2490-4d78-a41a-390e3596a261'
+			select 'Patient Overview - View Allergies', 'Able to view the Allergies portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a261'
 			from privilege
-			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Allergies') limit 1;
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Allergies') limit 1;
 			
 			insert into privilege (privilege, description, uuid) 
-			select 'Patient Dashboard Overview - View Problem List', 'Able to view the Problem List portlet on the patient dashboard overview tab', 'd05118c6-2490-4d78-a41a-390e3596a260'
+			select 'Patient Overview - View Problem List', 'Able to view the Problem List portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a260'
 			from privilege
-			where not exists (select privilege from privilege where privilege = 'Patient Dashboard Overview - View Problem List') limit 1;
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Problem List') limit 1;
 		</sql>
 	</changeSet>
 	
@@ -6714,32 +6714,32 @@
 	</changeSet>
 	
 	<changeSet id="1-grant-new-dashboard-overview-tab-app-privileges" author="dkayiwa">
-		<comment>Granting the new dashboard overview tab application privileges</comment>
+		<comment>Granting the new patient overview tab application privileges</comment>
 		<sql>
 			insert into role_privilege (role, privilege) 
-			select role, 'Patient Dashboard Overview - View Patient Actions' from role_privilege rp
+			select role, 'Patient Overview - View Patient Actions' from role_privilege rp
 			where rp.privilege = 'Patient Dashboard - View Overview Section'
-			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard Overview - View Patient Actions' and rp2.role=rp.role);
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Patient Actions' and rp2.role=rp.role);
 		
 			insert into role_privilege (role, privilege) 
-			select role, 'Patient Dashboard Overview - View Programs' from role_privilege rp
+			select role, 'Patient Overview - View Programs' from role_privilege rp
 			where rp.privilege = 'View Patient Programs'
-			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard Overview - View Programs' and rp2.role=rp.role);
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Programs' and rp2.role=rp.role);
 			
 			insert into role_privilege (role, privilege) 
-			select role, 'Patient Dashboard Overview - View Relationships' from role_privilege rp
+			select role, 'Patient Overview - View Relationships' from role_privilege rp
 			where rp.privilege = 'View Relationships'
-			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard Overview - View Relationships' and rp2.role=rp.role);
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Relationships' and rp2.role=rp.role);
 			
 			insert into role_privilege (role, privilege) 
-			select role, 'Patient Dashboard Overview - View Allergies' from role_privilege rp
+			select role, 'Patient Overview - View Allergies' from role_privilege rp
 			where rp.privilege = 'View Allergies'
-			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard Overview - View Allergies' and rp2.role=rp.role);
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Allergies' and rp2.role=rp.role);
 			
 			insert into role_privilege (role, privilege) 
-			select role, 'Patient Dashboard Overview - View Problem List' from role_privilege rp
+			select role, 'Patient Overview - View Problem List' from role_privilege rp
 			where rp.privilege = 'View Problems'
-			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard Overview - View Problem List' and rp2.role=rp.role);
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Problem List' and rp2.role=rp.role);
 		</sql>
 	</changeSet>
 	
