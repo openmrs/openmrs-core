@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Concept Map Types" otherwise="/login.htm" redirect="/admin/concepts/conceptReferenceTerms.htm" />
+<openmrs:require privilege="Manage Concept Reference Terms" otherwise="/login.htm" redirect="/admin/concepts/conceptReferenceTerms.htm" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
