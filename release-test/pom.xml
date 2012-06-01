@@ -16,7 +16,7 @@
 		<dependency>
 			<groupId>org.jbehave.web</groupId>
 			<artifactId>jbehave-web-selenium</artifactId>
-			<version>3.4.1</version>
+			<version>3.5.3</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
