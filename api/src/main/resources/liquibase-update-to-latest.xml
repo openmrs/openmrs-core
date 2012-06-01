@@ -7032,31 +7032,5 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20120531-1628" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<changeSetExecuted id="10-insert-new-app-privileges" author="dkayiwa" changeLogFile="liquibase-update-to-latest.xml" />
-		</preConditions>
-		<comment>
-			Assigning the new Patient Overview privileges to roles with corresponding api level privileges
-		</comment>
-			<sql>
-				INSERT INTO role_privilege (role, privilege)  
-				SELECT DISTINCT role, 'Patient Overview - View Allergies' FROM role_privilege rp 
-				WHERE rp.privilege = 'View Allergies';
-				
-				INSERT INTO role_privilege (role, privilege)  
-				SELECT DISTINCT role, 'Patient Overview - View Programs' FROM role_privilege rp 
-				WHERE rp.privilege = 'View Programs';
-				
-				INSERT INTO role_privilege (role, privilege)  
-				SELECT DISTINCT role, 'Patient Overview - View Relationships' FROM role_privilege rp 
-				WHERE rp.privilege = 'View Relationships';
-				
-				INSERT INTO role_privilege (role, privilege)  
-				SELECT DISTINCT role, 'Patient Overview - View Problem List' FROM role_privilege rp 
-				WHERE rp.privilege = 'View Problems';
-			</sql>
-	</changeSet>
-	
 </databaseChangeLog>
 
