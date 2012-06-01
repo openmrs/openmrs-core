@@ -13,11 +13,15 @@
  */
 package org.openmrs.notification.web.dwr;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Role;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
@@ -86,5 +90,37 @@ public class DWRAlertService {
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 		}
+	}
+	
+	/**
+	 * Creates and saves a new {@link Alert}
+	 * 
+	 * @param text the string to set as the alert text
+	 * @return true if the alert was successfully created and saved otherwise false
+	 */
+	public boolean createAlert(String text) {
+		if (StringUtils.isNotBlank(text)) {
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
+				Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+				Context.addProxyPrivilege(PrivilegeConstants.GET_ROLES);
+				
+				Role role = Context.getUserService().getRole("System Developer");
+				Collection<User> users = Context.getUserService().getUsersByRole(role);
+				Context.getAlertService().saveAlert(new Alert(text, users));
+				
+				return true;
+			}
+			catch (Exception e) {
+				log.error("Error while creating an alert ", e);
+			}
+			finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_ROLES);
+			}
+		}
+		
+		return false;
 	}
 }

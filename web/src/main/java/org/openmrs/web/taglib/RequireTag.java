@@ -314,6 +314,7 @@ public class RequireTag extends TagSupport {
 	 * @see javax.servlet.jsp.tagext.TagSupport#doEndTag()
 	 */
 	public int doEndTag() {
+		missingPrivilegesBuffer = null;
 		if (errorOccurred)
 			return SKIP_PAGE;
 		else

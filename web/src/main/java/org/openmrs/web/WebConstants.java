@@ -102,7 +102,7 @@ public class WebConstants {
 	public static final String DENIED_PAGE = "denied_page";
 	
 	/**
-	 * Session attribute name for the privileges the user was didn't have
+	 * Session attribute name for the privileges the user didn't have
 	 */
 	public static final String REQUIRED_PRIVILEGES = "required_privileges";
 	

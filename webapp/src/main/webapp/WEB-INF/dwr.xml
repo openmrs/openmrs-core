@@ -151,6 +151,7 @@
 			<param name="class" value="org.openmrs.notification.web.dwr.DWRAlertService" />
 			<include method="getAlerts"/>
 			<include method="markAlertRead"/>
+			<include method="createAlert"/>
 		</create>
 		
 		<create creator="new" javascript="DWRPatientSetService">

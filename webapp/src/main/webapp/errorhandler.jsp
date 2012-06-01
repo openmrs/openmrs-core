@@ -1,6 +1,25 @@
 <%@ page isErrorPage="true" import="java.io.*" %>
 
-<%-- Exception Handler --%>
+<%-- 
+	Exceptions thrown from within jsps e.g those with scripts calling code that requires authentication, are
+	forwarded here so we need to be able to handle them too, but by the time we are on this JSP, the actual  
+	thrown exception has been wrapped into a javax.servlet.jsp.JspException, therefore we need to check the 
+	root cause exception to see if it is an authentication related exception and handle it appropriately.
+--%>
+<%
+if (exception.getCause() != null && (ContextAuthenticationException.class.equals(exception.getCause().getClass())
+		        || APIAuthenticationException.class.equals(exception.getCause().getClass()))) {
+	//convert it back to the actual exception that was thrown
+	exception = exception.getCause();
+%>
+
+<%@ include file="/WEB-INF/view/authorizationHandlerInclude.jsp" %>
+
+<%
+}else{
+%>
+
+<%-- Otherwise the Exception Handler retains control --%>
 <font color="red">
 <h2>An error has occurred!</h2>
 The following error happened somewhere on this page:<br/>
@@ -29,4 +48,5 @@ else {
 	out.println("-->");
 }
 org.openmrs.api.context.Context.closeSession();
-%>
+
+}//end else%>
