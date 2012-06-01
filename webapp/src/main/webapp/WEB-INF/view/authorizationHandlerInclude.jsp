@@ -15,14 +15,9 @@
 			log.error("Exception was thrown by user with id=" + Context.getAuthenticatedUser().getUserId(),
 			    exception);
 			
-			session.setAttribute(WebConstants.FOUND_MISSING_PRIVILEGES, true);
-			String errorCodeOrMsg = exception.getMessage();
-			if (StringUtils.isBlank(errorCodeOrMsg))
-				errorCodeOrMsg = "require.unauthorized";
-			else
-				session.setAttribute(WebConstants.UNCAUGHT_EXCEPTION_MESSAGE, errorCodeOrMsg);
-			
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, errorCodeOrMsg);
+			session.setAttribute(WebConstants.INSUFFICIENT_PRIVILEGES, true);
+			session.setAttribute(WebConstants.UNCAUGHT_EXCEPTION_MESSAGE,
+			    StringUtils.isNotBlank(exception.getMessage()) ? exception.getMessage() : "");
 			
 			Object requestUrl = request.getAttribute("javax.servlet.error.request_uri");
 			if (requestUrl != null) {
@@ -35,10 +30,8 @@
 				
 				session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, uri);
 			}
-			if (request.getQueryString() != null) {
-
-			}
 			
+			session.setAttribute(WebConstants.REFERER_URL, request.getHeader("Referer"));
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 		} else {
 			log.error("Exception was thrown by not authenticated user", exception);

@@ -178,16 +178,8 @@ public class RequireTagTest extends BaseWebContextSensitiveTest {
 		tag.setRedirect(redirect);
 		
 		Assert.assertEquals(Tag.SKIP_PAGE, tag.doStartTag());
-		Object missingPrivilegesObj = pageContext.getAttribute(WebConstants.FOUND_MISSING_PRIVILEGES,
-		    PageContext.SESSION_SCOPE);
-		Assert.assertNotNull(missingPrivilegesObj);
-		Assert.assertTrue(Boolean.valueOf(missingPrivilegesObj.toString()));
-		
-		Object errorMsg = pageContext.getAttribute(WebConstants.OPENMRS_ERROR_ATTR, PageContext.SESSION_SCOPE);
-		Assert.assertNotNull(errorMsg);
-		Assert.assertTrue(errorMsg.toString().indexOf("general.authentication.unableToViewPage") > -1);
-		Assert.assertTrue(errorMsg.toString().indexOf("general.authentication.accountHasNoPrivilege") > -1);
-		
+		Assert.assertEquals(true, pageContext.getAttribute(WebConstants.INSUFFICIENT_PRIVILEGES, PageContext.SESSION_SCOPE));
+		Assert.assertNotNull(pageContext.getAttribute(WebConstants.REQUIRED_PRIVILEGES, PageContext.SESSION_SCOPE));
 		Assert.assertEquals(redirect, pageContext.getAttribute(WebConstants.DENIED_PAGE, PageContext.SESSION_SCOPE)
 		        .toString());
 		
@@ -214,16 +206,8 @@ public class RequireTagTest extends BaseWebContextSensitiveTest {
 		tag.setRedirect("");
 		
 		Assert.assertEquals(Tag.SKIP_PAGE, tag.doStartTag());
-		Object missingPrivilegesObj = pageContext.getAttribute(WebConstants.FOUND_MISSING_PRIVILEGES,
-		    PageContext.SESSION_SCOPE);
-		Assert.assertNotNull(missingPrivilegesObj);
-		Assert.assertTrue(Boolean.valueOf(missingPrivilegesObj.toString()));
-		
-		Object errorMsg = pageContext.getAttribute(WebConstants.OPENMRS_ERROR_ATTR, PageContext.SESSION_SCOPE);
-		Assert.assertNotNull(errorMsg);
-		Assert.assertTrue(errorMsg.toString().indexOf("general.authentication.unableToViewPage") > -1);
-		Assert.assertTrue(errorMsg.toString().indexOf("general.authentication.accountHasNoPrivilege") > -1);
-		
+		Assert.assertEquals(true, pageContext.getAttribute(WebConstants.INSUFFICIENT_PRIVILEGES, PageContext.SESSION_SCOPE));
+		Assert.assertNotNull(pageContext.getAttribute(WebConstants.REQUIRED_PRIVILEGES, PageContext.SESSION_SCOPE));
 		Assert.assertEquals(referer, pageContext.getAttribute(WebConstants.DENIED_PAGE, PageContext.SESSION_SCOPE)
 		        .toString());
 		

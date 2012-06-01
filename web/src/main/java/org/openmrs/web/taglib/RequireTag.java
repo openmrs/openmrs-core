@@ -28,7 +28,6 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
-import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
 import org.springframework.util.StringUtils;
@@ -110,43 +109,19 @@ public class RequireTag extends TagSupport {
 		if (!hasPrivilege) {
 			errorOccurred = true;
 			if (userContext.isAuthenticated()) {
+				httpSession.setAttribute(WebConstants.INSUFFICIENT_PRIVILEGES, true);
+				if (missingPrivilegesBuffer != null)
+					httpSession.setAttribute(WebConstants.REQUIRED_PRIVILEGES, missingPrivilegesBuffer.toString());
+				
 				String referer = request.getHeader("Referer");
-				// If the user has just authenticated, but is still not authorized to see the page.
-				if (referer != null && referer.contains("login.")) {
-					try {
-						httpResponse.sendRedirect(request.getContextPath()); // Redirect to the home page.
-						return SKIP_PAGE;
-					}
-					catch (IOException e) {
-						// oops, cannot redirect
-						log.error("Unable to redirect to the home page", e);
-						throw new APIException(e);
-					}
+				httpSession.setAttribute(WebConstants.REFERER_URL, referer);
+				if (StringUtils.hasText(redirect)) {
+					httpSession.setAttribute(WebConstants.DENIED_PAGE, redirect);
+				} else if (StringUtils.hasText(referer)) {
+					//This is not exactly correct all the time
+					httpSession.setAttribute(WebConstants.DENIED_PAGE, referer);
 				}
 				
-				String errorCodeOrMsg = "";
-				if (missingPrivilegesBuffer != null) {
-					String requiredPrivileges = missingPrivilegesBuffer.toString();
-					MessageSourceService mss = Context.getMessageSourceService();
-					errorCodeOrMsg = mss.getMessage("general.authentication.unableToViewPage",
-					    new Object[] { requiredPrivileges }, null);
-					errorCodeOrMsg += "<br />" + mss.getMessage("general.authentication.accountHasNoPrivilege");
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, errorCodeOrMsg);
-					httpSession.setAttribute(WebConstants.FOUND_MISSING_PRIVILEGES, true);
-					httpSession.setAttribute(WebConstants.REQUIRED_PRIVILEGES, requiredPrivileges);
-					
-					if (StringUtils.hasText(redirect)) {
-						httpSession.setAttribute(WebConstants.DENIED_PAGE, redirect);
-					} else if (StringUtils.hasText(referer)) {
-						//This is not exactly correct all the time
-						httpSession.setAttribute(WebConstants.DENIED_PAGE, referer);
-					}
-				} else {
-					//Why would there be no missing privileges yet the hasPrivileges(String priv) returned false
-					errorCodeOrMsg = "require.unauthorized";
-				}
-				
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, errorCodeOrMsg);
 				log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + redirect
 				        + " which requires privilege: " + privilege + " or one of: " + allPrivileges + " or any of "
 				        + anyPrivilege);

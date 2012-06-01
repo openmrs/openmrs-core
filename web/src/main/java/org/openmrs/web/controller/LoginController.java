@@ -20,7 +20,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.JavaScriptUtils;
 
 /**
@@ -40,14 +39,25 @@ public class LoginController {
 	 */
 	@RequestMapping(LOGIN_FORM)
 	public String handleRequest(WebRequest webRequest, ModelMap model) {
-		if (Context.getAuthenticatedUser() != null) {
-			model.addAttribute("foundMissingPrivileges", webRequest.getAttribute(WebConstants.FOUND_MISSING_PRIVILEGES,
-			    WebRequest.SCOPE_SESSION));
-			webRequest.removeAttribute(WebConstants.FOUND_MISSING_PRIVILEGES, WebRequest.SCOPE_SESSION);
+		boolean failedPrivilegeCheck = false;
+		Object attributeValue = webRequest.getAttribute(WebConstants.INSUFFICIENT_PRIVILEGES, WebRequest.SCOPE_SESSION);
+		if (attributeValue != null) {
+			if (Boolean.valueOf(attributeValue.toString().trim())) {
+				failedPrivilegeCheck = true;
+			}
+			webRequest.removeAttribute(WebConstants.INSUFFICIENT_PRIVILEGES, WebRequest.SCOPE_SESSION);
+		}
+		
+		//If there is a currently logged in user and they failed a privilege check, else go to login in page
+		if (Context.getAuthenticatedUser() != null && failedPrivilegeCheck) {
+			model.addAttribute("foundMissingPrivileges", true);
+			webRequest.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.insufficientPrivileges",
+			    WebRequest.SCOPE_SESSION);
 			
 			String deniedPage = null;
 			String requiredPrivileges = null;
 			String exceptionMsg = null;
+			String refererUrl = null;
 			if (webRequest.getAttribute(WebConstants.DENIED_PAGE, WebRequest.SCOPE_SESSION) != null) {
 				String deniedPageTemp = webRequest.getAttribute(WebConstants.DENIED_PAGE, WebRequest.SCOPE_SESSION)
 				        .toString();
@@ -56,7 +66,6 @@ public class LoginController {
 					deniedPage = deniedPageTemp;
 				
 			}
-			
 			if (webRequest.getAttribute(WebConstants.REQUIRED_PRIVILEGES, WebRequest.SCOPE_SESSION) != null) {
 				String requiredPrivilegesTemp = webRequest.getAttribute(WebConstants.REQUIRED_PRIVILEGES,
 				    WebRequest.SCOPE_SESSION).toString();
@@ -71,13 +80,18 @@ public class LoginController {
 				if (StringUtils.isNotBlank(exceptionMsgTemp))
 					exceptionMsg = exceptionMsgTemp;
 			}
+			if (webRequest.getAttribute(WebConstants.REFERER_URL, WebRequest.SCOPE_SESSION) != null) {
+				String refererUrlTemp = webRequest.getAttribute(WebConstants.REFERER_URL, WebRequest.SCOPE_SESSION)
+				        .toString();
+				webRequest.removeAttribute(WebConstants.REFERER_URL, WebRequest.SCOPE_SESSION);
+				if (StringUtils.isNotBlank(refererUrlTemp) && !refererUrlTemp.contains("login."))
+					refererUrl = refererUrlTemp;
+			}
 			
 			String alertMessage = null;
-			String buttonLabelMsgCode = "general.requestAccessToPage";
 			if (requiredPrivileges != null && deniedPage != null) {
 				alertMessage = Context.getMessageSourceService().getMessage("general.alert.requestPrivilegesForPage",
 				    new String[] { Context.getAuthenticatedUser().getUsername(), requiredPrivileges, deniedPage }, null);
-				buttonLabelMsgCode = "general.requestPrivileges";
 			} else if (exceptionMsg != null && deniedPage != null) {
 				alertMessage = Context.getMessageSourceService().getMessage("general.alert.privilegesForPageOnException",
 				    new String[] { exceptionMsg, Context.getAuthenticatedUser().getUsername(), deniedPage }, null);
@@ -87,17 +101,28 @@ public class LoginController {
 			} else if (requiredPrivileges != null) {
 				alertMessage = Context.getMessageSourceService().getMessage("general.alert.requestPrivileges",
 				    new String[] { Context.getAuthenticatedUser().getUsername(), requiredPrivileges }, null);
-				buttonLabelMsgCode = "general.requestPrivileges";
 			} else if (exceptionMsg != null) {
 				alertMessage = Context.getMessageSourceService().getMessage("general.alert.requestPrivileges",
 				    new String[] { Context.getAuthenticatedUser().getUsername(), exceptionMsg }, null);
 			}
+			
+			String reason = null;
+			if (requiredPrivileges != null) {
+				reason = Context.getMessageSourceService().getMessage("error.privilegesRequired",
+				    new Object[] { requiredPrivileges }, null);
+			} else if (exceptionMsg != null) {
+				reason = exceptionMsg;
+			} else {
+				reason = Context.getMessageSourceService().getMessage("error.extraPrivilegesRequired");
+			}
+			
 			//else we don't know both the page and privileges required, and there 
 			//was no exception message that might contain the required privilege
 			
 			//will be sending the alert via ajax, so we need to escape js special chars
 			model.put("alertMessage", JavaScriptUtils.javaScriptEscape(alertMessage));
-			model.put("buttonLabel", HtmlUtils.htmlEscape(Context.getMessageSourceService().getMessage(buttonLabelMsgCode)));
+			model.put("reason", reason);
+			model.put("refererUrl", refererUrl);
 		}
 		
 		return LOGIN_FORM;

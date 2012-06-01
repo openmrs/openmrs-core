@@ -93,7 +93,7 @@ public class WebConstants {
 	 * Session attribute name that specifies if there are any privilege checks the currently
 	 * authenticated user failed
 	 */
-	public static final String FOUND_MISSING_PRIVILEGES = "found_missing_privileges";
+	public static final String INSUFFICIENT_PRIVILEGES = "insufficient_privileges";
 	
 	/**
 	 * Session attribute name for the url of the page the user was trying to access when they failed
@@ -110,4 +110,9 @@ public class WebConstants {
 	 * Session attribute name for the uncaught exception message
 	 */
 	public static final String UNCAUGHT_EXCEPTION_MESSAGE = "uncaught_exception_message";
+	
+	/**
+	 * Session attribute name for the referer url
+	 */
+	public static final String REFERER_URL = "referer_url";
 }

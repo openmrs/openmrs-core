@@ -18,6 +18,18 @@
 			$j('#responseDiv').show();
 		});
 	}
+	
+	function goToPreviousPage(){
+		<c:choose>
+			<c:when test="${not empty refererUrl}">
+			window.location= "${refererUrl}";
+			</c:when>
+			<c:otherwise>
+			//unfortunately this can bring us back to the login page, probably should go to index page
+			history.go(-1);
+			</c:otherwise>
+		</c:choose>
+	}
 </script>
 
 <style>
@@ -34,18 +46,37 @@
 	<c:if test="${not empty alertMessage}">
 	<div id="responseDiv" style="display: none">
 		<br />
-		<span id="successMsg" style="display: none"><spring:message code="general.requestSent" /></span>
+		<span id="successMsg" style="display: none"><spring:message code="general.alertSent" /></span>
 		<span id="failureMsg" class="error" style="display: none"><spring:message code="error.failedToSendRequest" /></span>
-	</div>
-	<div id="sendAlertDetails">
+	</div></c:if>
+	
+	<br />
+	<spring:message code="general.unableToViewPage" />
+	<c:if test="${not empty reason}">
 		<br />
-		<input id="notificationButton" type="button" value="${buttonLabel}" onclick="createAlert()" />
+		<span>${reason}</span>
+	</c:if>
+	
+	<br /><br />
+	<spring:message code="general.accountHasNoPrivilege" />
+	<br /><br />
+	<input type="button" value='<spring:message code="general.back" />' onclick="goToPreviousPage()" />
+	
+	<c:if test="${not empty alertMessage}">
+	<div id="sendAlertDetails">
+	<br /><br />
+	<spring:message code="general.sendAlertToAdminMessage" />
+		<br /><br />
+		<input id="notificationButton" type="button" value="<spring:message code="general.alertSystemAdmin" />" onclick="createAlert()" />
 	</div>
 	</c:if>
-	<br />
+	
+	<br /><br />
 	<div>
+		<spring:message code="general.loginWithAnotherAccountMessage" />
+		<br /><br />
 		<a href="#" onclick="javascript:$j('#loginPortlet').show()">
-			<spring:message code="general.authentication.loginWithAnotherAccount" />
+			<spring:message code="general.loginWithAnotherAccount" />
 		</a>
 	</div>
 </c:if>
