@@ -408,22 +408,23 @@ public class DWRConceptService {
 		
 		// find drugs for this concept
 		Set<Drug> drugs = new HashSet<Drug>();
-       
-        // trying to treat search phrase as drug concept id
-        try {
-                Integer conceptId = Integer.parseInt(phrase);
-                Concept targetConcept = cs.getConcept(conceptId);
-                if (targetConcept != null) {
-                        drugs.addAll(cs.getDrugsByConcept(targetConcept));
-                }
-        } catch (NumberFormatException e) {
-                // do nothing
-        }
-        
-        // also find drugs by given phrase, assuming that 
-        // this phrase is a list of concept words
-        drugs.addAll(cs.getDrugs(phrase));
-        		
+		
+		// trying to treat search phrase as drug concept id
+		try {
+			Integer conceptId = Integer.parseInt(phrase);
+			Concept targetConcept = cs.getConcept(conceptId);
+			if (targetConcept != null) {
+				drugs.addAll(cs.getDrugsByConcept(targetConcept));
+			}
+		}
+		catch (NumberFormatException e) {
+			// do nothing
+		}
+		
+		// also find drugs by given phrase, assuming that 
+		// this phrase is a list of concept words
+		drugs.addAll(cs.getDrugs(phrase));
+		
 		// miniaturize our drug objects
 		for (Drug drug : drugs) {
 			items.add(new ConceptDrugListItem(drug, locale));
