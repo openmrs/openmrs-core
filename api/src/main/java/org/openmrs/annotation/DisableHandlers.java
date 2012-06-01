@@ -33,6 +33,7 @@ import java.lang.annotation.Target;
  *          private List<Person> persons;
  *      }
  *
+ *      You can disable all RequiredDataAdviceHandlers by specifying the parent class: @DisableHandlers(handlerTypes = { RequiredDataHandler.class })
  **/
 
 @Target( { ElementType.FIELD })
