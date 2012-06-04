@@ -601,7 +601,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Override
 	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
-	        throws APIException {
+	    throws APIException {
 		if (name != null)
 			name = name.replace(", ", " ");
 		
@@ -625,13 +625,18 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
-	 * @see UserService#notifyPrivilegeListeners(User, String, boolean)  
+	 * @see UserService#notifyPrivilegeListeners(User, String, boolean)
 	 */
 	@Override
 	public void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
 		if (privilegeListeners != null) {
 			for (PrivilegeListener privilegeListener : privilegeListeners) {
-				privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
+				try {
+					privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
+				}
+				catch (Exception e) {
+					log.error("Privilege listener has failed", e);
+				}
 			}
 		}
 	}
