@@ -5,6 +5,8 @@
 	<div id="footer">
 		<div id="footerInner">
 		
+			<openmrs:extensionPoint pointId="org.openmrs.footerFullBeforeStatusBar" type="html" />
+		
 			<span id="localeOptions">
 				<%  //removes last instance of lang= from querystring and encodes the url to avoid xml problems
 					String qs = org.apache.commons.lang.StringEscapeUtils.escapeXml(request.getQueryString());
