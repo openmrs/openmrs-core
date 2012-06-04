@@ -311,25 +311,31 @@ public class UserContext {
 		if (isAuthenticated()) {
 			
 			// check user's privileges
-			if (getAuthenticatedUser().hasPrivilege(privilege))
+			if (getAuthenticatedUser().hasPrivilege(privilege) || getAuthenticatedRole().hasPrivilege(privilege)) {
+				Context.getUserService().notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 				return true;
+			}
 			
-			if (getAuthenticatedRole().hasPrivilege(privilege))
-				return true;
 		}
 		
 		if (log.isDebugEnabled())
 			log.debug("Checking '" + privilege + "' against proxies: " + proxies);
 		
 		// check proxied privileges
-		for (String s : proxies)
-			if (s.equals(privilege))
+		for (String s : proxies) {
+			if (s.equals(privilege)) {
+				Context.getUserService().notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 				return true;
+			}
+		}
 		
-		if (getAnonymousRole().hasPrivilege(privilege))
+		if (getAnonymousRole().hasPrivilege(privilege)) {
+			Context.getUserService().notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 			return true;
+		}
 		
 		// default return value
+		Context.getUserService().notifyPrivilegeListeners(getAuthenticatedUser(), privilege, false);
 		return false;
 	}
 	
