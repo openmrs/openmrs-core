@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>1.9.0-RC4</version>
+	<version>1.9.0</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -27,9 +27,9 @@
 	</organization>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs/tags/1.9.0-RC4</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs/tags/1.9.0-RC4</developerConnection>
-		<url>http://svn.openmrs.org/openmrs/tags/1.9.0-RC4</url>
+		<connection>scm:svn:http://svn.openmrs.org/openmrs/tags/1.9.0</connection>
+		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs/tags/1.9.0</developerConnection>
+		<url>http://svn.openmrs.org/openmrs/tags/1.9.0</url>
 	</scm>
 
 	<modules>
