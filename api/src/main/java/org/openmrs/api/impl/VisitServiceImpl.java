@@ -23,7 +23,6 @@ import java.util.Map;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
-import org.openmrs.EncounterRole;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Visit;

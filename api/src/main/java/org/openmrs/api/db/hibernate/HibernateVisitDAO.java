@@ -26,7 +26,6 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
-import org.openmrs.EncounterRole;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
