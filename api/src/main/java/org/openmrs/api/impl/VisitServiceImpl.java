@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
+import org.openmrs.EncounterRole;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
@@ -66,6 +67,14 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	public List<VisitType> getAllVisitTypes() {
 		return getVisitDAO().getAllVisitTypes();
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getAllVisitTypes(boolean)
+	 */
+	@Override
+	public List<VisitType> getAllVisitTypes(boolean includeRetired) {
+		return dao.getAllVisitTypes(includeRetired);
 	}
 	
 	/**

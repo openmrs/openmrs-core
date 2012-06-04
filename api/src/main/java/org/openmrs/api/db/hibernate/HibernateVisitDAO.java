@@ -26,6 +26,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
+import org.openmrs.EncounterRole;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
@@ -62,6 +63,15 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Transactional(readOnly = true)
 	public List<VisitType> getAllVisitTypes() throws APIException {
 		return getCurrentSession().createCriteria(VisitType.class).list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getAllVisitTypes(boolean)
+	 */
+	@Override
+	public List<VisitType> getAllVisitTypes(boolean includeRetired) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(VisitType.class);
+		return includeRetired ? criteria.list() : criteria.add(Restrictions.eq("retired", includeRetired)).list();
 	}
 	
 	/**

@@ -13,6 +13,8 @@
  */
 package org.openmrs.api;
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
@@ -889,5 +892,18 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(visit.getDateCreated());
 		Assert.assertEquals(originalSize + 1, vs.getAllVisits().size());
 		Assert.assertTrue(visit.getEncounters().size() == 1);
+	}
+	
+	/**
+	 * @see {@link VisitService#getAllVisitTypes(boolean)}
+	 */
+	@Test
+	@Verifies(value = "get all visit types based on include retired flag", method = "getAllVisitTypes(boolean)")
+	public void getAllVisitTypes_shouldGetAllVisitTypesBasedOnIncludeRetiredFlag() throws Exception {
+		VisitService visitService = Context.getVisitService();
+		List<VisitType> visitTypes = visitService.getAllVisitTypes(true);
+		assertEquals("get all visit types including retired", 3, visitTypes.size());
+		visitTypes = visitService.getAllVisitTypes(false);
+		assertEquals("get all visit types excluding retired", 2, visitTypes.size());
 	}
 }
