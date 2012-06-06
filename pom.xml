@@ -320,8 +320,8 @@
 
 			<dependency>
 				<groupId>ca.uhn.hapi</groupId>
-				<artifactId>hapi</artifactId>
-				<version>0.5</version>
+				<artifactId>hapi-structures-v25</artifactId>
+				<version>1.2</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-cli</groupId>
