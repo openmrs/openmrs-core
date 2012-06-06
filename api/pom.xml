@@ -87,7 +87,7 @@
       </dependency>
       <dependency>
          <groupId>ca.uhn.hapi</groupId>
-         <artifactId>hapi</artifactId>
+         <artifactId>hapi-structures-v25</artifactId>
       </dependency>
       <dependency>
          <groupId>org.openmrs.simpleframework</groupId>
