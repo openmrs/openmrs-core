@@ -102,6 +102,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   searchPhrase: The phrase to be set in the search box so that a search is triggered on page load to display initial items
  *   doSearchWhenEmpty: If it is set to true, it lists all items initially and filters them with the given search phrase. (default:false)
  *   verboseHandler: function to be called to return the text to display as verbose output
+ *   attributes: Array of names for attributes types to display in the list of results
  *   
  * The styling on this table works like this:
  * <pre>  
@@ -354,6 +355,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	
 	    		return true;
 		    });
+			
+			/*=============== Begin Processing of some initialization stuff  =======================*/
 		    
 		    //on widget load the focus should be on the search box if there are no 
 		    //other enabled and visible text boxes on the page
@@ -373,8 +376,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	self._results = self.options.initialData;
 		    else
 		    	div.find(".openmrsSearchDiv").hide();
-			
-			/*=============== Begin Processing of some initialization stuff  =======================*/
 		    
 		    //Add the placeholder text to the Search field
 		    if(self.options.searchPlaceholder){
@@ -557,7 +558,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			var self = this;
 			var fieldsAndHeaders = self.options.fieldsAndHeaders;
 			var columnIndex = 0
-			return $j.map(fieldsAndHeaders, function(c) {
+			columData = $j.map(fieldsAndHeaders, function(c) {
 				var width = null;
 				var fnRenderer = null;
 				var visible = true;
@@ -574,6 +575,24 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				columnIndex++;
 				return column;
 			});
+			
+			//add attribute column headers if any
+			if(self.options.attributes){
+				$j.each(self.options.attributes, function(index, a) {
+					attribColWidth = null;
+					attribColFnRenderer = null;
+					attribColVisibility = (a.columnVisible != false);
+					
+					if(a.columnWidth)
+						attribColWidth = a.columnWidth;
+					if(a.columnRenderer)
+						attribColFnRenderer = a.columnRenderer;
+					
+					columData.push({ sTitle: a.header, sWidth: attribColWidth, fnRender: attribColFnRenderer, bVisible: attribColVisibility });
+				});
+			}
+			
+			return columData;
 		},
 		
 		_doSearch: function(text) {
@@ -770,13 +789,26 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		
 		_buildRow: function(rowData) {
 			var cols = this.options.fieldsAndHeaders;
-			return $j.map(cols, function(c) {
+			rRowData = $j.map(cols, function(c) {
 				var data = rowData[c.fieldName];
 				if(data == null) 
 					data = " ";
 				
 				return data;
 			});
+			
+			//include the attributes
+			if(this.options.attributes){
+				$j.each(this.options.attributes, function(index, a) {
+					attributeValue = rowData.attributes[a.name];
+					if(attributeValue == null) 
+						attributeValue = '';
+					
+					rRowData.push(attributeValue);
+				});
+			}
+			
+			return rRowData;
 		},
 		
 		_fireEvent: function(eventType, data) {
