@@ -10,6 +10,8 @@
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js"/>
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
 
+<openmrs:globalProperty key="patient.listingAttributeTypes" var="attributesToList"/>
+
 <script type="text/javascript">
 	$j(document).ready(function() {
 		new OpenmrsSearch("findPatients", false, doPatientSearch, doSelectionHandler, 
@@ -23,7 +25,22 @@
 				],
 				{
                     searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>',
-                    searchPlaceholder:'<spring:message code="Patient.searchBox.placeholder" javaScriptEscape="true"/>'
+                    searchPlaceholder:'<spring:message code="Patient.searchBox.placeholder" javaScriptEscape="true"/>',
+                    attributes: [
+                      <c:forEach var="attribute" items="${fn:split(attributesToList, ',')}" varStatus="varStatus">
+                      <c:if test="${fn:trim(attribute) != ''}">
+                          <c:set var="attributeName" value="${fn:trim(attribute)}" />
+						  <c:choose>
+						    <c:when test="${varStatus.index == 0}">
+								{name:"${attributeName}", header:"<spring:message code="PersonAttributeType.${fn:replace(attributeName, ' ', '')}" text="${attributeName}"/>"}
+						    </c:when>
+						    <c:otherwise>
+								,{name:"${attributeName}", header:"<spring:message code="PersonAttributeType.${fn:replace(attributeName, ' ', '')}" text="${attributeName}"/>"}
+						    </c:otherwise>
+						  </c:choose>
+                    	</c:if>
+                      </c:forEach>
+                    ]
                 });
 	});
 	

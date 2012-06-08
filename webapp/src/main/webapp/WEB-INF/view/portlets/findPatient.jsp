@@ -149,6 +149,8 @@
 			<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js"/>
 			<openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
 
+			<openmrs:globalProperty key="patient.listingAttributeTypes" var="attributesToList"/>
+			
 			<script type="text/javascript">
 				var lastSearch;
 				$j(document).ready(function() {
@@ -163,10 +165,25 @@
 						],
 						{
                             searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>',
-                            searchPlaceholder:'<spring:message code="Patient.searchBox.placeholder" javaScriptEscape="true"/>'
+                            searchPlaceholder:'<spring:message code="Patient.searchBox.placeholder" javaScriptEscape="true"/>',
+                            attributes: [
+                                     	<c:forEach var="attribute" items="${fn:split(attributesToList, ',')}" varStatus="varStatus">
+                                           <c:if test="${fn:trim(attribute) != ''}">
+                                           <c:set var="attributeName" value="${fn:trim(attribute)}" />
+                                			     <c:choose>
+                                					<c:when test="${varStatus.index == 0}">
+                                						{name:"${attributeName}", header:"<spring:message code="PersonAttributeType.${fn:replace(attributeName, ' ', '')}" text="${attributeName}"/>"}
+                                					</c:when>
+                                					<c:otherwise>
+                                						,{name:"${attributeName}", header:"<spring:message code="PersonAttributeType.${fn:replace(attributeName, ' ', '')}" text="${attributeName}"/>"}
+                                					</c:otherwise>
+                                				 </c:choose>
+                                           </c:if>
+                                   		</c:forEach>
+                                     ]
                             <c:if test="${not empty param.phrase}">
                                 , searchPhrase: '<spring:message text="${ param.phrase }" javaScriptEscape="true"/>'
-                            </c:if>
+                            </c:if>                      
                         });
 
 					//set the focus to the first input box on the page(in this case the text box for the search widget)
