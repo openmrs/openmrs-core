@@ -32,7 +32,6 @@ import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -794,7 +793,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Deprecated
 	public void purgeConceptDatatype(ConceptDatatype cd) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -804,7 +803,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Deprecated
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws APIException {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
