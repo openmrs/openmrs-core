@@ -2289,4 +2289,17 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(conceptWithMultipleMatchingNames, searchResults.get(0).getConcept());
 		Assert.assertEquals("SALBUTAMOL INHALER", searchResults.get(0).getConceptName().getName());
 	}
+	
+	/**
+	 * @see {@link ConceptService#getConcepts(String,List<Locale>,null,List<ConceptClass>,List<
+	 *      ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)}
+	 */
+	@Test
+	@Verifies(value = "should not return concepts with matching names that are voided", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
+	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() throws Exception {
+		Concept concept = conceptService.getConcept(7);
+		conceptService.updateConceptIndex(concept);
+		Assert.assertEquals(0, conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false, null,
+		    null, null, null, null, null, null).size());
+	}
 }
