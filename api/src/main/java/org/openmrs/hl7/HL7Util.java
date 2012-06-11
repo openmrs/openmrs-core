@@ -14,7 +14,6 @@
 package org.openmrs.hl7;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,9 +39,9 @@ public class HL7Util {
 	private static Log log = LogFactory.getLog(HL7Util.class);
 	
 	// Date and time format parsers
-	private static final DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss.SSSZ");
+	private static final String TIMESTAMP_FORMAT = "yyyyMMddHHmmss.SSSZ";
 	
-	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss.SSSZ");
+	private static final String TIME_FORMAT = "HHmmss.SSSZ";
 	
 	public static final String LOCAL_TIMEZONE_OFFSET = new SimpleDateFormat("Z").format(new Date());
 	
@@ -137,7 +136,7 @@ public class HL7Util {
 		
 		Date date;
 		try {
-			date = TIMESTAMP_FORMAT.parse(dateString.toString());
+			date = new SimpleDateFormat(TIMESTAMP_FORMAT).parse(dateString.toString());
 		}
 		catch (ParseException e) {
 			throw new HL7Exception("Error parsing date '" + s + "'");
@@ -253,7 +252,7 @@ public class HL7Util {
 		
 		Date date;
 		try {
-			date = (Date) TIME_FORMAT.parse(timeString.toString());
+			date = new SimpleDateFormat(TIME_FORMAT).parse(timeString.toString());
 		}
 		catch (ParseException e) {
 			throw new HL7Exception("Invalid time format: '" + s + "' [" + timeString + "]", e);
