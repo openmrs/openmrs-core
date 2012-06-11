@@ -601,7 +601,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Override
 	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
-	    throws APIException {
+	        throws APIException {
 		if (name != null)
 			name = name.replace(", ", " ");
 		
