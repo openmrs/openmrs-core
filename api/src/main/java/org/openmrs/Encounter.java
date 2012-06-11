@@ -374,6 +374,18 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * Basic property accessors for encounterProviders set
+	 * @return
+	 */
+	public Set<EncounterProvider> getEncounterProviders() {
+		return encounterProviders;
+	}
+	
+	public void setEncounterProviders(Set<EncounterProvider> encounterProviders) {
+		this.encounterProviders = encounterProviders;
+	}
+	
+	/**
 	 * @return Returns the provider.
 	 * @since 1.6 (used to return User)
 	 * @deprecated since 1.9, use {@link #getProvidersByRole(EncounterRole)}
@@ -651,4 +663,5 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 			}
 		}
 	}
+	
 }
