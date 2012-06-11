@@ -50,6 +50,10 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if prn is null
 	 * @should fail validation if complex is null
 	 * @should fail validation if drug is null
+	 * @should fail validation if drug concept is not set
+	 * @should fail validation if drug dose is set and units is not set
+	 * @should fail if daily dose set and units not set 
+	 * @should fail if quantity set and units not set
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -62,7 +66,13 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			// for the following elements Order.hbm.xml says: not-null="true"
 			ValidationUtils.rejectIfEmpty(errors, "prn", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "complex", "error.null");
-			//ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
+			if (order.getDrug() != null) {
+				ValidationUtils.rejectIfEmpty(errors, "drug.concept", "error.null");
+			}
+			if (order.getDose() != null || order.getEquivalentDailyDose() != null || order.getQuantity() != null) {
+				ValidationUtils.rejectIfEmpty(errors, "units", "DrugOrder.error.unitsNotSetWhenDoseOrQuantitySpecified");
+			}
 		}
 	}
 }
