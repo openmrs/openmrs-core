@@ -633,4 +633,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		return dao.getDrugOrdersByPatientAndIngredient(patient, ingredient);
 	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrdersByPatient(org.openmrs.Patient, java.lang.Boolean)
+	 */
+	public List<Order> getOrdersByPatient(Patient patient, boolean includeVoided) throws APIException {
+		if (patient == null)
+			throw new APIException("Unable to get orders if I am not given a patient");
+		
+		List<Patient> patients = new Vector<Patient>();
+		patients.add(patient);
+		
+		return getOrders(Order.class, patients, null, includeVoided ? ORDER_STATUS.ANY : ORDER_STATUS.NOTVOIDED, null, null,
+		    null);
+	}
 }

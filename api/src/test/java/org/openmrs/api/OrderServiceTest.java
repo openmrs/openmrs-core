@@ -36,6 +36,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String DRUG_ORDERS_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-drugOrdersList.xml";
 	
+	protected static final String ORDERS_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-ordersList.xml";
+	
 	/**
 	 * @see {@link OrderService#saveOrder(Order)}
 	 */
@@ -212,4 +214,30 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(0, drugOrders.size());
 	}
 	
+	/**
+	 * @see {@link OrderService#getOrdersByPatient(Patient, boolean)}
+	 */
+	@Test
+	@Verifies(value = "return list of orders for patient with respect to the include voided flag", method = "getOrdersByPatient(Patient, boolean)")
+	public void getOrdersByPatient_shouldReturnListOfOrdersForPatientWithRespectToTheIncludeVoidedFlag() throws Exception {
+		executeDataSet(ORDERS_DATASET_XML);
+		Patient p = Context.getPatientService().getPatient(2);
+		List<Order> orders = Context.getOrderService().getOrdersByPatient(p, true);
+		Assert.assertEquals(8, orders.size());
+		
+		orders = Context.getOrderService().getOrdersByPatient(p, false);
+		Assert.assertEquals(4, orders.size());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrdersByPatient(Patient)}
+	 */
+	@Test
+	@Verifies(value = "return list of non voided orders for patient", method = "getOrdersByPatient(Patient)")
+	public void getOrdersByPatient_shouldReturnListOfNonVoidedOrdersForPatient() throws Exception {
+		executeDataSet(ORDERS_DATASET_XML);
+		Patient p = Context.getPatientService().getPatient(2);
+		List<Order> orders = Context.getOrderService().getOrdersByPatient(p);
+		Assert.assertEquals(4, orders.size());
+	}
 }

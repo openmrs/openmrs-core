@@ -293,6 +293,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @return orders list
 	 * @throws APIException
+	 * @should return list of non voided orders for patient
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
@@ -569,4 +570,15 @@ public interface OrderService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient);
 	
+	/**
+	 * Get orders for a given patient
+	 * 
+	 * @param patient the owning Patient of the returned orders
+	 * @param includeVoided true/false whether or not to include voided orders
+	 * @return List of orders for the given patient
+	 * @should return list of orders for patient with respect to the include voided flag
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	public List<Order> getOrdersByPatient(Patient patient, boolean includeVoided);
 }
