@@ -577,6 +577,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param includeVoided true/false whether or not to include voided orders
 	 * @return List of orders for the given patient
 	 * @should return list of orders for patient with respect to the include voided flag
+	 * @since 1.10
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_ORDERS)

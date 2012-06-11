@@ -641,7 +641,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (patient == null)
 			throw new APIException("Unable to get orders if I am not given a patient");
 		
-		List<Patient> patients = new Vector<Patient>();
+		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(patient);
 		
 		return getOrders(Order.class, patients, null, includeVoided ? ORDER_STATUS.ANY : ORDER_STATUS.NOTVOIDED, null, null,
