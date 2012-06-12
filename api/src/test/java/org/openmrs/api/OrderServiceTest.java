@@ -240,4 +240,95 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> orders = Context.getOrderService().getOrdersByPatient(p);
 		Assert.assertEquals(4, orders.size());
 	}
+	
+	/**
+	 * @see OrderService#voidOrder(Order,String)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@Verifies(value = "should fail if reason is empty", method = "voidOrder(Order,String)")
+	public void voidOrder_shouldFailIfReasonIsEmpty() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		
+		Order order = orderService.getOrder(2);
+		Assert.assertNotNull(order);
+		
+		String voidReason = "";
+		orderService.voidOrder(order, "");
+	}
+	
+	/**
+	 * @see {@link OrderService#voidOrder(Order,String)}
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@Verifies(value = "should fail if reason is null", method = "voidOrder(Order,String)")
+	public void voidOrder_shouldFailIfReasonIsNull() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		
+		Order order = orderService.getOrder(2);
+		Assert.assertNotNull(order);
+		
+		String voidReason = null;
+		orderService.voidOrder(order, voidReason);
+	}
+	
+	/**
+	 * @see {@link OrderService#voidOrder(Order,String)}
+	 */
+	@Test
+	@Verifies(value = "should void given order", method = "voidOrder(Order,String)")
+	public void voidOrder_shouldVoidGivenOrder() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		
+		Order order = orderService.getOrder(2);
+		Assert.assertNotNull(order);
+		
+		String voidReason = "test reason";
+		orderService.voidOrder(order, voidReason);
+		
+		// assert that order is voided and void reason is set		
+		Assert.assertTrue(order.isVoided());
+		Assert.assertEquals(voidReason, order.getVoidReason());
+	}
+	
+	/**
+	 * @see {@link OrderService#voidOrder(Order,String)}
+	 */
+	@Test
+	@Verifies(value = "should not change an already voided order", method = "voidOrder(Order,String)")
+	public void voidOrder_shouldNotChangeAnAlreadyVoidedOrder() throws Exception {
+		executeDataSet(DRUG_ORDERS_DATASET_XML);
+		OrderService orderService = Context.getOrderService();
+		
+		Order order = orderService.getOrder(8);
+		Assert.assertNotNull(order);
+		// assert that order has been already voided
+		Assert.assertTrue(order.isVoided());
+		String expectedVoidReason = order.getVoidReason();
+		
+		String voidReason = "test reason";
+		orderService.voidOrder(order, voidReason);
+		
+		// assert that voiding does not make an affect
+		Assert.assertTrue(order.isVoided());
+		Assert.assertEquals(expectedVoidReason, order.getVoidReason());
+	}
+	
+	/**
+	 * @see {@link OrderService#unvoidOrder(Order)}
+	 */
+	@Test
+	@Verifies(value = "should unvoid given order", method = "voidOrder(Order)")
+	public void unvoidOrder_shouldUnvoidGivenOrder() throws Exception {
+		executeDataSet(DRUG_ORDERS_DATASET_XML);
+		OrderService orderService = Context.getOrderService();
+		
+		Order order = orderService.getOrder(8);
+		Assert.assertNotNull(order);
+		// assert that order has been already voided
+		Assert.assertTrue(order.isVoided());
+		
+		orderService.unvoidOrder(order);
+		
+		Assert.assertFalse(order.isVoided());
+	}
 }

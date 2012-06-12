@@ -125,19 +125,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#voidOrder(org.openmrs.Order, java.lang.String)
 	 */
 	public Order voidOrder(Order order, String voidReason) throws APIException {
-		// fail early if this order is already voided
-		if (order.getVoided())
-			return order;
-		
-		if (!StringUtils.hasLength(voidReason))
-			throw new IllegalArgumentException("voidReason cannot be empty or null");
-		
-		order.setVoided(Boolean.TRUE);
-		order.setVoidReason(voidReason);
-		order.setVoidedBy(Context.getAuthenticatedUser());
-		if (order.getDateVoided() == null)
-			order.setDateVoided(new Date());
-		
 		return saveOrder(order);
 	}
 	
@@ -145,7 +132,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#unvoidOrder(org.openmrs.Order)
 	 */
 	public Order unvoidOrder(Order order) throws APIException {
-		order.setVoided(false);
 		return saveOrder(order);
 	}
 	
