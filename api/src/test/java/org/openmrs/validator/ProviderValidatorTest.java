@@ -58,13 +58,13 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldBeValidIfIdentifierIsNotSet() throws Exception {
 		//given
 		provider.setIdentifier(null);
+		provider.setName("bcj");
 		
 		//when
 		providerValidator.validate(provider, errors);
 		
 		//then
-		Assert.assertTrue(errors.hasFieldErrors("identifier"));
-		Assert.assertEquals("Provider.error.identifier.required", errors.getFieldError("identifier").getCode());
+		Assert.assertFalse(errors.hasErrors());
 	}
 	
 	/**
