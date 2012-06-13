@@ -79,7 +79,21 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order saveOrder(Order order) throws APIException {
-		return saveOrderWithLesserValidation(order);
+		
+		checkIfModifyingSavedOrderNumber(order);
+		
+		//No editing of orders. We instead create a new one.
+		if (order.getOrderId() != null) {
+			Order newOrder = new Order();
+			newOrder.setConcept(order.getConcept());
+			newOrder.setPatient(order.getPatient());
+			newOrder.setOrderNumber(order.getOrderNumber());
+			newOrder.setStartDate(new Date());
+			newOrder.setUuid(UUID.randomUUID().toString());
+			
+			return saveOrderWithLesserValidation(newOrder);
+		} else
+			return saveOrderWithLesserValidation(order);
 	}
 	
 	/**
@@ -116,7 +130,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order unvoidOrder(Order order) throws APIException {
-		return saveOrder(order);
+		return saveOrderWithLesserValidation(order);
 	}
 	
 	/**
@@ -422,12 +436,15 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @throws APIException
 	 */
 	private Order saveOrderWithLesserValidation(Order order) throws APIException {
+		checkIfModifyingSavedOrderNumber(order);
+		ValidateUtil.validate(order);
+		return dao.saveOrder(order);
+	}
+	
+	private void checkIfModifyingSavedOrderNumber(Order order) {
 		String orderNumberInDatabase = dao.getOrderNumberInDatabase(order);
 		if (orderNumberInDatabase != null && !orderNumberInDatabase.equals(order.getOrderNumber()))
 			throw new APIException("Cannot modify the orderNumber of a saved order");
-		
-		ValidateUtil.validate(order);
-		return dao.saveOrder(order);
 	}
 	
 	/**

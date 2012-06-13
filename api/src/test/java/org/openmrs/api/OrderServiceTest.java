@@ -69,6 +69,18 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link OrderService#saveOrder(Order)}
+	 */
+	@Test
+	@Verifies(value = "should save new version of an existing order", method = "saveOrder(Order)")
+	public void saveOrder_shouldSaveNewVersionOfAnExistingOrder() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		Order order = orderService.getOrder(2);
+		Order newOrder = orderService.saveOrder(order);
+		Assert.assertTrue(order.getOrderId() != newOrder.getOrderId());
+	}
+	
+	/**
 	 * @see {@link OrderService#getOrderByUuid(String)}
 	 */
 	@Test
@@ -86,6 +98,58 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return null if no object found with given uuid", method = "getOrderByUuid(String)")
 	public void getOrderByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getOrderService().getOrderByUuid("some invalid uuid"));
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderByOrderNumber(String)}
+	 */
+	@Test
+	@Verifies(value = "should find object given valid order number", method = "getOrderByOrderNumber(String)")
+	public void getOrderByOrderNumber_shouldFindObjectGivenValidOrderNumber() throws Exception {
+		Order order = Context.getOrderService().getOrderByOrderNumber("1");
+		Assert.assertNotNull(order);
+		Assert.assertEquals(1, (int) order.getOrderId());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderByOrderNumber(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given order number", method = "getOrderByOrderNumber(String)")
+	public void getOrderByOrderNumber_shouldReturnNullIfNoObjectFoundWithGivenOrderNumber() throws Exception {
+		Assert.assertNull(Context.getOrderService().getOrderByOrderNumber("some invalid order number"));
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrder(Integer)}
+	 */
+	@Test
+	@Verifies(value = "should find object given valid order id", method = "getOrder(Integer)")
+	public void getOrder_shouldFindObjectGivenValidOrderId() throws Exception {
+		Order order = Context.getOrderService().getOrder(1);
+		Assert.assertNotNull(order);
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrder(Integer)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given order id", method = "getOrder(Integer)")
+	public void getOrder_shouldReturnNullIfNoObjectFoundWithGivenOrderId() throws Exception {
+		Assert.assertNull(Context.getOrderService().getOrder(999));
+	}
+	
+	/**
+	 * @see {@link OrderService#purgeOrder(Order)}
+	 */
+	@Test
+	@Verifies(value = "should delete order", method = "purgeOrder(Order)")
+	public void purgeOrder_shouldDeleteOrder() throws Exception {
+		Order order = Context.getOrderService().getOrder(1);
+		Assert.assertNotNull(order);
+		Context.getOrderService().purgeOrder(order);
+		order = Context.getOrderService().getOrder(1);
+		Assert.assertNull(order);
 	}
 	
 	/**

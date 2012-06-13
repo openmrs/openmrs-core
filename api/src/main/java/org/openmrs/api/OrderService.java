@@ -65,6 +65,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should not allow you to edit an order after it has been activated
 	 * @should allow you to edit an order before it is activated
 	 * @should not allow you to save an order that is not activated and signed
+	 * @should save new version of an existing order
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order) throws APIException;
@@ -75,6 +76,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param order The Order to remove from the system
 	 * @throws APIException
+	 * @should delete order
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDERS)
 	public void purgeOrder(Order order) throws APIException;
@@ -102,6 +104,8 @@ public interface OrderService extends OpenmrsService {
 	 * @return order with given internal identifier
 	 * @throws APIException
 	 * @see #getOrder(Integer, Class)
+	 * @should find object given valid order id
+	 * @should return null if no object found with given order id
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
@@ -201,6 +205,8 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param orderNumber the order number.
 	 * @return the order object.
+	 * @should find object given valid order number
+	 * @should return null if no object found with given order number
 	 */
 	@Transactional(readOnly = true)
 	public Order getOrderByOrderNumber(String orderNumber);
