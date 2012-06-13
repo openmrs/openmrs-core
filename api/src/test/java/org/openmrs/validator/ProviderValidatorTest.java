@@ -21,7 +21,6 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
-import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -53,10 +52,10 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderValidator#validate(Object,Errors)
-	 * @verifies be invalid if identifier is not set
+	 * @verifies be valid if identifier is not set
 	 */
 	@Test
-	public void validate_shouldBeInvalidIfIdentifierIsNotSet() throws Exception {
+	public void validate_shouldBeValidIfIdentifierIsNotSet() throws Exception {
 		//given
 		provider.setIdentifier(null);
 		
