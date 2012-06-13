@@ -87,6 +87,10 @@ public interface OrderService extends OpenmrsService {
 	 * @param order Order to void
 	 * @return the Order that was voided
 	 * @throws APIException
+	 * @should fail if reason is null
+	 * @should fail if reason is empty
+	 * @should void given order
+	 * @should not change an already voided order
 	 */
 	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order voidOrder(Order order, String voidReason) throws APIException;
@@ -132,6 +136,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @return orders list
 	 * @throws APIException
+	 * @should return list of non voided orders for patient
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
@@ -164,6 +169,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param order order to be unvoided
 	 * @return the Order that was unvoided
+	 * @should unvoid given order
 	 */
 	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order unvoidOrder(Order order) throws APIException;
@@ -339,4 +345,34 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public String getNewOrderNumber();
+	
+	/**
+	 * Gets all drug orders for the given patient and ingredient, which can be either the drug
+	 * itself or any ingredient.
+	 * 
+	 * @param patient
+	 * @param ingredient
+	 * @return the list of drug orders
+	 * @should return drug orders matched by patient and intermediate concept
+	 * @should return drug orders matched by patient and drug concept
+	 * @should return empty list if no concept matched
+	 * @should return empty list if no patient matched
+	 * @since 1.10
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient);
+	
+	/**
+	 * Get orders for a given patient
+	 * 
+	 * @param patient the owning Patient of the returned orders
+	 * @param includeVoided true/false whether or not to include voided orders
+	 * @return List of orders for the given patient
+	 * @should return list of orders for patient with respect to the include voided flag
+	 * @since 1.10
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	public List<Order> getOrdersByPatient(Patient patient, boolean includeVoided);
 }

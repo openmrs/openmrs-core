@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 
 /**
@@ -42,10 +44,13 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	private Concept concept;
 	
+	private Collection<DrugIngredient> ingredients;
+	
 	// Constructors
 	
 	/** default constructor */
 	public Drug() {
+		ingredients = new LinkedHashSet<DrugIngredient>();
 	}
 	
 	/** constructor with id */
@@ -186,12 +191,36 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 		this.minimumDailyDose = minimumDailyDose;
 	}
 	
+	/**
+	 * @deprecated moving it to order entry where it belongs.
+	 */
+	@Deprecated
 	public Concept getRoute() {
 		return route;
 	}
 	
+	/**
+	 * @deprecated moving it to order entry where it belongs.
+	 */
+	@Deprecated
 	public void setRoute(Concept route) {
 		this.route = route;
+	}
+	
+	/**
+	 * @return Returns the ingredients
+	 * @since 1.10
+	 */
+	public Collection<DrugIngredient> getIngredients() {
+		return ingredients;
+	}
+	
+	/**
+	 * @param ingredients The ingredients to set
+	 * @since 1.10
+	 */
+	public void setIngredients(Collection<DrugIngredient> ingredients) {
+		this.ingredients = ingredients;
 	}
 	
 	/**

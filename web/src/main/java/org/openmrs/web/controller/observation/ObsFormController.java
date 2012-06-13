@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller.observation;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -105,6 +106,12 @@ public class ObsFormController extends SimpleFormController {
 			obs.setValueCoded(obs.getValueCodedName().getConcept());
 		}
 		
+		//Set the complex obs value before we validate. See TRUNK-3353
+		if (obs.getConcept().isComplex()) {
+			InputStream complexDataInputStream = setComplexData(obs, request);
+			complexDataInputStream.close();
+		}
+		
 		super.onBind(request, command);
 	}
 	
@@ -137,21 +144,12 @@ public class ObsFormController extends SimpleFormController {
 					
 					if (obs.getConcept().isComplex()) {
 						if (request instanceof MultipartHttpServletRequest) {
-							MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-							MultipartFile complexDataFile = multipartRequest.getFile("complexDataFile");
-							if (complexDataFile != null && !complexDataFile.isEmpty()) {
-								InputStream complexDataInputStream = complexDataFile.getInputStream();
-								
-								ComplexData complexData = new ComplexData(complexDataFile.getOriginalFilename(),
-								        complexDataInputStream);
-								
-								obs.setComplexData(complexData);
-								
-								// the handler on the obs.concept is called with the given complex data
-								newlySavedObs = os.saveObs(obs, reason);
-								
-								complexDataInputStream.close();
-							}
+							InputStream complexDataInputStream = setComplexData(obs, request);
+							
+							// the handler on the obs.concept is called with the given complex data
+							newlySavedObs = os.saveObs(obs, reason);
+							
+							complexDataInputStream.close();
 						}
 					} else {
 						newlySavedObs = os.saveObs(obs, reason);
@@ -277,4 +275,28 @@ public class ObsFormController extends SimpleFormController {
 		return map;
 	}
 	
+	/**
+	 * Sets the value of a complex obs from an http request.
+	 * 
+	 * @param obs the complex obs whose value to set.
+	 * @param request the http request.
+	 * @return the complex data input stream.
+	 */
+	private InputStream setComplexData(Obs obs, HttpServletRequest request) throws IOException {
+		InputStream complexDataInputStream = null;
+		
+		if (request instanceof MultipartHttpServletRequest) {
+			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+			MultipartFile complexDataFile = multipartRequest.getFile("complexDataFile");
+			if (complexDataFile != null && !complexDataFile.isEmpty()) {
+				complexDataInputStream = complexDataFile.getInputStream();
+				
+				ComplexData complexData = new ComplexData(complexDataFile.getOriginalFilename(), complexDataInputStream);
+				
+				obs.setComplexData(complexData);
+			}
+		}
+		
+		return complexDataInputStream;
+	}
 }

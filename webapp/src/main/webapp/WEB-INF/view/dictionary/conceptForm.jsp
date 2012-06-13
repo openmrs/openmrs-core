@@ -84,6 +84,7 @@
 	#preferredLabel{ padding-left: 345px; padding-top:10px; }
 	#addAnswerError{ margin-bottom: 0.5em; border: 1px dashed black; background: #FAA; line-height: 2em; text-align: center; display: none; }
 	#headerRow th { text-align: center; }
+	#footer { clear:both; }
 </style>
 
 <c:choose>
@@ -154,7 +155,7 @@
 </c:if>
 
 <openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
-
+<div id="conceptMainarea">
 <form method="post" action="">
 
 <table id="conceptTable" cellpadding="2" cellspacing="0">
@@ -729,65 +730,6 @@
 		</tr>
 	</c:if>
 	
-	<tr><td colspan="2"><br/></td></tr>
-	
-	<c:if test="${fn:length(command.questionsAnswered) > 0}">
-		<tr>
-			<th valign="top"><spring:message code="dictionary.questionsAnswered" /></th>
-			<td>
-				<c:forEach items="${command.questionsAnswered}" var="question">
-					<a href="concept.htm?conceptId=${question.conceptId}"><openmrs:format concept="${question}" /></a><br/>
-				</c:forEach>
-			</td>
-		</tr>
-	</c:if>
-	
-	<c:if test="${fn:length(command.containedInSets) > 0}">
-		<tr>
-			<th valign="top"><spring:message code="dictionary.containedInSets" /></th>
-			<td>
-				<c:forEach items="${command.containedInSets}" var="set">
-					<a href="concept.htm?conceptId=${set.conceptSet.conceptId}"><openmrs:format concept="${set.conceptSet}" /></a><br/>
-				</c:forEach>
-			</td>
-		</tr>
-	</c:if>
-	
-	<c:if test="${fn:length(command.formsInUse) > 0}">
-		<tr>
-			<th valign="top"><spring:message code="dictionary.forms" /></th>
-			<td>
-				<c:forEach items="${command.formsInUse}" var="form">
-					<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}</a><br/>
-				</c:forEach>
-			</td>
-		</tr>
-	</c:if>
-	
-	<tr><td colspan="2"><br/></td></tr>
-	
-	<tr>	
-		<th valign="top">
-			<b><spring:message code="Concept.resources" /></b>
-		</th>
-		<td>
-			<a href="index.htm?phrase=<openmrs:format concept="${command.concept}" />"
-			       target="_similar_terms" onclick="addName(this)">Similar Concepts</a><br/>
-			<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=<openmrs:format concept="${command.concept}" />"
-			       target="_blank" onclick="addName(this)">Merriam Webster&reg;</a><br/>
-			<a href="http://www.google.com/search?q=<openmrs:format concept="${command.concept}" />"
-			       target="_blank" onclick="addName(this)">Google&trade;</a><br/>
-			<a href="http://www.utdol.com/application/vocab.asp?submit=Go&search=<openmrs:format concept="${command.concept}" />"
-			       target="_blank" onclick="addName(this)">UpToDate&reg;</a><br/>
-			<a href="http://dictionary.reference.com/search?submit=Go&q=<openmrs:format concept="${command.concept}" />"
-			       target="_blank" onclick="addName(this)">Dictionary.com&reg;</a><br/>
-			<a href="http://search.atomz.com/search/?sp-a=sp1001878c&sp-q=<openmrs:format concept="${command.concept}" />"
-			       target="_blank" onclick="addName(this)">Lab Tests Online</a><br/>
-			<a href="http://en.wikipedia.org/wiki/<openmrs:format concept="${command.concept}" />"
-			       target="_blank"><spring:message code="Concept.wikipedia" /></a>
-		</td>
-	</tr>
-	
 </table>
 
 <%-- These will be used when the from is submitted to determine existing mappings that have been removed by the user --%>
@@ -872,6 +814,14 @@
         			onclick="javascript:$j('#create-new-term-dialog').dialog('close')"/>
      </div>
 </div>
+
+</div>
+
+<c:if test="${command.concept.conceptId != null}">
+	<div id="conceptSidebar">
+	<%@ include file="/WEB-INF/view/dictionary/conceptSidebar.jsp"%>
+	</div>
+</c:if>
 <script type="text/javascript">
 $j(document).ready( function() {
 	$j("#create-new-term-dialog").dialog({

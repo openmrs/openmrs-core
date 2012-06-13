@@ -114,6 +114,7 @@ public class PersonNameValidator implements Validator {
 	 * @should pass validation if PersonName.familyName2 is valid
 	 * @should pass validation if regex string is null
 	 * @should pass validation if regex string is empty
+	 * @should not validate against regex for blank names
 	 */
 	public void validatePersonName(PersonName personName, Errors errors, boolean arrayInd, boolean testInd) {
 		
@@ -130,13 +131,13 @@ public class PersonNameValidator implements Validator {
 		String namePattern = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
 		if (namePattern != null && namePattern != "") {
-			if (personName.getGivenName() != null && !personName.getGivenName().matches(namePattern))
+			if (StringUtils.isNotBlank(personName.getGivenName()) && !personName.getGivenName().matches(namePattern))
 				errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "GivenName.invalid");
-			if (personName.getMiddleName() != null && !personName.getMiddleName().matches(namePattern))
+			if (StringUtils.isNotBlank(personName.getMiddleName()) && !personName.getMiddleName().matches(namePattern))
 				errors.rejectValue(getFieldKey("middleName", arrayInd, testInd), "MiddleName.invalid");
-			if (personName.getFamilyName() != null && !personName.getFamilyName().matches(namePattern))
+			if (StringUtils.isNotBlank(personName.getFamilyName()) && !personName.getFamilyName().matches(namePattern))
 				errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "FamilyName.invalid");
-			if (personName.getFamilyName2() != null && !personName.getFamilyName2().matches(namePattern))
+			if (StringUtils.isNotBlank(personName.getFamilyName2()) && !personName.getFamilyName2().matches(namePattern))
 				errors.rejectValue(getFieldKey("familyName2", arrayInd, testInd), "FamilyName2.invalid");
 		}
 		// Make sure the length does not exceed database column size

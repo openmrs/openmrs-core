@@ -38,6 +38,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -363,6 +364,20 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDrugsByIngredient(org.openmrs.Concept)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Drug> getDrugsByIngredient(Concept ingredient) {
+		Criteria searchDrugCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
+		Criterion rhs = Restrictions.eq("drug.concept", ingredient);
+		searchDrugCriteria.createAlias("ingredients", "ingredients");
+		Criterion lhs = Restrictions.eq("ingredients.ingredient", ingredient);
+		searchDrugCriteria.add(Restrictions.or(lhs, rhs));
+		
+		return (List<Drug>) searchDrugCriteria.list();
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getDrugs(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
@@ -539,6 +554,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				matchmode = MatchMode.ANYWHERE;
 			
 			criteria.add(Restrictions.ilike("names.name", name, matchmode));
+			criteria.add(Restrictions.eq("names.voided", false));
 			
 			String language = loc.getLanguage();
 			if (language.length() > 2) {
@@ -1437,6 +1453,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 					
 					DetachedCriteria crit = DetachedCriteria.forClass(ConceptWord.class, "cw2").setProjection(
 					    Property.forName("concept")).add(Restrictions.eqProperty("cw2.concept", "cw1.concept")).add(
+					    Restrictions.eqProperty("cw2.conceptName", "cw1.conceptName")).add(
 					    Restrictions.like("word", w, MatchMode.START)).add(Restrictions.in("locale", locales));
 					junction.add(Subqueries.exists(crit));
 				}

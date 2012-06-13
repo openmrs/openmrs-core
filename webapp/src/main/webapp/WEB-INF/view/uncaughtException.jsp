@@ -1,13 +1,11 @@
 <%@page isErrorPage="true" %>
 <%@ page import="org.openmrs.web.WebUtil" %>
-<%@ page import="org.openmrs.web.WebConstants" %>
+<%@page import="org.openmrs.web.WebConstants"%>
 <%@ page import="org.openmrs.api.context.UserContext" %>
 <%@ page import="org.openmrs.util.OpenmrsConstants" %>
-<%@ page import="org.openmrs.api.APIAuthenticationException" %>
+<%@page import="org.openmrs.api.APIAuthenticationException"%>
+<%@page import="org.openmrs.api.context.ContextAuthenticationException"%>
 <%@ page import="org.springframework.transaction.UnexpectedRollbackException" %>
-<%@ page import="org.apache.commons.logging.Log" %>
-<%@ page import="org.apache.commons.logging.LogFactory" %>
-<%@ page import="org.openmrs.api.context.Context" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
@@ -43,22 +41,17 @@
 	// If they weren't displayed/removed because of this error, remove them
 	session.removeAttribute(WebConstants.OPENMRS_MSG_ATTR);
 	session.removeAttribute(WebConstants.OPENMRS_ERROR_ATTR); 
-	
+
 try {
 	// The Servlet spec guarantees this attribute will be available
 	//Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception"); 
 
 	if (exception != null) {
-		
-        Log log = LogFactory.getLog(this.getClass().getName());                                                            
-        if(Context.getAuthenticatedUser() != null) {
-                log.error("Exception was thrown by user with id="+
-                        Context.getAuthenticatedUser().getUserId(), exception);
-        } else {
-                log.error("Exception was thrown by not authenticated user",
-                        exception);
-        }
-        
+%>
+
+<%@ include file="/WEB-INF/view/authorizationHandlerInclude.jsp" %>
+
+<%       
 		out.println("<b>" + exception.getClass().getName() + "</b>");
 		if (exception.getMessage() != null)
 			out.println("<pre id='exceptionMessage'>" + WebUtil.escapeHTML(exception.getMessage()) + "</pre>");
@@ -67,7 +60,7 @@ try {
 			out.println("<br/><b>Possible cause</b>: A programmer has made an error and forgotten to include a @Transaction(readOnly=true) annotation on a method.<br/>");
 		}
 	}
-	%>
+%>
 	
 	<br /><br />
 	Consult the <a href="<%= request.getContextPath() %>/help.htm">help document</a>. <br />
@@ -84,17 +77,7 @@ try {
 	// page isn't passed through that filter like all other pages	
 	UserContext userContext = (UserContext) session.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
 	if (exception != null) {
-		if (exception instanceof APIAuthenticationException) {
-			// If they are not authorized to use a function
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, exception.getMessage());
-			String uri = (String)request.getAttribute("javax.servlet.error.request_uri");
-			if (request.getQueryString() != null) {
-				uri = uri + "?" + request.getQueryString();
-			}
-			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, uri);
-			response.sendRedirect(request.getContextPath() + "/login.htm");
-		}
-		else if (userContext == null || userContext.getAuthenticatedUser() == null) {
+		if (userContext == null || userContext.getAuthenticatedUser() == null) {
 			out.println("You must be logged in to view the stack trace");
 			// print the stack trace to the servlet container's error logs
 			exception.printStackTrace();

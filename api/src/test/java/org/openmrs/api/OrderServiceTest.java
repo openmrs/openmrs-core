@@ -22,9 +22,11 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
+import org.openmrs.DrugOrder;
 import org.openmrs.GenericDrug;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
@@ -42,6 +44,10 @@ import org.openmrs.util.OpenmrsUtil;
 public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	private static final String simpleOrderEntryDatasetFilename = "org/openmrs/api/include/OrderServiceTest-simpleOrderEntryTestDataset.xml";
+	
+	protected static final String DRUG_ORDERS_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-drugOrdersList.xml";
+	
+	protected static final String ORDERS_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-ordersList.xml";
 	
 	private OrderService service;
 	
@@ -293,4 +299,170 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//since we used a set we should have the size as N indicating that there were no duplicates
 		Assert.assertEquals(N, uniqueOrderNumbers.size());
 	}
+	
+	/**
+	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient,Concept)
+	 * @verifies return drug orders matched by patient and intermediate concept
+	 */
+	@Test
+	public void getDrugOrdersByPatientAndIngredient_shouldReturnDrugOrdersMatchedByPatientAndIntermediateConcept()
+	        throws Exception {
+		OrderService orderService = Context.getOrderService();
+		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatientAndIngredient(new Patient(2), new Concept(88));
+		Assert.assertEquals(4, drugOrders.size());
+	}
+	
+	/**
+	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient,Concept)
+	 * @verifies return drug orders matched by patient and drug concept
+	 */
+	@Test
+	public void getDrugOrdersByPatientAndIngredient_shouldReturnDrugOrdersMatchedByPatientAndDrugConcept() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatientAndIngredient(new Patient(2), new Concept(792));
+		Assert.assertEquals(2, drugOrders.size());
+	}
+	
+	/**
+	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient,Concept)
+	 * @verifies return empty list if no concept matched
+	 */
+	@Test
+	public void getDrugOrdersByPatientAndIngredient_shouldReturnEmptyListIfNoConceptMatched() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatientAndIngredient(new Patient(2), new Concept(80));
+		Assert.assertEquals(0, drugOrders.size());
+	}
+	
+	/**
+	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient,Concept)
+	 * @verifies return empty list if no patient matched
+	 */
+	@Test
+	public void getDrugOrdersByPatientAndIngredient_shouldReturnEmptyListIfNoPatientMatched() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatientAndIngredient(new Patient(10), new Concept(88));
+		Assert.assertEquals(0, drugOrders.size());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrdersByPatient(Patient, boolean)}
+	 */
+	@Test
+	@Ignore
+	@Verifies(value = "return list of orders for patient with respect to the include voided flag", method = "getOrdersByPatient(Patient, boolean)")
+	public void getOrdersByPatient_shouldReturnListOfOrdersForPatientWithRespectToTheIncludeVoidedFlag() throws Exception {
+		executeDataSet(ORDERS_DATASET_XML);
+		Patient p = Context.getPatientService().getPatient(2);
+		List<Order> orders = Context.getOrderService().getOrdersByPatient(p, true);
+		Assert.assertEquals(8, orders.size());
+		
+		orders = Context.getOrderService().getOrdersByPatient(p, false);
+		Assert.assertEquals(4, orders.size());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrdersByPatient(Patient)}
+	 */
+	@Test
+	@Ignore
+	@Verifies(value = "return list of non voided orders for patient", method = "getOrdersByPatient(Patient)")
+	public void getOrdersByPatient_shouldReturnListOfNonVoidedOrdersForPatient() throws Exception {
+		executeDataSet(ORDERS_DATASET_XML);
+		Patient p = Context.getPatientService().getPatient(2);
+		List<Order> orders = Context.getOrderService().getOrdersByPatient(p);
+		Assert.assertEquals(4, orders.size());
+	}
+	
+	/**
+	 * @see OrderService#voidOrder(Order,String)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@Verifies(value = "should fail if reason is empty", method = "voidOrder(Order,String)")
+	public void voidOrder_shouldFailIfReasonIsEmpty() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		
+		Order order = orderService.getOrder(2);
+		Assert.assertNotNull(order);
+		
+		String voidReason = "";
+		orderService.voidOrder(order, "");
+	}
+	
+	/**
+	 * @see {@link OrderService#voidOrder(Order,String)}
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@Verifies(value = "should fail if reason is null", method = "voidOrder(Order,String)")
+	public void voidOrder_shouldFailIfReasonIsNull() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		
+		Order order = orderService.getOrder(2);
+		Assert.assertNotNull(order);
+		
+		String voidReason = null;
+		orderService.voidOrder(order, voidReason);
+	}
+	
+	/**
+	 * @see {@link OrderService#voidOrder(Order,String)}
+	 */
+	@Test
+	@Verifies(value = "should void given order", method = "voidOrder(Order,String)")
+	public void voidOrder_shouldVoidGivenOrder() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		
+		Order order = orderService.getOrder(2);
+		Assert.assertNotNull(order);
+		
+		String voidReason = "test reason";
+		orderService.voidOrder(order, voidReason);
+		
+		// assert that order is voided and void reason is set		
+		Assert.assertTrue(order.isVoided());
+		Assert.assertEquals(voidReason, order.getVoidReason());
+	}
+	
+	/**
+	 * @see {@link OrderService#voidOrder(Order,String)}
+	 */
+	@Test
+	@Verifies(value = "should not change an already voided order", method = "voidOrder(Order,String)")
+	public void voidOrder_shouldNotChangeAnAlreadyVoidedOrder() throws Exception {
+		executeDataSet(DRUG_ORDERS_DATASET_XML);
+		OrderService orderService = Context.getOrderService();
+		
+		Order order = orderService.getOrder(8);
+		Assert.assertNotNull(order);
+		// assert that order has been already voided
+		Assert.assertTrue(order.isVoided());
+		String expectedVoidReason = order.getVoidReason();
+		
+		String voidReason = "test reason";
+		orderService.voidOrder(order, voidReason);
+		
+		// assert that voiding does not make an affect
+		Assert.assertTrue(order.isVoided());
+		Assert.assertEquals(expectedVoidReason, order.getVoidReason());
+	}
+	
+	/**
+	 * @see {@link OrderService#unvoidOrder(Order)}
+	 */
+	@Test
+	@Verifies(value = "should unvoid given order", method = "voidOrder(Order)")
+	public void unvoidOrder_shouldUnvoidGivenOrder() throws Exception {
+		executeDataSet(DRUG_ORDERS_DATASET_XML);
+		OrderService orderService = Context.getOrderService();
+		
+		Order order = orderService.getOrder(8);
+		Assert.assertNotNull(order);
+		// assert that order has been already voided
+		Assert.assertTrue(order.isVoided());
+		
+		orderService.unvoidOrder(order);
+		
+		Assert.assertFalse(order.isVoided());
+	}
+	
 }

@@ -13,6 +13,11 @@
  */
 package org.openmrs.web.controller.encounter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,14 +26,17 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
+import org.openmrs.Privilege;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.PrivilegeEditor;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -50,6 +58,7 @@ public class EncounterTypeFormController extends SimpleFormController {
 		super.initBinder(request, binder);
 		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(Privilege.class, new PrivilegeEditor());
 	}
 	
 	/**
@@ -143,6 +152,25 @@ public class EncounterTypeFormController extends SimpleFormController {
 			encounterType = new EncounterType();
 		
 		return encounterType;
+	}
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		List<Privilege> privileges = new ArrayList<Privilege>();
+		
+		if (Context.isAuthenticated()) {
+			privileges = Context.getUserService().getAllPrivileges();
+		}
+		
+		map.put("privileges", privileges);
+		
+		return map;
 	}
 	
 }

@@ -17,11 +17,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.OrderService;
 
 /**
  * Order-related database functions
@@ -85,5 +87,10 @@ public interface OrderDAO {
 	 * @should return the highest order id
 	 */
 	public Integer getHighestOrderId();
+	
+	/**
+	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient, Concept)
+	 */
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient);
 	
 }

@@ -25,7 +25,9 @@
 		padding-left: 3px;
 		padding-right: 3px;
 	}
-	
+	#footer {
+		clear:both;
+	}
 </style>
 
 <script type="text/javascript">
@@ -115,6 +117,7 @@
 	
 	<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptHeader" type="html" />
 	
+<div id="conceptMainarea">
 	<table id="conceptTable" cellpadding="2" cellspacing="0">
 		<tr>
 			<th title="<spring:message code="Concept.id.help"/>"><spring:message code="general.id"/></th>
@@ -342,68 +345,45 @@
 		
 		<tr><td colspan="2"><br/></td></tr>
 		
-		<c:if test="${fn:length(command.questionsAnswered) > 0}">
-			<tr>
-				<th valign="top"><spring:message code="dictionary.questionsAnswered" /></th>
-				<td>
-					<c:forEach items="${command.questionsAnswered}" var="question">
-						<a href="concept.htm?conceptId=${question.conceptId}"><openmrs:format concept="${question}" /></a><br/>
-					</c:forEach>
-				</td>
-			</tr>
-		</c:if>
-		
-		<c:if test="${fn:length(command.containedInSets) > 0}">
-			<tr>
-				<th valign="top"><spring:message code="dictionary.containedInSets" /></th>
-				<td>
-					<c:forEach items="${command.containedInSets}" var="set">
-						<a href="concept.htm?conceptId=${set.conceptSet.conceptId}"><openmrs:format concept="${set.conceptSet}" /></a><br/>
-					</c:forEach>
-				</td>
-			</tr>
-		</c:if>
-		
-		<openmrs:hasPrivilege privilege="View Forms">
-			<c:if test="${fn:length(command.formsInUse) > 0}">
+		<openmrs:hasPrivilege privilege="Edit Concepts">
+			<c:if test="${ not empty command.conceptDrugList and fn:length(command.conceptDrugList) > 0}">
 				<tr>
-					<th valign="top"><spring:message code="dictionary.forms" /></th>
-					<td>
-						<c:forEach items="${command.formsInUse}" var="form">
-							<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}</a><br/>
-						</c:forEach>
+					<td colspan="2">
+						<spring:message code="Concept.drugFormulations" />:<br/>
+						<ul>
+							<c:forEach var="drug" items="${command.conceptDrugList}">
+								<c:choose>
+									<c:when test="${not empty drug.dosageForm}">
+										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.doseStrength} ${drug.units} ${drug.dosageForm.name}</li>
+									</c:when>
+									<c:otherwise>
+										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.doseStrength} ${drug.units}</li>
+									</c:otherwise>
+								</c:choose>
+							</c:forEach>
+							<li>
+								<a href="${pageContext.request.contextPath}/admin/concepts/conceptDrug.list?conceptId=${command.concept.conceptId}"><spring:message code="Concept.manageDrugFormulary" /></a><br/>
+							</li>
+						</ul> 
 					</td>
 				</tr>
 			</c:if>
 		</openmrs:hasPrivilege>
 		
-		<tr><td colspan="2"><br/></td></tr>
-		
-		<tr>	
-			<th valign="top">
-				<b><spring:message code="Concept.resources" /></b>
-			</th>
-			<td>
-				<a href="index.htm?phrase=<openmrs:format concept="${command.concept}" />"
-				       target="_similar_terms" onclick="addName(this)">Similar Concepts</a><br/>
-				<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=<openmrs:format concept="${command.concept}" />"
-				       target="_blank" onclick="addName(this)">Merriam Webster&reg;</a><br/>
-				<a href="http://www.google.com/search?q=<openmrs:format concept="${command.concept}" />"
-				       target="_blank" onclick="addName(this)">Google&trade;</a><br/>
-				<a href="http://www.utdol.com/application/vocab.asp?submit=Go&search=<openmrs:format concept="${command.concept}" />"
-				       target="_blank" onclick="addName(this)">UpToDate&reg;</a><br/>
-				<a href="http://dictionary.reference.com/search?submit=Go&q=<openmrs:format concept="${command.concept}" />"
-				       target="_blank" onclick="addName(this)">Dictionary.com&reg;</a><br/>
-				<a href="http://search.atomz.com/search/?sp-a=sp1001878c&sp-q=<openmrs:format concept="${command.concept}" />"
-				       target="_blank" onclick="addName(this)">Lab Tests Online</a><br/>
-				<a href="http://en.wikipedia.org/wiki/<openmrs:format concept="${command.concept}" />"
-				       target="_blank"><spring:message code="Concept.wikipedia" /></a>
-			</td>
-		</tr>
 	</table>
 	
 	<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFooter" type="html" />
 </c:if>
+
+</div>
+
+<div id="conceptSidebar">
+
+<%@ include file="/WEB-INF/view/dictionary/conceptSidebar.jsp"%>
+
+</div>
+
+
 
 <script type="text/javascript">
 	document.getElementById("searchPhrase").focus();

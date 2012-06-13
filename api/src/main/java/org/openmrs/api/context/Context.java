@@ -28,6 +28,7 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 
 import org.aopalliance.aop.Advice;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -675,8 +676,18 @@ public class Context {
 	 * @throws ContextAuthenticationException
 	 */
 	public static void requirePrivilege(String privilege) throws ContextAuthenticationException {
-		if (!hasPrivilege(privilege))
-			throw new ContextAuthenticationException();
+		if (!hasPrivilege(privilege)) {
+			String errorMessage = null;
+			if (StringUtils.isNotBlank(privilege)) {
+				errorMessage = Context.getMessageSourceService().getMessage("error.privilegesRequired",
+				    new Object[] { privilege }, null);
+			} else {
+				//Should we even be here if the privilege is blank?
+				errorMessage = Context.getMessageSourceService().getMessage("error.privilegesRequiredNoArgs");
+			}
+			
+			throw new ContextAuthenticationException(errorMessage);
+		}
 	}
 	
 	/**
@@ -1165,9 +1176,9 @@ public class Context {
 	}
 	
 	/**
-	 * Gets the simple time format for the current user's locale. The format will be similar
-	 * to hh:mm a
-	 *
+	 * Gets the simple time format for the current user's locale. The format will be similar to
+	 * hh:mm a
+	 * 
 	 * @return SimpleDateFormat for the user's current locale
 	 * @see org.openmrs.util.OpenmrsUtil#getTimeFormat(Locale)
 	 * @should return a pattern with two h characters in it
@@ -1177,9 +1188,9 @@ public class Context {
 	}
 	
 	/**
-	 * Gets the simple datetime format for the current user's locale. The format will be similar
-	 * to mm/dd/yyyy hh:mm a
-	 *
+	 * Gets the simple datetime format for the current user's locale. The format will be similar to
+	 * mm/dd/yyyy hh:mm a
+	 * 
 	 * @return SimpleDateFormat for the user's current locale
 	 * @see org.openmrs.util.OpenmrsUtil#getDateTimeFormat(Locale)
 	 * @should return a pattern with four y characters and two h characters in it

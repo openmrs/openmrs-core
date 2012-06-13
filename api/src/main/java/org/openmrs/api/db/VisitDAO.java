@@ -41,6 +41,11 @@ public interface VisitDAO {
 	List<VisitType> getAllVisitTypes() throws APIException;
 	
 	/**
+	 * @see org.openmrs.api.VisitService#getAllVisitTypes(boolean)
+	 */
+	public List<VisitType> getAllVisitTypes(boolean includeRetired) throws DAOException;
+	
+	/**
 	 * @see org.openmrs.api.VisitService#getVisitType(java.lang.Integer)
 	 */
 	VisitType getVisitType(Integer visitTypeId);

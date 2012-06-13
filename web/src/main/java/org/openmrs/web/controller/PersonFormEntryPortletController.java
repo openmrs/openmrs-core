@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.Form;
 import org.openmrs.Person;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.Extension;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.Extension.MEDIA_TYPE;
@@ -75,6 +76,11 @@ public class PersonFormEntryPortletController extends PortletController {
 		}
 		model.put("formToEntryUrlMap", entryUrlMap);
 		model.put("anyUpdatedFormEntryModules", handlers != null && handlers.size() > 0);
+		
+		// determine whether it's need to show disclaimer on jsp page or not
+		// as current user does not have enough permissions to view at least one
+		// type of encounters
+		model.put("showDisclaimer", !Context.getEncounterService().canViewAllEncounterTypes(Context.getAuthenticatedUser()));
 	}
 	
 }

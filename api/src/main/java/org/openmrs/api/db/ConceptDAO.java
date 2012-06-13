@@ -105,6 +105,7 @@ public interface ConceptDAO {
 	 * @param searchOnPhrase This puts wildcard characters around the concept name search criteria
 	 * @return List<Concept>
 	 * @throws DAOException
+	 * @should not return concepts with matching names that are voided
 	 */
 	public List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
 	        List<ConceptDatatype> datatypes) throws DAOException;
@@ -527,6 +528,11 @@ public interface ConceptDAO {
 	 * @should weigh words when jvm is run in a locale with a different decimal separator character
 	 */
 	public Double weighConceptWord(ConceptWord word);
+	
+	/**
+	 * @see ConceptService#getDrugsByIngredient(Concept)
+	 */
+	public List<Drug> getDrugsByIngredient(Concept ingredient);
 	
 	/**
 	 * @see ConceptService#getConceptMapTypes(boolean, boolean)

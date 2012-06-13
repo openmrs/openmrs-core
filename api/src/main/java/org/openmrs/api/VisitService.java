@@ -28,6 +28,7 @@ import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This service contains methods relating to visits.
@@ -44,6 +45,18 @@ public interface VisitService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_VISIT_TYPES })
 	List<VisitType> getAllVisitTypes();
+	
+	/**
+	 * Get all visit types based on includeRetired flag
+	 * 
+	 * @param includeRetired
+	 * @return List of all visit types
+	 * @since 1.9
+	 * @should get all visit types based on include retired flag.
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.MANAGE_VISIT_TYPES })
+	public List<VisitType> getAllVisitTypes(boolean includeRetired);
 	
 	/**
 	 * Gets a visit type by its visit type id.

@@ -15,6 +15,7 @@ package org.openmrs.validator;
 
 import junit.framework.Assert;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
@@ -633,5 +634,26 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(personName, "givenName");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("givenName"));
+	}
+	
+	/**
+	 * @see {@link PersonNameValidator#validatePersonName(PersonName,Errors,null,null)}
+	 */
+	@Test
+	@Verifies(value = "should not validate against regex for blank names", method = "validatePersonName(PersonName,Errors,null,null)")
+	public void validatePersonName_shouldNotValidateAgainstRegexForBlankNames() throws Exception {
+		String regex = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
+		//the regex string should be set for the test to be valid
+		Assert.assertFalse(StringUtils.isBlank(regex));
+		
+		PersonName personName = new PersonName();
+		personName.setGivenName("given");
+		personName.setFamilyName("family");
+		personName.setMiddleName("");
+		personName.setFamilyName2("");
+		Errors errors = new BindException(personName, "personName");
+		new PersonNameValidator().validatePersonName(personName, errors, false, true);
+		Assert.assertFalse(errors.hasErrors());
 	}
 }

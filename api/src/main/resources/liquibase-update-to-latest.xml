@@ -5207,6 +5207,7 @@
 		<validCheckSum><comment>Corrected version with predefined UUIDs</comment>3:5faead5506cbcde69490fef985711d66</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_map_type" />
+			<sqlCheck expectedResult="0">select count(*) from concept_map_type</sqlCheck>
 		</preConditions>
 		<comment>Inserting core concept map types</comment>
 		<customChange class="org.openmrs.util.databasechange.AddConceptMapTypesChangeset">
@@ -5327,34 +5328,17 @@
 			baseTableName="concept_reference_term_map" baseColumnNames="changed_by" />
 	</changeSet>
 		
-	<changeSet id="2011121-1030k" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030m" author="wyclif" dbms="mysql">
+		<validCheckSum><comment>Initial SQL version</comment>3:523b32f95b74186733ebf2be0ef4ba7f</validCheckSum>
+		<validCheckSum><comment>Changed to Java</comment>3:b286407bfcdf3853512cb15009c816f1</validCheckSum>
 		<preConditions onFail="MARK_RAN">
-			<and>
-				<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_map</sqlCheck></not>
-				<dbms type="mysql" />
-			</and>
+			<sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_term</sqlCheck>
+			<columnExists tableName="concept_reference_map" columnName="source_code"/>
+			<columnExists tableName="concept_reference_map" columnName="source"/>
+			<columnExists tableName="concept_reference_map" columnName="comment"/>
 		</preConditions>
-		<comment>Creating concept reference terms from existing rows in the concept_map table</comment>
-		<sql>
-			INSERT INTO concept_reference_term (concept_reference_term_id, concept_source_id, code, description, creator, date_created, uuid) 
-			SELECT cm.concept_map_id, cm.source, cm.source_code, cm.comment, cm.creator, cm.date_created, UUID() 
-			FROM concept_reference_map cm, concept_reference_source crs
-			WHERE cm.source = crs.concept_source_id
-		</sql>
-	</changeSet>
-
-	<changeSet id="20110301-1030m" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<and>
-				<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_map</sqlCheck></not>
-			</and>
-		</preConditions>
-		<comment>
-			Copying concept_map_id column to concept_reference_map.concept_reference_term_id column
-		</comment>
-		<sql>
-			UPDATE concept_reference_map SET concept_reference_term_id = concept_map_id
-		</sql>
+		<comment>Creating concept reference terms from existing rows in the concept_reference_map table</comment>
+		<customChange class="org.openmrs.util.databasechange.MigrateConceptReferenceTermChangeSet" />
 	</changeSet>
 	
 	<changeSet id="20110301-1030n" author="wyclif" dbms="mysql">
@@ -5984,23 +5968,25 @@
      	<validCheckSum>3:d0da8b0b930623f6c62e2bd02bc2523b</validCheckSum>
      	<validCheckSum><comment>Changing identifier from person.person_id to user.system_id</comment>3:cccc02519a766bd8fde048cea13d307c</validCheckSum>
      	<validCheckSum><comment>Changing now() to CURRENT_TIMESTAMP</comment>3:a70d8897d05364a0a4398f2b90542fd4</validCheckSum>
+     	<validCheckSum><comment>Copying user.retired to person.voided so that generated providers for retired users are retired</comment>3:f338c9ea12ce38b0695db335d983b4e1</validCheckSum>
+     	<validCheckSum><comment>Correcting checksum</comment>3:216ab5057dca5471de69124e93953d96</validCheckSum>
      	<preConditions onFail="MARK_RAN">
  			<columnExists tableName="encounter" columnName="provider_id"/>
  		</preConditions>
  		<comment>Creating providers for persons from the encounter table</comment>
  		<sql>
- 			insert into provider(person_id, identifier, creator, date_created, retired, uuid)
- 				select distinct person.person_id, person.uuid, 1, CURRENT_TIMESTAMP, person.voided, person.uuid 
+ 			insert into provider(person_id, identifier, creator, date_created, retired, retired_by, date_retired, retire_reason, uuid)
+ 				select distinct person.person_id, person.uuid, 1, CURRENT_TIMESTAMP, user.retired, user.retired_by, user.date_retired, user.retire_reason, person.uuid 
  				from person as person
  					inner join encounter as encounter on encounter.provider_id = person.person_id
  					left join users as user on user.person_id = person.person_id
  				where user.person_id is null and encounter.provider_id not in (select person_id from provider);
  				
- 			insert into provider(person_id, identifier, creator, date_created, retired, uuid)
- 				select distinct person.person_id, user.system_id, 1, CURRENT_TIMESTAMP, person.voided, person.uuid
+ 			insert into provider(person_id, identifier, creator, date_created, retired, retired_by, date_retired, retire_reason, uuid)
+ 				select distinct person.person_id, user.system_id, 1, CURRENT_TIMESTAMP, user.retired, user.retired_by, user.date_retired, user.retire_reason, person.uuid
  				from person as person
  					inner join encounter as encounter on encounter.provider_id = person.person_id
- 					left join (select max(users.user_id) as user_id, users.system_id, users.person_id 
+ 					left join (select max(users.user_id) as user_id, users.system_id, users.person_id, users.retired, users.retired_by, users.date_retired, users.retire_reason 
  							from users as users group by users.person_id) as user 
  						on person.person_id = user.person_id
  				where user.user_id is not null and encounter.provider_id not in (select person_id from provider);
@@ -6366,6 +6352,684 @@
 	<changeSet id="20120330-0954" author="jkeiper">
 		<comment>Increase size of drug name column to 255 characters</comment>
 		<modifyDataType tableName="drug" columnName="name" newDataType="varchar(255)"/>
+	</changeSet>
+	
+	<changeSet id="20120504-1000" author="raff">
+		<preConditions onFail="HALT">
+			<sqlCheck expectedResult="0">
+				select count(*) from
+				drug_ingredient
+			</sqlCheck>
+		</preConditions>
+		<comment>Dropping the drug_ingredient table</comment>
+		<dropTable tableName="drug_ingredient" />
+	</changeSet>
+
+	<changeSet id="20120504-1010" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="drug_ingredient" />
+			</not>
+		</preConditions>
+		<comment>Creating the drug_ingredient table</comment>
+		<createTable tableName="drug_ingredient">
+			<column name="drug_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="ingredient_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="uuid" type="char(38)">
+				<constraints unique="true" nullable="false" />
+			</column>
+			<column name="quantity" type="double" />
+			<column name="units" type="int" />
+		</createTable>
+	</changeSet>
+
+	<changeSet id="20120504-1020" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<primaryKeyExists tableName="drug_ingredient" />
+			</not>
+		</preConditions>
+		<comment>Adding a primary key to the drug_ingredient table</comment>
+		<addPrimaryKey constraintName="drug_ingredient_pk"
+			tableName="drug_ingredient" columnNames="drug_id,ingredient_id" />
+	</changeSet>
+
+	<changeSet id="20120504-1030" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<foreignKeyConstraintExists
+					foreignKeyName="drug_ingredient_units_fk" />
+			</not>
+		</preConditions>
+		<comment>Adding a new foreign key from drug_ingredient.units to concept.concept_id</comment>
+		<addForeignKeyConstraint constraintName="drug_ingredient_units_fk"
+			baseTableName="drug_ingredient" baseColumnNames="units"
+			referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+
+	<changeSet id="20120504-1040" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<foreignKeyConstraintExists
+					foreignKeyName="drug_ingredient_drug_id_fk" />
+			</not>
+		</preConditions>
+		<comment>Adding a new foreign key from drug_ingredient.drug_id to drug.drug_id</comment>
+		<addForeignKeyConstraint constraintName="drug_ingredient_drug_id_fk"
+			referencedTableName="drug" baseColumnNames="drug_id" baseTableName="drug_ingredient"
+			referencedColumnNames="drug_id" />
+	</changeSet>
+
+	<changeSet id="20120504-1050" author="raff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<foreignKeyConstraintExists
+					foreignKeyName="drug_ingredient_ingredient_id_fk" />
+			</not>
+		</preConditions>
+		<comment>Adding a new foreign key from drug_ingredient.ingredient_id to concept.concept_id</comment>
+		<addForeignKeyConstraint constraintName="drug_ingredient_ingredient_id_fk"
+			referencedTableName="concept" referencedColumnNames="concept_id"
+			baseTableName="drug_ingredient" baseColumnNames="ingredient_id" />
+	</changeSet>
+	
+	<changeSet id="200912141000-drug-add-date-changed" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug" columnName="date_changed" />
+			</not>
+		</preConditions>
+		<comment>
+			Add date_changed column to drug table
+		</comment>
+		<addColumn tableName="drug">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="200912141001-drug-add-changed-by" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug" columnName="changed_by" />
+			</not>
+		</preConditions>
+		<comment>
+			Add changed_by column to drug table
+		</comment>
+		<addColumn tableName="drug">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="drug_changed_by"
+			baseTableName="drug" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+	
+	<changeSet id="10-insert-new-app-privileges" author="dkayiwa">
+		<comment>Inserting the new application privileges</comment>
+		<sql>
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - View Patient Actions', 'Able to view the Patient Actions portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a264'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Patient Actions') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - View Programs', 'Able to view the Programs portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a263'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Programs') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - View Relationships', 'Able to view the Relationships portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a262'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Relationships') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - View Allergies', 'Able to view the Allergies portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a261'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Allergies') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - View Problem List', 'Able to view the Problem List portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a260'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Problem List') limit 1;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="11-insert-new-api-privileges" author="dkayiwa">
+		<comment>Inserting the new API privileges</comment>
+		<sql>
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concepts', 'Able to get concept entries', 'd05118c6-2490-4d78-a41a-390e3596a251'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concepts') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Proposals', 'Able to get concept proposals to the system', 'd05118c6-2490-4d78-a41a-390e3596a250'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Proposals') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Users', 'Able to get users in OpenMRS', 'd05118c6-2490-4d78-a41a-390e3596a249'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Users') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Encounters', 'Able to get patient encounters', 'd05118c6-2490-4d78-a41a-390e3596a248'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Encounters') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Encounter Types', 'Able to get encounter types', 'd05118c6-2490-4d78-a41a-390e3596a247'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Encounter Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Locations', 'Able to get locations', 'd05118c6-2490-4d78-a41a-390e3596a246'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Locations') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Observations', 'Able to get patient observations', 'd05118c6-2490-4d78-a41a-390e3596a245'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Observations') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Patients', 'Able to get patients', 'd05118c6-2490-4d78-a41a-390e3596a244'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Patients') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Patient Identifiers', 'Able to get patient identifiers', 'd05118c6-2490-4d78-a41a-390e3596a243'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Patient Identifiers') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Patient Cohorts', 'Able to get patient cohorts', 'd05118c6-2490-4d78-a41a-390e3596a242'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Patient Cohorts') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Orders', 'Able to get orders', 'd05118c6-2490-4d78-a41a-390e3596a241'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Orders') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Forms', 'Able to get forms', 'd05118c6-2490-4d78-a41a-390e3596a240'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Forms') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Identifier Types', 'Able to get patient identifier types', 'd05118c6-2490-4d78-a41a-390e3596a239'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Identifier Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Classes', 'Able to get concept classes', 'd05118c6-2490-4d78-a41a-390e3596a238'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Classes') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Datatypes', 'Able to get concept datatypes', 'd05118c6-2490-4d78-a41a-390e3596a237'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Datatypes') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Privileges', 'Able to get user privileges', 'd05118c6-2490-4d78-a41a-390e3596a236'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Privileges') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Roles', 'Able to get user roles', 'd05118c6-2490-4d78-a41a-390e3596a235'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Roles') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Field Types', 'Able to get field types', 'd05118c6-2490-4d78-a41a-390e3596a234'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Field Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Order Types', 'Able to get order types', 'd05118c6-2490-4d78-a41a-390e3596a233'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Order Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Relationship Types', 'Able to get relationship types', 'd05118c6-2490-4d78-a41a-390e3596a232'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Relationship Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Sources', 'Able to get concept sources', 'd05118c6-2490-4d78-a41a-390e3596a231'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Sources') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Map Types', 'Able to get concept map types', 'd05118c6-2490-4d78-a41a-390e3596a230'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Map Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Concept Reference Terms', 'Able to get concept reference terms', 'd05118c6-2490-4d78-a41a-390e3596a229'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Concept Reference Terms') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Programs', 'Able to get patient programs', 'd05118c6-2490-4d78-a41a-390e3596a228'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Programs') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Patient Programs', 'Able to get which programs that patients are in', 'd05118c6-2490-4d78-a41a-390e3596a227'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Patient Programs') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Global Properties', 'Able to get global properties on the administration screen', 'd05118c6-2490-4d78-a41a-390e3596a226'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Global Properties') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Person Attribute Types', 'Able to get person attribute types', 'd05118c6-2490-4d78-a41a-390e3596a225'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Person Attribute Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get People', 'Able to get person objects', 'd05118c6-2490-4d78-a41a-390e3596a224'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get People') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Relationships', 'Able to get relationships', 'd05118c6-2490-4d78-a41a-390e3596a223'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Relationships') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Database Changes', 'Able to get database changes from the admin screen', 'd05118c6-2490-4d78-a41a-390e3596a222'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Database Changes') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Problems', 'Able to get problems', 'd05118c6-2490-4d78-a41a-390e3596a221'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Problems') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Allergies', 'Able to get allergies', 'd05118c6-2490-4d78-a41a-390e3596a220'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Allergies') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get HL7 Source', 'Able to get an HL7 Source', 'd05118c6-2490-4d78-a41a-390e3596a219'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get HL7 Source') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get HL7 Inbound Queue', 'Able to get an HL7 Queue item', 'd05118c6-2490-4d78-a41a-390e3596a218'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Queue') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get HL7 Inbound Archive', 'Able to get an HL7 archive item', 'd05118c6-2490-4d78-a41a-390e3596a217'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Archive') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get HL7 Inbound Exception', 'Able to get an HL7 error item', 'd05118c6-2490-4d78-a41a-390e3596a216'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Exception') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Visit Types', 'Able to get visit types', 'd05118c6-2490-4d78-a41a-390e3596a215'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Visit Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Visits', 'Able to get visits', 'd05118c6-2490-4d78-a41a-390e3596a214'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Visits') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Visit Attribute Types', 'Able to get visit attribute types', 'd05118c6-2490-4d78-a41a-390e3596a213'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Visit Attribute Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Location Attribute Types', 'Able to get location attribute types', 'd05118c6-2490-4d78-a41a-390e3596a212'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Location Attribute Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Providers', 'Able to get Providers', 'd05118c6-2490-4d78-a41a-390e3596a211'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Providers') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Get Encounter Roles', 'Able to get encounter roles', 'd05118c6-2490-4d78-a41a-390e3596a210'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Get Encounter Roles') limit 1;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="1-grant-new-dashboard-overview-tab-app-privileges" author="dkayiwa">
+		<comment>Granting the new patient overview tab application privileges</comment>
+		<sql>
+			insert into role_privilege (role, privilege) 
+			select role, 'Patient Overview - View Patient Actions' from role_privilege rp
+			where rp.privilege = 'Patient Dashboard - View Overview Section'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Patient Actions' and rp2.role=rp.role);
+		
+			insert into role_privilege (role, privilege) 
+			select role, 'Patient Overview - View Programs' from role_privilege rp
+			where rp.privilege = 'View Patient Programs'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Programs' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Patient Overview - View Relationships' from role_privilege rp
+			where rp.privilege = 'View Relationships'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Relationships' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Patient Overview - View Allergies' from role_privilege rp
+			where rp.privilege = 'View Allergies'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Allergies' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Patient Overview - View Problem List' from role_privilege rp
+			where rp.privilege = 'View Problems'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Problem List' and rp2.role=rp.role);
+		</sql>
+	</changeSet>
+	
+	<changeSet id="2-role-assign-new-api-privileges-to-renamed-ones" author="dkayiwa">
+		<comment>Assigning the new API-level privileges to roles that used to have the renamed privileges</comment>
+		<sql>
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concepts' from role_privilege rp
+			where rp.privilege = 'View Concepts'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concepts' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Proposals' from role_privilege rp
+			where rp.privilege = 'View Concept Proposals'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Proposals' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Users' from role_privilege rp
+			where rp.privilege = 'View Users'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Users' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Encounters' from role_privilege rp
+			where rp.privilege = 'View Encounters'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Encounters' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Encounter Types' from role_privilege rp
+			where rp.privilege = 'View Encounter Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Encounter Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Locations' from role_privilege rp
+			where rp.privilege = 'View Locations'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Locations' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Observations' from role_privilege rp
+			where rp.privilege = 'View Observations'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Observations' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Patients' from role_privilege rp
+			where rp.privilege = 'View Patients'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patients' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Patient Identifiers' from role_privilege rp
+			where rp.privilege = 'View Patient Identifiers'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patient Identifiers' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Patient Cohorts' from role_privilege rp
+			where rp.privilege = 'View Patient Cohorts'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patient Cohorts' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Orders' from role_privilege rp
+			where rp.privilege = 'View Orders'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Orders' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Forms' from role_privilege rp
+			where rp.privilege = 'View Forms'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Forms' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Identifier Types' from role_privilege rp
+			where rp.privilege = 'View Identifier Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Identifier Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Classes' from role_privilege rp
+			where rp.privilege = 'View Concept Classes'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Classes' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Datatypes' from role_privilege rp
+			where rp.privilege = 'View Concept Datatypes'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Datatypes' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Privileges' from role_privilege rp
+			where rp.privilege = 'View Privileges'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Privileges' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Roles' from role_privilege rp
+			where rp.privilege = 'View Roles'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Roles' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Field Types' from role_privilege rp
+			where rp.privilege = 'View Field Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Field Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Order Types' from role_privilege rp
+			where rp.privilege = 'View Order Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Order Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Relationship Types' from role_privilege rp
+			where rp.privilege = 'View Relationship Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Relationship Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Sources' from role_privilege rp
+			where rp.privilege = 'View Concept Sources'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Sources' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Map Types' from role_privilege rp
+			where rp.privilege = 'View Concept Map Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Map Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Concept Reference Terms' from role_privilege rp
+			where rp.privilege = 'View Concept Reference Terms'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Reference Terms' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Programs' from role_privilege rp
+			where rp.privilege = 'View Programs'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Programs' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Patient Programs' from role_privilege rp
+			where rp.privilege = 'View Patient Programs'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patient Programs' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Global Properties' from role_privilege rp
+			where rp.privilege = 'View Global Properties'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Global Properties' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Person Attribute Types' from role_privilege rp
+			where rp.privilege = 'View Person Attribute Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Person Attribute Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get People' from role_privilege rp
+			where rp.privilege = 'View People'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get People' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Relationships' from role_privilege rp
+			where rp.privilege = 'View Relationships'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Relationships' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Database Changes' from role_privilege rp
+			where rp.privilege = 'View Database Changes'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Database Changes' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Problems' from role_privilege rp
+			where rp.privilege = 'View Problems'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Problems' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Allergies' from role_privilege rp
+			where rp.privilege = 'View Allergies'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Allergies' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get HL7 Source' from role_privilege rp
+			where rp.privilege = 'View HL7 Source'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Source' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get HL7 Inbound Queue' from role_privilege rp
+			where rp.privilege = 'View HL7 Inbound Queue'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Inbound Queue' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get HL7 Inbound Archive' from role_privilege rp
+			where rp.privilege = 'View HL7 Inbound Archive'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Inbound Archive' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get HL7 Inbound Exception' from role_privilege rp
+			where rp.privilege = 'View HL7 Inbound Exception'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Inbound Exception' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Visit Types' from role_privilege rp
+			where rp.privilege = 'View Visit Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Visit Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Visits' from role_privilege rp
+			where rp.privilege = 'View Visits'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Visits' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Visit Attribute Types' from role_privilege rp
+			where rp.privilege = 'View Visit Attribute Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Visit Attribute Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Location Attribute Types' from role_privilege rp
+			where rp.privilege = 'View Location Attribute Types'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Location Attribute Types' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Providers' from role_privilege rp
+			where rp.privilege = 'View Providers'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Providers' and rp2.role=rp.role);
+			
+			insert into role_privilege (role, privilege) 
+			select role, 'Get Encounter Roles' from role_privilege rp
+			where rp.privilege = 'View Encounter Roles'
+			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Encounter Roles' and rp2.role=rp.role);
+		</sql>
+	</changeSet>
+	
+	<changeSet id="1-increase-privilege-col-size-privilege" author="dkayiwa">
+        <preConditions onFail="MARK_RAN">
+			<columnExists tableName="privilege" columnName="privilege"/>
+		</preConditions>
+		<comment>
+			Increasing the size of the privilege column in the privilege table
+		</comment>
+		<ext:modifyColumn tableName="privilege">
+		    <column name="privilege" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
+	
+	<changeSet id="2-increase-privilege-col-size-rol-privilege" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="role_privilege" columnName="privilege"/>
+		</preConditions>
+		<comment>
+			Increasing the size of the privilege column in the role_privilege table
+		</comment>
+		<ext:modifyColumn tableName="role_privilege">
+		    <column name="privilege" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
+	
+	<changeSet id="201205241728-1" author="mvorobey">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="encounter_type" columnName="view_privilege"/></not>
+		</preConditions>
+		<comment>
+			Add optional property view_privilege to encounter_type table
+		</comment>		
+		<addColumn tableName="encounter_type">
+			<column name="view_privilege" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="privilege_which_can_view_encounter_type"
+			baseTableName="encounter_type" baseColumnNames="view_privilege"
+			referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
+	
+	<changeSet id="201205241728-2" author="mvorobey">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="encounter_type" columnName="edit_privilege"/></not>
+		</preConditions>
+		<comment>
+			Add optional property edit_privilege to encounter_type table
+		</comment>		
+		<addColumn tableName="encounter_type">
+			<column name="edit_privilege" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="privilege_which_can_edit_encounter_type"
+			baseTableName="encounter_type" baseColumnNames="edit_privilege"
+			referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
+	
+	<changeSet id="3-increase-privilege-col-size-person_attribute_type" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="person_attribute_type" columnName="edit_privilege"/>
+		</preConditions>
+		<comment>
+			Increasing the size of the edit_privilege column in the person_attribute_type table
+		</comment>
+		<ext:modifyColumn tableName="person_attribute_type">
+		    <column name="edit_privilege" type="varchar(255)" />
+		</ext:modifyColumn>
 	</changeSet>
 	
 	<changeSet id="20101209-1111-orders-order_number" author="dkayiwa">

@@ -1502,6 +1502,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return concept search results that match unique concepts
 	 * @should return a search result whose concept name contains a word with more weight
+	 * @should return a search result whose concept name contains all word tokens
+	 * @should not return concepts with matching names that are voided
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
@@ -1691,6 +1693,18 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<ConceptStopWord> getAllConceptStopWords();
+	
+	/**
+	 * Gets drugs by the given ingredient, which can be either the drug itself or any ingredient.
+	 * 
+	 * @return the list of drugs
+	 * @should return drugs matched by intermediate concept
+	 * @should return drugs matched by drug concept
+	 * @should return empty list if nothing found
+	 * @since 1.10
+	 */
+	@Transactional(readOnly = true)
+	public List<Drug> getDrugsByIngredient(Concept ingredient);
 	
 	/**
 	 * Returns a list of concept map types currently in the database excluding hidden ones

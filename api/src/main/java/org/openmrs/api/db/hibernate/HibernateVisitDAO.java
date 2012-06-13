@@ -65,6 +65,15 @@ public class HibernateVisitDAO implements VisitDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.VisitDAO#getAllVisitTypes(boolean)
+	 */
+	@Override
+	public List<VisitType> getAllVisitTypes(boolean includeRetired) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(VisitType.class);
+		return includeRetired ? criteria.list() : criteria.add(Restrictions.eq("retired", includeRetired)).list();
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitType(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)

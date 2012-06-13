@@ -31,6 +31,14 @@ public class Link {
 	public Link() {
 	}
 	
+	/**
+	 * @since 1.10 
+	 */
+	public Link(String label, String url) {
+		this.label = label;
+		this.url = url;
+	}
+	
 	public String getDescription() {
 		return description;
 	}

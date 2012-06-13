@@ -15,9 +15,14 @@ package org.openmrs.web;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.controller.ForgotPasswordFormController;
@@ -29,6 +34,34 @@ import org.springframework.mock.web.MockHttpServletResponse;
  * Test the different aspects of {@link org.openmrs.web.controller.ForgotPasswordFormController}
  */
 public class ForgotPasswordFormControllerTest extends BaseWebContextSensitiveTest {
+	
+	private static Level initialLogLevel;
+	
+	private static final String CLASS_TO_LOG = "org.openmrs.api.db.hibernate.HibernateUserDAO";
+	
+	/**
+	 * Some of the tests are testing code that logs warning messages. Switch off logging
+	 * before the suite runs so the warnings don't become distractions in the build report
+	 * 
+	 * @throws Exception
+	 */
+	@BeforeClass
+	public static void runBeforeTestSuite() throws Exception {
+		Logger log = LogManager.getLogger(CLASS_TO_LOG);
+		initialLogLevel = log.getLevel();
+		log.setLevel(Level.OFF);
+	}
+	
+	/**
+	 * After the test suite runs, revert the log level.
+	 * 
+	 * @throws Exception
+	 */
+	@AfterClass
+	public static void runAfterTestSuite() throws Exception {
+		Logger log = LogManager.getLogger(CLASS_TO_LOG);
+		log.setLevel(initialLogLevel);
+	}
 	
 	/**
 	 * Log out before every test (authentication is done in the "@Before" in the parent class)

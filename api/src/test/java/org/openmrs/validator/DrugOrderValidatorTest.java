@@ -18,6 +18,7 @@ import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -34,14 +35,66 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should not fail validation if drug is null", method = "validate(Object,Errors)")
-	public void validate_shouldNotFailValidationIfDrugIsNull() throws Exception {
+	@Verifies(value = "should fail validation if drug is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDrugIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("drug"));
+		Assert.assertTrue(errors.hasFieldErrors("drug"));
+	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if drug concept is not set", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDrugConceptIsNotSet() throws Exception {
+		DrugOrder order = new DrugOrder();
+		Drug drug = Context.getConceptService().getDrug(3);
+		// intentionally set drug's concept to null
+		drug.setConcept(null);
+		order.setDrug(drug);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("drug.concept"));
+	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if drug dose is set and units is not set", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDrugDoseIsSetAndUnitsIsNotSet() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setDose(500d);
+		// intentionally set order's units to null
+		order.setDoseUnits(null);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("doseUnits"));
+	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if quantity set and units not set", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfQuantitySetAndUnitsNotSet() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setQuantity(5);
+		// intentionally set order's units to null
+		order.setQuantityUnits(null);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("quantityUnits"));
 	}
 	
 	/**

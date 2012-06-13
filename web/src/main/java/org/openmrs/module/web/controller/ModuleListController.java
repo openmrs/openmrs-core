@@ -19,8 +19,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -176,7 +179,7 @@ public class ModuleListController extends SimpleFormController {
 						success = msa.getMessage("Module.loadedAndStarted", new String[] { module.getName() });
 						
 						if (updateModule && dependentModulesStopped != null) {
-							for (Module depMod : dependentModulesStopped) {
+							for (Module depMod : sortStartupOrder(dependentModulesStopped)) {
 								ModuleFactory.startModule(depMod);
 								WebModuleUtil.startModule(depMod, getServletContext(), false);
 							}
@@ -250,6 +253,51 @@ public class ModuleListController extends SimpleFormController {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		
 		return new ModelAndView(new RedirectView(view));
+	}
+	
+	/**
+	 * @param modulesToStart
+	 * @return a new list, with the same elements as modulesToStart, sorted so that no module is before a module it depends on
+	 * @should sort modules correctly
+	 */
+	List<Module> sortStartupOrder(List<Module> modulesToStart) {
+		// can't use Collections.sort--we need a slower algorithm that guarantees to compare every pair of elements
+		List<Module> candidates = new LinkedList<Module>(modulesToStart);
+		List<Module> ret = new ArrayList<Module>();
+		while (candidates.size() > 0) {
+			Module mod = removeModuleWithNoDependencies(candidates);
+			if (mod == null) {
+				log.warn("Unable to determine suitable startup order for " + modulesToStart);
+				return modulesToStart;
+			}
+			ret.add(mod);
+		}
+		return ret;
+	}
+	
+	/**
+	 * Looks for a module in the list that doesn't depend on any other modules in the list.
+	 * If any is found, that module is removed from the list and returned.
+	 * 
+	 * @param candidates
+	 * @return
+	 */
+	private Module removeModuleWithNoDependencies(List<Module> candidates) {
+		for (Iterator<Module> i = candidates.iterator(); i.hasNext();) {
+			Module candidate = i.next();
+			boolean suitable = true;
+			for (Module other : candidates) {
+				if (candidate.getRequiredModules().contains(other.getPackageName())) {
+					suitable = false;
+					break;
+				}
+			}
+			if (suitable) {
+				i.remove();
+				return candidate;
+			}
+		}
+		return null;
 	}
 	
 	/**

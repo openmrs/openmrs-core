@@ -283,7 +283,6 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should allow release type in the version", method = "matchRequiredVersions(String,String)")
@@ -408,7 +407,6 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link ModuleUtil#compareVersion(String,String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should correctly comparing two version numbers", method = "compareVersion(String,String)")
@@ -420,7 +418,6 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link ModuleUtil#compareVersion(String,String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "treat SNAPSHOT as earliest version", method = "compareVersion(String,String)")

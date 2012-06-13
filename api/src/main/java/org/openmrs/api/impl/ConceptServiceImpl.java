@@ -32,7 +32,6 @@ import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -794,7 +793,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Deprecated
 	public void purgeConceptDatatype(ConceptDatatype cd) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -804,7 +803,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Deprecated
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws APIException {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -1924,6 +1923,17 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			locales.add(locale);
 		
 		return getConcepts(phrase, locales, includeRetired, null, null, null, null, null, null, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getDrugsByIngredient(org.openmrs.Concept)
+	 */
+	@Override
+	public List<Drug> getDrugsByIngredient(Concept ingredient) throws APIException {
+		if (ingredient == null)
+			throw new IllegalArgumentException("ingredient is required");
+		
+		return dao.getDrugsByIngredient(ingredient);
 	}
 	
 	/**

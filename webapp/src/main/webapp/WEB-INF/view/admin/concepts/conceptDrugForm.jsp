@@ -51,9 +51,9 @@
 </script>
 
 <style>
-	#table th {
-		text-align: left;
-	}
+	#table { width: 100%; }
+	#table th { text-align: left; }
+	#table input[name=name], input#concept_selection { width: 99%; }
 </style>
 
 <h2><spring:message code="ConceptDrug.manage.title"/></h2>
@@ -91,7 +91,7 @@
 		<th><spring:message code="general.name"/></th>
 		<td>
 			<spring:bind path="drug.name">			
-				<input type="text" name="${status.expression}" size="40" 
+				<input type="text" name="${status.expression}" size="40"
 					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
@@ -101,8 +101,7 @@
 		<th><spring:message code="ConceptDrug.concept"/></th>
 		<td>
 			<spring:bind path="drug.concept">
-				<div dojoType="ConceptSearch" widgetId="conceptSearch" conceptId="${status.value}" showVerboseListing="true" includeClasses="Drug;"></div>
-				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="${status.expression}" hiddenInputId="concept" searchWidget="conceptSearch" searchTitle='<spring:message code="ConceptDrug.find"/>'></div>
+				<openmrs_tag:conceptField formFieldName="${status.expression}" formFieldId="concept" initialValue="${status.value}" includeClasses="Drug" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>				
 			</spring:bind>
 		</td>
@@ -176,6 +175,18 @@
 			</spring:bind>
 		</td>
 	</tr>
+
+	<tr>
+		
+		<th><spring:message code="ConceptDrug.ingredients"/></th>
+		<td>
+			<table cellpadding="3" cellspacing="0">
+					<c:forEach var="ingredient" items="${drug.ingredients}">
+						<tr><td><openmrs:format concept="${ingredient.ingredient}"/> - ${ingredient.quantity} <openmrs:format concept="${ingredient.units}"/></td></tr>        
+					</c:forEach>
+			</table>
+		</td>
+	</tr>
 	
 	<c:if test="${drug.creator != null}">
 		<tr>
@@ -183,6 +194,15 @@
 			<td>
 				<a href="#View User" onclick="return gotoUser(null, '${drug.creator.userId}')">${drug.creator.personName}</a> -
 				<openmrs:formatDate date="${drug.dateCreated}" type="medium" />
+			</td>
+		</tr>
+	</c:if>
+	<c:if test="${drug.changedBy != null}">
+		<tr>
+			<th><spring:message code="general.changedBy" /></th>
+			<td>
+				<a href="#View User" onclick="return gotoUser(null, '${drug.changedBy.userId}')">${drug.changedBy.personName}</a> 
+				<openmrs:formatDate date="${drug.dateChanged}" type="medium" />
 			</td>
 		</tr>
 	</c:if>

@@ -45,7 +45,9 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.Privilege;
 import org.openmrs.Provider;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
@@ -57,6 +59,7 @@ import org.openmrs.api.handler.NoVisitAssignmentHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -1898,4 +1901,215 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, encounter.getAllObs().size());
 	}
 	
+	/**
+	 * @see {@link EncounterService#voidEncounter(Encounter, String)}
+	 */
+	@Test
+	@Verifies(value = "should not void providers", method = "voidEncounter(Encounter, String)")
+	public void voidEncounter_shouldNotVoidProviders() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(3));
+		
+		EncounterRole role = new EncounterRole();
+		role.setName("role");
+		role = encounterService.saveEncounterRole(role);
+		
+		Provider provider = new Provider();
+		provider.setName("provider");
+		provider.setIdentifier("id1");
+		provider = Context.getProviderService().saveProvider(provider);
+		
+		encounter.addProvider(role, provider);
+		encounterService.saveEncounter(encounter);
+		
+		assertEquals(1, encounter.getProvidersByRoles().size());
+		
+		encounterService.voidEncounter(encounter, "reason");
+		
+		encounter = encounterService.getEncounter(encounter.getEncounterId());
+		assertEquals(1, encounter.getProvidersByRoles().size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#filterEncountersByViewPermissions(List, User)}
+	 */
+	@Test
+	@Verifies(value = "should filter encounters if user is not allowed to see some encounters", method = "filterEncountersByViewPermissions(List, User)")
+	public void filterEncountersByViewPermissions_shouldFilterEncountersIfUserIsNotAllowedToSeeSomeEncounters()
+	        throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		int expectedSize = encounterService.getEncountersByPatientId(3).size();
+		
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(Context.getPatientService().getPatient(3));
+		EncounterType encounterType = new EncounterType(1);
+		encounterType.setViewPrivilege(Context.getUserService().getPrivilege("Some Privilege For View Encounter Types"));
+		encounter.setEncounterType(encounterType);
+		
+		EncounterRole role = new EncounterRole();
+		role.setName("role");
+		role = encounterService.saveEncounterRole(role);
+		
+		Provider provider = new Provider();
+		provider.setName("provider");
+		provider.setIdentifier("id1");
+		provider = Context.getProviderService().saveProvider(provider);
+		
+		encounter.addProvider(role, provider);
+		encounterService.saveEncounter(encounter);
+		
+		List<Encounter> patientEncounters = encounterService.getEncountersByPatientId(3);
+		assertEquals(expectedSize + 1, patientEncounters.size());
+		
+		if (Context.isAuthenticated()) {
+			Context.logout();
+		}
+		Context.authenticate("test_user", "test");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+		
+		patientEncounters = encounterService.getEncountersByPatientId(3);
+		int actualSize = patientEncounters.size();
+		
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+		Context.logout();
+		
+		assertEquals(actualSize, expectedSize);
+		assertTrue(!patientEncounters.contains(encounter));
+	}
+	
+	/**
+	 * @see {@link EncounterService#filterEncountersByViewPermissions(List, User)}
+	 */
+	@Test
+	@Verifies(value = "should not filter all encounters when the encounter type's view privilege column is null", method = "filterEncountersByViewPermissions(List, User)")
+	public void filterEncountersByViewPermissions_shouldNotFilterAllEncountersWhenTheEncounterTypesViewPrivilegeColumnIsNull()
+	        throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		int beforeSize = encounterService.getEncountersByPatientId(3).size();
+		
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(Context.getPatientService().getPatient(3));
+		EncounterType encounterType = new EncounterType(1);
+		// viewPrivilige on encounter type intentionally left null
+		encounter.setEncounterType(encounterType);
+		
+		EncounterRole role = new EncounterRole();
+		role.setName("role");
+		role = encounterService.saveEncounterRole(role);
+		
+		Provider provider = new Provider();
+		provider.setName("provider");
+		provider.setIdentifier("id1");
+		provider = Context.getProviderService().saveProvider(provider);
+		
+		encounter.addProvider(role, provider);
+		encounterService.saveEncounter(encounter);
+		
+		List<Encounter> patientEncounters = encounterService.getEncountersByPatientId(3);
+		assertNotNull(patientEncounters);
+		assertEquals(beforeSize + 1, patientEncounters.size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#canViewAllEncounterTypes(User)}
+	 */
+	@Test
+	@Verifies(value = "should return true if user is granted to view all encounters", method = "canViewAllEncounterTypes(User)")
+	public void canViewAllEncounterTypes_shouldReturnTrueIfUserIsGrantedToViewEncounters() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		EncounterType encounterType = new EncounterType("testing", "desc");
+		Privilege viewPrivilege = Context.getUserService().getPrivilege("Some Privilege For View Encounter Types");
+		encounterType.setViewPrivilege(viewPrivilege);
+		
+		encounterService.saveEncounterType(encounterType);
+		
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+		
+		assertFalse(encounterService.canViewAllEncounterTypes(user));
+		
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(viewPrivilege);
+		user.addRole(role);
+		
+		assertTrue(encounterService.canViewAllEncounterTypes(user));
+	}
+	
+	/**
+	 * @see {@link EncounterService#canViewAllEncounterTypes(User)}
+	 */
+	@Test
+	@Verifies(value = "should return true when the encounter type's view privilege column is null", method = "canViewAllEncounterTypes(User)")
+	public void canViewAllEncounterTypes_shouldReturnTrueWhenTheEncounterTypesViewPrivilegeColumnIsNull() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// set viewPrivilege on each encounter type to null
+		for (EncounterType encounterType : encounterService.getAllEncounterTypes()) {
+			encounterType.setViewPrivilege(null);
+			encounterService.saveEncounterType(encounterType);
+		}
+		
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+		
+		assertTrue(encounterService.canViewAllEncounterTypes(user));
+	}
+	
+	/**
+	 * @see {@link EncounterService#canEditAllEncounterTypes(User)}
+	 */
+	@Test
+	@Verifies(value = "should return true if user is granted to edit all encounters", method = "canEditAllEncounterTypes(User)")
+	public void canEditAllEncounterTypes_shouldReturnTrueIfUserIsGrantedToEditEncounters() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		EncounterType encounterType = new EncounterType("testing", "desc");
+		Privilege editPrivilege = Context.getUserService().getPrivilege("Some Privilege For Edit Encounter Types");
+		encounterType.setEditPrivilege(editPrivilege);
+		
+		encounterService.saveEncounterType(encounterType);
+		
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+		
+		assertFalse(encounterService.canEditAllEncounterTypes(user));
+		
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(editPrivilege);
+		user.addRole(role);
+		
+		assertTrue(encounterService.canEditAllEncounterTypes(user));
+	}
+	
+	/**
+	 * @see {@link EncounterService#canEditAllEncounterTypes(User)}
+	 */
+	@Test
+	@Verifies(value = "should return true when the encounter type's edit privilege column is null", method = "canViewAllEncounterTypes(User)")
+	public void canViewAllEncounterTypes_shouldReturnTrueWhenTheEncounterTypesEditPrivilegeColumnIsNull() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// set editPrivilege on each encounter type to null
+		for (EncounterType encounterType : encounterService.getAllEncounterTypes()) {
+			encounterType.setEditPrivilege(null);
+			encounterService.saveEncounterType(encounterType);
+		}
+		
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+		
+		assertTrue(encounterService.canEditAllEncounterTypes(user));
+	}
 }

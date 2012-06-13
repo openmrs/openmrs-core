@@ -68,7 +68,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="version" type="varchar(50)"/>
@@ -96,7 +96,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="sort_weight" type="double precision"></column>
@@ -120,7 +120,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="retired" type="BOOLEAN">
@@ -150,7 +150,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="retired" type="BOOLEAN">
@@ -182,7 +182,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -207,7 +207,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="concept_id" type="int">
@@ -237,7 +237,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="concept_name_type" type="varchar(50)"/>
@@ -267,7 +267,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
@@ -329,7 +329,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -368,7 +368,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="uuid" type="char(38)" />
@@ -405,7 +405,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="retired" type="BOOLEAN">
@@ -475,12 +475,14 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="retired" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="DATETIME"/>
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
@@ -535,13 +537,13 @@
             </column>
             <column defaultValueNumeric="0" name="location_id" type="int"/>
             <column name="form_id" type="int"/>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="encounter_datetime" type="DATETIME">
+            <column name="encounter_datetime" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
@@ -573,7 +575,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="retired" type="BOOLEAN">
@@ -583,8 +585,14 @@
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
             <column name="uuid" type="char(38)" />
+			<column name="edit_privilege" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+			<column name="view_privilege" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
         </createTable>
-        <modifySql dbms="mssql">
+		<modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
         </modifySql>
     </changeSet>
@@ -608,7 +616,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -636,7 +644,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="uuid" type="char(38)" />
@@ -658,7 +666,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="uuid" type="char(38)" />
@@ -689,7 +697,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -731,7 +739,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="sort_weight" type="real"/>
@@ -766,7 +774,7 @@
             <column name="hl7_data" type="text">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="message_state" type="int" defaultValueNumeric="2" remarks="2=processed, 4=deleted"/>
@@ -792,7 +800,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="error_details" type="text"/>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="uuid" type="char(38)" />
@@ -837,7 +845,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="uuid" type="char(38)" />
@@ -866,7 +874,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="county_district" type="varchar(50)"/>
@@ -904,7 +912,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -933,7 +941,7 @@
             <column name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -992,7 +1000,7 @@
             </column>
             <column name="encounter_id" type="int"/>
             <column name="order_id" type="int"/>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="obs_datetime" type="DATETIME">
+            <column name="obs_datetime" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="location_id" type="int"/>
@@ -1012,7 +1020,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
@@ -1041,7 +1049,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="retired" type="BOOLEAN">
@@ -1082,7 +1090,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
@@ -1110,7 +1118,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -1144,7 +1152,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="date_changed" type="DATETIME"/>
@@ -1179,7 +1187,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="required" type="BOOLEAN">
@@ -1220,7 +1228,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -1253,7 +1261,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -1288,7 +1296,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -1327,7 +1335,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
@@ -1366,7 +1374,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -1402,7 +1410,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -1413,7 +1421,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-            <column name="edit_privilege" type="varchar(50)"/>
+            <column name="edit_privilege" type="varchar(255)"/>
             <column name="sort_weight" type="double precision"/>
             <column name="uuid" type="char(38)" />
         </createTable>
@@ -1443,7 +1451,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
@@ -1462,7 +1470,7 @@
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-56">
         <createTable tableName="privilege">
-            <column defaultValue="" name="privilege" type="varchar(50)">
+            <column defaultValue="" name="privilege" type="varchar(255)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column defaultValue="" name="description" type="varchar(250)">
@@ -1486,7 +1494,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -1518,7 +1526,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="retired" type="BOOLEAN">
@@ -1552,7 +1560,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="retired" type="BOOLEAN">
@@ -1585,7 +1593,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="date_changed" type="DATETIME"/>
@@ -1625,7 +1633,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
@@ -1715,7 +1723,7 @@
             <column defaultValue="" name="role" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="" name="privilege" type="varchar(50)">
+            <column defaultValue="" name="privilege" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -1752,7 +1760,7 @@
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="created_by" type="int"/>
-            <column defaultValueDate="2005-01-01T00:00:00.0" name="date_created" type="DATETIME"/>
+            <column name="date_created" type="DATETIME"/>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
             <column name="last_execution_time" type="DATETIME">
@@ -1815,7 +1823,7 @@
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="DATETIME">
+            <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="int"/>
@@ -2745,6 +2753,9 @@
     <changeSet author="ben (generated)" id="1227303685425-159">
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="drug" constraintName="drug_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
+    <changeSet author="dkayiwa" id="1227123456789-100">
+        <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="drug" constraintName="drug_changed_by" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+    </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-160">
         <addForeignKeyConstraint baseColumnNames="dosage_form" baseTableName="drug" constraintName="dosage_form_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
     </changeSet>
@@ -3408,6 +3419,12 @@
     <changeSet id="20110915-1536" author="sunbiz">
         <addForeignKeyConstraint constraintName="mapped_concept_reference_term" referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" baseTableName="concept_reference_map" baseColumnNames="concept_reference_term_id"/>
     </changeSet>
+    <changeSet id="20120529-2230" author="mvorobey">
+        <addForeignKeyConstraint constraintName="privilege_which_can_view_encounter_type" baseTableName="encounter_type" baseColumnNames="view_privilege" referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
+	<changeSet id="20120529-2231" author="mvorobey">
+        <addForeignKeyConstraint constraintName="privilege_which_can_edit_encounter_type" baseTableName="encounter_type" baseColumnNames="edit_privilege" referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
     
     <!-- Skip changesets from liquibase-update-to-latest when new installation -->
     <!-- TODO: CustomChange to avoid replicated columns-->
@@ -3558,4 +3575,5 @@
             <column name="exectype" value="MARK_RAN"/>
         </insert>
     </changeSet>
+    
 </databaseChangeLog>

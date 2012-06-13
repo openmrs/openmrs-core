@@ -50,6 +50,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.aop.Advisor;
+import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.util.StringUtils;
 
 /**
@@ -450,17 +451,31 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * Runs through extensionPoints and then calls {@link BaseModuleActivator#willStart()} on the
-	 * Module's activator. This method is run in a new thread and is authenticated as the Daemon
-	 * user
-	 * 
-	 * @param module Module to start
-	 * @throws ModuleException if the module throws any kind of error at startup or in an activator
+	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
 	 * @see #startModuleInternal(Module)
 	 * @see Daemon#startModule(Module)
 	 */
 	public static Module startModule(Module module) throws ModuleException {
 		return Daemon.startModule(module);
+	}
+	
+	/**
+	 * Runs through extensionPoints and then calls {@link BaseModuleActivator#willStart()} on the
+	 * Module's activator. This method is run in a new thread and is authenticated as the Daemon
+	 * user. If a non null application context is passed in, it gets refreshed to make the module's
+	 * services available
+	 * 
+	 * @param module Module to start
+	 * @param isOpenmrsStartup Specifies whether this module is being started at application startup
+	 *            or not, this argument is ignored if a null application context is passed in
+	 * @param applicationContext the spring application context instance to refresh
+	 * @throws ModuleException if the module throws any kind of error at startup or in an activator
+	 * @see #startModuleInternal(Module, boolean, AbstractRefreshableApplicationContext)
+	 * @see Daemon#startModule(Module, boolean, AbstractRefreshableApplicationContext)
+	 */
+	public static Module startModule(Module module, boolean isOpenmrsStartup,
+	        AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
+		return Daemon.startModule(module, isOpenmrsStartup, applicationContext);
 	}
 	
 	/**
@@ -475,6 +490,29 @@ public class ModuleFactory {
 	 * @param module Module to start
 	 */
 	public static Module startModuleInternal(Module module) throws ModuleException {
+		return startModuleInternal(module);
+	}
+	
+	/**
+	 * This method should not be called directly.<br/>
+	 * <br/>
+	 * The {@link #startModule(Module)} (and hence {@link Daemon#startModule(Module)}) calls this
+	 * method in a new Thread and is authenticated as the {@link Daemon} user<br/>
+	 * <br/>
+	 * Runs through extensionPoints and then calls {@link BaseModuleActivator#willStart()} on the
+	 * Module's activator. <br/>
+	 * <br/>
+	 * If a non null application context is passed in, it gets refreshed to make the module's
+	 * services available
+	 * 
+	 * @param module Module to start
+	 * @param isOpenmrsStartup Specifies whether this module is being started at application startup
+	 *            or not, this argument is ignored if a null application context is passed in
+	 * @param applicationContext the spring application context instance to refresh
+	 * @param applicationContext the spring application context instance to refresh
+	 */
+	public static Module startModuleInternal(Module module, boolean isOpenmrsStartup,
+	        AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
 		
 		if (module != null) {
 			
@@ -649,7 +687,8 @@ public class ModuleFactory {
 			
 		}
 		
-		// refresh spring service context?
+		if (applicationContext != null)
+			ModuleUtil.refreshApplicationContext(applicationContext, isOpenmrsStartup, module);
 		
 		return module;
 	}

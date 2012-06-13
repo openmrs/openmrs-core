@@ -2354,4 +2354,71 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(concept.getDateChanged());
 		Assert.assertNotNull(concept.getChangedBy());
 	}
+	
+	/**
+	 * @see ConceptService#getDrugsByIngredient(Concept)
+	 * @verifies return drugs matched by drug concept
+	 */
+	@Test
+	public void getDrugsByIngredient_shouldReturnDrugsMatchedByDrugConcept() throws Exception {
+		List<Drug> drugs = conceptService.getDrugsByIngredient(new Concept(792));
+		assertEquals(1, drugs.size());
+	}
+	
+	/**
+	 * @see ConceptService#getDrugsByIngredient(Concept)
+	 * @verifies return drugs matched by intermediate concept
+	 */
+	@Test
+	public void getDrugsByIngredient_shouldReturnDrugsMatchedByIntermediateConcept() throws Exception {
+		List<Drug> drugs = conceptService.getDrugsByIngredient(new Concept(88));
+		assertEquals(2, drugs.size());
+	}
+	
+	/**
+	 * @see ConceptService#getDrugsByIngredient(Concept)
+	 * @verifies return empty list if nothing found
+	 */
+	@Test
+	public void getDrugsByIngredient_shouldReturnEmptyListIfNothingFound() throws Exception {
+		List<Drug> drugs = conceptService.getDrugsByIngredient(new Concept(18));
+		assertEquals(0, drugs.size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 */
+	@Test
+	@Verifies(value = "should return a search result whose concept name contains all word tokens", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAllWordTokens() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		Concept conceptWithMultipleMatchingNames = conceptService.getConcept(798);
+		
+		//recalculate the weights just in case the logic for calculating the weights is changed
+		conceptService.updateConceptIndex(conceptWithMultipleMatchingNames);
+		conceptService.updateConceptIndex(conceptService.getConcept(240));
+		conceptService.updateConceptIndex(conceptService.getConcept(357));
+		conceptService.updateConceptIndex(conceptService.getConcept(328));
+		conceptService.updateConceptIndex(conceptService.getConcept(1240));
+		
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("SALBUTAMOL INHALER", Collections
+		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		
+		Assert.assertEquals(1, searchResults.size());
+		Assert.assertEquals(conceptWithMultipleMatchingNames, searchResults.get(0).getConcept());
+		Assert.assertEquals("SALBUTAMOL INHALER", searchResults.get(0).getConceptName().getName());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConcepts(String,List<Locale>,null,List<ConceptClass>,List<
+	 *      ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)}
+	 */
+	@Test
+	@Verifies(value = "should not return concepts with matching names that are voided", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
+	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() throws Exception {
+		Concept concept = conceptService.getConcept(7);
+		conceptService.updateConceptIndex(concept);
+		Assert.assertEquals(0, conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false, null,
+		    null, null, null, null, null, null).size());
+	}
 }

@@ -45,7 +45,10 @@ public class DrugOrderValidator extends OrderValidator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail not fail validation if drug is null
+	 * @should fail validation if drug is null
+	 * @should fail validation if drug concept is not set
+	 * @should fail validation if drug dose is set and units is not set
+	 * @should fail if quantity set and units not set
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -67,6 +70,10 @@ public class DrugOrderValidator extends OrderValidator {
 			if (order.getDose() != null)
 				ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.add.error.missingDoseUnits");
 			
+			// for the following elements Order.hbm.xml says: not-null="true"
+			ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
+			if (order.getDrug() != null)
+				ValidationUtils.rejectIfEmpty(errors, "drug.concept", "error.null");
 		}
 	}
 }

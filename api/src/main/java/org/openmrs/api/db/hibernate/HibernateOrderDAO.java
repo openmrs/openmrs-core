@@ -21,8 +21,11 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
@@ -179,6 +182,23 @@ public class HibernateOrderDAO implements OrderDAO {
 	public Integer getHighestOrderId() {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery("SELECT max(order_id) FROM orders");
 		return (Integer) query.uniqueResult();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient) {
+		Criteria searchDrugOrderCriteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class, "order");
+		
+		searchDrugOrderCriteria.add(Restrictions.eq("order.patient", patient));
+		
+		searchDrugOrderCriteria.createAlias("drug", "drug");
+		Criterion lhs = Restrictions.eq("drug.concept", ingredient);
+		
+		searchDrugOrderCriteria.createAlias("drug.ingredients", "ingredients");
+		Criterion rhs = Restrictions.eq("ingredients.ingredient", ingredient);
+		
+		searchDrugOrderCriteria.add(Restrictions.or(lhs, rhs));
+		
+		return (List<DrugOrder>) searchDrugOrderCriteria.list();
 	}
 	
 }

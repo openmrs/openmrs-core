@@ -69,6 +69,14 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	}
 	
 	/**
+	 * @see org.openmrs.api.VisitService#getAllVisitTypes(boolean)
+	 */
+	@Override
+	public List<VisitType> getAllVisitTypes(boolean includeRetired) {
+		return dao.getAllVisitTypes(includeRetired);
+	}
+	
+	/**
 	 * @see org.openmrs.api.VisitService#getVisitType(java.lang.Integer)
 	 */
 	public VisitType getVisitType(Integer visitTypeId) {

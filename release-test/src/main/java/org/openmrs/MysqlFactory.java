@@ -36,10 +36,14 @@ public class MysqlFactory {
         String userName = System.getProperty("mysql_username", "root");
         String password = System.getProperty("mysql_password", "password");
         String databaseName = System.getProperty("database_name", "openmrsReleaseTest");
-
+        if(System.getProperty("smoke-test") != null || System.getProperty("start-test-server")!=null){
+            System.out.println("Starting Database server ");
+            startDatabaseServer(databaseDir,dataDir, port, userName, password);
+        }else{
         deleteOldRunTimePropertiesFile();
         startDatabaseServer(databaseDir, dataDir, port, userName, password);
         dropDatabaseIfExists(port, userName, password, databaseName);
+        }
     }
 
     private static void dropDatabaseIfExists(String port, String userName, String password, String databaseName) throws Exception {

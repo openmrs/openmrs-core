@@ -24,8 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openmrs.EncounterProvider;
+import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.handler.VoidHandler;
 
 /**
  * An Encounter represents one visit or interaction of a patient with a healthcare worker. Every
@@ -62,6 +63,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Visit visit;
 	
+	@DisableHandlers(handlerTypes = { VoidHandler.class })
 	private Set<EncounterProvider> encounterProviders = new LinkedHashSet<EncounterProvider>();
 	
 	// Constructors
@@ -372,6 +374,18 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * Basic property accessors for encounterProviders
+	 * @return
+	 */
+	public Set<EncounterProvider> getEncounterProviders() {
+		return encounterProviders;
+	}
+	
+	public void setEncounterProviders(Set<EncounterProvider> encounterProviders) {
+		this.encounterProviders = encounterProviders;
+	}
+	
+	/**
 	 * @return Returns the provider.
 	 * @since 1.6 (used to return User)
 	 * @deprecated since 1.9, use {@link #getProvidersByRole(EncounterRole)}
@@ -516,14 +530,15 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 		
 		Map<EncounterRole, Set<Provider>> providers = new HashMap<EncounterRole, Set<Provider>>();
 		for (EncounterProvider encounterProvider : encounterProviders) {
+			
+			if (!includeVoided && encounterProvider.getVoided()) {
+				continue;
+			}
+			
 			Set<Provider> list = providers.get(encounterProvider.getEncounterRole());
 			if (list == null) {
 				list = new LinkedHashSet<Provider>();
 				providers.put(encounterProvider.getEncounterRole(), list);
-			}
-			
-			if (!includeVoided && encounterProvider.getVoided()) {
-				continue;
 			}
 			
 			list.add(encounterProvider.getProvider());
@@ -648,4 +663,5 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 			}
 		}
 	}
+	
 }

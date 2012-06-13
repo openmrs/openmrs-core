@@ -43,7 +43,6 @@ import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ValidateUtil;
-import org.springframework.util.StringUtils;
 
 /**
  * Default implementation of the Order-related services class. This class should not be invoked by
@@ -109,13 +108,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order voidOrder(Order order, String voidReason) throws APIException {
-		// fail early if this order is already voided
-		if (order.getVoided())
-			return order;
-		
-		if (!StringUtils.hasLength(voidReason))
-			throw new IllegalArgumentException("voidReason cannot be empty or null");
-		
 		return dao.saveOrder(order);
 	}
 	
@@ -124,7 +116,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order unvoidOrder(Order order) throws APIException {
-		return dao.saveOrder(order);
+		return saveOrder(order);
 	}
 	
 	/**
@@ -464,5 +456,33 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX,
 		    OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX)
 		        + next;
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatientAndIngredient(org.openmrs.Patient,
+	 *      org.openmrs.Concept)
+	 */
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient) throws APIException {
+		if (patient == null)
+			throw new IllegalArgumentException("patient is required");
+		
+		if (ingredient == null)
+			throw new IllegalArgumentException("ingredient is required");
+		
+		return dao.getDrugOrdersByPatientAndIngredient(patient, ingredient);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrdersByPatient(org.openmrs.Patient, java.lang.Boolean)
+	 */
+	public List<Order> getOrdersByPatient(Patient patient, boolean includeVoided) throws APIException {
+		if (patient == null)
+			throw new APIException("Unable to get orders if I am not given a patient");
+		
+		List<Patient> patients = new ArrayList<Patient>();
+		patients.add(patient);
+		
+		//TODO take includeVoided into consideration
+		return getOrdersByPatient(patient);
 	}
 }

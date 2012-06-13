@@ -16,6 +16,7 @@ package org.openmrs.web.controller;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -43,13 +44,19 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSet;
+import org.openmrs.Drug;
 import org.openmrs.Form;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.web.extension.ConceptUsageExtension;
+import org.openmrs.module.web.extension.provider.Link;
 import org.openmrs.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.propertyeditor.ConceptClassEditor;
 import org.openmrs.propertyeditor.ConceptDatatypeEditor;
@@ -58,6 +65,7 @@ import org.openmrs.propertyeditor.ConceptReferenceTermEditor;
 import org.openmrs.propertyeditor.ConceptSetsEditor;
 import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ConceptValidator;
 import org.openmrs.web.WebConstants;
@@ -370,6 +378,9 @@ public class ConceptFormController extends SimpleFormController {
 		
 		public List<ConceptMap> conceptMappings; // a "lazy list" version of the concept.getMappings() list
 		
+		/** The list of drugs for its concept object */
+		public List<Drug> conceptDrugList = new ArrayList<Drug>();
+		
 		public Double hiAbsolute;
 		
 		public Double lowAbsolute;
@@ -440,6 +451,10 @@ public class ConceptFormController extends SimpleFormController {
 			} else if (concept.isComplex()) {
 				ConceptComplex complex = (ConceptComplex) concept;
 				this.handlerKey = complex.getHandler();
+			}
+			
+			if (concept.getConceptClass() != null && OpenmrsUtil.nullSafeEquals(concept.getConceptClass().getName(), "Drug")) {
+				this.conceptDrugList.addAll(Context.getConceptService().getDrugsByConcept(concept));
 			}
 		}
 		
@@ -835,6 +850,69 @@ public class ConceptFormController extends SimpleFormController {
 		}
 		
 		/**
+		 * Get the list of extensions/metadata and the specific instances of
+		 * them that use this concept.
+		 * 
+		 * @return list of {@link ConceptUsageExtension}
+		 */
+		public List<ConceptUsageExtension> getConceptUsage() {
+			
+			List<ConceptUsageExtension> togo = new ArrayList<ConceptUsageExtension>();
+			
+			// Forms
+			List<Link> forms = new ArrayList<Link>();
+			for (Form form : Context.getFormService().getFormsContainingConcept(concept)) {
+				forms.add(new Link(form.getName(), "/admin/forms/formSchemaDesign.form?formId=" + form.getFormId()));
+			}
+			togo.add(new ConceptUsageExtension("dictionary.forms", forms, PrivilegeConstants.VIEW_FORMS));
+			
+			// Drugs
+			List<Link> drugs = new ArrayList<Link>();
+			for (Drug drug : Context.getConceptService().getDrugsByConcept(concept)) {
+				drugs.add(new Link(drug.getName(), "/admin/concepts/conceptDrug.form?drugId=" + drug.getId()));
+			}
+			togo.add(new ConceptUsageExtension("dictionary.drugs", drugs, PrivilegeConstants.VIEW_CONCEPTS));
+			
+			// Programs
+			List<Link> programs = new ArrayList<Link>();
+			for (Program program : Context.getProgramWorkflowService().getProgramsByConcept(concept)) {
+				programs.add(new Link(program.getName(), "/admin/programs/program.form?programId=" + program.getId()));
+			}
+			togo.add(new ConceptUsageExtension("dictionary.programs", programs, PrivilegeConstants.VIEW_PROGRAMS));
+			
+			// ProgramWorkflows
+			List<Link> programWorkflows = new ArrayList<Link>();
+			for (ProgramWorkflow programWorkflow : Context.getProgramWorkflowService().getProgramWorkflowsByConcept(concept)) {
+				programWorkflows.add(new Link(programWorkflow.getProgram().getName(),
+				        "/admin/programs/workflow.form?programWorkflowId=" + programWorkflow.getId()));
+			}
+			togo.add(new ConceptUsageExtension("dictionary.programworkflows", programWorkflows,
+			        PrivilegeConstants.VIEW_PROGRAMS));
+			
+			// ProgramWorkflowStates
+			List<Link> programWorkflowStates = new ArrayList<Link>();
+			for (ProgramWorkflowState programWorkflowState : Context.getProgramWorkflowService()
+			        .getProgramWorkflowStatesByConcept(concept)) {
+				programWorkflowStates.add(new Link(programWorkflowState.getProgramWorkflow().getProgram().getName(), ""));
+			}
+			togo.add(new ConceptUsageExtension("dictionary.programworkflowstates", programWorkflowStates,
+			        PrivilegeConstants.VIEW_PROGRAMS));
+			
+			return togo;
+		}
+		
+		/**
+		 * Get the number of observations that use this concept.
+		 * 
+		 * @return number of obs using this concept
+		 */
+		public int getNumberOfObsUsingThisConcept() {
+			List<Concept> searchConcepts = Arrays.asList(concept);
+			return Context.getObsService().getObservationCount(null, null, searchConcepts, null, null, null, null, null,
+			    null, true);
+		}
+		
+		/**
 		 * Get the other concept questions that this concept is declared as an answer for
 		 * 
 		 * @return
@@ -893,6 +971,22 @@ public class ConceptFormController extends SimpleFormController {
 		 */
 		public void setPreferredNamesByLocale(Map<Locale, String> preferredNamesByLocale) {
 			this.preferredNamesByLocale = preferredNamesByLocale;
+		}
+		
+		/**
+		 * @return the not-null list of its concept drugs
+		 */
+		public List<Drug> getConceptDrugList() {
+			return conceptDrugList;
+		}
+		
+		/**
+		 * Sets the list of drugs for its concept object
+		 * 
+		 * @param conceptDrugList the value to be set
+		 */
+		public void setConceptDrugList(List<Drug> conceptDrugList) {
+			this.conceptDrugList = conceptDrugList;
 		}
 	}
 	
