@@ -206,6 +206,8 @@ public interface OrderService extends OpenmrsService {
 	 * @param patient the patient.
 	 * @param concept the concept.
 	 * @return the list of orders.
+	 * @should return orders with the given concept
+	 * @should return empty list for concept without orders
 	 */
 	@Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
