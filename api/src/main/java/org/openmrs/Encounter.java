@@ -381,6 +381,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return list of all existing providers on this encounter
 	 * @see #getProvidersByRole(EncounterRole)
 	 * @see #getProvidersByRoles()
+	 * @since 1.9.1
 	 */
 	public Set<EncounterProvider> getEncounterProviders() {
 		return encounterProviders;
@@ -396,6 +397,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see #addProvider(EncounterRole, Provider)
 	 * @see #removeProvider(EncounterRole, Provider)
 	 * @see #setProvider(EncounterRole, Provider)
+	 * @since 1.9.1
 	 */
 	public void setEncounterProviders(Set<EncounterProvider> encounterProviders) {
 		this.encounterProviders = encounterProviders;
