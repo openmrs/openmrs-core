@@ -374,8 +374,9 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Basic property accessors for encounterProviders set
-	 * @return
+	 * Basic property accessors for encounterProviders
+	 * Note that convenience methods getProvidersByRoles, getProvidersByRole, addProviders,
+	 * setProvider, and removeProvider are the preferred methods for adding/removing providers
 	 */
 	public Set<EncounterProvider> getEncounterProviders() {
 		return encounterProviders;
