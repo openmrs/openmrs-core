@@ -427,7 +427,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	private Order saveOrderWithLesserValidation(Order order) throws APIException {
 		checkIfModifyingSavedOrderNumber(order);
-		ValidateUtil.validate(order);
 		return dao.saveOrder(order);
 	}
 	

@@ -196,6 +196,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return the order object.
 	 * @should find object given valid order number
 	 * @should return null if no object found with given order number
+	 * @since 1.10
 	 */
 	@Transactional(readOnly = true)
 	public Order getOrderByOrderNumber(String orderNumber);
