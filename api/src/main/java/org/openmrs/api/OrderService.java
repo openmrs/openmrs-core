@@ -158,17 +158,6 @@ public interface OrderService extends OpenmrsService {
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided);
 	
 	/**
-	 * Un-discontinue order record. Reverse a previous call to
-	 * {@link #discontinueOrder(Order, Concept, Date)}
-	 * 
-	 * @param order order to be un-discontinued
-	 * @see #discontinueOrder(Order, Concept, Date)
-	 * @return The Order that was undiscontinued
-	 */
-	@Authorized(PrivilegeConstants.EDIT_ORDERS)
-	public Order undiscontinueOrder(Order order) throws APIException;
-	
-	/**
 	 * Unvoid order record. Reverse a previous call to {@link #voidOrder(Order, String)}
 	 * 
 	 * @param order order to be unvoided

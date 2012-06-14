@@ -134,19 +134,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#undiscontinueOrder(org.openmrs.Order)
-	 */
-	@Override
-	public Order undiscontinueOrder(Order order) throws APIException {
-		order.setDiscontinued(Boolean.FALSE);
-		order.setDiscontinuedBy(null);
-		order.setDiscontinuedDate(null);
-		order.setDiscontinuedReason(null);
-		//return Context.getOrderService().saveOrder(order);
-		throw new APIException("TODO If we're going to allow this we need to also void the D/C order");
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
 	@Override
@@ -415,6 +402,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		saveOrderWithLesserValidation(oldOrder);
 		
 		Order newOrder = new Order();
+		newOrder.setOrderNumber(getNewOrderNumber());
 		newOrder.setConcept(oldOrder.getConcept());
 		newOrder.setPatient(oldOrder.getPatient());
 		newOrder.setPreviousOrderNumber(oldOrder.getOrderNumber());
