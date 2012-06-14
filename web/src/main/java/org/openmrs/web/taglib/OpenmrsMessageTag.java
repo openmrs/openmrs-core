@@ -15,7 +15,6 @@ package org.openmrs.web.taglib;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Locale;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -251,20 +250,20 @@ public class OpenmrsMessageTag extends OpenmrsHtmlEscapingAwareTag {
 		}
 		// by default message code is used as fallback
 		String message = resolvedCode;
-		Locale locale = LocaleUtility.fromSpecification(this.locale);
 		if (resolvedCode != null || resolvedText != null || bodyText != null) {
 			// we have either a code or default text or body that we need to resolve.
 			Object[] argumentsArray = resolveArguments(this.arguments);
 			if (bodyText != null) {
 				// we have a fallback body text to consider.
-				message = messageSource.getMessage(resolvedCode, argumentsArray, bodyText, locale);
+				message = messageSource.getMessage(resolvedCode, argumentsArray, bodyText, getRequestContext().getLocale());
 			} else if (resolvedText != null) {
 				// we have a fallback value of text attribute to consider.
-				message = messageSource.getMessage(resolvedCode, argumentsArray, resolvedText, locale);
+				message = messageSource.getMessage(resolvedCode, argumentsArray, resolvedText, getRequestContext()
+				        .getLocale());
 			} else {
 				// we have no fallback text to consider.
 				try {
-					message = messageSource.getMessage(resolvedCode, argumentsArray, locale);
+					message = messageSource.getMessage(resolvedCode, argumentsArray, getRequestContext().getLocale());
 				}
 				catch (NoSuchMessageException e) {
 					// do nothing, use resolved code as fallback
