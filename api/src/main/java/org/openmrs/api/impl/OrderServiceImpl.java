@@ -490,4 +490,30 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//TODO take includeVoided into consideration
 		return getOrdersByPatient(patient);
 	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrdersByEncounter(org.openmrs.Encounter)
+	 */
+	public List<Order> getOrdersByEncounter(Encounter encounter) throws APIException {
+		if (encounter == null)
+			throw new APIException("Unable to get orders if I am not given an encounter");
+		
+		List<Encounter> encounters = new ArrayList<Encounter>();
+		encounters.add(encounter);
+		
+		return getOrders(Order.class, null, null, null, encounters, null, null, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrdersByOrderer(org.openmrs.User)
+	 */
+	public List<Order> getOrdersByOrderer(User orderer) throws APIException {
+		if (orderer == null)
+			throw new APIException("Unable to get orders if I am not given an orderer");
+		
+		List<User> orderers = new ArrayList<User>();
+		orderers.add(orderer);
+		
+		return getOrders(Order.class, null, null, orderers, null, null, null, null);
+	}
 }

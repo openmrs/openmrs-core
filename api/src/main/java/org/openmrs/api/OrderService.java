@@ -370,4 +370,28 @@ public interface OrderService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<Order> getOrdersByPatient(Patient patient, boolean includeVoided);
+	
+	/**
+	 * Get orders by encounter
+	 * 
+	 * @return orders list
+	 * @throws APIException
+	 * @should return list of non voided orders by encounter
+	 * @since 1.10
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	public List<Order> getOrdersByEncounter(Encounter encounter) throws APIException;
+	
+	/**
+	 * Get orders by orderer
+	 * 
+	 * @return orders list
+	 * @throws APIException
+	 * @should return list of non voided orders by orderer
+	 * @since 1.10
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	public List<Order> getOrdersByOrderer(User user) throws APIException;
 }

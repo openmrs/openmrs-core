@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
 import org.openmrs.GenericDrug;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
@@ -529,4 +530,26 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(order.isVoided());
 	}
 	
+	/**
+	 * @see {@link OrderService#getOrdersByEncounter(Encounter)}
+	 */
+	@Test
+	@Verifies(value = "return list of non voided orders by encounter", method = "getOrdersByEncounter(Encounter)")
+	public void getOrdersByEncounter_shouldReturnListOfNonVoidedOrdersByEncounter() throws Exception {
+		executeDataSet(ORDERS_DATASET_XML);
+		Encounter encounter = new Encounter(1);
+		List<Order> orders = Context.getOrderService().getOrdersByEncounter(encounter);
+		Assert.assertEquals(3, orders.size());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrdersByOrderer(User)}
+	 */
+	@Test
+	@Verifies(value = "return list of non voided orders by orderer", method = "getOrdersByOrderer(User)")
+	public void getOrdersByOrderer_shouldReturnListOfNonVoidedOrdersByOrderer() throws Exception {
+		User user = Context.getUserService().getUser(1);
+		List<Order> orders = Context.getOrderService().getOrdersByOrderer(user);
+		Assert.assertEquals(10, orders.size());
+	}
 }
