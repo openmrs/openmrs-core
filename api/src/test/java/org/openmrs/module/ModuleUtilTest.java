@@ -413,7 +413,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	public void compareVersion_shouldCorrectlyComparingTwoVersionNumbers() throws Exception {
 		String olderVersion = "2.1.1";
 		String newerVersion = "2.1.10";
-		ModuleUtil.compareVersion(olderVersion, newerVersion);
+		Assert.assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
 	}
 	
 	/**
@@ -422,8 +422,10 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "treat SNAPSHOT as earliest version", method = "compareVersion(String,String)")
 	public void compareVersion_shouldTreatSNAPSHOTAsEarliestVersion() throws Exception {
-		String olderVersion = "1.8.4-SNAPSHOT";
-		String newerVersion = "1.8.3";
-		Assert.assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) > 0);
+		String olderVersion = "1.8.3";
+		String newerVersion = "1.8.4-SNAPSHOT";
+		Assert.assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
+		//should still return the correct value if the arguments are switched
+		Assert.assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
 	}
 }
