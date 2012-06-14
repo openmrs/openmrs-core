@@ -105,7 +105,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
-	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude) {
+	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude, boolean includeVoided) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);
 		
@@ -140,7 +140,8 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (actionsToExclude != null && actionsToExclude.size() > 0)
 			crit.add(Expression.not(Expression.in("action", actionsToExclude)));
 		
-		crit.add(Expression.eq("voided", false));
+		if (!includeVoided)
+			crit.add(Expression.eq("voided", false));
 		
 		return crit.list();
 	}

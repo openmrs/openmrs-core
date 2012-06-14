@@ -156,11 +156,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
 	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude) {
+		
+		return getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate, actionsToInclude,
+		    actionsToExclude, false);
+	}
+	
+	private <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
+	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude, boolean includeVoided) {
 		if (orderClassType == null)
 			throw new APIException("orderClassType cannot be null.  An order type of Order.class or a subclass is required");
 		
 		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate, actionsToInclude,
-		    actionsToExclude);
+		    actionsToExclude, includeVoided);
 	}
 	
 	/**
@@ -168,13 +176,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException {
-		if (patient == null)
-			throw new APIException("Unable to get orders if I am not given a patient");
-		
-		List<Patient> patients = new Vector<Patient>();
-		patients.add(patient);
-		
-		return getOrders(Order.class, patients, null, null, null, null, null, null);
+		return getOrdersByPatient(patient, false);
 	}
 	
 	/**
@@ -487,8 +489,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(patient);
 		
-		//TODO take includeVoided into consideration
-		return getOrdersByPatient(patient);
+		return getOrders(Order.class, patients, null, null, null, null, null, null, includeVoided);
 	}
 	
 	/**

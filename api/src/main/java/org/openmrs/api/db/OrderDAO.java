@@ -59,7 +59,7 @@ public interface OrderDAO {
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
-	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude);
+	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude, boolean includeVoided);
 	
 	/**
 	 * Auto generated method comment

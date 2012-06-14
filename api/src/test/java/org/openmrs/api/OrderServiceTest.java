@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
@@ -414,29 +413,26 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#getOrdersByPatient(Patient, boolean)}
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "return list of orders for patient with respect to the include voided flag", method = "getOrdersByPatient(Patient, boolean)")
 	public void getOrdersByPatient_shouldReturnListOfOrdersForPatientWithRespectToTheIncludeVoidedFlag() throws Exception {
 		executeDataSet(ORDERS_DATASET_XML);
 		Patient p = Context.getPatientService().getPatient(2);
 		List<Order> orders = Context.getOrderService().getOrdersByPatient(p, true);
-		Assert.assertEquals(8, orders.size());
+		Assert.assertEquals(12, orders.size());
 		
 		orders = Context.getOrderService().getOrdersByPatient(p, false);
-		Assert.assertEquals(4, orders.size());
+		Assert.assertEquals(8, orders.size());
 	}
 	
 	/**
 	 * @see {@link OrderService#getOrdersByPatient(Patient)}
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "return list of non voided orders for patient", method = "getOrdersByPatient(Patient)")
 	public void getOrdersByPatient_shouldReturnListOfNonVoidedOrdersForPatient() throws Exception {
-		executeDataSet(ORDERS_DATASET_XML);
 		Patient p = Context.getPatientService().getPatient(2);
 		List<Order> orders = Context.getOrderService().getOrdersByPatient(p);
-		Assert.assertEquals(4, orders.size());
+		Assert.assertEquals(8, orders.size());
 	}
 	
 	/**
