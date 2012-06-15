@@ -56,6 +56,16 @@
 		return null;
 	}
 	
+	function getOverview() {
+		alert('in overview');
+		$j.ajax(
+		 	{url:"patientDashboardOverview.form?patientId=2", success:function(result){
+    			document.getElementById('tempDivId').innerHTML= result;
+  			}}
+  		);
+		alert('what more can i say');
+	}
+	
 	function changeTab(tabObj) {
 		if (!document.getElementById || !document.createTextNode) {return;}
 		if (typeof tabObj == "string")
@@ -116,7 +126,7 @@
 <div id="patientTabs" class="${patientVariation}">
 	<ul>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
-			<li><a id="patientOverviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.overview"/></a></li>
+			<li><a id="patientOverviewTab" href="#" onclick="return getOverview();" hidefocus="hidefocus"><spring:message code="patientDashboard.overview"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Regimen Section">
 			<li><a id="patientRegimenTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.regimens"/></a></li>
@@ -156,6 +166,10 @@
 			</openmrs:hasPrivilege>
 		</openmrs:extensionPoint>
 	</ul>
+</div>
+
+<div id="tempDivId">
+	<p>Tabs come here</p>
 </div>
 
 <div id="patientSections">
