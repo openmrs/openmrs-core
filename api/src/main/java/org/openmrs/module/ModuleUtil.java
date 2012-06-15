@@ -357,6 +357,7 @@ public class ModuleUtil {
 			// treat "-SNAPSHOT" as the lowest possible version
 			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0 
 			version = version.replace("-SNAPSHOT", ".0");
+			value = value.replace("-SNAPSHOT", ".0");
 			
 			Collections.addAll(versions, version.split("\\."));
 			Collections.addAll(values, value.split("\\."));

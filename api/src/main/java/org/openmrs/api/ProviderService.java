@@ -284,6 +284,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @return true if the identifier is unique otherwise false
 	 * @throws APIException
 	 * @should return false if the identifier is a duplicate
+	 * @should return true if the identifier is null
+	 * @should return true if the identifier is a blank string
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })

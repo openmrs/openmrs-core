@@ -519,4 +519,27 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(providers.contains(provider));
 	}
+	
+	/**
+	 * @see {@link ProviderService#isProviderIdentifierUnique(Provider)}
+	 */
+	@Test
+	@Verifies(value = "should return true if the identifier is null", method = "isProviderIdentifierUnique(Provider)")
+	public void isProviderIdentifierUnique_shouldReturnTrueIfTheIdentifierIsNull() throws Exception {
+		Provider provider = new Provider();
+		provider.setName("new developer");
+		Assert.assertTrue(service.isProviderIdentifierUnique(provider));
+	}
+	
+	/**
+	 * @see {@link ProviderService#isProviderIdentifierUnique(Provider)}
+	 */
+	@Test
+	@Verifies(value = "should return true if the identifier is a blank string", method = "isProviderIdentifierUnique(Provider)")
+	public void isProviderIdentifierUnique_shouldReturnTrueIfTheIdentifierIsABlankString() throws Exception {
+		Provider provider = new Provider();
+		provider.setName("new developer");
+		provider.setIdentifier("");
+		Assert.assertTrue(service.isProviderIdentifierUnique(provider));
+	}
 }

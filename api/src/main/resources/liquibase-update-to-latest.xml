@@ -7032,6 +7032,16 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
+	<changeSet id="20120613-0930" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="provider" columnName="identifier" />
+		</preConditions>
+		<comment>
+			Dropping not null constraint from provider.identifier column
+		</comment>
+		<dropNotNullConstraint tableName="provider" columnName="identifier" columnDataType="varchar(255)" />
+	</changeSet>
+	
 	<changeSet id="20101209-1111-orders-order_number" author="dkayiwa">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="orders" columnName="order_number"/></not>
