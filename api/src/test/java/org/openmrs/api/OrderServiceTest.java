@@ -214,7 +214,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#getOrderables(String)}
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "shoudl fail if null passed in", method = "getOrderables(String)")
+	@Verifies(value = "should fail if null passed in", method = "getOrderables(String)")
 	public void getOrderables_shouldFailIfNullPassedIn() throws Exception {
 		executeDataSet(simpleOrderEntryDatasetFilename);
 		
