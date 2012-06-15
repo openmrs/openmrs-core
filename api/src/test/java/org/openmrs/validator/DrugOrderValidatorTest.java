@@ -111,6 +111,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setStartDate(cal.getTime());
 		order.setAutoExpireDate(new Date());
 		order.setDrug(Context.getConceptService().getDrug(3));
+		order.setOrderNumber("orderNumber");
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);

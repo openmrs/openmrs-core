@@ -75,7 +75,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should save new version of an existing order", method = "saveOrder(Order)")
 	public void saveOrder_shouldSaveNewVersionOfAnExistingOrder() throws Exception {
 		OrderService orderService = Context.getOrderService();
-		Order order = orderService.getOrder(2);
+		Order order = orderService.getOrder(3);
 		Order newOrder = orderService.saveOrder(order);
 		Assert.assertTrue(order.getOrderId() != newOrder.getOrderId());
 	}
@@ -184,21 +184,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
 		Assert.assertEquals(0, orders.size());
-	}
-	
-	/**
-	 * @see {@link OrderService#saveOrder(Order)}
-	 */
-	@Test
-	@Verifies(value = "should asign order number for new order", method = "saveOrder(Order)")
-	public void saveOrder_shouldAssignOrderNumberForNewOrder() throws Exception {
-		Order order = new Order();
-		order.setConcept(Context.getConceptService().getConcept(23));
-		order.setPatient(Context.getPatientService().getPatient(6));
-		order.setStartDate(new Date());
-		service.saveOrder(order);
-		Assert.assertNotNull(order.getOrderId());
-		Assert.assertNotNull(order.getOrderNumber());
 	}
 	
 	/**

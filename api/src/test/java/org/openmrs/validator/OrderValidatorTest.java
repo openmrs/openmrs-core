@@ -19,6 +19,7 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Order;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -176,10 +177,213 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(cal.getTime());
 		order.setAutoExpireDate(new Date());
+		order.setOrderNumber("orderNumber");
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if order is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfOrderIsNull() throws Exception {
+		Errors errors = new BindException(new Order(), "order");
+		new OrderValidator().validate(null, errors);
+		
+		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if orderNumber is empty", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfOrderNumberIsEmpty() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderNumber(null);
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("orderNumber"));
+		
+		order.setOrderNumber("  ");
+		
+		errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("orderNumber"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if discontinued but date is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDiscontinuedButDateIsNull() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderNumber("orderNumber");
+		order.setDiscontinued(true);
+		order.setDiscontinuedDate(null);
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("discontinuedDate"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if discontinued but by is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDiscontinuedButByIsNull() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderNumber("orderNumber");
+		order.setDiscontinued(true);
+		order.setDiscontinuedBy(null);
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("discontinuedBy"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if discontinued but reason is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDiscontinuedButReasonIsNull() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderNumber("orderNumber");
+		order.setDiscontinued(true);
+		order.setDiscontinuedReason(null);
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("discontinuedReason"));
+		
+		order.setDiscontinuedReason(" ");
+		
+		errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("discontinuedReason"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if not discontinued but date is not null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfNotDiscontinuedButDateIsNotNull() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderNumber("orderNumber");
+		order.setDiscontinued(false);
+		order.setDiscontinuedDate(new Date());
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("discontinuedDate"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if not discontinued but by is not null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfNotDiscontinuedButByIsNotNull() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderNumber("orderNumber");
+		order.setDiscontinued(false);
+		order.setDiscontinuedBy(new User());
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("discontinuedBy"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if not discontinued but reason is not null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfNotDiscontinuedButReasonIsNotNull() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderNumber("orderNumber");
+		order.setDiscontinued(false);
+		order.setDiscontinuedReason("reason");
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("discontinuedReason"));
+		
+		order.setDiscontinuedReason(" ");
+		
+		errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("discontinuedReason"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if discontinuedDate after autoExpireDate", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDiscontinuedDateAfterAutoExpireDate() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setDiscontinued(true);
+		order.setDiscontinuedReason("discontinuedReason");
+		order.setDiscontinuedBy(new User());
+		order.setDiscontinuedDate(new Date());
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+		order.setAutoExpireDate(cal.getTime());
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("discontinuedDate"));
+		Assert.assertTrue(errors.hasFieldErrors("autoExpireDate"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if discontinuedDate in future", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDiscontinuedDateInFuture() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setDiscontinued(true);
+		order.setDiscontinuedReason("discontinuedReason");
+		order.setDiscontinuedBy(new User());
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) + 1);
+		order.setDiscontinuedDate(cal.getTime());
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("discontinuedDate"));
 	}
 }
