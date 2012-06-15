@@ -190,7 +190,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#getOrderables(String)}
 	 */
 	@Test
-	@Verifies(value = "get orderable concepts by name and drug class", method = "getOrderables(String)")
+	@Verifies(value = "should get orderable concepts by name and drug class", method = "getOrderables(String)")
 	public void getOrderables_shouldGetOrderableConceptsByNameAndDrugClass() throws Exception {
 		executeDataSet(simpleOrderEntryDatasetFilename);
 		
@@ -214,12 +214,36 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#getOrderables(String)}
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "fail if null passed in", method = "getOrderables(String)")
+	@Verifies(value = "shoudl fail if null passed in", method = "getOrderables(String)")
 	public void getOrderables_shouldFailIfNullPassedIn() throws Exception {
 		executeDataSet(simpleOrderEntryDatasetFilename);
 		
 		String query = null;
 		Context.getOrderService().getOrderables(query);
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderable(String)}
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@Verifies(value = "should fail if null passed in", method = "getOrderable(String)")
+	public void getOrderable_shouldFailIfNullPassedIn() throws Exception {
+		Context.getOrderService().getOrderable(null);
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderable(String)}
+	 */
+	@Test
+	@Verifies(value = "should fetch an orderable with given identifier", method = "getOrderable(String)")
+	public void getOrderable_shouldFetchAnOrderableWithGivenIdentifier() throws Exception {
+		Orderable orderable = Context.getOrderService().getOrderable("org.openmrs.GenericDrug:concept=3");
+		Assert.assertNotNull(orderable);
+		Assert.assertTrue(orderable.getClass().equals(GenericDrug.class));
+		
+		orderable = Context.getOrderService().getOrderable("org.openmrs.Drug:2");
+		Assert.assertNotNull(orderable);
+		Assert.assertTrue(orderable.getClass().equals(Drug.class));
 	}
 	
 	/**

@@ -251,7 +251,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should not get orders with discontinuedDate before the given date
 	 * @should get orders with startDate before the given date
 	 */
-	List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) throws APIException;
+	public List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) throws APIException;
 	
 	/**
 	 * Finds all {@link Orderable}s that match <code>query</code>, based on a fuzzy comparison. (The
@@ -265,7 +265,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if null passed in
 	 * @throws APIException when error occurred
 	 */
-	List<Orderable<?>> getOrderables(String query) throws APIException;
+	public List<Orderable<?>> getOrderables(String query) throws APIException;
 	
 	/**
 	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
@@ -330,6 +330,8 @@ public interface OrderService extends OpenmrsService {
 	 * @return requested orderable
 	 * @throws APIException
 	 * @should fetch an orderable with given identifier
+	 * @should fail if null passed in
+	 * @should return null if no orderable found with given identifier
 	 */
 	@Transactional(readOnly = true)
 	public Orderable<?> getOrderable(String identifier) throws APIException;

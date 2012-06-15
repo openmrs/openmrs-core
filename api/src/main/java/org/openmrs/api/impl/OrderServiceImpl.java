@@ -440,6 +440,27 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderable(java.lang.String)
 	 */
 	public Orderable<?> getOrderable(String identifier) throws APIException {
+		if (identifier == null)
+			throw new IllegalArgumentException("Orderable identifier is required");
+		
+		Integer numericIdentifier = GenericDrug.getNumericIdentifier(identifier);
+		if (numericIdentifier != null) {
+			Concept concept = Context.getConceptService().getConcept(numericIdentifier);
+			if (concept != null) {
+				return new GenericDrug(concept);
+			}
+		}
+		
+		numericIdentifier = Drug.getNumericIdentifier(identifier);
+		if (numericIdentifier != null) {
+			Drug drug = Context.getConceptService().getDrug(numericIdentifier);
+			if (drug != null) {
+				return drug;
+			}
+		}
+		
+		//Do we have other types to check?
+		
 		return null;
 	}
 	
