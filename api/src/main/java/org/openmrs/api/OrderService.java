@@ -66,6 +66,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should allow you to edit an order before it is activated
 	 * @should not allow you to save an order that is not activated and signed
 	 * @should save new version of an existing order
+	 * @should asign order number for new order
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order) throws APIException;
