@@ -66,7 +66,7 @@
 					   ${order.instructions}
 					</td>
 					<td valign="top">
-						<a href="order.form?orderId=${order.orderId}">
+						<a href="<c:choose><c:when test="${order.class.name=='org.openmrs.DrugOrder'}">orderDrug</c:when><c:otherwise>order</c:otherwise></c:choose>.form?orderId=${order.orderId}">
 							<spring:message code="general.edit" />
 						</a>
 					</td>					

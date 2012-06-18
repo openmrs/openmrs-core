@@ -29,20 +29,19 @@
 
 <form method="post" class="box">
 	<table>
+	
+		<tr>
+			<td valign="top"><spring:message code="Order.orderable"/></td>
+			<td valign="top">
+				<openmrs:fieldGen type="org.openmrs.Orderable" formFieldName="orderable" val="" />
+			</td>
+		</tr>
+		
 		<tr>
 			<td valign="top"><spring:message code="Order.patient"/></td>
 			<td valign="top">
 				<spring:bind path="order.patient">
 					<openmrs:fieldGen type="org.openmrs.Patient" formFieldName="${status.expression}" val="${status.editor.value}" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<td><spring:message code="Order.orderType"/></td>
-			<td>
-				<spring:bind path="order.orderType">
-					<openmrs:fieldGen type="org.openmrs.OrderType" formFieldName="${status.expression}" val="${status.editor.value}" parameters="optionHeader=[blank]" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>

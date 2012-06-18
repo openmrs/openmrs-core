@@ -17,12 +17,20 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Drug
  */
-public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, Orderable<DrugOrder> {
 	
 	public static final long serialVersionUID = 285L;
+	
+	private static final String IDENTIFIER_PREFIX = "org.openmrs.Drug:";
+	
+	private static final Log log = LogFactory.getLog(Drug.class);
 	
 	// Fields
 	
@@ -79,7 +87,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * Gets the entires concept drug name in the form of CONCEPTNAME (Drug: DRUGNAME)
+	 * Gets the entires concept drug name in the form of CONCEPTNAME (Drug:
+	 * DRUGNAME)
 	 * 
 	 * @param locale
 	 * @return full drug name (with concept name appended)
@@ -216,7 +225,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param ingredients The ingredients to set
+	 * @param ingredients
+	 *            The ingredients to set
 	 * @since 1.10
 	 */
 	public void setIngredients(Collection<DrugIngredient> ingredients) {
@@ -238,7 +248,41 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 */
 	public void setId(Integer id) {
 		setDrugId(id);
-		
 	}
 	
+	/**
+	 * @see org.openmrs.Orderable#getUniqueIdentifier()
+	 */
+	@Override
+	public String getUniqueIdentifier() {
+		return "org.openmrs.Drug:" + drugId;
+	}
+	
+	/**
+	 * Gets a numeric identifier from a string identifier.
+	 * 
+	 * @param identifier
+	 *            the string identifier.
+	 * @return the numeric identifier if it is a valid one, else null
+	 * @should return numeric identifier of valid string identifier
+	 * @should return null for an invalid string identifier
+	 * @should fail if null or empty passed in
+	 * @since 1.10
+	 */
+	public static Integer getNumericIdentifier(String identifier) {
+		if (StringUtils.isBlank(identifier))
+			throw new IllegalArgumentException("identifier cannot be null");
+		
+		if (!identifier.startsWith(IDENTIFIER_PREFIX))
+			return null;
+		
+		try {
+			return Integer.valueOf(identifier.substring(IDENTIFIER_PREFIX.length()));
+		}
+		catch (NumberFormatException ex) {
+			log.error("invalid unique identifier for Drug:" + identifier, ex);
+		}
+		
+		return null;
+	}
 }

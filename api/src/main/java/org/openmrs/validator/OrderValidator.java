@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Order;
 import org.openmrs.annotation.Handler;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -39,8 +40,7 @@ public class OrderValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	public boolean supports(Class<?> c) {
 		return Order.class.isAssignableFrom(c);
 	}
 	
@@ -55,15 +55,23 @@ public class OrderValidator implements Validator {
 	 * @should fail validation if voided is null
 	 * @should fail validation if concept is null
 	 * @should fail validation if patient is null
-	 * @should fail validation if orderType is null
 	 * @should fail validation if startDate after discontinuedDate
 	 * @should fail validation if startDate after autoExpireDate
+	 * @should fail validation if orderNumber is empty
+	 * @should fail validation if discontinued but date is null
+	 * @should fail validation if discontinued but by is null
+	 * @should fail validation if discontinued but reason is null
+	 * @should fail validation if not discontinued but date is not null
+	 * @should fail validation if not discontinued but by is not null
+	 * @should fail validation if not discontinued but reason is not null
+	 * @should fail validation if discontinuedDate in future
+	 * @should fail validation if discontinuedDate after autoExpireDate
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Order order = (Order) obj;
 		if (order == null) {
-			errors.rejectValue("order", "error.general");
+			errors.reject("error.general");
 		} else {
 			if (order.getEncounter() != null && order.getPatient() != null) {
 				if (!order.getEncounter().getPatient().equals(order.getPatient()))
@@ -75,7 +83,7 @@ public class OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "voided", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
 			ValidationUtils.rejectIfEmpty(errors, "patient", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "orderType", "error.null");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "orderNumber", "error.null");
 			
 			Date startDate = order.getStartDate();
 			if (startDate != null) {
@@ -90,6 +98,34 @@ public class OrderValidator implements Validator {
 					errors.rejectValue("startDate", "Order.error.startDateAfterAutoExpireDate");
 					errors.rejectValue("autoExpireDate", "Order.error.startDateAfterAutoExpireDate");
 				}
+			}
+			
+			if (order.getDiscontinued() == null) {
+				errors.rejectValue("discontinued", "error.null");
+			} else if (order.getDiscontinued()) {
+				ValidationUtils.rejectIfEmpty(errors, "discontinuedDate", "Order.error.discontinueNeedsDateAndPerson");
+				ValidationUtils.rejectIfEmpty(errors, "discontinuedBy", "Order.error.discontinueNeedsDateAndPerson");
+				ValidationUtils
+				        .rejectIfEmptyOrWhitespace(errors, "discontinuedReason", "Order.error.discontinueNeedsReason");
+				if (order.getDiscontinuedDate() != null) {
+					// must be <= now(), and <= autoExpireDate
+					if (OpenmrsUtil.compare(order.getDiscontinuedDate(), new Date()) > 0)
+						errors.rejectValue("discontinuedDate", "Order.error.discontinuedDateInFuture");
+					if (order.getAutoExpireDate() != null
+					        && OpenmrsUtil.compare(order.getDiscontinuedDate(), order.getAutoExpireDate()) > 0) {
+						errors.rejectValue("autoExpireDate", "Order.error.discontinuedAfterAutoExpireDate");
+						errors.rejectValue("discontinuedDate", "Order.error.discontinuedAfterAutoExpireDate");
+					}
+				}
+			} else if (!order.getDiscontinued()) {
+				if (order.getDiscontinuedDate() != null)
+					errors.rejectValue("discontinuedDate", "Order.error.notDiscontinuedShouldHaveNoDate");
+				
+				if (order.getDiscontinuedBy() != null)
+					errors.rejectValue("discontinuedBy", "Order.error.notDiscontinuedShouldHaveNoBy");
+				
+				if (order.getDiscontinuedReason() != null)
+					errors.rejectValue("discontinuedReason", "Order.error.notDiscontinuedShouldHaveNoReason");
 			}
 		}
 	}

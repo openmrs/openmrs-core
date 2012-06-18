@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<concept concept_id="100" retired="false" datatype_id="4" class_id="15" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" version="" uuid="ab0743e6-9ebb-11e0-8d6b-9b9415a91465"/>
+	<concept_name concept_id="100" name="ASPIRIN AND TRIOMUNE" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="100" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="d60c2868-9ebb-11e0-8d6b-9b9415a91465"/>
+	<order_set order_set_id="1" name="Aspirin and Triomune" description="" title="" comment="In real life these drugs don't go together" creator="1" date_created="2011-06-24 00:00:00" uuid="590b7994-9ebc-11e0-8d6b-9b9415a91465"/>
+	<order_set_member order_set_member_id="1" parent_order_set_id="1" sort_weight="1" concept_id="88" uuid="cf50f494-9ebc-11e0-8d6b-9b9415a91465"/>
+	<order_set_member order_set_member_id="2" parent_order_set_id="1" sort_weight="1" concept_id="792" uuid="e69ee340-9ebc-11e0-8d6b-9b9415a91465"/>
+	<published_order_set published_order_set_id="1" concept_id="100" order_set_id="1"/>
+</dataset>

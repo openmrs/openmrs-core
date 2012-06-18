@@ -13,17 +13,17 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
+import org.openmrs.Order.OrderAction;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.OrderService.ORDER_STATUS;
 
 /**
  * Order-related database functions
@@ -34,28 +34,6 @@ import org.openmrs.api.OrderService.ORDER_STATUS;
  * @see org.openmrs.api.OrderService
  */
 public interface OrderDAO {
-	
-	// methods for the OrderType java pojo object
-	
-	/**
-	 * @see org.openmrs.api.OrderService#saveOrderType(OrderType)
-	 */
-	public OrderType saveOrderType(OrderType orderType) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#purgeOrderType(OrderType)
-	 */
-	public void deleteOrderType(OrderType orderType) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getAllOrderTypes(boolean)
-	 */
-	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderType(Integer)
-	 */
-	public OrderType getOrderType(Integer orderTypeId) throws DAOException;
 	
 	// methods for the Order java pojo object
 	
@@ -77,13 +55,11 @@ public interface OrderDAO {
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> classType) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List)
+	 * @see org.openmrs.api.OrderService#getOrders(Class, List, List, List, List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
-	        List<OrderType> orderTypes);
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
+	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude, boolean includeVoided);
 	
 	/**
 	 * Auto generated method comment
@@ -94,12 +70,23 @@ public interface OrderDAO {
 	public Order getOrderByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
+	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
+	 */
+	public Order getOrderByOrderNumber(String orderNumber);
+	
+	/**
+	 * Determine the order number of this order as saved in the database (ignoring caches)
 	 * 
-	 * @param uuid
+	 * @param order
 	 * @return
 	 */
-	public OrderType getOrderTypeByUuid(String uuid);
+	public String getOrderNumberInDatabase(Order order);
+	
+	/**
+	 * @return the highest orderId that has been persisted to the database
+	 * @should return the highest order id
+	 */
+	public Integer getHighestOrderId();
 	
 	/**
 	 * @see OrderService#getDrugOrdersByPatientAndIngredient(Patient, Concept)

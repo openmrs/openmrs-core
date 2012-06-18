@@ -77,16 +77,14 @@ public final class OpenmrsConstants {
 	/**
 	 * This holds the current openmrs code version in a short space-less string.<br/>
 	 * The format is:<br/>
-	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i
-	 * >
+	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i >
 	 */
 	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion() != null ? THIS_PACKAGE
 	        .getSpecificationVersion() : getBuildVersionShort();
 	
 	/**
-	 * @return build version with alpha characters (eg:1.10.0 SNAPSHOT Build 24858) 
-	 * defined in MANIFEST.MF(specification-Vendor)
-	 * 
+	 * @return build version with alpha characters (eg:1.10.0 SNAPSHOT Build 24858) defined in
+	 *         MANIFEST.MF(specification-Vendor)
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
@@ -115,9 +113,8 @@ public final class OpenmrsConstants {
 	}
 	
 	/**
-	 * @return build version without alpha characters (eg: 1.10.0.24858) 
-	 * defined in MANIFEST.MF (specification-Version)
-	 * 
+	 * @return build version without alpha characters (eg: 1.10.0.24858) defined in MANIFEST.MF
+	 *         (specification-Version)
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
@@ -937,6 +934,11 @@ public final class OpenmrsConstants {
 	public static final String GP_SEARCH_WIDGET_DELAY_INTERVAL = "searchWidget.searchDelayInterval";
 	
 	/**
+	 * Global property name for the prefix used when creating order numbers.
+	 */
+	public static final String GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX = "orderEntry.orderNumberPrefix";
+	
+	/**
 	 * Global property name for the maximum number of results to return from a single search in the
 	 * search widgets
 	 */
@@ -970,17 +972,20 @@ public final class OpenmrsConstants {
 	public static final String GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW = "dashboard.encounters.maximumNumberToShow";
 	
 	/**
-	 * Global property name for the default ConceptMapType which is set automatically when no other is set manually.
+	 * Global property name for the default ConceptMapType which is set automatically when no other
+	 * is set manually.
 	 */
 	public static final String GP_DEFAULT_CONCEPT_MAP_TYPE = "concept.defaultConceptMapType";
 	
 	/**
-	 * Global property name of the allowed concept classes for the dosage form field of the concept drug management form.
+	 * Global property name of the allowed concept classes for the dosage form field of the concept
+	 * drug management form.
 	 */
 	public static final String GP_CONCEPT_DRUG_DOSAGE_FORM_CONCEPT_CLASSES = "conceptDrug.dosageForm.conceptClasses";
 	
 	/**
-	 * Global property name of the allowed concept classes for the route field of the concept drug management form.
+	 * Global property name of the allowed concept classes for the route field of the concept drug
+	 * management form.
 	 */
 	public static final String GP_CONCEPT_DRUG_ROUTE_CONCEPT_CLASSES = "conceptDrug.route.conceptClasses";
 	
@@ -1373,6 +1378,9 @@ public final class OpenmrsConstants {
 		                "START",
 		                "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
 		
+		props.add(new GlobalProperty(GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, ORDER_NUMBER_DEFAULT_PREFIX,
+		        "Specifies the prefix used when creating order numbers"));
+		
 		props.add(new GlobalProperty(GP_ENABLE_CONCEPT_MAP_TYPE_MANAGEMENT, "false",
 		        "Enables or disables management of concept map types", BooleanDatatype.class, null));
 		
@@ -1656,6 +1664,8 @@ public final class OpenmrsConstants {
 	public static final String RAW_VIEW = "RAW_VIEW";
 	
 	public static final String TEXT_VIEW = "TEXT_VIEW";
+	
+	public static final String ORDER_NUMBER_DEFAULT_PREFIX = "OR:";
 	
 	/** The data type to return on failing to load a custom data type. */
 	public static final String DEFAULT_CUSTOM_DATATYPE = FreeTextDatatype.class.getName();

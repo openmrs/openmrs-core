@@ -13,11 +13,13 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
@@ -26,10 +28,9 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
+import org.openmrs.Order.OrderAction;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 
@@ -66,51 +67,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#saveOrderType(org.openmrs.OrderType)
-	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
-	 */
-	public OrderType saveOrderType(OrderType orderType) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(orderType);
-		
-		return orderType;
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrderType(java.lang.Integer)
-	 * @see org.openmrs.api.OrderService#getOrderType(java.lang.Integer)
-	 */
-	public OrderType getOrderType(Integer orderTypeId) throws DAOException {
-		if (log.isDebugEnabled())
-			log.debug("getting orderType with id: " + orderTypeId);
-		
-		return (OrderType) sessionFactory.getCurrentSession().get(OrderType.class, orderTypeId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypes()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws DAOException {
-		log.debug("getting all order types");
-		
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(OrderType.class);
-		
-		if (includeRetired == false) {
-			crit.add(Expression.eq("retired", false));
-		}
-		
-		return crit.list();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#deleteOrderType(org.openmrs.OrderType)
-	 * @see org.openmrs.api.OrderService#purgeOrderType(org.openmrs.OrderType)
-	 */
-	public void deleteOrderType(OrderType orderType) throws DAOException {
-		sessionFactory.getCurrentSession().delete(orderType);
-	}
-	
-	/**
 	 * @see org.openmrs.api.db.OrderDAO#saveOrder(org.openmrs.Order)
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
@@ -141,40 +97,51 @@ public class HibernateOrderDAO implements OrderDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List)
+	 *      java.util.List, java.util.List, java.util.List, java.util.Date)
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.Date, java.util.List,
 	 *      java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
-	        List<OrderType> orderTypes) {
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
+	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude, boolean includeVoided) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);
 		
-		if (patients.size() > 0)
+		if (patients != null && patients.size() > 0)
 			crit.add(Expression.in("patient", patients));
 		
-		if (concepts.size() > 0)
+		if (concepts != null && concepts.size() > 0)
 			crit.add(Expression.in("concept", concepts));
 		
-		// only the "ANY" status cares about voided Orders.  All others 
-		// do not want voided orders included in the list
-		if (status != ORDER_STATUS.ANY)
-			crit.add(Expression.eq("voided", false));
-		// we are not checking the other status's here because they are 
-		// algorithm dependent  
+		// if an asOfDate is passed in, then we need to restrict to just active type of orders
+		if (asOfDate != null) {
+			crit.add(Expression.le("startDate", asOfDate)); // startDate cannot be null?
+			
+			crit.add(Expression.or(Expression.isNull("discontinuedDate"), Expression.ge("discontinueDate", asOfDate)));
+			
+			crit.add(Expression.or(Expression.isNull("autoExpireDate"), Expression.ge("autoExpireDate", asOfDate)));
+			
+		}
 		
-		if (orderers.size() > 0)
+		// we are not checking the other status's here because they are 
+		// algorithm dependent
+		
+		if (orderers != null && orderers.size() > 0)
 			crit.add(Expression.in("orderer", orderers));
 		
-		if (encounters.size() > 0)
+		if (encounters != null && encounters.size() > 0)
 			crit.add(Expression.in("encounter", encounters));
 		
-		if (orderTypes.size() > 0)
-			crit.add(Expression.in("orderType", orderTypes));
+		if (actionsToInclude != null && actionsToInclude.size() > 0)
+			crit.add(Expression.in("action", actionsToInclude));
+		
+		if (actionsToExclude != null && actionsToExclude.size() > 0)
+			crit.add(Expression.not(Expression.in("action", actionsToExclude)));
+		
+		if (!includeVoided)
+			crit.add(Expression.eq("voided", false));
 		
 		return crit.list();
 	}
@@ -188,11 +155,34 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrderTypeByUuid(java.lang.String)
+	 * @see org.openmrs.api.db.OrderDAO#getOrderByOrderNumber(java.lang.String)
 	 */
-	public OrderType getOrderTypeByUuid(String uuid) {
-		return (OrderType) sessionFactory.getCurrentSession().createQuery("from OrderType ot where ot.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
+	public Order getOrderByOrderNumber(String orderNumber) {
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Order.class, "order");
+		searchCriteria.add(Expression.eq("order.orderNumber", orderNumber));
+		return (Order) searchCriteria.uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderNumberInDatabase(org.openmrs.Order)
+	 */
+	@Override
+	public String getOrderNumberInDatabase(Order order) {
+		if (order.getOrderId() == null)
+			return null;
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(
+		    "select order_number from orders where order_id = :orderId");
+		query.setInteger("orderId", order.getOrderId());
+		return (String) query.uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getHighestOrderId()
+	 */
+	@Override
+	public Integer getHighestOrderId() {
+		Query query = sessionFactory.getCurrentSession().createSQLQuery("SELECT max(order_id) FROM orders");
+		return (Integer) query.uniqueResult();
 	}
 	
 	@SuppressWarnings("unchecked")
