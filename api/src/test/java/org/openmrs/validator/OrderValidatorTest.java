@@ -201,28 +201,6 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if orderNumber is empty", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfOrderNumberIsEmpty() throws Exception {
-		Order order = new Order();
-		order.setConcept(Context.getConceptService().getConcept(88));
-		order.setPatient(Context.getPatientService().getPatient(2));
-		order.setOrderNumber(null);
-		
-		Errors errors = new BindException(order, "order");
-		new OrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("orderNumber"));
-		
-		order.setOrderNumber("  ");
-		
-		errors = new BindException(order, "order");
-		new OrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("orderNumber"));
-	}
-	
-	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
-	 */
-	@Test
 	@Verifies(value = "should fail validation if discontinued but date is null", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfDiscontinuedButDateIsNull() throws Exception {
 		Order order = new Order();

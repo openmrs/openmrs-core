@@ -57,7 +57,6 @@ public class OrderValidator implements Validator {
 	 * @should fail validation if patient is null
 	 * @should fail validation if startDate after discontinuedDate
 	 * @should fail validation if startDate after autoExpireDate
-	 * @should fail validation if orderNumber is empty
 	 * @should fail validation if discontinued but date is null
 	 * @should fail validation if discontinued but by is null
 	 * @should fail validation if discontinued but reason is null
@@ -83,7 +82,6 @@ public class OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "voided", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
 			ValidationUtils.rejectIfEmpty(errors, "patient", "error.null");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "orderNumber", "error.null");
 			
 			Date startDate = order.getStartDate();
 			if (startDate != null) {
