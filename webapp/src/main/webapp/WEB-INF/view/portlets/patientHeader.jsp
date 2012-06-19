@@ -228,11 +228,49 @@
 		</c:if>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="View Visits, View Encounters">	
-		<script type="text/javascript">					
-			function endVisitNow(visitId, patientId) {
-				if (confirm("<spring:message code="Visit.confirm.endNow"/>")) {
-					window.location = '<openmrs:contextPath />/admin/visits/visitEnd.form?visitId=' + visitId + '&patientId=' + patientId;
+		<openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
+		
+		<div id="patientHeader-endvisit-dialog" title="<spring:message code="Visit.end"/>">
+		    <form:form action="${pageContext.request.contextPath}/admin/visits/endVisit.form" method="post" modelAttribute="visit">
+		       <table cellpadding="3" cellspacing="3" align="center">
+					<tr>
+						<td>
+							<input type="hidden" name="visitId" value="" />
+							<spring:message code="Visit.enterEndDate"/>
+							<jsp:useBean id="now" class="java.util.Date" scope="page" />
+							<input type="text" id="enddate_visit" size="20" name="stopDate" value="<openmrs:formatDate date="${now}" format="dd/MM/yyyy HH:mm"/>" onClick="showDateTimePicker(this)" readonly="readonly"/></br>&nbsp;&nbsp;
+						</td>
+					</tr>
+					<tr height="20"></tr>
+					<tr>
+						<td colspan="2" style="text-align: center">
+							<input type="submit" value="<spring:message code="Visit.end"/>" />
+							&nbsp;
+							<input id="patientHeader-close-endvisit-dialog" type="button" value="<spring:message code="general.cancel"/>" /> 
+						</td>
+					</tr>
+				</table>
+			</form:form>
+		</div>
+		<script type="text/javascript">	
+			$j(document).ready( function() {
+				$j("#patientHeader-endvisit-dialog").dialog({
+					autoOpen: false,
+					resizable: false,
+					width:'auto',
+					height:'auto',
+					modal: true
+				});
+				$j('#patientHeader-close-endvisit-dialog').click(function() {
+					$j('#patientHeader-endvisit-dialog').dialog('close')
+				});
+			});
+			function patientHeaderEndVisit(visitId, stopVisitDate) {
+				$j("input[name=visitId]", "#patientHeader-endvisit-dialog").val(visitId);
+				if (stopVisitDate) {
+					$j("input[name=stopDate]", "#patientHeader-endvisit-dialog").val(stopVisitDate);
 				}
+				$j('#patientHeader-endvisit-dialog').dialog('open');
 			}
 		</script>
 	
@@ -253,7 +291,7 @@
 				<openmrs:hasPrivilege privilege="Edit Visits">
 					<input type="button" value="<spring:message code="Visit.edit"/>"
 						onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?visitId=${ visit.visitId }&patientId=${model.patient.patientId}'" />
-					<input type="button" value="<spring:message code="Visit.endNow"/>" onclick="endVisitNow('${visit.visitId}', '${model.patient.patientId}');" />
+					<input type="button" value="<spring:message code="Visit.end"/>" onclick="patientHeaderEndVisit('${visit.visitId}', '<openmrs:formatDate date="${visit.stopDatetime}" format="dd/MM/yyyy HH:mm" />');" />
 				</openmrs:hasPrivilege>
 				<br />&nbsp;
 				<c:if test="${empty visit.encounters}">

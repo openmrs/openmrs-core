@@ -84,6 +84,7 @@ public class VisitFormController {
 			visit.setStartDatetime(new Date());
 		if (visit.getVisitId() != null)
 			model.addAttribute("canPurgeVisit", Context.getEncounterService().getEncountersByVisit(visit, true).size() == 0);
+		
 		addEncounterAndObservationCounts(visit, model);
 		return VISIT_FORM;
 	}
