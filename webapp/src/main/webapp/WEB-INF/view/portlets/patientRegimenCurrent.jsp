@@ -51,7 +51,7 @@
 										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.concept.name.name}</a>
 									</c:if>
 								</td>
-								<td class="regimenCurrentDrugDoseData">${drugOrder.dose} ${drugOrder.units}</td>
+								<td class="regimenCurrentDrugDoseData">${drugOrder.dose} ${drugOrder.doseUnits}</td>
 								<td class="regimenCurrentDrugFrequencyData">${drugOrder.frequency}</td>
 								<td class="regimenCurrentDrugStartDateData"><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
 								<td class="regimenCurrentDrugAutoExpireDateData"><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
@@ -173,7 +173,7 @@
 										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.concept.name.name}</a>
 									</c:if>
 								</td>
-								<td class="regimenCurrentDrugDoseData">${drugOrder.dose} ${drugOrder.units}</td>
+								<td class="regimenCurrentDrugDoseData">${drugOrder.dose} ${drugOrder.doseUnits}</td>
 								<td class="regimenCurrentDrugFrequencyData">${drugOrder.frequency}</td>
 								<td class="regimenCurrentDrugStartDateData"><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
 								<td class="regimenCurrentDrugAutoExpireDateData"><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
@@ -244,7 +244,7 @@
 										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.concept.name.name}</a>
 									</c:if>
 								</td>
-								<td class="regimenCurrentDrugDoseData">${drugOrder.dose} ${drugOrder.units}</td>
+								<td class="regimenCurrentDrugDoseData">${drugOrder.dose} ${drugOrder.doseUnits}</td>
 								<td class="regimenCurrentDrugFrequencyData">${drugOrder.frequency}</td>
 								<td class="regimenCurrentDrugStartDateData"><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
 								<td class="regimenCurrentDrugAutoExpireDateData"><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>

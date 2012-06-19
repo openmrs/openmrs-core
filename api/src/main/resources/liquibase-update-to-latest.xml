@@ -7172,7 +7172,7 @@
 	
 	<changeSet id="20101209-1111-drug_order_dose_units" author="wyclif">
 		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="units"/></not>
+			<not><columnExists tableName="drug_order" columnName="dose_units"/></not>
 			<columnExists tableName="drug_order" columnName="units"/>
 		</preConditions>
 		<comment>Renaming drug_order.units column to drug_order.dose_units</comment>
@@ -7294,6 +7294,14 @@
 		</sql>
 	</changeSet>
 	
+	<changeSet id="20120502-1650" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="discontinued_because"/>
+		</preConditions>
+		<comment>Dropping foreign key constraint on orders.discontinued_reason to concept.concept_id</comment>
+		<dropForeignKeyConstraint constraintName="discontinued_because" baseTableName="orders" />
+	</changeSet>
+	
 	<changeSet id="20120503-1658" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="orders" columnName="discontinued_reason"/>
@@ -7308,7 +7316,7 @@
 			<columnExists tableName="orders" columnName="discontinued_reason_non_coded"/>
 		</preConditions>
 		<comment>Renaming orders.discontinued_reason_non_coded column to orders.discontinued_reason</comment>
-		<renameColumn tableName="orders" oldColumnName="discontinued_reason_non_coded" newColumnName="discontinued_reason"/>
+		<renameColumn tableName="orders" oldColumnName="discontinued_reason_non_coded" newColumnName="discontinued_reason" columnDataType="varchar(255)" />
 	</changeSet>
 	
 	<changeSet id="20120503-1702" author="wyclif">
@@ -7339,7 +7347,7 @@
 		
 		<addForeignKeyConstraint constraintName="test_order_order_id_fk"
 			baseTableName="test_order" baseColumnNames="order_id"
-			referencedTableName="order" referencedColumnNames="order_id" />
+			referencedTableName="orders" referencedColumnNames="order_id" />
 
 	</changeSet>
 	
