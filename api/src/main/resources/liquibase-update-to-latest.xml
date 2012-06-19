@@ -7310,7 +7310,7 @@
 		<dropColumn tableName="orders" columnName="discontinued_reason" />
 	</changeSet>
 	
-	<changeSet id="20120503-1659" author="wyclif">
+	<changeSet id="20120503-1659b" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="orders" columnName="discontinued_reason"/></not>
 			<columnExists tableName="orders" columnName="discontinued_reason_non_coded"/>
