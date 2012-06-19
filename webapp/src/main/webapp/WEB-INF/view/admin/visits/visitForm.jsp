@@ -389,7 +389,8 @@ $j(document).ready( function() {
 				<td>
 					<input type="hidden" name="visitId" value="${visit.visitId}" />
 					<spring:message code="Visit.enterEndDate"/>
-					<input type="text" id="enddate_visit" size="20" name="stopDate" onClick="showDateTimePicker(this)" readonly="readonly"/></br>&nbsp;&nbsp;
+					<jsp:useBean id="now" class="java.util.Date" scope="page" />
+					<input type="text" id="enddate_visit" size="20" name="stopDate" value="<openmrs:formatDate date="${now}" format="dd/MM/yyyy HH:mm"/>" onClick="showDateTimePicker(this)" readonly="readonly"/></br>&nbsp;&nbsp;
 				</td>
 			</tr>
 			<tr height="20"></tr>
