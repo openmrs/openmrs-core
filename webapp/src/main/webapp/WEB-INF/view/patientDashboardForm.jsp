@@ -41,7 +41,8 @@
 			if (tabs.length && tabs[0].id)
 				c = tabs[0].id;
 		}
-		changeTab(c, false);
+		var notAjax = getAjaxStatus(c);
+		changeTab(c, notAjax);
 	});
 	
 	function setTabCookie(tabType) {
@@ -54,6 +55,40 @@
 			return unescape(cookies[1]);
 		}
 		return null;
+	}
+	
+	function getAjaxStatus(tabId) {
+		var status;
+		switch (tabId) {
+			case "patientOverviewTab":
+				status = ${ajaxOverviewDisabled};
+				break;
+			
+			case "patientRegimenTab":
+				status = ${ajaxRegimensDisabled};
+				break;
+				
+			case "patientVisitsTab":
+				status = ${ajaxVisitsEncountersDisabled};
+				break;
+				
+			case "patientEncountersTab":
+				status = ${ajaxVisitsEncountersDisabled};
+				break;
+				
+			case "patientDemographicsTab":
+				status = ${ajaxDemographicsDisabled};
+				break;
+				
+			case "patientGraphsTab":
+				status = ${ajaxGraphsDisabled};
+				break;
+				
+			case "formEntryTab":
+				status = ${ajaxFormEntryDisabled};
+				break;
+		}
+		return status;
 	}
 	
 	function getUrl(tabId) {
@@ -91,6 +126,9 @@
 	}
 	
 	function changeTab(tabObj, notAjax) {
+		var ajaxDiv = document.getElementById("ajaxTabPlaceHolder");
+		ajaxDiv.style.display = "none";
+		
 		if (!document.getElementById || !document.createTextNode) {return;}
 		if (typeof tabObj == "string")
 			tabObj = document.getElementById(tabObj);
@@ -113,13 +151,7 @@
 			addClass(tabObj, 'current');
 			setTabCookie(tabObj.id);
 			
-			var ajaxDiv = document.getElementById("ajaxTabPlaceHolder");
-		
-			if (notAjax == true) {
-				if (ajaxDiv) {
-			    	ajaxDiv.style.display = "none";
-			    }
-			} else {
+			if (notAjax == false) {
 				$j('#ajaxTabPlaceHolder').html('<p><img src="<openmrs:contextPath/>/images/loading.gif"/><spring:message code="general.loading"/></p>');
 				ajaxDiv.style.display = "";
 				var url = getUrl(tabObj.id);
@@ -204,9 +236,7 @@
 	</ul>
 </div>
 
-<c:if test="${ajaxEnabled}">
-	<div id="ajaxTabPlaceHolder"></div>
-</c:if>
+<div id="ajaxTabPlaceHolder"></div>
 
 <div id="patientSections">
 	<c:if test="${ajaxOverviewDisabled}">
