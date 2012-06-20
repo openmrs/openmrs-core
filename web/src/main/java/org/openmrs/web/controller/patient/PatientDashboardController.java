@@ -134,6 +134,14 @@ public class PatientDashboardController {
 		Set<Link> links = ExtensionUtil.getAllAddEncounterToVisitLinks();
 		map.put("allAddEncounterToVisitLinks", links);
 		
+		map.put("ajaxEnabled", true);
+		map.put("ajaxOverviewDisabled", false);
+		map.put("ajaxRegimensDisabled", false);
+		map.put("ajaxVisitsEncountersDisabled", false);
+		map.put("ajaxDemographicsDisabled", false);
+		map.put("ajaxGraphsDisabled", false);
+		map.put("ajaxFormEntryDisabled", false);
+		
 		return "patientDashboardForm";
 	}
 	
