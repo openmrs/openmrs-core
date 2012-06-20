@@ -205,7 +205,7 @@
 </div>
 
 <c:if test="${ajaxEnabled}">
-	<div id="ajaxTabPlaceHolder"><p>Nimantha</p></div>
+	<div id="ajaxTabPlaceHolder"></div>
 </c:if>
 
 <div id="patientSections">
