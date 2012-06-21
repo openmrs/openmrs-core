@@ -32,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * Facilitates testing controllers.
  * 
- * @since 1.10, 1.9.1, 1.8.4
+ * @since 1.10, 1.9.1, 1.8.4, 1.7.4
  */
 @Component
 public class WebTestHelper {
