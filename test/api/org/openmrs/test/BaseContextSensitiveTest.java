@@ -624,7 +624,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		// needed because the authenticatedUser is the only object that sticks
 		// around after tests and the clearSession call
-		Context.refreshAuthenticatedUser();
+		if (Context.isSessionOpen())
+			Context.logout();
 		
 	}
 	
