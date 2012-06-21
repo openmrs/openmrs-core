@@ -36,6 +36,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @Controller
 public class PatientDashboardController {
@@ -140,6 +142,9 @@ public class PatientDashboardController {
 		map.put("ajaxDemographicsDisabled", false);
 		map.put("ajaxGraphsDisabled", false);
 		map.put("ajaxFormEntryDisabled", false);
+		
+		RequestContextHolder.currentRequestAttributes().setAttribute("dashboardAjax", patient,
+		    RequestAttributes.SCOPE_SESSION);
 		
 		return "patientDashboardForm";
 	}
