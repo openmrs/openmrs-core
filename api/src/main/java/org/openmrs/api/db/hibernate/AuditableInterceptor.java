@@ -50,6 +50,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	 * @should set the dateChanged field
 	 * @should set the changedBy field
 	 * @should be called when saving an Auditable
+	 * @should not enter into recursion on entity
 	 * 
 	 * @see org.hibernate.EmptyInterceptor#onFlushDirty(java.lang.Object, java.io.Serializable, java.lang.Object[], java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
 	 */
@@ -59,7 +60,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		
 		if (entity instanceof Auditable && propertyNames != null) {
 			if (log.isDebugEnabled())
-				log.debug("Setting changed by fields on " + entity);
+				log.debug("Setting changed by fields on " + entity.getClass());
 			
 			// the return value
 			boolean objectWasChanged = false;
