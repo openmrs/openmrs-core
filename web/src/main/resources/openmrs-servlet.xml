@@ -314,7 +314,6 @@
 	<!--<bean id="orderTypeForm" class="org.openmrs.web.controller.OrderTypeFormController" />-->
 
 	<bean id="orderTypeList" class="org.openmrs.web.controller.order.OrderTypeListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>orderTypeList</value></property>
 		<property name="formView"><value>/admin/orders/orderTypeList</value></property>
 		<property name="successView"><value>orderType.list</value></property>
@@ -322,7 +321,6 @@
 
 	<!--  Form Controller for the add/edit order types page -->
 	<bean id="orderTypeForm" class="org.openmrs.web.controller.order.OrderTypeFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>orderType</value></property>
 		<property name="validator">
 			<ref bean="orderTypeValidator" />
@@ -336,7 +334,6 @@
 
 	<!-- ** Order ** -->
 	<bean id="orderList" class="org.openmrs.web.controller.order.OrderListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>orderList</value></property>
 		<property name="formView"><value>/admin/orders/orderList</value></property>
 		<property name="successView"><value>order.list</value></property>
@@ -353,7 +350,6 @@
 	</bean>
 
 	<bean id="orderDrugList" class="org.openmrs.web.controller.order.OrderDrugListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>orderDrugList</value></property>
 		<property name="formView"><value>/admin/orders/orderDrugList</value></property>
 		<property name="successView"><value>orderDrug.list</value></property>
@@ -373,7 +369,6 @@
 	<!-- ** Order Placement ** -->
 	<bean id="orderListByPatient"
 		class="org.openmrs.web.controller.order.OrderListByPatientController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>orderDrugList</value></property>
 		<property name="formView"><value>/admin/orders/orderListByPatient</value></property>
 		<property name="successView"><value>orderDrug.list</value></property>
@@ -400,14 +395,12 @@
 	<!-- **  Patient Identifier Type   ** -->
 	<bean id="patientIdentifierTypeList"
 		class="org.openmrs.web.controller.patient.PatientIdentifierTypeListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>patientIdentifierTypeList</value></property>
 		<property name="formView"><value>/admin/patients/patientIdentifierTypeList</value></property>
 		<property name="successView"><value>patientIdentifierType.list</value></property>
 	</bean>
 	<bean id="patientIdentifierTypeForm"
 		class="org.openmrs.web.controller.patient.PatientIdentifierTypeFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>patientIdentifierType</value></property>
 		<property name="validator">
 			<ref bean="patientIdentifierTypeValidator" />
@@ -420,7 +413,6 @@
 	<!-- ** Merge Patient ** -->
 	<bean id="mergePatientsForm"
 		class="org.openmrs.web.controller.patient.MergePatientsFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>patient1</value></property>
 		<property name="formView"><value>/admin/patients/mergePatientsForm</value></property>
 		<property name="successView"><value>mergePatients.form</value></property>
@@ -436,21 +428,18 @@
 	<!-- **  Relationship Type   ** -->
 	<bean id="relationshipTypeList"
 		class="org.openmrs.web.controller.person.RelationshipTypeListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>relationshipTypeList</value></property>
 		<property name="formView"><value>/admin/person/relationshipTypeList</value></property>
 		<property name="successView"><value>relationshipType.list</value></property>
 	</bean>
 	<bean id="relationshipTypeForm"
 		class="org.openmrs.web.controller.person.RelationshipTypeFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>relationshipType</value></property>
 		<property name="formView"><value>/admin/person/relationshipTypeForm</value></property>
 		<property name="successView"><value>relationshipType.list</value></property>
 	</bean>
 	<bean id="relationshipTypeViewForm"
 		class="org.openmrs.web.controller.person.RelationshipTypeViewFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>relationshipTypeList</value></property>
 		<property name="formView"><value>/admin/person/relationshipTypeViewForm</value></property>
 		<property name="successView"><value>relationshipType.list</value></property>
@@ -484,7 +473,6 @@
 
 	<!-- ** Role  ** -->
 	<bean id="roleList" class="org.openmrs.web.controller.user.RoleListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>roleList</value></property>
 		<property name="formView"><value>/admin/users/roleList</value></property>
 		<property name="successView"><value>role.list</value></property>
@@ -492,7 +480,6 @@
 
 	<!--  Form Controller for the add/edit role page -->
 	<bean id="roleForm" class="org.openmrs.web.controller.user.RoleFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>role</value></property>
 		<property name="validator">
 			<ref bean="roleValidator" />
@@ -503,7 +490,6 @@
 	<!--  ** /Role ** -->
 	<!-- ** Privilege  ** -->
 	<bean id="privilegeList" class="org.openmrs.web.controller.user.PrivilegeListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>privilegeList</value></property>
 		<property name="formView"><value>/admin/users/privilegeList</value></property>
 		<property name="successView"><value>privilege.list</value></property>
@@ -511,7 +497,6 @@
 
 	<!--  Form Controller for the add/edit privilege page -->
 	<bean id="privilegeForm" class="org.openmrs.web.controller.user.PrivilegeFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>privilege</value></property>
 		<property name="validator">
 			<ref bean="privilegeValidator" />
@@ -616,7 +601,6 @@
 	<!-- ** Concept Drug ** -->
 	<bean id="conceptDrugList"
 		class="org.openmrs.web.controller.concept.ConceptDrugListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>conceptDrugList</value></property>
 		<property name="formView"><value>/admin/concepts/conceptDrugList</value></property>
 		<property name="successView"><value>conceptDrug.list</value></property>
@@ -632,7 +616,6 @@
 	<!-- ** Concept Class ** -->
 	<bean id="conceptClassList"
 		class="org.openmrs.web.controller.concept.ConceptClassListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>conceptClassList</value></property>
 		<property name="formView"><value>/admin/concepts/conceptClassList</value></property>
 		<property name="successView"><value>conceptClass.list</value></property>
@@ -641,7 +624,6 @@
 	<!--  Form Controller for the add/edit concept types page -->
 	<bean id="conceptClassForm"
 		class="org.openmrs.web.controller.concept.ConceptClassFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>conceptClass</value></property>
 		<property name="validator">
 			<ref bean="conceptClassValidator" />
@@ -653,7 +635,6 @@
 	<!--  ** Concept Datatype ** -->
 	<bean id="conceptDatatypeList"
 		class="org.openmrs.web.controller.concept.ConceptDatatypeListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>conceptDatatypeList</value></property>
 		<property name="formView"><value>/admin/concepts/conceptDatatypeList</value></property>
 		<property name="successView"><value>conceptDatatype.list</value></property>
@@ -662,7 +643,6 @@
 	<!--  Form Controller for the add/edit concept types page -->
 	<bean id="conceptDatatypeForm"
 		class="org.openmrs.web.controller.concept.ConceptDatatypeFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>conceptDatatype</value></property>
 		<property name="validator">
 			<ref bean="conceptDatatypeValidator" />
@@ -714,7 +694,6 @@
 	<!-- ** Concept Source ** -->
 	<bean id="conceptSourceList"
 		class="org.openmrs.web.controller.concept.ConceptSourceListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>conceptSourceList</value></property>
 		<property name="formView"><value>/admin/concepts/conceptSourceList</value></property>
 		<property name="successView"><value>conceptSource.list</value></property>
@@ -723,7 +702,6 @@
 	<!--  Form Controller for the add/edit concept types page -->
 	<bean id="conceptSourceForm"
 		class="org.openmrs.web.controller.concept.ConceptSourceFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>conceptSource</value></property>
 		<property name="formView"><value>/admin/concepts/conceptSourceForm</value></property>
 		<property name="successView"><value>conceptSource.list</value></property>
@@ -797,7 +775,6 @@
 
 	<!-- ** Field Type ** -->
 	<bean id="fieldTypeList" class="org.openmrs.web.controller.form.FieldTypeListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>fieldTypeList</value></property>
 		<property name="formView"><value>/admin/forms/fieldTypeList</value></property>
 		<property name="successView"><value>fieldType.list</value></property>
@@ -844,7 +821,6 @@
 	</bean>
 	<bean id="workflowFormController"
 		class="org.openmrs.web.controller.program.WorkflowFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>workflow</value></property>
 		<property name="formView"><value>/admin/programs/workflowForm</value></property>
 		<property name="successView"><value>program.list</value></property>
@@ -852,14 +828,12 @@
 
 	<bean id="stateConversionList"
 		class="org.openmrs.web.controller.program.StateConversionListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>stateConversionList</value></property>
 		<property name="formView"><value>/admin/programs/conversionList</value></property>
 		<property name="successView"><value>conversion.list</value></property>
 	</bean>
 	<bean id="stateConversionForm"
 		class="org.openmrs.web.controller.program.StateConversionFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>conversion</value></property>
 		<property name="validator">
 			<ref bean="stateConversionValidator" />
@@ -877,7 +851,6 @@
 	<!--
 		
 		<bean id="calendarController" class="org.openmrs.web.controller.calendar.CalendarController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>eventList</value></property>
 		<property name="formView"><value>/calendar/calendar</value></property>
 		<property name="successView"><value>calendar.list</value></property>
@@ -901,7 +874,6 @@
 	</bean>
 	<bean id="personDashboardForm"
 		class="org.openmrs.web.controller.person.PersonDashboardController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>person</value></property>
 		<property name="formView"><value>/personDashboardForm</value></property>
 		<property name="successView"><value>personDashboard.form</value></property>
@@ -920,7 +892,6 @@
 	</bean>
 	<bean id="implementationIdFormController"
 		class="org.openmrs.web.controller.maintenance.ImplementationIdFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>implId</value></property>
 		<property name="formView"><value>/admin/maintenance/implementationIdForm</value></property>
 		<property name="successView"><value>implementationid.form</value></property>
