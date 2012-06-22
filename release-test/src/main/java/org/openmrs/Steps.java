@@ -15,6 +15,7 @@ package org.openmrs;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.When;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -213,6 +214,7 @@ public abstract class Steps {
 	}
 
     @When("I click on the button $buttonName")
+    @Given("I click on the button $buttonName")
 	public void save(String buttonName) {
 		clickOn(button(buttonName));
 	}

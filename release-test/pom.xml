@@ -78,7 +78,8 @@
     </build>
 	<profiles>
 		<profile>
-            <!-- This profile will be useful when you want to run the test on your development server instead of release test server -->
+            <!-- This profile will be useful when you want to run the test on your development server instead of release test server.
+             Beware that this might change your development database.-->
 			<id>smoke-test-without-server</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
@@ -185,7 +186,7 @@
 					<plugin>
 						<groupId>org.jbehave</groupId>
 						<artifactId>jbehave-maven-plugin</artifactId>
-						<version>3.4.3</version>
+						<version>3.6.7</version>
 						<executions>
 							<execution>
 								<id>run-stories</id>
@@ -268,7 +269,9 @@
 		</profile>
 
         <profile>
-            <!-- run all the tests except for installation wizard test on the release test server an database-->
+            <!-- run all the tests except for installation wizard test on the release test server an database,
+            You need to have your database setup before you can run smoke test. So, first run the integration-test profile
+            and then you can run smoke tests any number of times.-->
 			<id>smoke-test</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
