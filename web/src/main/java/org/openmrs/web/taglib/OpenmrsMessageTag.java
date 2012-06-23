@@ -180,6 +180,7 @@ public class OpenmrsMessageTag extends OpenmrsHtmlEscapingAwareTag {
 	 * @see MessageTag#doStartTagInternal()
 	 * @should evaluate specified message resolvable
 	 * @should resolve message by code
+	 * @should resolve message in locale that different from default
 	 * @should return code if no message resolved
 	 * @should use body content as fallback if no message resolved
 	 * @should use text attribute as fallback if no message resolved
