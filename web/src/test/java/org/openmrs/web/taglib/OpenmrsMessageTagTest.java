@@ -13,24 +13,26 @@
  */
 package org.openmrs.web.taglib;
 
+import java.util.Locale;
+
 import javax.servlet.jsp.tagext.TagSupport;
 
 import junit.framework.Assert;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.mock.web.MockBodyContent;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockPageContext;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.GenericWebApplicationContext;
+import org.springframework.web.context.support.StaticWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * Contains tests for {@link OpenmrsMessageTag} class
@@ -39,30 +41,25 @@ public class OpenmrsMessageTagTest extends BaseWebContextSensitiveTest {
 	
 	private OpenmrsMessageTag openmrsMessageTag;
 	
-	private MockServletContext mockServletContext;
-	
 	private MockPageContext mockPageContext;
 	
 	@Before
-	public void initContext() throws Exception {
-		// create the mock servlet context
-		mockServletContext = new MockServletContext();
+	public void createMockPageContext() throws Exception {
 		
-		// create the mock spring context, so that we can mock out the calls to request context in the custom tag
-		DefaultListableBeanFactory dlbf = new DefaultListableBeanFactory(applicationContext.getParentBeanFactory());
-		GenericWebApplicationContext webApplicationContext = new GenericWebApplicationContext(dlbf);
-		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-		messageSource.setBasename("org/openmrs/web/taglib/messages/test-messages");
-		webApplicationContext.setParent(applicationContext);
-		mockServletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, webApplicationContext);
-		webApplicationContext.refresh();
+		MockServletContext sc = new MockServletContext();
+		SimpleWebApplicationContext wac = new SimpleWebApplicationContext();
+		wac.setServletContext(sc);
+		wac.setNamespace("test");
+		wac.refresh();
 		
-		// create the MockPageContext passing in the mock servlet context created above
-		mockPageContext = new MockPageContext(mockServletContext);
+		MockHttpServletRequest request = new MockHttpServletRequest(sc);
+		request.addPreferredLocale(Context.getLocale());
+		MockHttpServletResponse response = new MockHttpServletResponse();
 		
-		// create an instance of the message tag we want to test
-		// set it's PageContext to the MockPageContext we created above
+		request.setAttribute(DispatcherServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE, wac);
+		
 		openmrsMessageTag = new OpenmrsMessageTag();
+		mockPageContext = new MockPageContext(sc, request, response);
 		openmrsMessageTag.setPageContext(mockPageContext);
 	}
 	
@@ -83,10 +80,25 @@ public class OpenmrsMessageTagTest extends BaseWebContextSensitiveTest {
 	 * @see {@link OpenmrsMessageTag#doEndTag()}
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "resolve message by code", method = "doEndTag()")
 	public void doEndTag_shouldResolveMessageByCode() throws Exception {
 		String expectedOutput = "this is a test";
+		openmrsMessageTag.setCode("test.code");
+		
+		checkDoEndTagEvaluation(expectedOutput);
+	}
+	
+	/**
+	 * @see {@link OpenmrsMessageTag#doEndTag()}
+	 */
+	@Test
+	@Verifies(value = "resolve message in locale that different from default", method = "doEndTag()")
+	public void doEndTag_shouldResolveMessageInLocaleThatDifferentFromDefault() throws Exception {
+		
+		MockHttpServletRequest request = (MockHttpServletRequest) mockPageContext.getRequest();
+		request.addPreferredLocale(Locale.FRENCH);
+		
+		String expectedOutput = "il s'agit d'un essai";
 		openmrsMessageTag.setCode("test.code");
 		
 		checkDoEndTagEvaluation(expectedOutput);
@@ -172,5 +184,22 @@ public class OpenmrsMessageTagTest extends BaseWebContextSensitiveTest {
 		
 		Assert.assertEquals("Tag should return 'EVAL_PAGE'", TagSupport.EVAL_PAGE, tagReturnValue);
 		Assert.assertEquals(String.format("Output should be '%s'", expectedOutput), expectedOutput, output);
+	}
+	
+	/**
+	 * Mock web application context to be used in tests as messages source
+	 */
+	public class SimpleWebApplicationContext extends StaticWebApplicationContext {
+		
+		/**
+		 * @see org.springframework.context.support.AbstractApplicationContext#refresh()
+		 */
+		@Override
+		public void refresh() throws BeansException {
+			addMessage("test.code", Context.getLocale(), "this is a test");
+			addMessage("test.code", Locale.FRENCH, "il s'agit d'un essai");
+			super.refresh();
+		}
+		
 	}
 }
