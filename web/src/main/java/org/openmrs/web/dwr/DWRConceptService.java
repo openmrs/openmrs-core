@@ -83,6 +83,15 @@ public class DWRConceptService {
 	 * @param start the beginning index
 	 * @param length the number of matching concepts to return
 	 * @return a list of conceptListItems matching the given arguments
+	 * 
+	 * @should return concept by given id if exclude and include lists are empty
+	 * @should return concept by given id if classname is included
+	 * @should not return concept by given id if classname is not included
+	 * @should not return concept by given id if classname is excluded
+	 * @should return concept by given id if datatype is included
+	 * @should not return concept by given id if datatype is not included
+	 * @should not return concept by given id if datatype is excluded
+	 * @should include 
 	 * @since 1.8
 	 */
 	public List<Object> findBatchOfConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
@@ -148,9 +157,22 @@ public class DWRConceptService {
 				// corresponding conceptId
 				Concept c = cs.getConcept(Integer.valueOf(phrase));
 				if (c != null && (!c.isRetired() || includeRetired)) {
-					ConceptName cn = c.getName(defaultLocale);
-					ConceptSearchResult searchResult = new ConceptSearchResult(phrase, c, cn);
-					searchResults.add(searchResult);
+					String conceptClassName = null;
+					if (c.getConceptClass() != null) {
+						conceptClassName = c.getConceptClass().getName();
+					}
+					String conceptDatatypeName = null;
+					if (c.getDatatype() != null) {
+						conceptDatatypeName = c.getDatatype().getName();
+					}
+					if ((includeClassNames.isEmpty() || includeClassNames.contains(conceptClassName))
+					        && (excludeClassNames.isEmpty() || !excludeClassNames.contains(conceptClassName))
+					        && (includeDatatypeNames.isEmpty() || includeDatatypeNames.contains(conceptDatatypeName))
+					        && (excludeDatatypeNames.isEmpty() || !excludeDatatypeNames.contains(conceptDatatypeName))) {
+						ConceptName cn = c.getName(defaultLocale);
+						ConceptSearchResult searchResult = new ConceptSearchResult(phrase, c, cn);
+						searchResults.add(searchResult);
+					}
 				}
 			}
 			
