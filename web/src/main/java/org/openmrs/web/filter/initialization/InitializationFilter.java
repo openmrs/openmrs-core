@@ -1289,7 +1289,15 @@ public class InitializationFilter extends StartupFilter {
 							setMessage("Create database");
 							setExecutingTask(WizardTask.CREATE_SCHEMA);
 							// connect via jdbc and create a database
-							String sql = "create database if not exists `?` default character set utf8";
+							String sql = null;
+							if (wizardModel.databaseConnection.contains("mysql")) {
+								sql = "create database if not exists `?` default character set utf8";
+							} else if (wizardModel.databaseConnection.contains("postgresql")) {
+								sql = "create database `?` encoding 'utf8'";
+							} else {
+								sql = "create database `?`";
+							}
+							
 							int result = executeStatement(false, wizardModel.createDatabaseUsername,
 							    wizardModel.createDatabasePassword, sql, wizardModel.databaseName);
 							// throw the user back to the main screen if this error occurs
