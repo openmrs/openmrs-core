@@ -37,10 +37,10 @@ import org.springframework.web.servlet.ModelAndView;
 @Component
 public class WebTestHelper {
 	
-	@Autowired
+	@Autowired(required = false)
 	List<HandlerAdapter> handlerAdapters;
 	
-	@Autowired
+	@Autowired(required = false)
 	List<HandlerMapping> handlerMappings;
 	
 	/**
@@ -99,6 +99,10 @@ public class WebTestHelper {
 	 * @throws Exception
 	 */
 	public Response handle(final HttpServletRequest request) throws Exception {
+		if (handlerMappings == null || handlerAdapters == null) {
+			throw new UnsupportedOperationException("The web context is not configured!");
+		}
+
 		//Simulate a request with a fresh Hibernate session
 		Context.flushSession();
 		Context.clearSession();
