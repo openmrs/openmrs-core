@@ -220,6 +220,7 @@ public class DatabaseUpdater {
 			
 			DatabaseChangeLog changeLog = new XMLChangeLogSAXParser().parse(changeLogFile, new ChangeLogParameters(),
 			    new CompositeResourceAccessor(openmrsFO, fsFO));
+			changeLog.setChangeLogParameters(liquibase.getChangeLogParameters());
 			changeLog.validate(database);
 			ChangeLogIterator logIterator = new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
 			        new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
