@@ -136,12 +136,13 @@ public class PatientDashboardController {
 		Set<Link> links = ExtensionUtil.getAllAddEncounterToVisitLinks();
 		map.put("allAddEncounterToVisitLinks", links);
 		
-		map.put("ajaxOverviewDisabled", false);
+		map.put("ajaxEnabled", true);
+		map.put("ajaxOverviewDisabled", true);
 		map.put("ajaxRegimensDisabled", false);
 		map.put("ajaxVisitsEncountersDisabled", false);
-		map.put("ajaxDemographicsDisabled", false);
+		map.put("ajaxDemographicsDisabled", true);
 		map.put("ajaxGraphsDisabled", false);
-		map.put("ajaxFormEntryDisabled", false);
+		map.put("ajaxFormEntryDisabled", true);
 		
 		RequestContextHolder.currentRequestAttributes().setAttribute("dashboardAjax", patient,
 		    RequestAttributes.SCOPE_SESSION);

@@ -127,7 +127,9 @@
 	
 	function changeTab(tabObj, notAjax) {
 		var ajaxDiv = document.getElementById("ajaxTabPlaceHolder");
-		ajaxDiv.style.display = "none";
+		if (ajaxDiv) {
+			ajaxDiv.style.display = "none";
+		}
 		
 		if (!document.getElementById || !document.createTextNode) {return;}
 		if (typeof tabObj == "string")
@@ -236,7 +238,9 @@
 	</ul>
 </div>
 
-<div id="ajaxTabPlaceHolder"></div>
+<c:if test="${ajaxEnabled}">
+	<div id="ajaxTabPlaceHolder"></div>
+</c:if>
 
 <div id="patientSections">
 	<c:if test="${ajaxOverviewDisabled}">
