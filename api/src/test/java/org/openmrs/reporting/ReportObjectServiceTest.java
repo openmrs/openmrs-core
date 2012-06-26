@@ -27,7 +27,7 @@ public class ReportObjectServiceTest extends BaseContextSensitiveTest {
 		args.add(new SearchArgument("timeModifier", "ANY", PatientSetService.TimeModifier.class));
 		args.add(new SearchArgument("question", Context.getConceptService().getConceptByName("CD4 COUNT").getConceptId()
 		        .toString(), Concept.class));
-		args.add(new SearchArgument("withinLastDays", "${howManyDays}", Integer.class));
+		args.add(new SearchArgument("withinLastDays", "1", Integer.class)); //one indicates the number of days
 		search.setArguments(args);
 		
 		// save the object to the database
