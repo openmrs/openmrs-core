@@ -109,7 +109,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return null if no object found with given order id
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public Order getOrder(Integer orderId) throws APIException;
 	
 	/**
@@ -121,6 +121,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public Order getOrderByUuid(String uuid) throws APIException;
 	
 	/**
@@ -133,7 +134,8 @@ public interface OrderService extends OpenmrsService {
 	 * @return The Order in the system corresponding to given primary key id
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws APIException;
 	
 	/**
@@ -144,7 +146,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return list of non voided orders for patient
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException;
 	
 	/**
@@ -155,7 +157,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return List of drug orders for the given patient
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided);
 	
 	/**
@@ -175,7 +177,7 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws APIException;
 	
 	/**
@@ -187,7 +189,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return list of RegimenSuggestion objects that have been predefined
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<RegimenSuggestion> getStandardRegimens();
 	
 	/**
@@ -200,6 +202,7 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public Order getOrderByOrderNumber(String orderNumber);
 	
 	/**
@@ -212,6 +215,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return empty list for concept without orders
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
 	
 	/**
@@ -232,6 +236,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should not get orders with discontinuedDate before the given date
 	 * @should get orders with startDate before the given date
 	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<Order> getActiveOrdersByPatient(Patient p, Date date) throws APIException;
 	
 	/**
@@ -252,6 +258,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should not get orders with discontinuedDate before the given date
 	 * @should get orders with startDate before the given date
 	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) throws APIException;
 	
 	/**
@@ -266,6 +274,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if null passed in
 	 * @throws APIException when error occurred
 	 */
+	@Transactional(readOnly = true)
 	public List<Orderable<?>> getOrderables(String query) throws APIException;
 	
 	/**
@@ -284,7 +293,8 @@ public interface OrderService extends OpenmrsService {
 	 * @return list of Orders matching the parameters
 	 * @should not include voided orders
 	 */
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
 	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude);
@@ -361,7 +371,7 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient);
 	
 	/**
