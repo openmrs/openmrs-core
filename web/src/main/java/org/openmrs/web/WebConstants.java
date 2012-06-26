@@ -88,4 +88,21 @@ public class WebConstants {
 	 * ServletContext under this key
 	 */
 	public static final String CURRENT_USERS = "CURRENT_USERS";
+	
+	/**
+	 * The following 7 constants are used as session variable keys in the Ajax Dashboard
+	 */
+	public static final String AJAX_DASHBOARD_PATIENT = "ajax_dashboard_patient_";
+	
+	public static final String AJAX_DASHBOARD_PATIENT_VARIATION = "ajax_dashboard_patient_variation_";
+	
+	public static final String AJAX_DASHBOARD_IDENTIFIER = "ajax_dashboard_identifier_";
+	
+	public static final String AJAX_DASHBOARD_NAME = "ajax_dashboard_name_";
+	
+	public static final String AJAX_DASHBOARD_ADDRESS = "ajax_dashboard_address_";
+	
+	public static final String AJAX_DASHBOARD_CAUSE_OF_DEATH = "ajax_dashboard_cause_of_death_";
+	
+	public static final String AJAX_DASHBOARD_ADD_ENCOUNTER_TO_VISIT_LINKS = "ajax_dashboard_encounter_to_visit_links_";
 }
