@@ -2,7 +2,11 @@
 		</div>
 	</div>
 
-	<div id="footer">
+	<div id="footer" 
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+		xmlns:spring="http://www.springframework.org/tags">
+	
 		<div id="footerInner">
 		
 			<openmrs:extensionPoint pointId="org.openmrs.footerFullBeforeStatusBar" type="html" />
