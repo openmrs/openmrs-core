@@ -31,6 +31,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.web.extension.ExtensionUtil;
 import org.openmrs.module.web.extension.provider.Link;
+import org.openmrs.web.WebConstants;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -127,25 +128,40 @@ public class PatientDashboardController {
 		map.put("patientVariation", patientVariation);
 		
 		// empty objects used to create blank template in the view
+		PatientIdentifier identifier = new PatientIdentifier();
+		PersonName name = new PersonName();
+		PersonAddress address = new PersonAddress();
 		
-		map.put("emptyIdentifier", new PatientIdentifier());
-		map.put("emptyName", new PersonName());
-		map.put("emptyAddress", new PersonAddress());
+		map.put("emptyIdentifier", identifier);
+		map.put("emptyName", name);
+		map.put("emptyAddress", address);
 		map.put("causeOfDeathOther", causeOfDeathOther);
 		
 		Set<Link> links = ExtensionUtil.getAllAddEncounterToVisitLinks();
 		map.put("allAddEncounterToVisitLinks", links);
 		
 		map.put("ajaxEnabled", true);
-		map.put("ajaxOverviewDisabled", true);
+		map.put("ajaxOverviewDisabled", false);
 		map.put("ajaxRegimensDisabled", false);
 		map.put("ajaxVisitsEncountersDisabled", false);
-		map.put("ajaxDemographicsDisabled", true);
+		map.put("ajaxDemographicsDisabled", false);
 		map.put("ajaxGraphsDisabled", false);
-		map.put("ajaxFormEntryDisabled", true);
+		map.put("ajaxFormEntryDisabled", false);
 		
-		RequestContextHolder.currentRequestAttributes().setAttribute("dashboardAjax", patient,
+		RequestContextHolder.currentRequestAttributes().setAttribute(WebConstants.AJAX_DASHBOARD_PATIENT + patientId,
+		    patient, RequestAttributes.SCOPE_SESSION);
+		RequestContextHolder.currentRequestAttributes().setAttribute(
+		    WebConstants.AJAX_DASHBOARD_PATIENT_VARIATION + patientId, patientVariation, RequestAttributes.SCOPE_SESSION);
+		RequestContextHolder.currentRequestAttributes().setAttribute(WebConstants.AJAX_DASHBOARD_IDENTIFIER + patientId,
+		    identifier, RequestAttributes.SCOPE_SESSION);
+		RequestContextHolder.currentRequestAttributes().setAttribute(WebConstants.AJAX_DASHBOARD_NAME + patientId, name,
 		    RequestAttributes.SCOPE_SESSION);
+		RequestContextHolder.currentRequestAttributes().setAttribute(WebConstants.AJAX_DASHBOARD_ADDRESS + patientId,
+		    address, RequestAttributes.SCOPE_SESSION);
+		RequestContextHolder.currentRequestAttributes().setAttribute(WebConstants.AJAX_DASHBOARD_CAUSE_OF_DEATH + patientId,
+		    causeOfDeathOther, RequestAttributes.SCOPE_SESSION);
+		RequestContextHolder.currentRequestAttributes().setAttribute(
+		    WebConstants.AJAX_DASHBOARD_ADD_ENCOUNTER_TO_VISIT_LINKS + patientId, links, RequestAttributes.SCOPE_SESSION);
 		
 		return "patientDashboardForm";
 	}
