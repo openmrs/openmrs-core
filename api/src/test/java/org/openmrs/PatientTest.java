@@ -111,6 +111,35 @@ public class PatientTest {
 	}
 	
 	/**
+	 * Regression test for TRUNK-3118
+	 */
+	@Test
+	public void addIdentifier_shouldAddNewIdentifierForExistingVoidedIdentifier() {
+		Patient p = new Patient();
+		PatientIdentifier pa1 = new PatientIdentifier();
+		PatientIdentifierType identifierType = new PatientIdentifierType(1);
+		Location location = new Location(1);
+		
+		pa1.setIdentifier("theid");
+		pa1.setIdentifierType(identifierType);
+		pa1.setLocation(location);
+		pa1.setVoided(true);
+		p.addIdentifier(pa1);
+		
+		PatientIdentifier pa2 = new PatientIdentifier();
+		pa2.setIdentifier("theid");
+		pa2.setIdentifierType(identifierType);
+		pa1.setLocation(location);
+		pa2.setVoided(false);
+		
+		// this should not fail
+		p.addIdentifier(pa2);
+		
+		// make sure we still have it in there
+		assertTrue("The second identifier has not been added as a new identifier", p.getActiveIdentifiers().contains(pa2));
+	}
+	
+	/**
 	 * @see {@link Patient#addIdentifier(PatientIdentifier)}
 	 */
 	@Test
