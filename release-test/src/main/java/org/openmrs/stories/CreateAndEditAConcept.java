@@ -15,17 +15,19 @@ package org.openmrs.stories;
 
 import org.openmrs.Steps;
 import org.openmrs.Story;
-import org.openmrs.steps.AdminSteps;
-import org.openmrs.steps.CreateRoleSteps;
+import org.openmrs.steps.CreateAConceptSteps;
+import org.openmrs.steps.EditAConceptSteps;
 import org.openmrs.steps.LoginSteps;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
 
-public class CreateARole extends Story {
-    @Override
-    public List<Steps> includeSteps() {
-        return asList(new LoginSteps(driver), new AdminSteps(driver), new CreateRoleSteps(driver));
-    }
+
+public class CreateAndEditAConcept extends Story {
+	
+	@Override
+	public List<Steps> includeSteps() {
+		return asList(new LoginSteps(driver), new CreateAConceptSteps(driver), new EditAConceptSteps(driver));
+	}
 }

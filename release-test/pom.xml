@@ -89,7 +89,7 @@
 					<plugin>
 						<groupId>org.jbehave</groupId>
 						<artifactId>jbehave-maven-plugin</artifactId>
-						<version>3.4.3</version>
+						<version>3.6.7</version>
 						<executions>
 							<execution>
 								<id>run-stories</id>
@@ -381,7 +381,7 @@
 					<plugin>
 						<groupId>org.jbehave</groupId>
 						<artifactId>jbehave-maven-plugin</artifactId>
-						<version>3.4.3</version>
+						<version>3.6.7</version>
 						<executions>
 							<execution>
 								<id>run-stories</id>

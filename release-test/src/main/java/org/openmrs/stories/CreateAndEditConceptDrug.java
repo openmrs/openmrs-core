@@ -15,7 +15,9 @@ package org.openmrs.stories;
 
 import org.openmrs.Steps;
 import org.openmrs.Story;
+import org.openmrs.steps.AdminSteps;
 import org.openmrs.steps.CreateConceptDrugSteps;
+import org.openmrs.steps.EditConceptDrugSteps;
 import org.openmrs.steps.LoginSteps;
 
 import java.util.List;
@@ -23,10 +25,11 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 
-public class CreateConceptDrug extends Story {
+public class CreateAndEditConceptDrug extends Story {
 	
 	@Override
     public List<Steps> includeSteps() {
-        return asList(new LoginSteps(driver), new CreateConceptDrugSteps(driver));
+        return asList(new LoginSteps(driver), new AdminSteps(driver),new CreateConceptDrugSteps(driver),
+                new EditConceptDrugSteps(driver));
     }
 }
