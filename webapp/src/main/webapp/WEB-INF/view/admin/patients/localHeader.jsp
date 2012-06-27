@@ -33,6 +33,13 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Global Properties">
+		<li <c:if test='<%= request.getRequestURI().contains("managePatientDashboard") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/patients/managePatientDashboard.form">
+				<spring:message code="PatientDashboard.manage.title"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.patients.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >
