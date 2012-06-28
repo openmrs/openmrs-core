@@ -1,6 +1,8 @@
-<ul class="navList">	<li id="homeNavLink" class="firstChild" 
+<ul class="navList" 
 	xmlns:spring="http://www.springframework.org/tags"
 	xmlns:openmrs="urn:jsptld:/WEB-INF/taglibs/openmrs.tld">
+		
+	<li id="homeNavLink" class="firstChild">
 		<a href="${pageContext.request.contextPath}/"><spring:message code="Navigation.home"/></a>
 	</li>
 
