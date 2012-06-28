@@ -53,37 +53,37 @@
 		<tbody id="globalPropsList">
 			<c:forEach var="globalProp" items="${globalProps}" varStatus="status">
 				<tr class="${status.index % 2 == 0 ? 'evenRow' : 'oddRow' }">
-					<td valign="top"><input type="text" name="property" value="${globalProp.property}" size="50" maxlength="250" onchange="edited()" /></td>
+					<td valign="top"><input type="text" name="property" value="${globalProp.property}" size="50" maxlength="250" onkeyup="edited()" /></td>
 					<td valign="top">
 						<c:choose>
 							<c:when test="${fn:length(globalProp.propertyValue) > 20}">
-								<textarea name="value" onchange="edited()" rows="1" cols="60" wrap="off">${globalProp.propertyValue}</textarea>
+								<textarea name="value" onkeyup="edited()" rows="1" cols="60" wrap="off">${globalProp.propertyValue}</textarea>
 							</c:when>
 							<c:otherwise>
-								<input type="text" name="value" value="${globalProp.propertyValue}" size="30" maxlength="4000" onchange="edited()" />
+								<input type="text" name="value" value="${globalProp.propertyValue}" size="30" maxlength="4000" onkeyup="edited()" />
 							</c:otherwise>
 						</c:choose>
 					</td>
-					<td valign="top" rowspan="2"><input type="button" align="right" value='<spring:message code="general.remove" />' class="closeButton" onclick="edited(); remove(this)" /> </td> 
+					<td valign="top" rowspan="2"><input type="button" align="right" value='<spring:message code="general.remove" />' class="closeButton" onkeyup="edited(); remove(this)" /> </td> 
 					<td id="message" valign="top" rowspan="2"></td>
 				</tr>
 				<tr class="${status.index % 2 == 0 ? 'evenRow' : 'oddRow' }">
 					<td colspan="2" valign="top" class="description">
 						<textarea name="description" class="descriptionBox" 
-							rows="2" cols="96" onchange="edited()"
+							rows="2" cols="96" onkeyup="edited()"
 							onfocus="descriptionFocus(this)" onblur="descriptionBlur(this)">${globalProp.description}</textarea>
 					</td>
 				</tr>
 			</c:forEach>
 			<tr id="newProperty">
-				<td valign="top"><input type="text" name="property" size="50" maxlength="250" onchange="edited()" /></td>
-				<td valign="top"><input type="text" name="value" size="30" maxlength="250" onchange="edited()" /></td>
+				<td valign="top"><input type="text" name="property" size="50" maxlength="250" onkeyup="edited()" /></td>
+				<td valign="top"><input type="text" name="value" size="30" maxlength="250" onkeyup="edited()" /></td>
 				<td valign="top" rowspan="2"><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="remove(this)" /></td>
 			</tr>
 			<tr id="newPropertyDescription">
 					<td colspan="2" valign="top" class="description">
 						<textarea name="description" class="descriptionBox" 
-							rows="2" cols="96" onchange="edited()"
+							rows="2" cols="96" onkeyup="edited()"
 							onfocus="descriptionFocus(this)" onblur="descriptionBlur(this)"></textarea>
 					</td>
 				</tr>
