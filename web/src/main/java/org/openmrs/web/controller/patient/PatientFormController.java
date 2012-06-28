@@ -137,7 +137,7 @@ public class PatientFormController extends PersonFormController {
 				if (ids != null) {
 					for (int i = 0; i < ids.length; i++) {
 						String id = ids[i].trim();
-						if (!id.equals("") && !idTypes.equals("")) { //skips invalid and blank identifiers/identifierTypes
+						if (!id.equals("") && !idTypes[i].equals("")) { //skips invalid and blank identifiers/identifierTypes
 							PatientIdentifier pi = new PatientIdentifier();
 							pi.setIdentifier(id);
 							pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
