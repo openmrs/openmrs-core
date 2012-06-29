@@ -1230,6 +1230,119 @@
 	</attribute>
 </tag>
 
+<tag>
+	<description>
+		Like spring:message tag, this retrieves the message from the bundle with the given code, but
+ 		(in addition) uses tag body content, when code isn't resolvable. This tag considers its
+ 		body content as a text string. So, any text, placed between the start and end will be treated as
+ 		a string. If the body value is not specified, the text attribute is used. If there is no message
+ 		in the bundle and no text attribute value or tag body text, then it displays the message code (if
+ 		it is set), otherwise - null. If both the text attribute and body text are present (shouldn't happen,
+ 		but could by mistake), then the body text is used. With this tag the user can pre-define
+ 		text for codes in locales other than the system default by specifying the locale in the locale
+ 		attribute. If locale attribute is not specified, then the system default locale (e.g., "en")
+ 		will be used by default. HTML escaping is also supported by this tag.
+	</description>
+	
+	<name>message</name>
+	<tag-class>org.openmrs.web.taglib.OpenmrsMessageTag</tag-class>
+	<body-content>tagdependent</body-content>
+
+	<attribute>
+		<description>A MessageSourceResolvable argument (direct or through JSP EL).  Fits nicely 
+		when used in conjunction with Spring's validation error classes which all implement 
+		the MessageSourceResolvable interface. For example, this allows you to iterate over all 
+		of the errors in a form, passing each error (using a runtime expression) as the value 
+		of this 'message' attribute, thus effecting the easy display of such error messages.
+		</description>
+		<name>message</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+
+	<attribute>
+		<description>The code (key) to use, when looking up the message.
+		If code is not provided, the tag body value will be taken. Otherwise,
+		if body is empty, then the text attribute will be used.</description>
+		<name>code</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+
+	<attribute>
+		<description>Set optional message arguments for this tag, as a
+		(comma-)delimited String (each String argument can contain JSP EL),
+		an Object array (used as argument array), or a single Object (used
+		as single argument).</description>
+		<name>arguments</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+
+	<attribute>
+		<description>The separator character to be used for splitting the
+		arguments string value; defaults to a 'comma' (',').</description>
+		<name>argumentSeparator</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+
+	<attribute>
+		<description>
+			Default text to output when a message for the given code could not be 
+			found both in bundle and in tag body. If both text, body, and code are 
+			not set, the tag will output null.
+		</description>
+		<name>text</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+
+	<attribute>
+		<description>The string to use when binding the result to the page,
+		request, session or application scope. If not specified, the result
+		gets outputted to the writer (i.e. typically directly to the JSP).</description>
+		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+
+	<attribute>
+		<description>The scope to use when exporting the result to a variable.
+		This attribute is only used when var is also set. Possible values are
+		page, request, session and application.</description>
+		<name>scope</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+
+	<attribute>
+		<description>
+			Set HTML escaping for this tag, as boolean value. 
+			If true, any HTML in the message will be escaped. Overrides 
+			the default HTML escaping setting for the current page. 
+		</description>
+		<name>htmlEscape</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+
+	<attribute>
+		<description>Set JavaScript escaping for this tag, as boolean value. 
+		If true, any JavaScript in the message will be escaped. Default is false.</description>
+		<name>javaScriptEscape</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	
+	<attribute>
+		<description>Set the locale of the message fallback provided in the tag. The default is the system's default locale.</description>
+		<name>locale</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
 <function>
 	<name>sort</name>
 	<function-class>org.openmrs.web.taglib.functions.Sort</function-class>
