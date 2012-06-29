@@ -5,6 +5,8 @@
 	<div id="footer">
 		<div id="footerInner">
 		
+			<openmrs:extensionPoint pointId="org.openmrs.footerFullBeforeStatusBar" type="html" />
+		
 			<span id="localeOptions">
 				<%  //removes last instance of lang= from querystring
 					String qs = request.getQueryString();
