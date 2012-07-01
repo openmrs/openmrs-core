@@ -138,6 +138,15 @@
 			name="openmrs.api.name" 
 			value="openmrs-api-${openmrs.version.short}.jar"/>
 
+		<property name="openmrs.web.name" 
+							value="openmrs-web-${openmrs.version.short}.jar"/>
+		
+		<property name="openmrs.web.tests.name" 
+					value="openmrs-web-${openmrs.version.short}-tests.jar"/>
+		
+		<property name="openmrs.api.tests.name" 
+							value="openmrs-api-${openmrs.version.short}-tests.jar"/>
+		
 		<!-- These variables are replaced in the web.xml file during compilation 
 			  and then read in by org.openmrs.web.Listener at openmrs startup -->
 		<filterset id="web.xml.variables.to.replace">
@@ -189,9 +198,31 @@
 		</javac>
 	</target>
 
-	<target name="package-all" depends="package-api,package-api-tests,package-web-src"
+	<target name="package-all" depends="package-api, package-api-tests, package-web-src, package-web-tests"
 		description="packages api, test, and web jars for use in modules"/>
 
+	<target name="package-web-tests" depends="package-api, package-web-src" description="create openmrs web tests jar">
+		<mkdir dir="${dist.dir}/test/web" />
+		<javac destdir="${dist.dir}/test/web" debug="${javac.debug}" debuglevel="${javac.debuglevel}" 
+			deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.compile.classpath" classpath="${build.dir}">
+			<compilerarg line="${compile.arguments}" />
+			<src path="${test.dir}/web" />
+			<classpath>
+				<path refid="api.compile.classpath" />
+				<path refid="web.compile.classpath" />
+				<path location="${dist.dir}/${openmrs.api.name}" />
+				<path location="${dist.dir}/${openmrs.web.name}" />
+			</classpath>
+		</javac>
+		<jar destfile="${dist.dir}/${openmrs.web.tests.name}">
+			<manifest>
+				<attribute name="Class-Path" value="${openmrs.web.tests.name}" />
+			</manifest>
+			<fileset dir="${dist.dir}/test/web" includes="**/*" />
+			<fileset dir="${test.dir}/web" excludes="**/*.java" />
+		</jar>
+	</target>
+	
 	<!-- the api package will contain test classes unless an "ant clean" is done right before -->
 	<target name="package-api" depends="compile-api" description="create openmrs api jar">
 		<mkdir dir="${dist.dir}" />
@@ -265,9 +296,9 @@
 
 	<target name="package-api-tests" depends="compile-api-tests" description="create api-tests jar">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/tests-${openmrs.api.name}">
+		<jar destfile="${dist.dir}/${openmrs.api.tests.name}">
 			<manifest>
-				<attribute name="Class-Path" value="tests-${openmrs.api.name}" />
+				<attribute name="Class-Path" value="${openmrs.api.tests.name}" />
 			</manifest>
 			<fileset dir="${build.dir}">
 				<exclude name="**/web/" />
@@ -426,7 +457,7 @@
 		</javac>
 
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/web-${openmrs.api.name}">
+		<jar destfile="${dist.dir}/${openmrs.web.name}">
 			<fileset dir="${build.dir}" includes="**/web/**/*" />
 			<fileset dir="${basedir}/web/WEB-INF" includes="openmrs-servlet.xml" />
 		</jar>
