@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.context;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -40,7 +41,9 @@ import org.openmrs.util.RoleConstants;
  * 
  * @see org.openmrs.api.context.Context
  */
-public class UserContext {
+public class UserContext implements Serializable {
+	
+	private static final long serialVersionUID = -806631231941890648L;
 	
 	/**
 	 * Logger - shared by entire class
