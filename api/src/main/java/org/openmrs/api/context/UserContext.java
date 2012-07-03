@@ -26,10 +26,12 @@ import org.openmrs.Location;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
+import java.io.Serializable;
 
 /**
  * Represents an OpenMRS <code>User Context</code> which stores the current user information. Only
@@ -40,8 +42,10 @@ import org.openmrs.util.RoleConstants;
  * 
  * @see org.openmrs.api.context.Context
  */
-public class UserContext {
+public class UserContext implements Serializable {
 	
+	private static final long serialVersionUID = -806631231941890648L;
+
 	/**
 	 * Logger - shared by entire class
 	 */
@@ -98,7 +102,6 @@ public class UserContext {
 			log.debug("Authenticating with username: " + username);
 		
 		this.user = contextDAO.authenticate(username, password);
-		
 		setUserLocation();
 		if (log.isDebugEnabled())
 			log.debug("Authenticated as: " + this.user);
