@@ -36,7 +36,7 @@ import static org.openqa.selenium.lift.match.SelectionMatcher.selection;
 
 public abstract class Steps {
 
-	private static final long DEFAULT_TIMEOUT = 5000;
+	private static final long DEFAULT_TIMEOUT = 8000;
 
 	protected WebDriver driver;
 
