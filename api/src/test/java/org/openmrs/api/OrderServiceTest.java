@@ -13,11 +13,15 @@
  */
 package org.openmrs.api;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -26,6 +30,8 @@ import org.openmrs.test.Verifies;
  * TODO clean up and test all methods in OrderService
  */
 public class OrderServiceTest extends BaseContextSensitiveTest {
+	
+	protected static final String DRUG_ORDERS_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-drugOrdersList.xml";
 	
 	/**
 	 * @see {@link OrderService#saveOrder(Order)}
@@ -100,6 +106,19 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order = Context.getOrderService().getOrderByUuid(uuid);
 		
 		Assert.assertEquals(discontinuedReasonNonCoded, order.getDiscontinuedReasonNonCoded());
+	}
+	
+	/**
+	 * @see {@link OrderService#getDrugOrdersByPatient(Patient, ORDER_STATUS, boolean)}
+	 */
+	@Test
+	@Verifies(value = "return list of drug orders with given status", method = "getDrugOrdersByPatient(Patient, ORDER_STATUS, boolean)")
+	public void getDrugOrdersByPatient_shouldReturnListOfDrugOrdersWithGivenStatus() throws Exception {
+		executeDataSet(DRUG_ORDERS_DATASET_XML);
+		Patient p = Context.getPatientService().getPatient(2);
+		List<DrugOrder> drugOrders = Context.getOrderService().getDrugOrdersByPatient(p, ORDER_STATUS.CURRENT_AND_FUTURE,
+		    Boolean.FALSE);
+		Assert.assertEquals(4, drugOrders.size());
 	}
 	
 	@Test
