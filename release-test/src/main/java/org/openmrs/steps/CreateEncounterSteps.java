@@ -50,11 +50,11 @@ public class CreateEncounterSteps extends Steps {
         waitFor(finderByXpath(autoCompleteXPath));
         clickOn(finderByXpath(autoCompleteXPath));
 
-        select(location, "location");
+        selectFrom(location, "location");
         type(date, into(textbox().with(attribute("name", equalTo("encounterDatetime")))));
         clickOn(textbox().with(attribute("name", equalTo("encounterDatetime"))));
         getWebDriver().findElement(By.id("addProviderButton")).click();
-		select(providerRole, "roleIds[0]");
+        selectFrom(providerRole, "roleIds[0]");
         type(provider, into(textbox().with(attribute("id", equalTo("providers[0]")))));
 	}
 

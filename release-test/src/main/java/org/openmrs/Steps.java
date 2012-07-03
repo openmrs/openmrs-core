@@ -160,7 +160,7 @@ public abstract class Steps {
 		return new InputFinder().with(attribute("type", equalTo("checkbox")));
 	}
 
-    protected void select(String value, String id){
+    protected void selectFrom(String value, String id){
         WebElement select = driver.findElement(By.id(id));
         List<WebElement> options = select.findElements(By.tagName("option"));
         for (WebElement option : options) {
