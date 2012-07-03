@@ -909,6 +909,7 @@
       <openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}</openmrs.version.shortnumericonly>
 
       <springVersion>3.0.5.RELEASE</springVersion>
+      <customArgLineForTesting></customArgLineForTesting>
    </properties>
    
 </project>
