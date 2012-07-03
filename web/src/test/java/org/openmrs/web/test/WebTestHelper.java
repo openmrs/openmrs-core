@@ -102,7 +102,7 @@ public class WebTestHelper {
 		if (handlerMappings == null || handlerAdapters == null) {
 			throw new UnsupportedOperationException("The web context is not configured!");
 		}
-
+		
 		//Simulate a request with a fresh Hibernate session
 		Context.flushSession();
 		Context.clearSession();
