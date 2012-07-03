@@ -55,7 +55,7 @@ public class VerifyPatientDashboardSteps extends Steps {
 	@Then("the dashboard header should contain name, age, bmi, CD4, regimens, last encounter, Old identification number and OpenMRS identification number")
 	public void verifyPatientDashBoard(){
     	assertPresenceOf(div().with(attribute("id",equalTo("patientHeaderPatientName"))).with(text(equalTo("Mr. Horatio L Hornblower Esq."))));
-		assertPresenceOf(cell().with(attribute("id",equalTo("patientHeaderPatientAge"))).with(text(containsString("70 yrs"))));
+		assertPresenceOf(cell().with(attribute("id",equalTo("patientHeaderPatientAge"))).with(text(containsString("71 yrs"))));
 		assertPresenceOf(table().with(attribute("id",equalTo("patientHeaderObs"))));
 		assertPresenceOf(cell().with(attribute("id",equalTo("patientHeaderObsCD4"))));
 		assertPresenceOf(cell().with(attribute("id", equalTo("patientHeaderObsRegimen"))));

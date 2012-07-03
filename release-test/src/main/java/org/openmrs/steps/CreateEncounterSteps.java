@@ -48,11 +48,13 @@ public class CreateEncounterSteps extends Steps {
 		type(name, into(textbox().with(attribute("id", equalTo("patientId_id_selection")))));
         String autoCompleteXPath = "//ul[@class='ui-autocomplete ui-menu ui-widget ui-widget-content ui-corner-all']";
         waitFor(finderByXpath(autoCompleteXPath));
-        type(location, into(selectbox().with(attribute("id", equalTo("location")))));
+        clickOn(finderByXpath(autoCompleteXPath));
+
+        select(location, "location");
         type(date, into(textbox().with(attribute("name", equalTo("encounterDatetime")))));
         clickOn(textbox().with(attribute("name", equalTo("encounterDatetime"))));
         getWebDriver().findElement(By.id("addProviderButton")).click();
-		type(providerRole, into(selectbox().with(attribute("id", equalTo("roleIds[0]")))));
+		select(providerRole, "roleIds[0]");
         type(provider, into(textbox().with(attribute("id", equalTo("providers[0]")))));
 	}
 

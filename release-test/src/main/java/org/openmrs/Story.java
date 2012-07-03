@@ -85,7 +85,6 @@ public abstract class Story extends JUnitStory {
 	
 	private void createDriver() {
 		this.driver = new FirefoxDriver();
-	    
 		// Use this driver if using Firefox 5.  There is currently a bug in selenium with ff5
 		//this.driver = new ChromeDriver();
 	}

@@ -57,15 +57,10 @@ public class CreateConceptDrugSteps extends Steps {
 
 	@When("I mention $name, $concept, $doseStrength, $units, $maximumDose and $minimumDose")
 	public void addDrugDetails(String name, String concept, String doseStrength, String units, String maximumDose, String minimumDose) {
-		//editing $name into name textbox
 		type(name, into(textbox().with(attribute("name", equalTo("name")))));
-		
 		//editing the concept
-		String changeButtonXpath = "//table[@id = 'table']/tbody/tr[2]/td[1]/span[1]/span[1]/input[2]"; //html/body/div/div[3]/form/fieldset/table/tbody/tr[2]/td/span[1]/span[1]/input[2]
-		waitFor(finderByXpath(changeButtonXpath));
-		clickOn(finderByXpath(changeButtonXpath));
-		type(concept, into(textbox().with(attribute("id", equalTo("conceptSearch")))));
-		String conceptSearchXpath = "//table[@class = 'openmrsSearchTable']/tbody/tr[1]/td[2]/a"; //html/body/div/div[3]/form/fieldset/table/tbody/tr[2]/td/span/span[3]/span[2]/table/tbody/tr/td[2]/a/span[2]
+		type(concept, into(textbox().with(attribute("id", equalTo("concept_selection")))));
+		String conceptSearchXpath = "//table[@id='table']/tbody/tr[2]/td/input[@id='concept_selection']";
 		waitFor(finderByXpath(conceptSearchXpath));
 		clickOn(finderByXpath(conceptSearchXpath));
 
