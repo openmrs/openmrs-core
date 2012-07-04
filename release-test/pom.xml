@@ -194,7 +194,8 @@
 								<configuration>
                                     <ignoreFailureInStories>true</ignoreFailureInStories>
                                     <ignoreFailureInView>true</ignoreFailureInView>
-									<includes>
+                                    <storyTimeoutInSecs>${story.timeout.in.secs}</storyTimeoutInSecs>
+                                    <includes>
 										<include>**/stories/${test}.java</include>
 									</includes>
 								</configuration>
@@ -504,6 +505,7 @@
 		<webapp.name>openmrs</webapp.name>
         <openMRSVersion>${parent.version}</openMRSVersion>
         <test>*</test>
+        <story.timeout.in.secs>1200</story.timeout.in.secs>
 	</properties>
 
 </project>
