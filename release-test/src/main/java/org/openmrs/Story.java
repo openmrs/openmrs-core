@@ -48,7 +48,7 @@ public abstract class Story extends JUnitStory {
     @Override
     public Embedder configuredEmbedder() {
         Embedder embedder = super.configuredEmbedder();
-        embedder.useEmbedderControls(new EmbedderControls().doIgnoreFailureInStories(true));
+        embedder.useEmbedderControls(new EmbedderControls().doIgnoreFailureInStories(true).useStoryTimeoutInSecs(1200));
         return embedder;
     }
 
