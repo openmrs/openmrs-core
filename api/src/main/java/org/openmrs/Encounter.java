@@ -302,7 +302,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public Set<Order> getOrders() {
 		if (orders == null) {
-			return new HashSet<Order>();
+			orders = new LinkedHashSet<Order>();
 		}
 		return orders;
 	}
@@ -321,14 +321,13 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should add order with null values
 	 * @should not fail with null obs passed to add order
 	 * @should set encounter attribute
-	 * @should add order to non nul initial order set
+	 * @should add order to non null initial order set
+	 * @should add order to encounter when adding order to set returned from getOrders
 	 */
 	public void addOrder(Order order) {
-		if (orders == null)
-			orders = new HashSet<Order>();
 		if (order != null) {
 			order.setEncounter(this);
-			orders.add(order);
+			getOrders().add(order);
 		}
 	}
 	

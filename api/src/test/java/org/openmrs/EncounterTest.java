@@ -772,12 +772,13 @@ public class EncounterTest {
 		assertTrue(order.getEncounter().equals(encounter));
 	}
 	
+	
 	/**
 	 * @see {@link Encounter#addOrder(Order)}
 	 */
 	@Test
-	@Verifies(value = "should add order to non nul initial order set", method = "addOrder(Order)")
-	public void addOrder_shouldAddOrderToNonNulInitialOrderSet() throws Exception {
+	@Verifies(value = "should add order to non null initial order set", method = "addOrder(Order)")
+	public void addOrder_shouldAddOrderToNonNullInitialOrderSet() throws Exception {
 		Encounter encounter = new Encounter();
 		Set<Order> orderSet = new HashSet<Order>();
 		orderSet.add(new Order(1));
@@ -786,6 +787,19 @@ public class EncounterTest {
 		
 		encounter.addOrder(new Order(2));
 		assertEquals(2, encounter.getOrders().size());
+	}
+	
+	/**
+	 * @see {@link Encounter#getOrders()}
+	 */
+	@Test
+	@Verifies(value = "should add order to encounter when adding order to set returned from getOrders", method = "getOrders()")
+	public void addOrders_shouldAddOrderToEncounterWhenAddingOrderToSetReturnedFromGetOrders() throws Exception {
+		Encounter encounter = new Encounter();
+		Order order = new Order();
+		encounter.getOrders().add(order);
+		
+		assertEquals(1, encounter.getOrders().size());
 	}
 	
 	/**
