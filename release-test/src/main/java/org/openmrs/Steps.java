@@ -37,6 +37,7 @@ import static org.openqa.selenium.lift.match.SelectionMatcher.selection;
 public abstract class Steps {
 
 	private static final long DEFAULT_TIMEOUT = 8000;
+	private static final long EXTENDED_TIMEOUT = 25000;
 
 	protected WebDriver driver;
 
@@ -171,7 +172,7 @@ public abstract class Steps {
     }
 
     protected void waitAndAssertFor(Finder finder){
-        waitFor(finder);
+        waitFor(finder, EXTENDED_TIMEOUT);
         assertPresenceOf(finder);
     }
 
