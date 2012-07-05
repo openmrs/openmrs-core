@@ -11,20 +11,20 @@
 <form method="post" action="loginServlet" style="padding:15px; width: 300px;" autocomplete="off">
 	<table>
 		<tr>
-			<td><spring:message code="User.username"/>:</td>
+			<td><openmrs:message code="User.username"/>:</td>
 			<td><input type="text" name="uname" value="<request:parameter name="username" />" id="username" size="25" maxlength="50" /></td>
 		</tr>
 		<tr>
-			<td><spring:message code="User.password"/>:</td>
+			<td><openmrs:message code="User.password"/>:</td>
 			<td><input type="password" name="pw" value="" id="password" size="25" /></td>
 		</tr>
 		<tr>
 			<td></td>
-			<td><input type="submit" value="<spring:message code="auth.login"/>" /></td>
+			<td><input type="submit" value="<openmrs:message code="auth.login"/>" /></td>
 		</tr>
 		<tr>
 			<td></td>
-			<td><a class="forgotPasswordLink" href="${pageContext.request.contextPath}/forgotPassword.form"><spring:message code="User.password.forgot"/></a></td>
+			<td><a class="forgotPasswordLink" href="${pageContext.request.contextPath}/forgotPassword.form"><openmrs:message code="User.password.forgot"/></a></td>
 		</tr>
 	</table>
 	<br/>

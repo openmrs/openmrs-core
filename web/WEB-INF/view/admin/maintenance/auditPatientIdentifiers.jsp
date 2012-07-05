@@ -6,12 +6,12 @@
 <%@ include file="localHeader.jsp" %>
 
 <br />
-<h2><spring:message code="AuditPatientIdentifiers.manage"/></h2>
+<h2><openmrs:message code="AuditPatientIdentifiers.manage"/></h2>
 <br />
 
 <a href="${pageContext.request.contextPath}/auditServlet?audit=patientIdentifiers">
-	<spring:message code="AuditPatientIdentifiers.link"/>
+	<openmrs:message code="AuditPatientIdentifiers.link"/>
 </a>
-<spring:message code="AuditPatientIdentifiers.description"/>
+<openmrs:message code="AuditPatientIdentifiers.description"/>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

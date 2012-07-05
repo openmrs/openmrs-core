@@ -11,8 +11,8 @@
 	<table cellspacing="0" cellpadding="2">
 		<c:if test="${model.showHeader}">
 			<tr>
-				<th><spring:message code="general.name" /></th>
-				<th><spring:message code="general.value" /></th>
+				<th><openmrs:message code="general.name" /></th>
+				<th><openmrs:message code="general.value" /></th>
 				<th></th>
 			</tr>
 		</c:if>
@@ -47,7 +47,7 @@
                 </td>
 				<td style="width: 10em">
 					<span id="gp_${ind}_actions" style="display: none">
-						<input type="button" value="<spring:message code="general.save"/>"
+						<input type="button" value="<openmrs:message code="general.save"/>"
 							onClick='
 								hideDiv("gp_${ind}_actions");
 								showDiv("gp_${ind}_saving");
@@ -55,14 +55,14 @@
 									function() { hideDiv("gp_${ind}_saving") });
 							'
 						/>
-						<input type="button" value="<spring:message code="general.cancel"/>"
+						<input type="button" value="<openmrs:message code="general.cancel"/>"
 							onClick='
 								hideDiv("gp_${ind}_actions");
 								dwr.util.setValue("gp_${ind}", "${prop.propertyValue}");
 						'/>
 					</span>
 					<span id="gp_${ind}_saving" style="display: none; background-color: #e0e0e0">
-						<spring:message code="general.saving" arguments="..."/>
+						<openmrs:message code="general.saving" arguments="..."/>
 					</span>
 				</td>
 			</tr>
@@ -75,7 +75,7 @@
 				<td></tr>
 			</c:if>
 			<script type="text/javascript">
-				var gpVal = "<spring:message text="${prop.propertyValue}" javaScriptEscape="true"/>";
+				var gpVal = "<openmrs:message text="${prop.propertyValue}" javaScriptEscape="true"/>";
 				dwr.util.setValue('gp_${ind}', gpVal);
 			</script>
 		</c:forEach>

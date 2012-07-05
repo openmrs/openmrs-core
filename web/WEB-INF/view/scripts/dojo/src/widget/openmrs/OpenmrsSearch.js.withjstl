@@ -58,13 +58,13 @@ dojo.widget.defineWidget(
 	// check box options
 	showIncludeRetired: false,
 	includeRetired: null,
-	includeRetiredLabel: '<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>',
+	includeRetiredLabel: '<openmrs:message code="SearchResults.includeRetired" javaScriptEscape="true"/>',
 	showIncludeVoided: false,
 	includeVoided: null,
-	includeVoidedLabel: '<spring:message code="SearchResults.includeVoided" javaScriptEscape="true"/>',
+	includeVoidedLabel: '<openmrs:message code="SearchResults.includeVoided" javaScriptEscape="true"/>',
 	showVerboseListing: false,
 	verboseListing: null,
-	verboseListingLabel: '<spring:message code="SearchResults.includeVerbose" javaScriptEscape="true"/>',
+	verboseListingLabel: '<openmrs:message code="SearchResults.includeVerbose" javaScriptEscape="true"/>',
 	
 	eventNamesDefault: {
 		select : "select",
@@ -389,7 +389,7 @@ dojo.widget.defineWidget(
 		}
 		else {
 			this.objectsFound = new Array();
-			this.objectsFound.push('<spring:message code="SearchResults.minCharactersPhrase1" javaScriptEscape="true"/> ' + this.minSearchCharacters + ' <spring:message code="SearchResults.minCharactersPhrase2" javaScriptEscape="true"/>');
+			this.objectsFound.push('<openmrs:message code="SearchResults.minCharactersPhrase1" javaScriptEscape="true"/> ' + this.minSearchCharacters + ' <openmrs:message code="SearchResults.minCharactersPhrase2" javaScriptEscape="true"/>');
 			this.doObjectsFound(this.objectsFound);
 		}
 		
@@ -772,10 +772,10 @@ dojo.widget.defineWidget(
 		
 		this.infoBar.innerHTML = '';
 		if (this.lastPhraseSearched != null)
-			this.infoBar.innerHTML = ' &nbsp; <spring:message code="SearchResults.resultsFor" javaScriptEscape="true"/> "' + this.lastPhraseSearched + '". &nbsp;';
+			this.infoBar.innerHTML = ' &nbsp; <openmrs:message code="SearchResults.resultsFor" javaScriptEscape="true"/> "' + this.lastPhraseSearched + '". &nbsp;';
 		
 		if (this.objectsFound.length > 0)
-			this.infoBar.innerHTML += "<spring:message code="SearchResults.viewing" javaScriptEscape="true"/> <b>" + this.firstItemDisplayed + "-" + lastItemDisplayed + "</b> <spring:message code="SearchResults.of" javaScriptEscape="true"/> <b>" + total + "</b> &nbsp; ";
+			this.infoBar.innerHTML += "<openmrs:message code="SearchResults.viewing" javaScriptEscape="true"/> <b>" + this.firstItemDisplayed + "-" + lastItemDisplayed + "</b> <openmrs:message code="SearchResults.of" javaScriptEscape="true"/> <b>" + total + "</b> &nbsp; ";
 		
 		this.pagingBar.innerHTML = "&nbsp;";
 	

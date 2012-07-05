@@ -14,27 +14,27 @@
 	})
 </script>
 
-<h2><spring:message code="ConceptDrug.title" /></h2>
+<h2><openmrs:message code="ConceptDrug.title" /></h2>
 
-<a href="conceptDrug.form"><spring:message code="ConceptDrug.add" /></a>
+<a href="conceptDrug.form"><openmrs:message code="ConceptDrug.add" /></a>
 <br/><br/>
 
 <b class="boxHeader">
 	<a style="display: block; float: right"
 		href="#"
 		onClick="return toggleRowVisibilityForClass('drugTable', 'retired', false);">
-		<spring:message code="general.toggle.retired" />
+		<openmrs:message code="general.toggle.retired" />
 	</a>
-	<spring:message	code="ConceptDrug.manage" />
+	<openmrs:message	code="ConceptDrug.manage" />
 </b>
 
 <div class="box">
 <table id="drugTable" cellpadding="2" cellspacing="0">
 	<tr>
-		<th><spring:message code="general.name" /></th>
-		<%-- <th> <spring:message code="ConceptDrug.concept"/> </th> --%>
-		<th><spring:message code="ConceptDrug.doseStrength" /></th>
-		<th><spring:message code="ConceptDrug.units" /></th>
+		<th><openmrs:message code="general.name" /></th>
+		<%-- <th> <openmrs:message code="ConceptDrug.concept"/> </th> --%>
+		<th><openmrs:message code="ConceptDrug.doseStrength" /></th>
+		<th><openmrs:message code="ConceptDrug.units" /></th>
 	</tr>
 
 	<c:forEach var="drug" items="${conceptDrugList}">

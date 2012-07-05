@@ -83,17 +83,17 @@
 	}
 </script>
 
-<h2><spring:message code="Program.addEdit.title"/></h2>
+<h2><openmrs:message code="Program.addEdit.title"/></h2>
 
 <spring:hasBindErrors name="program">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
 <form method="post" id="theForm">
 <table>
 	<tr>
-		<th><spring:message code="general.name"/></th>
+		<th><openmrs:message code="general.name"/></th>
 		<td>
 			<spring:bind path="program.name">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -102,7 +102,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="general.description"/></th>
+		<th><openmrs:message code="general.description"/></th>
 		<td>
 			<spring:bind path="program.description">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -111,11 +111,11 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="Program.concept"/></th>
+		<th><openmrs:message code="Program.concept"/></th>
 		<td>
 			<spring:bind path="program.concept">
 				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.value}" showVerboseListing="false" conceptClasses="Program"></div>
-				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="${status.expression}" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />'></div>
+				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="${status.expression}" searchWidget="cSearch" searchTitle='<openmrs:message code="Concept.find" />'></div>
 							
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">
@@ -127,15 +127,15 @@
 	</tr>
 	<tr>
 		<td></td>
-		<td><spring:message code="Program.conceptHint"/></td>
+		<td><openmrs:message code="Program.conceptHint"/></td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="general.retired"/>?</th>
+		<th valign="top"><openmrs:message code="general.retired"/>?</th>
 		<td valign="top">
 			<spring:bind path="program.retired">
 				<select name="${status.expression}">
-					<option value="false" <c:if test="${status.value == false}">selected</c:if>><spring:message code="general.no"/></option>
-					<option value="true" <c:if test="${status.value == true}">selected</c:if>><spring:message code="general.yes"/></option>
+					<option value="false" <c:if test="${status.value == false}">selected</c:if>><openmrs:message code="general.no"/></option>
+					<option value="true" <c:if test="${status.value == true}">selected</c:if>><openmrs:message code="general.yes"/></option>
 				</select>
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">${status.errorMessage}</span>
@@ -144,7 +144,7 @@
 		</td>
 	</tr>
 	<tr id="workflowSetRow">
-		<th valign="top"><spring:message code="Program.workflows" /></th>
+		<th valign="top"><openmrs:message code="Program.workflows" /></th>
 		<td valign="top">
 			<spring:bind path="program.allWorkflows">
 				<input type="hidden" name="${status.expression}" id="workflowsValue" value="${status.value}" />
@@ -159,13 +159,13 @@
 			</table>
 
 			<div dojoType="ConceptSearch" widgetId="wfSearch" showVerboseListing="false" conceptClasses="Workflow"></div>
-			<div dojoType="OpenmrsPopup" widgetId="conceptSelection2" hiddenInputName="notUsed" searchWidget="wfSearch" searchTitle='<spring:message code="Concept.find" />' changeButtonValue='<spring:message code="general.add"/>'></div>
+			<div dojoType="OpenmrsPopup" widgetId="conceptSelection2" hiddenInputName="notUsed" searchWidget="wfSearch" searchTitle='<openmrs:message code="Concept.find" />' changeButtonValue='<openmrs:message code="general.add"/>'></div>
 			
 		</td>
 	</tr>
 </table>
 <br />
-<input type="submit" value='<spring:message code="Program.save"/>' onClick="$j('#theForm').submit()" />
+<input type="submit" value='<openmrs:message code="Program.save"/>' onClick="$j('#theForm').submit()" />
 </form>
 
 <script type="text/javascript">

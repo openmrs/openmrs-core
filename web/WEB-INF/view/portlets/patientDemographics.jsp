@@ -1,13 +1,13 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<div class="boxHeader${model.patientVariation}"><spring:message code="Patient.title"/></div>
+<div class="boxHeader${model.patientVariation}"><openmrs:message code="Patient.title"/></div>
 <div class="box${model.patientVariation}">
 	<table class="personName">
 		<thead>
 			<tr class="patientDemographicsHeaderRow">
-				<th class="patientDemographicsPersonNameHeader"><spring:message code="Person.names"/></th>
+				<th class="patientDemographicsPersonNameHeader"><openmrs:message code="Person.names"/></th>
 				<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
-					<th class="patientDemographicsPersonAttTypeHeader"><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></th>
+					<th class="patientDemographicsPersonAttTypeHeader"><openmrs:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></th>
 				</openmrs:forEachDisplayAttributeType>
 			</tr>
 		</thead>
@@ -33,7 +33,7 @@
 
 <br/>
 
-<div class="boxHeader${model.patientVariation}"><spring:message code="Person.addresses"/></div>
+<div class="boxHeader${model.patientVariation}"><openmrs:message code="Person.addresses"/></div>
 <div class="box${model.patientVariation}">
 	<table class="personAddress">
 		<thead>
@@ -57,12 +57,12 @@
 
 <div id="patientDemographicsEdit">
 	<openmrs:hasPrivilege privilege="Edit Patients">
-		<a href="${pageContext.request.contextPath}/admin/patients/patient.form?patientId=${model.patient.patientId}"><spring:message code="Patient.edit"/></a> | 
-		<a href="${pageContext.request.contextPath}/admin/patients/newPatient.form?patientId=${model.patient.patientId}"><spring:message code="Patient.edit.short"/></a><br /><br />
+		<a href="${pageContext.request.contextPath}/admin/patients/patient.form?patientId=${model.patient.patientId}"><openmrs:message code="Patient.edit"/></a> | 
+		<a href="${pageContext.request.contextPath}/admin/patients/newPatient.form?patientId=${model.patient.patientId}"><openmrs:message code="Patient.edit.short"/></a><br /><br />
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Edit Patients" inverse="true">
 		<openmrs:hasPrivilege privilege="Add Patients">
-			<a href="${pageContext.request.contextPath}/admin/patients/newPatient.form?patientId=${model.patient.patientId}"><spring:message code="Patient.edit"/></a><br />
+			<a href="${pageContext.request.contextPath}/admin/patients/newPatient.form?patientId=${model.patient.patientId}"><openmrs:message code="Patient.edit"/></a><br />
 		</openmrs:hasPrivilege>
 	</openmrs:hasPrivilege>
 </div>

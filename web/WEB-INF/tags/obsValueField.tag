@@ -17,14 +17,14 @@
 		var errorTag = $('numericRangeError'+conceptId);
 		if (field.value != '') {
 			if (isNaN(field.value)) {
-				errorTag.innerHTML = '<spring:message code="error.number" />';
+				errorTag.innerHTML = '<openmrs:message code="error.number" />';
 				errorTag.className = 'error';
 				return false;
 			}
 			else {
 				DWRConceptService.isValidNumericValue(field.value, conceptId, function(validValue) {
 					if (validValue == false) {
-						errorTag.innerHTML = '<spring:message code="error.numberOutsideRange" />';
+						errorTag.innerHTML = '<openmrs:message code="error.numberOutsideRange" />';
 						errorTag.className = 'error';
 						return false;
 					}
@@ -43,8 +43,8 @@
 			<span id="valueBooleanRow${conceptId}" class="obsValue">
 				<select name="${formFieldName}" id="valueBooleanField${conceptId}">
 					<option value="" <c:if test="${initialValue == null}">selected</c:if>></option>
-					<option value="1" <c:if test="${initialValue != null && initialValue != 0}">selected</c:if>><spring:message code="general.true"/></option>
-					<option value="0" <c:if test="${initialValue == 0}">selected</c:if>><spring:message code="general.false"/></option>
+					<option value="1" <c:if test="${initialValue != null && initialValue != 0}">selected</c:if>><openmrs:message code="general.true"/></option>
+					<option value="0" <c:if test="${initialValue == 0}">selected</c:if>><openmrs:message code="general.false"/></option>
 				</select>
 			</span>
 		</c:when>

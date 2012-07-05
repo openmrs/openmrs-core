@@ -44,7 +44,7 @@
 	function refreshRelationshipsCallback(rels) {
 		dwr.util.removeAllOptions('new_relationships');
 		if (rels.length == 0) {
-			dwr.util.addOptions('new_relationships', [ '<spring:message code="general.none" javaScriptEscape="true" />' ]);
+			dwr.util.addOptions('new_relationships', [ '<openmrs:message code="general.none" javaScriptEscape="true" />' ]);
 		}
 		for (var i = 0; i < rels.length; ++i) {
 			var rel = rels[i];
@@ -63,11 +63,11 @@
 				else
 					str += '<a href="personDashboard.form?personId=' + rel.personAId + '">' + rel.personA + '</a>';
 			}
-			str += '&nbsp;<a id="del_rel_' + relId + '" href="javascript:showDiv(\'voidRel' + relId + '\'); hideDiv(\'del_rel_' + relId + '\');"><spring:message code="general.deleteLink" javaScriptEscape="true" /></a>';
+			str += '&nbsp;<a id="del_rel_' + relId + '" href="javascript:showDiv(\'voidRel' + relId + '\'); hideDiv(\'del_rel_' + relId + '\');"><openmrs:message code="general.deleteLink" javaScriptEscape="true" /></a>';
 			str += ' <span style="display: none; border: 1px black dashed; margin: 2px" id="voidRel' + relId + '">';
-			str += ' <spring:message code="general.voidReasonQuestion" javaScriptEscape="true"/>: <input type="text" id="void_reason_' + relId + '"/>';
-			str += ' <input type="button" value="<spring:message code="general.delete" javaScriptEscape="true"/>" onClick="handleDeleteRelationship(' + relId + ')"/>';
-			str += ' <input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv(\'del_rel_' + relId + '\'); hideDiv(\'voidRel' + relId + '\')"/>';
+			str += ' <openmrs:message code="general.voidReasonQuestion" javaScriptEscape="true"/>: <input type="text" id="void_reason_' + relId + '"/>';
+			str += ' <input type="button" value="<openmrs:message code="general.delete" javaScriptEscape="true"/>" onClick="handleDeleteRelationship(' + relId + ')"/>';
+			str += ' <input type="button" value="<openmrs:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv(\'del_rel_' + relId + '\'); hideDiv(\'voidRel' + relId + '\')"/>';
 			str += '</span>';
 			dwr.util.addOptions('new_relationships', [ str ], {escapeHtml: false});
 		}
@@ -79,11 +79,11 @@
 		var personIdA = personPopup.hiddenInputNode.value;
 		var relType = dwr.util.getValue('add_relationship_type');
 		if (relType == null || relType == '' || personIdA == null || personIdA == '' || personIdB == null || personIdB == '') {
-			window.alert('<spring:message code="Relationship.error.everything" javaScriptEscape="true"/>');
+			window.alert('<openmrs:message code="Relationship.error.everything" javaScriptEscape="true"/>');
 			return;
 		}
 		if (personIdA == personIdB) {
-			window.alert('<spring:message code="Relationship.error.same" javaScriptEscape="true"/>');
+			window.alert('<openmrs:message code="Relationship.error.same" javaScriptEscape="true"/>');
 		}
 		var reverseIndex = relType.indexOf('::reverse');
 		if (reverseIndex > 0) {
@@ -115,12 +115,12 @@
 
 <div id="patientRelationshipPortlet">
 	<ul id="new_relationships">
-		<li><spring:message code="general.loading"/></li>
+		<li><openmrs:message code="general.loading"/></li>
 	</ul>
 	
-	<a id="addRelationshipLink" href="javascript:showDiv('addRelationship'); hideDiv('addRelationshipLink');"><spring:message code="Relationship.add"/></a>
+	<a id="addRelationshipLink" href="javascript:showDiv('addRelationship'); hideDiv('addRelationshipLink');"><openmrs:message code="Relationship.add"/></a>
 	<div id="addRelationship" style="border: 1px black dashed; display: none">
-		<spring:message code="Relationship.whatType"/>
+		<openmrs:message code="Relationship.whatType"/>
 		<table style="margin: 0px 0px 1em 2em;">
 			<c:forEach var="relType" items="${model.relationshipTypes}">
 				<tr>
@@ -140,18 +140,18 @@
 
 		<span id="add_rel_details" style="display: none">
 			${model.person.personName}
-			<spring:message code="Relationship.possessive"/>
-			<i><span id="add_relationship_name"><spring:message code="Relationship.whatType"/></span></i>
+			<openmrs:message code="Relationship.possessive"/>
+			<i><span id="add_relationship_name"><openmrs:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
-			<spring:message code="Relationship.target"/>
+			<openmrs:message code="Relationship.target"/>
 			<openmrs_tag:personField formFieldName="add_rel_target" searchLabel="Find a Person" useOnKeyDown="${model.useOnKeyDown}" callback="callbackAfterSelect" canAddNewPerson="true" />
 		</span>
 		
 		<br/>
 		&nbsp;&nbsp;
-		<input type="button" value="<spring:message code="general.save" javaScriptEscape="true"/>" onClick="handleAddRelationship()" />
+		<input type="button" value="<openmrs:message code="general.save" javaScriptEscape="true"/>" onClick="handleAddRelationship()" />
 		&nbsp;&nbsp;
-		<input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv('addRelationshipLink'); hideDiv('addRelationship'); hideDiv('add_rel_details');" />
+		<input type="button" value="<openmrs:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv('addRelationshipLink'); hideDiv('addRelationship'); hideDiv('add_rel_details');" />
 	</div>
 	
 </div>

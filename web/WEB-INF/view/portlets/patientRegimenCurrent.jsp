@@ -11,12 +11,12 @@
 			<table class="regimenCurrentTable">
 				<thead>
 					<tr class="regimenCurrentHeaderRow">
-						<th style="nowrap: true;" class="regimenCurrentDrugOrderedHeader"> <spring:message code="Order.item.ordered" /> </th>
-						<th class="regimenCurrentDrugDoseHeader"> <spring:message code="DrugOrder.dose"/>/<spring:message code="DrugOrder.units"/> </th>
-						<th class="regimenCurrentDrugFrequencyHeader"> <spring:message code="DrugOrder.frequency"/> </th>
-						<th class="regimenCurrentDrugDateStartHeader"> <spring:message code="general.dateStart"/> </th>
-						<th class="regimenCurrentDrugScheduledStopDateHeader"> <spring:message code="DrugOrder.scheduledStopDate"/> </th>
-						<th class="regimenCurrentDrugInstructionsHeader"> <spring:message code="general.instructions" /> </th>
+						<th style="nowrap: true;" class="regimenCurrentDrugOrderedHeader"> <openmrs:message code="Order.item.ordered" /> </th>
+						<th class="regimenCurrentDrugDoseHeader"> <openmrs:message code="DrugOrder.dose"/>/<openmrs:message code="DrugOrder.units"/> </th>
+						<th class="regimenCurrentDrugFrequencyHeader"> <openmrs:message code="DrugOrder.frequency"/> </th>
+						<th class="regimenCurrentDrugDateStartHeader"> <openmrs:message code="general.dateStart"/> </th>
+						<th class="regimenCurrentDrugScheduledStopDateHeader"> <openmrs:message code="DrugOrder.scheduledStopDate"/> </th>
+						<th class="regimenCurrentDrugInstructionsHeader"> <openmrs:message code="general.instructions" /> </th>
 						<c:if test="${model.currentRegimenMode != 'view'}">
 							<th class="regimenCurrentEmptyHeader"> </th>
 							<th class="regimenCurrentEmptyHeader"> </th>
@@ -31,10 +31,10 @@
 					<tr class="regimenCurrentHeaderOtherRow">
 						<c:choose>
 							<c:when test="${model.currentRegimenMode == 'view'}">
-								<td colspan="6"><table><tr><td><spring:message code="DrugOrder.header.otherRegimens" /></td></tr></table></td>
+								<td colspan="6"><table><tr><td><openmrs:message code="DrugOrder.header.otherRegimens" /></td></tr></table></td>
 							</c:when>
 							<c:otherwise>
-								<td colspan="8"><table><tr><td><spring:message code="DrugOrder.header.otherRegimens" /></td></tr></table></td>
+								<td colspan="8"><table><tr><td><openmrs:message code="DrugOrder.header.otherRegimens" /></td></tr></table></td>
 							</c:otherwise>
 						</c:choose>
 					</tr>
@@ -58,34 +58,34 @@
 								<td class="regimenCurrentDrugInstructionsData">${drugOrder.instructions}</td>
 								<c:if test="${model.currentRegimenMode != 'view'}">
 									<td class="regimenCurrentDrugDiscontinuedData">
-										<input id="closebutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
+										<input id="closebutton_${drugOrder.orderId}" type="button" value="<openmrs:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 										<div id="close_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted">
 											<form class="discontinuedDrugForm">
-												<spring:message code="DrugOrder.discontinuedDate" />:
+												<openmrs:message code="DrugOrder.discontinuedDate" />:
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
 												&nbsp;&nbsp;&nbsp;&nbsp;
-												<spring:message code="general.reason" />:
+												<openmrs:message code="general.reason" />:
 													<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="close_${drugOrder.orderId}_reason" val="" parameters="optionHeader=[blank]|globalProp=concept.reasonOrderStopped" />
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
-												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
+												<input type="button" value="<openmrs:message code="DrugOrder.discontinue" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<openmrs:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>
 									<td class="regimenCurrentDrugVoidData">
-										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<openmrs:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 										<div id="void_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted">
 											<form class="voidOrderDrugForm">
-												<spring:message code="general.reason" />: 
+												<openmrs:message code="general.reason" />: 
 													<select name="void_${drugOrder.orderId}_reason" id="void_${drugOrder.orderId}_reason">
 														<option value=""></option>
-														<option value="DrugOrder.void.reason.dateError"><spring:message code="DrugOrder.void.reason.dateError" /></option>
-														<option value="DrugOrder.void.reason.error"><spring:message code="DrugOrder.void.reason.error" /></option>
-														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
+														<option value="DrugOrder.void.reason.dateError"><openmrs:message code="DrugOrder.void.reason.dateError" /></option>
+														<option value="DrugOrder.void.reason.error"><openmrs:message code="DrugOrder.void.reason.error" /></option>
+														<option value="DrugOrder.void.reason.other"><openmrs:message code="DrugOrder.void.reason.other" /></option>
 													</select>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidCurrentDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
-												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+												<input type="button" value="<openmrs:message code="DrugOrder.void" />" onClick="handleVoidCurrentDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<openmrs:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>
@@ -97,10 +97,10 @@
 						<tr class="regimenCurrentNoDrugOrdersRow">
 							<c:choose>
 								<c:when test="${model.currentRegimenMode == 'view'}">
-									<td colspan="6" class="regimenCurrentViewModeData"><span class="noOrdersMessage">&nbsp;&nbsp;&nbsp;&nbsp;(<spring:message code="DrugOrder.list.noOrders" />)</span></td>
+									<td colspan="6" class="regimenCurrentViewModeData"><span class="noOrdersMessage">&nbsp;&nbsp;&nbsp;&nbsp;(<openmrs:message code="DrugOrder.list.noOrders" />)</span></td>
 								</c:when>
 								<c:otherwise>
-									<td colspan="8" class="regimenCurrentOtherModeData"><span class="noOrdersMessage">&nbsp;&nbsp;&nbsp;&nbsp;(<spring:message code="DrugOrder.list.noOrders" />)</span></td>
+									<td colspan="8" class="regimenCurrentOtherModeData"><span class="noOrdersMessage">&nbsp;&nbsp;&nbsp;&nbsp;(<openmrs:message code="DrugOrder.list.noOrders" />)</span></td>
 								</c:otherwise>
 							</c:choose>
 						</tr>
@@ -123,35 +123,35 @@
 									<td class="regimenCurrentConceptData"><openmrs_tag:concept conceptId="${model.drugOrderHeaders[drugSetId].conceptId}" /></td>
 									<c:if test="${(model.currentRegimenMode != 'view') && (not empty model.currentDrugOrderSets[drugSetId])}">
 										<td class="regimenCurrentDrugDiscontinuedGroupData">
-											<input id="closegpbutton_${fn:replace(drugSetId, " ", "_")}" type="button" value="<spring:message code="DrugOrder.discontinueGroup" />" onClick="showHideDiv('closegp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('closegpbutton_${fn:replace(drugSetId, " ", "_")}')" />
+											<input id="closegpbutton_${fn:replace(drugSetId, " ", "_")}" type="button" value="<openmrs:message code="DrugOrder.discontinueGroup" />" onClick="showHideDiv('closegp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('closegpbutton_${fn:replace(drugSetId, " ", "_")}')" />
 											<div id="closegp_${fn:replace(drugSetId, " ", "_")}" style="display:none;" class="dashedAndHighlighted">
 												<form class="regimenCurrentDrugDiscontinuedGroupForm">
-													<spring:message code="DrugOrder.discontinuedDate" />:
+													<openmrs:message code="DrugOrder.discontinuedDate" />:
 													<input type="text" id="closegp_${fn:replace(drugSetId, " ", "_")}_date" size="10" value="" onFocus="showCalendar(this)" />
 													&nbsp;&nbsp;&nbsp;&nbsp;
-													<spring:message code="general.reason" />:
+													<openmrs:message code="general.reason" />:
 														<% if ( pageContext.getAttribute("drugSetId") != null ) pageContext.setAttribute("drugSetReplaced", ((String)pageContext.getAttribute("drugSetId")).replace(" ", "_")); %>
 														<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="closegp_${drugSetReplaced}_reason" val="" parameters="optionHeader=[blank]|globalProp=concept.reasonOrderStopped" />
 													&nbsp;&nbsp;
-													<input type="button" value="<spring:message code="DrugOrder.discontinueGroup" />" onClick="handleDiscontinueDrugSet('${drugSetId}', 'closegp_${fn:replace(drugSetId, " ", "_")}_date', 'closegp_${fn:replace(drugSetId, " ", "_")}_reason')" />
-													<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('closegp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('closegpbutton_${fn:replace(drugSetId, " ", "_")}');" />
+													<input type="button" value="<openmrs:message code="DrugOrder.discontinueGroup" />" onClick="handleDiscontinueDrugSet('${drugSetId}', 'closegp_${fn:replace(drugSetId, " ", "_")}_date', 'closegp_${fn:replace(drugSetId, " ", "_")}_reason')" />
+													<input type="button" value="<openmrs:message code="general.cancel" />" onClick="showHideDiv('closegp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('closegpbutton_${fn:replace(drugSetId, " ", "_")}');" />
 												</form>
 											</div>
 										</td>
 										<td class="regimenCurrentDrugVoidGroupData">
-											<input id="voidgpbutton_${fn:replace(drugSetId, " ", "_")}" type="button" value="<spring:message code="DrugOrder.voidGroup" />" onClick="showHideDiv('voidgp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('voidgpbutton_${fn:replace(drugSetId, " ", "_")}')" />
+											<input id="voidgpbutton_${fn:replace(drugSetId, " ", "_")}" type="button" value="<openmrs:message code="DrugOrder.voidGroup" />" onClick="showHideDiv('voidgp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('voidgpbutton_${fn:replace(drugSetId, " ", "_")}')" />
 											<div id="voidgp_${fn:replace(drugSetId, " ", "_")}" style="display:none" class="dashedAndHighlighted" >
 												<form class="regimenCurrentDrugVoidGroupForm">
-													<spring:message code="general.reason" />:
+													<openmrs:message code="general.reason" />:
 														<select name="voidgp_${fn:replace(drugSetId, " ", "_")}_reason" id="voidgp_${fn:replace(drugSetId, " ", "_")}_reason">
 															<option value=""></option>
-															<option value="DrugOrder.void.reason.dateError"><spring:message code="DrugOrder.void.reason.dateError" /></option>
-															<option value="DrugOrder.void.reason.error"><spring:message code="DrugOrder.void.reason.error" /></option>
-															<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
+															<option value="DrugOrder.void.reason.dateError"><openmrs:message code="DrugOrder.void.reason.dateError" /></option>
+															<option value="DrugOrder.void.reason.error"><openmrs:message code="DrugOrder.void.reason.error" /></option>
+															<option value="DrugOrder.void.reason.other"><openmrs:message code="DrugOrder.void.reason.other" /></option>
 														</select>
 													&nbsp;&nbsp;
-													<input type="button" value="<spring:message code="DrugOrder.voidGroup" />" onClick="handleVoidCurrentDrugSet('${drugSetId}', 'voidgp_${fn:replace(drugSetId, " ", "_")}_reason')" />
-													<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('voidgp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('voidgpbutton_${fn:replace(drugSetId, " ", "_")}')" />
+													<input type="button" value="<openmrs:message code="DrugOrder.voidGroup" />" onClick="handleVoidCurrentDrugSet('${drugSetId}', 'voidgp_${fn:replace(drugSetId, " ", "_")}_reason')" />
+													<input type="button" value="<openmrs:message code="general.cancel" />" onClick="showHideDiv('voidgp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('voidgpbutton_${fn:replace(drugSetId, " ", "_")}')" />
 												</form>
 											</div>
 										</td>
@@ -180,34 +180,34 @@
 								<td  class="regimenCurrentDrugInstructionsData">${drugOrder.instructions}</td>
 								<c:if test="${model.currentRegimenMode != 'view'}">
 									<td class="regimenCurrentDrugDiscontinuedData">
-										<input id="closebutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
+										<input id="closebutton_${drugOrder.orderId}" type="button" value="<openmrs:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 										<div id="close_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted" >
 											<form class="discontinuedDrugForm">
-												<spring:message code="DrugOrder.discontinuedDate" />:
+												<openmrs:message code="DrugOrder.discontinuedDate" />:
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
 												&nbsp;&nbsp;&nbsp;&nbsp;
-												<spring:message code="general.reason" />:
+												<openmrs:message code="general.reason" />:
 													<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="close_${drugOrder.orderId}_reason" val="" parameters="optionHeader=[blank]|globalProp=concept.reasonOrderStopped" />
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
-												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
+												<input type="button" value="<openmrs:message code="DrugOrder.discontinue" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<openmrs:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>
 									<td class="regimenCurrentDrugVoidData">
-										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<openmrs:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 										<div id="void_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted" >
 											<form class="regimenCurrentDrugVoidForm">
-												<spring:message code="general.reason" />: 
+												<openmrs:message code="general.reason" />: 
 													<select name="void_${drugOrder.orderId}_reason" id="void_${drugOrder.orderId}_reason">
 														<option value=""></option>
-														<option value="DrugOrder.void.reason.dateError"><spring:message code="DrugOrder.void.reason.dateError" /></option>
-														<option value="DrugOrder.void.reason.error"><spring:message code="DrugOrder.void.reason.error" /></option>
-														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
+														<option value="DrugOrder.void.reason.dateError"><openmrs:message code="DrugOrder.void.reason.dateError" /></option>
+														<option value="DrugOrder.void.reason.error"><openmrs:message code="DrugOrder.void.reason.error" /></option>
+														<option value="DrugOrder.void.reason.other"><openmrs:message code="DrugOrder.void.reason.other" /></option>
 													</select>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidCurrentDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
-												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+												<input type="button" value="<openmrs:message code="DrugOrder.void" />" onClick="handleVoidCurrentDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<openmrs:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>
@@ -219,10 +219,10 @@
 						<tr class="regimenCurrentNoDrugOrdersRow">
 							<c:choose>
 								<c:when test="${model.currentRegimenMode == 'view'}">
-									<td colspan="6" class="regimenCurrentViewModeData"><span class="noOrdersMessage">&nbsp;&nbsp;&nbsp;&nbsp;(<spring:message code="DrugOrder.list.noOrders" />)</span></td>
+									<td colspan="6" class="regimenCurrentViewModeData"><span class="noOrdersMessage">&nbsp;&nbsp;&nbsp;&nbsp;(<openmrs:message code="DrugOrder.list.noOrders" />)</span></td>
 								</c:when>
 								<c:otherwise>
-									<td colspan="8" class="regimenCurrentOtherModeData"><span class="noOrdersMessage">&nbsp;&nbsp;&nbsp;&nbsp;(<spring:message code="DrugOrder.list.noOrders" />)</span></td>
+									<td colspan="8" class="regimenCurrentOtherModeData"><span class="noOrdersMessage">&nbsp;&nbsp;&nbsp;&nbsp;(<openmrs:message code="DrugOrder.list.noOrders" />)</span></td>
 								</c:otherwise>
 							</c:choose>
 						</tr>
@@ -251,34 +251,34 @@
 								<td class="regimenCurrentDrugInstructionsData">${drugOrder.instructions}</td>
 								<c:if test="${model.currentRegimenMode != 'view'}">
 									<td class="regimenCurrentDrugDiscontinuedData">
-										<input id="closebutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
+										<input id="closebutton_${drugOrder.orderId}" type="button" value="<openmrs:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 										<div id="close_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted" >
 											<form class="discontinuedDrugForm">
-												<spring:message code="DrugOrder.discontinuedDate" />:
+												<openmrs:message code="DrugOrder.discontinuedDate" />:
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
 												&nbsp;&nbsp;&nbsp;&nbsp;
-												<spring:message code="general.reason" />:
+												<openmrs:message code="general.reason" />:
 													<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="close_${drugOrder.orderId}_reason" val="" parameters="optionHeader=[blank]|globalProp=concept.reasonOrderStopped" />
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
-												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
+												<input type="button" value="<openmrs:message code="DrugOrder.discontinue" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<openmrs:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>
 									<td class="regimenCurrentDrugVoidData">
-										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<openmrs:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 										<div id="void_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted" >
 											<form class="regimenCurrentDrugVoidForm">
-												<spring:message code="general.reason" />: 
+												<openmrs:message code="general.reason" />: 
 													<select name="void_${drugOrder.orderId}_reason" id="void_${drugOrder.orderId}_reason">
 														<option value=""></option>
-														<option value="DrugOrder.void.reason.dateError"><spring:message code="DrugOrder.void.reason.dateError" /></option>
-														<option value="DrugOrder.void.reason.error"><spring:message code="DrugOrder.void.reason.error" /></option>
-														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
+														<option value="DrugOrder.void.reason.dateError"><openmrs:message code="DrugOrder.void.reason.dateError" /></option>
+														<option value="DrugOrder.void.reason.error"><openmrs:message code="DrugOrder.void.reason.error" /></option>
+														<option value="DrugOrder.void.reason.other"><openmrs:message code="DrugOrder.void.reason.other" /></option>
 													</select>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidCurrentDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
-												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+												<input type="button" value="<openmrs:message code="DrugOrder.void" />" onClick="handleVoidCurrentDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<openmrs:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>
@@ -290,10 +290,10 @@
 						<tr class="regimenCurrentNoDrugOrdersRow">
 							<c:choose>
 								<c:when test="${model.currentRegimenMode == 'view'}">
-									<td colspan="6" class="regimenCurrentViewModeData"><span class="noOrdersMessage">(<spring:message code="DrugOrder.list.noOrders" />)</span></td>
+									<td colspan="6" class="regimenCurrentViewModeData"><span class="noOrdersMessage">(<openmrs:message code="DrugOrder.list.noOrders" />)</span></td>
 								</c:when>
 								<c:otherwise>
-									<td colspan="8" class="regimenCurrentOtherModeData"><span class="noOrdersMessage">(<spring:message code="DrugOrder.list.noOrders" />)</span></td>
+									<td colspan="8" class="regimenCurrentOtherModeData"><span class="noOrdersMessage">(<openmrs:message code="DrugOrder.list.noOrders" />)</span></td>
 								</c:otherwise>
 							</c:choose>
 						</tr>

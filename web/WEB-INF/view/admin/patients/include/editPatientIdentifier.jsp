@@ -1,6 +1,6 @@
 <table>
 	<tr>
-		<td><spring:message code="general.preferred"/></td>
+		<td><openmrs:message code="general.preferred"/></td>
 		<td>
 			<spring:bind path="preferred">
 				<input type="hidden" name="_${status.expression}">
@@ -10,20 +10,20 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="PatientIdentifier.identifier"/></td>
+		<td><openmrs:message code="PatientIdentifier.identifier"/></td>
 		<td>
 			<spring:bind path="identifier">
 				<input type="text" 
 						name="${status.expression}" 
 						value="${status.value}" 
-						onKeyUp="return true; validateIdentifier(this, 'saveButton', '<spring:message code="error.identifier"/>');"
-						onChange="return true; validateIdentifier(this, 'saveButton', '<spring:message code="error.identifier"/>');"/>
+						onKeyUp="return true; validateIdentifier(this, 'saveButton', '<openmrs:message code="error.identifier"/>');"
+						onChange="return true; validateIdentifier(this, 'saveButton', '<openmrs:message code="error.identifier"/>');"/>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 			</td>
 	</tr>
 	<tr>
-		<td><spring:message code="PatientIdentifier.identifierType"/></td>
+		<td><openmrs:message code="PatientIdentifier.identifierType"/></td>
 		<td>
 			<spring:bind path="identifierType">
 				<select name="${status.expression}" onclick="modifyTab(this, this.options[this.selectedIndex].text, 0)">
@@ -38,7 +38,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="PatientIdentifier.location"/></td>
+		<td><openmrs:message code="PatientIdentifier.location"/></td>
 		<td>
 			<spring:bind path="location">
 				<select name="${status.expression}">
@@ -55,7 +55,7 @@
 	<spring:bind path="creator">
 		<c:if test="${!(status.value == null)}">
 			<tr>
-				<td><spring:message code="general.createdBy" /></td>
+				<td><openmrs:message code="general.createdBy" /></td>
 				<td>
 					${status.value.personName} -
 					<openmrs:formatDate path="dateCreated" type="long" />
@@ -65,7 +65,7 @@
 	</spring:bind>
 	<c:if test="${identifier.patientIdentifierId != null}">
 		<tr>
-			<td><spring:message code="general.voided"/></td>
+			<td><openmrs:message code="general.voided"/></td>
 			<td>
 				<spring:bind path="voided">
 					<input type="hidden" name="_${status.expression}"/>
@@ -78,7 +78,7 @@
 		</tr>
 	</c:if>
 	<tr id="voidReasonRow-${identifier}" <spring:bind path="voided"><c:if test="${status.value == false}">style="display: none"</c:if></spring:bind> >
-		<td><spring:message code="general.voidReason"/></td>
+		<td><openmrs:message code="general.voidReason"/></td>
 		<spring:bind path="voidReason">
 			<td>
 				<input type="text" name="${status.expression}" value="${status.value}" size="35"/>
@@ -89,7 +89,7 @@
 	<spring:bind path="voidedBy">
 		<c:if test="${status.value != null}">
 			<tr>
-				<td><spring:message code="general.voidedBy" /></td>
+				<td><openmrs:message code="general.voidedBy" /></td>
 				<td>
 					${status.value.personName} -
 					<openmrs:formatDate path="dateVoided" type="long" />

@@ -14,7 +14,7 @@
 			<c:if test="${optionHeader != '[blank]'}"> ${jsVar}.push({ val: '', display: '${optionHeader}' }); </c:if></c:if>
 		<c:forEach items="${reasons}" var="reason"> ${jsVar}.push({ val: '${reason.key}', display: '${reason.value}' }); </c:forEach>
 
-		// create a function for converting reasons to their spring:message equivalent string
+		// create a function for converting reasons to their openmrs:message equivalent string
 		function getReason(code) {
 			<c:forEach items="${reasons}" var="reason">
 				if ( code == '${reason.key}' ) return '${reason.value}';

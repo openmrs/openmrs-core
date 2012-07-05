@@ -5,26 +5,26 @@
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="LocationTag.edit.title"/></h2>
+<h2><openmrs:message code="LocationTag.edit.title"/></h2>
 
 <c:if test="${locationTag.retired}">
 	<form method="post" action="locationTagUnretire.form">
 		<input type="hidden" name="id" value="${locationTag.id}"/>
 		<div class="retiredMessage">
 			<div>
-				<spring:message code="general.retiredBy"/>
+				<openmrs:message code="general.retiredBy"/>
 				${locationTag.retiredBy.personName}
 				<openmrs:formatDate date="${locationTag.dateRetired}" type="medium" />
 				-
 				${locationTag.retireReason}
-				<input type="submit" value='<spring:message code="general.unretire"/>'/>
+				<input type="submit" value='<openmrs:message code="general.unretire"/>'/>
 			</div>
 		</div>
 	</form>
 </c:if>
 
 <div class="boxHeader">
-	<spring:message code="general.properties"/>
+	<openmrs:message code="general.properties"/>
 </div>
 <div class="box">
 	<form:form modelAttribute="locationTag">
@@ -32,7 +32,7 @@
 			<tr>
 				<td>
 					<span class="required">*</span>
-					<spring:message code="LocationTag.name"/>
+					<openmrs:message code="LocationTag.name"/>
 				</td>
 				<td>
 					<form:input path="name"/> <form:errors path="name" cssClass="error"/>
@@ -40,14 +40,14 @@
 			</tr>
 			<tr>
 				<td>
-					<spring:message code="LocationTag.description"/>
+					<openmrs:message code="LocationTag.description"/>
 				</td>
 				<td>
 					<form:textarea path="description" rows="3" cols="72"/> <form:errors path="description" cssClass="error"/>
 				</td>
 			</tr>
 			<tr>
-				<td><spring:message code="general.createdBy"/></td>
+				<td><openmrs:message code="general.createdBy"/></td>
 				<td>
 					<openmrs:format user="${locationTag.creator}"/>
 					<openmrs:formatDate date="${locationTag.dateCreated}"/>
@@ -56,8 +56,8 @@
 			<tr>
 				<td></td>
 				<td>
-					<input type="submit" value="<spring:message code="general.save"/>" />
-					<input type="button" value="<spring:message code="general.cancel"/>" onClick="window.location = 'locationTag.list'"/>
+					<input type="submit" value="<openmrs:message code="general.save"/>" />
+					<input type="button" value="<openmrs:message code="general.cancel"/>" onClick="window.location = 'locationTag.list'"/>
 				</td>
 			</tr>
 		</table>
@@ -66,7 +66,7 @@
 
 <br/>
 <div class="boxHeader">
-	<spring:message code="LocationTag.purgeRetire"/>
+	<openmrs:message code="LocationTag.purgeRetire"/>
 </div>
 <div class="box">
 	<%-- Purge --%>
@@ -74,12 +74,12 @@
 		<c:when test="${empty locations}">
 			<form method="post" action="locationTagPurge.form">
 				<input type="hidden" name="id" value="${locationTag.id}"/>
-				<spring:message code="LocationTag.purge.allowed"/>:
-				<input type="submit" value="<spring:message code="general.purge"/>"/>
+				<openmrs:message code="LocationTag.purge.allowed"/>:
+				<input type="submit" value="<openmrs:message code="general.purge"/>"/>
 			</form>
 		</c:when>
 		<c:otherwise>
-			<spring:message code="LocationTag.cannot.purge.in.use"/>
+			<openmrs:message code="LocationTag.cannot.purge.in.use"/>
 		</c:otherwise>
 	</c:choose>
 	
@@ -89,11 +89,11 @@
 		<form method="post" action="locationTagRetire.form">
 			<input type="hidden" name="id" value="${locationTag.id}"/>
 			
-			<b><spring:message code="general.retire"/></b>
+			<b><openmrs:message code="general.retire"/></b>
 			<br/>
-			<spring:message code="general.reason"/>:
+			<openmrs:message code="general.reason"/>:
 			<input type="text" name="retireReason" size="40"/>
-			<input type="submit" value='<spring:message code="general.retire"/>'/>
+			<input type="submit" value='<openmrs:message code="general.retire"/>'/>
 		</form>
 	</c:if>
 </div>
@@ -103,7 +103,7 @@
 <c:if test="${not empty locations}">
 	<br/>
 	<div class="boxHeader">
-		<spring:message code="LocationTag.locationsWithTag"/>
+		<openmrs:message code="LocationTag.locationsWithTag"/>
 	</div>
 	<div class="box">
 		<ul>

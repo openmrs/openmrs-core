@@ -10,48 +10,48 @@
 		<b class="boxHeader">
 			<c:choose>
 				<c:when test="${model.personType != null && model.personType != ''}">
-					<spring:message code="Person.create.${model.personType}" />
+					<openmrs:message code="Person.create.${model.personType}" />
 				</c:when>
 				<c:otherwise>
-					<spring:message code="Person.create"/>
+					<openmrs:message code="Person.create"/>
 				</c:otherwise>
 			</c:choose>
 		</b>
 		<div class="box">
-			<spring:message code="Person.search.instructions"/> <br/>
+			<openmrs:message code="Person.search.instructions"/> <br/>
 			
 			<form method="get" action="${model.postURL}" onSubmit="return validateForm()">
 				
 				<table>
 					<tr>
-						<td><spring:message code="Person.name"/></td>
+						<td><openmrs:message code="Person.name"/></td>
 						<td>
 							<input type="text" name="addName" id="personName" size="40" onKeyUp="clearError('name')" />
-							<span class="error" id="nameError"><spring:message code="Person.name.required"/></span>
+							<span class="error" id="nameError"><openmrs:message code="Person.name.required"/></span>
 						</td>
 					</tr>
 					<tr>
-						<td><spring:message code="Person.birthdate"/><br/><i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i></td>
+						<td><openmrs:message code="Person.birthdate"/><br/><i style="font-weight: normal; font-size: 0.8em;">(<openmrs:message code="general.format"/>: <openmrs:datePattern />)</i></td>
 						<td valign="top">
 							<input type="text" name="addBirthdate" id="birthdate" size="11" value="" onClick="showCalendar(this,60)" onChange="clearError('birthdate')" />
-							<spring:message code="Person.age.or"/>
+							<openmrs:message code="Person.age.or"/>
 							<input type="text" name="addAge" id="age" size="5" value="" onKeyUp="clearError('birthdate')" />
-							<span class="error" id="birthdateError"><spring:message code="Person.birthdate.required"/></span>
+							<span class="error" id="birthdateError"><openmrs:message code="Person.birthdate.required"/></span>
 						</td>
 					</tr>
 					<tr>
-						<td><spring:message code="Person.gender"/></td>
+						<td><openmrs:message code="Person.gender"/></td>
 						<td>
 							<openmrs:forEachRecord name="gender">
-								<input type="radio" name="addGender" id="gender-${record.key}" value="${record.key}"  onClick="clearError('gender')" /><label for="gender-${record.key}"> <spring:message code="Person.gender.${record.value}"/> </label>
+								<input type="radio" name="addGender" id="gender-${record.key}" value="${record.key}"  onClick="clearError('gender')" /><label for="gender-${record.key}"> <openmrs:message code="Person.gender.${record.value}"/> </label>
 							</openmrs:forEachRecord>
-							<span class="error" id="genderError"><spring:message code="Person.gender.required"/></span>
+							<span class="error" id="genderError"><openmrs:message code="Person.gender.required"/></span>
 						</td>
 					</tr>
 					<tr>
 						<td></td>
 						<td>
-							<input type="submit" value='<spring:message code="Person.create"/>'/>
+							<input type="submit" value='<openmrs:message code="Person.create"/>'/>
 						</td>
 					</tr>
 				</table>

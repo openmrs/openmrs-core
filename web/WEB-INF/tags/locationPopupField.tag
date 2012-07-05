@@ -37,7 +37,7 @@
 
 <span dojoType="LocationSearch" widgetId="${formFieldName}_search" locationId="${initialValue}"></span>
 <c:if test="${not empty searchLabelCode}">
-	<span dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" />"></span>
+	<span dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<openmrs:message code="${searchLabelCode}" />"></span>
 </c:if> 
 <c:if test="${empty searchLabelCode}">
 	<span dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}"></span>

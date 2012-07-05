@@ -12,13 +12,13 @@
 %>
 	
 <br />
-<h2><spring:message code="SystemInfo.title"/></h2>
+<h2><openmrs:message code="SystemInfo.title"/></h2>
 <br />
 
 <table cellpadding="4" cellspacing="0">
 	<tr>
-		<th><spring:message code="SystemInfo.name"/></th>
-		<th><spring:message code="SystemInfo.value"/></th>
+		<th><openmrs:message code="SystemInfo.name"/></th>
+		<th><openmrs:message code="SystemInfo.value"/></th>
 	</tr>
 	<c:forEach items="${vars}" var="var" varStatus="status">
 		<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
@@ -29,11 +29,11 @@
 </table>
 
 <br/><br/>
-<h3><spring:message code="Scheduler.header"/></h3>
+<h3><openmrs:message code="Scheduler.header"/></h3>
 <table cellpadding="4" cellspacing="0">
 	<tr>
-		<th><spring:message code="SystemInfo.name"/></th>
-		<th><spring:message code="SystemInfo.value"/></th>
+		<th><openmrs:message code="SystemInfo.name"/></th>
+		<th><openmrs:message code="SystemInfo.value"/></th>
 	</tr>
 	<c:forEach items="${schedVars}" var="var" varStatus="status">
 		<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
