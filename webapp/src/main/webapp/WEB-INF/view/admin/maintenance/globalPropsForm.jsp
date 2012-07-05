@@ -23,9 +23,9 @@
 	border-style: solid;
 	border-width: 1px;
 	padding: 5px;
-	top: 20em;
 	position: fixed;
-	left: 75em;
+	right: 0.5em;
+	bottom: 1em;
 	background-color: #FFFF66;
 	display: none;
 	text-align: center;
