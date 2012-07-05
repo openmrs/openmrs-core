@@ -5,22 +5,22 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="FieldType.manage" /></h2>	
+<h2><openmrs:message code="FieldType.manage" /></h2>	
 
-<a href="fieldType.form"><spring:message code="FieldType.add" /></a> <br />
+<a href="fieldType.form"><openmrs:message code="FieldType.add" /></a> <br />
 
 <br />
 
 <b class="boxHeader">
-	<spring:message code="FieldType.list.title" />
+	<openmrs:message code="FieldType.list.title" />
 </b>
 <form method="post" class="box">
 	<table>
 		<tr>
 			<th> </th>
-			<th> <spring:message code="general.name" /> </th>
-			<th> <spring:message code="FieldType.isSet" /> </th>
-			<th> <spring:message code="general.description" /></th>
+			<th> <openmrs:message code="general.name" /> </th>
+			<th> <openmrs:message code="FieldType.isSet" /> </th>
+			<th> <openmrs:message code="general.description" /></th>
 		</tr>
 		<c:forEach var="fieldType" items="${fieldTypeList}">
 			<tr>
@@ -30,12 +30,12 @@
 					   ${fieldType.name}
 					</a>
 				</td>
-				<td valign="top" align="center"><c:if test="${fieldType.isSet == true}"><spring:message code="general.yes"/></c:if></td>
+				<td valign="top" align="center"><c:if test="${fieldType.isSet == true}"><openmrs:message code="general.yes"/></c:if></td>
 				<td valign="top">${fieldType.description}</td>
 			</tr>
 		</c:forEach>
 	</table>
-	<input type="submit" value="<spring:message code="FieldType.delete"/>" />
+	<input type="submit" value="<openmrs:message code="FieldType.delete"/>" />
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

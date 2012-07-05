@@ -15,31 +15,31 @@
 	<a href="${linkUrl}">${command.person.personName}</a>
 	&nbsp;-&nbsp;
 	<c:if test="${empty command.concept}">
-		<spring:message code="Person.allObservations"/>
+		<openmrs:message code="Person.allObservations"/>
 	</c:if>
 	<c:if test="${not empty command.concept}">
-		<spring:message code="Person.allObservationsForConcept" arguments="${command.concept.name.name}"/>
-		&nbsp;&nbsp;&nbsp;<small><a href="?personId=${command.person.personId}"><spring:message code="general.showAll"/></a></small>
+		<openmrs:message code="Person.allObservationsForConcept" arguments="${command.concept.name.name}"/>
+		&nbsp;&nbsp;&nbsp;<small><a href="?personId=${command.person.personId}"><openmrs:message code="general.showAll"/></a></small>
 	</c:if>
 </h3>
 
 <table cellspacing="0" cellpadding="2" border="1">
 	<tr>
 		<c:if test="${empty command.concept}">
-			<th><spring:message code="Obs.concept"/></th>
+			<th><openmrs:message code="Obs.concept"/></th>
 		</c:if>
 		<th>
-			<spring:message code="Obs.value"/>
+			<openmrs:message code="Obs.value"/>
 		</th>
 		<th>
-			<spring:message code="Obs.datetime"/>
+			<openmrs:message code="Obs.datetime"/>
 		</th>
 		<th>
-			<spring:message code="general.creator"/>
-			<spring:message code="general.dateCreated"/>
+			<openmrs:message code="general.creator"/>
+			<openmrs:message code="general.dateCreated"/>
 		</th>
-		<th><spring:message code="Obs.encounter"/></th>
-		<th><spring:message code="general.voidInfo"/></th>
+		<th><openmrs:message code="Obs.encounter"/></th>
+		<th><openmrs:message code="general.voidInfo"/></th>
 	</tr>
 	<c:forEach var="obs" items="${command.observations}">
 		<tr <c:if test="${obs.voided}">style="background-color: #f0f0f0"</c:if>>
@@ -76,17 +76,17 @@
 					</a>
 					<c:if test="${obs.dateCreated != obs.encounter.dateCreated}">
 						<br/>
-						<spring:message code="general.byPerson"/> <openmrs:format user="${obs.encounter.creator}"/>
-						<spring:message code="general.onDate"/> <openmrs:formatDate date="${obs.encounter.dateCreated}"/>
+						<openmrs:message code="general.byPerson"/> <openmrs:format user="${obs.encounter.creator}"/>
+						<openmrs:message code="general.onDate"/> <openmrs:formatDate date="${obs.encounter.dateCreated}"/>
 					</c:if>
 				</c:if>
 			</td>
 			<td>
 				<c:if test="${obs.voided}">
 					<openmrs:format user="${obs.voidedBy}"/><br/>
-					<spring:message code="general.onDate"/>
+					<openmrs:message code="general.onDate"/>
 						<openmrs:formatDate date="${obs.dateVoided}"/><br/>
-					<spring:message code="general.reason"/>: ${obs.voidReason}
+					<openmrs:message code="general.reason"/>: ${obs.voidReason}
 				</c:if>
 			</td>
 		</tr>

@@ -6,10 +6,10 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="AddressTemplate.Manage"/></h2>
+<h2><openmrs:message code="AddressTemplate.Manage"/></h2>
 
 <div class="boxHeader">
-    <spring:message code="AddressTemplate.add"/>
+    <openmrs:message code="AddressTemplate.add"/>
 </div>
 <div class="box">
     <form method="post" action="addressTemplateAdd.form">
@@ -20,8 +20,8 @@
                     <textarea name="xml" rows="20" cols="60">${addressTemplateXml}</textarea>
                 </td>
                 <td valign="top">
-                    <span class="description"> <p><spring:message code="AddressTemplate.copy.form.wiki"/>: <a
-                            href="http://wiki.openmrs.org/display/docs/Administering+Address+Templates" TARGET="_blank"><spring:message
+                    <span class="description"> <p><openmrs:message code="AddressTemplate.copy.form.wiki"/>: <a
+                            href="http://wiki.openmrs.org/display/docs/Administering+Address+Templates" TARGET="_blank"><openmrs:message
                             code="AddressTemplate.wiki.title"/></a></p> </span>
                 </td>
             </tr>
@@ -29,8 +29,8 @@
 
             <tr>
                 <td>
-                    <input type="submit" value="<spring:message code="general.save"/>"/>
-                    <input type="button" value="<spring:message code="general.cancel"/>"
+                    <input type="submit" value="<openmrs:message code="general.save"/>"/>
+                    <input type="button" value="<openmrs:message code="general.cancel"/>"
                            onClick="window.location = 'addressTemplate.form'"/>
                 </td>
             </tr>

@@ -15,23 +15,23 @@
 		$j('#addActiveListProblem').dialog({
 			autoOpen: false,
 			modal: true,
-			title: '<spring:message code="ActiveLists.problem.add" javaScriptEscape="true"/>',
+			title: '<openmrs:message code="ActiveLists.problem.add" javaScriptEscape="true"/>',
 			width: '30%',
 			zIndex: 100,
 			close: function() { $j("#problem_concept").autocomplete("close"); },
-			buttons: { '<spring:message code="general.save"/>': function() { handleAddProblem(); },
-					   '<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
+			buttons: { '<openmrs:message code="general.save"/>': function() { handleAddProblem(); },
+					   '<openmrs:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
 			}
 		});
 		
 		$j('#resolveActiveListProblem').dialog({
 			autoOpen: false,
 			modal: true,
-			title: '<spring:message code="ActiveLists.problem.resolveTitle" javaScriptEscape="true"/>',
+			title: '<openmrs:message code="ActiveLists.problem.resolveTitle" javaScriptEscape="true"/>',
 			width: '30%',
 			zIndex: 100,
-			buttons: { '<spring:message code="ActiveLists.resolve"/>': function() { handleResolveProblem(); },
-				       '<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
+			buttons: { '<openmrs:message code="ActiveLists.resolve"/>': function() { handleResolveProblem(); },
+				       '<openmrs:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
 			}
 		});
 
@@ -58,7 +58,7 @@
 		problemStartDatePicker.setDate("${model.today}");
 		$j('#problem_comments').val("");
 
-		$j('#addActiveListProblem').dialog("option", "title", '<spring:message code="ActiveLists.problem.add"/>');
+		$j('#addActiveListProblem').dialog("option", "title", '<openmrs:message code="ActiveLists.problem.add"/>');
 		$j('#addActiveListProblem').dialog('open');
 		$j('#problem_concept').focus();
 	}
@@ -70,7 +70,7 @@
 		var comments = $j('#problem_comments').val();
 
 		if((problem == null) || (problem == '')) {
-			showProblemAddError("<spring:message code="ActiveLists.problem.problemRequired"/>");
+			showProblemAddError("<openmrs:message code="ActiveLists.problem.problemRequired"/>");
 			return;
 		}
 
@@ -96,7 +96,7 @@
 		problemStartDatePicker.setDate(problem['startDate']);
 		$j('#problem_comments').val(problem['comments']);
 
-		$j('#addActiveListProblem').dialog("option", "title", '<spring:message code="ActiveLists.problem.edit"/>');
+		$j('#addActiveListProblem').dialog("option", "title", '<openmrs:message code="ActiveLists.problem.edit"/>');
 		$j('#addActiveListProblem').dialog('open');
 	}
 
@@ -118,7 +118,7 @@
 		currentlyEditingProblemId = activeListId;
 
 		var name = $j('#problem_conceptName_' + activeListId).html().trim();
-		$j('#resolveActiveListAllergy').dialog("option", "title", '<spring:message code="ActiveLists.problem.resolveTitle"/>: ' + name);
+		$j('#resolveActiveListAllergy').dialog("option", "title", '<openmrs:message code="ActiveLists.problem.resolveTitle"/>: ' + name);
 		$j('#resolveActiveListProblem').dialog('open');
 	}
 
@@ -137,9 +137,9 @@
 
 	function doToggleShowingInactiveProblems() {
 		$j('#removedProblemTable').toggle();
-		var text = '<spring:message code="ActiveLists.problem.hideRemoved"/>';
+		var text = '<openmrs:message code="ActiveLists.problem.hideRemoved"/>';
 		if(showingInactiveProblems == true) {
-			text = '<spring:message code="ActiveLists.problem.showRemoved"/>';
+			text = '<openmrs:message code="ActiveLists.problem.showRemoved"/>';
 		}
 		$j('#inactiveProblemLink').html(text);
 		showingInactiveProblems = !showingInactiveProblems;
@@ -162,15 +162,15 @@
 <div id="patientActiveListProblemPortlet">
 <c:choose>
 	<c:when test="${fn:length(model.problems) == 0}">
-		<spring:message code="general.none"/><br/><br/>
+		<openmrs:message code="general.none"/><br/><br/>
 	</c:when>
 	<c:otherwise>
 	<table style="margin: 0px 0px 1em 2em;" cellpadding="3" cellspacing="0" id="problemTable" class="alTable">
 		<tr bgcolor="whitesmoke">
-			<td><spring:message code="ActiveLists.problem.problem"/></td>
-			<td><spring:message code="ActiveLists.date"/></td>
-			<td><spring:message code="ActiveLists.problem.status"/></td>
-			<td><spring:message code="ActiveLists.problem.comments"/></td>
+			<td><openmrs:message code="ActiveLists.problem.problem"/></td>
+			<td><openmrs:message code="ActiveLists.date"/></td>
+			<td><openmrs:message code="ActiveLists.problem.status"/></td>
+			<td><openmrs:message code="ActiveLists.problem.comments"/></td>
 			<td></td>
 		</tr>
 		<c:forEach var="problem" items="${model.problems}">
@@ -195,7 +195,7 @@
 				<td>${problem.modifier.text}</td>
 				<td>${problem.comments}</td>
 				<td>
-					<a href="javascript:doResolveProblem(${problem.activeListId})"><img src="images/delete.gif" border="0" title="<spring:message code="ActiveLists.resolve"/>"/></a>
+					<a href="javascript:doResolveProblem(${problem.activeListId})"><img src="images/delete.gif" border="0" title="<openmrs:message code="ActiveLists.resolve"/>"/></a>
 				</td>
 			</tr>
 		</c:forEach>
@@ -204,9 +204,9 @@
 </c:choose>
 	
 	<div style="width: 100%">
-		<a id="addActiveListProblemLink" href="javascript:doAddProblem();" title=""><spring:message code="ActiveLists.problem.add"/></a>
+		<a id="addActiveListProblemLink" href="javascript:doAddProblem();" title=""><openmrs:message code="ActiveLists.problem.add"/></a>
 		<c:choose><c:when test="${fn:length(model.removedProblems) > 0}">		
-			<a href="javascript:doToggleShowingInactiveProblems();" id="inactiveProblemLink" style="width: 100%; text-align: right"><spring:message code="ActiveLists.problem.showRemoved"/></a>
+			<a href="javascript:doToggleShowingInactiveProblems();" id="inactiveProblemLink" style="width: 100%; text-align: right"><openmrs:message code="ActiveLists.problem.showRemoved"/></a>
 		</c:when></c:choose>
 	</div>
 	
@@ -214,13 +214,13 @@
 	<c:when test="${fn:length(model.removedProblems) > 0}">
 		<br/>
 		<div id="removedProblemTable" style="display: none">
-			<spring:message code="ActiveLists.problem.removedProblem"/><br/>
+			<openmrs:message code="ActiveLists.problem.removedProblem"/><br/>
 			<table style="margin: 0px 0px 1em 2em;" cellpadding="3" cellspacing="0" class="alTable">
 				<tr bgcolor="whitesmoke">
-					<td><spring:message code="ActiveLists.problem.problem"/></td>
-					<td><spring:message code="ActiveLists.date"/></td>
-					<td><spring:message code="ActiveLists.problem.comments"/></td>
-					<td><spring:message code="ActiveLists.resolvedOn"/></td>
+					<td><openmrs:message code="ActiveLists.problem.problem"/></td>
+					<td><openmrs:message code="ActiveLists.date"/></td>
+					<td><openmrs:message code="ActiveLists.problem.comments"/></td>
+					<td><openmrs:message code="ActiveLists.resolvedOn"/></td>
 				</tr>
 				<c:forEach var="problem" items="${model.removedProblems}">
 					<c:choose>
@@ -243,14 +243,14 @@
 		<div id="problemError" class="error"></div>
 		<table style="margin: 0px 0px 1em 2em;">
 			<tr>
-				<td nowrap><spring:message code="ActiveLists.problem.problem"/> *</td>
+				<td nowrap><openmrs:message code="ActiveLists.problem.problem"/> *</td>
 				<td>
 					<input type="text" id="problem_concept" size="20"/>
 					<input type="hidden" id="problem_concept_id"/>
 				</td>
 			</tr>
 			<tr>
-				<td><spring:message code="ActiveLists.problem.status"/></td>
+				<td><openmrs:message code="ActiveLists.problem.status"/></td>
 				<td>
 					<select id="problem_modifier">
 						<option value=""></option>
@@ -261,11 +261,11 @@
 				</td>
 			</tr>
 			<tr>
-				<td><spring:message code="ActiveLists.startDate"/></td>
+				<td><openmrs:message code="ActiveLists.startDate"/></td>
 				<td><input type="text" id="problem_startDate" size="20"/></td>
 			</tr>
 			<tr>
-				<td valign="top"><spring:message code="ActiveLists.problem.comments"/></td>
+				<td valign="top"><openmrs:message code="ActiveLists.problem.comments"/></td>
 				<td>
 					<textarea id="problem_comments" cols="18" rows="3" style="width: 100%"></textarea>
 				</td>
@@ -275,15 +275,15 @@
 	<div id="resolveActiveListProblem" style="display: none">
 		<table style="margin: 0px 0px 1em 2em;">
 			<tr>
-				<td><input type="radio" name="problem_resolved" value="Removed" checked/><spring:message code="ActiveLists.problem.resolved"/></td>
+				<td><input type="radio" name="problem_resolved" value="Removed" checked/><openmrs:message code="ActiveLists.problem.resolved"/></td>
 				<td><input type="text" id="problem_endDate" size="20"/></td>
 			</tr>
 			<tr>
-				<td colspan="2"><input type="radio" name="problem_resolved" value="Error"/><spring:message code="ActiveLists.resolve.error"/></td>
+				<td colspan="2"><input type="radio" name="problem_resolved" value="Error"/><openmrs:message code="ActiveLists.resolve.error"/></td>
 			</tr>
 			<tr>
 				<td colspan="2">
-					<spring:message code="ActiveLists.problem.comments"/><br/>
+					<openmrs:message code="ActiveLists.problem.comments"/><br/>
 					<textarea id="problem_reason" cols="18" rows="3" style="width: 100%"></textarea>
 				</td>
 			</tr>

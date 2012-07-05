@@ -38,15 +38,15 @@
   }
 </style>
 
-<h2><spring:message code="GlobalProperty.manage.title"/></h2>	
+<h2><openmrs:message code="GlobalProperty.manage.title"/></h2>	
 
-<b class="boxHeader"><spring:message code="GlobalProperty.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="GlobalProperty.list.title"/></b>
 <form method="post" class="box" onsubmit="removeHiddenRows()">
 	<table cellpadding="1" cellspacing="0">
 		<thead>
 			<tr>
-				<th><spring:message code="general.name" /></th>
-				<th><spring:message code="general.value" /></th>
+				<th><openmrs:message code="general.name" /></th>
+				<th><openmrs:message code="general.value" /></th>
 				<th></th>
 			</tr>
 		</thead>
@@ -64,7 +64,7 @@
 							</c:otherwise>
 						</c:choose>
 					</td>
-					<td valign="top" rowspan="2"><input type="button" align="right" value='<spring:message code="general.remove" />' class="closeButton" onkeyup="edited(); remove(this)" /> </td> 
+					<td valign="top" rowspan="2"><input type="button" align="right" value='<openmrs:message code="general.remove" />' class="closeButton" onkeyup="edited(); remove(this)" /> </td> 
 					<td id="message" valign="top" rowspan="2"></td>
 				</tr>
 				<tr class="${status.index % 2 == 0 ? 'evenRow' : 'oddRow' }">
@@ -78,7 +78,7 @@
 			<tr id="newProperty">
 				<td valign="top"><input type="text" name="property" size="50" maxlength="250" onkeyup="edited()" /></td>
 				<td valign="top"><input type="text" name="value" size="30" maxlength="250" onkeyup="edited()" /></td>
-				<td valign="top" rowspan="2"><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="remove(this)" /></td>
+				<td valign="top" rowspan="2"><input type="button" value='<openmrs:message code="general.remove" />' class="closeButton" onclick="remove(this)" /></td>
 			</tr>
 			<tr id="newPropertyDescription">
 					<td colspan="2" valign="top" class="description">
@@ -90,7 +90,7 @@
 		</tbody>
 	</table>
 	
-	<input type="button" onclick="addProperty()" class="smallButton" value='<spring:message code="GlobalProperty.add" />' />
+	<input type="button" onclick="addProperty()" class="smallButton" value='<openmrs:message code="GlobalProperty.add" />' />
 	
 	<br /><br />
 	
@@ -122,7 +122,7 @@
 			if(btn.getAttribute("remove") == null){
 				var parent = btn.parentNode;
 				if(parent.tagName.toLowerCase() == "td"){
-					$j(parent).next().text("<spring:message code="GlobalProperty.toDelete" />");					
+					$j(parent).next().text("<openmrs:message code="GlobalProperty.toDelete" />");					
 				}
 				
 				while (parent.tagName.toLowerCase() != "tr")
@@ -134,7 +134,7 @@
 						parentDesc.setAttribute("deleted","true");
 						parent.setAttribute("deleted","true");
 						parent.style.backgroundColor = parentDesc.style.backgroundColor = "#D2C5C8";
-						btn.value ="<spring:message code="general.restore" />";
+						btn.value ="<openmrs:message code="general.restore" />";
 						btn.style.backgroundColor = '#4AA02C';
 							
 						btn.setAttribute("remove", "true");
@@ -153,7 +153,7 @@
 								
 					parentDesc.setAttribute("deleted","false");
 					parent.setAttribute("deleted","false");
-					btn.value ="<spring:message code="general.remove" />";
+					btn.value ="<openmrs:message code="general.remove" />";
 					btn.style.backgroundColor = 'lightPink';
 					btn.removeAttribute("remove");	
 					parent.style.backgroundColor = parentDesc.style.backgroundColor = null;
@@ -212,13 +212,13 @@
 
 	<div id="buttonsAtBottom">
 	 <br/>
-	 <spring:message code="general.changes.toSave"/>
+	 <openmrs:message code="general.changes.toSave"/>
 	 <br/>
 	 <br/>
 		&nbsp;&nbsp;
-		<input type="submit" name="action" value='<spring:message code="general.save"/>' />
+		<input type="submit" name="action" value='<openmrs:message code="general.save"/>' />
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="button" value='<spring:message code="general.cancel"/>' onclick="location.reload(true);"/>
+		<input type="button" value='<openmrs:message code="general.cancel"/>' onclick="location.reload(true);"/>
 	</div>
 	<div style="clear:both"></div>
 </form>

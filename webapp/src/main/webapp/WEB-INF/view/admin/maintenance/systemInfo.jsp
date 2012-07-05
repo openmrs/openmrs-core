@@ -11,16 +11,16 @@
 		<tr>
 			<td colspan="2">
 				<br/>
-				<h3><spring:message code="${ var.key }" /></h3>
+				<h3><openmrs:message code="${ var.key }" /></h3>
 			</td>
 		</tr>
 		<tr>
-			<th align="left"><spring:message code="SystemInfo.name" /></th>
-			<th align="left"><spring:message code="SystemInfo.value" /></th>
+			<th align="left"><openmrs:message code="SystemInfo.name" /></th>
+			<th align="left"><openmrs:message code="SystemInfo.value" /></th>
 		</tr>
 		<c:forEach items="${var.value}" var="info" varStatus="status">
 			<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
-				<td nowrap><spring:message code="${ info.key }" /></td>
+				<td nowrap><openmrs:message code="${ info.key }" /></td>
 				<td>${ info.value }</td>
 			</tr>
 		</c:forEach>

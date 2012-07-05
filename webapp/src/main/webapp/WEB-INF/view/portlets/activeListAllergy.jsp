@@ -19,23 +19,23 @@
 		$j('#addActiveListAllergy').dialog({
 			autoOpen: false,
 			modal: true,
-			title: '<spring:message code="ActiveLists.allergy.add" javaScriptEscape="true"/>',
+			title: '<openmrs:message code="ActiveLists.allergy.add" javaScriptEscape="true"/>',
 			width: '30%',
 			zIndex: 100,
 			close: function() { $j("#allergy_concept").autocomplete("close"); $j("#allergy_reaction").autocomplete("close"); },
-			buttons: { '<spring:message code="general.save"/>': function() { handleAddAllergy(); },
-					   '<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
+			buttons: { '<openmrs:message code="general.save"/>': function() { handleAddAllergy(); },
+					   '<openmrs:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
 			}
 		});
 		
 		$j('#resolveActiveListAllergy').dialog({
 			autoOpen: false,
 			modal: true,
-			title: '<spring:message code="ActiveLists.allergy.resolveTitle" javaScriptEscape="true"/>',
+			title: '<openmrs:message code="ActiveLists.allergy.resolveTitle" javaScriptEscape="true"/>',
 			width: '30%',
 			zIndex: 100,
-			buttons: { '<spring:message code="ActiveLists.resolve"/>': function() { handleResolveAllergy(); },
-				       '<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
+			buttons: { '<openmrs:message code="ActiveLists.resolve"/>': function() { handleResolveAllergy(); },
+				       '<openmrs:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
 			}
 		});
 
@@ -77,7 +77,7 @@
 		$j('#allergy_severity').val("");
 		$j('#allergy_reaction').val("");
 
-		$j('#addActiveListAllergy').dialog("option", "title", '<spring:message code="ActiveLists.allergy.add"/>');
+		$j('#addActiveListAllergy').dialog("option", "title", '<openmrs:message code="ActiveLists.allergy.add"/>');
 		$j('#addActiveListAllergy').dialog('open');
 		$j('#allergy_concept').focus();
 	}
@@ -90,7 +90,7 @@
 		var reaction = $j('#allergy_reaction_id').val();
 
 		if((allergen == null) || (allergen == '')) {
-			showAllergyAddError("<spring:message code="ActiveLists.allergy.allergenRequired"/>");
+			showAllergyAddError("<openmrs:message code="ActiveLists.allergy.allergenRequired"/>");
 			return;
 		}
 
@@ -118,7 +118,7 @@
 		$j('#allergy_reaction').val($j('#reaction_conceptName_' + activeListId).html().trim());
 		$j('#allergy_reaction_id').val(allergy['reactionId']);
 
-		$j('#addActiveListAllergy').dialog("option", "title", '<spring:message code="ActiveLists.allergy.edit"/>');
+		$j('#addActiveListAllergy').dialog("option", "title", '<openmrs:message code="ActiveLists.allergy.edit"/>');
 		$j('#addActiveListAllergy').dialog('open');
 	}
 
@@ -137,7 +137,7 @@
 		currentlyEditingAllergyId = activeListId;
 
 		var name = $j('#allergen_conceptName_' + activeListId).html().trim();
-		$j('#resolveActiveListAllergy').dialog("option", "title", '<spring:message code="ActiveLists.allergy.resolveTitle"/>: ' + name);
+		$j('#resolveActiveListAllergy').dialog("option", "title", '<openmrs:message code="ActiveLists.allergy.resolveTitle"/>: ' + name);
 		$j('#resolveActiveListAllergy').dialog('open');
 	}
 
@@ -154,9 +154,9 @@
 
 	function doToggleShowingInactiveAllergies() {
 		$j('#removedAllergyTable').toggle();
-		var text = '<spring:message code="ActiveLists.allergy.hideRemoved"/>';
+		var text = '<openmrs:message code="ActiveLists.allergy.hideRemoved"/>';
 		if(showingInactiveAllergies == true) {
-			text = '<spring:message code="ActiveLists.allergy.showRemoved"/>';
+			text = '<openmrs:message code="ActiveLists.allergy.showRemoved"/>';
 		}
 		$j('#inactiveAllergyLink').html(text);
 		showingInactiveAllergies = !showingInactiveAllergies;
@@ -179,15 +179,15 @@
 <div id="patientActiveListAllergyPortlet">
 <c:choose>
 	<c:when test="${fn:length(model.allergies) == 0}">
-		<spring:message code="general.none"/><br/><br/>
+		<openmrs:message code="general.none"/><br/><br/>
 	</c:when>
 	<c:otherwise>
 	<table style="margin: 0px 0px 1em 2em;" cellpadding="3" cellspacing="0" id="allergyTable" class="alTable">
 		<tr bgcolor="whitesmoke">
-			<td><spring:message code="ActiveLists.allergy.allergen"/></td>
-			<td><spring:message code="ActiveLists.date"/></td>
-			<td><spring:message code="ActiveLists.allergy.reaction"/></td>
-			<td><spring:message code="ActiveLists.allergy.severity"/></td>
+			<td><openmrs:message code="ActiveLists.allergy.allergen"/></td>
+			<td><openmrs:message code="ActiveLists.date"/></td>
+			<td><openmrs:message code="ActiveLists.allergy.reaction"/></td>
+			<td><openmrs:message code="ActiveLists.allergy.severity"/></td>
 			<td></td>
 		</tr>
 		<c:forEach var="allergy" items="${model.allergies}">
@@ -220,7 +220,7 @@
 				<td><span id="reaction_conceptName_${allergy.activeListId}"><openmrs_tag:concept conceptId="${allergy.reaction.conceptId}"/></span></td>
 				<td>${allergy.severity}</td>
 				<td>
-					<a href="javascript:doResolveAllergy(${allergy.activeListId})" title=""><img src="images/delete.gif" border="0" title="<spring:message code="ActiveLists.resolve"/>"/></a>
+					<a href="javascript:doResolveAllergy(${allergy.activeListId})" title=""><img src="images/delete.gif" border="0" title="<openmrs:message code="ActiveLists.resolve"/>"/></a>
 				</td>
 			</tr>
 		</c:forEach>
@@ -229,9 +229,9 @@
 </c:choose>
 
 	<div style="width: 100%">
-		<a id="addActiveListAllergyLink" href="javascript:doAddAllergy();" title=""><spring:message code="ActiveLists.allergy.add"/></a>
+		<a id="addActiveListAllergyLink" href="javascript:doAddAllergy();" title=""><openmrs:message code="ActiveLists.allergy.add"/></a>
 		<c:choose><c:when test="${fn:length(model.removedAllergies) > 0}">		
-			<a href="javascript:doToggleShowingInactiveAllergies();" id="inactiveAllergyLink" style="width: 100%; text-align: right"><spring:message code="ActiveLists.allergy.showRemoved"/></a>
+			<a href="javascript:doToggleShowingInactiveAllergies();" id="inactiveAllergyLink" style="width: 100%; text-align: right"><openmrs:message code="ActiveLists.allergy.showRemoved"/></a>
 		</c:when></c:choose>
 	</div>
 	
@@ -239,14 +239,14 @@
 	<c:when test="${fn:length(model.removedAllergies) > 0}">
 		<br/>
 		<div id="removedAllergyTable" style="display: none">
-			<spring:message code="ActiveLists.allergy.removedAllergies"/><br/>
+			<openmrs:message code="ActiveLists.allergy.removedAllergies"/><br/>
 			<table style="margin: 0px 0px 1em 2em;" cellpadding="3" cellspacing="0" class="alTable">
 				<tr bgcolor="whitesmoke">
-					<td><spring:message code="ActiveLists.allergy.allergen"/></td>
-					<td><spring:message code="ActiveLists.date"/></td>
-					<td><spring:message code="ActiveLists.allergy.reaction"/></td>
-					<td><spring:message code="ActiveLists.allergy.severity"/></td>
-					<td><spring:message code="ActiveLists.resolvedOn"/></td>
+					<td><openmrs:message code="ActiveLists.allergy.allergen"/></td>
+					<td><openmrs:message code="ActiveLists.date"/></td>
+					<td><openmrs:message code="ActiveLists.allergy.reaction"/></td>
+					<td><openmrs:message code="ActiveLists.allergy.severity"/></td>
+					<td><openmrs:message code="ActiveLists.resolvedOn"/></td>
 				</tr>
 				<c:forEach var="allergy" items="${model.removedAllergies}">
 					<c:choose>
@@ -270,25 +270,25 @@
 		<div id="allergyError" class="error"></div>
 		<table style="margin: 0px 0px 1em 2em;">
 			<tr>
-				<td nowrap><spring:message code="ActiveLists.allergy.allergen"/> *</td>
+				<td nowrap><openmrs:message code="ActiveLists.allergy.allergen"/> *</td>
 				<td>
 					<input type="text" id="allergy_concept" size="20"/>
 					<input type="hidden" id="allergy_concept_id"/>
 				</td>
 			</tr>
 			<tr>
-				<td style="white-space: nowrap"><spring:message code="ActiveLists.startDate"/></td>
+				<td style="white-space: nowrap"><openmrs:message code="ActiveLists.startDate"/></td>
 				<td><input type="text" id="allergy_startDate" size="20"/></td>
 			</tr>
 			<tr>
-				<td><spring:message code="ActiveLists.allergy.reaction"/></td>
+				<td><openmrs:message code="ActiveLists.allergy.reaction"/></td>
 				<td>
 					<input type="text" id="allergy_reaction" size="20"/>
 					<input type="hidden" id="allergy_reaction_id"/>
 				</td>
 			</tr>
 			<tr>
-				<td><spring:message code="ActiveLists.allergy.severity"/></td>
+				<td><openmrs:message code="ActiveLists.allergy.severity"/></td>
 				<td>
 					<select id="allergy_severity">
 						<option value=""></option>
@@ -303,10 +303,10 @@
 	<div id="resolveActiveListAllergy" style="display: none">
 		<table style="margin: 0px 0px 1em 2em;">
 			<tr>
-				<td><input type="radio" name="allergy_resolved" value="Removed" checked/><spring:message code="ActiveLists.removed.remove"/></td>
+				<td><input type="radio" name="allergy_resolved" value="Removed" checked/><openmrs:message code="ActiveLists.removed.remove"/></td>
 			</tr>
 			<tr>
-				<td><input type="radio" name="allergy_resolved" value="Error"/><spring:message code="ActiveLists.resolve.error"/></td>
+				<td><input type="radio" name="allergy_resolved" value="Error"/><openmrs:message code="ActiveLists.resolve.error"/></td>
 			</tr>
 		</table>
 	</div>

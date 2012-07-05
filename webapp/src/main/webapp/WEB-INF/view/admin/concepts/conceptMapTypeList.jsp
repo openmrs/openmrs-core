@@ -5,19 +5,19 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="ConceptMapType.title"/></h2>
+<h2><openmrs:message code="ConceptMapType.title"/></h2>
 
-<a href="conceptMapType.form"><spring:message code="ConceptMapType.add"/></a>
+<a href="conceptMapType.form"><openmrs:message code="ConceptMapType.add"/></a>
 
 <br /><br />
 
-<b class="boxHeader"><spring:message code="ConceptMapType.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="ConceptMapType.list.title"/></b>
 <div class="box">
 	<table cellpadding="3" cellspacing="3">
 		<tr>
-			<th><spring:message code="general.name"/></th>
+			<th><openmrs:message code="general.name"/></th>
 			<th>&nbsp;</th>
-			<th><spring:message code="general.description"/></th>
+			<th><openmrs:message code="general.description"/></th>
 		</tr>
 		<c:forEach var="conceptMapType" items="${conceptMapTypeList}">
 			<tr <c:if test="${conceptMapType.isHidden == true }">style='color:red'</c:if>> 

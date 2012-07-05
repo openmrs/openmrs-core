@@ -8,7 +8,7 @@
 <%@ attribute name="programPrefix" required="false" %>
 
 <c:if test="${empty programWorkflows}">
-	<spring:message code="Program.workflows.empty" />
+	<openmrs:message code="Program.workflows.empty" />
 </c:if>
 <c:if test="${not empty programWorkflows}">
 	<select name="${formFieldName}" id="${formFieldName}"<c:if test="${not empty onChange}"> onChange=${onChange}</c:if>>

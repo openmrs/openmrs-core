@@ -39,46 +39,46 @@
 	th { text-align: left; }
 </style>
 
-<h2><spring:message code="ConceptProposal.manage.title"/></h2>
+<h2><openmrs:message code="ConceptProposal.manage.title"/></h2>
 
-<a href="proposeConcept.form"><spring:message code="ConceptProposal.proposeNewConcept"/></a>
+<a href="proposeConcept.form"><openmrs:message code="ConceptProposal.proposeNewConcept"/></a>
 
 <br/><br/>
 
 <openmrs:hasPrivilege privilege="Edit Concepts">
 	<table>
 		<tr>
-			<th><spring:message code="ConceptProposal.includeCompleted"/></th>
+			<th><openmrs:message code="ConceptProposal.includeCompleted"/></th>
 			<td><input type="checkbox" <c:if test="${param.includeCompleted}">checked</c:if> id="includeCompleted" onclick="updateList()" /></td>
 		</tr>
 		<tr>
-			<th><spring:message code="ConceptProposal.sortOn"/></th>
+			<th><openmrs:message code="ConceptProposal.sortOn"/></th>
 			<td>
-				<input type="radio" name="sortOn" id="sortText" value="text" <c:if test="${param.sortOn == 'text'}">checked</c:if> onclick="updateList()" /><label for="sortText"><spring:message code="ConceptProposal.originalText"/></label>
-				<input type="radio" name="sortOn" id="sortOccurences" value="text" <c:if test="${param.sortOn == null || param.sortOn == 'occurences'}">checked</c:if> onclick="updateList()" /><label for="sortOccurences"><spring:message code="ConceptProposal.occurences"/></label>
+				<input type="radio" name="sortOn" id="sortText" value="text" <c:if test="${param.sortOn == 'text'}">checked</c:if> onclick="updateList()" /><label for="sortText"><openmrs:message code="ConceptProposal.originalText"/></label>
+				<input type="radio" name="sortOn" id="sortOccurences" value="text" <c:if test="${param.sortOn == null || param.sortOn == 'occurences'}">checked</c:if> onclick="updateList()" /><label for="sortOccurences"><openmrs:message code="ConceptProposal.occurences"/></label>
 			</td>
 		</tr>
 		<tr>
-			<th><spring:message code="ConceptProposal.sortOrder"/></th>
+			<th><openmrs:message code="ConceptProposal.sortOrder"/></th>
 			<td>
-				<input type="radio" name="sortOrder" id="orderAsc" value="asc" <c:if test="${param.sortOrder == 'asc'}">checked</c:if> onclick="updateList()" /><label for="orderAsc"><spring:message code="ConceptProposal.sortOrder.asc"/></label>
-				<input type="radio" name="sortOrder" id="orderDesc" value="desc" <c:if test="${param.sortOrder == null || param.sortOrder == 'desc'}">checked</c:if> onclick="updateList()" /><label for="orderDesc"><spring:message code="ConceptProposal.sortOrder.desc"/></label>
+				<input type="radio" name="sortOrder" id="orderAsc" value="asc" <c:if test="${param.sortOrder == 'asc'}">checked</c:if> onclick="updateList()" /><label for="orderAsc"><openmrs:message code="ConceptProposal.sortOrder.asc"/></label>
+				<input type="radio" name="sortOrder" id="orderDesc" value="desc" <c:if test="${param.sortOrder == null || param.sortOrder == 'desc'}">checked</c:if> onclick="updateList()" /><label for="orderDesc"><openmrs:message code="ConceptProposal.sortOrder.desc"/></label>
 			</td>
 		</tr>
 	</table>
 	
 	<br/>
 	
-	<b class="boxHeader"><spring:message code="ConceptProposal.list.title"/></b>
+	<b class="boxHeader"><openmrs:message code="ConceptProposal.list.title"/></b>
 	
 	<form method="post" class="box">
 		<table width="100%" cellspacing="0" cellpadding="2">
 			<tr>
-				<th> <spring:message code="ConceptProposal.encounter"/> </th>
-				<th> <spring:message code="ConceptProposal.originalText"/> </th>
-				<th> <spring:message code="general.creator"/> </th>
-				<th> <spring:message code="general.dateCreated"/> </th>
-				<th> <spring:message code="ConceptProposal.occurences"/> </th>
+				<th> <openmrs:message code="ConceptProposal.encounter"/> </th>
+				<th> <openmrs:message code="ConceptProposal.originalText"/> </th>
+				<th> <openmrs:message code="general.creator"/> </th>
+				<th> <openmrs:message code="general.dateCreated"/> </th>
+				<th> <openmrs:message code="ConceptProposal.occurences"/> </th>
 			</tr>
 			<c:forEach var="map" items="${conceptProposalMap}" varStatus="rowStatus">
 				<c:forEach items="${map.key}" var="conceptProposal" varStatus="varStatus">

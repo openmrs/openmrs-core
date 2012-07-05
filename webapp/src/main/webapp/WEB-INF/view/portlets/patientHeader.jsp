@@ -31,32 +31,32 @@
 		<td id="patientHeaderPatientGender"><c:if
 				test="${model.patient.gender == 'M'}">
 				<img src="${pageContext.request.contextPath}/images/male.gif"
-					alt='<spring:message code="Person.gender.male"/>'
+					alt='<openmrs:message code="Person.gender.male"/>'
 					id="maleGenderIcon" />
 			</c:if> <c:if test="${model.patient.gender == 'F'}">
 				<img src="${pageContext.request.contextPath}/images/female.gif"
-					alt='<spring:message code="Person.gender.female"/>'
+					alt='<openmrs:message code="Person.gender.female"/>'
 					id="femaleGenderIcon" />
 			</c:if></td>
 		<td id="patientHeaderPatientAge"><openmrs:extensionPoint
 				pointId="org.openmrs.patientDashboard.beforePatientHeaderPatientAge"
 				type="html" parameters="patientId=${model.patient.patientId}" /> <c:if
-				test="${model.patient.age > 0}">${model.patient.age} <spring:message
+				test="${model.patient.age > 0}">${model.patient.age} <openmrs:message
 					code="Person.age.years" />
-			</c:if> <c:if test="${model.patient.age == 0}">< 1 <spring:message
+			</c:if> <c:if test="${model.patient.age == 0}">< 1 <openmrs:message
 					code="Person.age.year" />
 			</c:if> <span id="patientHeaderPatientBirthdate"><c:if
 					test="${not empty model.patient.birthdate}">(<c:if
 						test="${model.patient.birthdateEstimated}">~</c:if>
 					<openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)</c:if>
 				<c:if test="${empty model.patient.birthdate}">
-					<spring:message code="Person.age.unknown" />
+					<openmrs:message code="Person.age.unknown" />
 				</c:if></span></td>
 
 		<%-- Display selected person attributes from the manage person attributes page --%>
 		<openmrs:forEachDisplayAttributeType personType="patient"
 			displayType="header" var="attrType">
-			<td class="patientHeaderPersonAttribute"><spring:message
+			<td class="patientHeaderPersonAttribute"><openmrs:message
 					code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}"
 					text="${attrType.name}" />: <b>${model.patient.attributeMap[attrType.name]}</b>
 			</td>
@@ -70,7 +70,7 @@
 			defaultValue="false" var="showHealthCenter" />
 		<c:if
 			test="${showHealthCenter && not empty model.patient.attributeMap['Health Center']}">
-			<td id="patientHeaderHealthCenter"><spring:message
+			<td id="patientHeaderHealthCenter"><openmrs:message
 					code="PersonAttributeType.HealthCenter" />: <b>${model.patient.attributeMap['Health Center']}</b></td>
 		</c:if>
 		<td id="patientDashboardHeaderExtension"><openmrs:extensionPoint
@@ -105,7 +105,7 @@
 			<td width="32" class="patientHeaderShowMoreIdentifiersData"><small><a
 					id="patientHeaderShowMoreIdentifiers"
 					onclick="return showMoreIdentifiers()"
-					title='<spring:message code="patientDashboard.showMoreIdentifers"/>'><spring:message
+					title='<openmrs:message code="patientDashboard.showMoreIdentifers"/>'><openmrs:message
 							code="general.nMore"
 							arguments="${fn:length(model.patient.activeIdentifiers) - 2}" /></a></small>
 			</td>
@@ -140,7 +140,7 @@
 					<th class="programEnrollmentNameHeader">${
 						programEnrollment.program.name }</th>
 					<td class="programEnrollmentBarData">|</td>
-					<td class="programEnrollmentName"><spring:message
+					<td class="programEnrollmentName"><openmrs:message
 							code="Program.enrolled" />:</td>
 					<th class="programEnrollmentDateHeader"><openmrs:formatDate
 							date="${programEnrollment.dateEnrolled}" type="medium" /></th>
@@ -166,24 +166,24 @@
 	<openmrs:globalProperty key="concept.cd4_count" var="cd4ConceptId" />
 
 	<tr class="patientObsRow">
-		<th id="patientHeaderObsWeight"><spring:message
+		<th id="patientHeaderObsWeight"><openmrs:message
 				code="Patient.bmi" />: ${model.patientBmiAsString}</th>
 		<th class="patientHeaderObsWeightHeightHeader"><small> (
-				<spring:message code="Patient.weight" />: <openmrs_tag:mostRecentObs
+				<openmrs:message code="Patient.weight" />: <openmrs_tag:mostRecentObs
 					observations="${model.patientObs}" concept="${weightConceptId}"
-					showUnits="true" locale="${model.locale}" showDate="false" /> , <spring:message
+					showUnits="true" locale="${model.locale}" showDate="false" /> , <openmrs:message
 					code="Patient.height" />: <openmrs_tag:mostRecentObs
 					observations="${model.patientObs}" concept="${heightConceptId}"
 					showUnits="true" locale="${model.locale}" showDate="false" /> )
 		</small></th>
-		<td id="patientHeaderObsCD4"><spring:message code="Patient.cd4" />:
+		<td id="patientHeaderObsCD4"><openmrs:message code="Patient.cd4" />:
 			<openmrs_tag:mostRecentObs observations="${model.patientObs}"
 				concept="${cd4ConceptId}" locale="${model.locale}" /></td>
-		<td id="patientHeaderObsReturnVisit"><spring:message
+		<td id="patientHeaderObsReturnVisit"><openmrs:message
 				code="Patient.returnVisit" />: <openmrs_tag:mostRecentObs
 				observations="${model.patientObs}" concept="5096"
 				locale="${model.locale}" /></td>
-		<td id="patientHeaderObsRegimen"><spring:message
+		<td id="patientHeaderObsRegimen"><openmrs:message
 				code="Patient.regimen" />: <span id="patientHeaderRegimen">
 				<c:forEach items="${model.currentDrugOrders}" var="drugOrder"
 					varStatus="drugOrderStatus">
@@ -200,7 +200,7 @@
 		<div class="box noBorder">
 			<table class="patientLastEncounterTable">
 				<tr class="patientLastEncounterRow">
-					<td class="patientLastEncounterData"><spring:message
+					<td class="patientLastEncounterData"><openmrs:message
 							code="Patient.lastEncounter" />:</td>
 					<th><c:forEach
 							items='${openmrs:sort(model.patientEncounters, "encounterDatetime", true)}'
@@ -208,7 +208,7 @@
 								${lastEncounter.encounterType.name} @ ${lastEncounter.location.name}, <openmrs:formatDate
 								date="${lastEncounter.encounterDatetime}" type="medium" />
 						</c:forEach> <c:if test="${fn:length(model.patientEncounters) == 0}">
-							<spring:message code="Encounter.no.previous" />
+							<openmrs:message code="Encounter.no.previous" />
 						</c:if></th>
 				</tr>
 			</table>
@@ -220,7 +220,7 @@
 	<openmrs:hasPrivilege privilege="Add Visits">
 		<c:if test="${empty model.activeVisits}">
 			<div id="patientVisitsSubheader" class="box" style="margin-top: 2px">
-				<input type="button" value="<spring:message code="Visit.start"/>"
+				<input type="button" value="<openmrs:message code="Visit.start"/>"
 					onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?patientId=${model.patient.patientId}&startNow=true'" />
 			</div>
 		</c:if>
@@ -228,13 +228,13 @@
 	<openmrs:hasPrivilege privilege="View Visits, View Encounters">	
 		<openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
 		
-		<div id="patientHeader-endvisit-dialog" title="<spring:message code="Visit.end"/>">
+		<div id="patientHeader-endvisit-dialog" title="<openmrs:message code="Visit.end"/>">
 		    <form:form action="${pageContext.request.contextPath}/admin/visits/endVisit.form" method="post" modelAttribute="visit">
 		       <table cellpadding="3" cellspacing="3" align="center">
 					<tr>
 						<td>
 							<input type="hidden" name="visitId" value="" />
-							<spring:message code="Visit.enterEndDate"/>
+							<openmrs:message code="Visit.enterEndDate"/>
 							<jsp:useBean id="now" class="java.util.Date" scope="page" />
 							<input type="text" id="enddate_visit" size="20" name="stopDate" value="<openmrs:formatDate date="${now}" format="dd/MM/yyyy HH:mm"/>" onClick="showDateTimePicker(this)" readonly="readonly"/></br>&nbsp;&nbsp;
 						</td>
@@ -242,9 +242,9 @@
 					<tr height="20"></tr>
 					<tr>
 						<td colspan="2" style="text-align: center">
-							<input type="submit" value="<spring:message code="Visit.end"/>" />
+							<input type="submit" value="<openmrs:message code="Visit.end"/>" />
 							&nbsp;
-							<input id="patientHeader-close-endvisit-dialog" type="button" value="<spring:message code="general.cancel"/>" /> 
+							<input id="patientHeader-close-endvisit-dialog" type="button" value="<openmrs:message code="general.cancel"/>" /> 
 						</td>
 					</tr>
 				</table>
@@ -274,26 +274,26 @@
 	
 		<c:forEach var="visit" items="${model.activeVisits}">
 			<div id="patientVisitsSubheader" class="box" style="margin-top: 2px">
-				&nbsp;<strong><spring:message code="Visit.active.label" />: <a
+				&nbsp;<strong><openmrs:message code="Visit.active.label" />: <a
 					href="<openmrs:contextPath />/admin/visits/visit.form?visitId=${ visit.visitId }&patientId=${model.patient.patientId}"><openmrs:format
 							visitType="${ visit.visitType }" /></a></strong>
 				<c:if test="${ not empty visit.location }">
-					<spring:message code="general.atLocation" />
+					<openmrs:message code="general.atLocation" />
 					<strong><openmrs:format location="${ visit.location }" /></strong></c:if>
-				<spring:message code="general.fromDate" />
+				<openmrs:message code="general.fromDate" />
 				<openmrs:formatDate date="${ visit.startDatetime }" />
 				<c:if test="${not empty visit.stopDatetime }">
-					<spring:message code="general.toDate" />
+					<openmrs:message code="general.toDate" />
 					<openmrs:formatDate date="${ visit.stopDatetime }" />
 				</c:if>
 				<openmrs:hasPrivilege privilege="Edit Visits">
-					<input type="button" value="<spring:message code="Visit.edit"/>"
+					<input type="button" value="<openmrs:message code="Visit.edit"/>"
 						onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?visitId=${ visit.visitId }&patientId=${model.patient.patientId}'" />
-					<input type="button" value="<spring:message code="Visit.end"/>" onclick="patientHeaderEndVisit('${visit.visitId}', '<openmrs:formatDate date="${visit.stopDatetime}" format="dd/MM/yyyy HH:mm" />');" />
+					<input type="button" value="<openmrs:message code="Visit.end"/>" onclick="patientHeaderEndVisit('${visit.visitId}', '<openmrs:formatDate date="${visit.stopDatetime}" format="dd/MM/yyyy HH:mm" />');" />
 				</openmrs:hasPrivilege>
 				<br />&nbsp;
 				<c:if test="${empty visit.encounters}">
-					<i><spring:message code="Encounter.noEncounters" /></i>
+					<i><openmrs:message code="Encounter.noEncounters" /></i>
 				</c:if>
 				<c:forEach var="encounter" items="${visit.encounters}" varStatus="status">
 					<c:set var="viewEncounterUrl" value="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}"/>
@@ -318,7 +318,7 @@
 					<c:if test="${not empty allAddEncounterToVisitLinks}">
 						<div id="patientHeaderAddEncounterToVisit${visit.visitId}Popup">
 							<openmrs:format visitType="${ visit.visitType }" var="visitType"/>
-							<spring:message code="Visit.addEncounterToVisit" arguments="${visitType}"/>
+							<openmrs:message code="Visit.addEncounterToVisit" arguments="${visitType}"/>
 							<c:forEach items="${allAddEncounterToVisitLinks}" var="link">
 								<c:url var="linkUrl" value="${link.url}">
 									<c:param name="patientId" value="${model.patientId}"/>
@@ -333,7 +333,7 @@
 						<script type="text/javascript">
 							$j(document).ready(function() {
 								$j('#patientHeaderAddEncounterToVisit${visit.visitId}Popup').dialog({
-										title: '<spring:message code="Visit.addEncounter"/>',
+										title: '<openmrs:message code="Visit.addEncounter"/>',
 										autoOpen: false,
 										draggable: false,
 										resizable: false,
@@ -348,7 +348,7 @@
 							}
 						</script>
 						
-						<input type="button" value="<spring:message code="Visit.addEncounter"/>"
+						<input type="button" value="<openmrs:message code="Visit.addEncounter"/>"
 							onclick="patientHeaderShowAddEncounterToVisit${visit.visitId}Popup()" />
 					</c:if>
 					
@@ -373,10 +373,10 @@
 <script type="text/javascript">
 	function showMoreIdentifiers() {
 		if (identifierElement.style.display == '') {
-			linkElement.innerHTML = '<spring:message code="general.nMore" arguments="${fn:length(model.patient.activeIdentifiers) - 2}"/>';
+			linkElement.innerHTML = '<openmrs:message code="general.nMore" arguments="${fn:length(model.patient.activeIdentifiers) - 2}"/>';
 			identifierElement.style.display = "none";
 		} else {
-			linkElement.innerHTML = '<spring:message code="general.nLess" arguments="${fn:length(model.patient.activeIdentifiers) - 2}"/>';
+			linkElement.innerHTML = '<openmrs:message code="general.nLess" arguments="${fn:length(model.patient.activeIdentifiers) - 2}"/>';
 			identifierElement.style.display = "";
 		}
 	}

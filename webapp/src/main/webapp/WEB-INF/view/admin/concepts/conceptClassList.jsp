@@ -5,21 +5,21 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="ConceptClass.manage.title"/></h2>
+<h2><openmrs:message code="ConceptClass.manage.title"/></h2>
 
-<a href="conceptClass.form"><spring:message code="ConceptClass.add"/></a>
+<a href="conceptClass.form"><openmrs:message code="ConceptClass.add"/></a>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptClassList.afterAdd" type="html" />
 
 <br /><br />
 
-<b class="boxHeader"><spring:message code="ConceptClass.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="ConceptClass.list.title"/></b>
 <form method="post" class="box">
 	<table>
 		<tr>
 			<th> </th>
-			<th> <spring:message code="general.name"/> </th>
-			<th> <spring:message code="general.description"/> </th>
+			<th> <openmrs:message code="general.name"/> </th>
+			<th> <openmrs:message code="general.description"/> </th>
 		</tr>
 		<c:forEach var="conceptClass" items="${conceptClassList}">
 			<tr> 
@@ -35,7 +35,7 @@
 	
 	<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptClassList.inForm" type="html" />
 	
-	<input type="submit" value="<spring:message code="ConceptClass.delete"/>" name="action">
+	<input type="submit" value="<openmrs:message code="ConceptClass.delete"/>" name="action">
 </form>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptClassList.footer" type="html" />

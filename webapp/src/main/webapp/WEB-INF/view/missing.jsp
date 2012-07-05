@@ -1,15 +1,15 @@
 <%@page isErrorPage="true" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<spring:message var="pageTitle" code="missing.title" scope="page"/>
+<openmrs:message var="pageTitle" code="missing.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <h2>Error 404</h2>
 
 <br /><br />
 
-<spring:message code="Missing.start"/> "<b><%= request.getAttribute("javax.servlet.error.request_uri") %></b>"
-<spring:message code="Missing.end"/>
+<openmrs:message code="Missing.start"/> "<b><%= request.getAttribute("javax.servlet.error.request_uri") %></b>"
+<openmrs:message code="Missing.end"/>
 
 <br/><br/>
 

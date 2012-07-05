@@ -5,7 +5,7 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Order.list.patient.choose" /></h2>
+<h2><openmrs:message code="Order.list.patient.choose" /></h2>
 
 <br />
 
@@ -16,7 +16,7 @@
 <center>
 	<form>
 		<input type="hidden" name="showAll" value="true" />
-		<input type="submit" value="<spring:message code="DrugOrder.list.showAll" />" />
+		<input type="submit" value="<openmrs:message code="DrugOrder.list.showAll" />" />
 	</form>
 </center>
 

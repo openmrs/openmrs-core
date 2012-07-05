@@ -42,7 +42,7 @@
 					function (st) { return getButton(st[0]); }
 				], { escapeHtml:false });
 		} else {
-			dwr.util.addRows('stateTable', ['<spring:message code="general.none"/>'], [
+			dwr.util.addRows('stateTable', ['<openmrs:message code="general.none"/>'], [
 					function(s) { return s;}
 				], { escapeHtml:false });
 		}
@@ -51,7 +51,7 @@
 	function retireState(conceptId) {
 		for (var i = 0; i < activeStates.length; ++i) {
 			if (activeStates[i][0] == conceptId) {
-				var x=window.confirm("<spring:message code='State.retire.confirmation'/>")
+				var x=window.confirm("<openmrs:message code='State.retire.confirmation'/>")
 				if (x) {
 					retiredStates.push(activeStates[i]);
 					activeStates.splice(i,1);
@@ -71,7 +71,7 @@
 	function unretireState(conceptId) {
 		for (var i = 0; i < retiredStates.length; ++i) {
 			if (retiredStates[i][0] == conceptId) {
-				var x=window.confirm("<spring:message code='State.unretire.confirmation'/>")
+				var x=window.confirm("<openmrs:message code='State.unretire.confirmation'/>")
 				if (x) {
 					activeStates.push(retiredStates[i]);
 					retiredStates.splice(i,1);
@@ -97,10 +97,10 @@
 function getButton(conceptId){
 	if(isStateRetired(conceptId)){
 		
-		return '<input type="button" class="statesToRetire" value="<spring:message code="general.unretire"/>" onclick="unretireState('+conceptId+')"}/>';
+		return '<input type="button" class="statesToRetire" value="<openmrs:message code="general.unretire"/>" onclick="unretireState('+conceptId+')"}/>';
 	 }else{
 		 
-	    return '<input type="button" class="statesToRetire" value="<spring:message code="general.retire"/>" onclick="retireState('+conceptId+')"}/>';
+	    return '<input type="button" class="statesToRetire" value="<openmrs:message code="general.retire"/>" onclick="retireState('+conceptId+')"}/>';
 
 	 }
 	
@@ -137,7 +137,7 @@ function isStateRetired(conceptId){
 	function addState(conceptId, isInitial, isTerminal) {
 		for (var i = 0; i < allSates.length; ++i)
 			if (allSates[i][0] == conceptId) {
-				window.alert("<spring:message code='State.error.name.duplicate'/>");
+				window.alert("<openmrs:message code='State.error.name.duplicate'/>");
 				return;
 			}
 		if(isActiveDisplay){
@@ -182,38 +182,38 @@ refreshStateTable();
 </h3>
 
 <spring:hasBindErrors name="workflow">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
 <b class="boxHeader"> <a style="display: block; float: right"
-	href="#" onClick="toggleStatesVisibility();"> <spring:message
-			code="general.toggle.retired" /> </a> <spring:message
+	href="#" onClick="toggleStatesVisibility();"> <openmrs:message
+			code="general.toggle.retired" /> </a> <openmrs:message
 		code="State.list.title" /> </b>
 
 <form method="post" id="theForm">
 	<table>
 		<thead>
 			<tr>
-				<th><spring:message code="State.state"/></th>
-				<th><spring:message code="State.initial"/>?</th>
-				<th><spring:message code="State.terminal"/>?</th>
+				<th><openmrs:message code="State.state"/></th>
+				<th><openmrs:message code="State.initial"/>?</th>
+				<th><openmrs:message code="State.terminal"/>?</th>
 			</tr>
 		</thead>
 		<tbody id="stateTable">
-			<tr><td colspan="3"><spring:message code="general.none" /></td></tr>
+			<tr><td colspan="3"><openmrs:message code="general.none" /></td></tr>
 		</tbody>
 		<tbody>
 			<tr>
 				<td colspan="3" align="center">
 					<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="" showVerboseListing="false" conceptClasses="State"></div>
-					<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' changeButtonValue='<spring:message code="general.add"/>'></div>
+					<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<openmrs:message code="Concept.find" />' changeButtonValue='<openmrs:message code="general.add"/>'></div>
 				</td>
 			</tr>
 		</tbody>
 	</table>
 	<input type="hidden" id="statesToSubmit" name="newStates" />
-	<input type="button" onClick="handleSave()" value="<spring:message code="general.save" />" />
+	<input type="button" onClick="handleSave()" value="<openmrs:message code="general.save" />" />
 </form>
 
 <script type="text/javascript">

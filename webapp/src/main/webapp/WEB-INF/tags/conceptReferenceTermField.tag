@@ -30,7 +30,7 @@
 				}
 				</c:if>
 			},
-			placeholder:'<spring:message code="ConceptReferenceTerm.searchBox.placeholder" javaScriptEscape="true"/>'
+			placeholder:'<openmrs:message code="ConceptReferenceTerm.searchBox.placeholder" javaScriptEscape="true"/>'
 		});
 		
 		//Clear hidden value on losing focus with no valid entry

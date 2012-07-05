@@ -17,13 +17,13 @@
 	
 </script>
 
-<h2><spring:message code="RelationshipType.title"/></h2>
+<h2><openmrs:message code="RelationshipType.title"/></h2>
 
 <form method="post">
 <fieldset>
 <table>
 	<tr>
-		<td><spring:message code="RelationshipType.aIsToB"/></td>
+		<td><openmrs:message code="RelationshipType.aIsToB"/></td>
 		<td>
 			<spring:bind path="relationshipType.aIsToB">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -32,7 +32,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="RelationshipType.bIsToA"/></td>
+		<td><openmrs:message code="RelationshipType.bIsToA"/></td>
 		<td>
 			<spring:bind path="relationshipType.bIsToA">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -41,7 +41,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="relationshipType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
@@ -51,7 +51,7 @@
 	</tr>
 	<c:if test="${relationshipType.creator != null}">
 		<tr>
-			<td><spring:message code="general.createdBy" /></td>
+			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
 				${relationshipType.creator.personName} -
 				<openmrs:formatDate date="${relationshipType.dateCreated}" type="long" />
@@ -60,7 +60,7 @@
 	</c:if>
 </table>
 <br />
-<input type="submit" value="<spring:message code="RelationshipType.save"/>" name="save">
+<input type="submit" value="<openmrs:message code="RelationshipType.save"/>" name="save">
 </fieldset>
 </form>
 
@@ -69,17 +69,17 @@
 <c:if test="${not relationshipType.retired && not empty relationshipType.relationshipTypeId}">
 	<form method="post">
 		<fieldset>
-			<h4><spring:message code="RelationshipType.retireRelationshipType"/></h4>
+			<h4><openmrs:message code="RelationshipType.retireRelationshipType"/></h4>
 			
-			<b><spring:message code="general.reason"/></b>
+			<b><openmrs:message code="general.reason"/></b>
 			<input type="text" value="" size="40" name="retireReason" />
 			<spring:hasBindErrors name="relationshipType">
 				<c:forEach items="${errors.allErrors}" var="error">
-					<c:if test="${error.code == 'retireReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+					<c:if test="${error.code == 'retireReason'}"><span class="error"><openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
 				</c:forEach>
 			</spring:hasBindErrors>
 			<br/>
-			<input type="submit" value='<spring:message code="RelationshipType.retireRelationshipType"/>' name="retire"/>
+			<input type="submit" value='<openmrs:message code="RelationshipType.retireRelationshipType"/>' name="retire"/>
 		</fieldset>
 	</form>
 </c:if>
@@ -89,9 +89,9 @@
 <c:if test="${relationshipType.retired && not empty relationshipType.relationshipTypeId}">
 	<form id="unretire" method="post">
 		<fieldset>
-			<h4><spring:message code="RelationshipType.unretireRelationshipType"/></h4>
+			<h4><openmrs:message code="RelationshipType.unretireRelationshipType"/></h4>
 			<input type="submit"
-			value='<spring:message code="RelationshipType.unretireRelationshipType"/>'
+			value='<openmrs:message code="RelationshipType.unretireRelationshipType"/>'
 			name="unretire" />
 		</fieldset>
 	</form>
@@ -103,8 +103,8 @@
 	<openmrs:hasPrivilege privilege="Purge Relationship Types">
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>
-				<h4><spring:message code="RelationshipType.purgeRelationshipType"/></h4>
-				<input type="submit" value='<spring:message code="RelationshipType.purgeRelationshipType"/>' name="purge" />
+				<h4><openmrs:message code="RelationshipType.purgeRelationshipType"/></h4>
+				<input type="submit" value='<openmrs:message code="RelationshipType.purgeRelationshipType"/>' name="purge" />
 			</fieldset>
 		</form>
 	</openmrs:hasPrivilege>

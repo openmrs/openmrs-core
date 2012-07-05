@@ -44,11 +44,11 @@
 </script>
 
 <h2>
-	<spring:message code="Field.title" />
+	<openmrs:message code="Field.title" />
 </h2>
 
 <spring:hasBindErrors name="field">
-	<spring:message code="fix.error" />
+	<openmrs:message code="fix.error" />
 	<br />
 	<!-- ${errors} -->
 </spring:hasBindErrors>
@@ -59,9 +59,9 @@
 	<br />
 	<input type="hidden" name="phrase" value='<request:parameter name="phrase" />' />
 	
-	<input type="submit" value='<spring:message code="general.save"/>' name="action">
+	<input type="submit" value='<openmrs:message code="general.save"/>' name="action">
 	<c:if test="${field.fieldId != null && empty param.duplicate}">
-		&nbsp; &nbsp; <input type="submit" onclick="return confirm('<spring:message code="Field.deleteWarning"/>')" value='<spring:message code="general.delete"/>' name="action">
+		&nbsp; &nbsp; <input type="submit" onclick="return confirm('<openmrs:message code="Field.deleteWarning"/>')" value='<openmrs:message code="general.delete"/>' name="action">
 	</c:if>
 </form>
 

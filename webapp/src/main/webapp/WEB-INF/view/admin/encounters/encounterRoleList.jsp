@@ -5,22 +5,22 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="EncounterRole.manage.title"/></h2>
+<h2><openmrs:message code="EncounterRole.manage.title"/></h2>
 
-<a href="encounterRole.form"><spring:message code="EncounterRole.add"/></a>
+<a href="encounterRole.form"><openmrs:message code="EncounterRole.add"/></a>
 
 <br />
 <br />
 
 <b class="boxHeader">
-	<spring:message code="EncounterRole.list.title"/>
+	<openmrs:message code="EncounterRole.list.title"/>
 </b>
 
 <form method="post" class="box">
 	<table id="encounterRoleTable">
 		<tr>
-			<th> <spring:message code="general.name" /> </th>
-			<th> <spring:message code="general.description" /> </th>
+			<th> <openmrs:message code="general.name" /> </th>
+			<th> <openmrs:message code="general.description" /> </th>
 		</tr>
 		<c:forEach var="encounterRole" items="${encounterRoles}">
 			<tr>

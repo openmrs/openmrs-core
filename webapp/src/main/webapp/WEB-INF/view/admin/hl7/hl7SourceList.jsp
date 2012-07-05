@@ -5,19 +5,19 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Hl7Source.manage.title"/></h2>	
-<a href="hl7Source.form"><spring:message code="Hl7Source.add"/></a> 
+<h2><openmrs:message code="Hl7Source.manage.title"/></h2>	
+<a href="hl7Source.form"><openmrs:message code="Hl7Source.add"/></a> 
  <openmrs:extensionPoint pointId="org.openmrs.admin.hl7.hl7SourceList.afterAdd" type="html" />
 
 <br />
 <br />
 
-<b class="boxHeader"><spring:message code="Hl7Source.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="Hl7Source.list.title"/></b>
 <div class="box">
 	<table cellspacing="0" cellpadding="3">
 		<tr>
-			<th> <spring:message code="general.name" /> </th>
-			<th> <spring:message code="general.description" /> </th>
+			<th> <openmrs:message code="general.name" /> </th>
+			<th> <openmrs:message code="general.description" /> </th>
 		</tr>
 		<c:forEach var="hl7Source" items="${hl7SourceList}" varStatus="status">
 			<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"} ${hl7Source.retired ? "voided" : ""}'>
