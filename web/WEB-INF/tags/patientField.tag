@@ -52,7 +52,7 @@
 
 <div dojoType="PatientSearch" widgetId="${formFieldName}_search" patientId="${initialValue}"></div>
 <c:if test="${not empty searchLabelCode}">
-	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" arguments="${searchLabelArguments}" />" allowSearch="${allowSearch}"></div>
+	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<openmrs:message code="${searchLabelCode}" arguments="${searchLabelArguments}" />" allowSearch="${allowSearch}"></div>
 </c:if> 
 <c:if test="${empty searchLabelCode}">
 	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}" allowSearch="${allowSearch}"></div>

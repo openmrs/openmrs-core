@@ -113,30 +113,30 @@
 	#searchNode, #searchInfoBar  { display: none; }
 </style>
 
-<h2><spring:message code="Patient.merge.title"/></h2>
+<h2><openmrs:message code="Patient.merge.title"/></h2>
 
-<spring:message code="Patient.merge.search_on"/>: <br/>
-<input type="checkbox" name="attr" id="identifier" value="identifier" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="identifier"><spring:message code="Patient.identifier"/></label> <br/>
-<input type="checkbox" name="attr" id="gender" value="gender" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="gender"><spring:message code="Person.gender"/></label> <br/>
-<input type="checkbox" name="attr" id="birthdate" value="birthdate" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="birthdate"><spring:message code="Person.birthdate"/></label> <br/>
-<input type="checkbox" name="attr" id="givenName" value="givenName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="givenName"><spring:message code="PersonName.givenName"/></label> <br/>
-<input type="checkbox" name="attr" id="middleName" value="middleName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="middleName"><spring:message code="PersonName.middleName"/></label> <br/>
-<input type="checkbox" name="attr" id="familyName" value="familyName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="familyName"><spring:message code="PersonName.familyName"/></label> <br/>
+<openmrs:message code="Patient.merge.search_on"/>: <br/>
+<input type="checkbox" name="attr" id="identifier" value="identifier" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="identifier"><openmrs:message code="Patient.identifier"/></label> <br/>
+<input type="checkbox" name="attr" id="gender" value="gender" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="gender"><openmrs:message code="Person.gender"/></label> <br/>
+<input type="checkbox" name="attr" id="birthdate" value="birthdate" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="birthdate"><openmrs:message code="Person.birthdate"/></label> <br/>
+<input type="checkbox" name="attr" id="givenName" value="givenName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="givenName"><openmrs:message code="PersonName.givenName"/></label> <br/>
+<input type="checkbox" name="attr" id="middleName" value="middleName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="middleName"><openmrs:message code="PersonName.middleName"/></label> <br/>
+<input type="checkbox" name="attr" id="familyName" value="familyName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="familyName"><openmrs:message code="PersonName.familyName"/></label> <br/>
 <br/>
-<input type="checkbox" name="attr" id="includeVoided" value="includeVoided" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="includeVoided"><spring:message code="Patient.merge.includeVoided"/></label> <br/>
+<input type="checkbox" name="attr" id="includeVoided" value="includeVoided" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="includeVoided"><openmrs:message code="Patient.merge.includeVoided"/></label> <br/>
 
 <br />
-<input type="button" value='<spring:message code="general.search"/>' onclick="showSearch(event)" /><br />
+<input type="button" value='<openmrs:message code="general.search"/>' onclick="showSearch(event)" /><br />
 
-<i>(<spring:message code="Patient.merge.minimum"/>)</i>
+<i>(<openmrs:message code="Patient.merge.minimum"/>)</i>
 
 <br /><br />
 
 <form action="mergePatients.form" id="patientsFound">
-    <span id="patientListSize"></span> <spring:message code="Patient.returned"/>.
-    <span id="patientsSelect"><spring:message code="Patient.merge.select"/>
+    <span id="patientListSize"></span> <openmrs:message code="Patient.returned"/>.
+    <span id="patientsSelect"><openmrs:message code="Patient.merge.select"/>
 	<div dojoType="PatientSearch" widgetId="pSearch" inputId="searchNode" tableHeight="1000"></div>
-	<input type="submit" value='<spring:message code="general.continue"/>'/>
+	<input type="submit" value='<openmrs:message code="general.continue"/>'/>
     </span>
 </form>
 

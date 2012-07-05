@@ -61,12 +61,12 @@ highlightMissing=true/false (defaults to true)
 	function getMessage(msg) {
 		var ret = "";
 	
-		if ( msg == "PatientIdentifier.error.formatInvalid" ) ret = "<spring:message code="PatientIdentifier.error.formatInvalid" />";
-		if ( msg == "PatientIdentifier.error.checkDigit" ) ret = "<spring:message code="PatientIdentifier.error.checkDigit" />";
-		if ( msg == "PatientIdentifier.error.notUnique" ) ret = "<spring:message code="PatientIdentifier.error.notUnique" />";
-		if ( msg == "PatientIdentifier.error.duplicate" ) ret = "<spring:message code="PatientIdentifier.error.duplicate" />";
-		if ( msg == "PatientIdentifier.error.insufficientIdentifiers" ) ret = "<spring:message code="PatientIdentifier.error.insufficientIdentifiers" />";
-		if ( msg == "PatientIdentifier.error.general" ) ret = "<spring:message code="PatientIdentifier.error.general" />";
+		if ( msg == "PatientIdentifier.error.formatInvalid" ) ret = "<openmrs:message code="PatientIdentifier.error.formatInvalid" />";
+		if ( msg == "PatientIdentifier.error.checkDigit" ) ret = "<openmrs:message code="PatientIdentifier.error.checkDigit" />";
+		if ( msg == "PatientIdentifier.error.notUnique" ) ret = "<openmrs:message code="PatientIdentifier.error.notUnique" />";
+		if ( msg == "PatientIdentifier.error.duplicate" ) ret = "<openmrs:message code="PatientIdentifier.error.duplicate" />";
+		if ( msg == "PatientIdentifier.error.insufficientIdentifiers" ) ret = "<openmrs:message code="PatientIdentifier.error.insufficientIdentifiers" />";
+		if ( msg == "PatientIdentifier.error.general" ) ret = "<openmrs:message code="PatientIdentifier.error.general" />";
 		
 		return ret;
 	}
@@ -121,7 +121,7 @@ highlightMissing=true/false (defaults to true)
 							allowUserDefault="true"
 						/>
 					</c:if>
-					<input id="idSaveButton_${iter.index}" type="button" value="<spring:message code="general.save" />" disabled="true" onClick="handleSaveIdentifier(${iter.index})"/>
+					<input id="idSaveButton_${iter.index}" type="button" value="<openmrs:message code="general.save" />" disabled="true" onClick="handleSaveIdentifier(${iter.index})"/>
 				</td>
 				<td>
 					<span id="msg_${iter.index}" style="display:none;" class="error"></span>

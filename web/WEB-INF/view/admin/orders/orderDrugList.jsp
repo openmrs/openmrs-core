@@ -5,27 +5,27 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Order.drug.manage.title"/></h2>	
+<h2><openmrs:message code="Order.drug.manage.title"/></h2>	
 
-<a href="order.form"><spring:message code="Order.add"/></a> 
-<a href="orderDrug.form"><spring:message code="Order.drug.add"/></a><br />
+<a href="order.form"><openmrs:message code="Order.add"/></a> 
+<a href="orderDrug.form"><openmrs:message code="Order.drug.add"/></a><br />
 
 <br />
 
-<span class="boxHeader"><spring:message code="Order.drug.list.title"/></span>
+<span class="boxHeader"><openmrs:message code="Order.drug.list.title"/></span>
 <c:if test="${not empty orderDrugList}">
 <div class="box">
 	<form method="post">
 		<table cellpadding="5">
 			<tr>
 				<th> </th>
-				<th> <spring:message code="Patient.names" /> </th>
-				<th> <spring:message code="Order.item.ordered" /> </th>
-				<th> <spring:message code="DrugOrder.dose"/> </th>
-				<th> <spring:message code="DrugOrder.units"/> </th>
-				<th> <spring:message code="DrugOrder.frequency"/> </th>
-				<th> <spring:message code="general.dateStart"/> </th>
-				<th> <spring:message code="general.instructions" /> </th>
+				<th> <openmrs:message code="Patient.names" /> </th>
+				<th> <openmrs:message code="Order.item.ordered" /> </th>
+				<th> <openmrs:message code="DrugOrder.dose"/> </th>
+				<th> <openmrs:message code="DrugOrder.units"/> </th>
+				<th> <openmrs:message code="DrugOrder.frequency"/> </th>
+				<th> <openmrs:message code="general.dateStart"/> </th>
+				<th> <openmrs:message code="general.instructions" /> </th>
 			</tr>
 			<c:forEach var="order" items="${orderDrugList}">
 				<tr>
@@ -64,13 +64,13 @@
 			</c:forEach>
 			<tr>
 				<td colspan="8" align="center">
-					<input type="submit" value="<spring:message code="Order.delete"/>" name="action">
+					<input type="submit" value="<openmrs:message code="Order.delete"/>" name="action">
 				</td>
 			</tr>
 		</table>
 	</form>
 </div>
 </c:if>
-<c:if test="${empty orderDrugList}"><spring:message code="Order.list.empty"/></c:if>
+<c:if test="${empty orderDrugList}"><openmrs:message code="Order.list.empty"/></c:if>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

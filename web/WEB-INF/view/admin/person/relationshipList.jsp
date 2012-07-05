@@ -25,14 +25,14 @@
 	
 </script>
 
-<h2><spring:message code="Relationship.title"/></h2>
+<h2><openmrs:message code="Relationship.title"/></h2>
 
-<a href="${pageContext.request.contextPath}/admin/person/relationship.form"><spring:message code="Relationship.add"/></a><br/><br/>
+<a href="${pageContext.request.contextPath}/admin/person/relationship.form"><openmrs:message code="Relationship.add"/></a><br/><br/>
 
 <div id="findRelationship">
-	<b class="boxHeader"><spring:message code="Person.find"/></b>
+	<b class="boxHeader"><openmrs:message code="Person.find"/></b>
 	<div class="box">
-		<div dojoType="PersonSearch" widgetId="pSearch" inputName="personName" searchLabel='<spring:message code="Person.searchBox"/>'></div>
+		<div dojoType="PersonSearch" widgetId="pSearch" inputName="personName" searchLabel='<openmrs:message code="Person.searchBox"/>'></div>
 	</div>
 </div>
 

@@ -202,38 +202,38 @@
 	
 </style>
 
-<h2><spring:message code="Patient.title"/></h2>
+<h2><openmrs:message code="Patient.title"/></h2>
 
 <c:if test="${patient.voided}">
 	<div id="patientFormVoided" class="retiredMessage">
-		<div><spring:message code="Patient.voidedMessage"/></div>
+		<div><openmrs:message code="Patient.voidedMessage"/></div>
 	</div>
 </c:if>
 
 <c:if test="${patient.dead}">
 	<div id="patientFormDeceased" class="retiredMessage">
-		<div><spring:message code="Patient.patientDeceased"/></div>
+		<div><openmrs:message code="Patient.patientDeceased"/></div>
 	</div>
 </c:if>
 
 <c:if test="${patient.patientId != null}">
-	<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${patient.patientId}"><spring:message code="patientDashboard.viewDashboard"/></a>
+	<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${patient.patientId}"><openmrs:message code="patientDashboard.viewDashboard"/></a>
 	|
-	<a href="${pageContext.request.contextPath}/admin/patients/mergePatients.form?patientId=${patient.patientId}"><spring:message code="Patient.mergeThis"/></a><br/><br/>
+	<a href="${pageContext.request.contextPath}/admin/patients/mergePatients.form?patientId=${patient.patientId}"><openmrs:message code="Patient.mergeThis"/></a><br/><br/>
 </c:if>
 
 <spring:hasBindErrors name="patient">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
 		</c:forEach>
 	</div>
 </spring:hasBindErrors>
 
 <form method="post" onSubmit="removeBlankData()">
 
-	<h3><spring:message code="Patient.identifiers"/></h3>
+	<h3><openmrs:message code="Patient.identifiers"/></h3>
 		<spring:hasBindErrors name="patient.identifiers">
 			<span class="error">${error.errorMessage}</span><br/>
 		</spring:hasBindErrors>
@@ -243,21 +243,21 @@
 					<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifier${varStatus.index}" <c:if test="${identifier.voided}">class='voided'</c:if>><span>${identifier.identifierType.name}</span>&nbsp;</a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifierTab" style="display: none"><span></span>&nbsp;</a>
-				<input type="button" onClick="return addNew('identifier');" class="addNew" id="identifier" value='<spring:message code="Patient.addNewIdentifier"/>'/>
+				<input type="button" onClick="return addNew('identifier');" class="addNew" id="identifier" value='<openmrs:message code="Patient.addNewIdentifier"/>'/>
 			</div>
 			<div class="tabBoxes" id="identifierDataBoxes">
 				<c:forEach var="identifier" items="${patient.identifiers}" varStatus="varStatus">
 					<spring:nestedPath path="patient.identifiers[${varStatus.index}]">
 						<div id="identifier${varStatus.index}Data" class="tabBox">
 							<%@ include file="include/editPatientIdentifier.jsp" %>
-							<!-- <input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value='<spring:message code="Patient.removeThisIdentifier"/>'/><br/> --> <br/>
+							<!-- <input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value='<openmrs:message code="Patient.removeThisIdentifier"/>'/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="identifierData" class="tabBox">
 					<spring:nestedPath path="emptyIdentifier">
 						<%@ include file="include/editPatientIdentifier.jsp" %>
-						<!-- <input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value='<spring:message code="Patient.removeThisIdentifier"/>'/><br/> --> <br/>
+						<!-- <input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value='<openmrs:message code="Patient.removeThisIdentifier"/>'/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
 			</div>
@@ -265,7 +265,7 @@
 	
 	<br style="clear: both" />
 	
-	<h3><spring:message code="Patient.names"/></h3>
+	<h3><openmrs:message code="Patient.names"/></h3>
 		<spring:hasBindErrors name="patient.names">
 			<span class="error">${error.errorMessage}</span><br/>
 		</spring:hasBindErrors>
@@ -275,21 +275,21 @@
 					<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="name${varStatus.index}" <c:if test="${name.voided}">class='voided'</c:if>><span>${name.givenName}</span>&nbsp;<span>${name.familyName}</span></a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="nameTab" style="display: none"><span></span>&nbsp;<span></span></a>
-				<input type="button" onClick="return addNew('name');" class="addNew" id="name" value='<spring:message code="Patient.addNewName"/>'/>
+				<input type="button" onClick="return addNew('name');" class="addNew" id="name" value='<openmrs:message code="Patient.addNewName"/>'/>
 			</div>
 			<div class="tabBoxes" id="nameDataBoxes">
 				<c:forEach var="name" items="${patient.names}" varStatus="varStatus">
 					<spring:nestedPath path="patient.names[${varStatus.index}]">
 						<div id="name${varStatus.index}Data" class="tabBox">
 							<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=${(name.personNameId == null)}" />
-							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<spring:message code="Patient.removeThisName"/>'/><br/> --> <br/>
+							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<openmrs:message code="Patient.removeThisName"/>'/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="nameData" class="tabBox">
 					<spring:nestedPath path="emptyName">
 						<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=true" />
-						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<spring:message code="Patient.removeThisName"/>'/><br/> --> <br/>
+						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<openmrs:message code="Patient.removeThisName"/>'/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
 			</div>
@@ -297,7 +297,7 @@
 	
 	<br style="clear: both" />
 	
-	<h3><spring:message code="Patient.addresses"/></h3>
+	<h3><openmrs:message code="Patient.addresses"/></h3>
 		<spring:hasBindErrors name="patient.addresses">
 			<span class="error">${error.errorMessage}</span><br/>
 		</spring:hasBindErrors>
@@ -307,7 +307,7 @@
 					<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="address${varStatus.index}" <c:if test="${address.voided}">class='voided'</c:if>><span>${address.cityVillage}</span>&nbsp;</a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="addressTab" style="display: none"><span></span>&nbsp;</a>
-				<input type="button" onClick="return addNew('address');" class="addNew" id="address" value='<spring:message code="Patient.addNewAddress"/>'/>			
+				<input type="button" onClick="return addNew('address');" class="addNew" id="address" value='<openmrs:message code="Patient.addNewAddress"/>'/>			
 			</div>
 			<div class="tabBoxes" id="addressDataBoxes">
 				<c:forEach var="address" items="${patient.addresses}" varStatus="varStatus">
@@ -315,14 +315,14 @@
 						<div id="address${varStatus.index}Data" class="tabBox">
 							<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=${(address.personAddressId == null)}" />
 							<%-- @ include file="include/editPersonAddress.jsp" --%>
-							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<spring:message code="Patient.removeThisAddress"/>'/><br/> --> <br/>
+							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<openmrs:message code="Patient.removeThisAddress"/>'/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="addressData" class="tabBox">
 					<spring:nestedPath path="emptyAddress">
 						<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=true" />
-						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<spring:message code="Patient.removeThisAddress"/>'/><br/> --> <br/>
+						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<openmrs:message code="Patient.removeThisAddress"/>'/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
 			</div>
@@ -330,7 +330,7 @@
 	
 	<br/>
 	
-	<h3><spring:message code="Patient.information"/></h3>
+	<h3><openmrs:message code="Patient.information"/></h3>
 		<div class="tabBox" id="pInformationBox">
 			<div class="tabBoxes">
 				<table>
@@ -346,20 +346,20 @@
 		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 	</spring:bind>
 	
-	<input type="submit" name="action" id="saveButton" value='<spring:message code="Patient.save"/>' />
+	<input type="submit" name="action" id="saveButton" value='<openmrs:message code="Patient.save"/>' />
 	
 	<c:if test="${patient.patientId != null}">
 	<openmrs:hasPrivilege privilege="Purge Patients">
 		&nbsp; &nbsp; &nbsp;
 		<span style="position: relative">
-			<input type="button" id="deletePatientButton" value="<spring:message code="Patient.delete"/>" onClick="showDiv('deletePatientDiv'); hideDiv('deletePatientButton')"/>
+			<input type="button" id="deletePatientButton" value="<openmrs:message code="Patient.delete"/>" onClick="showDiv('deletePatientDiv'); hideDiv('deletePatientButton')"/>
 			<div id="deletePatientDiv" style="position: absolute; padding: 1em; bottom: 0px; left: 0px; z-index: 9; width: 350px; border: 1px black solid; background-color: #ffff88; display: none">
-				<spring:message code="Patient.delete.warningMessage"/>
+				<openmrs:message code="Patient.delete.warningMessage"/>
 				<br/><br/>
 				<div align="center">
-					<input type="submit" name="action" value="<spring:message code="Patient.delete"/>" onclick="return confirm('<spring:message code="Patient.delete.finalWarning"/>')"/>
+					<input type="submit" name="action" value="<openmrs:message code="Patient.delete"/>" onclick="return confirm('<openmrs:message code="Patient.delete.finalWarning"/>')"/>
 					&nbsp; &nbsp; &nbsp;
-					<input type="button" value="<spring:message code="general.cancel" />" onClick="showDiv('deletePatientButton'); hideDiv('deletePatientDiv')"/>
+					<input type="button" value="<openmrs:message code="general.cancel" />" onClick="showDiv('deletePatientButton'); hideDiv('deletePatientDiv')"/>
 				</div>
 			</div>
 		</span>

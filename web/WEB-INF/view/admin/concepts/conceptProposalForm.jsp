@@ -43,7 +43,7 @@
 
 </script>
 
-<h2><spring:message code="ConceptProposal.title"/></h2>
+<h2><openmrs:message code="ConceptProposal.title"/></h2>
 
 <style>
 	th { text-align: left; }
@@ -53,27 +53,27 @@
 <table>
 	<c:if test="${conceptProposal.encounter != null}">
 		<tr>
-			<th valign="top"><spring:message code="ConceptProposal.encounter"/></th>
+			<th valign="top"><openmrs:message code="ConceptProposal.encounter"/></th>
 			<td class="sideNote">
 				<table>
 					<tr>
-						<th><spring:message code="general.id"/></th>
+						<th><openmrs:message code="general.id"/></th>
 						<td>${conceptProposal.encounter.encounterId}</td>
 					</tr>
 					<tr>
-						<th><spring:message code="Encounter.type"/></th>
+						<th><openmrs:message code="Encounter.type"/></th>
 						<td>${conceptProposal.encounter.encounterType.name}</td>
 					</tr>
 					<tr>
-						<th><spring:message code="Encounter.location"/></th>
+						<th><openmrs:message code="Encounter.location"/></th>
 						<td>${conceptProposal.encounter.location}</td>
 					</tr>
 					<tr>
-						<th><spring:message code="Encounter.provider"/></th>
+						<th><openmrs:message code="Encounter.provider"/></th>
 						<td>${conceptProposal.encounter.provider.personName}</td>
 					</tr>
 					<tr>
-						<th><spring:message code="Encounter.datetime"/></th>
+						<th><openmrs:message code="Encounter.datetime"/></th>
 						<td><openmrs:formatDate date="${conceptProposal.encounter.encounterDatetime}" type="long" /></td>
 					</tr>
 				</table>
@@ -82,7 +82,7 @@
 	</c:if>
 	<c:if test="${conceptProposal.obs != null}">
 		<tr>
-			<th><spring:message code="ConceptProposal.obs" /></th>
+			<th><openmrs:message code="ConceptProposal.obs" /></th>
 			<td>
 				${conceptProposal.obs.obsId}
 			</td>
@@ -90,7 +90,7 @@
 	</c:if>
 	<c:if test="${obsConcept != null}">
 		<tr>
-			<th><spring:message code="ConceptProposal.obsConcept" /></th>
+			<th><openmrs:message code="ConceptProposal.obsConcept" /></th>
 			<td>
 				#${obsConcept.conceptId}: ${obsConcept.name}
 			</td>
@@ -98,7 +98,7 @@
 	</c:if>
 	<c:if test="${!(conceptProposal.creator == null)}">
 		<tr>
-			<th><spring:message code="ConceptProposal.proposedBy" /></th>
+			<th><openmrs:message code="ConceptProposal.proposedBy" /></th>
 			<td>
 				${conceptProposal.creator.personName} -
 				<openmrs:formatDate date="${conceptProposal.dateCreated}" type="long" />
@@ -107,7 +107,7 @@
 	</c:if>
 	<c:if test="${!(conceptProposal.changedBy == null)}">
 		<tr>
-			<th><spring:message code="general.changedBy" /></th>
+			<th><openmrs:message code="general.changedBy" /></th>
 			<td>
 				${conceptProposal.changedBy.personName} -
 				<openmrs:formatDate date="${conceptProposal.dateChanged}" type="long" />
@@ -115,14 +115,14 @@
 		</tr>
 	</c:if>
 	<tr>
-		<th><spring:message code="ConceptProposal.originalText"/></th>
+		<th><openmrs:message code="ConceptProposal.originalText"/></th>
 		<td>${conceptProposal.originalText}</td>
 	</tr>
 	<tr>
 		<th></th>
 		<td>
 			<div class="subnote">
-				<spring:message code="ConceptProposal.possibleConcepts"/>:
+				<openmrs:message code="ConceptProposal.possibleConcepts"/>:
 				<table> 
 					<tr>
 						<td valign="top">
@@ -154,7 +154,7 @@
 	<tr><td>&nbsp;</td><td></td></tr>
 	
 	<tr>
-		<th><spring:message code="ConceptProposal.finalText"/></th>
+		<th><openmrs:message code="ConceptProposal.finalText"/></th>
 		<td>
 			<spring:bind path="conceptProposal.finalText">
 				<input type="text" name="${status.expression}" id="finalText" value="<c:if test="${(status.value == null || status.value == '') && conceptProposal.mappedConcept == null}">${conceptProposal.originalText}</c:if><c:if test="${status.value != ''}">${status.value}</c:if>" size="50" />
@@ -163,24 +163,24 @@
 		</td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="ConceptProposal.comments"/></th>
+		<th valign="top"><openmrs:message code="ConceptProposal.comments"/></th>
 		<td valign="top">
 			<spring:bind path="conceptProposal.comments">
 				<textarea name="${status.expression}" rows="3" cols="48">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
-			<i><spring:message code="ConceptProposal.commentsDescription"/></i>
+			<i><openmrs:message code="ConceptProposal.commentsDescription"/></i>
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="ConceptProposal.mappedConcept"/></th>
+		<th><openmrs:message code="ConceptProposal.mappedConcept"/></th>
 		<td>
 			<spring:bind path="conceptProposal.mappedConcept">
-				<a target="_blank" href="${pageContext.request.contextPath}/dictionary/concept.form?conceptName=" onclick="this.href=this.href + document.getElementById('finalText').value"><spring:message code="Concept.add"/></a>
-				<spring:message code="general.or" />
+				<a target="_blank" href="${pageContext.request.contextPath}/dictionary/concept.form?conceptName=" onclick="this.href=this.href + document.getElementById('finalText').value"><openmrs:message code="Concept.add"/></a>
+				<openmrs:message code="general.or" />
 				<br/>
 				<div dojoType="ConceptSearch" widgetId="cSearch" showVerboseListing="true"></div>
-				<div dojoType="OpenmrsPopup" widgetId="cSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find"/>'></div>
+				<div dojoType="OpenmrsPopup" widgetId="cSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<openmrs:message code="Concept.find"/>'></div>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -189,17 +189,17 @@
 <br />
 <!-- TODO create some sort of mechanism to scroll through the encounters -->
 <c:if test="${fn:length(matchingProposals) > 1}">
-	<spring:message code="ConceptProposal.update.note" arguments="${fn:length(matchingProposals)-1}"/>
+	<openmrs:message code="ConceptProposal.update.note" arguments="${fn:length(matchingProposals)-1}"/>
 	<c:if test="${fn:length(matchingProposals) > 2}">
-	    <spring:message code="ConceptProposal.update.note.plural"/>
+	    <openmrs:message code="ConceptProposal.update.note.plural"/>
 	</c:if>
 	<br/>
 </c:if>
 <br />
-<input type="submit" name="action" value="<spring:message code="ConceptProposal.ignore"/>">
-<input type="submit" name="action" value="<spring:message code="ConceptProposal.saveAsConcept"/>">
-<input type="submit" name="action" value="<spring:message code="ConceptProposal.saveAsSynonym"/>">
-<input type="submit" name="action" value="<spring:message code="general.cancel"/>">
+<input type="submit" name="action" value="<openmrs:message code="ConceptProposal.ignore"/>">
+<input type="submit" name="action" value="<openmrs:message code="ConceptProposal.saveAsConcept"/>">
+<input type="submit" name="action" value="<openmrs:message code="ConceptProposal.saveAsSynonym"/>">
+<input type="submit" name="action" value="<openmrs:message code="general.cancel"/>">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

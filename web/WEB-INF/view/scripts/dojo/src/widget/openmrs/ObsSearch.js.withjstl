@@ -115,7 +115,7 @@ dojo.widget.defineWidget(
 			dojo.event.connect(this.verboseListing, "onclick", this, "onCheckboxClick");
 		},
 		
-		templateString: '<span><span style="white-space: nowrap"><span dojoAttachPoint="searchLabelNode"></span> <div dojoType="ObsSearch" widgetId="oSearch" searchLabel="<spring:message code="Obs.searchBox" htmlEscape="true"/>" patientId='<request:parameter name="patientId"/>' encounterId='<request:parameter name="encounterId"/>' conceptId='<request:parameter name="conceptId"/>"></div>
+		templateString: '<span><span style="white-space: nowrap"><span dojoAttachPoint="searchLabelNode"></span> <div dojoType="ObsSearch" widgetId="oSearch" searchLabel="<openmrs:message code="Obs.searchBox" htmlEscape="true"/>" patientId='<request:parameter name="patientId"/>' encounterId='<request:parameter name="encounterId"/>' conceptId='<request:parameter name="conceptId"/>"></div>
 		
 		
 		 <input type="text" value="" dojoAttachPoint="inputPatientNode" autocomplete="off" /> <input type="checkbox" style="display: none" dojoAttachPoint="includeRetired"/> <input type="checkbox" style="display: none" dojoAttachPoint="includeVoided"/> <input type="checkbox" style="display: none" dojoAttachPoint="verboseListing"/></span><span class="openmrsSearchDiv"><table class="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead><tr dojoAttachPoint="headerRow"></tr></thead><tbody dojoAttachPoint="objHitsTableBody" style="vertical-align: top"><tr><td class="searchIndex"></td><td></td></tr></tbody></table></span></span>',
@@ -148,7 +148,7 @@ dojo.widget.defineWidget(
 			}
 		},
 		
-		noPatientsFoundText: "<spring:message javaScriptEscape="true" code="ObsSearch.noneFound"/> <br/> ",
+		noPatientsFoundText: "<openmrs:message javaScriptEscape="true" code="ObsSearch.noneFound"/> <br/> ",
 		
 		getId: function(o) {
 			var td = document.createElement("td");
@@ -197,7 +197,7 @@ dojo.widget.defineWidget(
 		
 		showHeaderRow: true,
 		getHeaderCellContent: function() {
-			return ['', '<spring:message code="Obs.patient" javaScriptEscape="true"/>', '<spring:message code="Encounter.datetime" javaScriptEscape="true"/>', '<spring:message code="Concept.name" javaScriptEscape="true"/>', '<spring:message code="Obs.value" javaScriptEscape="true"/>'];
+			return ['', '<openmrs:message code="Obs.patient" javaScriptEscape="true"/>', '<openmrs:message code="Encounter.datetime" javaScriptEscape="true"/>', '<openmrs:message code="Concept.name" javaScriptEscape="true"/>', '<openmrs:message code="Obs.value" javaScriptEscape="true"/>'];
 		},
 		
 		getProblemImage: function() {

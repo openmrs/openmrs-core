@@ -98,11 +98,11 @@
 			var birthdate = parseSimpleDate(birthdateBox.value, '<openmrs:datePattern />');
 			var age = getAge(birthdate);
 			if (age > 0)
-				ageBox.innerHTML = "(" + age + ' <spring:message code="Person.age.years"/>)';
+				ageBox.innerHTML = "(" + age + ' <openmrs:message code="Person.age.years"/>)';
 			else if (age == 1)
-				ageBox.innerHTML = '(1 <spring:message code="Person.age.year"/>)';
+				ageBox.innerHTML = '(1 <openmrs:message code="Person.age.year"/>)';
 			else if (age == 0)
-				ageBox.innerHTML = '( < 1 <spring:message code="Person.age.year"/>)';
+				ageBox.innerHTML = '( < 1 <openmrs:message code="Person.age.year"/>)';
 			else
 				ageBox.innerHTML = '( ? )';
 			ageBox.style.display = "";
@@ -200,21 +200,21 @@
 <openmrs:globalProperty key="use_patient_attribute.mothersName" defaultValue="false" var="showMothersName"/>
 
 <spring:hasBindErrors name="patient">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}" arguments="${error.arguments}"/><br/><!-- ${fn:replace(error, '--', '\\-\\-')} -->
+			<openmrs:message code="${error.code}" text="${error.code}" arguments="${error.arguments}"/><br/><!-- ${fn:replace(error, '--', '\\-\\-')} -->
 		</c:forEach>
 	</div>
 </spring:hasBindErrors>
 
 <form method="post" action="newPatient.form" onSubmit="removeHiddenRows()">
-	<c:if test="${patient.patientId == null}"><h2><spring:message code="Patient.create"/></h2></c:if>
-	<c:if test="${patient.patientId != null}"><h2><spring:message code="Patient.edit"/></h2></c:if>
+	<c:if test="${patient.patientId == null}"><h2><openmrs:message code="Patient.create"/></h2></c:if>
+	<c:if test="${patient.patientId != null}"><h2><openmrs:message code="Patient.edit"/></h2></c:if>
 
 	<c:if test="${patient.patientId != null}">
 		<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${patient.patientId}">
-			<spring:message code="patientDashboard.viewDashboard"/>
+			<openmrs:message code="patientDashboard.viewDashboard"/>
 		</a>
 		<br/>
 	</c:if>
@@ -223,7 +223,7 @@
 	
 	<table cellspacing="0" cellpadding="7">
 	<tr>
-		<th class="headerCell"><spring:message code="Person.name"/></th>
+		<th class="headerCell"><openmrs:message code="Person.name"/></th>
 		<td class="inputCell">
 			<table cellspacing="2">
 				<thead>
@@ -236,15 +236,15 @@
 		</td>
 	</tr>
 	<tr>
-		<th class="headerCell"><spring:message code="PatientIdentifier.title.endUser"/></th>
+		<th class="headerCell"><openmrs:message code="PatientIdentifier.title.endUser"/></th>
 		<td class="inputCell">
 			<table id="identifiers" cellspacing="2">
 				<tr>
-					<td><spring:message code="PatientIdentifier.identifier"/></td>
+					<td><openmrs:message code="PatientIdentifier.identifier"/></td>
 					<openmrs:extensionPoint pointId="newPatientForm.identifierHeader" />
-					<td><spring:message code="PatientIdentifier.identifierType"/></td>
-					<td><spring:message code="PatientIdentifier.location.identifier"/></td>
-					<td><spring:message code="general.preferred"/></td>
+					<td><openmrs:message code="PatientIdentifier.identifierType"/></td>
+					<td><openmrs:message code="PatientIdentifier.location.identifier"/></td>
+					<td><openmrs:message code="general.preferred"/></td>
 					<td></td>
 				</tr>
 				<tbody id="identifiersTbody">
@@ -276,7 +276,7 @@
 							<input type="radio" name="preferred" value="" onclick="identifierOrTypeChanged(this)" />
 						</td>
 						<td valign="middle" align="center">
-							<input type="button" name="closeButton" onClick="return removeRow(this);" class="closeButton" value='<spring:message code="general.remove"/>'/>
+							<input type="button" name="closeButton" onClick="return removeRow(this);" class="closeButton" value='<openmrs:message code="general.remove"/>'/>
 						</td>
 					</tr>
 				</tbody>
@@ -286,24 +286,24 @@
 					addIdentifier("${id.identifier}", "${id.identifierType.patientIdentifierTypeId}", "${id.location.locationId}", ${id.preferred}, ${id.dateCreated != null});
 				</c:forEach>
 			</script>
-			<input type="button" class="smallButton" onclick="addIdentifier()" value="<spring:message code="PatientIdentifier.add" />" hidefocus />
+			<input type="button" class="smallButton" onclick="addIdentifier()" value="<openmrs:message code="PatientIdentifier.add" />" hidefocus />
 		</td>
 	</tr>
 	<tr>
-		<th class="headerCell"><spring:message code="patientDashboard.demographics"/></th>
+		<th class="headerCell"><openmrs:message code="patientDashboard.demographics"/></th>
 		<td class="inputCell">
 			<table>
 				<tr>
-					<td><spring:message code="Person.gender"/></td>
-					<td><spring:message code="Person.age"/></td>
-					<td><spring:message code="Person.birthdate"/> <i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i></td>
+					<td><openmrs:message code="Person.gender"/></td>
+					<td><openmrs:message code="Person.age"/></td>
+					<td><openmrs:message code="Person.birthdate"/> <i style="font-weight: normal; font-size: 0.8em;">(<openmrs:message code="general.format"/>: <openmrs:datePattern />)</i></td>
 				</tr>
 				<tr>
 					<td style="padding-right: 3em">
 						<spring:bind path="patient.gender">
 								<openmrs:forEachRecord name="gender">
 									<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />
-										<label for="${record.key}"> <spring:message code="Person.gender.${record.value}"/> </label>
+										<label for="${record.key}"> <openmrs:message code="Person.gender.${record.value}"/> </label>
 								</openmrs:forEachRecord>
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
@@ -334,7 +334,7 @@
 						
 						<span id="birthdateEstimatedCheckbox" class="listItemChecked" style="padding: 5px;">
 							<spring:bind path="patient.birthdateEstimated">
-								<label for="birthdateEstimatedInput"><spring:message code="Person.birthdateEstimated"/></label>
+								<label for="birthdateEstimatedInput"><openmrs:message code="Person.birthdateEstimated"/></label>
 								<input type="hidden" name="_birthdateEstimated">
 								<input type="checkbox" name="birthdateEstimated" value="true" 
 									   <c:if test="${status.value == true}">checked</c:if> 
@@ -355,7 +355,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th class="headerCell"><spring:message code="Person.address"/></th>
+		<th class="headerCell"><openmrs:message code="Person.address"/></th>
 		<td class="inputCell">
 			<spring:nestedPath path="patient.address">
 				<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=false" />
@@ -401,7 +401,7 @@
 		</c:choose>
 	
 		<tr>
-			<th class="headerCell"><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></th>
+			<th class="headerCell"><openmrs:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></th>
 			<td class="inputCell">
 				<c:choose>
 					<c:when test="${authorized == true}">
@@ -421,9 +421,9 @@
 	</openmrs:forEachDisplayAttributeType>
 	
 	<tr>
-		<th class="headerCell lastCell"><spring:message code="Person.dead"/></th>
+		<th class="headerCell lastCell"><openmrs:message code="Person.dead"/></th>
 		<td class="inputCell lastCell">
-			<spring:message code="Person.dead.checkboxInstructions"/>
+			<openmrs:message code="Person.dead.checkboxInstructions"/>
 			<spring:bind path="patient.dead">
 				<input type="hidden" name="_${status.expression}"/>
 				<input type="checkbox" name="${status.expression}" 
@@ -448,17 +448,17 @@
 			</script>
 			<br/>
 			<div id="deathInformation">
-				<b><spring:message code="Person.deathDate"/>:</b>
+				<b><openmrs:message code="Person.deathDate"/>:</b>
 
 				<spring:bind path="patient.deathDate">
 					<input type="text" name="deathDate" size="10" 
 						   value="${status.value}" onClick="showCalendar(this)" 
 						   id="deathDate" />
-					<i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i>
+					<i style="font-weight: normal; font-size: 0.8em;">(<openmrs:message code="general.format"/>: <openmrs:datePattern />)</i>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 				&nbsp; &nbsp; 
-				<spring:message code="Person.causeOfDeath"/>
+				<openmrs:message code="Person.causeOfDeath"/>
 				<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
 				<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
 				<spring:bind path="patient.causeOfDeath">
@@ -478,8 +478,8 @@
 	<input type="hidden" name="patientId" value="${param.patientId}" />
 	
 	<br />
-	<input type="submit" value="<spring:message code="general.save" />" name="action" id="addButton"> &nbsp; &nbsp; 
-	<input type="button" value="<spring:message code="general.back" />" onclick="history.go(-1);">
+	<input type="submit" value="<openmrs:message code="general.save" />" name="action" id="addButton"> &nbsp; &nbsp; 
+	<input type="button" value="<openmrs:message code="general.back" />" onclick="history.go(-1);">
 </form>
 
 <script type="text/javascript">

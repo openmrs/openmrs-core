@@ -5,14 +5,14 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="ConceptDatatype.title"/></h2>
+<h2><openmrs:message code="ConceptDatatype.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.afterTitle" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 
 <%--  <form method="post"> --%>
 <table>
 	<tr>
-		<td><spring:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/></td>
 		<td>
 			<spring:bind path="conceptDatatype.name">
 				<input type="text" name="name" value="${status.value}" size="35" readonly="1"/>
@@ -21,7 +21,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td>
 			<spring:bind path="conceptDatatype.description">
 				<textarea name="description" rows="3" cols="40" type="_moz" readonly="1">${status.value}</textarea>
@@ -30,7 +30,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="ConceptDatatype.hl7Abbreviation"/></td>
+		<td><openmrs:message code="ConceptDatatype.hl7Abbreviation"/></td>
 		<td>
 			<spring:bind path="conceptDatatype.hl7Abbreviation">
 				<input type="text" name="hl7Abbreviation" value="${status.value}" size="5" readonly="1"/>
@@ -40,7 +40,7 @@
 	</tr>
 	<c:if test="${!(conceptDatatype.creator == null)}">
 		<tr>
-			<td><spring:message code="general.createdBy" /></td>
+			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
 				${conceptDatatype.creator.personName} -
 				<openmrs:formatDate date="${conceptDatatype.dateCreated}" type="long" />
@@ -50,10 +50,10 @@
 </table>
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.inForm" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 <br />
-<%-- <input type="submit" value="<spring:message code="ConceptDatatype.save"/>">
+<%-- <input type="submit" value="<openmrs:message code="ConceptDatatype.save"/>">
 </form> --%>
 
-<div id="conceptDatatypeFormReadOnly">(<spring:message code="general.readonly"/>)</div>
+<div id="conceptDatatypeFormReadOnly">(<openmrs:message code="general.readonly"/>)</div>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.footer" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 

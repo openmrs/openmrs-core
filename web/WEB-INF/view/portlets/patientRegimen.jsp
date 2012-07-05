@@ -4,12 +4,12 @@
 
 <div id="regimenPortlet">
 	<div id="regimenPortletCurrent">
-		<div class="boxHeader${model.patientVariation}"><spring:message code="DrugOrder.regimens.current" /></div>
+		<div class="boxHeader${model.patientVariation}"><openmrs:message code="DrugOrder.regimens.current" /></div>
 		<div class="box${model.patientVariation}">
 
 			<openmrs:portlet url="patientRegimenCurrent" id="patientRegimenCurrent" patientId="${patient.patientId}" parameters="displayDrugSetIds=${model.displayDrugSetIds},*|displayFutureRegimens=true" />
 			
-			<span><input type="button" onclick="showHideDiv('regimenPortletAddForm');" value="(+) <spring:message code="DrugOrder.regimens.addOrChange" />"></span>
+			<span><input type="button" onclick="showHideDiv('regimenPortletAddForm');" value="(+) <openmrs:message code="DrugOrder.regimens.addOrChange" />"></span>
 			<div id="regimenPortletAddForm" style="display:none; border: 1px dashed black; padding: 10px;">
 				<table width="100%">
 					<tr>
@@ -17,30 +17,30 @@
 							<td valign="top">								
 								<table>								
 									<tr>
-										<td colspan="2"><strong><spring:message code="DrugOrder.regimens.addStandard"/></strong></td>
+										<td colspan="2"><strong><openmrs:message code="DrugOrder.regimens.addStandard"/></strong></td>
 									</tr>
 									<c:forEach var="standardRegimen" items="${model.standardRegimens}">
 										<tr id="row${standardRegimen.codeName}">
 											<form onSubmit="addStandard${standardRegimen.codeName}();">
 												<td><a href="javascript:selectStandard('${standardRegimen.codeName}');">${standardRegimen.displayName}</a></td>
-												<td><div id="stDtLabel${standardRegimen.codeName}" style="display:none"><spring:message code="general.dateStart"/></div></td>
+												<td><div id="stDtLabel${standardRegimen.codeName}" style="display:none"><openmrs:message code="general.dateStart"/></div></td>
 												<td><div id="stDt${standardRegimen.codeName}" style="display:none"><openmrs:fieldGen type="java.util.Date" formFieldName="startDate${standardRegimen.codeName}" val="" parameters="noBind=true" /></div></td>
 												<td><div id="action${standardRegimen.codeName}" style="display:none">
 													<select id="actionSelect${standardRegimen.codeName}" onChange="handleStandardActionChange('${standardRegimen.codeName}');">
-														<option value=""><spring:message code="DrugOrder.regimen.action.choose" /></option>
-														<option value="add"><spring:message code="DrugOrder.regimen.action.addToCurrent" /></option>
+														<option value=""><openmrs:message code="DrugOrder.regimen.action.choose" /></option>
+														<option value="add"><openmrs:message code="DrugOrder.regimen.action.addToCurrent" /></option>
 														<c:if test="${not empty standardRegimen.canReplace && not empty model.currentDrugOrders}">
-															<option value="discontinue"><spring:message code="DrugOrder.regimen.action.discontinue" arguments="${standardRegimen.canReplace}" /></option>
-															<option value="void"><spring:message code="DrugOrder.regimen.action.void" arguments="${standardRegimen.canReplace}" /></option>
+															<option value="discontinue"><openmrs:message code="DrugOrder.regimen.action.discontinue" arguments="${standardRegimen.canReplace}" /></option>
+															<option value="void"><openmrs:message code="DrugOrder.regimen.action.void" arguments="${standardRegimen.canReplace}" /></option>
 														</c:if>
 													</select>
 												</td>
 												<td><div id="reas${standardRegimen.codeName}" style="display:none">
-													<spring:message code="general.reason" />: 
+													<openmrs:message code="general.reason" />: 
 														<select name="reason${standardRegimen.codeName}" id="reason${standardRegimen.codeName}"></select>
 												</div></td>
-												<td><div id="replace${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="DrugOrder.regimen.addAndReplace" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
-												<td><div id="add${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="general.add" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
+												<td><div id="replace${standardRegimen.codeName}" style="display:none"><input type="button" value="<openmrs:message code="DrugOrder.regimen.addAndReplace" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
+												<td><div id="add${standardRegimen.codeName}" style="display:none"><input type="button" value="<openmrs:message code="general.add" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
 											</form>
 										</tr>
 									</c:forEach>
@@ -54,16 +54,16 @@
 								<form method="post" id="orderForm" onSubmit="handleAddDrugOrder(${model.patientId}, 'drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')">
 								<table>
 									<tr>
-										<td colspan="2"><strong><spring:message code="DrugOrder.regimens.addCustom"/></strong></td>
+										<td colspan="2"><strong><openmrs:message code="DrugOrder.regimens.addCustom"/></strong></td>
 									</tr>								
 									<tr>
-										<td><spring:message code="DrugOrder.drug"/></td>						
+										<td><openmrs:message code="DrugOrder.drug"/></td>						
 										<td>
 											<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="drug" val="" parameters="includeVoided=false|noBind=true|optionHeader=[blank]|onChange=updateAddFields('drug','units','frequency')" />
 										</td>
 									</tr>
 									<tr>
-										<td><spring:message code="DrugOrder.dose"/></td>
+										<td><openmrs:message code="DrugOrder.dose"/></td>
 										<td>
 											<openmrs:fieldGen type="java.lang.Integer" formFieldName="dose" val="" parameters="noBind=true" />
 											<span id="unitsSpan"></span>
@@ -71,25 +71,25 @@
 										</td>
 									</tr>
 									<tr>
-										<td><spring:message code="DrugOrder.frequency"/></td>
+										<td><openmrs:message code="DrugOrder.frequency"/></td>
 										<td>
 											<%--<openmrs:fieldGen type="java.lang.String" formFieldName="frequency" val="" parameters="noBind=true|fieldLength=8" />--%>
 											<select name="frequencyDay" id="frequencyDay">
 												<% for ( int i = 1; i <= 10; i++ ) { %>
-													<option value="<%= i %>/<spring:message code="DrugOrder.frequency.day" />"><%= i %>/<spring:message code="DrugOrder.frequency.day" /></option>
+													<option value="<%= i %>/<openmrs:message code="DrugOrder.frequency.day" />"><%= i %>/<openmrs:message code="DrugOrder.frequency.day" /></option>
 												<% } %>
 											</select>
 											<span> x </span>
 											<select name="frequencyWeek" id="frequencyWeek">
-												<%--<option value="<spring:message code="DrugOrder.frequency.everyDay" />"><spring:message code="DrugOrder.frequency.everyDay" /></option>--%>
+												<%--<option value="<openmrs:message code="DrugOrder.frequency.everyDay" />"><openmrs:message code="DrugOrder.frequency.everyDay" /></option>--%>
 												<% for ( int i = 7; i >= 1; i-- ) { %>
-													<option value="<%= i %> <spring:message code="DrugOrder.frequency.days" />/<spring:message code="DrugOrder.frequency.week" />"><%= i %> <spring:message code="DrugOrder.frequency.days" />/<spring:message code="DrugOrder.frequency.week" /></option>
+													<option value="<%= i %> <openmrs:message code="DrugOrder.frequency.days" />/<openmrs:message code="DrugOrder.frequency.week" />"><%= i %> <openmrs:message code="DrugOrder.frequency.days" />/<openmrs:message code="DrugOrder.frequency.week" /></option>
 												<% } %>
 											</select>
 										</td>
 									</tr>
 									<tr>
-										<td><spring:message code="general.dateStart"/></td>
+										<td><openmrs:message code="general.dateStart"/></td>
 										<td>
 											<openmrs:fieldGen type="java.util.Date" formFieldName="startDate" val="" parameters="noBind=true" />
 										</td>
@@ -99,17 +99,17 @@
 										<td>
 											<div id="actionNew" style="display:none;">
 												<select id="actionSelectNew" onChange="handleStandardActionChangeNew();">
-													<option value=""><spring:message code="DrugOrder.regimen.action.choose" /></option>
-													<option value="add"><spring:message code="DrugOrder.regimen.action.addToCurrent" /></option>
-													<option value="discontinue"><spring:message code="DrugOrder.regimen.action.discontinue.allCurrent" /></option>
-													<option value="void"><spring:message code="DrugOrder.regimen.action.void.allCurrent" /></option>
+													<option value=""><openmrs:message code="DrugOrder.regimen.action.choose" /></option>
+													<option value="add"><openmrs:message code="DrugOrder.regimen.action.addToCurrent" /></option>
+													<option value="discontinue"><openmrs:message code="DrugOrder.regimen.action.discontinue.allCurrent" /></option>
+													<option value="void"><openmrs:message code="DrugOrder.regimen.action.void.allCurrent" /></option>
 												</select>
 											</div>
 										</td>
 									</tr>
 									<tr id="reasNew" style="display:none">
 										<td>
-												<spring:message code="general.reason" />: 
+												<openmrs:message code="general.reason" />: 
 										</td>
 										<td>
 												<select name="reasonNew" id="reasonNew"></select>
@@ -117,10 +117,10 @@
 									</tr>
 									<tr>
 										<td colspan="2" align="center">
-											<span id="replaceNew" style="display:none"><input type="button" value="<spring:message code="DrugOrder.regimen.addAndReplace" />" onClick="addNewDrugOrder();"></span>
-											<span id="addNew" style="display:none"><input type="button" value="<spring:message code="general.add" />" onClick="addNewDrugOrder();"></span>
-											<span id="cancelNew" style="display:none"><input type="button" value="<spring:message code="general.cancel" />" onClick="cancelNewOrder();"></span>
-											<%--<td><input type="button" value="<spring:message code="general.add"/>" onClick="handleAddDrugOrder(${model.patientId}, 'drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')"></td>--%>									
+											<span id="replaceNew" style="display:none"><input type="button" value="<openmrs:message code="DrugOrder.regimen.addAndReplace" />" onClick="addNewDrugOrder();"></span>
+											<span id="addNew" style="display:none"><input type="button" value="<openmrs:message code="general.add" />" onClick="addNewDrugOrder();"></span>
+											<span id="cancelNew" style="display:none"><input type="button" value="<openmrs:message code="general.cancel" />" onClick="cancelNewOrder();"></span>
+											<%--<td><input type="button" value="<openmrs:message code="general.add"/>" onClick="handleAddDrugOrder(${model.patientId}, 'drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')"></td>--%>									
 										</td>
 									</tr>
 								</table>
@@ -134,7 +134,7 @@
 	</div>
 	<br />
 	<div id="regimenPortletCompleted">
-		<div class="boxHeader${model.patientVariation}"><spring:message code="DrugOrder.regimens.completed" /></div>
+		<div class="boxHeader${model.patientVariation}"><openmrs:message code="DrugOrder.regimens.completed" /></div>
 		<div class="box${model.patientVariation}">
 
 			<openmrs:portlet url="patientRegimenCompleted" id="patientRegimenCompleted" patientId="${patient.patientId}" parameters="displayDrugSetIds=${model.displayDrugSetIds}" />
@@ -252,7 +252,7 @@
 							}
 						}
 					} else {
-						alert("<spring:message code="DrugOrder.add.error.missingStartDate" />");
+						alert("<openmrs:message code="DrugOrder.add.error.missingStartDate" />");
 					}
 				}
 				
@@ -333,12 +333,12 @@
 				hideDiv('actionNew');
 				showHideOtherStandards("New");
 			} else {
-				if ( drugId == '' ) alert("<spring:message code="DrugOrder.add.error.missingDrug" />");
-				else if ( dose == '' ) alert("<spring:message code="DrugOrder.add.error.missingDose" />");
-				else if ( units == '' ) alert("<spring:message code="DrugOrder.add.error.missingUnits" />");
-				else if ( freqDay == '' ) alert("<spring:message code="DrugOrder.add.error.missingFrequency" />");
-				else if ( freqWeek == '' ) alert("<spring:message code="DrugOrder.add.error.missingFrequency" />");
-				else if ( startDate == '' ) alert("<spring:message code="DrugOrder.add.error.missingStartDate" />");
+				if ( drugId == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingDrug" />");
+				else if ( dose == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingDose" />");
+				else if ( units == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingUnits" />");
+				else if ( freqDay == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingFrequency" />");
+				else if ( freqWeek == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingFrequency" />");
+				else if ( startDate == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingStartDate" />");
 			}
 		}
 

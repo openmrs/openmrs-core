@@ -23,15 +23,15 @@
  }
 </style>
 
-<h2><spring:message code="GlobalProperty.manage.title"/></h2>	
+<h2><openmrs:message code="GlobalProperty.manage.title"/></h2>	
 
-<b class="boxHeader"><spring:message code="GlobalProperty.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="GlobalProperty.list.title"/></b>
 <form method="post" class="box" onsubmit="removeHiddenRows()">
 	<table cellpadding="1" cellspacing="0">
 		<thead>
 			<tr>
-				<th><spring:message code="general.name" /></th>
-				<th><spring:message code="general.value" /></th>
+				<th><openmrs:message code="general.name" /></th>
+				<th><openmrs:message code="general.value" /></th>
 				<th></th>
 			</tr>
 		</thead>
@@ -49,7 +49,7 @@
 							</c:otherwise>
 						</c:choose>
 					</td>
-					<td valign="top" rowspan="2"><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="edited(); remove(this)" /></td>
+					<td valign="top" rowspan="2"><input type="button" value='<openmrs:message code="general.remove" />' class="closeButton" onclick="edited(); remove(this)" /></td>
 				</tr>
 				<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
 					<td colspan="2" valign="top" class="description">
@@ -62,7 +62,7 @@
 			<tr id="newProperty">
 				<td valign="top"><input type="text" name="property" size="50" maxlength="250" onchange="edited()" /></td>
 				<td valign="top"><input type="text" name="value" size="30" maxlength="250" onchange="edited()" /></td>
-				<td valign="top" rowspan="2"><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="remove(this)" /></td>
+				<td valign="top" rowspan="2"><input type="button" value='<openmrs:message code="general.remove" />' class="closeButton" onclick="remove(this)" /></td>
 			</tr>
 			<tr id="newPropertyDescription">
 					<td colspan="2" valign="top" class="description">
@@ -74,7 +74,7 @@
 		</tbody>
 	</table>
 	
-	<input type="button" onclick="addProperty()" class="smallButton" value='<spring:message code="GlobalProperty.add" />' />
+	<input type="button" onclick="addProperty()" class="smallButton" value='<openmrs:message code="GlobalProperty.add" />' />
 	
 	<br /><br />
 	
@@ -162,9 +162,9 @@
 	</script>
 
 	<span id="buttonsAtBottom">
-		<input type="submit" name="action" value='<spring:message code="general.save"/>' />
+		<input type="submit" name="action" value='<openmrs:message code="general.save"/>' />
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="action" value='<spring:message code="general.cancel"/>' />
+		<input type="submit" name="action" value='<openmrs:message code="general.cancel"/>' />
 	</span>
 </form>
 

@@ -26,14 +26,14 @@
 		</script>
 
 		<!--  Page Title : '${pageTitle}'
-			OpenMRS Title: <spring:message code="openmrs.title"/>
+			OpenMRS Title: <openmrs:message code="openmrs.title"/>
 		-->
 		<c:choose>
 			<c:when test="${!empty pageTitle}">
 				<title>${pageTitle}</title>
 			</c:when>
 			<c:otherwise>
-				<title><spring:message code="openmrs.title"/></title>
+				<title><openmrs:message code="openmrs.title"/></title>
 			</c:otherwise>
 		</c:choose>
 
@@ -49,9 +49,9 @@
 	<div id="pageBody">
 		<div id="contentMinimal">
 			<c:if test="${msg != null}">
-				<div id="openmrs_msg"><spring:message code="${msg}" text="${msg}" arguments="${msgArgs}" /></div>
+				<div id="openmrs_msg"><openmrs:message code="${msg}" text="${msg}" arguments="${msgArgs}" /></div>
 			</c:if>
 			<c:if test="${err != null}">
-				<div id="openmrs_error"><spring:message code="${err}" text="${err}" arguments="${errArgs}"/></div>
+				<div id="openmrs_error"><openmrs:message code="${err}" text="${err}" arguments="${errArgs}"/></div>
 			</c:if>
 

@@ -73,9 +73,9 @@ dojo.widget.defineWidget(
 			}
 		},
 		
-		searchOnPatientNameText: "<spring:message javaScriptEscape="true" code="PatientSearch.searchOnName"/>",
-		noPatientsFoundText: "<spring:message javaScriptEscape="true" code="PatientSearch.noneFound"/> <br/> ",
-		addPatientLink: "<a href='<openmrs:contextPath />/admin/person/addPerson.htm?personType=patient&viewType=shortEdit'><spring:message javaScriptEscape="true" code="Patient.addNew"/></a>",
+		searchOnPatientNameText: "<openmrs:message javaScriptEscape="true" code="PatientSearch.searchOnName"/>",
+		noPatientsFoundText: "<openmrs:message javaScriptEscape="true" code="PatientSearch.noneFound"/> <br/> ",
+		addPatientLink: "<a href='<openmrs:contextPath />/admin/person/addPerson.htm?personType=patient&viewType=shortEdit'><openmrs:message javaScriptEscape="true" code="Patient.addNew"/></a>",
 		
 		getId: function(p) {
 			var td = document.createElement("td");
@@ -122,16 +122,16 @@ dojo.widget.defineWidget(
 		getHeaderCellContent: function() {
 			var arr = new Array();
 			arr.push('');
-			arr.push('<spring:message code="Patient.identifier" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.givenName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.middleName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.familyName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="Person.age" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="Person.gender" javaScriptEscape="true"/>');
+			arr.push('<openmrs:message code="Patient.identifier" javaScriptEscape="true"/>');
+			arr.push('<openmrs:message code="PersonName.givenName" javaScriptEscape="true"/>');
+			arr.push('<openmrs:message code="PersonName.middleName" javaScriptEscape="true"/>');
+			arr.push('<openmrs:message code="PersonName.familyName" javaScriptEscape="true"/>');
+			arr.push('<openmrs:message code="Person.age" javaScriptEscape="true"/>');
+			arr.push('<openmrs:message code="Person.gender" javaScriptEscape="true"/>');
 			arr.push('');
-			arr.push('<spring:message code="Person.birthdate" javaScriptEscape="true"/>');
+			arr.push('<openmrs:message code="Person.birthdate" javaScriptEscape="true"/>');
 			<openmrs:forEachDisplayAttributeType personType="patient" displayType="listing" var="attrType">
-				arr.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
+				arr.push('<openmrs:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
 			</openmrs:forEachDisplayAttributeType>
 			
 			return arr;

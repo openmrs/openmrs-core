@@ -1,7 +1,7 @@
 <table>
 	<tr>
 		<td valign="top">
-			<spring:message code="Field.name" />
+			<openmrs:message code="Field.name" />
 		</td>
 		<td>
 			<spring:bind path="field.name">
@@ -16,7 +16,7 @@
 	</tr>
 	<tr>
 		<td valign="top">
-			<spring:message code="general.description" />
+			<openmrs:message code="general.description" />
 		</td>
 		<td>
 			<spring:bind path="field.description">
@@ -31,7 +31,7 @@
 	</tr>
 	<tr>
 		<td>
-			<spring:message code="Field.type" />
+			<openmrs:message code="Field.type" />
 		</td>
 		<td>
 			<spring:bind path="field.fieldType">
@@ -53,13 +53,13 @@
 	</tr>
 	<tr id="concept">
 		<td>
-			<spring:message code="Field.concept" />
+			<openmrs:message code="Field.concept" />
 		</td>
 		<td>
 			<spring:bind path="field.concept">
 				
 				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.value.conceptId}" showVerboseListing="true"></div>
-				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />'></div>
+				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<openmrs:message code="Concept.find" />'></div>
 					
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">
@@ -71,13 +71,13 @@
 	</tr>
 	<tr id="database">
 		<td valign="top">
-			<spring:message code="Field.database" />
+			<openmrs:message code="Field.database" />
 		</td>
 		<td>
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td>
-						<spring:message code="Field.tableName" />
+						<openmrs:message code="Field.tableName" />
 						<br />
 						<spring:bind path="field.tableName">
 							<input type="input" name="${status.expression}" id="${status.expression}" value="${status.value}"/>
@@ -89,7 +89,7 @@
 						</spring:bind>
 					</td>
 					<td>
-						<spring:message code="Field.attributeName" />
+						<openmrs:message code="Field.attributeName" />
 						<br />
 						<spring:bind path="field.attributeName">
 							<input type="input" name="${status.expression}" id="${status.expression}" value="${status.value}"/>
@@ -106,7 +106,7 @@
 	</tr>
 	<tr>
 		<td valign="top">
-			<spring:message code="Field.defaultValue" />
+			<openmrs:message code="Field.defaultValue" />
 		</td>
 		<td>
 			<spring:bind path="field.defaultValue">
@@ -121,7 +121,7 @@
 	</tr>
 	<tr>
 		<td>
-			<spring:message code="Field.selectMultiple" />
+			<openmrs:message code="Field.selectMultiple" />
 		</td>
 		<td>
 			<spring:bind path="field.selectMultiple">
@@ -139,7 +139,7 @@
 	<c:if test="${field.creator != null}">
 		<tr>
 			<td>
-				<spring:message code="general.createdBy" />
+				<openmrs:message code="general.createdBy" />
 			</td>
 			<td>
 				${field.creator.personName} -
@@ -150,7 +150,7 @@
 	<c:if test="${field.changedBy != null}">
 		<tr>
 			<td>
-				<spring:message code="general.changedBy" />
+				<openmrs:message code="general.changedBy" />
 			</td>
 			<td>
 				${field.changedBy.personName} -

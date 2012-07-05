@@ -10,13 +10,13 @@
 <c:set var="mostRecentObs_foundAny" value="false" />
 <c:forEach items="${openmrs:sort(openmrs:filterObsByConcept(observations, concept), 'obsDatetime', true)}" var="o" end="0">
 	<c:if test="${label != null}">
-		<span class="obsLabel"><spring:message code="${label}" />:</span>
+		<span class="obsLabel"><openmrs:message code="${label}" />:</span>
 	</c:if>
 	<span class="obsValue"><openmrs:format obsValue="${o}"/></span>
 	<c:if test="${showUnits}">
 		<openmrs:concept conceptId="${o.concept.conceptId}" var="c" numericVar="nv">
 			<c:if test="${nv != null}">
-				<span class="obsUnits"><spring:message code="Units.${nv.units}" /></span>
+				<span class="obsUnits"><openmrs:message code="Units.${nv.units}" /></span>
 			</c:if>
 		</openmrs:concept>
 	</c:if>
@@ -25,5 +25,5 @@
 </c:forEach>
 
 <c:if test="${labelIfNone != null && mostRecentObs_foundAny == 'false'}">
-	<spring:message code="${labelIfNone}"/>
+	<openmrs:message code="${labelIfNone}"/>
 </c:if>

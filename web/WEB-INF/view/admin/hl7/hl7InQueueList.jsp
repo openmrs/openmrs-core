@@ -5,10 +5,10 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Hl7inQueue.header" /></h2>	
+<h2><openmrs:message code="Hl7inQueue.header" /></h2>	
 
 <div class="hl7inQueueList" style="overflow:xscroll">
-	<b class="boxHeader"><spring:message code="Hl7inQueue.queueList.title" /></b>
+	<b class="boxHeader"><openmrs:message code="Hl7inQueue.queueList.title" /></b>
 	<div class="box">
 		<form id="hl7inQueueListForm" method="post">
 			<div id="hl7QueueListing">
@@ -19,11 +19,11 @@
 				<table cellpadding="5" cellspacing="0">
 					<tr>
 						<th></th>
-						<th><spring:message code="Hl7inQueue.queueList.source.header" /></th>
-						<th><spring:message code="Hl7inQueue.queueList.data.header" /></th>
-						<th><spring:message code="Hl7inQueue.queueList.state.header" /></th>
-						<th><spring:message code="Hl7inQueue.queueList.errorMessage.header" /></th>
-						<th><spring:message code="Hl7inQueue.queueList.dateCreated" /></th>
+						<th><openmrs:message code="Hl7inQueue.queueList.source.header" /></th>
+						<th><openmrs:message code="Hl7inQueue.queueList.data.header" /></th>
+						<th><openmrs:message code="Hl7inQueue.queueList.state.header" /></th>
+						<th><openmrs:message code="Hl7inQueue.queueList.errorMessage.header" /></th>
+						<th><openmrs:message code="Hl7inQueue.queueList.dateCreated" /></th>
 					</tr>
 					<c:forEach var="queue" items="${queueList}">
 						<tr>
@@ -34,14 +34,14 @@
 									<pre>${queue.HL7Data}</pre>
 								</div>							
 							</td>
-							<td valign="top"><spring:message code="Hl7inQueue.status.${queue.messageState}" /></td>
+							<td valign="top"><openmrs:message code="Hl7inQueue.status.${queue.messageState}" /></td>
 							<td valign="top">${queue.errorMessage}</td>
 							<td valign="top">${queue.dateCreated }</td>	
 						</tr>
 					</c:forEach>
 					<tr>
 						<td colspan="6">
-							<input type="submit" value="<spring:message code="Hl7inQueue.queueList.delete"/>" name="delete">
+							<input type="submit" value="<openmrs:message code="Hl7inQueue.queueList.delete"/>" name="delete">
 						</td>
 					</tr>
 				</table>

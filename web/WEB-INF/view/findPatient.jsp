@@ -2,10 +2,10 @@
 
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/findPatient.htm" />
 
-<spring:message var="pageTitle" code="findPatient.title" scope="page"/>
+<openmrs:message var="pageTitle" code="findPatient.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<h2><spring:message code="Patient.search"/></h2>	
+<h2><openmrs:message code="Patient.search"/></h2>	
 
 <br />
 
