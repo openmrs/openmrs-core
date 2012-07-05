@@ -2,18 +2,18 @@
 
 <openmrs:require privilege="Manage Global Properties" otherwise="/login.htm" redirect="/admin/maintenance/LocalesAndThemes.form" />
 
-<spring:message var="pageTitle" code="LocalesAndThemes.titlebar" scope="page"/>
+<openmrs:message var="pageTitle" code="LocalesAndThemes.titlebar" scope="page"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="LocalesAndThemes.view.title"/></h2>	
+<h2><openmrs:message code="LocalesAndThemes.view.title"/></h2>	
 
 <form method="post">
 	<table>
 		<tr>
-			<td><spring:message code="LocalesAndThemes.locale"/></td>
+			<td><openmrs:message code="LocalesAndThemes.locale"/></td>
 			<td>
 				<input type="text" name="locale" value="${locale}"/>
 				<%--
@@ -25,21 +25,21 @@
 				 --%>
 			</td>
 			<td class="description">
-				<spring:message code="LocalesAndThemes.locale.help"/>
+				<openmrs:message code="LocalesAndThemes.locale.help"/>
 			</td>
 		</tr>
 		<tr>
-			<td><spring:message code="LocalesAndThemes.theme"/></td>
+			<td><openmrs:message code="LocalesAndThemes.theme"/></td>
 			<td>
 				<input type="text" value="${theme}" name="theme"/>
 			</td>
 			<td class="description">
-				<spring:message code="LocalesAndThemes.theme.help"/>
+				<openmrs:message code="LocalesAndThemes.theme.help"/>
 			</td>
 		</tr>
 	</table>
 	
-	<input type="submit" value='<spring:message code="general.submit"/>' />
+	<input type="submit" value='<openmrs:message code="general.submit"/>' />
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

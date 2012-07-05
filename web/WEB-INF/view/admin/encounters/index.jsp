@@ -32,18 +32,18 @@
 		
 </script>
 
-<h2><spring:message code="Encounter.title"/></h2>
+<h2><openmrs:message code="Encounter.title"/></h2>
 
-<a href="encounter.form"><spring:message code="Encounter.add"/></a>
+<a href="encounter.form"><openmrs:message code="Encounter.add"/></a>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.index.afterAdd" type="html" />
 
 <br/><br/>
 
 <div id="findEncounter">
-	<b class="boxHeader"><spring:message code="Encounter.find"/></b>
+	<b class="boxHeader"><openmrs:message code="Encounter.find"/></b>
 	<div class="box">
-		<div dojoType="EncounterSearch" widgetId="eSearch" showIncludeVoided="true" searchLabel='<spring:message code="Encounter.search"/>' <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> encounterId='<request:parameter name="encounterId" />'></div>
+		<div dojoType="EncounterSearch" widgetId="eSearch" showIncludeVoided="true" searchLabel='<openmrs:message code="Encounter.search"/>' <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> encounterId='<request:parameter name="encounterId" />'></div>
 	</div>
 </div>
 

@@ -26,12 +26,12 @@ Parameters:
 </c:if>
 
 <c:if test="${showDecorationProp}">
-	<div class="boxHeader${model.patientVariation}"><spring:message code="FormEntry.fillOutForm"/></div>
+	<div class="boxHeader${model.patientVariation}"><openmrs:message code="FormEntry.fillOutForm"/></div>
 	<div class="box${model.patientVariation}">
 </c:if>
 
 <c:if test="${!model.anyUpdatedFormEntryModules}">
-	<span class="error"><spring:message code="FormEntry.noModulesInstalled"/></span>
+	<span class="error"><openmrs:message code="FormEntry.noModulesInstalled"/></span>
 	<br/><br/>
 </c:if>
 
@@ -95,15 +95,15 @@ Parameters:
 	<div id="formEntryTableParent${model.id}">
 	<span id="handleForShowRetired${model.id}">
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="checkbox" id="showRetired${model.id}"/> <spring:message code="SearchResults.includeRetired"/>
+		<input type="checkbox" id="showRetired${model.id}"/> <openmrs:message code="SearchResults.includeRetired"/>
 	</span>
 	<table id="formEntryTable${model.id}" cellspacing="0" cellpadding="3">
 		<thead>
 			<tr>
-				<th><spring:message code="general.name"/></th>
+				<th><openmrs:message code="general.name"/></th>
 				<th><!-- Hidden column for sorting previous column --></th>
-				<th><spring:message code="Form.version"/></th>
-				<th class="EncounterTypeClass"><spring:message code="Encounter.type"/></th>
+				<th><openmrs:message code="Form.version"/></th>
+				<th class="EncounterTypeClass"><openmrs:message code="Encounter.type"/></th>
 				<th><!-- Hidden column for retired --></th>
 			</tr>
 		</thead>
@@ -125,7 +125,7 @@ Parameters:
 						</td>
 						<td>
 							${entry.key.version}
-							<c:if test="${!entry.key.published}"><i>(<spring:message code="Form.unpublished"/>)</i></c:if>
+							<c:if test="${!entry.key.published}"><i>(<openmrs:message code="Form.unpublished"/>)</i></c:if>
 						</td>
 						<td>
 							${entry.key.encounterType.name}

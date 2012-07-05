@@ -5,13 +5,13 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="ConceptSetDerived.title"/></h2>
+<h2><openmrs:message code="ConceptSetDerived.title"/></h2>
 
 <form method="post">
-	<spring:message code="ConceptSetDerived.instructions"/>
+	<openmrs:message code="ConceptSetDerived.instructions"/>
 	<br/><br/>
-	<spring:message code="ConceptSetDerived.conceptId"/> <input type="text" name="conceptId"> <spring:message code="ConceptSetDerived.conceptId.optional"/><br/><br/>
-	<input type="submit" value="<spring:message code="ConceptSetDerived.manage"/>">
+	<openmrs:message code="ConceptSetDerived.conceptId"/> <input type="text" name="conceptId"> <openmrs:message code="ConceptSetDerived.conceptId.optional"/><br/><br/>
+	<input type="submit" value="<openmrs:message code="ConceptSetDerived.manage"/>">
 </form>
 
 <script type="text/javascript">

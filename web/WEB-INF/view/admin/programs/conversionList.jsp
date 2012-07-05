@@ -5,17 +5,17 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Program.conversion.manage.title"/></h2>
+<h2><openmrs:message code="Program.conversion.manage.title"/></h2>
 
-<a href="conversion.form"><spring:message code="Program.conversion.add"/></a>
+<a href="conversion.form"><openmrs:message code="Program.conversion.add"/></a>
 
 <br /><br />
 
-<b class="boxHeader"><spring:message code="Program.conversion.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="Program.conversion.list.title"/></b>
 <div class="box">
 	<c:if test="${fn:length(stateConversionList) == 0}">
 		<tr>
-			<td colspan="5"><spring:message code="general.none"/></td>
+			<td colspan="5"><openmrs:message code="general.none"/></td>
 		</tr>
 	</c:if>
 	<c:if test="${fn:length(stateConversionList) != 0}">
@@ -23,9 +23,9 @@
 			<table id="triggeredStateConversion">
 				<tr>
 					<th> </th>
-					<th> <spring:message code="Program.conversion.programWorkflow"/> </th>
-					<th> <spring:message code="Program.conversion.concept"/> </th>
-					<th> <spring:message code="Program.conversion.programWorkflowState"/> </th>
+					<th> <openmrs:message code="Program.conversion.programWorkflow"/> </th>
+					<th> <openmrs:message code="Program.conversion.concept"/> </th>
+					<th> <openmrs:message code="Program.conversion.programWorkflowState"/> </th>
 					<th> </th>
 				</tr>
 				<c:forEach var="conversion" items="${stateConversionList}">
@@ -45,13 +45,13 @@
 						</td>
 						<td valign="top">
 							<a href="conversion.form?conceptStateConversionId=${conversion.conceptStateConversionId}">
-								<spring:message code="general.edit" />
+								<openmrs:message code="general.edit" />
 							</a>
 						</td>
 					</tr>
 				</c:forEach>
 			</table>
-			<input type="submit" value="<spring:message code="Program.conversion.deleteSelected" />">
+			<input type="submit" value="<openmrs:message code="Program.conversion.deleteSelected" />">
 		</form>
 	</c:if>
 </div>

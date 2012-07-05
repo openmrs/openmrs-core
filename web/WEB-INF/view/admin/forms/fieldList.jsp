@@ -23,21 +23,21 @@
 </script>
 
 <h2>
-	<spring:message code="Field.title" />
+	<openmrs:message code="Field.title" />
 </h2>
 
 <a href="field.form">
-	<spring:message code="Field.add" />
+	<openmrs:message code="Field.add" />
 </a>
 <br />
 <br />
 
 <div id="findField">
 	<b class="boxHeader">
-		<spring:message code="Field.find" />
+		<openmrs:message code="Field.find" />
 	</b>
 	<div class="box">
-		<div dojoType="FieldSearch" widgetId="fSearch" searchLabel='<spring:message code="Field.search" />' fieldId='<request:parameter name="fieldId" />'></div>
+		<div dojoType="FieldSearch" widgetId="fSearch" searchLabel='<openmrs:message code="Field.search" />' fieldId='<request:parameter name="fieldId" />'></div>
 	</div>
 </div>
 

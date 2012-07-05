@@ -27,9 +27,9 @@
 					         "fnRender": function ( oObj ) {
 								return '<div id="hl7' + oObj.iDataRow + '" class="showmore"><pre>' + oObj.aData[3] + 
 									'</pre></div><a id="show'+ oObj.iDataRow + '" href=# onClick="showMore(' + oObj.iDataRow +
-									')"><spring:message code="Hl7inQueue.queueList.showMore" /></a>' +
+									')"><openmrs:message code="Hl7inQueue.queueList.showMore" /></a>' +
 									'<a id="hide'+ oObj.iDataRow + '" style="display:none;" href=# onClick="hideMore(' + oObj.iDataRow + 
-									')"><spring:message code="Hl7inQueue.queueList.hideMore" /></a>';
+									')"><openmrs:message code="Hl7inQueue.queueList.hideMore" /></a>';
 								}
 							}
 			  			 ],
@@ -83,7 +83,7 @@
 	#hl7Table button { padding: 0.5em; }
 </style>
 
-<h2><spring:message code="Hl7InArchive.title" /></h2>
+<h2><openmrs:message code="Hl7InArchive.title" /></h2>
 
 <div id="message" class="ui-widget"
 	style="display: none; margin-bottom: 1em;">
@@ -97,9 +97,9 @@
 	<thead>
 		<tr>
 			<th></th>
-			<th><spring:message code="Hl7inQueue.queueList.source.header" /></th>
-			<th><spring:message code="Hl7inQueue.queueList.dateCreated" /></th>
-			<th width="80%"><spring:message
+			<th><openmrs:message code="Hl7inQueue.queueList.source.header" /></th>
+			<th><openmrs:message code="Hl7inQueue.queueList.dateCreated" /></th>
+			<th width="80%"><openmrs:message
 				code="Hl7inQueue.queueList.data.header" /></th>
 		</tr>
 	</thead>

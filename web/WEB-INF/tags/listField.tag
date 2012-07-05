@@ -8,7 +8,7 @@
 <%@ attribute name="includeVoided" required="false" %>
 
 <c:if test="${empty list}">
-	<spring:message code="list.empty" />
+	<openmrs:message code="list.empty" />
 </c:if>
 <c:if test="${not empty list}">
 	<select name="${formFieldName}" id="${formFieldName}"<c:if test="${not empty onChange}">onChange=${onChange}</c:if>>

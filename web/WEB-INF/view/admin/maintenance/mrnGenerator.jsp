@@ -8,12 +8,12 @@
 <script type="text/javascript">
 	function toggle(link, id) {
 		var trace = document.getElementById(id);
-		if (link.innerHTML == '<spring:message code="MRNGenerator.log.view"/>') {
-			link.innerHTML = '<spring:message code="MRNGenerator.log.hide"/>';
+		if (link.innerHTML == '<openmrs:message code="MRNGenerator.log.view"/>') {
+			link.innerHTML = '<openmrs:message code="MRNGenerator.log.hide"/>';
 			trace.style.display = "block";
 		}
 		else {
-			link.innerHTML = '<spring:message code="MRNGenerator.log.view"/>';
+			link.innerHTML = '<openmrs:message code="MRNGenerator.log.view"/>';
 			trace.style.display = "none";
 		}
 		return false;
@@ -27,14 +27,14 @@
 </style>
 
 <br />
-<h2><spring:message code="MRNGenerator.title"/></h2>
+<h2><openmrs:message code="MRNGenerator.title"/></h2>
 <br />
 
 <form method="post" action="${pageContext.request.contextPath}/mrnGenerator">
 	<table border="0" cellspacing="2" cellpadding="2">
 		<tr>
 			<td rowspan="4" align="left" valign="top">
-				<label for="site"><spring:message code="MRNGenerator.select.site"/></label><br/>
+				<label for="site"><openmrs:message code="MRNGenerator.select.site"/></label><br/>
 				<select name="site" size="24">
 					<optgroup label="Group A sites">
 						<option value="BF">BF - Burnt Forest</option>
@@ -68,19 +68,19 @@
 				</select>
 			</td>
 			<td align="left" valign="top">
-				<label for="mrn_first"><spring:message code="MRNGenerator.starting.number"/></label><br>
+				<label for="mrn_first"><openmrs:message code="MRNGenerator.starting.number"/></label><br>
 				<input name="mrn_first" size="10" type="text">
 			</td>
 		</tr>
 		<tr>
 			<td align="left" valign="top">
-				<label for="mrn_prefix"><spring:message code="MRNGenerator.prefix.number"/></label><br>
+				<label for="mrn_prefix"><openmrs:message code="MRNGenerator.prefix.number"/></label><br>
 				<input type="text" size="4" name="mrn_prefix"/>
 			</td>
 		</tr>
 		<tr>
 			<td align="left" valign="top">
-				<label for="mrn_count"><spring:message code="MRNGenerator.generate.number"/></label><br>
+				<label for="mrn_count"><openmrs:message code="MRNGenerator.generate.number"/></label><br>
 				<select name="mrn_count" size="4">
 					  <option>100</option>
 					  <option>500</option>
@@ -91,22 +91,22 @@
 		</tr>
 		<tr>
 			<td>
-				<input type="submit" value="<spring:message code="general.submit"/>">
+				<input type="submit" value="<openmrs:message code="general.submit"/>">
 			</td>
 		</tr>
 	</table>
 </form>
 
 <br/>
-<a href="#toggle" onClick="return toggle(this, 'mrnLog')"><spring:message code="MRNGenerator.log.view"/></a>
+<a href="#toggle" onClick="return toggle(this, 'mrnLog')"><openmrs:message code="MRNGenerator.log.view"/></a>
 <div id="mrnLog">
 	<table cellpadding="4" cellspacing="0">
 		<tr>
-			<th><spring:message code="MRNGenerator.date"/></th>
-			<th><spring:message code="MRNGenerator.generator"/></th>
-			<th><spring:message code="MRNGenerator.site"/></th>
-			<th><spring:message code="MRNGenerator.first"/></th>
-			<th><spring:message code="MRNGenerator.count"/></th>
+			<th><openmrs:message code="MRNGenerator.date"/></th>
+			<th><openmrs:message code="MRNGenerator.generator"/></th>
+			<th><openmrs:message code="MRNGenerator.site"/></th>
+			<th><openmrs:message code="MRNGenerator.first"/></th>
+			<th><openmrs:message code="MRNGenerator.count"/></th>
 		</tr>
 		<%
 			pageContext.setAttribute("rows", org.openmrs.api.context.Context.getAdministrationService().getMRNGeneratorLog());

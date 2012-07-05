@@ -25,7 +25,7 @@ dojo.widget.defineWidget(
 		
 		showUsername: true,
 		
-		includeRetiredLabel: '<spring:message code="SearchResults.includeDisabled" javaScriptEscape="true"/>',
+		includeRetiredLabel: '<openmrs:message code="SearchResults.includeDisabled" javaScriptEscape="true"/>',
 		
 		postCreate: function(){
 			dojo.debug("postCreate in UserSearch");
@@ -80,16 +80,16 @@ dojo.widget.defineWidget(
 		getHeaderCellContent: function() {
 			var arr = new Array();
 			arr.push('');
-			arr.push('<spring:message code="User.systemId" javaScriptEscape="true"/>');
+			arr.push('<openmrs:message code="User.systemId" javaScriptEscape="true"/>');
 			if (this.showUsername)
-				arr.push('<spring:message code="User.username" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.givenName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.middleName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.familyName" javaScriptEscape="true"/>');
+				arr.push('<openmrs:message code="User.username" javaScriptEscape="true"/>');
+			arr.push('<openmrs:message code="PersonName.givenName" javaScriptEscape="true"/>');
+			arr.push('<openmrs:message code="PersonName.middleName" javaScriptEscape="true"/>');
+			arr.push('<openmrs:message code="PersonName.familyName" javaScriptEscape="true"/>');
 			if (this.showRoles)
-				arr.push('<spring:message code="User.roles" javaScriptEscape="true"/>');
+				arr.push('<openmrs:message code="User.roles" javaScriptEscape="true"/>');
 			<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
-				arr.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
+				arr.push('<openmrs:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
 			</openmrs:forEachDisplayAttributeType>
 			
 			return arr;

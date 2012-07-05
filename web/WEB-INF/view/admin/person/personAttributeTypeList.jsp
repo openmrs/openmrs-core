@@ -5,22 +5,22 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="PersonAttributeType.manage.title"/></h2>
+<h2><openmrs:message code="PersonAttributeType.manage.title"/></h2>
 
-<a href="personAttributeType.form"><spring:message code="PersonAttributeType.add"/></a>
+<a href="personAttributeType.form"><openmrs:message code="PersonAttributeType.add"/></a>
 
 <br /><br />
 
-<b class="boxHeader"><spring:message code="PersonAttributeType.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="PersonAttributeType.list.title"/></b>
 <form method="post" class="box">
 	<table>
 		<tr>
 			<th> </th>
-			<th> <spring:message code="general.name"/> </th>
-			<th> <spring:message code="PersonAttributeType.format"/> </th>
-			<th> <spring:message code="PersonAttributeType.searchable"/> </th>
-			<th> <spring:message code="general.description"/> </th>
-			<th> <spring:message code="PersonAttributeType.editPrivilege"/> </th>
+			<th> <openmrs:message code="general.name"/> </th>
+			<th> <openmrs:message code="PersonAttributeType.format"/> </th>
+			<th> <openmrs:message code="PersonAttributeType.searchable"/> </th>
+			<th> <openmrs:message code="general.description"/> </th>
+			<th> <openmrs:message code="PersonAttributeType.editPrivilege"/> </th>
 		</tr>
 		<c:forEach var="personAttributeType" items="${personAttributeTypeList}">
 			<tr>
@@ -39,15 +39,15 @@
 					</a>
 				</td>
 				<td valign="top">${personAttributeType.format}</td>
-				<td valign="top"><c:if test="${personAttributeType.searchable == true}"><spring:message code="general.yes"/></c:if></td>
+				<td valign="top"><c:if test="${personAttributeType.searchable == true}"><openmrs:message code="general.yes"/></c:if></td>
 				<td valign="top">${personAttributeType.description}</td>
 				<td valign="top">${personAttributeType.editPrivilege}</td>
 			</tr>
 		</c:forEach>
 	</table>
 	<input type="hidden" name="action" id="saveAction" value=""/>
-	<input type="submit" value='<spring:message code="PersonAttributeType.moveup"/>' onclick="document.getElementById('saveAction').value='moveup'">
-	<input type="submit" value='<spring:message code="PersonAttributeType.movedown"/>' onclick="document.getElementById('saveAction').value='movedown'">
+	<input type="submit" value='<openmrs:message code="PersonAttributeType.moveup"/>' onclick="document.getElementById('saveAction').value='moveup'">
+	<input type="submit" value='<openmrs:message code="PersonAttributeType.movedown"/>' onclick="document.getElementById('saveAction').value='movedown'">
 </form>
 
 <form method="post" style="display: none;">
@@ -58,38 +58,38 @@
 
 <br/>
 
-<b class="boxHeader"><spring:message code="PersonAttributeType.viewingListing.title"/></b>
+<b class="boxHeader"><openmrs:message code="PersonAttributeType.viewingListing.title"/></b>
 <form method="post" class="box">
 	<table>
 		<tr>
-			<th><spring:message code="PersonAttributeType.patient.listing" /></th>
+			<th><openmrs:message code="PersonAttributeType.patient.listing" /></th>
 			<td><input type="text" size="50" name="patientListingAttributeTypes" value="${patientListingAttributeTypes}"/></td>
-			<td><spring:message code="PersonAttributeType.patient.listing.help" /></td>
+			<td><openmrs:message code="PersonAttributeType.patient.listing.help" /></td>
 		</tr>
 		<tr>
-			<th><spring:message code="PersonAttributeType.patient.viewing" /></th>
+			<th><openmrs:message code="PersonAttributeType.patient.viewing" /></th>
 			<td><input type="text" size="50" name="patientViewingAttributeTypes" value="${patientViewingAttributeTypes}"/></td>
-			<td><spring:message code="PersonAttributeType.patient.viewing.help" /></td>
+			<td><openmrs:message code="PersonAttributeType.patient.viewing.help" /></td>
 		</tr>
 		<tr>
-			<th><spring:message code="PersonAttributeType.patient.header" /></th>
+			<th><openmrs:message code="PersonAttributeType.patient.header" /></th>
 			<td><input type="text" size="50" name="patientHeaderAttributeTypes" value="${patientHeaderAttributeTypes}"/></td>
-			<td><spring:message code="PersonAttributeType.patient.header.help" /></td>
+			<td><openmrs:message code="PersonAttributeType.patient.header.help" /></td>
 		</tr>		
 		<tr>
-			<th><spring:message code="PersonAttributeType.user.listing" /></th>
+			<th><openmrs:message code="PersonAttributeType.user.listing" /></th>
 			<td><input type="text" size="50" name="userListingAttributeTypes" value="${userListingAttributeTypes}"/></td>
-			<td><spring:message code="PersonAttributeType.user.listing.help" /></td>
+			<td><openmrs:message code="PersonAttributeType.user.listing.help" /></td>
 		</tr>
 		<tr>
-			<th><spring:message code="PersonAttributeType.user.viewing" /></th>
+			<th><openmrs:message code="PersonAttributeType.user.viewing" /></th>
 			<td><input type="text" size="50" name="userViewingAttributeTypes" value="${userViewingAttributeTypes}"/></td>
-			<td><spring:message code="PersonAttributeType.user.viewing.help" /></td>
+			<td><openmrs:message code="PersonAttributeType.user.viewing.help" /></td>
 		</tr>
 	</table>
 	
 	<input type="hidden" name="action" value="attrs"/>
-	<input type="submit" value='<spring:message code="general.save"/>'>
+	<input type="submit" value='<openmrs:message code="general.save"/>'>
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

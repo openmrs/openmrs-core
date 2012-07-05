@@ -5,19 +5,19 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="RelationshipType.manage.title"/></h2>
+<h2><openmrs:message code="RelationshipType.manage.title"/></h2>
 
-<a href="relationshipType.form"><spring:message code="RelationshipType.add"/></a> | 
-<a href="relationshipTypeViews.form"><spring:message code="RelationshipType.views.title"/></a>
+<a href="relationshipType.form"><openmrs:message code="RelationshipType.add"/></a> | 
+<a href="relationshipTypeViews.form"><openmrs:message code="RelationshipType.views.title"/></a>
 
 <br /><br />
 
-<b class="boxHeader"><spring:message code="RelationshipType.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="RelationshipType.list.title"/></b>
 <form method="post" class="box">
 	<table>
 		<tr>
-			<th> <spring:message code="RelationshipType.names"/> </th>
-			<th> <spring:message code="general.description"/> </th>
+			<th> <openmrs:message code="RelationshipType.names"/> </th>
+			<th> <openmrs:message code="general.description"/> </th>
 		</tr>
 		<c:forEach var="relationshipType" items="${relationshipTypeList}">
 			<tr>
