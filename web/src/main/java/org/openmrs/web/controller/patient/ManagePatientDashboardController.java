@@ -13,35 +13,19 @@
  */
 package org.openmrs.web.controller.patient;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.ServletException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PersonAddress;
-import org.openmrs.PersonName;
-import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.web.extension.ExtensionUtil;
-import org.openmrs.module.web.extension.provider.Link;
-import org.openmrs.web.WebConstants;
-import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 @Controller
-public class ManagePatientDashboardController {
+public class ManagePatientDashboardController implements MessageSourceAware {
+	
+	private MessageSource source;
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -51,8 +35,26 @@ public class ManagePatientDashboardController {
 	 */
 	@RequestMapping("/admin/patients/managePatientDashboard.form")
 	protected String renderDashboard(ModelMap map) throws Exception {
-		map.put("hello", "Welcome Admin");
+		map.put("overviewButtonLabel", source.getMessage("PatientDashboard.button.enable", null, Context.getLocale()));
+		map.put("regimensButtonLabel", source.getMessage("PatientDashboard.button.disable", null, Context.getLocale()));
+		map.put("visitsEncountersButtonLabel", source.getMessage("PatientDashboard.button.disable", null, Context.getLocale()));
+		map.put("demographicsButtonLabel", source.getMessage("PatientDashboard.button.enable", null, Context.getLocale()));
+		map.put("graphsButtonLabel", source.getMessage("PatientDashboard.button.disable", null, Context.getLocale()));
+		map.put("formentryButtonLabel", source.getMessage("PatientDashboard.button.enable", null, Context.getLocale()));
+		
+		map.put("overviewStatus", source.getMessage("PatientDashboard.status.disabled", null, Context.getLocale()));
+		map.put("regimensStatus", source.getMessage("PatientDashboard.status.enabled", null, Context.getLocale()));
+		map.put("visitsEncountersStatus", source.getMessage("PatientDashboard.status.enabled", null, Context.getLocale()));
+		map.put("demographicsStatus", source.getMessage("PatientDashboard.status.disabled", null, Context.getLocale()));
+		map.put("graphsStatus", source.getMessage("PatientDashboard.status.enabled", null, Context.getLocale()));
+		map.put("formentryStatus", source.getMessage("PatientDashboard.status.disabled", null, Context.getLocale()));
+		
 		return "/admin/patients/managePatientDashboardForm";
+	}
+	
+	@Override
+	public void setMessageSource(MessageSource messageSource) {
+		source = messageSource;
 	}
 	
 }
