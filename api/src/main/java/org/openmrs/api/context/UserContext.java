@@ -45,7 +45,7 @@ import java.io.Serializable;
 public class UserContext implements Serializable {
 	
 	private static final long serialVersionUID = -806631231941890648L;
-
+	
 	/**
 	 * Logger - shared by entire class
 	 */

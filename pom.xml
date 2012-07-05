@@ -44,6 +44,46 @@
 
 	<dependencyManagement>
 		<dependencies>
+            <!-- OpenMRS Dependencies -->
+            <dependency>
+                <groupId>org.openmrs.tools</groupId>
+                <artifactId>openmrs-tools</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.test</groupId>
+                <artifactId>openmrs-test</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.api</groupId>
+                <artifactId>openmrs-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.api</groupId>
+                <artifactId>openmrs-api</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.web</groupId>
+                <artifactId>openmrs-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.web</groupId>
+                <artifactId>openmrs-webapp</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs</groupId>
+                <artifactId>openmrs-release-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>servlet-api</artifactId>
@@ -96,6 +136,17 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-tools</artifactId>
+                <version>2.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
 			<dependency>
 				<groupId>commons-collections</groupId>
@@ -128,106 +179,52 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-beans</artifactId>
 				<version>${springVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
 				<version>${springVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-aop</artifactId>
 				<version>${springVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-orm</artifactId>
 				<version>${springVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-tx</artifactId>
 				<version>${springVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-jdbc</artifactId>
 				<version>${springVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
 				<version>${springVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-webmvc</artifactId>
 				<version>${springVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-oxm</artifactId>
 				<version>${springVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 
-			<!-- For the upgrade to Spring 3.0, antlr-runtime-3.2.jar is required. 
-				However, Hibernate 3.25 needs antlr_2.7.6.jar and they can both exist because 
-				their packaging is different. The earlier version, 2.7.6, is antlr.* whereas 
-				3.2 is org.antlr.*, so they can co-habitate here just fine. For more information, 
+			<!-- For the upgrade to Spring 3.0, antlr-runtime-3.2.jar is required.
+				However, Hibernate 3.25 needs antlr_2.7.6.jar and they can both exist because
+				their packaging is different. The earlier version, 2.7.6, is antlr.* whereas
+				3.2 is org.antlr.*, so they can co-habitate here just fine. For more information,
 				see this article: http://blog.newsplore.com/2009/03/07/upgrading-to-spring-30 -->
 			<dependency>
 				<groupId>org.antlr</groupId>
@@ -296,6 +293,10 @@
 				<artifactId>hibernate-c3p0</artifactId>
 				<version>3.6.0.Final</version>
 				<exclusions>
+                    <exclusion>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-core</artifactId>
+                    </exclusion>
 					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
@@ -319,6 +320,10 @@
 				<artifactId>hibernate-ehcache</artifactId>
 				<version>3.6.0.Final</version>
 				<exclusions>
+                    <exclusion>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-core</artifactId>
+                    </exclusion>
 					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
@@ -342,6 +347,10 @@
 				<artifactId>hibernate-search</artifactId>
 				<version>3.4.0.Final</version>
 				<exclusions>
+                    <exclusion>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-core</artifactId>
+                    </exclusion>
 					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
@@ -365,6 +374,21 @@
 				<artifactId>liquibase-core</artifactId>
 				<version>2.0.5</version>
 			</dependency>
+            <dependency>
+                <groupId>org.openmrs.liquibase.ext</groupId>
+                <artifactId>modify-column</artifactId>
+                <version>2.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.liquibase.ext</groupId>
+                <artifactId>identity-insert</artifactId>
+                <version>1.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.liquibase.ext</groupId>
+                <artifactId>type-converter</artifactId>
+                <version>1.0.1</version>
+            </dependency>
 
 			<dependency>
 				<groupId>log4j</groupId>
@@ -519,6 +543,11 @@
 				<version>5.1.8</version>
 				<scope>runtime</scope>
 			</dependency>
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-mxj</artifactId>
+                <version>5.0.11</version>
+            </dependency>
 			<dependency>
 				<groupId>postgresql</groupId>
 				<artifactId>postgresql</artifactId>
@@ -586,6 +615,10 @@
 						<groupId>hsqldb</groupId>
 						<artifactId>hsqldb</artifactId>
 					</exclusion>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
@@ -608,6 +641,29 @@
 				<artifactId>ehcache-core</artifactId>
 				<version>2.2.0</version>
 			</dependency>
+
+            <dependency>
+                <groupId>org.jbehave.web</groupId>
+                <artifactId>jbehave-web-selenium</artifactId>
+                <version>3.5.3</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.googlecode.lambdaj</groupId>
+                <artifactId>lambdaj</artifactId>
+                <version>2.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -758,7 +814,7 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
+				<!--This plugin's configuration is used to store Eclipse m2e settings
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
@@ -883,13 +939,6 @@
 		</plugins>
 	</build>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-oxm</artifactId>
-			<version>3.0.5.RELEASE</version>
-		</dependency>
-	</dependencies>
 	<reporting>
 		<plugins>
 			<!-- docfilessubdirs config set to include image resource -->
