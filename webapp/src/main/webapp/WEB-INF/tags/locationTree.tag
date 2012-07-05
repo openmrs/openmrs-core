@@ -71,11 +71,11 @@ $j(document).ready(function() {
 			}
 		});
 	<c:if test="${empty initialValue}">
-		$j('#${id}_display').html('<spring:message code="general.none" javaScriptEscape="true"/>');
+		$j('#${id}_display').html('<openmrs:message code="general.none" javaScriptEscape="true"/>');
 	</c:if>
 	<c:if test="${not empty initialValue}">
 		$j('#${id}_hidden_input').val(${initialValue.locationId});
-		$j('#${id}_display').html('<spring:message javaScriptEscape="true" text="${initialValue.name}"/>');
+		$j('#${id}_display').html('<openmrs:message javaScriptEscape="true" text="${initialValue.name}"/>');
 	</c:if>
 	$j('#${id}_button').click(function() { locationTreeTag_showTree('${id}'); });
 });

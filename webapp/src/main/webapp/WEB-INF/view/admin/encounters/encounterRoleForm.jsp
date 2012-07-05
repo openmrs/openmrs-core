@@ -9,7 +9,7 @@
 <script type="text/javascript">
 
     function confirmPurge() {
-        if (confirm("<spring:message code="general.confirm.purge"/>")) {
+        if (confirm("<openmrs:message code="general.confirm.purge"/>")) {
             return true;
         } else {
             return false;
@@ -26,19 +26,19 @@
     }
 </script>
 
-<h2><spring:message code="EncounterRole.title"/></h2>
+<h2><openmrs:message code="EncounterRole.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterRoleForm.belowTitle" type="html" parameters="encounterRoleId=${encounterRole.encounterRoleId}"/>
 
 <spring:hasBindErrors name="encounterRole">
-    <spring:message code="fix.error"/>
+    <openmrs:message code="fix.error"/>
     <br/>
 </spring:hasBindErrors>
 <form method="post">
     <fieldset>
         <table>
             <tr>
-                <td><spring:message code="general.name"/></td>
+                <td><openmrs:message code="general.name"/></td>
                 <td colspan="5">
                     <spring:bind path="encounterRole.name">
                         <input type="text" name="name" value='<c:out value="${status.value}"/>' size="35"/>
@@ -47,7 +47,7 @@
                 </td>
             </tr>
             <tr>
-                <td valign="top"><spring:message code="general.description"/></td>
+                <td valign="top"><openmrs:message code="general.description"/></td>
                 <td valign="top" colspan="5">
                     <spring:bind path="encounterRole.description">
                         <textarea name="description" rows="3" cols="40">${status.value}</textarea>
@@ -57,7 +57,7 @@
             </tr>
             <c:if test="${!(encounterRole.creator == null)}">
                 <tr>
-                    <td><spring:message code="general.createdBy"/></td>
+                    <td><openmrs:message code="general.createdBy"/></td>
                     <td>
                       <c:out value="${encounterRole.creator.personName}"/> - <openmrs:formatDate date="${encounterRole.dateCreated}" type="long"/>
                     </td>
@@ -67,7 +67,7 @@
         <br/>
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterRoleForm.inForm" type="html" parameters="encounterRoleId=${encounterRole.encounterRoleId}" />
 
-        <input type="submit" value="<spring:message code="EncounterRole.save"/>" name="saveEncounterRole">
+        <input type="submit" value="<openmrs:message code="EncounterRole.save"/>" name="saveEncounterRole">
     </fieldset>
 </form>
 
@@ -76,17 +76,17 @@
 <c:if test="${not encounterRole.retired && not empty encounterRole.encounterRoleId}">
 	<form method="post">
 		<fieldset>
-			<h4><spring:message code="EncounterRole.retireEncounterRole"/></h4>
+			<h4><openmrs:message code="EncounterRole.retireEncounterRole"/></h4>
 			
-			<b><spring:message code="general.reason"/></b>
+			<b><openmrs:message code="general.reason"/></b>
 			<input type="text" value="" size="40" name="retireReason" />
 			<spring:hasBindErrors name="encounterRole">
 				<c:forEach items="${errors.allErrors}" var="error">
-					<c:if test="${error.code == 'retireReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+					<c:if test="${error.code == 'retireReason'}"><span class="error"><openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
 				</c:forEach>
 			</spring:hasBindErrors>
 			<br/>
-			<input type="submit" value='<spring:message code="EncounterRole.retireEncounterRole"/>' name="retire"/>
+			<input type="submit" value='<openmrs:message code="EncounterRole.retireEncounterRole"/>' name="retire"/>
 		</fieldset>
 	</form>
 </c:if>
@@ -97,8 +97,8 @@
 	<openmrs:hasPrivilege privilege="Manage Encounter Roles">
 		<form id="unretire" method="post">
 		<fieldset>
-		<h4><spring:message code="EncounterRole.unretire" /></h4>
-		<input type="submit" value='<spring:message code="EncounterRole.unretire"/>' name="unretire" /></fieldset>
+		<h4><openmrs:message code="EncounterRole.unretire" /></h4>
+		<input type="submit" value='<openmrs:message code="EncounterRole.unretire"/>' name="unretire" /></fieldset>
 		</form>
 	</openmrs:hasPrivilege>
 </c:if>
@@ -108,8 +108,8 @@
 	<openmrs:hasPrivilege privilege="Purge Encounter Types">
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>
-				<h4><spring:message code="EncounterRole.purgeEncounterRole"/></h4>
-				<input type="submit" value='<spring:message code="EncounterRole.purgeEncounterRole"/>' name="purge" />
+				<h4><openmrs:message code="EncounterRole.purgeEncounterRole"/></h4>
+				<input type="submit" value='<openmrs:message code="EncounterRole.purgeEncounterRole"/>' name="purge" />
 			</fieldset>
 		</form>
 	</openmrs:hasPrivilege>

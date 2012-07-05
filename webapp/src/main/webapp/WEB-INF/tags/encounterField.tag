@@ -36,7 +36,7 @@
 				}
 				</c:if>
 			},
-            placeholder:'<spring:message code="Encounter.search.placeholder" javaScriptEscape="true"/>'
+            placeholder:'<openmrs:message code="Encounter.search.placeholder" javaScriptEscape="true"/>'
 		});
 
 		//Clear hidden value on losing focus with no valid entry

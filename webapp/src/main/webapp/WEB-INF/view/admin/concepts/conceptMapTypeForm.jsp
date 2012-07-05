@@ -36,7 +36,7 @@ $j(document).ready( function() {
 </c:if>
 </script>
 
-<h2><spring:message code="ConceptMapType.form.title"/></h2>
+<h2><openmrs:message code="ConceptMapType.form.title"/></h2>
 <br/>
 
 <c:if test="${conceptMapType.conceptMapTypeId != null && conceptMapType.retired}">
@@ -46,7 +46,7 @@ $j(document).ready( function() {
 	</c:if>
 	<div class="voidedMessage">
 		<div>
-		<spring:message code="ConceptMapType.retiredMessage"/> &nbsp;<input type="submit" value='<spring:message code="general.restore"/>'/>
+		<openmrs:message code="ConceptMapType.retiredMessage"/> &nbsp;<input type="submit" value='<openmrs:message code="general.restore"/>'/>
 		</div>
 	</div>
 </form:form>
@@ -57,11 +57,11 @@ $j(document).ready( function() {
 		<input type="hidden" name="conceptMapTypeId" value="${param.conceptMapTypeId}"/>
 	</c:if>
 	<fieldset>
-	<legend><spring:message code="ConceptMapType.details" /></legend>
+	<legend><openmrs:message code="ConceptMapType.details" /></legend>
 	<br/>
     <table cellpadding="3" cellspacing="3" class="form_align_left">
         <tr>
-            <th class="alignRight"><spring:message code="general.name"/><span class="required">*</span></th>
+            <th class="alignRight"><openmrs:message code="general.name"/><span class="required">*</span></th>
             <td>
                 <spring:bind path="name">
                 	<input type="text" name="${status.expression}" value="${status.value}"/>
@@ -70,7 +70,7 @@ $j(document).ready( function() {
             </td>
         </tr>
         <tr>
-       		<th class="alignRight" valign="top"><spring:message code="general.description"/></th>
+       		<th class="alignRight" valign="top"><openmrs:message code="general.description"/></th>
             <td valign="top">
                 <spring:bind path="description">
                 	<textarea name="${status.expression}" rows="3" cols="50">${status.value}</textarea>
@@ -80,7 +80,7 @@ $j(document).ready( function() {
         </tr>
         <tr>
        		<th class="alignRight">
-       			<spring:message code="ConceptMapType.hidden" /> <img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="ConceptMapType.hidden.help"/>"/>
+       			<openmrs:message code="ConceptMapType.hidden" /> <img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<openmrs:message code="ConceptMapType.hidden.help"/>"/>
        		</th>
             <td>
                 <spring:bind path="isHidden">
@@ -92,7 +92,7 @@ $j(document).ready( function() {
         </tr>
         <c:if test="${conceptMapType.creator != null}">
 		<tr>
-			<th class="alignRight"><spring:message code="general.createdBy" /></th>
+			<th class="alignRight"><openmrs:message code="general.createdBy" /></th>
 			<td>
 				${conceptMapType.creator.personName} -
 				<openmrs:formatDate date="${conceptMapType.dateCreated}" type="long" />
@@ -101,7 +101,7 @@ $j(document).ready( function() {
 		</c:if>
 		<c:if test="${conceptMapType.changedBy != null}">
 		<tr>
-			<th class="alignRight"><spring:message code="general.changedBy" /></th>
+			<th class="alignRight"><openmrs:message code="general.changedBy" /></th>
 			<td>
 				${conceptMapType.changedBy.personName} -
 				<openmrs:formatDate date="${conceptMapType.dateChanged}" type="long" />
@@ -110,7 +110,7 @@ $j(document).ready( function() {
 		</c:if>
 		<c:if test="${conceptMapType.retiredBy != null}">
 		<tr>
-			<th class="alignRight"><spring:message code="general.retiredBy" /></th>
+			<th class="alignRight"><openmrs:message code="general.retiredBy" /></th>
 			<td>
 				${conceptMapType.retiredBy.personName} -
 				<openmrs:formatDate date="${conceptMapType.dateRetired}" type="long" />
@@ -119,7 +119,7 @@ $j(document).ready( function() {
 		</c:if>
 		<c:if test="${conceptMapType.retireReason != null}">
 		<tr>
-			<th class="alignRight"><spring:message code="general.retireReason" /></th>
+			<th class="alignRight"><openmrs:message code="general.retireReason" /></th>
 			<td>
 				${conceptMapType.retireReason}
 			</td>
@@ -129,8 +129,8 @@ $j(document).ready( function() {
 			<td colspan="2">
 				<table cellpadding="0" cellspacing="20" align="center">
         			<tr>
-        				<td><input type="submit" value="<spring:message code="general.save"/>"></td>
-        				<td><input type="button" value="<spring:message code="general.cancel"/>" onclick="javascript:window.location='conceptMapTypeList.list'"></td>
+        				<td><input type="submit" value="<openmrs:message code="general.save"/>"></td>
+        				<td><input type="button" value="<openmrs:message code="general.cancel"/>" onclick="javascript:window.location='conceptMapTypeList.list'"></td>
         			</tr>
      			</table>
 			</td>
@@ -145,14 +145,14 @@ $j(document).ready( function() {
 	<tr>
 		<td>
 			<c:if test="${conceptMapType.retired == false }">
-			<input type="submit" value='<spring:message code="general.retire"/>' onclick="javascript:$j('#retire-dialog').dialog('open')"/>
-			<div id="retire-dialog" title="<spring:message code="general.retire.confirmation"/>">
+			<input type="submit" value='<openmrs:message code="general.retire"/>' onclick="javascript:$j('#retire-dialog').dialog('open')"/>
+			<div id="retire-dialog" title="<openmrs:message code="general.retire.confirmation"/>">
 			<form:form action="retireConceptMapType.htm" method="post" modelAttribute="conceptMapType">
 			<input type="hidden" name="conceptMapTypeId" value="${param.conceptMapTypeId}"/>
 			<br/><br/>
 			<table cellpadding="3" cellspacing="3" align="center">
 				<tr>
-					<th><spring:message code="general.reason"/></th>
+					<th><openmrs:message code="general.reason"/></th>
 					<td>
 						<input id="retireReason" type="text" name="retireReason" size="40" />
 					</td>
@@ -160,7 +160,7 @@ $j(document).ready( function() {
 				<tr height="20"></tr>
 				<tr>
 					<td colspan="2" style="text-align: center">
-						<input type="submit" value="<spring:message code="general.retire"/>" /> &nbsp; <input type="button" value="<spring:message code="general.cancel"/>" 
+						<input type="submit" value="<openmrs:message code="general.retire"/>" /> &nbsp; <input type="button" value="<openmrs:message code="general.cancel"/>" 
 						onclick="javascript:$j('#retire-dialog').dialog('close')" /></td>
 				</tr>
 			</table>
@@ -170,17 +170,17 @@ $j(document).ready( function() {
 		</td>
 		<td>
 			<openmrs:hasPrivilege privilege="Purge Concept Map Types">
-			<input type="button" value='<spring:message code="general.purge"/>' onclick="javascript:$j('#purge-dialog').dialog('open')" />
-			<div id="purge-dialog" title="<spring:message code="general.purge.confirmation"/>">
+			<input type="button" value='<openmrs:message code="general.purge"/>' onclick="javascript:$j('#purge-dialog').dialog('open')" />
+			<div id="purge-dialog" title="<openmrs:message code="general.purge.confirmation"/>">
 				<form:form action="purgeConceptMapType.htm" method="post" modelAttribute="conceptMapType">
 				<input type="hidden" name="conceptMapTypeId" value="${param.conceptMapTypeId}"/>
 				<br/><br/>
-				<spring:message code="general.confirm.purge"/>
+				<openmrs:message code="general.confirm.purge"/>
 				<br/>
 				<table cellpadding="3" cellspacing="30" align="center">
 					<tr>
 						<td>
-							<input type="submit" value='<spring:message code="general.yes"/>' /> &nbsp; <input type="button" value="<spring:message code="general.no"/>" 
+							<input type="submit" value='<openmrs:message code="general.yes"/>' /> &nbsp; <input type="button" value="<openmrs:message code="general.no"/>" 
 							onclick="javascript:$j('#purge-dialog').dialog('close')" />
 						</td>
 					</tr>

@@ -32,7 +32,7 @@
 
 </script>
 
-<h2><spring:message code="ConceptProposal.title"/></h2>
+<h2><openmrs:message code="ConceptProposal.title"/></h2>
 
 <style>
 	th { text-align: left; }
@@ -42,16 +42,16 @@
 <c:if test="${conceptProposal.encounter != null}">
 	<table>
 		<tr>
-			<th valign="top"><spring:message code="ConceptProposal.encounter"/></th>
+			<th valign="top"><openmrs:message code="ConceptProposal.encounter"/></th>
 			<td>
 				<spring:bind path="conceptProposal.encounter">
 					${status.value.encounterId}
-					<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${status.value.encounterId}"><spring:message code="general.view"/>/<spring:message code="general.edit"/></a>
+					<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${status.value.encounterId}"><openmrs:message code="general.view"/>/<openmrs:message code="general.edit"/></a>
 				</spring:bind>
 			</td>
 		</tr>
 		<tr>
-			<th valign="top"><spring:message code="ConceptProposal.obsConcept" /></th>
+			<th valign="top"><openmrs:message code="ConceptProposal.obsConcept" /></th>
 			<td>
 				<spring:bind path="conceptProposal.obsConcept">
 					<c:choose>
@@ -60,7 +60,7 @@
 						</c:when>
 						<c:otherwise>
 							<div dojoType="ConceptSearch" widgetId="cSearch" showVerboseListing="true"></div>
-							<div dojoType="OpenmrsPopup" widgetId="cSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="general.search"/>'></div>
+							<div dojoType="OpenmrsPopup" widgetId="cSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<openmrs:message code="general.search"/>'></div>
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</c:otherwise>
 					</c:choose>
@@ -71,15 +71,15 @@
 	</table>
 </c:if>
 
-<spring:message code="ConceptProposal.proposeWarning"/> <br/>
-<spring:message code="ConceptProposal.proposeInfo"/>
+<openmrs:message code="ConceptProposal.proposeWarning"/> <br/>
+<openmrs:message code="ConceptProposal.proposeInfo"/>
 <spring:bind path="conceptProposal.originalText">
 	<input type="text" name="${status.expression}" id="originalText" value="" size="60" />
 	<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 </spring:bind>
 
 <br /><br />
-<input type="submit" value="<spring:message code="ConceptProposal.propose"/>">
+<input type="submit" value="<openmrs:message code="ConceptProposal.propose"/>">
 
 </form>
 

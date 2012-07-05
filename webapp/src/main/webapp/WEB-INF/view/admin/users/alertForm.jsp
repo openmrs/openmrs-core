@@ -137,13 +137,13 @@
 	.description { display: none; }
 </style>
 
-<h2><spring:message code="Alert.manage.title"/></h2>	
+<h2><openmrs:message code="Alert.manage.title"/></h2>	
 
 <spring:hasBindErrors name="alert">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
 		</c:forEach>
 	</div>
 </spring:hasBindErrors>
@@ -151,7 +151,7 @@
 <form method="post">
 <table>
 	<tr>
-		<th valign="top"><spring:message code="Alert.text"/></th>
+		<th valign="top"><openmrs:message code="Alert.text"/></th>
 		<td>
 			<spring:bind path="alert.text">
 				<textarea id="text" name="${status.expression}" rows="2" cols="43">${status.value}</textarea>
@@ -160,7 +160,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="Alert.recipients"/></th>
+		<th valign="top"><openmrs:message code="Alert.recipients"/></th>
 		<td valign="top">
 			<input type="hidden" name="userIds" id="userIds" size="40" value='<c:forEach items="${alert.recipients}" var="recipient">${recipient.recipient.userId} </c:forEach>' />
 			<table cellpadding="0" cellspacing="0">
@@ -173,24 +173,24 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						&nbsp;<span dojoType="UserSearch" widgetId="uSearch"></span><span dojoType="OpenmrsPopup" searchWidget="uSearch" searchTitle='<spring:message code="User.find"/>' changeButtonValue='<spring:message code="general.add"/>'></span> <br/>
-						&nbsp; <input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('userNames', 'userIds', ' ');" /> <br/>
-						&nbsp; <input type="button" value="<spring:message code="User.goTo"/>" class="smallButton" onClick="gotoUser('userNames');" /><br/>
+						&nbsp;<span dojoType="UserSearch" widgetId="uSearch"></span><span dojoType="OpenmrsPopup" searchWidget="uSearch" searchTitle='<openmrs:message code="User.find"/>' changeButtonValue='<openmrs:message code="general.add"/>'></span> <br/>
+						&nbsp; <input type="button" value="<openmrs:message code="general.remove"/>" class="smallButton" onClick="removeItem('userNames', 'userIds', ' ');" /> <br/>
+						&nbsp; <input type="button" value="<openmrs:message code="User.goTo"/>" class="smallButton" onClick="gotoUser('userNames');" /><br/>
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="Alert.roles"/></th>
+		<th valign="top"><openmrs:message code="Alert.roles"/></th>
 		<td valign="top">
 			<select id="roleStr" class="mediumWidth">
-				<option value=""><spring:message code="general.none"/></option>
+				<option value=""><openmrs:message code="general.none"/></option>
 				<c:forEach items="${allRoles}" var="role">
 					<option value="${role.role}" <c:if test="${role == status.value}">selected</c:if>>${role.role}</option>
 				</c:forEach>
 			</select>
-			&nbsp;<input type="button" class="smallButton" value="<spring:message code="Alert.addRole"/>" onClick="addRole();"/>
+			&nbsp;<input type="button" class="smallButton" value="<openmrs:message code="Alert.addRole"/>" onClick="addRole();"/>
 			<input type="hidden" name="newRoles" id="newRoles" value="" />
 		</td>
 	</tr>
@@ -204,25 +204,25 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						&nbsp; <input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('roles', 'newRoles', ',');" /> <br/>
+						&nbsp; <input type="button" value="<openmrs:message code="general.remove"/>" class="smallButton" onClick="removeItem('roles', 'newRoles', ',');" /> <br/>
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="Alert.satisfiedByAny"/></th>
+		<th valign="top"><openmrs:message code="Alert.satisfiedByAny"/></th>
 		<td valign="top">
 			<spring:bind path="alert.satisfiedByAny">
 				<input type="hidden" name="_${status.expression}" value="on" />
 				<input type="checkbox" name="${status.expression}"
 					   value="on" <c:if test="${alert.satisfiedByAny}">checked</c:if> />
 			</spring:bind>
-			<i><spring:message code="Alert.satisfiedByAny.description"/></i>
+			<i><openmrs:message code="Alert.satisfiedByAny.description"/></i>
 		</td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="Alert.dateToExpire"/></th>
+		<th valign="top"><openmrs:message code="Alert.dateToExpire"/></th>
 		<td valign="top">
 			<spring:bind path="alert.dateToExpire">
 				<input type="text" name="${status.expression}" size="10" 
@@ -232,7 +232,7 @@
 	</tr>
 	<c:if test="${!(encounter.changedBy == null)}">
 		<tr>
-			<td><spring:message code="general.changedBy" /></td>
+			<td><openmrs:message code="general.changedBy" /></td>
 			<td>
 				<a href="#View User" onclick="return gotoUser(null, '${alert.changedBy.userId}')">${alert.changedBy.personName}</a> -
 				<openmrs:formatDate date="${alert.dateChanged}" type="medium" />
@@ -241,7 +241,7 @@
 	</c:if>
 </table>
 
-<input type="submit" value="<spring:message code="Alert.save"/>">
+<input type="submit" value="<openmrs:message code="Alert.save"/>">
 </form>
 
 <script type="text/javascript">

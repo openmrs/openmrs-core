@@ -5,34 +5,34 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Program.manage.title"/></h2>
+<h2><openmrs:message code="Program.manage.title"/></h2>
 
-<a href="program.form"><spring:message code="Program.add"/></a>
+<a href="program.form"><openmrs:message code="Program.add"/></a>
 
 <br /><br />
 
-<b class="boxHeader"><spring:message code="Program.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="Program.list.title"/></b>
 <div class="box">
 	<c:if test="${fn:length(programList) == 0}">
 		<tr>
-			<td colspan="6"><spring:message code="general.none"/></td>
+			<td colspan="6"><openmrs:message code="general.none"/></td>
 		</tr>
 	</c:if>
 	<c:if test="${fn:length(programList) != 0}">
 		<table cellspacing="0" cellpadding="2">
 			<tr>
-				<th> <spring:message code="general.id"/> </th>
-				<th> <spring:message code="general.name"/> </th>
-				<th> <spring:message code="general.description"/> </th>
-				<th> <spring:message code="Concept.name"/> </th>
-				<th> <spring:message code="Program.workflows"/> </th>
-				<th> <spring:message code="Program.outcomes"/> </th>
+				<th> <openmrs:message code="general.id"/> </th>
+				<th> <openmrs:message code="general.name"/> </th>
+				<th> <openmrs:message code="general.description"/> </th>
+				<th> <openmrs:message code="Concept.name"/> </th>
+				<th> <openmrs:message code="Program.workflows"/> </th>
+				<th> <openmrs:message code="Program.outcomes"/> </th>
 			</tr>
 			<c:forEach var="program" items="${programList}">
 				<tr>
 					<c:if test="${program.retired}">
 						<td colspan="6">
-							<i><spring:message code="general.retired"/><strike>
+							<i><openmrs:message code="general.retired"/><strike>
 								<a href="program.form?programId=${program.programId}">${program.name}</a>
 							</strike></i>
 						</td>

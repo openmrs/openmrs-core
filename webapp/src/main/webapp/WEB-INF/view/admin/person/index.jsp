@@ -21,8 +21,8 @@
 					{fieldName:"birthdateString", header:omsgs.birthdate}
 				],
 				{
-                    searchLabel: '<spring:message code="Person.searchBox" javaScriptEscape="true"/>',
-                    searchPlaceholder:'<spring:message code="Person.search.placeholder" javaScriptEscape="true"/>'
+                    searchLabel: '<openmrs:message code="Person.searchBox" javaScriptEscape="true"/>',
+                    searchPlaceholder:'<openmrs:message code="Person.search.placeholder" javaScriptEscape="true"/>'
                 });
 	});
 	
@@ -36,12 +36,12 @@
 	}
 </script>
 
-<h2><spring:message code="Person.title"/></h2>
+<h2><openmrs:message code="Person.title"/></h2>
 
-<a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?viewType=edit"><spring:message code="Person.create"/></a><br/><br/>
+<a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?viewType=edit"><openmrs:message code="Person.create"/></a><br/><br/>
 
 <div>
-	<b class="boxHeader"><spring:message code="Person.find"/></b>
+	<b class="boxHeader"><openmrs:message code="Person.find"/></b>
 	<div class="box">
 		<div class="searchWidgetContainer" id="findPersons"></div>
 	</div>

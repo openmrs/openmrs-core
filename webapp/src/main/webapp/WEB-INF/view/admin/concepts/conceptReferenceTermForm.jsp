@@ -95,7 +95,7 @@ $j(document).ready( function() {
 }
 </style>
 
-<h2><spring:message code="ConceptReferenceTerm.form.title"/></h2>
+<h2><openmrs:message code="ConceptReferenceTerm.form.title"/></h2>
 <br/>
 
 <c:if test="${conceptReferenceTermModel.conceptReferenceTerm.conceptReferenceTermId != null && 
@@ -104,17 +104,17 @@ $j(document).ready( function() {
 	<input type="hidden" name="conceptReferenceTermId" value="${param.conceptReferenceTermId}"/>
 	<div class="voidedMessage">
 		<div>
-		<spring:message code="ConceptReferenceTerm.retiredMessage"/> &nbsp;<input type="submit" value='<spring:message code="general.restore"/>'/>
+		<openmrs:message code="ConceptReferenceTerm.retiredMessage"/> &nbsp;<input type="submit" value='<openmrs:message code="general.restore"/>'/>
 		</div>
 	</div>
 </form:form>
 </c:if>
 
 <spring:hasBindErrors name="conceptReferenceTermModel">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/>- ${error.objectName}<br/>
+			<openmrs:message code="${error.code}" text="${error.code}"/>- ${error.objectName}<br/>
 		</c:forEach>
 	</div>
 	<br />
@@ -125,12 +125,12 @@ $j(document).ready( function() {
 		<input type="hidden" name="conceptReferenceTermId" value="${param.conceptReferenceTermId}"/>
 	</c:if>
 	<fieldset>
-	<legend><spring:message code="ConceptReferenceTerm.details" /></legend>
+	<legend><openmrs:message code="ConceptReferenceTerm.details" /></legend>
 	<br/>
 	<table cellpadding="3" cellspacing="3" class="form_align_left">
 		<spring:nestedPath path="conceptReferenceTerm">
         <tr>
-            <th class="alignRight" valign="top"><spring:message code="ConceptReferenceTerm.code"/><span class="required">*</span></th>
+            <th class="alignRight" valign="top"><openmrs:message code="ConceptReferenceTerm.code"/><span class="required">*</span></th>
             <td valign="top">
                 <spring:bind path="code">
                     <input type="text" name="${status.expression}" value="${status.value}"/>
@@ -139,7 +139,7 @@ $j(document).ready( function() {
             </td>
         </tr>
         <tr>
-            <th class="alignRight" valign="top"><spring:message code="general.name"/></th>
+            <th class="alignRight" valign="top"><openmrs:message code="general.name"/></th>
             <td valign="top">
                 <spring:bind path="name">
                     <input type="text" name="${status.expression}" value="${status.value}"/>
@@ -148,7 +148,7 @@ $j(document).ready( function() {
             </td>
         </tr>
         <tr>
-            <th class="alignRight" valign="top"><spring:message code="ConceptReferenceTerm.source"/><span class="required">*</span></th>
+            <th class="alignRight" valign="top"><openmrs:message code="ConceptReferenceTerm.source"/><span class="required">*</span></th>
             <td valign="top">
 			<spring:bind path="conceptSource">
 				<select name="${status.expression}">
@@ -164,7 +164,7 @@ $j(document).ready( function() {
 			</td>
         </tr>
         <tr>
-       		<th class="alignRight" valign="top"><spring:message code="general.description"/></th>
+       		<th class="alignRight" valign="top"><openmrs:message code="general.description"/></th>
             <td valign="top">
                 <spring:bind path="description">
                 	<textarea name="${status.expression}" rows="3" cols="50">${status.value}</textarea>
@@ -173,7 +173,7 @@ $j(document).ready( function() {
             </td>
         </tr>
         <tr>
-            <th class="alignRight"><spring:message code="general.version"/></th>
+            <th class="alignRight"><openmrs:message code="general.version"/></th>
             <td>
                 <spring:bind path="version">
                     <input type="text" name="${status.expression}" value="${status.value}"/>
@@ -183,14 +183,14 @@ $j(document).ready( function() {
         </tr>
         </spring:nestedPath>
         <tr>
-        	<th class="alignRight" valign="top" style="padding-top: 8px"><spring:message code="ConceptReferenceTerm.relatedTerms"/></th>
+        	<th class="alignRight" valign="top" style="padding-top: 8px"><openmrs:message code="ConceptReferenceTerm.relatedTerms"/></th>
         	<td valign="top">
         	<table cellpadding="3" cellspacing="1">
         		<tr class="headerRow" align="center">
-        			<th><spring:message code="Concept.mappings.type"/></th>
-        			<th><spring:message code="ConceptReferenceTerm.source"/></th>
-        			<th><spring:message code="ConceptReferenceTerm.code"/></th>
-        			<th><spring:message code="ConceptReferenceTerm.name"/></th>
+        			<th><openmrs:message code="Concept.mappings.type"/></th>
+        			<th><openmrs:message code="ConceptReferenceTerm.source"/></th>
+        			<th><openmrs:message code="ConceptReferenceTerm.code"/></th>
+        			<th><openmrs:message code="ConceptReferenceTerm.name"/></th>
         			<th>&nbsp;</th>
         		</tr>
         		
@@ -217,7 +217,7 @@ $j(document).ready( function() {
 					<c:otherwise>
 					<td>
 						<select id="term[${mapStatus.index}].source">
-							<option value=""><spring:message code="ConceptReferenceTerm.searchAllSources" /></option>
+							<option value=""><openmrs:message code="ConceptReferenceTerm.searchAllSources" /></option>
 							<openmrs:forEachRecord name="conceptSource">
 							<option value="${record.conceptSourceId}" <c:if test="${record.conceptSourceId == map.termB.conceptSource.conceptSourceId}">selected="selected"</c:if>>
 								${record.name}
@@ -235,7 +235,7 @@ $j(document).ready( function() {
 					</c:choose>
 					<td>
 						<input type="hidden" name="_termMaps[${mapStatus.index}].exists" />
-						<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" 
+						<input type="button" value='<openmrs:message code="general.remove"/>' class="smallButton" 
 							onClick="javascript:this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)" />
 						<spring:bind path="conceptReferenceTermModel.termMaps[${mapStatus.index}]" ignoreNestedPath="true">
 						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -258,7 +258,7 @@ $j(document).ready( function() {
 					</td>
 					<td>
 						<select id="map.source" name="term.source" >
-							<option value=""><spring:message code="ConceptReferenceTerm.searchAllSources" /></option>
+							<option value=""><openmrs:message code="ConceptReferenceTerm.searchAllSources" /></option>
 							<openmrs:forEachRecord  name="conceptSource">
 							<option value="${record.conceptSourceId}">
 								${record.name}
@@ -273,7 +273,7 @@ $j(document).ready( function() {
 					<td>&nbsp;</td>
 					<td>
 						<input type="hidden" name="_termMaps[x].exists" />
-						<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" 
+						<input type="button" value='<openmrs:message code="general.remove"/>' class="smallButton" 
 							onClick="javascript:this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)" />
 					</td>
 					
@@ -284,13 +284,13 @@ $j(document).ready( function() {
 		<tr>
 			<td></td>
 			<td colspan="3">
-				<input type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" 
+				<input type="button" value='<openmrs:message code="Concept.mapping.add"/>' class="smallButton" 
 					onClick="addConceptReferenceTermMap(${fn:length(conceptReferenceTermModel.termMaps)})" />
 			</td>
 		</tr>
 		<c:if test="${fn:length(referenceTermMappingsToThisTerm) > 0}">
 		<tr>
-        	<th class="alignRight" valign="top"><spring:message code="ConceptReferenceTerm.termsWithMappingsToThis"/></th>
+        	<th class="alignRight" valign="top"><openmrs:message code="ConceptReferenceTerm.termsWithMappingsToThis"/></th>
         	<td valign="top">
         		<c:forEach var="map" items="${referenceTermMappingsToThisTerm}">
         			<li class="list-item-no-style">
@@ -304,7 +304,7 @@ $j(document).ready( function() {
         </c:if>
 		<c:if test="${conceptReferenceTermModel.conceptReferenceTerm.creator != null}">
 		<tr>
-			<th class="alignRight"><spring:message code="general.createdBy" /></th>
+			<th class="alignRight"><openmrs:message code="general.createdBy" /></th>
 			<td>
 				${conceptReferenceTermModel.conceptReferenceTerm.creator.personName} -
 				<openmrs:formatDate date="${conceptReferenceTermModel.conceptReferenceTerm.dateCreated}" type="long" />
@@ -313,7 +313,7 @@ $j(document).ready( function() {
 		</c:if>
 		<c:if test="${conceptReferenceTermModel.conceptReferenceTerm.changedBy != null}">
 		<tr>
-			<th class="alignRight"><spring:message code="general.changedBy" /></th>
+			<th class="alignRight"><openmrs:message code="general.changedBy" /></th>
 			<td>
 				${conceptReferenceTermModel.conceptReferenceTerm.changedBy.personName} -
 				<openmrs:formatDate date="${conceptReferenceTermModel.conceptReferenceTerm.dateChanged}" type="long" />
@@ -322,7 +322,7 @@ $j(document).ready( function() {
 		</c:if>
 		<c:if test="${conceptReferenceTermModel.conceptReferenceTerm.retiredBy != null}">
 		<tr>
-			<th class="alignRight"><spring:message code="general.retiredBy" /></th>
+			<th class="alignRight"><openmrs:message code="general.retiredBy" /></th>
 			<td>
 				${conceptReferenceTermModel.conceptReferenceTerm.retiredBy.personName} -
 				<openmrs:formatDate date="${conceptReferenceTermModel.conceptReferenceTerm.dateRetired}" type="long" />
@@ -331,7 +331,7 @@ $j(document).ready( function() {
 		</c:if>
 		<c:if test="${conceptReferenceTermModel.conceptReferenceTerm.retireReason != null}">
 		<tr>
-			<th class="alignRight"><spring:message code="general.retireReason" /></th>
+			<th class="alignRight"><openmrs:message code="general.retireReason" /></th>
 			<td>
 				${conceptReferenceTermModel.conceptReferenceTerm.retireReason}
 			</td>
@@ -342,8 +342,8 @@ $j(document).ready( function() {
 			<td>
 				<table cellpadding="0" cellspacing="20" align="left">
         			<tr>
-        				<td><input type="submit" name="" value="<spring:message code="general.save"/>"></td>
-        				<td><input type="button" value="<spring:message code="general.cancel"/>" onclick="javascript:window.location='conceptReferenceTerms.htm'"></td>
+        				<td><input type="submit" name="" value="<openmrs:message code="general.save"/>"></td>
+        				<td><input type="button" value="<openmrs:message code="general.cancel"/>" onclick="javascript:window.location='conceptReferenceTerms.htm'"></td>
         			</tr>
      			</table>
 			</td>
@@ -358,14 +358,14 @@ $j(document).ready( function() {
 	<tr>
 		<td>
 			<c:if test="${conceptReferenceTermModel.conceptReferenceTerm.retired == false }">
-			<input type="submit" value='<spring:message code="general.retire"/>' onclick="javascript:$j('#retire-dialog').dialog('open')"/>
-			<div id="retire-dialog" title="<spring:message code="general.retire.confirmation"/>">
+			<input type="submit" value='<openmrs:message code="general.retire"/>' onclick="javascript:$j('#retire-dialog').dialog('open')"/>
+			<div id="retire-dialog" title="<openmrs:message code="general.retire.confirmation"/>">
 			<form:form action="retireConceptReferenceTerm.htm" method="post" modelAttribute="conceptReferenceTermModel">
 			<input type="hidden" name="conceptReferenceTermId" value="${param.conceptReferenceTermId}"/>
 			<br/><br/>
 			<table cellpadding="3" cellspacing="3" align="center">
 				<tr>
-					<th><spring:message code="general.reason"/></th>
+					<th><openmrs:message code="general.reason"/></th>
 					<td>
 						<input id="retireReason" type="text" name="retireReason" size="40" />
 					</td>
@@ -373,7 +373,7 @@ $j(document).ready( function() {
 				<tr height="20"></tr>
 				<tr>
 					<td colspan="2" style="text-align: center">
-						<input type="submit" value="<spring:message code="general.retire"/>" /> &nbsp; <input type="button" value="<spring:message code="general.cancel"/>" 
+						<input type="submit" value="<openmrs:message code="general.retire"/>" /> &nbsp; <input type="button" value="<openmrs:message code="general.cancel"/>" 
 						onclick="javascript:$j('#retire-dialog').dialog('close')" /></td>
 				</tr>
 			</table>
@@ -383,17 +383,17 @@ $j(document).ready( function() {
 		</td>
 		<td>
 			<openmrs:hasPrivilege privilege="Purge Concept Reference Terms">
-			<input type="button" value='<spring:message code="general.purge"/>' onclick="javascript:$j('#purge-dialog').dialog('open')" />
-			<div id="purge-dialog" title="<spring:message code="general.purge.confirmation"/>">
+			<input type="button" value='<openmrs:message code="general.purge"/>' onclick="javascript:$j('#purge-dialog').dialog('open')" />
+			<div id="purge-dialog" title="<openmrs:message code="general.purge.confirmation"/>">
 				<form:form action="purgeConceptReferenceTerm.htm" method="post" modelAttribute="conceptReferenceTermModel">
 				<input type="hidden" name="conceptReferenceTermId" value="${param.conceptReferenceTermId}"/>
 				<br/><br/>
-				<spring:message code="general.confirm.purge"/>
+				<openmrs:message code="general.confirm.purge"/>
 				<br/>
 				<table cellpadding="3" cellspacing="30" align="center">
 					<tr>
 						<td>
-							<input type="submit" value='<spring:message code="general.yes"/>' /> &nbsp; <input type="button" value="<spring:message code="general.no"/>" 
+							<input type="submit" value='<openmrs:message code="general.yes"/>' /> &nbsp; <input type="button" value="<openmrs:message code="general.no"/>" 
 							onclick="javascript:$j('#purge-dialog').dialog('close')" />
 						</td>
 					</tr>

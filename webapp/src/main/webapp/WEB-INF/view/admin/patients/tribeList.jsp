@@ -5,6 +5,6 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<spring:message code="Tribe.module.message"/>
+<openmrs:message code="Tribe.module.message"/>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

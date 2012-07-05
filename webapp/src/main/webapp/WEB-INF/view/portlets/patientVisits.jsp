@@ -102,7 +102,7 @@ tr.bottom-encounter-in-visit td:last-child {
 													var actions = '';
 													var encounterURL = aData[15];
 
-													var viewImg = '<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" />';
+													var viewImg = '<img src="${pageContext.request.contextPath}/images/file.gif" title="<openmrs:message code="general.view"/>" />';
 													actions = actions
 															+ ' <a href="'
 															+ encounterURL
@@ -114,7 +114,7 @@ tr.bottom-encounter-in-visit td:last-child {
 												} else {
 													$j('td:eq(2)', nRow)
 															.html(
-																	'<i><spring:message code="Encounter.noEncounters" /></i>');
+																	'<i><openmrs:message code="Encounter.noEncounters" /></i>');
 												}
 												return nRow;
 											},
@@ -136,7 +136,7 @@ tr.bottom-encounter-in-visit td:last-child {
 													$j(pageInfoElement).css('padding-top', $j(sInfoElement).css('padding-top'));
 												}
 												
-												pageInfoElement.innerHTML = '<b><spring:message code="patientDashboard.visits.showing.pages"/>'.
+												pageInfoElement.innerHTML = '<b><openmrs:message code="patientDashboard.visits.showing.pages"/>'.
 													replace('{0}', currentPage).replace('{1}', pageCount)+'</b>';
 												sInfoElement.parentNode.insertBefore(pageInfoElement, sInfoElement);
 
@@ -197,10 +197,10 @@ tr.bottom-encounter-in-visit td:last-child {
 																	+ visitId
 																	+ '&patientId=${model.patient.patientId}">'
 																	+ type
-																	+ '</a><br/><span class="dimmedDates"><spring:message code="general.fromDate" /> '
+																	+ '</a><br/><span class="dimmedDates"><openmrs:message code="general.fromDate" /> '
 																	+ from;
 															if (to != '') {
-																visit = visit + ' <spring:message code="general.toDate" /> ' + to;
+																visit = visit + ' <openmrs:message code="general.toDate" /> ' + to;
 															}
 															visit = visit + '</span>';
 															$j('td:eq(0)',
@@ -214,7 +214,7 @@ tr.bottom-encounter-in-visit td:last-child {
 													}
 													
 													if (visitId == '') {
-														$j('td:eq(0)', trs[i]).html('<spring:message code="general.none" />');
+														$j('td:eq(0)', trs[i]).html('<openmrs:message code="general.none" />');
 													}
 												}
 											}
@@ -232,7 +232,7 @@ tr.bottom-encounter-in-visit td:last-child {
 		<openmrs:hasPrivilege privilege="View Visits, View Encounters">
 			<openmrs:hasPrivilege privilege="Add Visits">
 				&nbsp;<a
-					href="<openmrs:contextPath />/admin/visits/visit.form?patientId=${model.patient.patientId}"><spring:message
+					href="<openmrs:contextPath />/admin/visits/visit.form?patientId=${model.patient.patientId}"><openmrs:message
 						code="Visit.add" /></a>
 				<br />
 				<br />
@@ -243,24 +243,24 @@ tr.bottom-encounter-in-visit td:last-child {
 						<tr>
 							<th class="visitIdHeader"></th>
 							<th class="visitActiveHeader"></th>
-							<th class="visitTypeHeader"><spring:message code="Visit" /></th>
+							<th class="visitTypeHeader"><openmrs:message code="Visit" /></th>
 							<th class="visitLocationHeader"></th>
 							<th class="visitFromHeader"></th>
 							<th class="visitToHeader"></th>
 							<th class="visitIndicationHeader"></th>
 							<th class="encounterFirstHeader"></th>
 							<th class="encounterLastHeader"></th>
-							<th class="encounterIdHeader"><spring:message
+							<th class="encounterIdHeader"><openmrs:message
 									code="general.view" /></th>
-							<th class="encounterDateHeader"><spring:message
+							<th class="encounterDateHeader"><openmrs:message
 									code="Encounter.datetime" /></th>
-							<th class="encounterTypeHeader"><spring:message
+							<th class="encounterTypeHeader"><openmrs:message
 									code="Encounter.type" /></th>
-							<th class="encounterProvidersHeader"><spring:message
+							<th class="encounterProvidersHeader"><openmrs:message
 									code="Encounter.providers" /></th>
-							<th class="encounterLocationHeader"><spring:message
+							<th class="encounterLocationHeader"><openmrs:message
 									code="Encounter.location" /></th>
-							<th class="encounterEntererHeader"><spring:message
+							<th class="encounterEntererHeader"><openmrs:message
 									code="Encounter.enterer" /></th>
 							<th class="encounterViewURLHeader"></th>
 						</tr>

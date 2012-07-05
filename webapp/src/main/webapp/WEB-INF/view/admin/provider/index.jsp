@@ -20,10 +20,10 @@
 					{fieldName:"identifier", header:omsgs.providerIdentifier}
 				],
                 {
-                    searchLabel: '<spring:message code="Provider.search" javaScriptEscape="true"/> ',
-                    searchPlaceholder:'<spring:message code="Provider.search.placeholder" javaScriptEscape="true"/>',
+                    searchLabel: '<openmrs:message code="Provider.search" javaScriptEscape="true"/> ',
+                    searchPlaceholder:'<openmrs:message code="Provider.search.placeholder" javaScriptEscape="true"/>',
                     doSearchWhenEmpty: true,
-                    includeVoidedLabel: '<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>'
+                    includeVoidedLabel: '<openmrs:message code="SearchResults.includeRetired" javaScriptEscape="true"/>'
                 });
 	});
 	
@@ -42,16 +42,16 @@
 	
 </script>
 
-<h2><spring:message code="Provider.title"/></h2>
+<h2><openmrs:message code="Provider.title"/></h2>
 
-<a href="provider.form"><spring:message code="Provider.add"/></a>
+<a href="provider.form"><openmrs:message code="Provider.add"/></a>
 
 
 
 <br/><br/>
 
 <div>
-	<b class="boxHeader"><spring:message code="Provider.find"/></b>
+	<b class="boxHeader"><openmrs:message code="Provider.find"/></b>
 	<div class="box">
 		<div class="searchWidgetContainer" id="findProvider"> </div>
 	</div>

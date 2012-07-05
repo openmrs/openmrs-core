@@ -18,7 +18,7 @@
 					{fieldName:"conceptSourceName", header:omsgs.conceptSource}
 				],
                 {
-                    searchLabel: '<spring:message code="ConceptReferenceTerm.search" javaScriptEscape="true"/>',
+                    searchLabel: '<openmrs:message code="ConceptReferenceTerm.search" javaScriptEscape="true"/>',
                     includeVoidedLabel:omsgs.includeRetired
                 });
 	});
@@ -33,14 +33,14 @@
 	}
 </script>
 
-<h2><spring:message code="ConceptReferenceTerm.title"/></h2>
+<h2><openmrs:message code="ConceptReferenceTerm.title"/></h2>
 
-<a href="conceptReferenceTerm.form"><spring:message code="ConceptReferenceTerm.add"/></a>
+<a href="conceptReferenceTerm.form"><openmrs:message code="ConceptReferenceTerm.add"/></a>
 
 <br/><br/>
 
 <div>
-	<b class="boxHeader"><spring:message code="ConceptReferenceTerm.find"/></b>
+	<b class="boxHeader"><openmrs:message code="ConceptReferenceTerm.find"/></b>
 	<div class="box">
 		<div class="searchWidgetContainer" id="findConceptReferenceTerm"></div>
 	</div>

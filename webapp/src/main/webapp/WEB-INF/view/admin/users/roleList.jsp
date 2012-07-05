@@ -1,25 +1,25 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="Manage Roles" otherwise="/login.htm" redirect="/admin/users/role.list" />
-<spring:message var="pageTitle" code="Role.manage.titlebar" scope="page"/>
+<openmrs:message var="pageTitle" code="Role.manage.titlebar" scope="page"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Role.manage.title"/></h2>
+<h2><openmrs:message code="Role.manage.title"/></h2>
 
-<a href="role.form"><spring:message code="Role.add"/></a>
+<a href="role.form"><openmrs:message code="Role.add"/></a>
 <br/><br/>
 
-<b class="boxHeader"><spring:message code="Role.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="Role.list.title"/></b>
 <form method="post" class="box">
 	<table cellpadding="2" cellspacing="0">
 		<tr>
 			<th> </th>
-			<th> <spring:message code="Role.role"/> </th>
-			<th> <spring:message code="general.description"/> </th>
-			<th> <spring:message code="Role.inheritedRoles"/> </th>
-			<th> <spring:message code="Role.privileges"/> </th>
+			<th> <openmrs:message code="Role.role"/> </th>
+			<th> <openmrs:message code="general.description"/> </th>
+			<th> <openmrs:message code="Role.inheritedRoles"/> </th>
+			<th> <openmrs:message code="Role.privileges"/> </th>
 		</tr>
 	<c:forEach var="map" items="${roleList}" varStatus="rowStatus">
 		<tr class='${rowStatus.index % 2 == 0 ? "evenRow" : "oddRow" }'>
@@ -39,7 +39,7 @@
 			<td><c:out value="${map.key.description}"/></td>
 			<c:choose>
 				<c:when test="${map.key.role == superuser}">
-					<td colspan="2" style="white-space: nowrap"><spring:message code="Role.superuser.hasAllRolesAndPrivileges"/></td>
+					<td colspan="2" style="white-space: nowrap"><openmrs:message code="Role.superuser.hasAllRolesAndPrivileges"/></td>
 				</c:when>
 				<c:otherwise>
 					<td style="white-space: nowrap" <c:if test="${fn:length(map.key.inheritedRoles)>2}">title="${map.key.inheritedRoles}"</c:if>>
@@ -61,7 +61,7 @@
 		</tr>
 	</c:forEach>
 	</table>
-	<input type="submit" value="<spring:message code="Role.delete"/>">
+	<input type="submit" value="<openmrs:message code="Role.delete"/>">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

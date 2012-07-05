@@ -16,19 +16,19 @@
 	}
 	
 	function confirmUnretire() {
-		var retVal = confirm('<spring:message code="PersonAttributeType.UnretirePersonAtrributeMessage"/>');
+		var retVal = confirm('<openmrs:message code="PersonAttributeType.UnretirePersonAtrributeMessage"/>');
 		return retVal;
 	}
 	
 </script>
 
-<h2><spring:message code="PersonAttributeType.title"/></h2>
+<h2><openmrs:message code="PersonAttributeType.title"/></h2>
 
 <form method="post">
 <fieldset>
 <table>
 	<tr>
-		<td><spring:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/></td>
 		<td>
 			<spring:bind path="personAttributeType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
@@ -37,7 +37,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="PersonAttributeType.format"/></td>
+		<td><openmrs:message code="PersonAttributeType.format"/></td>
 		<td>
 			<spring:bind path="personAttributeType.format">
 				<%-- This logic is here because java.util.Date should not be allowed, but existing entries may have that value, and it's impossible to fix that automatically. --%>
@@ -54,24 +54,24 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				<c:if test="${isJavaUtilDate != ''}">
 					<br/>
-					<span class="error"><spring:message code="PersonAttributeType.java.util.Date.warning"/></span>
+					<span class="error"><openmrs:message code="PersonAttributeType.java.util.Date.warning"/></span>
 				</c:if>
 			</spring:bind>
 		</td>
-		<td><i><spring:message code="PersonAttributeType.format.help"/></i></td>
+		<td><i><openmrs:message code="PersonAttributeType.format.help"/></i></td>
 	</tr>
 	<tr>
-		<td><spring:message code="PersonAttributeType.foreignKey"/></td>
+		<td><openmrs:message code="PersonAttributeType.foreignKey"/></td>
 		<td>
 			<spring:bind path="personAttributeType.foreignKey">
 				<input type="text" name="foreignKey" value="${status.value}" size="35" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
-		<td><i><spring:message code="PersonAttributeType.foreignKey.help"/></i></td>
+		<td><i><openmrs:message code="PersonAttributeType.foreignKey.help"/></i></td>
 	</tr>
 	<tr>
-		<td><spring:message code="PersonAttributeType.searchable"/></td>
+		<td><openmrs:message code="PersonAttributeType.searchable"/></td>
 		<td>
 			<spring:bind path="personAttributeType.searchable">
 				<input type="hidden" name="_${status.expression}">
@@ -81,10 +81,10 @@
 				/>
 			</spring:bind>
 		</td>
-		<td><i><spring:message code="PersonAttributeType.searchable.help"/></i></td>
+		<td><i><openmrs:message code="PersonAttributeType.searchable.help"/></i></td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="personAttributeType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
@@ -93,7 +93,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="PersonAttributeType.editPrivilege"/></td>
+		<td><openmrs:message code="PersonAttributeType.editPrivilege"/></td>
 		<td>
 			<spring:bind path="personAttributeType.editPrivilege">
 				<select name="editPrivilege">
@@ -105,11 +105,11 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
-		<td><i><spring:message code="PersonAttributeType.editPrivilege.help"/></i></td>
+		<td><i><openmrs:message code="PersonAttributeType.editPrivilege.help"/></i></td>
 	</tr>	
 	<c:if test="${personAttributeType.creator != null}">
 		<tr>
-			<td><spring:message code="general.createdBy" /></td>
+			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
 				${personAttributeType.creator.personName} -
 				<openmrs:formatDate date="${personAttributeType.dateCreated}" type="long" />
@@ -118,7 +118,7 @@
 	</c:if>
 	<c:if test="${personAttributeType.changedBy != null}">
 		<tr>
-			<td><spring:message code="general.changedBy" /></td>
+			<td><openmrs:message code="general.changedBy" /></td>
 			<td>
 				${personAttributeType.changedBy.personName} -
 				<openmrs:formatDate date="${personAttributeType.dateChanged}" type="long" />
@@ -128,7 +128,7 @@
 </table>
 <input type="hidden" name="personAttributeTypeId:int" value="${personAttributeType.personAttributeTypeId}">
 <br />
-<input type="submit" value="<spring:message code="PersonAttributeType.save"/>" name="save">
+<input type="submit" value="<openmrs:message code="PersonAttributeType.save"/>" name="save">
 </fieldset>
 </form>
 
@@ -137,17 +137,17 @@
 <c:if test="${not personAttributeType.retired && not empty personAttributeType.personAttributeTypeId}">
 	<form method="post">
 		<fieldset>
-			<h4><spring:message code="PersonAttributeType.retirePersonAttributeType"/></h4>
+			<h4><openmrs:message code="PersonAttributeType.retirePersonAttributeType"/></h4>
 			
-			<b><spring:message code="general.reason"/></b>
+			<b><openmrs:message code="general.reason"/></b>
 			<input type="text" value="" size="40" name="retireReason" />
 			<spring:hasBindErrors name="personAttributeType">
 				<c:forEach items="${errors.allErrors}" var="error">
-					<c:if test="${error.code == 'retireReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+					<c:if test="${error.code == 'retireReason'}"><span class="error"><openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
 				</c:forEach>
 			</spring:hasBindErrors>
 			<br/>
-			<input type="submit" value='<spring:message code="PersonAttributeType.retirePersonAttributeType"/>' name="retire"/>
+			<input type="submit" value='<openmrs:message code="PersonAttributeType.retirePersonAttributeType"/>' name="retire"/>
 		</fieldset>
 	</form>
 </c:if>
@@ -158,10 +158,10 @@
 	<openmrs:hasPrivilege privilege="Manage Person Attribute Types">
 		<form id="unretire" method="post" onsubmit="return confirmUnretire()">
 		<fieldset>
-		<h4><spring:message
+		<h4><openmrs:message
 			code="PersonAttributeType.UnretirePersonAttributeType" /></h4>
 		<input type="submit"
-			value='<spring:message code="PersonAttributeType.UnretirePersonAttributeType"/>'
+			value='<openmrs:message code="PersonAttributeType.UnretirePersonAttributeType"/>'
 			name="unretire" /></fieldset>
 		</form>
 	</openmrs:hasPrivilege>
@@ -172,8 +172,8 @@
 	<openmrs:hasPrivilege privilege="Purge Person Attribute Types">
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>
-				<h4><spring:message code="PersonAttributeType.purgePersonAttributeType"/></h4>
-				<input type="submit" value='<spring:message code="PersonAttributeType.purgePersonAttributeType"/>' name="purge" />
+				<h4><openmrs:message code="PersonAttributeType.purgePersonAttributeType"/></h4>
+				<input type="submit" value='<openmrs:message code="PersonAttributeType.purgePersonAttributeType"/>' name="purge" />
 			</fieldset>
 		</form>
 	</openmrs:hasPrivilege>
