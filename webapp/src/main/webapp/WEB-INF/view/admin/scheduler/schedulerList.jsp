@@ -11,10 +11,10 @@
 
 </script>
 
-<h2><spring:message code="Scheduler.header" /></h2>	
+<h2><openmrs:message code="Scheduler.header" /></h2>	
 
-<a href="scheduler.form"><spring:message code="Scheduler.taskList.add" /></a> |
-<a href="scheduler.list"><spring:message code="Scheduler.taskList.refresh" /></a>
+<a href="scheduler.form"><openmrs:message code="Scheduler.taskList.add" /></a> |
+<a href="scheduler.list"><openmrs:message code="Scheduler.taskList.refresh" /></a>
 
 <br/><br/>
 
@@ -27,18 +27,18 @@
 </style>
 
 <div class="scheduler">
-	<b class="boxHeader"><spring:message code="Scheduler.taskList.title" /></b>
+	<b class="boxHeader"><openmrs:message code="Scheduler.taskList.title" /></b>
 	<div class="box">
 		<form id="schedulerListForm" method="post">
 			<div id="schedulerTaskList" align="center">
 				<table cellpadding="0" cellspacing="0" width="100%" id="schedulerTable">
 					<tr class="top">
 						<th></th>
-						<th><spring:message code="Scheduler.list.status"/></th>
-						<th class="left"><spring:message code="Scheduler.list.taskClass"/></th>
-						<th class="left"><spring:message code="Scheduler.list.schedule"/></th>
-						<th class="left"><spring:message code="Scheduler.list.lastExecutionTime"/></th>
-						<th><spring:message code="Scheduler.list.startOnStartup"/></th>
+						<th><openmrs:message code="Scheduler.list.status"/></th>
+						<th class="left"><openmrs:message code="Scheduler.list.taskClass"/></th>
+						<th class="left"><openmrs:message code="Scheduler.list.schedule"/></th>
+						<th class="left"><openmrs:message code="Scheduler.list.lastExecutionTime"/></th>
+						<th><openmrs:message code="Scheduler.list.startOnStartup"/></th>
 					</tr>
 					<c:forEach var="task" items="${taskList}" varStatus="varStatus">
 					
@@ -55,13 +55,13 @@
 							<td valign="top" align="center">
 								<c:choose>
 									<c:when test="${task.started}">
-										<font color="green"><strong><spring:message code="Scheduler.list.started"/></strong></font><br>										
+										<font color="green"><strong><openmrs:message code="Scheduler.list.started"/></strong></font><br>										
 										<c:if test="${task.startTime!=null}">
-											<i><spring:message code="Scheduler.list.runsAgainIn" arguments="${task.secondsUntilNextExecutionTime}"/></i>
+											<i><openmrs:message code="Scheduler.list.runsAgainIn" arguments="${task.secondsUntilNextExecutionTime}"/></i>
 										</c:if>
 									</c:when>
 									<c:otherwise>
-										<font color="red"><strong><spring:message code="Scheduler.list.stopped"/></strong></font>
+										<font color="red"><strong><openmrs:message code="Scheduler.list.stopped"/></strong></font>
 									</c:otherwise>
 								</c:choose>
 							</td>							
@@ -69,10 +69,10 @@
 								<a href="scheduler.form?taskId=${task.id}"><strong>${task.name}</strong></a> 
 									<br/>${task.taskClass}
 							</td>
-							<td class="left"><spring:message code="Scheduler.list.runsEvery" arguments="${intervals[task]}"/> 
+							<td class="left"><openmrs:message code="Scheduler.list.runsEvery" arguments="${intervals[task]}"/> 
 								<c:if test="${task.startTime!=null}">								 	
-								 	<br/><spring:message code="Scheduler.list.from" arguments="${taskStartTime}"/> , 
-								 	<br/><spring:message code="Scheduler.list.startingOn" arguments="${taskStartDate}"/>
+								 	<br/><openmrs:message code="Scheduler.list.from" arguments="${taskStartTime}"/> , 
+								 	<br/><openmrs:message code="Scheduler.list.startingOn" arguments="${taskStartDate}"/>
 								</c:if>							
 							</td>
 							<td class="left">
@@ -80,8 +80,8 @@
 							</td>
 							<td>
 								<c:choose>
-									<c:when test="${task.startOnStartup}"><strong><spring:message code="general.yes"/></strong> (<spring:message code="Scheduler.list.automatic"/>)</c:when>
-									<c:otherwise><strong><spring:message code="general.no"/></strong> (<spring:message code="Scheduler.list.manual"/>)</c:otherwise>
+									<c:when test="${task.startOnStartup}"><strong><openmrs:message code="general.yes"/></strong> (<openmrs:message code="Scheduler.list.automatic"/>)</c:when>
+									<c:otherwise><strong><openmrs:message code="general.no"/></strong> (<openmrs:message code="Scheduler.list.manual"/>)</c:otherwise>
 								</c:choose>
 							</td>
 							
@@ -89,9 +89,9 @@
 					</c:forEach>
 					<tr class="bottom">
 						<td colspan="6">
-							<input type="submit" value="<spring:message code="Scheduler.taskList.start"/>" name="action">
-							<input type="submit" value="<spring:message code="Scheduler.taskList.stop"/>" name="action">
-							<input type="submit" value="<spring:message code="Scheduler.taskList.delete"/>" name="action">
+							<input type="submit" value="<openmrs:message code="Scheduler.taskList.start"/>" name="action">
+							<input type="submit" value="<openmrs:message code="Scheduler.taskList.stop"/>" name="action">
+							<input type="submit" value="<openmrs:message code="Scheduler.taskList.delete"/>" name="action">
 							
 						</td>
 					</tr>

@@ -26,7 +26,7 @@
 			"buttons": {
 				"Close": function() { $j(this).dialog("close"); } 
 			},
-			"title": "<spring:message code="Hl7inError.errorList.errorDetails.header" />",
+			"title": "<openmrs:message code="Hl7inError.errorList.errorDetails.header" />",
 			"width": "85%"
 		});
 
@@ -35,7 +35,7 @@
 					         "fnRender": function ( oObj ) {
 									return '<button ' +
 										'onClick="resubmitMessage(' + oObj.aData[0] + ',' + oObj.iDataRow + ')">' +
-										'<spring:message code="Hl7inError.errorList.restore" /></button>';
+										'<openmrs:message code="Hl7inError.errorList.restore" /></button>';
 								}
 							},
 							{ "sName": "source", "bSortable": false },
@@ -44,9 +44,9 @@
 					         "fnRender": function ( oObj ) {
 									return '<div id="hl7' + oObj.iDataRow + '" class="showmore"><pre>' + oObj.aData[3] + 
 										'</pre></div><a id="show'+ oObj.iDataRow + '" href=# onClick="showMore(' + oObj.iDataRow +
-										')"><spring:message code="Hl7inQueue.queueList.showMore" /></a>' +
+										')"><openmrs:message code="Hl7inQueue.queueList.showMore" /></a>' +
 										'<a id="hide'+ oObj.iDataRow + '" style="display:none;" href=# onClick="hideMore(' + oObj.iDataRow + 
-										')"><spring:message code="Hl7inQueue.queueList.hideMore" /></a>';
+										')"><openmrs:message code="Hl7inQueue.queueList.hideMore" /></a>';
 								}
 							},
 							{ "sName": "error", "bSortable": false ,
@@ -57,7 +57,7 @@
 								return '<p>' + oObj.aData[4] + '</p>' +
 									'<button class="' + clazz + '" ' + 
 									'onClick="showDetails(' + oObj.iDataRow + ')">' + 
-									'<spring:message code="Hl7inError.errorList.showDetails" /></button>';
+									'<openmrs:message code="Hl7inError.errorList.showDetails" /></button>';
 								}
 							},
 							{ "sName": "errorDetails", "bSortable": false, "bVisible": false }
@@ -110,7 +110,7 @@
 			"data": { "hl7InErrorId": id },
 			"dataType": "json",
 			"error": function(XMLHttpRequest, textStatus, errorThrown) {
-				setMessage('<spring:message code="Hl7inError.errorList.restore"/>');
+				setMessage('<openmrs:message code="Hl7inError.errorList.restore"/>');
 			},
 			"success": function(data, textStatus, XMLHttpRequest) {
 				setMessage(data);
@@ -132,7 +132,7 @@
 	#hl7Table button { padding: 0.5em; }
 </style>
 
-<h2><spring:message code="Hl7inError.header" /></h2>
+<h2><openmrs:message code="Hl7inError.header" /></h2>
 
 <div id="message" class="ui-widget"
 	style="display: none; margin-bottom: 1em;">
@@ -149,12 +149,12 @@
 	<thead>
 		<tr>
 			<th></th>
-			<th><spring:message code="Hl7inError.errorList.source.header" /></th>
-			<th><spring:message
+			<th><openmrs:message code="Hl7inError.errorList.source.header" /></th>
+			<th><openmrs:message
 				code="Hl7inError.errorList.dateCreated.header" /></th>
-			<th><spring:message code="Hl7inError.errorList.data.header" /></th>
-			<th><spring:message code="Hl7inError.errorList.error.header" /></th>
-			<th><spring:message
+			<th><openmrs:message code="Hl7inError.errorList.data.header" /></th>
+			<th><openmrs:message code="Hl7inError.errorList.error.header" /></th>
+			<th><openmrs:message
 				code="Hl7inError.errorList.errorDetails.header" /></th>
 		</tr>
 	</thead>

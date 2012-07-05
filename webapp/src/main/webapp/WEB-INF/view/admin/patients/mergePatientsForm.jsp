@@ -60,17 +60,17 @@
 </style>
 
 <spring:hasBindErrors name="patient">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
 		</c:forEach>
 	</div>
 </spring:hasBindErrors>
 
-<h2><spring:message code="Patient.merge.title"/></h2>
+<h2><openmrs:message code="Patient.merge.title"/></h2>
 
-<spring:message code="Patient.merge.warning" />
+<openmrs:message code="Patient.merge.warning" />
 
 <br/><br/>
 
@@ -93,22 +93,22 @@
 				<td valign="top">
 					<h4>
 						<input type="radio" name="preferred" id="${patient1.patientId}preferred" value="${patient1.patientId}" onclick="if (this.checked) changePrimary('left')" checked />
-						<label for="${patient1.patientId}preferred"><spring:message code="Patient.merge.preferred" /></label>
+						<label for="${patient1.patientId}preferred"><openmrs:message code="Patient.merge.preferred" /></label>
 					</h4>
 					<c:if test="${patient1.voided}">
 						<div class="retiredMessage">
-							<div><spring:message code="Patient.voided"/></div>
+							<div><openmrs:message code="Patient.voided"/></div>
 						</div>
 					</c:if>
 				</td>
 				<td valign="top">
 					<h4>
 						<input type="radio" name="preferred" id="${patient2.patientId}preferred" value="${patient2.patientId}" onclick="if (this.checked) changePrimary('right')"/>
-						<label for="${patient2.patientId}preferred"><spring:message code="Patient.merge.preferred" /></label>
+						<label for="${patient2.patientId}preferred"><openmrs:message code="Patient.merge.preferred" /></label>
 					</h4>
 						<c:if test="${patient2.voided}">
 							<div class="retiredMessage">
-								<div><spring:message code="Patient.voided"/></div>
+								<div><openmrs:message code="Patient.voided"/></div>
 							</div>
 						</c:if>
 				</td>
@@ -116,7 +116,7 @@
 		</c:if>
 		<tr>
 			<td valign="top">
-				<h4><spring:message code="Patient.names"/></h4>
+				<h4><openmrs:message code="Patient.names"/></h4>
 				<ol>
 					<c:forEach items="${patient1.names}" var="name">
 						<li>${name.givenName} ${name.middleName} ${name.familyName}
@@ -125,13 +125,13 @@
 			</td>
 			<c:if test="${patient2.patientId == null}">
 				<td rowspan="6" valign="top">
-					<h4><spring:message code="Patient.select"/></h4>
+					<h4><openmrs:message code="Patient.select"/></h4>
 					<div dojoType="PatientSearch" widgetId="pSearch"></div>
 				</td>
 			</c:if>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
-					<h4><spring:message code="Patient.names"/></h4>
+					<h4><openmrs:message code="Patient.names"/></h4>
 					<ol>
 						<c:forEach items="${patient2.names}" var="name">
 							<li>${name.givenName} ${name.middleName} ${name.familyName}
@@ -142,7 +142,7 @@
 		</tr>
 		<tr>
 			<td valign="top">
-				<h4><spring:message code="Patient.identifiers"/></h4>
+				<h4><openmrs:message code="Patient.identifiers"/></h4>
 				<ol>
 					<c:forEach items="${patient1.identifiers}" var="identifier">
 						<li>${identifier.identifier} ${identifier.identifierType.name}
@@ -151,7 +151,7 @@
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
-					<h4><spring:message code="Patient.identifiers"/></h4>
+					<h4><openmrs:message code="Patient.identifiers"/></h4>
 					<ol>
 						<c:forEach items="${patient2.identifiers}" var="identifier">
 							<li>${identifier.identifier} ${identifier.identifierType.name}
@@ -162,7 +162,7 @@
 		</tr>
 		<tr>
 			<td valign="top">
-				<h4><spring:message code="Patient.addresses"/></h4>
+				<h4><openmrs:message code="Patient.addresses"/></h4>
 				<ol>
 					<c:forEach items="${patient1.addresses}" var="address">
 						<li>${address.address1} ${address.address2} ${address.cityVillage}
@@ -171,7 +171,7 @@
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
-					<h4><spring:message code="Patient.addresses"/></h4>
+					<h4><openmrs:message code="Patient.addresses"/></h4>
 					<ol>
 						<c:forEach items="${patient2.addresses}" var="address">
 							<li>${address.address1} ${address.address2} ${address.cityVillage}
@@ -182,13 +182,13 @@
 		</tr>
 		<tr>
 			<td valign="top">
-				<h4><spring:message code="Patient.information"/></h4>
+				<h4><openmrs:message code="Patient.information"/></h4>
 				<c:set var="patient" value="${patient1}" />
 				<%@ include file="../person/include/showPersonInfo.jsp" %>
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
-					<h4><spring:message code="Patient.information"/></h4>
+					<h4><openmrs:message code="Patient.information"/></h4>
 					<c:set var="patient" value="${patient2}" />
 					<%@ include file="../person/include/showPersonInfo.jsp" %>
 				</td>
@@ -196,7 +196,7 @@
 		</tr>
 		<tr>
 			<td valign="top">
-				<h4><spring:message code="Patient.encounters"/></h4>
+				<h4><openmrs:message code="Patient.encounters"/></h4>
 				<ol>
 					<c:forEach items="${patient1Encounters}" var="encounter">
 						<li>
@@ -204,14 +204,14 @@
 							${encounter.location.name}
 							<openmrs:formatDate date="${encounter.encounterDatetime}" type="short" />
 							<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}">
-								<spring:message code="general.view"/>
+								<openmrs:message code="general.view"/>
 							</a>
 					</c:forEach>
 				</ol>
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
-					<h4><spring:message code="Patient.encounters"/></h4>
+					<h4><openmrs:message code="Patient.encounters"/></h4>
 					<ol>
 						<c:forEach items="${patient2Encounters}" var="encounter">
 							<li>
@@ -219,7 +219,7 @@
 								${encounter.location.name}
 								<openmrs:formatDate date="${encounter.encounterDatetime}" type="short" />
 								<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}">
-									<spring:message code="general.view"/>
+									<openmrs:message code="general.view"/>
 								</a>
 						</c:forEach>
 					</ol>
@@ -228,18 +228,18 @@
 		</tr>
 		<tr>
 			<td>
-				<a href="patient.form?patientId=${patient1.patientId}"><spring:message code="Patient.edit"/></a>
+				<a href="patient.form?patientId=${patient1.patientId}"><openmrs:message code="Patient.edit"/></a>
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td>
-					<a href="patient.form?patientId=${patient2.patientId}"><spring:message code="Patient.edit"/></a>
+					<a href="patient.form?patientId=${patient2.patientId}"><openmrs:message code="Patient.edit"/></a>
 				</td>
 			</c:if>
 	</table>
 
 	<c:if test="${patient2.patientId != null}">
 		<br />
-		<input type="submit" name="action" value='<spring:message code="Patient.merge"/>' onclick="return confirm('Are you sure you want to merge these patients?')" >
+		<input type="submit" name="action" value='<openmrs:message code="Patient.merge"/>' onclick="return confirm('Are you sure you want to merge these patients?')" >
 		<input type="hidden" name="patient1" value="${patient1.patientId}"/>
 		<input type="hidden" name="patient2" value="${patient2.patientId}"/>
 	</c:if>

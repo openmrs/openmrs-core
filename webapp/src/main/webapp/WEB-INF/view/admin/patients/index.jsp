@@ -21,7 +21,7 @@
 					{fieldName:"gender", header:omsgs.gender},
 					{fieldName:"birthdateString", header:omsgs.birthdate},
 				],
-				{searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>'});
+				{searchLabel: '<openmrs:message code="Patient.searchBox" javaScriptEscape="true"/>'});
 	});
 	
 	function doSelectionHandler(index, data) {
@@ -34,12 +34,12 @@
 	}
 </script>
 
-<h2><spring:message code="Patient.title"/></h2>
+<h2><openmrs:message code="Patient.title"/></h2>
 
-<a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?personType=patient&viewType=edit"><spring:message code="Patient.create"/></a><br/><br/>
+<a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?personType=patient&viewType=edit"><openmrs:message code="Patient.create"/></a><br/><br/>
 
 <div>
-	<b class="boxHeader"><spring:message code="Patient.find"/></b>
+	<b class="boxHeader"><openmrs:message code="Patient.find"/></b>
 	<div class="box">
 		<div class="searchWidgetContainer" id="findPatients"></div>
 	</div>

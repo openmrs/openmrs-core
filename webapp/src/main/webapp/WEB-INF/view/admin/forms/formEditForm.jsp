@@ -5,28 +5,28 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Form.edit.title"/></h2>
+<h2><openmrs:message code="Form.edit.title"/></h2>
 
 <spring:hasBindErrors name="form">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
 		</c:forEach>
 	</div>
 </spring:hasBindErrors>
 
 <c:if test="${form.retired}">
-	<div class="retiredMessage"><div><spring:message code="Form.retiredMessage"/></div></div>
+	<div class="retiredMessage"><div><openmrs:message code="Form.retiredMessage"/></div></div>
 </c:if>
 
 <c:if test="${form.formId != null && empty param.duplicate}">
 <br/>
-<a href="#designSchema"><spring:message code="Form.designSchema" /></a>
+<a href="#designSchema"><openmrs:message code="Form.designSchema" /></a>
 <c:if test="${form.formId != 1}">
 	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formHeader" type="html" parameters="formId=${form.formId}">
 		<c:forEach items="${extension.links}" var="link">
-			| <a href="${pageContext.request.contextPath}/${link.key}"><spring:message code="${link.value}"/></a>
+			| <a href="${pageContext.request.contextPath}/${link.key}"><openmrs:message code="${link.value}"/></a>
 		</c:forEach>
 	</openmrs:extensionPoint>
 </c:if>
@@ -38,7 +38,7 @@
 <form method="post" enctype="multipart/form-data">
 <table>
 	<tr>
-		<td><spring:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/></td>
 		<td>
 			<spring:bind path="form.name">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -47,7 +47,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="form.description">
 				<textarea name="description" rows="3" cols="40" type="_moz">${status.value}</textarea>
@@ -56,7 +56,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Form.version"/></td>
+		<td><openmrs:message code="Form.version"/></td>
 		<td>
 			<spring:bind path="form.version">
 				<input type="text" name="${status.expression}" value="${status.value}" size="5" />
@@ -65,7 +65,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Form.published"/></td>
+		<td><openmrs:message code="Form.published"/></td>
 		<td>
 			<spring:bind path="form.published">
 				<input type="hidden" name="_${status.expression}">
@@ -77,7 +77,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Encounter.type"/></td>
+		<td><openmrs:message code="Encounter.type"/></td>
 		<td>
 			<spring:bind path="form.encounterType">
 				<select name="encounterType">
@@ -90,17 +90,17 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Form.xslt"/></td>
+		<td><openmrs:message code="Form.xslt"/></td>
 		<td>
 			<spring:bind path="form.xslt">
-				<c:if test="${form.xslt != ''}"><a target="_new" href="formViewXslt.form?formId=${form.formId}"><spring:message code="Form.xslt.view"/></a><br/></c:if>
-				<spring:message code="Form.xslt.upload"/> <input type="file" name="xslt_file" size="25" />
+				<c:if test="${form.xslt != ''}"><a target="_new" href="formViewXslt.form?formId=${form.formId}"><openmrs:message code="Form.xslt.view"/></a><br/></c:if>
+				<openmrs:message code="Form.xslt.upload"/> <input type="file" name="xslt_file" size="25" />
 				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="general.retired"/></td>
+		<td><openmrs:message code="general.retired"/></td>
 		<td>
 			<spring:bind path="form.retired">
 				<input type="hidden" name="_${status.expression}">
@@ -113,7 +113,7 @@
 		</td>
 	</tr>
 	<tr id="retiredReasonRow">
-		<td><spring:message code="general.retiredReason"/></td>
+		<td><openmrs:message code="general.retiredReason"/></td>
 		<spring:bind path="form.retireReason">
 			<td>
 				<input type="text" name="${status.expression}" id="retiredReason" value="${status.value}" />
@@ -123,7 +123,7 @@
 	</tr>
 	<c:if test="${form.retired}" >
 		<tr>
-			<td><spring:message code="general.retiredBy"/></td>
+			<td><openmrs:message code="general.retiredBy"/></td>
 			<td>
 				${form.retiredBy.personName} -
 				<openmrs:formatDate date="${form.dateRetired}" type="long" />
@@ -132,7 +132,7 @@
 	</c:if>
 	<c:if test="${!(form.creator == null)}">
 		<tr>
-			<td><spring:message code="general.createdBy" /></td>
+			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
 				${form.creator.personName} -
 				<openmrs:formatDate date="${form.dateCreated}" type="long" />
@@ -141,7 +141,7 @@
 	</c:if>
 	<c:if test="${!(form.changedBy == null)}">
 		<tr>
-			<td><spring:message code="general.changedBy" /></td>
+			<td><openmrs:message code="general.changedBy" /></td>
 			<td>
 				${form.changedBy.personName} -
 				<openmrs:formatDate date="${form.dateChanged}" type="long" />
@@ -151,7 +151,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formRow" type="html" parameters="formId=${form.formId}">
 		<c:forEach items="${extension.rows}" var="row">
 			<tr>
-				<td><spring:message code="${row.key}"/></td>
+				<td><openmrs:message code="${row.key}"/></td>
 				<td>${row.value}</td>
 			</tr>
 		</c:forEach>
@@ -159,15 +159,15 @@
 </table>
 <br />
 <c:if test="${not empty param.duplicate}">
-	<input type="submit" name="action" value="<spring:message code="Form.create.duplicate"/>">
+	<input type="submit" name="action" value="<openmrs:message code="Form.create.duplicate"/>">
 </c:if>
 <c:if test="${empty param.duplicate}">
-	<input type="submit" name="action" value="<spring:message code="Form.save"/>">
+	<input type="submit" name="action" value="<openmrs:message code="Form.save"/>">
 	
 	<c:if test="${form.formId != null && form.formId != 1}">
 		<openmrs:hasPrivilege privilege="Delete Forms">
 			 &nbsp; &nbsp; &nbsp;
-			<input type="submit" name="action" value="<spring:message code="Form.delete"/>" onclick="return confirm('<spring:message code="Form.confirmation"/>')"/>
+			<input type="submit" name="action" value="<openmrs:message code="Form.delete"/>" onclick="return confirm('<openmrs:message code="Form.confirmation"/>')"/>
 		</openmrs:hasPrivilege>
 	</c:if>
 </c:if>
@@ -270,14 +270,14 @@
 
 <br/>
 <h2>
-	<spring:message code="Form.design.title" /><!-- - 
+	<openmrs:message code="Form.design.title" /><!-- - 
 	${form.name} -->
 </h2>
 
 <br/>
 
 <c:if test="${form.published == true}">
-	<div class="retiredMessage"><div><spring:message code="Form.design.disabled"/></div></div>
+	<div class="retiredMessage"><div><openmrs:message code="Form.design.disabled"/></div></div>
 </c:if>
 
 <div dojoType="TreeBasicController" widgetId="treeController" DNDController="create"></div>
@@ -292,7 +292,7 @@
 <div id="loadingTreeMessage">
 	<br/>
 	&nbsp;
-	<spring:message code="general.loading" />
+	<openmrs:message code="general.loading" />
 </div>
 
 <table width="99%">
@@ -304,7 +304,7 @@
 		<td valign="top" style="padding-left: 5px;" id="fieldSearch" width="40%">
 			<div id="fieldSearchDiv">
 				<c:if test="${form.published != true && form.formId != 1}">
-					<div dojoType="FieldSearch" widgetId="fieldSearch" searchLabel='<spring:message code="Field.find" />' showHeaderRow="false" alsoSearchConcepts="true"></div>
+					<div dojoType="FieldSearch" widgetId="fieldSearch" searchLabel='<openmrs:message code="Field.find" />' showHeaderRow="false" alsoSearchConcepts="true"></div>
 				</c:if>
 			</div>
 		</td>
@@ -312,15 +312,15 @@
 </table>
 
 <div id="editFormField">
-	<div id="formFieldTitle"><spring:message code="FormField.edit"/>:</div>
+	<div id="formFieldTitle"><openmrs:message code="FormField.edit"/>:</div>
 	
 	<form xonsubmit="save(selectedNode)" style="padding: 0px; margin: 0px; overflow: auto">
 		<%@ include file="include/formFieldEdit.jsp" %>
 	
 		<c:if test="${form.published != true && form.formId != 1}">
-			<input type="submit" id="saveFormField" onclick="return save(selectedNode);" value="<spring:message code="general.save"/>" />
+			<input type="submit" id="saveFormField" onclick="return save(selectedNode);" value="<openmrs:message code="general.save"/>" />
 		</c:if>
-		<input type="button" id="cancelFormField" onclick="cancelClicked()" value="<spring:message code="general.cancel"/>" />
+		<input type="button" id="cancelFormField" onclick="cancelClicked()" value="<openmrs:message code="general.cancel"/>" />
 	</form>
 </div>
 <!-- Spacer for schema editing -->

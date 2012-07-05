@@ -24,7 +24,7 @@
 					         "fnRender": function ( oObj ) {
 									var id = oObj.aData[0];
 									return '<button onClick="toggleMessage(' + id + ',' + oObj.iDataRow + 
-										')"><spring:message code="Hl7inQueue.queueList.restore" /></button>';
+										')"><openmrs:message code="Hl7inQueue.queueList.restore" /></button>';
 								}
 							},
 							{ "sName": "source", "bSortable": false },
@@ -33,9 +33,9 @@
 					         "fnRender": function ( oObj ) {
 								return '<div id="hl7' + oObj.iDataRow + '" class="showmore"><pre>' + oObj.aData[3] + 
 									'</pre></div><a id="show'+ oObj.iDataRow + '" href=# onClick="showMore(' + oObj.iDataRow +
-									')"><spring:message code="Hl7inQueue.queueList.showMore" /></a>' +
+									')"><openmrs:message code="Hl7inQueue.queueList.showMore" /></a>' +
 									'<a id="hide'+ oObj.iDataRow + '" style="display:none;" href=# onClick="hideMore(' + oObj.iDataRow + 
-									')"><spring:message code="Hl7inQueue.queueList.hideMore" /></a>';
+									')"><openmrs:message code="Hl7inQueue.queueList.hideMore" /></a>';
 								}
 							}
 			  			 ],
@@ -87,7 +87,7 @@
 			"data": { "hl7InQueueId": id },
 			"dataType": "json",
 			"error": function(XMLHttpRequest, textStatus, errorThrown) {
-				setMessage('<spring:message code="Hl7inQueue.queueList.error"/>');
+				setMessage('<openmrs:message code="Hl7inQueue.queueList.error"/>');
 			},
 			"success": function(data, textStatus, XMLHttpRequest) {
 				setMessage(data);
@@ -103,7 +103,7 @@
 	#hl7Table button { padding: 0.5em; }
 </style>
 
-<h2><spring:message code="Hl7inQueue.queueList.held.title" /></h2>
+<h2><openmrs:message code="Hl7inQueue.queueList.held.title" /></h2>
 
 <div id="message" class="ui-widget"
 	style="display: none; margin-bottom: 1em;">
@@ -117,9 +117,9 @@
 	<thead>
 		<tr>
 			<th></th>
-			<th><spring:message code="Hl7inQueue.queueList.source.header" /></th>
-			<th><spring:message code="Hl7inQueue.queueList.dateCreated" /></th>
-			<th width="100%"><spring:message
+			<th><openmrs:message code="Hl7inQueue.queueList.source.header" /></th>
+			<th><openmrs:message code="Hl7inQueue.queueList.dateCreated" /></th>
+			<th width="100%"><openmrs:message
 				code="Hl7inQueue.queueList.data.header" /></th>
 		</tr>
 	</thead>

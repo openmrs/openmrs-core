@@ -14,28 +14,28 @@
 	});
 </script>
 
-<h2><spring:message code="LocationTag.manage"/></h2>
+<h2><openmrs:message code="LocationTag.manage"/></h2>
 
-<a class="toggleAddLocationTag" href="#"><spring:message code="LocationTag.add"/></a>
+<a class="toggleAddLocationTag" href="#"><openmrs:message code="LocationTag.add"/></a>
 <div id="addLocationTag" style="border: 1px black solid; background-color: #e0e0e0; display: none">
 	<form method="post" action="locationTagAdd.form">
 		<table>
 			<tr>
-				<th><spring:message code="LocationTag.name"/></th>
+				<th><openmrs:message code="LocationTag.name"/></th>
 				<td>
 					<input type="text" name="name"/>
 					<span class="required">*</span>
 				</td>
 			</tr>
 			<tr>
-				<th><spring:message code="LocationTag.description"/></th>
+				<th><openmrs:message code="LocationTag.description"/></th>
 				<td><textarea name="description" rows="3" cols="72"></textarea></td>
 			</tr>
 			<tr>
 				<th></th>
 				<td>
-					<input type="submit" value="<spring:message code="general.save"/>" />
-					<input type="button" value="<spring:message code="general.cancel"/>" class="toggleAddLocationTag" />
+					<input type="submit" value="<openmrs:message code="general.save"/>" />
+					<input type="button" value="<openmrs:message code="general.cancel"/>" class="toggleAddLocationTag" />
 				</td>
 			</tr>
 		</table>
@@ -46,14 +46,14 @@
 
 <br />
 <br />
-<b class="boxHeader"><spring:message code="LocationTag.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="LocationTag.list.title"/></b>
 <form method="post" class="box">
 	<table>
 		<tr>
-			<th> <spring:message code="general.name" /> </th>
-			<th> <spring:message code="general.description" /> </th>
-			<th> <spring:message code="general.creator" /> </th>
-			<th> <spring:message code="general.dateCreated" /> </th>
+			<th> <openmrs:message code="general.name" /> </th>
+			<th> <openmrs:message code="general.description" /> </th>
+			<th> <openmrs:message code="general.creator" /> </th>
+			<th> <openmrs:message code="general.dateCreated" /> </th>
 		</tr>
 		<c:forEach var="locationTag" items="${locationTags}">
 			<tr <c:if test="${locationTag.retired == true}"> class="retired" </c:if> >
@@ -74,7 +74,7 @@
 			</tr>
 		</c:forEach>
 		<c:if test="${empty locationTags}">
-			<tr><td colspan="4"><spring:message code="general.none"/></td></tr>
+			<tr><td colspan="4"><openmrs:message code="general.none"/></td></tr>
 		</c:if>
 	</table>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationTagList.inForm" type="html" />

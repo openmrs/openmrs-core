@@ -3,15 +3,15 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="ViewCurrentUsers.title"/></h2>
+<h2><openmrs:message code="ViewCurrentUsers.title"/></h2>
 
-<spring:message code="ViewCurrentUsers.help" />
+<openmrs:message code="ViewCurrentUsers.help" />
 <br />
 <br />
 
 <table class="box">
     <tr>
-        <th><spring:message code="ViewCurrentUsers.users" /></th>
+        <th><openmrs:message code="ViewCurrentUsers.users" /></th>
     </tr>
     <c:if test="${not empty currentUsers}">
         <c:forEach var="username" varStatus="status" items="${currentUsers}">

@@ -22,7 +22,7 @@
  * <pre>
    $j(document).ready(function() {
 		$j("#elementId").openmrsSearch({
-			searchLabel:'<spring:message code="General.search"/>',
+			searchLabel:'<openmrs:message code="General.search"/>',
 			showIncludeVoided: true,
 			displayLength: 5,
 			minLength: 3,
@@ -49,7 +49,7 @@
 				{fieldName:"fiels5", header:"Header5"},
 				{fieldName:"field6", header:"Header6"}
 			],
-			{searchLabel: '<spring:message code="General.search"/>', displayLength: 5, 
+			{searchLabel: '<openmrs:message code="General.search"/>', displayLength: 5, 
 				minLength: 3, columnWidths: ["15%","15%","15%","15%","15%", "25%"],
 				columnRenderers: [null, null, null, null, null, null], 
 				columnVisibility: [true, true, true, true, true, true]}

@@ -1,27 +1,27 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="Manage Alerts" otherwise="/login.htm" redirect="/admin/users/alert.list" />
-<spring:message var="pageTitle" code="Alert.manage.titlebar" scope="page"/>
+<openmrs:message var="pageTitle" code="Alert.manage.titlebar" scope="page"/>
 	
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Alert.manage.title"/></h2>
+<h2><openmrs:message code="Alert.manage.title"/></h2>
 
-<a href="alert.form"><spring:message code="Alert.add"/></a>
+<a href="alert.form"><openmrs:message code="Alert.add"/></a>
 <br/><br/>
 
 <b class="boxHeader">
-	<a style="display: block; float: right" href="?includeExpired=${!param.includeExpired}"><spring:message code="Alert.includeExpired"/></a>
-	<spring:message code="Alert.list.title"/>
+	<a style="display: block; float: right" href="?includeExpired=${!param.includeExpired}"><openmrs:message code="Alert.includeExpired"/></a>
+	<openmrs:message code="Alert.list.title"/>
 </b>
 <form method="post" class="box">
 	<table cellpadding="2" cellspacing="0" width="100%">
 		<tr>
 			<th> </th>
-			<th> <spring:message code="Alert.text"/> </th>
-			<th> <spring:message code="Alert.assignedTo"/> </th>
-			<th> <spring:message code="Alert.dateToExpire"/> </th>
+			<th> <openmrs:message code="Alert.text"/> </th>
+			<th> <openmrs:message code="Alert.assignedTo"/> </th>
+			<th> <openmrs:message code="Alert.dateToExpire"/> </th>
 		</tr>
 	<c:forEach var="alert" items="${alertList}" varStatus="rowStatus">
 		<tr class='${rowStatus.index % 2 == 0 ? "evenRow" : "oddRow"}'>
@@ -38,10 +38,10 @@
 			<td>
 				<c:choose>
 					<c:when test="${fn:length(alert.recipients) == 1}">
-						<spring:message code="Alert.assignedTo.recipient" />
+						<openmrs:message code="Alert.assignedTo.recipient" />
 					</c:when>
 					<c:otherwise>
-						<spring:message code="Alert.assignedTo.recipients" arguments="${fn:length(alert.recipients)}" />
+						<openmrs:message code="Alert.assignedTo.recipients" arguments="${fn:length(alert.recipients)}" />
 					</c:otherwise>
 				</c:choose>
 			</td>
@@ -49,7 +49,7 @@
 		</tr>
 	</c:forEach>
 	</table>
-	<input type="submit" value="<spring:message code="Alert.expire"/>">
+	<input type="submit" value="<openmrs:message code="Alert.expire"/>">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

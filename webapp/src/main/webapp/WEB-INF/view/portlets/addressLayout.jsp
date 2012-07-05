@@ -44,7 +44,7 @@
         		// this is the first time there was an error, save the current
         		// onSubmit for the form and replace it with a popup error msg
         		origOnSubmit = obj.form.onsubmit;
-        		obj.form.onsubmit = function() { alert('<spring:message code="fix.error.plain" javaScriptEscape="true"/>'); return false; };
+        		obj.form.onsubmit = function() { alert('<openmrs:message code="fix.error.plain" javaScriptEscape="true"/>'); return false; };
         		overwrittenOnSubmit = true;
         	}
         }
@@ -63,7 +63,7 @@
 			<c:forEach items="${model.layoutTemplate.lines}" var="line">
 				<c:forEach items="${line}" var="token">
 					<c:if test="${token.isToken == model.layoutTemplate.layoutToken}">
-						<th><spring:message code="${token.displayText}"/></th>
+						<th><openmrs:message code="${token.displayText}"/></th>
 					</c:if>
 				</c:forEach>
 			</c:forEach>	
@@ -123,7 +123,7 @@
 									<td>
 										<c:forEach items="${line}" var="token">
 											<c:if test="${token.isToken == model.layoutTemplate.layoutToken}">
-												<spring:message code="${token.displayText}" />:
+												<openmrs:message code="${token.displayText}" />:
 												<spring:bind path="${token.codeName}">
 													<c:out value="${status.value}"/>
 												</spring:bind>
@@ -145,7 +145,7 @@
 					</c:if>
 					<c:if test="${model.layoutShowExtended == 'true'}">
 							<tr>
-								<td><spring:message code="general.preferred"/></td>
+								<td><openmrs:message code="general.preferred"/></td>
 								<td>
 									<spring:bind path="preferred">
 										<input type="hidden" name="_${status.expression}">
@@ -159,7 +159,7 @@
 						<tr>
 							<c:forEach items="${line}" var="token" varStatus="tokenStatus">
 								<c:if test="${token.isToken == model.layoutTemplate.layoutToken}">
-									<td><spring:message code="${token.displayText}" /></td>
+									<td><openmrs:message code="${token.displayText}" /></td>
 									<td <c:if test="${tokenStatus.last && tokenStatus.index < model.layoutTemplate.maxTokens}">colspan="${model.layoutTemplate.maxTokens - tokenStatus.index}"</c:if>>
 										<spring:bind path="${token.codeName}">
                                             <input type="text" name="${status.expression}"  value="<c:out value="${status.value}"/>" size="${token.displaySize}"
@@ -168,10 +168,10 @@
                                             <i name="formatMsg_${token.codeName}" style="font-weight: normal; font-size: xx-small; color: red; display: none">
                                                  <c:choose>
                                                      <c:when test="${model.layoutTemplate.elementRegexFormats[token.codeName] != null }" >
-                                                        (<spring:message code="general.format" />: ${model.layoutTemplate.elementRegexFormats[token.codeName]})
+                                                        (<openmrs:message code="general.format" />: ${model.layoutTemplate.elementRegexFormats[token.codeName]})
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <spring:message code="general.invalid" />&nbsp;<spring:message code="general.format" />
+                                                        <openmrs:message code="general.invalid" />&nbsp;<openmrs:message code="general.format" />
                                                     </c:otherwise>
                                                 </c:choose>
                                             </i>
@@ -188,7 +188,7 @@
 							<spring:bind path="creator">
 								<c:if test="${!(status.value == null)}">
 									<tr>
-										<td><spring:message code="general.createdBy" /></td>
+										<td><openmrs:message code="general.createdBy" /></td>
 										<td colspan="4">
 											${status.value.personName} -
 											<openmrs:formatDate path="dateCreated" type="long" />
@@ -198,7 +198,7 @@
 							</spring:bind>
                             <c:if test="${model.layoutHideVoidOption != 'true'}">
 								<tr>
-									<td><spring:message code="general.voided"/></td>
+									<td><openmrs:message code="general.voided"/></td>
 									<td>
 										<spring:bind path="voided">
 											<input type="hidden" name="_${status.expression}"/>
@@ -211,7 +211,7 @@
 								</tr>
 								<tr id="<spring:bind path="personAddressId">voidReasonAddressRow-${status.value}</spring:bind>"
 									style="<spring:bind path="voided"><c:if test="${status.value == false}">display: none;</c:if></spring:bind>">
-									<td><spring:message code="general.voidReason"/></td>
+									<td><openmrs:message code="general.voidReason"/></td>
 									<spring:bind path="voidReason">
 										<td colspan="4">
 											<input type="text" name="${status.expression}" value="${status.value}" size="43" />
@@ -222,7 +222,7 @@
 								<spring:bind path="voidedBy">
 									<c:if test="${!(status.value == null)}">
 										<tr>
-											<td><spring:message code="general.voidedBy" /></td>
+											<td><openmrs:message code="general.voidedBy" /></td>
 											<td colspan="4">
 												${status.value.personName} -
 												<openmrs:formatDate path="dateVoided" type="long" />
@@ -240,7 +240,7 @@
 			</c:choose>
 		</c:when>
 		<c:otherwise>
-			<spring:message code="Portlet.addressLayout.error" arguments="${model.size}"/>
+			<openmrs:message code="Portlet.addressLayout.error" arguments="${model.size}"/>
 		</c:otherwise>
 	</c:choose>
 </c:if>
