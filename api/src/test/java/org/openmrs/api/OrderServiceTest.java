@@ -377,8 +377,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals("Should receive a unique order number for each concurrent request",
 		    numberOfConcurrentOrderNumberRequests, uniqueOrderNumbers.size());
-		   
-		Assert.assertEquals(numberOfConcurrentOrderNumberRequests, uniqueOrderNumbers.size());
 	}
 	
 	/**
