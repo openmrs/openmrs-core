@@ -5,23 +5,23 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="ConceptDatatype.manage.title"/></h2>
+<h2><openmrs:message code="ConceptDatatype.manage.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeList.afterTitle" type="html" />
 
-<%--  <a href="conceptDatatype.form"><spring:message code="ConceptDatatype.add"/></a> --%>
+<%--  <a href="conceptDatatype.form"><openmrs:message code="ConceptDatatype.add"/></a> --%>
 
-<div id="conceptDatatypeListReadOnly">(<spring:message code="general.readonly"/>)</div>
+<div id="conceptDatatypeListReadOnly">(<openmrs:message code="general.readonly"/>)</div>
 
 <br />
 
-<b class="boxHeader"><spring:message code="ConceptDatatype.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="ConceptDatatype.list.title"/></b>
 <form method="post" class="box">
 	<table>
 		<tr>
 			<%-- <th> </th> --%>
-			<th> <spring:message code="general.name"/> </th>
-			<th> <spring:message code="general.description"/> </th>
+			<th> <openmrs:message code="general.name"/> </th>
+			<th> <openmrs:message code="general.description"/> </th>
 		</tr>
 		<c:forEach var="conceptDatatype" items="${conceptDatatypeList}">
 			<tr> 
@@ -35,7 +35,7 @@
 		</c:forEach>
 	</table>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeList.inForm" type="html" />
-	<%--  <input type="submit" value="<spring:message code="ConceptDatatype.delete"/>" name="action"> --%>
+	<%--  <input type="submit" value="<openmrs:message code="ConceptDatatype.delete"/>" name="action"> --%>
 </form>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeList.footer" type="html" />

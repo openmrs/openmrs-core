@@ -12,9 +12,9 @@
 		// create a js variable called voidReasons that is an array of reasons to void a drug - this will become a select field via DWRUtil.addOptions()
 		var voidReasons = new Array();
 		voidReasons.push({ val: '', display: ''});
-		voidReasons.push({ val: 'DrugOrder.void.reason.dateError', display: '<spring:message code="DrugOrder.void.reason.dateError" />'});
-		voidReasons.push({ val: 'DrugOrder.void.reason.error', display: '<spring:message code="DrugOrder.void.reason.error" />'});
-		voidReasons.push({ val: 'DrugOrder.void.reason.other', display: '<spring:message code="DrugOrder.void.reason.other" />'});
+		voidReasons.push({ val: 'DrugOrder.void.reason.dateError', display: '<openmrs:message code="DrugOrder.void.reason.dateError" />'});
+		voidReasons.push({ val: 'DrugOrder.void.reason.error', display: '<openmrs:message code="DrugOrder.void.reason.error" />'});
+		voidReasons.push({ val: 'DrugOrder.void.reason.other', display: '<openmrs:message code="DrugOrder.void.reason.other" />'});
 		//alert("voidReasons is " + voidReasons);
 
 		var currentRegimenTableCellFuncs = regimenMode != "view" ? [
@@ -30,24 +30,24 @@
 			function(data) { return "" + data.autoExpireDate; },
 			function(data) { return "" + data.instructions; },
 			function(data) {
-				var ret = "<input id=\"closebutton_" + data.orderId + "\" type=\"button\" value=\"<spring:message code="DrugOrder.discontinue" />\" onClick=\"showHideDiv('close_" + data.orderId + "');showHideDiv('closebutton_" + data.orderId + "')\" />";
+				var ret = "<input id=\"closebutton_" + data.orderId + "\" type=\"button\" value=\"<openmrs:message code="DrugOrder.discontinue" />\" onClick=\"showHideDiv('close_" + data.orderId + "');showHideDiv('closebutton_" + data.orderId + "')\" />";
 				ret += "<div id=\"close_" + data.orderId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
-				ret += "<spring:message code="DrugOrder.discontinuedDate" />: ";
+				ret += "<openmrs:message code="DrugOrder.discontinuedDate" />: ";
 				ret += "<input type=\"text\" id=\"close_" + data.orderId + "_date\" size=\"10\" value=\"\" onFocus=\"showCalendar(this)\" />";
-				ret += "&nbsp;&nbsp;&nbsp;&nbsp;<spring:message code="general.reason" />: ";
+				ret += "&nbsp;&nbsp;&nbsp;&nbsp;<openmrs:message code="general.reason" />: ";
 				ret += "<select name=\"close_" + data.orderId + "_reason\" id=\"close_" + data.orderId + "_reason\"></select>";
-				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.discontinue" />\" onClick=\"handleDiscontinueDrugOrder(" + data.orderId + ", 'close_" + data.orderId + "_date', 'close_" + data.orderId + "_reason')\" />";
-				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('close_" + data.orderId + "');showHideDiv('closebutton_" + data.orderId + "')\" />";
+				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<openmrs:message code="DrugOrder.discontinue" />\" onClick=\"handleDiscontinueDrugOrder(" + data.orderId + ", 'close_" + data.orderId + "_date', 'close_" + data.orderId + "_reason')\" />";
+				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<openmrs:message code="general.cancel" />\" onClick=\"showHideDiv('close_" + data.orderId + "');showHideDiv('closebutton_" + data.orderId + "')\" />";
 				ret += "</form></div>";
 				return ret;
 			},
 			function(data) {
-				var ret = "<input id=\"voidbutton_" + data.orderId + "\" type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"showHideDiv('void_" + data.orderId + "');showHideDiv('voidbutton_" + data.orderId + "')\" />";
+				var ret = "<input id=\"voidbutton_" + data.orderId + "\" type=\"button\" value=\"<openmrs:message code="DrugOrder.void" />\" onClick=\"showHideDiv('void_" + data.orderId + "');showHideDiv('voidbutton_" + data.orderId + "')\" />";
 				ret += "<div id=\"void_" + data.orderId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
-				ret += "<spring:message code="general.reason" />: ";
+				ret += "<openmrs:message code="general.reason" />: ";
 				ret += "<select name=\"void_" + data.orderId + "_reason\" id=\"void_" + data.orderId + "_reason\"></select>";
-				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"handleVoidCurrentDrugOrder(" + data.orderId + ", 'void_" + data.orderId + "_reason')\" />";
-				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('void_" + data.orderId + "');showHideDiv('voidbutton_" + data.orderId + "')\" />";
+				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<openmrs:message code="DrugOrder.void" />\" onClick=\"handleVoidCurrentDrugOrder(" + data.orderId + ", 'void_" + data.orderId + "_reason')\" />";
+				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<openmrs:message code="general.cancel" />\" onClick=\"showHideDiv('void_" + data.orderId + "');showHideDiv('voidbutton_" + data.orderId + "')\" />";
 				ret += "</form></div>";
 				return ret;
 			}
@@ -80,12 +80,12 @@
 			function(data) { return "" + data.instructions; },
 			function(data) { if ( data.discontinueReason ) return "" + getReason(data.discontinueReason); else return ""; },
 			function(data) {
-				var ret = "<input id=\"voidcpbutton_" + data.orderId + "\" type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"showHideDiv('voidcp_" + data.orderId + "');showHideDiv('voidcpbutton_" + data.orderId + "')\" />";
+				var ret = "<input id=\"voidcpbutton_" + data.orderId + "\" type=\"button\" value=\"<openmrs:message code="DrugOrder.void" />\" onClick=\"showHideDiv('voidcp_" + data.orderId + "');showHideDiv('voidcpbutton_" + data.orderId + "')\" />";
 				ret += "<div id=\"voidcp_" + data.orderId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
-				ret += "<spring:message code="general.reason" />: ";
+				ret += "<openmrs:message code="general.reason" />: ";
 				ret += "<select name=\"voidcp_" + data.orderId + "_reason\" id=\"voidcp_" + data.orderId + "_reason\"></select>";
-				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"handleVoidCompletedDrugOrder(" + data.orderId + ", 'voidcp_" + data.orderId + "_reason')\" />";
-				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('voidcp_" + data.orderId + "');showHideDiv('voidcpbutton_" + data.orderId + "')\" />";
+				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<openmrs:message code="DrugOrder.void" />\" onClick=\"handleVoidCompletedDrugOrder(" + data.orderId + ", 'voidcp_" + data.orderId + "_reason')\" />";
+				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<openmrs:message code="general.cancel" />\" onClick=\"showHideDiv('voidcp_" + data.orderId + "');showHideDiv('voidcpbutton_" + data.orderId + "')\" />";
 				ret += "</form></div>";
 				return ret;
 			}
@@ -108,30 +108,30 @@
 		var currentRegimenTableHeaderCells = [
 			function(data) { 
 				var headerName = data.name;
-				if ( headerName == '*' ) headerName = '<spring:message code="DrugOrder.header.otherRegimens" />';
+				if ( headerName == '*' ) headerName = '<openmrs:message code="DrugOrder.header.otherRegimens" />';
 				var ret = "<table><tr><td style=\"padding:7px 5px 2px 5px\">" + headerName + "";
 				
 				if ( data.drugCount > 0 && data.drugSetLabel != '__other__' && regimenMode != 'view' ) {
-					ret += "</td><td style=\"padding:7px 5px 0px 5px\"><input id=\"closegpbutton_" + data.drugSetId + "\" type=\"button\" value=\"<spring:message code="DrugOrder.discontinueGroup" />\" onClick=\"showHideDiv('closegp_" + data.drugSetId + "');showHideDiv('closegpbutton_" + data.drugSetId + "')\" />";
+					ret += "</td><td style=\"padding:7px 5px 0px 5px\"><input id=\"closegpbutton_" + data.drugSetId + "\" type=\"button\" value=\"<openmrs:message code="DrugOrder.discontinueGroup" />\" onClick=\"showHideDiv('closegp_" + data.drugSetId + "');showHideDiv('closegpbutton_" + data.drugSetId + "')\" />";
 					ret += "<div id=\"closegp_" + data.drugSetId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
-					ret += "<spring:message code="DrugOrder.discontinuedDate" />: ";
+					ret += "<openmrs:message code="DrugOrder.discontinuedDate" />: ";
 					ret += "<input type=\"text\" id=\"closegp_" + data.drugSetId + "_date\" size=\"10\" value=\"\" onFocus=\"showCalendar(this)\" />";
-					ret += "&nbsp;&nbsp;&nbsp;&nbsp;<spring:message code="general.reason" />: ";
+					ret += "&nbsp;&nbsp;&nbsp;&nbsp;<openmrs:message code="general.reason" />: ";
 					ret += "<select name=\"closegp_" + data.drugSetId + "_reason\" id=\"closegp_" + data.drugSetId + "_reason\"></select>";
-					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.discontinueGroup" />\" onClick=\"handleDiscontinueDrugSet(" + data.drugSetId + ", 'closegp_" + data.drugSetId + "_date', 'closegp_" + data.drugSetId + "_reason')\" />";
-					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('closegp_" + data.drugSetId + "');showHideDiv('closegpbutton_" + data.drugSetId + "')\" />";
+					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<openmrs:message code="DrugOrder.discontinueGroup" />\" onClick=\"handleDiscontinueDrugSet(" + data.drugSetId + ", 'closegp_" + data.drugSetId + "_date', 'closegp_" + data.drugSetId + "_reason')\" />";
+					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<openmrs:message code="general.cancel" />\" onClick=\"showHideDiv('closegp_" + data.drugSetId + "');showHideDiv('closegpbutton_" + data.drugSetId + "')\" />";
 					ret += "</form></div>";
 
-					ret += "</td><td style=\"padding:7px 5px 0px 5px\"><input id=\"voidgpbutton_" + data.drugSetId + "\" type=\"button\" value=\"<spring:message code="DrugOrder.voidGroup" />\" onClick=\"showHideDiv('voidgp_" + data.drugSetId + "');showHideDiv('voidgpbutton_" + data.drugSetId + "')\" />";
+					ret += "</td><td style=\"padding:7px 5px 0px 5px\"><input id=\"voidgpbutton_" + data.drugSetId + "\" type=\"button\" value=\"<openmrs:message code="DrugOrder.voidGroup" />\" onClick=\"showHideDiv('voidgp_" + data.drugSetId + "');showHideDiv('voidgpbutton_" + data.drugSetId + "')\" />";
 					ret += "<div id=\"voidgp_" + data.drugSetId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
-					ret += "<spring:message code="general.reason" />: ";
+					ret += "<openmrs:message code="general.reason" />: ";
 					ret += "<select name=\"voidgp_" + data.drugSetId + "_reason\" id=\"voidgp_" + data.drugSetId + "_reason\"></select>";
-					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.voidGroup" />\" onClick=\"handleVoidCurrentDrugSet(" + data.drugSetId+ ", 'voidgp_" + data.drugSetId + "_reason')\" />";
-					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('voidgp_" + data.drugSetId + "');showHideDiv('voidgpbutton_" + data.drugSetId + "')\" />";
+					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<openmrs:message code="DrugOrder.voidGroup" />\" onClick=\"handleVoidCurrentDrugSet(" + data.drugSetId+ ", 'voidgp_" + data.drugSetId + "_reason')\" />";
+					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<openmrs:message code="general.cancel" />\" onClick=\"showHideDiv('voidgp_" + data.drugSetId + "');showHideDiv('voidgpbutton_" + data.drugSetId + "')\" />";
 					ret += "</form></div></td></tr></table>";
 				} else {
 					if ( data.drugCount == 0 ) {
-						ret += "</td></tr><tr><td style=\"padding:1px 3px 1px 3px\">&nbsp;&nbsp;&nbsp;&nbsp;<span class=\"noOrdersMessage\">(<spring:message code="DrugOrder.list.noOrders" />)</span></td></tr></table>";
+						ret += "</td></tr><tr><td style=\"padding:1px 3px 1px 3px\">&nbsp;&nbsp;&nbsp;&nbsp;<span class=\"noOrdersMessage\">(<openmrs:message code="DrugOrder.list.noOrders" />)</span></td></tr></table>";
 					}
 				}
 
@@ -142,10 +142,10 @@
 		var completedRegimenTableHeaderCells = [
 			function(data) { 
 				var headerName = data.name;
-				if ( headerName == '*' ) headerName = '<spring:message code="DrugOrder.header.otherRegimens" />';
+				if ( headerName == '*' ) headerName = '<openmrs:message code="DrugOrder.header.otherRegimens" />';
 				var ret = "<table><tr><td style=\"padding:7px 5px 2px 5px\">" + headerName + "";
 				if ( data.drugCount == 0 ) {
-					ret += "</td></tr><tr><td style=\"padding:1px 3px 1px 3px\">&nbsp;&nbsp;&nbsp;&nbsp;<span class=\"noOrdersMessage\">(<spring:message code="DrugOrder.list.noOrders" />)</span></td></tr></table>";
+					ret += "</td></tr><tr><td style=\"padding:1px 3px 1px 3px\">&nbsp;&nbsp;&nbsp;&nbsp;<span class=\"noOrdersMessage\">(<openmrs:message code="DrugOrder.list.noOrders" />)</span></td></tr></table>";
 				} else {
 					ret += "</td></tr></table>";
 				}
@@ -172,7 +172,7 @@
 			var discReason = dwr.util.getValue($(discReasonField));
 			var drugSetIdParam = '' + drugSetId;
 			if ( discDate == null || discDate == '' ) {
-				alert("<spring:message code="DrugOrder.drugSet.discontinue.error.noDate" />");
+				alert("<openmrs:message code="DrugOrder.drugSet.discontinue.error.noDate" />");
 			} else {
 				DWROrderService.discontinueDrugSet(patientId, drugSetIdParam, discReason, discDate, refreshRegimenTables);
 			}
@@ -201,11 +201,11 @@
 				blankAddNewOrder(drugField, brandNameField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField);
 				DWROrderService.createDrugOrder(patientId, drugId, brandName, dose, units, frequency, startDate, instructions, waitToRefreshRegimenTables);
 			} else {
-				if ( drugId == '' ) alert("<spring:message code="DrugOrder.add.error.missingDrug" />");
-				else if ( dose == '' ) alert("<spring:message code="DrugOrder.add.error.missingDose" />");
-				else if ( units == '' ) alert("<spring:message code="DrugOrder.add.error.missingUnits" />");
-				else if ( frequency == '' ) alert("<spring:message code="DrugOrder.add.error.missingFrequency" />");
-				else if ( startDate == '' ) alert("<spring:message code="DrugOrder.add.error.missingStartDate" />");
+				if ( drugId == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingDrug" />");
+				else if ( dose == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingDose" />");
+				else if ( units == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingUnits" />");
+				else if ( frequency == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingFrequency" />");
+				else if ( startDate == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingStartDate" />");
 			}
 		}
 
@@ -235,7 +235,7 @@
 			if ( discDate && discDate != '' ) {
 				DWROrderService.discontinueOrder(orderId, discReason, discDate, refreshRegimenTables);
 			} else {
-				alert("<spring:message code="DrugOrder.drugSet.discontinue.error.noDate" />");
+				alert("<openmrs:message code="DrugOrder.drugSet.discontinue.error.noDate" />");
 			}
 		}
 

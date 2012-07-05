@@ -138,35 +138,35 @@ window.onload = init;
 	}
 </style>
 
-<h2><spring:message code="Scheduler.header"/></h2>
+<h2><openmrs:message code="Scheduler.header"/></h2>
 
 
 <spring:hasBindErrors name="concept">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
 		</c:forEach>
 	</div>
 	<br />
 </spring:hasBindErrors>
 
 <spring:hasBindErrors name="task">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
 <form method="post" id="schedulerForm">
 
   <fieldset>
-  <legend><spring:message code="Scheduler.taskForm.legend" /></legend>
+  <legend><openmrs:message code="Scheduler.taskForm.legend" /></legend>
 	<table cellpadding="5">
 		<tr>
-			<td><spring:message code="general.id"/></td>
+			<td><openmrs:message code="general.id"/></td>
 			<td>${task.id}</td>
 		</tr>
 		<tr>
-			<td><spring:message code="general.name"/></td>
+			<td><openmrs:message code="general.name"/></td>
 			<td>
 				<spring:bind path="task.name">
 					<input type="text" name="name" value="${status.value}" size="35" />
@@ -175,7 +175,7 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td><spring:message code="Scheduler.taskForm.class"/></td>
+			<td><openmrs:message code="Scheduler.taskForm.class"/></td>
 			<td>
 				<spring:bind path="task.taskClass">
 					<input type="text" name="taskClass" value="${status.value}" size="60" />
@@ -184,7 +184,7 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="general.description"/></td>
+			<td valign="top"><openmrs:message code="general.description"/></td>
 			<td valign="top">
 				<spring:bind path="task.description">
 					<textarea name="description" rows="3" cols="60">${status.value}</textarea>
@@ -193,7 +193,7 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="general.createdBy"/></td>
+			<td valign="top"><openmrs:message code="general.createdBy"/></td>
 			<td valign="top">
 				<spring:bind path="task.creator">
 					<openmrs:format user="${status.value}"/>
@@ -201,7 +201,7 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="general.dateCreated"/></td>
+			<td valign="top"><openmrs:message code="general.dateCreated"/></td>
 			<td valign="top">
 				<spring:bind path="task.dateCreated">
 					<openmrs:formatDate date="${status.editor.value}" type="long"/>
@@ -209,7 +209,7 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="general.changedBy"/></td>
+			<td valign="top"><openmrs:message code="general.changedBy"/></td>
 			<td valign="top">
 				<spring:bind path="task.changedBy">
 					<openmrs:format user="${status.value}"/>
@@ -217,7 +217,7 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="general.dateChanged"/></td>
+			<td valign="top"><openmrs:message code="general.dateChanged"/></td>
 			<td valign="top">
 				<spring:bind path="task.dateChanged">
 					<openmrs:formatDate date="${status.editor.value}" type="long"/>
@@ -228,16 +228,16 @@ window.onload = init;
 </fieldset>
 
 <fieldset>
-	<legend><spring:message code="Scheduler.scheduleForm.legend" /></legend> 
+	<legend><openmrs:message code="Scheduler.scheduleForm.legend" /></legend> 
 	<table cellpadding="5">
 		<tr>
 		
 			<td valign="top" colspan="2">
-				<spring:message code="Scheduler.scheduleForm.instructions"/>
+				<openmrs:message code="Scheduler.scheduleForm.instructions"/>
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="Scheduler.scheduleForm.started"/>:</td>
+			<td valign="top"><openmrs:message code="Scheduler.scheduleForm.started"/>:</td>
 			<td>
 				<spring:bind path="task.started">
 					${status.value} 
@@ -245,7 +245,7 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="Scheduler.scheduleForm.startOnStartup"/>:</td>
+			<td valign="top"><openmrs:message code="Scheduler.scheduleForm.startOnStartup"/>:</td>
 			<td>
 				<spring:bind path="task.startOnStartup">
 					<input type="hidden" name="_${status.expression}"/>
@@ -255,7 +255,7 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="Scheduler.scheduleForm.startTimePattern"/>:</td>
+			<td valign="top"><openmrs:message code="Scheduler.scheduleForm.startTimePattern"/>:</td>
 			<td>
 				<spring:bind path="task.startTimePattern">
 					<input type="text" id="startTimePattern" name="startTimePattern" size="25" value="${status.value}" disabled/>
@@ -264,7 +264,7 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="Scheduler.scheduleForm.startTime"/>:</td>
+			<td valign="top"><openmrs:message code="Scheduler.scheduleForm.startTime"/>:</td>
 			<td>
 				<spring:bind path="task.startTime">
 					<input type="text" id="startTime" name="startTime" size="25" value="${status.value}"/> 
@@ -273,15 +273,15 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="Scheduler.scheduleForm.repeatInterval"/>:</td>
+			<td valign="top"><openmrs:message code="Scheduler.scheduleForm.repeatInterval"/>:</td>
 			<td>
 				<spring:bind path="task.repeatInterval">
 					<input type="text" id="repeatInterval" name="repeatInterval" size="10" value="${status.value}" /> 
 					<select name="repeatIntervalUnits">
-						<option value="seconds" <c:if test="${units=='seconds'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.seconds" /></option>
-						<option value="minutes" <c:if test="${units=='minutes'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.minutes" /></option>
-						<option value="hours" <c:if test="${units=='hours'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.hours" /></option>
-						<option value="days" <c:if test="${units=='days'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.days" /></option>
+						<option value="seconds" <c:if test="${units=='seconds'}">selected</c:if>><openmrs:message code="Scheduler.scheduleForm.repeatInterval.units.seconds" /></option>
+						<option value="minutes" <c:if test="${units=='minutes'}">selected</c:if>><openmrs:message code="Scheduler.scheduleForm.repeatInterval.units.minutes" /></option>
+						<option value="hours" <c:if test="${units=='hours'}">selected</c:if>><openmrs:message code="Scheduler.scheduleForm.repeatInterval.units.hours" /></option>
+						<option value="days" <c:if test="${units=='days'}">selected</c:if>><openmrs:message code="Scheduler.scheduleForm.repeatInterval.units.days" /></option>
 					</select>
 					
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -289,7 +289,7 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="Scheduler.scheduleForm.lastExecutionTime"/>:</td>
+			<td valign="top"><openmrs:message code="Scheduler.scheduleForm.lastExecutionTime"/>:</td>
 			<td>
 				<openmrs:formatDate date="${task.lastExecutionTime}" type="long" />
 			</td>
@@ -298,18 +298,18 @@ window.onload = init;
 </fieldset>
 
 <fieldset>
-	<legend><spring:message code="Scheduler.propertyForm.legend" /></legend> 
+	<legend><openmrs:message code="Scheduler.propertyForm.legend" /></legend> 
 	<table>
 		<tbody id="propertiesTable">
 			<tr>
-				<td><spring:message code="general.name" /></td>
-				<td><spring:message code="general.value" /></td>
+				<td><openmrs:message code="general.name" /></td>
+				<td><openmrs:message code="general.value" /></td>
 			</tr>
 			<c:forEach var="property" items="${task.properties}">			
 			<tr>
 				<td><input type="text" name="propertyName" size="20" value="${property.key}" /></td>
 				<td><input type="text" name="propertyValue" size="30" value="${property.value}" /></td>
-				<td><input type="button" class="closeButton" onclick="removeProperty(this)" value="<spring:message code="Scheduler.propertyForm.remove"/>"></td>
+				<td><input type="button" class="closeButton" onclick="removeProperty(this)" value="<openmrs:message code="Scheduler.propertyForm.remove"/>"></td>
 			</tr>
 			</c:forEach>
 			<tr id="newProperty">
@@ -320,19 +320,19 @@ window.onload = init;
 					<input type="text" name="propertyValue" size="30"/> 
 				</td>
 				<td>
-					<input type="button" class="closeButton" onclick="removeProperty(this)" value="<spring:message code="Scheduler.propertyForm.remove"/>">
+					<input type="button" class="closeButton" onclick="removeProperty(this)" value="<openmrs:message code="Scheduler.propertyForm.remove"/>">
 				</td>
 			</tr>
 		</tbody>
 	</table>
 	<br/>
-	<input type="button" class="smallButton" onclick="addNewProperty()" value="<spring:message code="Scheduler.propertyForm.add"/>">
+	<input type="button" class="smallButton" onclick="addNewProperty()" value="<openmrs:message code="Scheduler.propertyForm.add"/>">
 	<br />
 	<br />
 	
 </fieldset>
 
-<input type="submit" value="<spring:message code="Scheduler.taskForm.save"/>">
+<input type="submit" value="<openmrs:message code="Scheduler.taskForm.save"/>">
 
 <br />
 

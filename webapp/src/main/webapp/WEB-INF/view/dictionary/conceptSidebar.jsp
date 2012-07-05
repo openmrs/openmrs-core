@@ -1,7 +1,7 @@
 <fieldset>
-	<legend><spring:message code="Concept.resources" /></legend>
+	<legend><openmrs:message code="Concept.resources" /></legend>
 	<a href="index.htm?phrase=<openmrs:format concept="${command.concept}" />"
-		target="_similar_terms" onclick="addName(this)"><spring:message code="dictionary.similarConcepts" /></a><br/>
+		target="_similar_terms" onclick="addName(this)"><openmrs:message code="dictionary.similarConcepts" /></a><br/>
 	<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=<openmrs:format concept="${command.concept}" />"
 		target="_blank" onclick="addName(this)">Merriam Webster&reg;</a><br/>
 	<a href="http://www.google.com/search?q=<openmrs:format concept="${command.concept}" />"
@@ -13,23 +13,23 @@
 	<a href="http://search.atomz.com/search/?sp-a=sp1001878c&sp-q=<openmrs:format concept="${command.concept}" />"
 		target="_blank" onclick="addName(this)">Lab Tests Online</a><br/>
 	<a href="http://en.wikipedia.org/wiki/<openmrs:format concept="${command.concept}" />"
-		target="_blank"><spring:message code="Concept.wikipedia" /></a>
+		target="_blank"><openmrs:message code="Concept.wikipedia" /></a>
 </fieldset>
 
 <fieldset>
-	<legend><spring:message code="Concept.usage" /></legend>
+	<legend><openmrs:message code="Concept.usage" /></legend>
 
-	<h4><spring:message code="dictionary.numobs" arguments="${command.numberOfObsUsingThisConcept}" /></h4>
+	<h4><openmrs:message code="dictionary.numobs" arguments="${command.numberOfObsUsingThisConcept}" /></h4>
 
 	<c:if test="${fn:length(command.questionsAnswered) > 0}">
-		<h4><spring:message code="dictionary.questionsAnswered" /></h4><ul>
+		<h4><openmrs:message code="dictionary.questionsAnswered" /></h4><ul>
 		<c:forEach items="${command.questionsAnswered}" var="question">
 			<li><a href="concept.htm?conceptId=${question.conceptId}"><openmrs:format concept="${question}" /></a></li>
 		</c:forEach></ul>
 	</c:if>
 	
 	<c:if test="${fn:length(command.containedInSets) > 0}">
-		<h4><spring:message code="dictionary.containedInSets" /></h4><ul>
+		<h4><openmrs:message code="dictionary.containedInSets" /></h4><ul>
 		<c:forEach items="${command.containedInSets}" var="set">
 			<li><a href="concept.htm?conceptId=${set.conceptSet.conceptId}"><openmrs:format concept="${set.conceptSet}" /></a><br/></li>
 		</c:forEach></ul>
@@ -38,7 +38,7 @@
 	<c:forEach items="${command.conceptUsage}" var="conceptUsageExt">
 		<openmrs:hasPrivilege privilege="${conceptUsageExt.requiredPrivilege}">
 		<c:if test="${fn:length(conceptUsageExt.conceptUsage) > 0}">
-			<h4><spring:message code="${conceptUsageExt.header}" /></h4>
+			<h4><openmrs:message code="${conceptUsageExt.header}" /></h4>
 			<ul><c:forEach items="${conceptUsageExt.conceptUsage}" var="usage">
 			<li><a href="${pageContext.request.contextPath}${usage.url}">${usage.label}</a></li>
 			</c:forEach></ul>

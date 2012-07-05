@@ -107,7 +107,7 @@ function collectInfo(){
 		</c:forEach>
 		<c:forEach items="${patientEncounters}" var="encounters" varStatus="status">
 			<c:forEach items="${encounters}" var="encounter">
-						encounters.value = encounters.value+"${encounter.encounterType.name} ${encounter.location.name} <openmrs:formatDate date='${encounter.encounterDatetime}' type='short' /> <a href=\"${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}\"><spring:message code='general.view'/></a>|";
+						encounters.value = encounters.value+"${encounter.encounterType.name} ${encounter.location.name} <openmrs:formatDate date='${encounter.encounterDatetime}' type='short' /> <a href=\"${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}\"><openmrs:message code='general.view'/></a>|";
 			</c:forEach>
 			encounters.value = encounters.value+"#";
 		</c:forEach>
@@ -409,24 +409,24 @@ function generateMergeList(){
 </style>
 
 <spring:hasBindErrors name="patient">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
 		</c:forEach>
 	</div>
 </spring:hasBindErrors>
 
-<h2><spring:message code="Patient.merge.title"/></h2>
+<h2><openmrs:message code="Patient.merge.title"/></h2>
 
-<spring:message code="Patient.merge.warning" />
+<openmrs:message code="Patient.merge.warning" />
 
 <br/><br/>
 <div id="selectionList" style="display:none">
-<b class="boxHeader"><spring:message code="Select a Preferred Patient" /></b>
+<b class="boxHeader"><openmrs:message code="Select a Preferred Patient" /></b>
 <div class="box" style="max-height:160px; overflow:auto">
 <table class="box" cellspacing="2" cellpadding="2">
-<tr><th></th><th><spring:message code="Patient.id"/></th><th><spring:message code="Patient.identifiers"/></th><th><spring:message code="PersonName.givenName"/></th><th><spring:message code="PersonName.middleName"/></th><th><spring:message code="PersonName.familyName"/></th><th><spring:message code="Person.age"/></th><th><spring:message code="Person.gender"/></th><th><spring:message code="Person.birthdate"/></th></tr>
+<tr><th></th><th><openmrs:message code="Patient.id"/></th><th><openmrs:message code="Patient.identifiers"/></th><th><openmrs:message code="PersonName.givenName"/></th><th><openmrs:message code="PersonName.middleName"/></th><th><openmrs:message code="PersonName.familyName"/></th><th><openmrs:message code="Person.age"/></th><th><openmrs:message code="Person.gender"/></th><th><openmrs:message code="Person.birthdate"/></th></tr>
 <c:forEach items="${patientList}" var="patient" varStatus="status">
 <tr id="${status.index}tr" class="<c:choose>
 				<c:when test="${status.index % 2 == 0}">evenRow</c:when>
@@ -476,34 +476,34 @@ function generateMergeList(){
 				<td valign="top">
 					<h4 id="p1">
 						<input type="radio" name="preferred1" id="${patient1.patientId}preferred" value="${patient1.patientId}" onclick="if (this.checked) changePrimary('left')" <c:if test="${!patient1.voided}">checked</c:if><c:if test="${patient1.voided}">disabled</c:if> />
-						<label for="${patient1.patientId}preferred"><spring:message code="Patient.merge.preferred" /></label>
+						<label for="${patient1.patientId}preferred"><openmrs:message code="Patient.merge.preferred" /></label>
 						<c:if test="${patient1.voided}">
 						<div class="retiredMessage">
-							<div><spring:message code="Patient.voided"/></div>
+							<div><openmrs:message code="Patient.voided"/></div>
 						</div>
 					</c:if>
 					</h4>
 					<h4 id="np1">
-						<center><b><spring:message code="Patient.merge.preferred"/></b></center>
+						<center><b><openmrs:message code="Patient.merge.preferred"/></b></center>
 						<div class="retiredMessage" id="voidCheck1" style="display:none">
-							<div><spring:message code="Patient.voided"/></div>
+							<div><openmrs:message code="Patient.voided"/></div>
 						</div>
 					</h4>
 				</td>
 				<td valign="top">
 					<h4 id="p2">
 						<input type="radio" name="preferred1" id="${patient2.patientId}preferred" value="${patient2.patientId}" onclick="if (this.checked) changePrimary('right')" <c:if test="${patient2.voided}">disabled</c:if>/>
-						<label for="${patient2.patientId}preferred"><spring:message code="Patient.merge.preferred" /></label>
+						<label for="${patient2.patientId}preferred"><openmrs:message code="Patient.merge.preferred" /></label>
 						<c:if test="${patient2.voided}">
 							<div class="retiredMessage">
-								<div><spring:message code="Patient.voided"/></div>
+								<div><openmrs:message code="Patient.voided"/></div>
 							</div>
 						</c:if>
 					</h4>
 					<h4 id="np2">
-						<center><b><spring:message code="Patient.merge.notPreferred"/></b></center>
+						<center><b><openmrs:message code="Patient.merge.notPreferred"/></b></center>
 						<div class="retiredMessage" id="voidCheck2" style="display:none">
-							<div><spring:message code="Patient.voided"/></div>
+							<div><openmrs:message code="Patient.voided"/></div>
 						</div>
 					</h4>
 				</td>
@@ -519,7 +519,7 @@ function generateMergeList(){
 		</tr>
 		<tr>
 			<td valign="top">
-				<h4><spring:message code="Patient.names"/></h4>
+				<h4><openmrs:message code="Patient.names"/></h4>
 				<ol id="name1">
 					<c:forEach items="${patient1.names}" var="name">
 							<li>${name.givenName} ${name.middleName} ${name.familyName}
@@ -528,13 +528,13 @@ function generateMergeList(){
 			</td>
 			<c:if test="${patient2.patientId == null}">
 				<td rowspan="6" valign="top">
-					<h4><spring:message code="Patient.select"/></h4>
+					<h4><openmrs:message code="Patient.select"/></h4>
 					<div dojoType="PatientSearch" widgetId="pSearch"></div>
 				</td>
 			</c:if>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
-					<h4><spring:message code="Patient.names"/></h4>
+					<h4><openmrs:message code="Patient.names"/></h4>
 					<ol id="name2">
 						<c:forEach items="${patient2.names}" var="name">
 							<li>${name.givenName} ${name.middleName} ${name.familyName}
@@ -545,7 +545,7 @@ function generateMergeList(){
 		</tr>
 		<tr>
 			<td valign="top">
-				<h4><spring:message code="Patient.identifiers"/></h4>
+				<h4><openmrs:message code="Patient.identifiers"/></h4>
 				<ol id="identifier1">
 					<c:forEach items="${patient1.identifiers}" var="identifier">
 						<li>${identifier.identifier} ${identifier.identifierType.name}
@@ -554,7 +554,7 @@ function generateMergeList(){
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
-					<h4><spring:message code="Patient.identifiers"/></h4>
+					<h4><openmrs:message code="Patient.identifiers"/></h4>
 					<ol id="identifier2">
 						<c:forEach items="${patient2.identifiers}" var="identifier">
 							<li>${identifier.identifier} ${identifier.identifierType.name}
@@ -565,7 +565,7 @@ function generateMergeList(){
 		</tr>
 		<tr>
 			<td valign="top">
-				<h4><spring:message code="Patient.addresses"/></h4>
+				<h4><openmrs:message code="Patient.addresses"/></h4>
 				<ol id="address1">
 					<c:forEach items="${patient1.addresses}" var="address">
 						<li>${address.address1} ${address.address2} ${address.cityVillage}
@@ -574,7 +574,7 @@ function generateMergeList(){
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
-					<h4><spring:message code="Patient.addresses"/></h4>
+					<h4><openmrs:message code="Patient.addresses"/></h4>
 					<ol id="address2">
 						<c:forEach items="${patient2.addresses}" var="address">
 							<li>${address.address1} ${address.address2} ${address.cityVillage}
@@ -585,17 +585,17 @@ function generateMergeList(){
 		</tr>
 		<tr>
 			<td valign="top">
-				<h4><spring:message code="Patient.information"/></h4>
+				<h4><openmrs:message code="Patient.information"/></h4>
 				<c:set var="patient" value="${patient1}" />
 
 
 	<table>
 		<tr>
-			<th align="left"><spring:message code="general.id"/></th>
+			<th align="left"><openmrs:message code="general.id"/></th>
 			<td id="info10">${patient.patientId}</td>
 		</tr>
 		<tr>
-			<th align="left"><spring:message code="Person.gender"/></th>
+			<th align="left"><openmrs:message code="Person.gender"/></th>
 			<td id="info11">
 				<c:choose>
 					<c:when test="${patient.gender == 'M'}">
@@ -609,37 +609,37 @@ function generateMergeList(){
 			</td>
 		</tr>
 		<tr>
-			<th align="left"><spring:message code="Person.birthdate"/></th>
+			<th align="left"><openmrs:message code="Person.birthdate"/></th>
 			<td id="info12"><openmrs:formatDate date="${patient.birthdate}" type="short" /></td>
 		</tr>
 		
 		<tr>
-			<th align="left"><spring:message code="Person.deathDate"/></th>
+			<th align="left"><openmrs:message code="Person.deathDate"/></th>
 			<td id="info13"><openmrs:formatDate date="${patient.deathDate}" type="short" /></td>
 		</tr>
 		<tr>
-			<th align="left"><spring:message code="general.createdBy" /></th>
+			<th align="left"><openmrs:message code="general.createdBy" /></th>
 			<td id="info14">
 				${patient.creator.personName} -
 				<openmrs:formatDate date="${patient.dateCreated}" type="long" />
 			</td>
 		</tr>
 		<tr>
-			<th align="left"><spring:message code="general.changedBy" /></th>
+			<th align="left"><openmrs:message code="general.changedBy" /></th>
 			<td id="info15">
 				${patient.changedBy.personName} -
 				<openmrs:formatDate date="${patient.dateChanged}" type="long" />
 			</td>
 		</tr>
 		<tr>
-			<th align="left"><spring:message code="general.voided"/></th>
+			<th align="left"><openmrs:message code="general.voided"/></th>
 			<td id="info16">
 				<c:choose>
 					<c:when test="${patient.voided}">
-						<spring:message code="general.yes"/>
+						<openmrs:message code="general.yes"/>
 					</c:when>
 					<c:otherwise>
-						<spring:message code="general.no"/>
+						<openmrs:message code="general.no"/>
 					</c:otherwise>
 				</c:choose>
 			</td>
@@ -649,16 +649,16 @@ function generateMergeList(){
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
-					<h4><spring:message code="Patient.information"/></h4>
+					<h4><openmrs:message code="Patient.information"/></h4>
 					<c:set var="patient" value="${patient2}" />
 
 	<table>
 		<tr>
-			<th align="left"><spring:message code="general.id"/></th>
+			<th align="left"><openmrs:message code="general.id"/></th>
 			<td id="info20">${patient.patientId}</td>
 		</tr>
 		<tr>
-			<th align="left"><spring:message code="Person.gender"/></th>
+			<th align="left"><openmrs:message code="Person.gender"/></th>
 			<td id="info21">
 				<c:choose>
 					<c:when test="${patient.gender == 'M'}">
@@ -672,37 +672,37 @@ function generateMergeList(){
 			</td>
 		</tr>
 		<tr>
-			<th align="left"><spring:message code="Person.birthdate"/></th>
+			<th align="left"><openmrs:message code="Person.birthdate"/></th>
 			<td id="info22"><openmrs:formatDate date="${patient.birthdate}" type="short" /></td>
 		</tr>
 		
 		<tr>
-			<th align="left"><spring:message code="Person.deathDate"/></th>
+			<th align="left"><openmrs:message code="Person.deathDate"/></th>
 			<td id="info23"><openmrs:formatDate date="${patient.deathDate}" type="short" /></td>
 		</tr>
 		<tr>
-			<th align="left"><spring:message code="general.createdBy" /></th>
+			<th align="left"><openmrs:message code="general.createdBy" /></th>
 			<td id="info24">
 				${patient.creator.personName} -
 				<openmrs:formatDate date="${patient.dateCreated}" type="long" />
 			</td>
 		</tr>
 		<tr>
-			<th align="left"><spring:message code="general.changedBy" /></th>
+			<th align="left"><openmrs:message code="general.changedBy" /></th>
 			<td id="info25">
 				${patient.changedBy.personName} -
 				<openmrs:formatDate date="${patient.dateChanged}" type="long" />
 			</td>
 		</tr>
 		<tr>
-			<th align="left"><spring:message code="general.voided"/></th>
+			<th align="left"><openmrs:message code="general.voided"/></th>
 			<td id="info26">
 				<c:choose>
 					<c:when test="${patient.voided}">
-						<spring:message code="general.yes"/>
+						<openmrs:message code="general.yes"/>
 					</c:when>
 					<c:otherwise>
-						<spring:message code="general.no"/>
+						<openmrs:message code="general.no"/>
 					</c:otherwise>
 				</c:choose>
 			</td>
@@ -714,7 +714,7 @@ function generateMergeList(){
 		</tr>
 		<tr>
 			<td valign="top">
-				<h4><spring:message code="Patient.encounters"/></h4>
+				<h4><openmrs:message code="Patient.encounters"/></h4>
 				<ol id="encounter1">
 					<c:forEach items="${patient1Encounters}" var="encounter">
 						<li>
@@ -722,14 +722,14 @@ function generateMergeList(){
 							${encounter.location.name}
 							<openmrs:formatDate date="${encounter.encounterDatetime}" type="short" />
 							<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}">
-								<spring:message code="general.view"/>
+								<openmrs:message code="general.view"/>
 							</a>
 					</c:forEach>
 				</ol>
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
-					<h4><spring:message code="Patient.encounters"/></h4>
+					<h4><openmrs:message code="Patient.encounters"/></h4>
 					<ol id="encounter2">
 						<c:forEach items="${patient2Encounters}" var="encounter">
 							<li>
@@ -737,7 +737,7 @@ function generateMergeList(){
 								${encounter.location.name}
 								<openmrs:formatDate date="${encounter.encounterDatetime}" type="short" />
 								<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}">
-									<spring:message code="general.view"/>
+									<openmrs:message code="general.view"/>
 								</a>
 						</c:forEach>
 					</ol>
@@ -746,11 +746,11 @@ function generateMergeList(){
 		</tr>
 		<tr>
 			<td>
-				<a href="patient.form?patientId=${patient1.patientId}" id="edit1"><spring:message code="Patient.edit"/></a>
+				<a href="patient.form?patientId=${patient1.patientId}" id="edit1"><openmrs:message code="Patient.edit"/></a>
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td>
-					<a href="patient.form?patientId=${patient2.patientId}" id="edit2"><spring:message code="Patient.edit"/></a>
+					<a href="patient.form?patientId=${patient2.patientId}" id="edit2"><openmrs:message code="Patient.edit"/></a>
 				</td>
 			</c:if>
 			</tr>
@@ -758,7 +758,7 @@ function generateMergeList(){
 	
 	<c:if test="${patient2.patientId != null}">
 		<br />
-		<input type="submit" name="action" value='<spring:message code="Patient.merge"/>' onclick="return generateMergeList();" >
+		<input type="submit" name="action" value='<openmrs:message code="Patient.merge"/>' onclick="return generateMergeList();" >
 		<input type="hidden" id="pref" name="preferred" value=""/>
 		<input type="hidden" id="nonPref" name="nonPreferred" value=""/>
 		<input type="hidden" name="modalMode" value='${modalMode}' />

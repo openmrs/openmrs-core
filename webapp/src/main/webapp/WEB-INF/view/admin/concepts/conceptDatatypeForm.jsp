@@ -5,31 +5,31 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="ConceptDatatype.title"/></h2>
+<h2><openmrs:message code="ConceptDatatype.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.afterTitle" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 
 <table class="left-aligned-th">
 	<tr>
-		<th><spring:message code="general.name"/></th>
+		<th><openmrs:message code="general.name"/></th>
 		<td><c:out value="${conceptDatatype.name}"/></td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="general.description"/></th>
-		<td><spring:message code="${conceptDatatype.description}"/></td>
+		<th valign="top"><openmrs:message code="general.description"/></th>
+		<td><openmrs:message code="${conceptDatatype.description}"/></td>
 	</tr>
 	<tr>
-		<th><spring:message code="ConceptDatatype.hl7Abbreviation"/></th>
+		<th><openmrs:message code="ConceptDatatype.hl7Abbreviation"/></th>
 		<td><c:out value="${conceptDatatype.hl7Abbreviation}"/></td>
 	</tr>
 	<tr>
-		<th><spring:message code="general.uuid"/></th>
+		<th><openmrs:message code="general.uuid"/></th>
 		<td><c:out value="${conceptDatatype.uuid}"/></td>
 	</tr>
 
 	<c:if test="${!(conceptDatatype.creator == null)}">
 		<tr>
-			<th><spring:message code="general.createdBy" /></th>
+			<th><openmrs:message code="general.createdBy" /></th>
 			<td>
 				<c:out value="${conceptDatatype.creator.personName}"/> -
 				<openmrs:formatDate date="${conceptDatatype.dateCreated}" type="long" />
@@ -40,7 +40,7 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.inForm" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 <br />
 
-<div id="conceptDatatypeFormReadOnly">(<spring:message code="general.readonly"/>)</div>
+<div id="conceptDatatypeFormReadOnly">(<openmrs:message code="general.readonly"/>)</div>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.footer" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 

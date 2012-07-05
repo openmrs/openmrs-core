@@ -41,7 +41,7 @@
 			<c:if test="${ canAddNewPerson }">
 				afterResults: [ {
 									value: ' ',
-									label: '<span class="not-found-link"><spring:message code="Person.notFoundCreate"/></span>',
+									label: '<span class="not-found-link"><openmrs:message code="Person.notFoundCreate"/></span>',
 									onClick: function() {
 										$j('#${ formFieldId }_addDialog').dialog('open');
 									}
@@ -68,7 +68,7 @@
 				}
 				</c:if>
 			},
-            placeholder:'<spring:message code="Person.search.placeholder" javaScriptEscape="true"/>' 
+            placeholder:'<openmrs:message code="Person.search.placeholder" javaScriptEscape="true"/>' 
 		});
 		
 		//Clear hidden value on losing focus with no valid entry
@@ -100,9 +100,9 @@
 	<div id="${ formFieldId }_addDialog">
 		<table>
 			<tr>
-				<td><spring:message code="PersonName.givenName"/></td>
-				<td><spring:message code="PersonName.middleName"/></td>
-				<td><spring:message code="PersonName.familyName"/></td>
+				<td><openmrs:message code="PersonName.givenName"/></td>
+				<td><openmrs:message code="PersonName.middleName"/></td>
+				<td><openmrs:message code="PersonName.familyName"/></td>
 			</tr>
 			<tr>
 				<td><input id="${ formFieldId }_add_given_name" type="text"/></td>
@@ -111,18 +111,18 @@
 			</tr>
 		</table>
 		
-		<spring:message code="Person.gender"/>:
+		<openmrs:message code="Person.gender"/>:
 		<openmrs:forEachRecord name="gender">
 			<input type="radio" name="${ formFieldId }_add_gender" id="${ formFieldId }_add_gender_${record.key}" value="${record.key}" />
 			<label for="${ formFieldId }_add_gender_${record.key}">
-				<spring:message code="Person.gender.${record.value}"/>
+				<openmrs:message code="Person.gender.${record.value}"/>
 			</label>
 		</openmrs:forEachRecord>
 		<br/>
 
-		<spring:message code="Person.birthdate"/>:
+		<openmrs:message code="Person.birthdate"/>:
 		<openmrs_tag:dateField formFieldName="${ formFieldId }_add_birthdate" startValue="" />
-		<span style="margin-left: 3em;"><spring:message code="Person.age"/>:</span>
+		<span style="margin-left: 3em;"><openmrs:message code="Person.age"/>:</span>
 		<input type="text" size="3" maxLength="3" id="${ formFieldId }_add_age"/>
 		
 	</div>
@@ -132,12 +132,12 @@
 				autoOpen: false,
 				modal: true,
 				width: '75%',
-				title: '<spring:message code="Person.notFoundCreate"/>',
+				title: '<openmrs:message code="Person.notFoundCreate"/>',
 				open: function(event, ui) {
 					$j('#${ formFieldId }_add_given_name').focus();
 				},
 				buttons: {
-					'<spring:message code="Person.create"/>': function() {
+					'<openmrs:message code="Person.create"/>': function() {
 						var given = $j('#${ formFieldId }_add_given_name').val();
 						var middle = $j('#${ formFieldId }_add_middle_name').val();
 						var family = $j('#${ formFieldId }_add_family_name').val();
@@ -157,7 +157,7 @@
 						});
 						
 					},
-					'<spring:message code="general.cancel"/>': function() {
+					'<openmrs:message code="general.cancel"/>': function() {
 						$j(this).dialog('close');
 					}
 				},

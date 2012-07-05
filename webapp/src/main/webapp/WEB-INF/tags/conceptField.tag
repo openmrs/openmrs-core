@@ -48,7 +48,7 @@
 			select: function(event, ui) {
 				func${escapedFormFieldId}AutoCompleteOnSelect(ui.item.object, ui.item);
 			},
-            placeholder:'<spring:message code="Concept.search.placeholder" javaScriptEscape="true"/>',
+            placeholder:'<openmrs:message code="Concept.search.placeholder" javaScriptEscape="true"/>',
             autoSelect: true
 		});
 		

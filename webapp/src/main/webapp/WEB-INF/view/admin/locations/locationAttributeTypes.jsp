@@ -5,23 +5,23 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="LocationAttributeType.manage.title"/></h2>	
+<h2><openmrs:message code="LocationAttributeType.manage.title"/></h2>	
 
-<a href="locationAttributeType.form"><spring:message code="LocationAttributeType.add"/></a> 
+<a href="locationAttributeType.form"><openmrs:message code="LocationAttributeType.add"/></a> 
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationAttributeTypes.afterAdd" type="html" />
 
 <br />
 <br />
 
-<b class="boxHeader"><spring:message code="LocationAttributeType.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="LocationAttributeType.list.title"/></b>
 <div class="box">
 	<c:choose>
 		<c:when test="${ not empty attributeTypes }">
 			<table>
 				<tr>
-					<th> <spring:message code="general.name" /> </th>
-					<th> <spring:message code="general.description" /> </th>
+					<th> <openmrs:message code="general.name" /> </th>
+					<th> <openmrs:message code="general.description" /> </th>
 				</tr>
 				<c:forEach var="attrType" items="${ attributeTypes }">
 					<tr>
@@ -43,7 +43,7 @@
 			</table>
 		</c:when>
 		<c:otherwise>
-			<spring:message code="general.none" />
+			<openmrs:message code="general.none" />
 		</c:otherwise>
 	</c:choose>
 </div>

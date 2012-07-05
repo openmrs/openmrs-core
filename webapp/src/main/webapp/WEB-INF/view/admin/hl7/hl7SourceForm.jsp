@@ -7,7 +7,7 @@
 <script type="text/javascript">
 
 	function confirmPurge() {
-		if (confirm("<spring:message code="general.confirm.purge"/>")) {
+		if (confirm("<openmrs:message code="general.confirm.purge"/>")) {
 			return true;
 		} else {
 			return false;
@@ -17,19 +17,19 @@
 </script>
 
 
-<h2><spring:message code="Hl7Source.title"/></h2>
+<h2><openmrs:message code="Hl7Source.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.hl7.Hl7SourceForm.belowTitle" type="html" parameters="id=${hl7Source.id}" />
 
 <spring:hasBindErrors name="hl7Source">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">
 <fieldset>
 <table>
 	<tr>
-		<td><spring:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/></td>
 		<td>
 			<spring:bind path="hl7Source.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
@@ -38,7 +38,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="hl7Source.description">
 				<textarea name="description" rows="3" cols="40" onkeypress="return maxLength(this, 1024);" >${status.value}</textarea>
@@ -48,7 +48,7 @@
 	</tr>
 	<c:if test="${!(hl7Source.creator == null)}">
 		<tr>
-			<td><spring:message code="general.createdBy" /></td>
+			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
 				${hl7Source.creator.personName} -
 				<openmrs:formatDate date="${hl7Source.dateCreated}" type="long" />
@@ -60,7 +60,7 @@
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.hl7.ehl7SourceForm.inForm" type="html" parameters="id=${hl7Source.id}" />
 
-<input type="submit" value="<spring:message code="HL7Source.save"/>" name="save">
+<input type="submit" value="<openmrs:message code="HL7Source.save"/>" name="save">
 
 </fieldset>
 </form>
@@ -75,8 +75,8 @@
 	<openmrs:hasPrivilege privilege="Purge HL7 Source">
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>
-				<h4><spring:message code="HL7Source.purgeHL7Source"/></h4>
-				<input type="submit" value='<spring:message code="HL7Source.purgeHL7Source"/>' name="purge" />
+				<h4><openmrs:message code="HL7Source.purgeHL7Source"/></h4>
+				<input type="submit" value='<openmrs:message code="HL7Source.purgeHL7Source"/>' name="purge" />
 			</fieldset>
 		</form>
 	</openmrs:hasPrivilege>

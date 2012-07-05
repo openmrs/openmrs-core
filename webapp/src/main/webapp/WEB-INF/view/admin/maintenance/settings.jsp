@@ -5,7 +5,7 @@
 <%@ include file="localHeader.jsp"%>
 
 <h2>
-	<spring:message code="Settings.title" />
+	<openmrs:message code="Settings.title" />
 </h2>
 <table style="width: 98%;">
 	<tr style="vertical-align: top;">
@@ -52,9 +52,9 @@
 					<tr>
 						<td colspan="2"><p>
 								<input id="saveButton" type="submit"
-									value="<spring:message code="general.save"/>" />
+									value="<openmrs:message code="general.save"/>" />
 								<input id="cancelButton" type="button"
-									value="<spring:message code="general.cancel"/>"
+									value="<openmrs:message code="general.cancel"/>"
 									onclick="window.location=''" />
 							</p></td>
 					</tr>

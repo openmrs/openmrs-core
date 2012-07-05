@@ -5,18 +5,18 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="VisitType.manage.title"/></h2>
+<h2><openmrs:message code="VisitType.manage.title"/></h2>
 
-<a href="visitType.form"><spring:message code="VisitType.add"/></a>
+<a href="visitType.form"><openmrs:message code="VisitType.add"/></a>
 
 <br /><br />
 
-<b class="boxHeader"><spring:message code="VisitType.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="VisitType.list.title"/></b>
 <form method="post" class="box">
 	<table>
 		<tr>
-			<th> <spring:message code="general.name"/> </th>
-			<th> <spring:message code="general.description"/> </th>
+			<th> <openmrs:message code="general.name"/> </th>
+			<th> <openmrs:message code="general.description"/> </th>
 		</tr>
 		<c:forEach var="visitType" items="${visitTypeList}">
 			<tr>

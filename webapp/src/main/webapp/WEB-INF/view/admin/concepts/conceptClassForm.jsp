@@ -5,14 +5,14 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="ConceptClass.title"/></h2>
+<h2><openmrs:message code="ConceptClass.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptClassForm.afterTitle" type="html" parameters="conceptClassId=${conceptClass.conceptClassId}" />
 
 <form method="post">
 <table>
 	<tr>
-		<td><spring:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/></td>
 		<td>
 			<spring:bind path="conceptClass.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
@@ -21,7 +21,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td>
 			<spring:bind path="conceptClass.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
@@ -31,7 +31,7 @@
 	</tr>
 	<c:if test="${!(conceptClass.creator == null)}">
 		<tr>
-			<td><spring:message code="general.createdBy" /></td>
+			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
 				${conceptClass.creator.personName} -
 				<openmrs:formatDate date="${conceptClass.dateCreated}" type="long" />
@@ -41,7 +41,7 @@
 </table>
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptClassForm.inForm" type="html" parameters="conceptClassId=${conceptClass.conceptClassId}" />
 <br />
-<input type="submit" value="<spring:message code="ConceptClass.save"/>">
+<input type="submit" value="<openmrs:message code="ConceptClass.save"/>">
 </form>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptClassForm.footer" type="html" parameters="conceptClassId=${conceptClass.conceptClassId}" />

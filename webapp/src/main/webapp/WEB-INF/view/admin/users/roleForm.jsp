@@ -27,17 +27,17 @@
 	function leaveForm() {
 		if (formChanged == false) return true;
 		
-		return confirm('<spring:message code="Role.leaveForm" />');
+		return confirm('<openmrs:message code="Role.leaveForm" />');
 	}
 </script>
 
-<h2><spring:message code="Role.manage.title"/></h2>	
+<h2><openmrs:message code="Role.manage.title"/></h2>	
 
 <spring:hasBindErrors name="role">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
 		</c:forEach>
 	</div>
 </spring:hasBindErrors>
@@ -45,7 +45,7 @@
 <form method="post">
 <table>
 	<tr>
-		<th><spring:message code="Role.role"/></th>
+		<th><openmrs:message code="Role.role"/></th>
 		<td>
 			<spring:bind path="role.role">
 				<c:if test="${param.roleName == null}"><input type="text" id="role" name="${status.expression}" value="${status.value}" onChange="updateRoleName()"></c:if>
@@ -55,7 +55,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="general.description"/></th>
+		<th valign="top"><openmrs:message code="general.description"/></th>
 		<td valign="top">
 			<spring:bind path="role.description">
 				<textarea name="description" rows="3" cols="50" onKeyUp="formChanged = true;" type="_moz">${status.value}</textarea>
@@ -65,7 +65,7 @@
 	</tr>
 	<c:if test="${fn:length(inheritingRoles) > 0}">
 		<tr>
-			<th colspan="2"><spring:message code="Role.inheritingRoles.description"/></th>
+			<th colspan="2"><openmrs:message code="Role.inheritingRoles.description"/></th>
 		</tr>
 		<tr>
 			<th></th>
@@ -82,28 +82,28 @@
 		</tr>
 	</c:if>
 	<tr>
-		<th colspan="2"><spring:message code="Role.inheritedRoles"/></th>
+		<th colspan="2"><openmrs:message code="Role.inheritedRoles"/></th>
 	</tr>
 	<tr>
 		<th></th>
 		<td>
-			<i><spring:message code="Role.inheritedRoles.description"/></i>
+			<i><openmrs:message code="Role.inheritedRoles.description"/></i>
 			<br/>
-			<c:if test="${role.role == superuser}"><spring:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
+			<c:if test="${role.role == superuser}"><openmrs:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
 				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}" />
 			</c:if>
 		</td>
 	</tr>
 	<tr>
-		<th colspan="2"><spring:message code="Role.privileges"/></th>
+		<th colspan="2"><openmrs:message code="Role.privileges"/></th>
 	</tr>
 	<tr>
 		<th></th>
 		<td>
-			<i><spring:message code="Role.inheritedPrivileges.description"/></i>
+			<i><openmrs:message code="Role.inheritedPrivileges.description"/></i>
 			<br/>
-			<c:if test="${role.role == superuser}"><spring:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
+			<c:if test="${role.role == superuser}"><openmrs:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
 				<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" inheritedItems="${inheritedPrivileges}" />
 			</c:if>
@@ -111,7 +111,7 @@
 	</tr>
 </table>
 
-<input type="submit" value="<spring:message code="Role.save"/>">
+<input type="submit" value="<openmrs:message code="Role.save"/>">
 </form>
 
 <script type="text/javascript">

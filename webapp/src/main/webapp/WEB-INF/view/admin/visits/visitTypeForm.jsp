@@ -8,7 +8,7 @@
 <script type="text/javascript">
 
 	function confirmPurge() {
-		if (confirm("<spring:message code='VisitType.purgeConfirmMessage' />")) {
+		if (confirm("<openmrs:message code='VisitType.purgeConfirmMessage' />")) {
 			return true;
 		} else {
 			return false;
@@ -25,19 +25,19 @@
    }
 </script>
 
-<h2><spring:message code="VisitType.title"/></h2>
+<h2><openmrs:message code="VisitType.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.visits.visitForm.belowTitle" type="html" parameters="visitTypeId=${visitType.visitTypeId}" />
 
 <spring:hasBindErrors name="visitType">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">
 <fieldset>
 <table>
 	<tr>
-		<td><spring:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/></td>
 		<td>
 			<spring:bind path="visitType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
@@ -46,7 +46,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="visitType.description">
 				<textarea name="description" rows="3" cols="40" onkeypress="return forceMaxLength(this, 1024);" >${status.value}</textarea>
@@ -56,7 +56,7 @@
 	</tr>
 	<c:if test="${!(visitType.creator == null)}">
 		<tr>
-			<td><spring:message code="general.createdBy" /></td>
+			<td><openmrs:message code="general.createdBy" /></td>
 			<td><openmrs:format user="${ visitType.creator }"/></td>
 		</tr>
 	</c:if>
@@ -65,7 +65,7 @@
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.visits.visitForm.inForm" type="html" parameters="visitTypeId=${visitType.visitTypeId}" />
 
-<input type="submit" value="<spring:message code="VisitType.save"/>" name="save">
+<input type="submit" value="<openmrs:message code="VisitType.save"/>" name="save">
 
 </fieldset>
 </form>
@@ -75,17 +75,17 @@
 <c:if test="${not visitType.retired && not empty visitType.visitTypeId}">
 	<form method="post">
 		<fieldset>
-			<h4><spring:message code="VisitType.retireVisitType"/></h4>
+			<h4><openmrs:message code="VisitType.retireVisitType"/></h4>
 			
-			<b><spring:message code="general.reason"/></b>
+			<b><openmrs:message code="general.reason"/></b>
 			<input type="text" value="" size="40" name="retireReason" />
 			<spring:hasBindErrors name="visitType">
 				<c:forEach items="${errors.allErrors}" var="error">
-					<c:if test="${error.code == 'retireReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+					<c:if test="${error.code == 'retireReason'}"><span class="error"><openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
 				</c:forEach>
 			</spring:hasBindErrors>
 			<br/>
-			<input type="submit" value='<spring:message code="VisitType.retireVisitType"/>' name="retire"/>
+			<input type="submit" value='<openmrs:message code="VisitType.retireVisitType"/>' name="retire"/>
 		</fieldset>
 	</form>
 </c:if>
@@ -96,8 +96,8 @@
 	<openmrs:hasPrivilege privilege="Manage Visit Types">
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>
-				<h4><spring:message code="VisitType.purgeVisitType"/></h4>
-				<input type="submit" value='<spring:message code="VisitType.purgeVisitType"/>' name="purge" />
+				<h4><openmrs:message code="VisitType.purgeVisitType"/></h4>
+				<input type="submit" value='<openmrs:message code="VisitType.purgeVisitType"/>' name="purge" />
 			</fieldset>
 		</form>
 	</openmrs:hasPrivilege>

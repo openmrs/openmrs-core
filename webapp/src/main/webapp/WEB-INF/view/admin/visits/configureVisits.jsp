@@ -26,39 +26,39 @@
 </script>
 
 <h2>
-	<spring:message code="Visit.configure" />
+	<openmrs:message code="Visit.configure" />
 </h2>
 
 <spring:hasBindErrors name="configureVisitsForm">
-	<spring:message code="fix.error" />
+	<openmrs:message code="fix.error" />
 	<br />
 </spring:hasBindErrors>
 
-<b class="boxHeader"><spring:message
+<b class="boxHeader"><openmrs:message
 		code="Visit.configure" /> </b>
 <div class="box">
 	<form:form method="post" commandName="configureVisitsForm">
 		<p>
-			<b><spring:message code="Encounter.visits.enable" />
+			<b><openmrs:message code="Encounter.visits.enable" />
 			</b>
 			<form:checkbox path="enableVisits" id="enableVisits" />
 			<form:errors path="enableVisits" cssClass="error" />
 		</p>
 		
 		<p>
-			<b><spring:message code="Visit.configure.startCloseVisitsTask" /></b>
+			<b><openmrs:message code="Visit.configure.startCloseVisitsTask" /></b>
 			<form:checkbox path="closeVisitsTaskStarted" />
 			<form:errors path="closeVisitsTaskStarted" cssClass="error" />
 		</p>
 		
 		<p>
-			<b style="vertical-align: top"><spring:message code="Visit.configure.visitTypesToClose" /></b>
+			<b style="vertical-align: top"><openmrs:message code="Visit.configure.visitTypesToClose" /></b>
 			<form:select path="visitTypesToClose" multiple="true" items="${visitTypes}" itemLabel="name" />
 			<form:errors path="visitTypesToClose" cssClass="error" />
 		</p>
 
 		<p>
-			<b><spring:message code="Encounter.visits.handler.choose" />
+			<b><openmrs:message code="Encounter.visits.handler.choose" />
 			</b> <br />
 			<form:select path="visitEncounterHandler" id="visitEncounterHandler">
 				<form:options items="${visitEncounterHandlers}"
@@ -66,7 +66,7 @@
 			</form:select>
 			<form:errors path="visitEncounterHandler" cssClass="error" />
 		</p>
-		<input type="submit" value='<spring:message code="general.save"/>'>
+		<input type="submit" value='<openmrs:message code="general.save"/>'>
 	</form:form>
 </div>
 

@@ -14,22 +14,22 @@
 	})
 </script>
 
-<h2><spring:message code="Order.manage.title"/></h2>	
+<h2><openmrs:message code="Order.manage.title"/></h2>	
 		
-<a href="order.form"><spring:message code="Order.add"/></a> 
-<a href="orderDrug.form"><spring:message code="Order.drug.add"/></a><br />
+<a href="order.form"><openmrs:message code="Order.add"/></a> 
+<a href="orderDrug.form"><openmrs:message code="Order.drug.add"/></a><br />
 
 <br />
 
 <c:forEach items="${errors.allErrors}" var="error">
-	<span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span><
+	<span class="error"><openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span><
 </c:forEach>
 
 <span class="boxHeader">
 	<span style="float: right">
-		<a href="#" id="showVoided" onClick="return toggleRowVisibilityForClass('orderTable', 'voided', false);"><spring:message code="general.toggle.voided"/></a>
+		<a href="#" id="showVoided" onClick="return toggleRowVisibilityForClass('orderTable', 'voided', false);"><openmrs:message code="general.toggle.voided"/></a>
 	</span>
-	<spring:message code="Order.list.title"/>
+	<openmrs:message code="Order.list.title"/>
 </span>
 <c:if test="${not empty orderList}">
 <div class="box">
@@ -37,10 +37,10 @@
 		<table id="orderTable" cellpadding="5" cellspacing="0">
 			<tr>
 				<th> </th>
-				<th> <spring:message code="Order.orderType" /> </th>
-				<th> <spring:message code="Patient.names" /> </th>
-				<th> <spring:message code="Order.item.ordered" /> </th>
-				<th> <spring:message code="general.instructions" /> </th>
+				<th> <openmrs:message code="Order.orderType" /> </th>
+				<th> <openmrs:message code="Patient.names" /> </th>
+				<th> <openmrs:message code="Order.item.ordered" /> </th>
+				<th> <openmrs:message code="general.instructions" /> </th>
 				<th> </th>
 			</tr>
 			<c:forEach var="order" items="${orderList}">
@@ -67,19 +67,19 @@
 					</td>
 					<td valign="top">
 						<a href="<c:choose><c:when test="${order.class.name=='org.openmrs.DrugOrder'}">orderDrug</c:when><c:otherwise>order</c:otherwise></c:choose>.form?orderId=${order.orderId}">
-							<spring:message code="general.edit" />
+							<openmrs:message code="general.edit" />
 						</a>
 					</td>					
 				</tr>
 			</c:forEach>
 		</table>
 		<br/>
-		<b><spring:message code="general.voidReason" />:</b>
+		<b><openmrs:message code="general.voidReason" />:</b>
 		<input type="text" value="" size="40" name="voidReason" /><br/>
-		<input type="submit" value="<spring:message code="Order.void"/>" name="action">
+		<input type="submit" value="<openmrs:message code="Order.void"/>" name="action">
 	</form>
 </div>
 </c:if>
-<c:if test="${empty orderList}"><spring:message code="Order.list.empty"/></c:if>
+<c:if test="${empty orderList}"><openmrs:message code="Order.list.empty"/></c:if>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

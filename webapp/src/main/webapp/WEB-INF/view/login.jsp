@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<spring:message var="pageTitle" code="login.title" scope="page"/>
+<openmrs:message var="pageTitle" code="login.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js"/>
@@ -46,37 +46,37 @@
 	<c:if test="${not empty alertMessage}">
 	<div id="responseDiv" style="display: none">
 		<br />
-		<span id="successMsg" style="display: none"><spring:message code="general.alertSent" /></span>
-		<span id="failureMsg" class="error" style="display: none"><spring:message code="error.failedToSendRequest" /></span>
+		<span id="successMsg" style="display: none"><openmrs:message code="general.alertSent" /></span>
+		<span id="failureMsg" class="error" style="display: none"><openmrs:message code="error.failedToSendRequest" /></span>
 	</div></c:if>
 	
 	<br />
-	<spring:message code="general.unableToViewPage" />
+	<openmrs:message code="general.unableToViewPage" />
 	<c:if test="${not empty reason}">
 		<br />
 		<span>${reason}</span>
 	</c:if>
 	
 	<br /><br />
-	<spring:message code="general.accountHasNoPrivilege" />
+	<openmrs:message code="general.accountHasNoPrivilege" />
 	<br /><br />
-	<input type="button" value='<spring:message code="general.back" />' onclick="goToPreviousPage()" />
+	<input type="button" value='<openmrs:message code="general.back" />' onclick="goToPreviousPage()" />
 	
 	<c:if test="${not empty alertMessage}">
 	<div id="sendAlertDetails">
 	<br /><br />
-	<spring:message code="general.sendAlertToAdminMessage" />
+	<openmrs:message code="general.sendAlertToAdminMessage" />
 		<br /><br />
-		<input id="notificationButton" type="button" value="<spring:message code="general.alertSystemAdmin" />" onclick="createAlert()" />
+		<input id="notificationButton" type="button" value="<openmrs:message code="general.alertSystemAdmin" />" onclick="createAlert()" />
 	</div>
 	</c:if>
 	
 	<br /><br />
 	<div>
-		<spring:message code="general.loginWithAnotherAccountMessage" />
+		<openmrs:message code="general.loginWithAnotherAccountMessage" />
 		<br /><br />
 		<a href="#" onclick="javascript:$j('#loginPortlet').show()">
-			<spring:message code="general.loginWithAnotherAccount" />
+			<openmrs:message code="general.loginWithAnotherAccount" />
 		</a>
 	</div>
 </c:if>

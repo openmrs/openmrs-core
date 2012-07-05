@@ -5,29 +5,29 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="FieldType.edit" /></h2>
+<h2><openmrs:message code="FieldType.edit" /></h2>
 
 <form method="post" onSubmit="return validateForm()">
 	<table>
 		<tr>
-			<td><spring:message code="general.name" /></td>
+			<td><openmrs:message code="general.name" /></td>
 			<td>
 				<input type="text" name="name" id="fieldTypeName" value="${fieldType.name}" size="35" onKeyUp="hideError('nameError');"/>
-				<span class="error" id="nameError"><spring:message code="error.name"/></span>
+				<span class="error" id="nameError"><openmrs:message code="error.name"/></span>
 			</td>
 		</tr>
 		<tr>
-			<td><spring:message code="FieldType.isSet" /></td>
+			<td><openmrs:message code="FieldType.isSet" /></td>
 			<input type="hidden" name="_isSet" value="" />
 			<td><input type="checkbox" name="isSet" value="true" <c:if test="${fieldType.isSet == true}">checked</c:if> /></td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="general.description" /></td>
+			<td valign="top"><openmrs:message code="general.description" /></td>
 			<td><textarea name="description" rows="3" cols="40">${fieldType.description}</textarea></td>
 		</tr>
 		<c:if test="${!(orderType.creator == null)}">
 			<tr>
-				<td><spring:message code="general.createdBy" /></td>
+				<td><openmrs:message code="general.createdBy" /></td>
 				<td>
 					${orderType.creator.personName} -
 					<openmrs:formatDate date="${orderType.dateCreated}" type="long" />
@@ -36,7 +36,7 @@
 		</c:if>
 	</table>
 	<br />
-	<input type="submit" value="<spring:message code="FieldType.save"/>">
+	<input type="submit" value="<openmrs:message code="FieldType.save"/>">
 </form>
 
 		<script type="text/javascript"><!--

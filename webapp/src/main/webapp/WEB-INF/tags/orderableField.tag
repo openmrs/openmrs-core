@@ -29,7 +29,7 @@
 				}
 				</c:if>
 			},
-            placeholder:'<spring:message code="Orderable.search.placeholder" javaScriptEscape="true"/>'
+            placeholder:'<openmrs:message code="Orderable.search.placeholder" javaScriptEscape="true"/>'
 		});
 
 		// get the name of the orderable that they passed in the id for

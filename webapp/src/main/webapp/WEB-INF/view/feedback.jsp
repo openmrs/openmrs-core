@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<spring:message var="pageTitle" code="feedback.title" scope="page"/>
+<openmrs:message var="pageTitle" code="feedback.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRMessageService.js'></script>
@@ -21,9 +21,9 @@
 	var note = document.getElementById("feedbackNote");
 	note.style.display = "";
 	if (success == true)
-		note.innerHTML = '<spring:message code="feedback.success"/>';
+		note.innerHTML = '<openmrs:message code="feedback.success"/>';
 	else
-		note.innerHTML = '<spring:message code="feedback.error"/>';
+		note.innerHTML = '<openmrs:message code="feedback.error"/>';
  }
  
  function clearNote() {
@@ -44,21 +44,21 @@
 }
 </style>
 
-<h2><spring:message code="feedback.title" /></h2>
+<h2><openmrs:message code="feedback.title" /></h2>
 
 <div id="feedbackNote"></div>
 
 <table>
 	<tr>
-		<td><spring:message code="feedback.email"/></td>
+		<td><openmrs:message code="feedback.email"/></td>
 		<td><input type="text" id="feedbackFrom" size="35" value=""></td>
 	</tr>
 	<tr>
-		<td><spring:message code="feedback.subject"/></td>
+		<td><openmrs:message code="feedback.subject"/></td>
 		<td><input type="text" id="feedbackSubject" size="35" value=""></td>
 	</tr>
 	<tr>
-		<td colspan="2"><spring:message code="feedback.message"/></td>
+		<td colspan="2"><openmrs:message code="feedback.message"/></td>
 	</tr>
 	<tr>
 		<td colspan="2"><textarea id="feedbackContent" rows="5" cols="53"></textarea></td>
@@ -66,7 +66,7 @@
 </table>
 
 <br />
-<input type="submit" value='<spring:message code="feedback.send"/>' onclick="sendFeedback()">
+<input type="submit" value='<openmrs:message code="feedback.send"/>' onclick="sendFeedback()">
 
 <script type="text/javascript">
 

@@ -7,16 +7,16 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="ConceptStopWord.title"/></h2>
+<h2><openmrs:message code="ConceptStopWord.title"/></h2>
 
 <spring:hasBindErrors name="command">
-    <spring:message code="fix.error"/><br/>    
+    <openmrs:message code="fix.error"/><br/>    
 </spring:hasBindErrors>
 
 <form method="post">
     <table>
         <tr>
-            <td><spring:message code="general.name"/></td>
+            <td><openmrs:message code="general.name"/></td>
             <td>
                 <spring:bind path="command.value">
                     <input type="text" name="${status.expression}" value="${status.value}" size="35"/>
@@ -36,7 +36,7 @@
         </tr>
     </table>
     <br/>
-    <input type="submit" value="<spring:message code="ConceptStopWord.save"/>">
+    <input type="submit" value="<openmrs:message code="ConceptStopWord.save"/>">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -6,7 +6,7 @@
 <%@ attribute name="optionHeader" required="false" %>
 
 <c:if test="${empty orderTypes}">
-	<spring:message code="OrderType.list.empty" />
+	<openmrs:message code="OrderType.list.empty" />
 </c:if>
 <c:if test="${not empty orderTypes}">
 	<select name="${formFieldName}">

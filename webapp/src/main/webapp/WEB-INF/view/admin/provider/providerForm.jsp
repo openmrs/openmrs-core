@@ -31,19 +31,19 @@ function toggleProviderDetails(){
 	}
 </style>
 
-<h2><spring:message code="Provider.manage.title"/></h2>
+<h2><openmrs:message code="Provider.manage.title"/></h2>
 
 <spring:hasBindErrors name="provider">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
 <b class="boxHeader">
 <c:if test="${provider.providerId == null}">
-	<spring:message code="Provider.create"/>
+	<openmrs:message code="Provider.create"/>
 </c:if>
 <c:if test="${provider.providerId != null}">
-	<spring:message code="Provider.edit"/>
+	<openmrs:message code="Provider.edit"/>
 </c:if>
 </b>
 
@@ -52,7 +52,7 @@ function toggleProviderDetails(){
 		
 		<table cellpadding="3" cellspacing="0">
 			<tr>
-				<th><spring:message code="Provider.identifier"/></th>
+				<th><openmrs:message code="Provider.identifier"/></th>
 				<td colspan="4">
 					<spring:bind path="provider.identifier">			
 						<input type="text" name="${status.expression}" size="10" 
@@ -65,15 +65,15 @@ function toggleProviderDetails(){
 			<c:choose>
 			<c:when test="${provider.providerId == null}">
 			<tr>
-				<th><spring:message code="Provider.person"/></th>
+				<th><openmrs:message code="Provider.person"/></th>
 				<td>
 					<spring:bind path="provider.person">
 					<openmrs:fieldGen type="org.openmrs.Person" formFieldName="${status.expression}" val="${status.editor.value}"/>
 						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 					</spring:bind>
 				</td>
-				<td>&nbsp;&nbsp;&nbsp;<spring:message code="general.or" />&nbsp;&nbsp;&nbsp;</td>
-				<th><spring:message code="Provider.name"/></th>
+				<td>&nbsp;&nbsp;&nbsp;<openmrs:message code="general.or" />&nbsp;&nbsp;&nbsp;</td>
+				<th><openmrs:message code="Provider.name"/></th>
 				<td>
 					<spring:bind path="provider.name">			
 						<input type="text" name="${status.expression}" size="25" 
@@ -86,11 +86,11 @@ function toggleProviderDetails(){
 			</c:when>
 			<c:otherwise>
 			<tr>
-				<th><spring:message code="Provider.name"/></th>
+				<th><openmrs:message code="Provider.name"/></th>
 				<td>
 					<div class="providerDetails" <c:if test="${provider.person != null}">style="display:none"</c:if>>
-						<form:input id="providerName" path="provider.name" /> <form:errors path="provider.name" cssClass="error" /> <spring:message code="general.or" /> 
-						<a href="javascript:void(0)" onclick="toggleProviderDetails()"> <spring:message code="Provider.linkToPerson"/></a>
+						<form:input id="providerName" path="provider.name" /> <form:errors path="provider.name" cssClass="error" /> <openmrs:message code="general.or" /> 
+						<a href="javascript:void(0)" onclick="toggleProviderDetails()"> <openmrs:message code="Provider.linkToPerson"/></a>
 					</div>
 					<div class="providerDetails" <c:if test="${provider.person == null}">style="display:none"</c:if>>
 						${provider.person.personName} 
@@ -100,7 +100,7 @@ function toggleProviderDetails(){
 						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>	
 						</spring:bind>
 						</span>
-						<a href="javascript:void(0)" onclick="toggleProviderDetails()">(<spring:message code="Provider.unLinkFromPerson"/>)</a>
+						<a href="javascript:void(0)" onclick="toggleProviderDetails()">(<openmrs:message code="Provider.unLinkFromPerson"/>)</a>
 					 </div>
 					 <input id="linkToPerson" name="linkToPerson" type="checkbox" value="true" style="display:none" 
 					 	<c:if test="${provider.person != null}">checked="checked"</c:if> />
@@ -134,9 +134,9 @@ function toggleProviderDetails(){
 		<br/>
 	
 	<input type="hidden" name="phrase" value='<request:parameter name="phrase" />'/>
-	<input type="submit" name="saveProviderButton" value='<spring:message code="Provider.save"/>'>
+	<input type="submit" name="saveProviderButton" value='<openmrs:message code="Provider.save"/>'>
 	&nbsp;
-	<input type="button" value='<spring:message code="general.cancel"/>' onclick="document.location='index.htm'">
+	<input type="button" value='<openmrs:message code="general.cancel"/>' onclick="document.location='index.htm'">
 	
 	</form>
 	</div>
@@ -149,7 +149,7 @@ function toggleProviderDetails(){
 			<form method="post">
 				<table cellpadding="3" cellspacing="0">
 					<tr>
-						<th><spring:message code="general.createdBy" /></th>
+						<th><openmrs:message code="general.createdBy" /></th>
 						<td>
 							<a href="#View User" onclick="return gotoUser(null, '${provider.creator.userId}')">${provider.creator.personName}</a> -
 							<openmrs:formatDate date="${provider.dateCreated}" type="medium" />
@@ -157,7 +157,7 @@ function toggleProviderDetails(){
 					</tr>
 					<c:if test="${provider.retiredBy == null}">
 						<tr id="retiredReason">
-							<th><spring:message code="general.retiredReason" /></th>
+							<th><openmrs:message code="general.retiredReason" /></th>
 							<td>
 								<spring:bind path="provider.retired">
 									<input type="hidden" name="${status.expression}" value="true"/>
@@ -171,25 +171,25 @@ function toggleProviderDetails(){
 						</tr>
 						<tr>
 							<td><input type="submit" name="retireProviderButton"
-								value='<spring:message code="Provider.retire"/>'></td>
+								value='<openmrs:message code="Provider.retire"/>'></td>
 						</tr>
 					</c:if>	
 														
 					<c:if test="${provider.retiredBy != null}">
 						<tr id="retiredBy">
-							<th><spring:message code="general.retiredBy" /></th>
+							<th><openmrs:message code="general.retiredBy" /></th>
 							<td>
 								<a href="#View User" onclick="return gotoUser(null, '${provider.retiredBy.userId}')">${provider.retiredBy.personName}</a> -
 								<openmrs:formatDate date="${provider.dateRetired}" type="medium" />
 							</td>
 						</tr>
 						<tr>
-							<th><spring:message code="general.retiredReason" /></th>
+							<th><openmrs:message code="general.retiredReason" /></th>
 							<td><c:out value="${provider.retireReason}"/></td>
 						</tr>
 						<tr>
 							<td><input type="submit" name="unretireProviderButton"
-								value='<spring:message code="Provider.unretire"/>'></td>
+								value='<openmrs:message code="Provider.unretire"/>'></td>
 						</tr>
 					</c:if>		
 				</table>

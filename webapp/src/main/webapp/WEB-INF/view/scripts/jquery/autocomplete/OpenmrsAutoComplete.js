@@ -11,7 +11,7 @@
  *			select: function(event, ui) {
  *				$j('#person_name_id').val(ui.item.object.personId);
  *			},
- *          placeholder:'<spring:message code="Person.search.placeholder" javaScriptEscape="true"/>'
+ *          placeholder:'<openmrs:message code="Person.search.placeholder" javaScriptEscape="true"/>'
  *		});
  * 
  * General options:
