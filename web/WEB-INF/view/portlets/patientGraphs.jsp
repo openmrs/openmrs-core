@@ -63,7 +63,7 @@ table#labTestTable th {
 
 <c:set var="graphConceptString" value="${userConcepts}" />
 	
-	<div class="boxHeader${model.patientVariation}"><spring:message code="patientDashboard.graphs"/></div>
+	<div class="boxHeader${model.patientVariation}"><openmrs:message code="patientDashboard.graphs"/></div>
 	<div class="box${model.patientVariation}">
 		<table width="100%">
 			<tr>
@@ -92,7 +92,7 @@ table#labTestTable th {
 					<tr>
 						<td>
 						<div>
-						<div align="center" id="conceptBox-${conceptId}"><spring:message
+						<div align="center" id="conceptBox-${conceptId}"><openmrs:message
 							code="general.loading" /></div>
 						<div align="center">
 						<div style="width: 750px; overflow: auto; border: 1px solid black;">
@@ -106,7 +106,7 @@ table#labTestTable th {
 							limit="-1" />
 						</div>
 						<div align="center" valign="top" style="font-size: .9em"><a
-							href="?patientId=${patient.patientId}&patientGraphConceptRemove=true&patientGraphConcept=${conceptId}"><spring:message
+							href="?patientId=${patient.patientId}&patientGraphConceptRemove=true&patientGraphConcept=${conceptId}"><openmrs:message
 							code="general.remove" /></a> <br />
 						<br />
 						</div>
@@ -128,9 +128,9 @@ table#labTestTable th {
 			<tr>
 				<td>
 					<form>
-						<spring:message code="patientGraphs.addNewGraph" />
+						<openmrs:message code="patientGraphs.addNewGraph" />
 						<span dojoType="ConceptSearch" widgetId="cSearch" includeDatatypes="Numeric"></span><br/>
-						<span dojoType="OpenmrsPopup" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.choose"/>'></span> 
+						<span dojoType="OpenmrsPopup" searchWidget="cSearch" searchTitle='<openmrs:message code="Concept.find"/>' changeButtonValue='<openmrs:message code="general.choose"/>'></span> 
 					</form>
 				</td>
 			</tr>

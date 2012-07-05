@@ -5,16 +5,16 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="OrderType.title"/></h2>
+<h2><openmrs:message code="OrderType.title"/></h2>
 
 <spring:hasBindErrors name="orderType">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">
 <table>
 	<tr>
-		<td><spring:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/></td>
 		<td>
 			<spring:bind path="orderType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
@@ -23,7 +23,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="orderType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
@@ -33,7 +33,7 @@
 	</tr>
 	<c:if test="${!(orderType.creator == null)}">
 		<tr>
-			<td><spring:message code="general.createdBy" /></td>
+			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
 				${orderType.creator.personName} -
 				<openmrs:formatDate date="${orderType.dateCreated}" type="long" />
@@ -42,7 +42,7 @@
 	</c:if>
 </table>
 <br />
-<input type="submit" value="<spring:message code="OrderType.save"/>">
+<input type="submit" value="<openmrs:message code="OrderType.save"/>">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

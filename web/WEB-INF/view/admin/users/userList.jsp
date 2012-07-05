@@ -5,13 +5,13 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="User.manage.title"/></h2>
+<h2><openmrs:message code="User.manage.title"/></h2>
 
-<a href="user.form"><spring:message code="User.add"/></a>
+<a href="user.form"><openmrs:message code="User.add"/></a>
 
 <br/><br/>
 
-<b class="boxHeader"><spring:message code="User.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="User.list.title"/></b>
 
 <openmrs:htmlInclude file="/dwr/util.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
@@ -67,7 +67,7 @@
 </script>
 
 <div class="box">
-	<div dojoType="UserSearch" widgetId="uSearch" searchLabel='<spring:message code="User.find"/>' showIncludeRetired="true" showRoles="true"></div>
+	<div dojoType="UserSearch" widgetId="uSearch" searchLabel='<openmrs:message code="User.find"/>' showIncludeRetired="true" showRoles="true"></div>
 </div>
 
 <br/><br/>

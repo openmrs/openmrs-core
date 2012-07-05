@@ -3,7 +3,7 @@
 <openmrs:require privilege="" otherwise="/login.htm"
 	redirect="/options.form" />
 	
-<spring:message var="pageTitle" code="optionsForm.title" scope="page"/>
+<openmrs:message var="pageTitle" code="optionsForm.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
 <script type="text/javascript">
@@ -108,12 +108,12 @@ function containsError(element) {
 
 </script>
 
-<h2><spring:message code="options.title" /></h2>
+<h2><openmrs:message code="options.title" /></h2>
 
 <spring:hasBindErrors name="opts">
-	<spring:message code="fix.error" />
+	<openmrs:message code="fix.error" />
 	<div class="error"><c:forEach items="${errors.allErrors}" var="error">
-		<spring:message code="${error.code}" text="${error.code}" />
+		<openmrs:message code="${error.code}" text="${error.code}" />
 		<br />
 		<!-- ${error} -->
 	</c:forEach></div>
@@ -123,10 +123,10 @@ function containsError(element) {
 <form method="post">
 
 <div id="optionsForm">
-<fieldset><legend><spring:message code="options.default.legend" /></legend>
+<fieldset><legend><openmrs:message code="options.default.legend" /></legend>
 <table>
 	<tr>
-		<td><spring:message code="options.default.location" /></td>
+		<td><openmrs:message code="options.default.location" /></td>
 		<td>
 			<spring:bind path="opts.defaultLocation">
 				<select name="${status.expression}">
@@ -142,7 +142,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.default.locale" /></td>
+		<td><openmrs:message code="options.default.locale" /></td>
 		<td>
 			<spring:bind path="opts.defaultLocale">
 				<select name="${status.expression}">
@@ -157,7 +157,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.proficient.locales" /></td>
+		<td><openmrs:message code="options.proficient.locales" /></td>
 		<td>
 			<spring:bind path="opts.proficientLocales">
 				<input type="text" name="${status.expression}" value="${status.value}" 
@@ -170,7 +170,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.showRetiredMessage" /></td>
+		<td><openmrs:message code="options.showRetiredMessage" /></td>
 		<td>
 			<label for="${status.expression}"><spring:bind path="opts.showRetiredMessage"></label>
 				<input type="hidden" name="_${status.expression}" value="true" />
@@ -182,7 +182,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.default.verbose" /></td>
+		<td><openmrs:message code="options.default.verbose" /></td>
 		<td>
 			<label for="${status.expression}"><spring:bind path="opts.verbose"></label>
 				<input type="hidden" name="_${status.expression}" value="true" />
@@ -198,10 +198,10 @@ function containsError(element) {
 <br />
 </fieldset>
 
-<fieldset><legend><spring:message code="options.login.legend" /></legend>
+<fieldset><legend><openmrs:message code="options.login.legend" /></legend>
 <table>
 	<tr>
-		<td><spring:message code="options.login.username" /></td>
+		<td><openmrs:message code="options.login.username" /></td>
 		<td>
 			<spring:bind path="opts.username">
 				<input type="text" name="${status.expression}" value="${status.value}" />
@@ -216,7 +216,7 @@ function containsError(element) {
 	</spring:nestedPath>
 	<tr><td colspan="2"><br/></td></tr>
 	<tr>
-		<td><spring:message code="options.login.password.old" /></td>
+		<td><openmrs:message code="options.login.password.old" /></td>
 		<td>
 			<spring:bind path="opts.oldPassword">
 				<input type="password" name="${status.expression}" value="${status.value}${resetPassword}" />
@@ -227,7 +227,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.login.password.new" /></td>
+		<td><openmrs:message code="options.login.password.new" /></td>
 		<td>
 			<spring:bind path="opts.newPassword">
 				<input type="password" name="${status.expression}"
@@ -236,11 +236,11 @@ function containsError(element) {
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
 			</spring:bind>
-			<spring:message code="options.login.password.hint"/>
+			<openmrs:message code="options.login.password.hint"/>
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.login.password.confirm" /></td>
+		<td><openmrs:message code="options.login.password.confirm" /></td>
 		<td>
 			<spring:bind path="opts.confirmPassword">
 				<input type="password" name="${status.expression}"
@@ -249,13 +249,13 @@ function containsError(element) {
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
 			</spring:bind>
-			<spring:message code="User.confirm.description" />
+			<openmrs:message code="User.confirm.description" />
 		</td>
 	</tr>
 	<tr><td colspan="2"><br/></td></tr>
-	<tr><td colspan="2"><spring:message code="options.login.secretQuestion.about" /></td></tr>
+	<tr><td colspan="2"><openmrs:message code="options.login.secretQuestion.about" /></td></tr>
 	<tr>
-		<td><spring:message code="options.login.password.old" /></td>
+		<td><openmrs:message code="options.login.password.old" /></td>
 		<td>
 			<spring:bind path="opts.secretQuestionPassword">
 				<input type="password" name="${status.expression}" value="${status.value}" />
@@ -266,7 +266,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.login.secretQuestionNew" /></td>
+		<td><openmrs:message code="options.login.secretQuestionNew" /></td>
 		<td>
 			<spring:bind path="opts.secretQuestionNew">
 				<input type="text" name="${status.expression}"
@@ -278,7 +278,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.login.secretAnswerNew" /></td>
+		<td><openmrs:message code="options.login.secretAnswerNew" /></td>
 		<td>
 			<spring:bind path="opts.secretAnswerNew">
 				<input type="password" name="${status.expression}"
@@ -290,7 +290,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.login.secretAnswerConfirm" /></td>
+		<td><openmrs:message code="options.login.secretAnswerConfirm" /></td>
 		<td>
 			<spring:bind path="opts.secretAnswerConfirm">
 				<input type="password" name="${status.expression}"
@@ -306,28 +306,28 @@ function containsError(element) {
 <br />
 </fieldset>
 
-<fieldset><legend><spring:message code="options.notify.legend" /></legend>
+<fieldset><legend><openmrs:message code="options.notify.legend" /></legend>
 <table>
 	<tr>
 		<td><input type="radio" name="notification" value="internalOnly" id="internalOnly" <c:if test="${opts.notification == 'internalOnly'}">checked</c:if> /></td>
-		<td><label for="internalOnly"><spring:message code="options.notify.internalOnly" /></label></td>
+		<td><label for="internalOnly"><openmrs:message code="options.notify.internalOnly" /></label></td>
 	</tr>
 	<tr>
 		<td><input type="radio" name="notification" value="internal" id="internal" <c:if test="${opts.notification == 'internal'}">checked</c:if> /></td>
-		<td><label for="internal"><spring:message code="options.notify.internal" /></label></td>
+		<td><label for="internal"><openmrs:message code="options.notify.internal" /></label></td>
 	</tr>
 	<tr>
 		<td><input type="radio" name="notification" value="internalProtected" id="internalProtected" <c:if test="${opts.notification == 'internalProtected'}">checked</c:if> /></td>
-		<td><label for="internalProtected"><spring:message code="options.notify.internalProtected" /></label></td>
+		<td><label for="internalProtected"><openmrs:message code="options.notify.internalProtected" /></label></td>
 	</tr>
 	<tr>
 		<td><input type="radio" name="notification" value="email" id="email" <c:if test="${opts.notification == 'email'}">checked</c:if> /></td>
-		<td><label for="email"><spring:message code="options.notify.email" /></label></td>
+		<td><label for="email"><openmrs:message code="options.notify.email" /></label></td>
 	</tr>
 </table>
 <table>
 	<tr>
-		<td><spring:message code="options.notify.notificationAddress" /></td>
+		<td><openmrs:message code="options.notify.notificationAddress" /></td>
 		<td>
 			<spring:bind path="opts.notificationAddress">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35"/>
@@ -344,7 +344,7 @@ function containsError(element) {
 
 </div>
 <br />
-<input type="submit" value="<spring:message code="options.save"/>">
+<input type="submit" value="<openmrs:message code="options.save"/>">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

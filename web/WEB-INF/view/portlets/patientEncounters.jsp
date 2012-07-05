@@ -16,7 +16,7 @@
 <openmrs:globalProperty key="dashboard.encounters.showEditLink" var="showEditLink" defaultValue="true"/>
 
 <div id="displayEncounterPopup">
-	<div id="displayEncounterPopupLoading"><spring:message code="general.loading"/></div>
+	<div id="displayEncounterPopupLoading"><openmrs:message code="general.loading"/></div>
 	<iframe id="displayEncounterPopupIframe" width="100%" height="100%" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"></iframe>
 </div>
 
@@ -65,7 +65,7 @@
         	],
 			"oLanguage": {
 					"sLengthMenu": 'Show <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select> entries',
-					"sZeroRecords": '<spring:message code="Encounter.no.previous"/>'
+					"sZeroRecords": '<openmrs:message code="Encounter.no.previous"/>'
 			}
 		} );
 		$j("#displayEncounterPopupIframe").load(function() { $j('#displayEncounterPopupLoading').hide(); });
@@ -93,12 +93,12 @@ Parameters
 				<openmrs:portlet url="personFormEntry" personId="${patient.personId}" id="encounterTabFormEntryPopup" parameters="showLastThreeEncounters=false|returnUrl=${model.formEntryReturnUrl}"/>
 			</div>
 
-			<button class="showFormEntryDialog" style="margin-left: 2em; margin-bottom: 0.5em"><spring:message code="FormEntry.fillOutForm"/></button>
+			<button class="showFormEntryDialog" style="margin-left: 2em; margin-bottom: 0.5em"><openmrs:message code="FormEntry.fillOutForm"/></button>
 			
 			<script type="text/javascript">
 				$j(document).ready(function() {
 					$j("#formEntryDialog").dialog({
-						title: '<spring:message code="FormEntry.fillOutForm" javaScriptEscape="true"/>',
+						title: '<openmrs:message code="FormEntry.fillOutForm" javaScriptEscape="true"/>',
 						autoOpen: false,
 						draggable: false,
 						resizable: false,
@@ -116,7 +116,7 @@ Parameters
 
 	<openmrs:hasPrivilege privilege="View Encounters">
 		<div id="encounters">
-			<div class="boxHeader${model.patientVariation}"><c:choose><c:when test="${empty model.title}"><spring:message code="Encounter.header"/></c:when><c:otherwise><spring:message code="${model.title}"/></c:otherwise></c:choose></div>
+			<div class="boxHeader${model.patientVariation}"><c:choose><c:when test="${empty model.title}"><openmrs:message code="Encounter.header"/></c:when><c:otherwise><openmrs:message code="${model.title}"/></c:otherwise></c:choose></div>
 			<div class="box${model.patientVariation}">
 				<div>
 					<table cellspacing="0" cellpadding="2" id="patientEncountersTable">
@@ -124,18 +124,18 @@ Parameters
 							<tr>
 								<th class="hidden"> hidden Encounter id </th>
 								<th class="encounterEdit" align="center"><c:if test="${showEditLink == 'true'}">
-									<spring:message code="general.edit"/>
+									<openmrs:message code="general.edit"/>
 								</c:if></th>
 								<th class="encounterView" align="center"><c:if test="${showViewLink == 'true'}">
-								 	<spring:message code="general.view"/>
+								 	<openmrs:message code="general.view"/>
 								</c:if></th>
-								<th class="encounterDatetimeHeader"> <spring:message code="Encounter.datetime"/> </th>
+								<th class="encounterDatetimeHeader"> <openmrs:message code="Encounter.datetime"/> </th>
 								<th class="hidden"> hidden Encounter.datetime </th>
-								<th class="encounterTypeHeader"> <spring:message code="Encounter.type"/>     </th>
-								<th class="encounterProviderHeader"> <spring:message code="Encounter.provider"/> </th>
-								<th class="encounterFormHeader"> <spring:message code="Encounter.form"/>     </th>
-								<th class="encounterLocationHeader"> <spring:message code="Encounter.location"/> </th>
-								<th class="encounterEntererHeader"> <spring:message code="Encounter.enterer"/>  </th>
+								<th class="encounterTypeHeader"> <openmrs:message code="Encounter.type"/>     </th>
+								<th class="encounterProviderHeader"> <openmrs:message code="Encounter.provider"/> </th>
+								<th class="encounterFormHeader"> <openmrs:message code="Encounter.form"/>     </th>
+								<th class="encounterLocationHeader"> <openmrs:message code="Encounter.location"/> </th>
+								<th class="encounterEntererHeader"> <openmrs:message code="Encounter.enterer"/>  </th>
 							</tr>
 						</thead>
 						<tbody>
@@ -155,7 +155,7 @@ Parameters
 													</c:url>
 												</c:if>
 												<a href="${editUrl}">
-													<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" />
+													<img src="${pageContext.request.contextPath}/images/edit.gif" title="<openmrs:message code="general.edit"/>" border="0" />
 												</a>
 											</openmrs:hasPrivilege>
 										</c:if>
@@ -170,7 +170,7 @@ Parameters
 												</c:url>
 											</c:if>
 											<a href="javascript:void(0)" onClick="loadUrlIntoEncounterPopup('<openmrs:format encounter="${enc}"/>', '${viewEncounterUrl}'); return false;">
-												<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" border="0" />
+												<img src="${pageContext.request.contextPath}/images/file.gif" title="<openmrs:message code="general.view"/>" border="0" />
 											</a>
 										</c:if>
 									</td>

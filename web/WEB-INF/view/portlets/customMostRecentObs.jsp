@@ -27,7 +27,7 @@
 				<td>
 					<c:set var="thisConcept" value="${model.conceptMapByStringIds[conceptId]}"/>
 					<a href="javascript:showHideDiv('newCustomObs_${conceptId}')">
-						<spring:message code="general.new"/>
+						<openmrs:message code="general.new"/>
 					</a>
 				</td>
 				<td class="dashedAndHighlighted" id="newCustomObs_${conceptId}" style="display:none">
@@ -41,10 +41,10 @@
 					</c:otherwise>
 				</c:choose>	
 				
-					<spring:message code="general.onDate"/>
+					<openmrs:message code="general.onDate"/>
 					<openmrs:fieldGen type="java.util.Date" formFieldName="date_${conceptId}" val="" parameters="noBind=true" />
-					<input type="button" value="<spring:message code="general.save"/>" onClick="handleAddCustomObs(${conceptId})"/>
-					<input type="button" value="<spring:message code="general.cancel"/>" onClick="showHideDiv('newCustomObs_${conceptId}')"/>
+					<input type="button" value="<openmrs:message code="general.save"/>" onClick="handleAddCustomObs(${conceptId})"/>
+					<input type="button" value="<openmrs:message code="general.cancel"/>" onClick="showHideDiv('newCustomObs_${conceptId}')"/>
 				</td>
 			</c:if>
 		</tr>

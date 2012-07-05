@@ -11,10 +11,10 @@
 
 </script>
 
-<h2><spring:message code="Scheduler.header" /></h2>	
+<h2><openmrs:message code="Scheduler.header" /></h2>	
 
-<a href="scheduler.form"><spring:message code="Scheduler.taskList.add" /></a> |
-<a href="scheduler.list"><spring:message code="Scheduler.taskList.refresh" /></a>
+<a href="scheduler.form"><openmrs:message code="Scheduler.taskList.add" /></a> |
+<a href="scheduler.list"><openmrs:message code="Scheduler.taskList.refresh" /></a>
 
 <br/><br/>
 
@@ -27,18 +27,18 @@
 </style>
 
 <div class="scheduler">
-	<b class="boxHeader"><spring:message code="Scheduler.taskList.title" /></b>
+	<b class="boxHeader"><openmrs:message code="Scheduler.taskList.title" /></b>
 	<div class="box">
 		<form id="schedulerListForm" method="post">
 			<div id="schedulerTaskList" align="center">
 				<table cellpadding="0" cellspacing="0" width="100%">
 					<tr class="top">
 						<th></th>
-						<th><spring:message code="Scheduler.list.status"/></th>
-						<th class="left"><spring:message code="Scheduler.list.taskClass"/></th>
-						<th class="left"><spring:message code="Scheduler.list.schedule"/></th>
-						<th class="left"><spring:message code="Scheduler.list.lastExecutionTime"/></th>
-						<th><spring:message code="Scheduler.list.startOnStartup"/></th>
+						<th><openmrs:message code="Scheduler.list.status"/></th>
+						<th class="left"><openmrs:message code="Scheduler.list.taskClass"/></th>
+						<th class="left"><openmrs:message code="Scheduler.list.schedule"/></th>
+						<th class="left"><openmrs:message code="Scheduler.list.lastExecutionTime"/></th>
+						<th><openmrs:message code="Scheduler.list.startOnStartup"/></th>
 					</tr>
 					<c:forEach var="task" items="${taskList}" varStatus="varStatus">
 					
@@ -89,9 +89,9 @@
 					</c:forEach>
 					<tr class="bottom">
 						<td colspan="6">
-							<input type="submit" value="<spring:message code="Scheduler.taskList.start"/>" name="action">
-							<input type="submit" value="<spring:message code="Scheduler.taskList.stop"/>" name="action">
-							<input type="submit" value="<spring:message code="Scheduler.taskList.delete"/>" name="action">
+							<input type="submit" value="<openmrs:message code="Scheduler.taskList.start"/>" name="action">
+							<input type="submit" value="<openmrs:message code="Scheduler.taskList.stop"/>" name="action">
+							<input type="submit" value="<openmrs:message code="Scheduler.taskList.delete"/>" name="action">
 							
 						</td>
 					</tr>

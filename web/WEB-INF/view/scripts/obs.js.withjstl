@@ -65,7 +65,7 @@
 					escapeHtml:false
 				});
 			} else {
-				var noObsMsg = "<spring:message code="ObsSearch.noneFound" />";
+				var noObsMsg = "<openmrs:message code="ObsSearch.noneFound" />";
 				var obsMsgs = [noObsMsg, ""];
 				dwr.util.addRows(obsTableToRefresh, obsMsgs, obsNoneCellFuncs, {
 					cellCreator:function(options) {

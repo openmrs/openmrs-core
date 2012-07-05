@@ -4,8 +4,8 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-		<h2><spring:message code="${errorTitle}"/></h2>
-		<b id="detail"><spring:message code="${errorMessage}"/></b>
+		<h2><openmrs:message code="${errorTitle}"/></h2>
+		<b id="detail"><openmrs:message code="${errorMessage}"/></b>
 		
 		<br/><br/>
 		
@@ -14,7 +14,7 @@
 		<input type="hidden" name="personType" value="${param.personType}" />
 		<input type="hidden" name="viewType" value="${param.viewType}" />
 		
-		<input type="button" value='<spring:message code="general.back"/>' onClick="history.go(-1)" />
+		<input type="button" value='<openmrs:message code="general.back"/>' onClick="history.go(-1)" />
 		
 		<br/><br/>
 		

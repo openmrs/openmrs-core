@@ -10,10 +10,10 @@
 
 </script>
 
-<h2><spring:message code="Hl7inQueue.header" /></h2>	
+<h2><openmrs:message code="Hl7inQueue.header" /></h2>	
 
 <div class="hl7DeletedForm" style="overflow:xscroll">
-	<b class="boxHeader"><spring:message code="Hl7inQueue.queueForm.title" /></b>
+	<b class="boxHeader"><openmrs:message code="Hl7inQueue.queueForm.title" /></b>
 	<div class="box">
 		<form id="hl7DeletedForm" method="post">
 			<div id="hl7DeletedListing">
@@ -24,9 +24,9 @@
 				<table cellpadding="5" cellspacing="0">
 					<tr>
 						<th></th>
-						<th><spring:message code="Hl7inQueue.queueForm.source.header" /></th>
-						<th><spring:message code="Hl7inQueue.queueForm.data.header" /></th>
-						<th><spring:message code="Hl7inQueue.queueForm.dateDeleted" /></th>
+						<th><openmrs:message code="Hl7inQueue.queueForm.source.header" /></th>
+						<th><openmrs:message code="Hl7inQueue.queueForm.data.header" /></th>
+						<th><openmrs:message code="Hl7inQueue.queueForm.dateDeleted" /></th>
 					</tr>
 					<c:forEach var="queue" items="${queueForm}">
 						<tr>
@@ -42,7 +42,7 @@
 					</c:forEach>
 					<tr>
 						<td colspan="6">
-							<input type="submit" value="<spring:message code="Hl7inQueue.queueForm.restore"/>" name="restore">
+							<input type="submit" value="<openmrs:message code="Hl7inQueue.queueForm.restore"/>" name="restore">
 						</td>
 					</tr>
 				</table>

@@ -81,48 +81,48 @@
 
 <c:choose>
 	<c:when test="${command.concept.conceptId != null}">
-		<h2><spring:message code="Concept.edit.title" arguments="${command.concept.name}" /></h2>
+		<h2><openmrs:message code="Concept.edit.title" arguments="${command.concept.name}" /></h2>
 	</c:when>
 	<c:otherwise>
-		<h2><spring:message code="Concept.creatingNewConcept" /></h2>
+		<h2><openmrs:message code="Concept.creatingNewConcept" /></h2>
 	</c:otherwise>
 </c:choose>
 
 <c:if test="${command.concept.conceptId != null}">
 	<form class="inlineForm" id="jumpForm" action="" method="post">
 		<input type="hidden" name="jumpAction" id="jumpAction" value="previous"/>
-		<a href="#previousConcept" id="previousConcept" valign="middle" accesskey="," onclick="return jumpToConcept('previous')"><spring:message code="general.previous"/></a>
+		<a href="#previousConcept" id="previousConcept" valign="middle" accesskey="," onclick="return jumpToConcept('previous')"><openmrs:message code="general.previous"/></a>
 			|
-		<a href="concept.htm?conceptId=${command.concept.conceptId}" id="viewConcept" accesskey="v"><spring:message code="general.view"/></a>
+		<a href="concept.htm?conceptId=${command.concept.conceptId}" id="viewConcept" accesskey="v"><openmrs:message code="general.view"/></a>
 			|
-		<a href="conceptStats.form?conceptId=${command.concept.conceptId}" id="conceptStats" accesskey="s" valign="middle"><spring:message code="Concept.stats"/></a>
+		<a href="conceptStats.form?conceptId=${command.concept.conceptId}" id="conceptStats" accesskey="s" valign="middle"><openmrs:message code="Concept.stats"/></a>
 			|
-		<a href="#nextConcept" id="nextConcept" valign="middle" accesskey="." onclick="return jumpToConcept('next')"><spring:message code="general.next"/></a>
+		<a href="#nextConcept" id="nextConcept" valign="middle" accesskey="." onclick="return jumpToConcept('next')"><openmrs:message code="general.next"/></a>
 	</form>
 </c:if>
 
 <openmrs:globalProperty key="concepts.locked" var="conceptsLocked"/>
 
 <c:if test="${conceptsLocked != 'true'}">
-	| <a href="concept.form" id="newConcept" valign="middle"><spring:message code="general.new"/></a>
+	| <a href="concept.form" id="newConcept" valign="middle"><openmrs:message code="general.new"/></a>
 </c:if>
 
 <form class="inlineForm" action="index.htm" method="get">
   &nbsp; &nbsp; 
   <input type="text" id="searchPhrase" name="phrase" size="18"> 
-  <input type="submit" class="smallButton" value="<spring:message code="general.search"/>"/>
+  <input type="submit" class="smallButton" value="<openmrs:message code="general.search"/>"/>
 </form>
 
 <br/><br/>
 <c:if test="${command.concept.retired}">
-	<div class="retiredMessage"><div><spring:message code="Concept.retiredMessage"/></div></div>
+	<div class="retiredMessage"><div><openmrs:message code="Concept.retiredMessage"/></div></div>
 </c:if>
 
 <spring:hasBindErrors name="command">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
 		</c:forEach>
 	</div>
 	<br />
@@ -131,7 +131,7 @@
 <c:if test="${command.concept.conceptId != null}">
 	<c:if test="${command.concept.conceptClass.name == 'Question' && command.concept.datatype.name == 'N/A'}">
 		<div class="highlighted">
-			<spring:message code="Concept.checkClassAndDatatype"/>
+			<openmrs:message code="Concept.checkClassAndDatatype"/>
 		</div>
 		<br/>
 	</c:if>
@@ -144,12 +144,12 @@
 <table id="conceptTable" cellpadding="2" cellspacing="0">
 
 	<tr>
-		<th><spring:message code="general.id"/></th>
+		<th><openmrs:message code="general.id"/></th>
 		<td colspan="${fn:length(locales)}">${command.concept.conceptId}</td>
 	</tr>
 
 	<tr>
-		<th><spring:message code="general.locale"/></th>
+		<th><openmrs:message code="general.locale"/></th>
 		<td style="padding-bottom: 0px; padding-left: 0px;">
 			<c:forEach items="${command.locales}" var="loc" varStatus="varStatus">
 				<a id="${loc}Tab" class="tab ${loc}" href="#select${loc.displayName}" onclick="return selectTab(this)">${loc.displayName}</a><c:if test="${varStatus.last==false}"> | </c:if>
@@ -158,8 +158,8 @@
 		</td>
 	</tr>
 	<tr class="localeSpecific">
-		<th title="<spring:message code="Concept.name.help"/>">
-			<spring:message code="general.name" />
+		<th title="<openmrs:message code="Concept.name.help"/>">
+			<openmrs:message code="general.name" />
 		</th>
 		<c:forEach items="${command.locales}" var="loc">
 			<td class="${loc}">
@@ -171,8 +171,8 @@
 		</c:forEach>
 	</tr>
 	<tr class="localeSpecific">
-		<th title="<spring:message code="Concept.shortName.help"/>">
-			<spring:message code="Concept.shortName" />
+		<th title="<openmrs:message code="Concept.shortName.help"/>">
+			<openmrs:message code="Concept.shortName" />
 		</th>
 		<c:forEach items="${command.locales}" var="loc">
 			<td class="${loc}">
@@ -184,8 +184,8 @@
 		</c:forEach>
 	</tr>
 	<tr class="localeSpecific">
-		<th valign="top" title="<spring:message code="Concept.description.help"/>">
-			<spring:message code="general.description" />
+		<th valign="top" title="<openmrs:message code="Concept.description.help"/>">
+			<openmrs:message code="general.description" />
 		</th>
 		<c:forEach items="${command.locales}" var="loc">
 			<td valign="top" class="${loc}">
@@ -198,8 +198,8 @@
 	</tr>
 	
 	<tr class="localeSpecific">
-		<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">
-			<spring:message code="Concept.synonyms" />
+		<th valign="top" title="<openmrs:message code="Concept.synonyms.help"/>">
+			<openmrs:message code="Concept.synonyms" />
 		</th>
 		<c:forEach items="${command.locales}" var="loc">
 			<td class="${loc}">
@@ -211,10 +211,10 @@
 								<input type="text" name="${status.expression}" value="${status.value}" class="largeWidth" />
 								<c:if test="${status.errorMessage != ''}">
 									<span class="error">${status.errorMessage}</span>
-									<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
+									<input type="button" value='<openmrs:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
 								</c:if>
 							</spring:bind>
-							<spring:message code="general.voided" />?
+							<openmrs:message code="general.voided" />?
 								<spring:bind path="voided">
 									<input type="hidden" name="_${status.expression}" value="" />
 									<input type="checkbox" name="${status.expression}" value="true" onclick="toggleLayer('synonymsByLocale[${loc}][${varStatus.index}].voidedInfo')" <c:if test="${status.value}">checked=checked</c:if>/>
@@ -226,7 +226,7 @@
 									</spring:bind>
 									<spring:bind path="voidedBy">
 										<c:if test="${status.value != null}">
-											<spring:message code="general.voidedBy" />:
+											<openmrs:message code="general.voidedBy" />:
 											${status.value.personName} -
 											<openmrs:formatDate date="${command.synonymsByLocale[loc][varStatus.index].dateVoided}" type="long" />
 										</c:if>
@@ -237,16 +237,16 @@
 				</c:forEach>
 				<div id="newConceptSynonym-${loc}" style="display: none">
 					<input type="text" name="[x].name" value="" class="largeWidth" />
-					<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
+					<input type="button" value='<openmrs:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
 				</div>
-				<input type="button" value='<spring:message code="Concept.synonym.add"/>' class="smallButton" onClick="cloneElement('newConceptSynonym-${loc}', ${fn:length(command.synonymsByLocale[loc])}, 'synonymsByLocale[${loc}]')" />
+				<input type="button" value='<openmrs:message code="Concept.synonym.add"/>' class="smallButton" onClick="cloneElement('newConceptSynonym-${loc}', ${fn:length(command.synonymsByLocale[loc])}, 'synonymsByLocale[${loc}]')" />
 			</td>
 			
 		</c:forEach>
 	</tr>
 	<tr>
-		<th title="<spring:message code="Concept.conceptClass.help"/>">
-			<spring:message code="Concept.conceptClass" />
+		<th title="<openmrs:message code="Concept.conceptClass.help"/>">
+			<openmrs:message code="Concept.conceptClass" />
 		</th>
 		<td valign="top">
 			<spring:bind path="command.concept.conceptClass">
@@ -262,7 +262,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="Concept.set"/></th>
+		<th valign="top"><openmrs:message code="Concept.set"/></th>
 		<td>
 			<spring:bind path="command.concept.set">
 				<input type="hidden" name="_${status.expression}" value=""/>
@@ -272,7 +272,7 @@
 		</td>
 	</tr>
 	<tr id="conceptSetRow">
-		<th valign="top"><spring:message code="Concept.conceptSets"/></th>
+		<th valign="top"><openmrs:message code="Concept.conceptSets"/></th>
 		<td valign="top">
 			<spring:bind path="command.concept.conceptSets">
 				<input type="hidden" name="${status.expression}" id="conceptSets" size="40" value='<c:forEach items="${command.concept.conceptSets}" var="set">${set.concept.conceptId} </c:forEach>' />
@@ -287,18 +287,18 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						<span dojoType="ConceptSearch" widgetId="sSearch"></span><span dojoType="OpenmrsPopup" searchWidget="sSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.add"/>' showConceptIds="true"></span>
-						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets', ' ');" style="display: block" />
-						<input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('conceptSetsNames', 'conceptSets');" style="display: block" />
-						<input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('conceptSetsNames', 'conceptSets');" style="display: block" />
+						<span dojoType="ConceptSearch" widgetId="sSearch"></span><span dojoType="OpenmrsPopup" searchWidget="sSearch" searchTitle='<openmrs:message code="Concept.find"/>' changeButtonValue='<openmrs:message code="general.add"/>' showConceptIds="true"></span>
+						<input type="button" value="<openmrs:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets', ' ');" style="display: block" />
+						<input type="button" value="<openmrs:message code="general.move_up"/>" class="smallButton" onClick="moveUp('conceptSetsNames', 'conceptSets');" style="display: block" />
+						<input type="button" value="<openmrs:message code="general.move_down"/>" class="smallButton" onClick="moveDown('conceptSetsNames', 'conceptSets');" style="display: block" />
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 	<tr>
-		<th title="<spring:message code="Concept.datatype.help"/>">
-			<spring:message code="Concept.datatype" />
+		<th title="<openmrs:message code="Concept.datatype.help"/>">
+			<openmrs:message code="Concept.datatype" />
 		</th>
 		<td valign="top">
 			<spring:bind path="command.concept.datatype">
@@ -313,7 +313,7 @@
 		</td>
 	</tr>
 	<tr id="codedDatatypeRow">
-		<th valign="top"><spring:message code="Concept.answers"/></th>
+		<th valign="top"><openmrs:message code="Concept.answers"/></th>
 		<td>
 			<spring:bind path="command.concept.answers">
 				<input type="hidden" name="${status.expression}" id="answerIds" size="40" value='<c:forEach items="${command.conceptAnswers}" var="answer">${answer.key} </c:forEach>' />
@@ -329,19 +329,19 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						<span dojoType="ConceptSearch" widgetId="aSearch" includeDrugConcepts="true"></span><span dojoType="OpenmrsPopup" searchWidget="aSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.add"/>' showConceptIds="true" showIfHiding="true"></span>
-						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds', ' ');"/><br/>
+						<span dojoType="ConceptSearch" widgetId="aSearch" includeDrugConcepts="true"></span><span dojoType="OpenmrsPopup" searchWidget="aSearch" searchTitle='<openmrs:message code="Concept.find"/>' changeButtonValue='<openmrs:message code="general.add"/>' showConceptIds="true" showIfHiding="true"></span>
+						<input type="button" value="<openmrs:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds', ' ');"/><br/>
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 	<tr id="numericDatatypeRow">
-		<th valign="top"><spring:message code="ConceptNumeric.name"/></th>
+		<th valign="top"><openmrs:message code="ConceptNumeric.name"/></th>
 		<td>
 			<table border="0">
 				<tr>
-					<th valign="middle"><spring:message code="ConceptNumeric.absoluteHigh"/></th>
+					<th valign="middle"><openmrs:message code="ConceptNumeric.absoluteHigh"/></th>
 					<td valign="middle">
 						<spring:bind path="command.hiAbsolute">
 							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
@@ -350,7 +350,7 @@
 					</td>
 				</tr>
 				<tr>
-					<th valign="middle"><spring:message code="ConceptNumeric.criticalHigh"/></th>
+					<th valign="middle"><openmrs:message code="ConceptNumeric.criticalHigh"/></th>
 					<td valign="middle">
 						<spring:bind path="command.hiCritical">
 							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
@@ -359,7 +359,7 @@
 					</td>
 				</tr>
 				<tr>
-					<th valign="middle"><spring:message code="ConceptNumeric.normalHigh"/></th>
+					<th valign="middle"><openmrs:message code="ConceptNumeric.normalHigh"/></th>
 					<td valign="middle">
 						<spring:bind path="command.hiNormal">
 							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
@@ -368,7 +368,7 @@
 					</td>
 				</tr>
 				<tr>
-					<th valign="middle"><spring:message code="ConceptNumeric.normalLow"/></th>
+					<th valign="middle"><openmrs:message code="ConceptNumeric.normalLow"/></th>
 					<td valign="middle">
 						<spring:bind path="command.lowNormal">
 							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
@@ -377,7 +377,7 @@
 					</td>
 				</tr>
 				<tr>
-					<th valign="middle"><spring:message code="ConceptNumeric.criticalLow"/></th>
+					<th valign="middle"><openmrs:message code="ConceptNumeric.criticalLow"/></th>
 					<td valign="middle">
 						<spring:bind path="command.lowCritical">
 							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
@@ -386,7 +386,7 @@
 					</td>
 				</tr>
 				<tr>
-					<th valign="middle"><spring:message code="ConceptNumeric.absoluteLow"/></th>
+					<th valign="middle"><openmrs:message code="ConceptNumeric.absoluteLow"/></th>
 					<td valign="middle">
 						<spring:bind path="command.lowAbsolute">
 							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
@@ -396,11 +396,11 @@
 				</tr>
 				<tr>
 					<td></td>
-					<td colspan="2"><small><em>(<spring:message code="ConceptNumeric.inclusive"/>)</em></small>
+					<td colspan="2"><small><em>(<openmrs:message code="ConceptNumeric.inclusive"/>)</em></small>
 					</td>
 				</tr>
 				<tr>
-					<th><spring:message code="ConceptNumeric.units"/></th>
+					<th><openmrs:message code="ConceptNumeric.units"/></th>
 					<td colspan="2">
 						<spring:bind path="command.units">
 							<input type="text" name="${status.expression}" value="${status.value}" class="mediumWidth" />
@@ -409,7 +409,7 @@
 					</td>
 				</tr>
 				<tr>
-					<th><spring:message code="ConceptNumeric.precise"/></th>
+					<th><openmrs:message code="ConceptNumeric.precise"/></th>
 					<td colspan="2">
 						<spring:bind path="command.precise">
 							<input type="hidden" name="_${status.expression}" value=""/>
@@ -422,11 +422,11 @@
 		</td>
 	</tr>
     <tr id="complexDatatypeRow">
-        <th valign="top"><spring:message code="ConceptComplex.handler"/></th>
+        <th valign="top"><openmrs:message code="ConceptComplex.handler"/></th>
         <td>
 			<spring:bind path="command.handlerKey">
 				<select name="${status.expression}"> 
-					<option value=""><spring:message code="general.select"/>...</option>
+					<option value=""><openmrs:message code="general.select"/>...</option>
 					<c:forEach var="handler" items="${handlers}">
 						<option value="${handler.key}" <c:if test="${handler.key == status.value}">selected="selected"</c:if>>
 					        ${handler.key}
@@ -441,7 +441,7 @@
              <c:forEach var="h" items="${handlers }">
                 <tr name="handlerRow" id="handler_${h.key}">
                     <th >
-                        <spring:message code="general.class"/>
+                        <openmrs:message code="general.class"/>
                     </th>
                     <td>
                         ${h.value['class'].name }
@@ -453,8 +453,8 @@
         </td>
     </tr>
 	<tr id="conceptMapRow">
-		<th valign="top" title="<spring:message code="Concept.mappings.help"/>">
-			<spring:message code="Concept.mappings"/>
+		<th valign="top" title="<openmrs:message code="Concept.mappings.help"/>">
+			<openmrs:message code="Concept.mappings"/>
 		</th>
 		<td>
 			<c:forEach var="mapping" items="${command.mappings}" varStatus="mapStatus">
@@ -474,7 +474,7 @@
 							</select>
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
-						<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
+						<input type="button" value='<openmrs:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
 						<br/>
 					</span>
 					<input type="hidden" name="_mappings[${mapStatus.index}].sourceCode" value="" />
@@ -489,15 +489,15 @@
 						</option>
 					</openmrs:forEachRecord>
 				</select>
-				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
+				<input type="button" value='<openmrs:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
 				<br/>
 			</span>
-			<input type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" onClick="cloneElement('newConceptMapping', ${fn:length(command.mappings)}, 'mappings')" />
+			<input type="button" value='<openmrs:message code="Concept.mapping.add"/>' class="smallButton" onClick="cloneElement('newConceptMapping', ${fn:length(command.mappings)}, 'mappings')" />
 			<br/>
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="Concept.version" /></th>
+		<th><openmrs:message code="Concept.version" /></th>
 		<td>
 			<spring:bind path="command.concept.version">
 				<input class="smallWidth" type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
@@ -506,7 +506,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="general.retired" /></th>
+		<th><openmrs:message code="general.retired" /></th>
 		<td>
 			<spring:bind path="command.concept.retired">
 				<input type="hidden" name="_${status.expression}" value="">
@@ -517,7 +517,7 @@
 	</tr>
 	<c:if test="${command.concept.creator != null}">
 		<tr>
-			<th><spring:message code="general.createdBy" /></th>
+			<th><openmrs:message code="general.createdBy" /></th>
 			<td>
 				${command.concept.creator.personName} -
 				<openmrs:formatDate date="${command.concept.dateCreated}" type="long" />
@@ -526,7 +526,7 @@
 	</c:if>
 	<c:if test="${command.concept.changedBy != null}">
 		<tr>
-			<th><spring:message code="general.changedBy" /></th>
+			<th><openmrs:message code="general.changedBy" /></th>
 			<td>
 				${command.concept.changedBy.personName} -
 				<openmrs:formatDate date="${command.concept.dateChanged}" type="long" />
@@ -538,7 +538,7 @@
 	
 	<c:if test="${fn:length(command.questionsAnswered) > 0}">
 		<tr>
-			<th valign="top"><spring:message code="dictionary.questionsAnswered" /></th>
+			<th valign="top"><openmrs:message code="dictionary.questionsAnswered" /></th>
 			<td>
 				<c:forEach items="${command.questionsAnswered}" var="question">
 					<a href="concept.htm?conceptId=${question.conceptId}"><openmrs:format concept="${question}" /></a><br/>
@@ -549,7 +549,7 @@
 	
 	<c:if test="${fn:length(command.containedInSets) > 0}">
 		<tr>
-			<th valign="top"><spring:message code="dictionary.containedInSets" /></th>
+			<th valign="top"><openmrs:message code="dictionary.containedInSets" /></th>
 			<td>
 				<c:forEach items="${command.containedInSets}" var="set">
 					<a href="concept.htm?conceptId=${set.conceptSet.conceptId}"><openmrs:format concept="${set.conceptSet}" /></a><br/>
@@ -560,7 +560,7 @@
 	
 	<c:if test="${fn:length(command.formsInUse) > 0}">
 		<tr>
-			<th valign="top"><spring:message code="dictionary.forms" /></th>
+			<th valign="top"><openmrs:message code="dictionary.forms" /></th>
 			<td>
 				<c:forEach items="${command.formsInUse}" var="form">
 					<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}</a><br/>
@@ -573,7 +573,7 @@
 	
 	<tr>	
 		<td valign="top">
-			<b><spring:message code="Concept.resources" /></b>
+			<b><openmrs:message code="Concept.resources" /></b>
 		</td>
 		<td>
 			<a href="index.htm?phrase=<openmrs:format concept="${command.concept}" />"
@@ -589,7 +589,7 @@
 			<a href="http://search.atomz.com/search/?sp-a=sp1001878c&sp-q=<openmrs:format concept="${command.concept}" />"
 			       target="_blank" onclick="addName(this)">Lab Tests Online</a><br/>
 			<a href="http://en.wikipedia.org/wiki/<openmrs:format concept="${command.concept}" />"
-			       target="_blank"><spring:message code="Concept.wikipedia" /></a>
+			       target="_blank"><openmrs:message code="Concept.wikipedia" /></a>
 		</td>
 	</tr>
 	
@@ -597,12 +597,12 @@
 
 <div id="saveDeleteButtons" style="margin-top: 15px">
 <c:if test="${conceptsLocked != 'true'}">	
-	<input type="submit" name="action" value="<spring:message code="Concept.save"/>" onMouseUp="removeHiddenRows()"/>
+	<input type="submit" name="action" value="<openmrs:message code="Concept.save"/>" onMouseUp="removeHiddenRows()"/>
 	
 	<c:if test="${command.concept.conceptId != null}">
 		<openmrs:hasPrivilege privilege="Delete Concepts">
 			 &nbsp; &nbsp; &nbsp;
-			<input type="submit" name="action" value="<spring:message code="Concept.delete"/>" onclick="return confirm('<spring:message code="Concept.confirmDelete"/>')"/>
+			<input type="submit" name="action" value="<openmrs:message code="Concept.delete"/>" onclick="return confirm('<openmrs:message code="Concept.confirmDelete"/>')"/>
 		</openmrs:hasPrivilege>
 	</c:if>
 </c:if>

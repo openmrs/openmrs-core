@@ -10,10 +10,10 @@
 		<h2>
 			<c:choose>
 				<c:when test="${param.personType != null}">
-					<spring:message code="Person.add.${param.personType}" />
+					<openmrs:message code="Person.add.${param.personType}" />
 				</c:when>
 				<c:otherwise>
-					<spring:message code="Person.add"/>
+					<openmrs:message code="Person.add"/>
 				</c:otherwise>
 			</c:choose>
 		</h2>
@@ -69,8 +69,8 @@
 			}
 		</style>
 		
-		<h2><spring:message code="Person.search.similarPerson"/></h2>
-		<b id="similarPeopleInstructions"><spring:message code="Person.search.similarPersonInstructions"/></b>
+		<h2><openmrs:message code="Person.search.similarPerson"/></h2>
+		<b id="similarPeopleInstructions"><openmrs:message code="Person.search.similarPersonInstructions"/></b>
 		
 		<br/><br/>
 		
@@ -81,9 +81,9 @@
 		<input type="hidden" name="personType" value="${param.personType}" />
 		<input type="hidden" name="viewType" value="${param.viewType}" />
 		
-		<input type="submit" value='<spring:message code="Person.search.similarPersonNotOnList"/>' />
+		<input type="submit" value='<openmrs:message code="Person.search.similarPersonNotOnList"/>' />
 		&nbsp;
-		<input type="button" value='<spring:message code="general.back"/>' onClick="history.go(-1)" />
+		<input type="button" value='<openmrs:message code="general.back"/>' onClick="history.go(-1)" />
 		
 		<br/><br/>
 		

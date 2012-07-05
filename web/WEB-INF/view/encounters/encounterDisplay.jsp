@@ -26,8 +26,8 @@
 
 <openmrs:extensionPoint pointId="org.openmrs.encounters.encounterListTop" type="html" parameters="encounterId=${model.encounter.encounterId}">
 	<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-		<div class="boxHeader" style="font-weight: bold;"><spring:message code="${extension.title}" /></div>
-		<div class="box" style="padding: 0px 0px 5px;"><spring:message code="${extension.content}" />
+		<div class="boxHeader" style="font-weight: bold;"><openmrs:message code="${extension.title}" /></div>
+		<div class="box" style="padding: 0px 0px 5px;"><openmrs:message code="${extension.content}" />
 			<c:if test="${extension.portletUrl != null}">
 				<openmrs:portlet url="${extension.portletUrl}" moduleId="${extension.moduleId}" id="${extension.portletUrl}" encounterId="${model.encounter.encounterId}" parameters="allowEdits=true"/>
 			</c:if>
@@ -39,7 +39,7 @@
 
 <div style="float: right">
 	<openmrs:hasPrivilege privilege="Edit Encounters">
-		<a href="javascript:void(0)" onClick="window.parent.location = '${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${model.encounter.encounterId}'; return false;">[ <spring:message code="Encounter.edit"/> ]</a>
+		<a href="javascript:void(0)" onClick="window.parent.location = '${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${model.encounter.encounterId}'; return false;">[ <openmrs:message code="Encounter.edit"/> ]</a>
 	</openmrs:hasPrivilege>
 </div>
 
@@ -49,7 +49,7 @@
 	<div id="page_${pageNumber}">
 		<table class="encounterFormTable" cellpadding="0" cellspacing="0">
 			<c:if test="${model.usePages}">
-				<tr><td align="center" colspan="2" style="background-color: black; color: white;"><spring:message code="Encounter.page" arguments="${pageNumber}"/></td></tr>
+				<tr><td align="center" colspan="2" style="background-color: black; color: white;"><openmrs:message code="Encounter.page" arguments="${pageNumber}"/></td></tr>
 			</c:if>
 		
 		<%-- The alternating odd/even status of the current row --%>	
@@ -104,7 +104,7 @@
 											<span class="encounterViewObsValue"><openmrs:format obsValue="${obs}" /></span>
 											<c:if test="${not empty obs.obsDatetime && obs.obsDatetime != model.encounter.encounterDatetime}">
 												<span class="encounterViewObsDatetime">
-													<spring:message code="general.onDate"/>
+													<openmrs:message code="general.onDate"/>
 													<openmrs:formatDate date="${obs.obsDatetime}"/>
 												</span>
 											</c:if>

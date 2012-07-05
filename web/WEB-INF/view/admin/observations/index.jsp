@@ -5,10 +5,10 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Obs.manage.title"/></h2>
+<h2><openmrs:message code="Obs.manage.title"/></h2>
 
 <openmrs:hasPrivilege  privilege="Add Observations">
-<a href="obs.form"><spring:message code="Obs.add"/></a>
+<a href="obs.form"><openmrs:message code="Obs.add"/></a>
 
 <br/>
 <br/>
@@ -17,9 +17,9 @@
 <openmrs:portlet url="findObservation" size="full" />
 
 <%--
-<a href="${pageContext.request.contextPath}/admin/encounters/"><spring:message code="Obs.edit"/></a>
+<a href="${pageContext.request.contextPath}/admin/encounters/"><openmrs:message code="Obs.edit"/></a>
 -
-<spring:message code="Obs.edit.description"/>
+<openmrs:message code="Obs.edit.description"/>
 --%>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

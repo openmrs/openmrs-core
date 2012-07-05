@@ -23,7 +23,7 @@
  }
 </style>
 
-<h2><spring:message code="ServerLog.view.title"/></h2>	
+<h2><openmrs:message code="ServerLog.view.title"/></h2>	
 
 <c:choose>
 	<c:when test="${empty logLines}">

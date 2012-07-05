@@ -42,23 +42,23 @@
 	}
 </style>
 
-<h2><spring:message code="ConceptDrug.manage.title"/></h2>
+<h2><openmrs:message code="ConceptDrug.manage.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.afterTitle" type="html" parameters="drugId=${drug.drugId}" />
 
 <c:if test="${drug.retired}">
-	<div class="retiredMessage"><div><spring:message code="ConceptDrug.retiredMessage"/></div></div>
+	<div class="retiredMessage"><div><openmrs:message code="ConceptDrug.retiredMessage"/></div></div>
 </c:if>
 
 <spring:hasBindErrors name="drug">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
 <form method="post">
 <table cellpadding="3" cellspacing="0" id="table">
 	<tr>
-		<th><spring:message code="general.name"/></th>
+		<th><openmrs:message code="general.name"/></th>
 		<td>
 			<spring:bind path="drug.name">			
 				<input type="text" name="${status.expression}" size="40" 
@@ -68,17 +68,17 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="ConceptDrug.concept"/></th>
+		<th><openmrs:message code="ConceptDrug.concept"/></th>
 		<td>
 			<spring:bind path="drug.concept">
 				<div dojoType="ConceptSearch" widgetId="conceptSearch" conceptId="${status.value.conceptId}" showVerboseListing="true" includeClasses="Drug;"></div>
-				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptId" hiddenInputId="concept" searchWidget="conceptSearch" searchTitle='<spring:message code="ConceptDrug.find"/>'></div>
+				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptId" hiddenInputId="concept" searchWidget="conceptSearch" searchTitle='<openmrs:message code="ConceptDrug.find"/>'></div>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>				
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="ConceptDrug.combination"/></th>
+		<th><openmrs:message code="ConceptDrug.combination"/></th>
 		<td>
 			<spring:bind path="drug.combination">	
 				<input type="hidden" name="_${status.expression}" value=""/>		
@@ -89,7 +89,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="ConceptDrug.doseStrength"/></th>
+		<th><openmrs:message code="ConceptDrug.doseStrength"/></th>
 		<td>
 			<spring:bind path="drug.doseStrength">			
 				<input type="text" name="${status.expression}" size="10" 
@@ -99,7 +99,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="ConceptDrug.units"/></th>
+		<th><openmrs:message code="ConceptDrug.units"/></th>
 		<td>
 			<spring:bind path="drug.units">			
 				<input type="text" name="${status.expression}" size="10" 
@@ -109,7 +109,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="ConceptDrug.minimumDailyDose"/></th>
+		<th><openmrs:message code="ConceptDrug.minimumDailyDose"/></th>
 		<td>
 			<spring:bind path="drug.minimumDailyDose">			
 				<input type="text" name="${status.expression}" size="10" 
@@ -119,7 +119,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="ConceptDrug.maximumDailyDose"/></th>
+		<th><openmrs:message code="ConceptDrug.maximumDailyDose"/></th>
 		<td>
 			<spring:bind path="drug.maximumDailyDose">
 				<input type="text" name="${status.expression}" size="10" 
@@ -129,7 +129,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="general.retired"/></th>
+		<th><openmrs:message code="general.retired"/></th>
 		<td>
 			<spring:bind path="drug.retired">
 				<input type="hidden" name="_${status.expression}" value=""/>		
@@ -143,7 +143,7 @@
 		</td>
 	</tr>
 	<tr id="retiredReasonRow">
-		<th><spring:message code="general.retiredReason"/></th>
+		<th><openmrs:message code="general.retiredReason"/></th>
 		<td>
 			<spring:bind path="drug.retireReason">
 				<input type="text" name="${status.expression}" id="retiredReason" value="${status.value}" />
@@ -153,7 +153,7 @@
 	</tr>
 	<c:if test="${drug.retired && drug.retiredBy != null}">
 		<tr>
-			<th><spring:message code="general.retiredBy" /></th>
+			<th><openmrs:message code="general.retiredBy" /></th>
 			<td>
 				<a href="#View User" onclick="return gotoUser(null, '${drug.retiredBy.userId}')">${drug.retiredBy.personName}</a> -
 				<openmrs:formatDate date="${drug.dateRetired}" type="medium" />
@@ -162,7 +162,7 @@
 	</c:if>
 	<c:if test="${drug.creator != null}">
 		<tr>
-			<th><spring:message code="general.createdBy" /></th>
+			<th><openmrs:message code="general.createdBy" /></th>
 			<td>
 				<a href="#View User" onclick="return gotoUser(null, '${drug.creator.userId}')">${drug.creator.personName}</a> -
 				<openmrs:formatDate date="${drug.dateCreated}" type="medium" />
@@ -175,9 +175,9 @@
 
 <br />
 <input type="hidden" name="phrase" value='<request:parameter name="phrase" />'/>
-<input type="submit" value='<spring:message code="ConceptDrug.save"/>'>
+<input type="submit" value='<openmrs:message code="ConceptDrug.save"/>'>
 &nbsp;
-<input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1); return; document.location='index.htm?autoJump=false&phrase=<request:parameter name="phrase"/>'">
+<input type="button" value='<openmrs:message code="general.cancel"/>' onclick="history.go(-1); return; document.location='index.htm?autoJump=false&phrase=<request:parameter name="phrase"/>'">
 </form>
 
 <script type="text/javascript">

@@ -5,10 +5,10 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Hl7inError.header" /></h2>	
+<h2><openmrs:message code="Hl7inError.header" /></h2>	
 
 <div class="hl7inErrorList" style="overflow:xscroll">
-	<b class="boxHeader"><spring:message code="Hl7inError.errorList.title" /></b>
+	<b class="boxHeader"><openmrs:message code="Hl7inError.errorList.title" /></b>
 	<div class="box">
 		<form id="hl7inErrorListForm" method="post">
 			<div id="hl7ErrorListing">
@@ -19,11 +19,11 @@
 				<table cellpadding="5" cellspacing="0">
 					<tr>
 						<th></th>
-						<th><spring:message code="Hl7inError.errorList.source.header" /></th>
-						<th><spring:message code="Hl7inError.errorList.data.header" /></th>
-						<th><spring:message code="Hl7inError.errorList.error.header" /></th>
-						<th><spring:message code="Hl7inError.errorList.errorDetails.header" /></th>
-						<th><spring:message code="Hl7inError.errorList.dateCreated.header" /></th>
+						<th><openmrs:message code="Hl7inError.errorList.source.header" /></th>
+						<th><openmrs:message code="Hl7inError.errorList.data.header" /></th>
+						<th><openmrs:message code="Hl7inError.errorList.error.header" /></th>
+						<th><openmrs:message code="Hl7inError.errorList.errorDetails.header" /></th>
+						<th><openmrs:message code="Hl7inError.errorList.dateCreated.header" /></th>
 					</tr>
 					<c:forEach var="error" items="${errorList}">
 						<tr>
@@ -41,7 +41,7 @@
 					</c:forEach>
 					<tr>
 						<td colspan="6">
-							<input type="submit" value="<spring:message code="Hl7inError.errorList.restore"/>" name="restore">
+							<input type="submit" value="<openmrs:message code="Hl7inError.errorList.restore"/>" name="restore">
 						</td>
 					</tr>
 				</table>

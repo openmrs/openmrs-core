@@ -6,20 +6,20 @@
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>
 
-<h2><spring:message code="DatabaseChangesInfo.title" /></h2>
+<h2><openmrs:message code="DatabaseChangesInfo.title" /></h2>
 
-<spring:message code="DatabaseChangesInfo.help" />
+<openmrs:message code="DatabaseChangesInfo.help" />
 <br/>
 <br/>
 
-<b class="boxHeader"><spring:message code="DatabaseChangesInfo.header"/></b>
+<b class="boxHeader"><openmrs:message code="DatabaseChangesInfo.header"/></b>
 <table cellpadding="4" cellspacing="0" border="0" class="box">
 	<tr>
-		<th style="white-space: nowrap"><spring:message code="DatabaseChangesInfo.runDate" /></th>
-		<th><spring:message code="DatabaseChangesInfo.comments" /></th>
-		<th><spring:message code="general.description" /></th>
-		<th><spring:message code="DatabaseChangesInfo.runStatus" /></th>
-		<th><spring:message code="general.author" /></th>
+		<th style="white-space: nowrap"><openmrs:message code="DatabaseChangesInfo.runDate" /></th>
+		<th><openmrs:message code="DatabaseChangesInfo.comments" /></th>
+		<th><openmrs:message code="general.description" /></th>
+		<th><openmrs:message code="DatabaseChangesInfo.runStatus" /></th>
+		<th><openmrs:message code="general.author" /></th>
 	</tr>
 	<c:forEach items="${databaseChanges}" var="databaseChange" varStatus="varStatus">
 		<tr class="<c:choose><c:when test="${varStatus.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">

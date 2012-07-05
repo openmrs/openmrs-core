@@ -5,18 +5,18 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Privilege.manage.title"/></h2>	
+<h2><openmrs:message code="Privilege.manage.title"/></h2>	
 
-<a href="privilege.form"><spring:message code="Privilege.add"/></a>
+<a href="privilege.form"><openmrs:message code="Privilege.add"/></a>
 <br/><br/>
 
-<b class="boxHeader"><spring:message code="Privilege.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="Privilege.list.title"/></b>
 <form method="post" class="box">
 	<table>
 		<tr>
 			<th> </th>
-			<th> <spring:message code="Privilege.privilege"/> </th>
-			<th> <spring:message code="general.description"/> </th>
+			<th> <openmrs:message code="Privilege.privilege"/> </th>
+			<th> <openmrs:message code="general.description"/> </th>
 		</tr>
 	<c:forEach var="map" items="${privilegeList}">
 		<tr>
@@ -37,7 +37,7 @@
 		</tr>
 	</c:forEach>
 	</table>
-	<input type="submit" value="<spring:message code="Privilege.delete"/>">
+	<input type="submit" value="<openmrs:message code="Privilege.delete"/>">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -4,9 +4,9 @@
 	<c:choose>
 		<c:when test="${model.size == 'compact'}">
 			<form method=get action="${model.postURL}">
-				<spring:message code="Navigation.findPatient" />
+				<openmrs:message code="Navigation.findPatient" />
 				<input type="text" name="phrase" value="<request:parameter name="phrase"/>"/>
-				<input type="submit" value="<spring:message code="general.searchButton" />" />
+				<input type="submit" value="<openmrs:message code="general.searchButton" />" />
 			</form>
 		</c:when>
 		<c:when test="${model.size == 'slowConnection'}">
@@ -18,11 +18,11 @@
 			<openmrs:htmlInclude file="/dwr/util.js" ></openmrs:htmlInclude>
 			
 			<div id="findPatient">
-				<b class="boxHeader"><spring:message code="Patient.find"/></b>
+				<b class="boxHeader"><openmrs:message code="Patient.find"/></b>
 				<div class="box">
 					<form>
 						<span style="white-space: nowrap">
-							<span><spring:message code="PatientSearch.searchOnName"/></span>
+							<span><openmrs:message code="PatientSearch.searchOnName"/></span>
 							<input type="text" value="" id="pSearch" name="pSearch" autocomplete="off" />
 							<input type="button" id="searchButton" value="Search" />
 						</span>
@@ -157,7 +157,7 @@
 					);
 					
 					<c:if test="${empty hideAddNewPatient}">
-						searchWidget.addPatientLink = '<a href="#" onClick="return jumpToAddNew()"><spring:message javaScriptEscape="true" code="Patient.addNew"/></a>';
+						searchWidget.addPatientLink = '<a href="#" onClick="return jumpToAddNew()"><openmrs:message javaScriptEscape="true" code="Patient.addNew"/></a>';
 					</c:if>
 					searchWidget.inputNode.select();
 					changeClassProperty("description", "display", "none");
@@ -166,15 +166,15 @@
 			</script>
 			
 			<div id="findPatient">
-				<b class="boxHeader"><spring:message code="Patient.find"/></b>
+				<b class="boxHeader"><openmrs:message code="Patient.find"/></b>
 				<div class="box">
-					<div dojoType="PatientSearch" widgetId="pSearch" <c:if test="${model.showIncludeVoided == 'true'}">showIncludeVoided="true"</c:if> searchLabel="<spring:message code="Patient.searchBox" htmlEscape="true"/>" showVerboseListing="true" patientId='<request:parameter name="patientId"/>' searchPhrase='<request:parameter name="phrase"/>' <c:if test="${not empty hideAddNewPatient}">showAddPatientLink='false'</c:if>></div>
+					<div dojoType="PatientSearch" widgetId="pSearch" <c:if test="${model.showIncludeVoided == 'true'}">showIncludeVoided="true"</c:if> searchLabel="<openmrs:message code="Patient.searchBox" htmlEscape="true"/>" showVerboseListing="true" patientId='<request:parameter name="patientId"/>' searchPhrase='<request:parameter name="phrase"/>' <c:if test="${not empty hideAddNewPatient}">showAddPatientLink='false'</c:if>></div>
 				</div>
 			</div>
 			
 			<c:if test="${empty model.hideAddNewPatient}">
 				<openmrs:hasPrivilege privilege="Add Patients">
-					<br/> &nbsp; <spring:message code="general.or"/><br/><br/>
+					<br/> &nbsp; <openmrs:message code="general.or"/><br/><br/>
 					<openmrs:portlet id="addPersonForm" url="addPersonForm" parameters="personType=patient|postURL=admin/person/addPerson.htm|viewType=${model.viewType}" />
 				</openmrs:hasPrivilege>
 				
@@ -190,7 +190,7 @@
 
 		</c:when>
 		<c:otherwise>
-			<spring:message code="Portlet.findPatient.error" arguments="${model.size}"/>
+			<openmrs:message code="Portlet.findPatient.error" arguments="${model.size}"/>
 		</c:otherwise>
 	</c:choose>
 
@@ -198,7 +198,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.findPatientPortlet.linksAtBottom" type="html"
 		requiredClass="org.openmrs.module.web.extension.LinkExt">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-			<a href="${extension.url}"><spring:message code="${extension.label}"/></a>
+			<a href="${extension.url}"><openmrs:message code="${extension.label}"/></a>
 			<br/>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>
@@ -208,7 +208,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.findPatientPortlet.linksAtBottom" type="html"
 		requiredClass="org.openmrs.module.web.extension.LinkExt">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-			<a href="${extension.url}"><spring:message code="${extension.label}"/></a>
+			<a href="${extension.url}"><openmrs:message code="${extension.label}"/></a>
 			<br/>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>

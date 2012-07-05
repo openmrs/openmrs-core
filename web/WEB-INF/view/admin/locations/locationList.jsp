@@ -14,9 +14,9 @@
 	})
 </script>
 
-<h2><spring:message code="Location.manage.title"/></h2>
+<h2><openmrs:message code="Location.manage.title"/></h2>
 
-<a href="location.form"><spring:message code="Location.add"/></a>
+<a href="location.form"><openmrs:message code="Location.add"/></a>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationList.afterAdd" type="html" />
 
@@ -27,17 +27,17 @@
 	<a style="display: block; float: right"
 		href="#"
 		onClick="return toggleRowVisibilityForClass('locationTable', 'retired', false);">
-		<spring:message code="general.toggle.retired" />
+		<openmrs:message code="general.toggle.retired" />
 	</a>
-	<spring:message code="Location.list.title"/>
+	<openmrs:message code="Location.list.title"/>
 </b>
 
 <form method="post" class="box">
 	<table id="locationTable">
 		<tr>
 			<th> </th>
-			<th> <spring:message code="general.name" /> </th>
-			<th> <spring:message code="general.description" /> </th>
+			<th> <openmrs:message code="general.name" /> </th>
+			<th> <openmrs:message code="general.description" /> </th>
 		</tr>
 		<c:forEach var="location" items="${locationList}">
 			<tr <c:if test="${location.retired}">class="retired"</c:if>>
@@ -50,7 +50,7 @@
 		</c:forEach>
 	</table>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationList.inForm" type="html" />
-	<input type="submit" value="<spring:message code="Location.delete"/>" name="action">
+	<input type="submit" value="<openmrs:message code="Location.delete"/>" name="action">
 </form>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationList.footer" type="html" />
