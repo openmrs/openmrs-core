@@ -5,20 +5,20 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="RelationshipType.views.title"/></h2>
+<h2><openmrs:message code="RelationshipType.views.title"/></h2>
 
-<a href="relationshipType.form"><spring:message code="RelationshipType.add"/></a> | 
-<a href="relationshipTypeViews.form"><spring:message code="RelationshipType.views.title"/></a>
+<a href="relationshipType.form"><openmrs:message code="RelationshipType.add"/></a> | 
+<a href="relationshipTypeViews.form"><openmrs:message code="RelationshipType.views.title"/></a>
 
 <br /><br />
 
-<b class="boxHeader"><spring:message code="RelationshipType.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="RelationshipType.list.title"/></b>
 <form method="post" class="box">
 	<table>
 		<tr>
-			<th> <spring:message code="RelationshipType.names"/> </th>
-			<th> <spring:message code="RelationshipType.views.order"/> </th>
-			<th> <spring:message code="RelationshipType.views.preferred"/> </th>
+			<th> <openmrs:message code="RelationshipType.names"/> </th>
+			<th> <openmrs:message code="RelationshipType.views.order"/> </th>
+			<th> <openmrs:message code="RelationshipType.views.preferred"/> </th>
 		</tr>
 		<c:forEach var="relationshipType" items="${relationshipTypeList}">
 			<tr>
@@ -40,13 +40,13 @@
 			</tr>
 		</c:forEach>
 	</table>
-	<input type="submit" value="<spring:message code="general.save"/>">
+	<input type="submit" value="<openmrs:message code="general.save"/>">
 </form>
 
 <br/>
 
-<b><spring:message code="RelationshipType.views.order"/>:</b> <spring:message code="RelationshipType.views.order.help"/> <br/>
-<b><spring:message code="RelationshipType.views.preferred"/>:</b> <spring:message code="RelationshipType.views.preferred.help"/> <br/>
+<b><openmrs:message code="RelationshipType.views.order"/>:</b> <openmrs:message code="RelationshipType.views.order.help"/> <br/>
+<b><openmrs:message code="RelationshipType.views.preferred"/>:</b> <openmrs:message code="RelationshipType.views.preferred.help"/> <br/>
 
 
 

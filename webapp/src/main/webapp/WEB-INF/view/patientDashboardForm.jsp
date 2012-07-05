@@ -7,10 +7,10 @@
 
 <c:if test="${enablePatientName}">
 	<c:set var="patientName" value="${patient.personName.fullName} (${patient.patientIdentifier})"/>
-	<spring:message var="pageTitle" text="${patientName}" scope="page"/>
+	<openmrs:message var="pageTitle" text="${patientName}" scope="page"/>
 </c:if>
 <c:if test="${!enablePatientName}">
-	<spring:message var="pageTitle" code="patientDashboard.title" scope="page"/>
+	<openmrs:message var="pageTitle" code="patientDashboard.title" scope="page"/>
 </c:if>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
@@ -86,21 +86,21 @@
 
 <c:if test="${patient.voided}">
 	<div id="patientDashboardVoided" class="retiredMessage">
-		<div><spring:message code="Patient.voidedMessage"/></div>
+		<div><openmrs:message code="Patient.voidedMessage"/></div>
 	</div>
 </c:if>
 
 <c:if test="${patient.dead}">
 	<div id="patientDashboardDeceased" class="retiredMessage">
 		<div>
-			<spring:message code="Patient.patientDeceased"/>
+			<openmrs:message code="Patient.patientDeceased"/>
 			<c:if test="${not empty patient.deathDate}">
 				&nbsp;&nbsp;&nbsp;&nbsp;
-				<spring:message code="Person.deathDate"/>: <openmrs:formatDate date="${patient.deathDate}"/>
+				<openmrs:message code="Person.deathDate"/>: <openmrs:formatDate date="${patient.deathDate}"/>
 			</c:if>
 			<c:if test="${not empty patient.causeOfDeath}">
 				&nbsp;&nbsp;&nbsp;&nbsp;
-				<spring:message code="Person.causeOfDeath"/>: <openmrs:format concept="${patient.causeOfDeath}"/>
+				<openmrs:message code="Person.causeOfDeath"/>: <openmrs:format concept="${patient.causeOfDeath}"/>
 				<c:if test="${not empty causeOfDeathOther}"> 
 					  &nbsp;:&nbsp;<c:out value="${causeOfDeathOther}"></c:out>
 				</c:if>
@@ -116,29 +116,29 @@
 <div id="patientTabs" class="${patientVariation}">
 	<ul>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
-			<li><a id="patientOverviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.overview"/></a></li>
+			<li><a id="patientOverviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.overview"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Regimen Section">
-			<li><a id="patientRegimenTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.regimens"/></a></li>
+			<li><a id="patientRegimenTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.regimens"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
-			<li><a id="patientEncountersTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.encounters"/></a></li>
+			<li><a id="patientEncountersTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.encounters"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Demographics Section">
-			<li><a id="patientDemographicsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.demographics"/></a></li>
+			<li><a id="patientDemographicsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.demographics"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Graphs Section">
-			<li><a id="patientGraphsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.graphs"/></a></li>
+			<li><a id="patientGraphsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.graphs"/></a></li>
 		</openmrs:hasPrivilege>
 		<c:if test="${enableFormEntryTab}">
 			<openmrs:hasPrivilege privilege="Form Entry">
-				<li><a id="formEntryTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.formEntry"/></a></li>
+				<li><a id="formEntryTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.formEntry"/></a></li>
 			</openmrs:hasPrivilege>
 		</c:if>
 		<openmrs:extensionPoint pointId="org.openmrs.patientDashboardTab" type="html">
 			<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 				<li>
-					<a id="${extension.tabId}Tab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="${extension.tabName}"/></a>
+					<a id="${extension.tabId}Tab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="${extension.tabName}"/></a>
 				</li>
 			</openmrs:hasPrivilege>
 		</openmrs:extensionPoint>
@@ -215,7 +215,7 @@
 				</c:catch>
 				<c:if test="${not empty ex}">
 					<div class="error">
-						<spring:message code="fix.error.plain"/> <br/>
+						<openmrs:message code="fix.error.plain"/> <br/>
 						<b>${ex}</b>
 						<div style="height: 200px; width: 800px; overflow: scroll">
 							<c:forEach var="row" items="${ex.cause.stackTrace}">

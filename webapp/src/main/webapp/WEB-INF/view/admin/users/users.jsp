@@ -2,14 +2,14 @@
 
 <openmrs:require privilege="Edit Users" otherwise="/login.htm"
 	redirect="/admin/users/users.list" />
-<spring:message var="pageTitle" code="User.manage.titlebar" scope="page" />
+<openmrs:message var="pageTitle" code="User.manage.titlebar" scope="page" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>
 
-<h2><spring:message code="User.manage.title" /></h2>
+<h2><openmrs:message code="User.manage.title" /></h2>
 
-<a href="user.form"><spring:message code="User.add" /></a>
+<a href="user.form"><openmrs:message code="User.add" /></a>
 
 <br />
 <br />
@@ -18,11 +18,11 @@
 
 <table>
 	<tr>
-		<td><spring:message code="User.find"/></td>
+		<td><openmrs:message code="User.find"/></td>
 		<td><input type="text" name="name" value="<c:out value="${param.name}"/>" /></td>
 	</tr>
 	<tr>
-		<td><spring:message code="Role.role"/></td>
+		<td><openmrs:message code="Role.role"/></td>
 		<td>
 			<select name="role">
 				<option></option>
@@ -35,14 +35,14 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="SearchResults.includeDisabled"/></td>
+		<td><openmrs:message code="SearchResults.includeDisabled"/></td>
 		<td>
 			<input type="checkbox" name="includeDisabled" <c:if test="${param.includeDisabled == 'on'}">checked=checked</c:if>/>
 		</td>
 	</tr>
 	<tr>
 		<td></td>
-		<td><input type="submit" name="action" value="<spring:message code="general.search"/>"/></td>
+		<td><input type="submit" name="action" value="<openmrs:message code="general.search"/>"/></td>
 	</tr>
 </table>
 
@@ -51,22 +51,22 @@
 <br/>
 
 <c:if test="${fn:length(users) == 0 && (param.name != None || param.role != None || param.includeDisabled != None)}">
-	<spring:message code="User.noUsersFound"/>
+	<openmrs:message code="User.noUsersFound"/>
 </c:if>
 
 <c:if test="${fn:length(users) > 0}">
-<b class="boxHeader"><spring:message code="User.list.title" /></b>
+<b class="boxHeader"><openmrs:message code="User.list.title" /></b>
 <div class="box">
 <table class="openmrsSearchTable" style="width: 100%;" cellpadding="2" cellspacing="0">
 	<thead>
 		<tr style="" dojoattachpoint="headerRow">
-			<th><spring:message code="User.systemId" javaScriptEscape="true"/></th>
-			<th><spring:message code="User.username" javaScriptEscape="true"/></th>
-			<th><spring:message code="PersonName.givenName" javaScriptEscape="true"/></th>
-			<th><spring:message code="PersonName.familyName" javaScriptEscape="true"/></th>
-			<th><spring:message code="User.roles" javaScriptEscape="true"/></th>
+			<th><openmrs:message code="User.systemId" javaScriptEscape="true"/></th>
+			<th><openmrs:message code="User.username" javaScriptEscape="true"/></th>
+			<th><openmrs:message code="PersonName.givenName" javaScriptEscape="true"/></th>
+			<th><openmrs:message code="PersonName.familyName" javaScriptEscape="true"/></th>
+			<th><openmrs:message code="User.roles" javaScriptEscape="true"/></th>
 			<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
-				<th><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/></th>
+				<th><openmrs:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/></th>
 			</openmrs:forEachDisplayAttributeType>
 		</tr>
 	</thead>

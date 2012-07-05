@@ -9,7 +9,7 @@
 
 <table>
 	<tr>
-		<td><spring:message code="">
+		<td><openmrs:message code="">
 
 
 

@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<spring:message var="pageTitle" code="dictionary.titlebar" scope="page"/>
+<openmrs:message var="pageTitle" code="dictionary.titlebar" scope="page"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
@@ -17,8 +17,8 @@
 	$j(document).ready(function() {
 		new OpenmrsSearch("findConcept", true, doConceptSearch, doSelectionHandler, 
 				[{fieldName:"name", header:" "}, {fieldName:"preferredName", header:" "}],
-				{searchLabel: '<spring:message code="Concept.search" javaScriptEscape="true"/>:', 
-					includeVoidedLabel: '<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>', 
+				{searchLabel: '<openmrs:message code="Concept.search" javaScriptEscape="true"/>', 
+					includeVoidedLabel: '<openmrs:message code="SearchResults.includeRetired" javaScriptEscape="true"/>', 
 					columnRenderers: [nameColumnRenderer, null], 
 					columnVisibility: [true, false],
 					searchPhrase:'<request:parameter name="phrase"/>'
@@ -43,23 +43,23 @@
 	}
 </script>
 
-<h2><spring:message code="dictionary.title" /></h2>
+<h2><openmrs:message code="dictionary.title" /></h2>
 
-<a href="<%= request.getContextPath() %>/downloadDictionary.csv"><spring:message code="dictionary.download.link"/></a> <spring:message code="dictionary.download.description"/><br />
+<a href="<%= request.getContextPath() %>/downloadDictionary.csv"><openmrs:message code="dictionary.download.link"/></a> <openmrs:message code="dictionary.download.description"/><br />
 <br />
 
 <c:choose>
 	<c:when test="${conceptsLocked != 'true'}"> 
-		<a href="concept.form"><spring:message code="Concept.add"/></a>
+		<a href="concept.form"><openmrs:message code="Concept.add"/></a>
 	</c:when>
 	<c:otherwise>
-		(<spring:message code="Concept.concepts.locked" />)
+		(<openmrs:message code="Concept.concepts.locked" />)
 	</c:otherwise>
 </c:choose>
 <br /><br />
 
 <div>
-	<b class="boxHeader"><spring:message code="Concept.find"/></b>
+	<b class="boxHeader"><openmrs:message code="Concept.find"/></b>
 	<div class="box">
 		<div class="searchWidgetContainer" id="findConcept"></div>
 	</div>

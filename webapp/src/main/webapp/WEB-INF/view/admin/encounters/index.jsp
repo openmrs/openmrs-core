@@ -21,7 +21,7 @@
 					{fieldName:"location", header:omsgs.encounterLocation},
 					{fieldName:"encounterDateString", header:omsgs.encounterDate}
 				],
-				{searchLabel: '<spring:message code="Encounter.search" javaScriptEscape="true"/>'});
+				{searchLabel: '<openmrs:message code="Encounter.search" javaScriptEscape="true"/>'});
 	});
 	
 	function doSelectionHandler(index, data) {
@@ -35,16 +35,16 @@
 	}
 </script>
 
-<h2><spring:message code="Encounter.title"/></h2>
+<h2><openmrs:message code="Encounter.title"/></h2>
 
-<a href="encounter.form"><spring:message code="Encounter.add"/></a>
+<a href="encounter.form"><openmrs:message code="Encounter.add"/></a>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.index.afterAdd" type="html" />
 
 <br/><br/>
 
 <div>
-	<b class="boxHeader"><spring:message code="Encounter.find"/></b>
+	<b class="boxHeader"><openmrs:message code="Encounter.find"/></b>
 	<div class="box">
 		<div class="searchWidgetContainer" id="findEncounter"></div>
 	</div>

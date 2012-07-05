@@ -5,21 +5,21 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="EncounterType.manage.title"/></h2>	
+<h2><openmrs:message code="EncounterType.manage.title"/></h2>	
 
-<a href="encounterType.form"><spring:message code="EncounterType.add"/></a> 
+<a href="encounterType.form"><openmrs:message code="EncounterType.add"/></a> 
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterTypeList.afterAdd" type="html" />
 
 <br />
 <br />
 
-<b class="boxHeader"><spring:message code="EncounterType.list.title"/></b>
+<b class="boxHeader"><openmrs:message code="EncounterType.list.title"/></b>
 <form method="post" class="box">
 	<table>
 		<tr>
-			<th> <spring:message code="general.name" /> </th>
-			<th> <spring:message code="general.description" /> </th>
+			<th> <openmrs:message code="general.name" /> </th>
+			<th> <openmrs:message code="general.description" /> </th>
 		</tr>
 		<c:forEach var="encounterType" items="${encounterTypeList}">
 			<tr>

@@ -3,13 +3,13 @@
 
 <c:set var="OPENMRS_VIEWING_PERSON_ID" scope="request" value="${person.personId}"/>
 
-<spring:message var="pageTitle" code="personDashboard.title" scope="page"/>
+<openmrs:message var="pageTitle" code="personDashboard.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <c:if test="${person.patient}">
 	<a href="patientDashboard.form?patientId=${person.personId}">
-		<spring:message code="patientDashboard.viewDashboard"/>
+		<openmrs:message code="patientDashboard.viewDashboard"/>
 	</a>
 	<br/>
 </c:if>
@@ -21,7 +21,7 @@
 <br/>
 
 <openmrs:hasPrivilege privilege="Person Dashboard - View Relationships">
-	<div class="boxHeader"><spring:message code="Relationship.relationships" /></div>
+	<div class="boxHeader"><openmrs:message code="Relationship.relationships" /></div>
 	<div class="box">
 		<openmrs:portlet url="personRelationships" size="normal" personId="${person.personId}"/>
 	</div>

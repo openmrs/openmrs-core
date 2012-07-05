@@ -33,7 +33,7 @@
 					function (st) { return '<input type="checkbox" id="terminal_' + st[0] + '" ' + (st[2] ? 'checked' : '') + '/>'; }
 				], { escapeHtml:false });
 		} else {
-			dwr.util.addRows('stateTable', ['<spring:message code="general.none"/>'], [
+			dwr.util.addRows('stateTable', ['<openmrs:message code="general.none"/>'], [
 					function(s) { return s;}
 				], { escapeHtml:false });
 		}
@@ -79,7 +79,7 @@
 </h3>
 
 <spring:hasBindErrors name="workflow">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
@@ -87,25 +87,25 @@
 	<table>
 		<thead>
 			<tr>
-				<th><spring:message code="State.state"/></th>
-				<th><spring:message code="State.initial"/>?</th>
-				<th><spring:message code="State.terminal"/>?</th>
+				<th><openmrs:message code="State.state"/></th>
+				<th><openmrs:message code="State.initial"/>?</th>
+				<th><openmrs:message code="State.terminal"/>?</th>
 			</tr>
 		</thead>
 		<tbody id="stateTable">
-			<tr><td colspan="3"><spring:message code="general.none" /></td></tr>
+			<tr><td colspan="3"><openmrs:message code="general.none" /></td></tr>
 		</tbody>
 		<tbody>
 			<tr>
 				<td colspan="3" align="center">
 					<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="" showVerboseListing="false" conceptClasses="State"></div>
-					<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' changeButtonValue='<spring:message code="general.add"/>'></div>
+					<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<openmrs:message code="Concept.find" />' changeButtonValue='<openmrs:message code="general.add"/>'></div>
 				</td>
 			</tr>
 		</tbody>
 	</table>
 	<input type="hidden" id="statesToSubmit" name="newStates" />
-	<input type="button" onClick="handleSave()" value="<spring:message code="general.save" />" />
+	<input type="button" onClick="handleSave()" value="<openmrs:message code="general.save" />" />
 </form>
 
 <script type="text/javascript">

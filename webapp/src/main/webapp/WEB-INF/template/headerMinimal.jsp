@@ -36,7 +36,7 @@
 				<title>${pageTitle}</title>
 			</c:when>
 			<c:otherwise>
-				<title><spring:message code="openmrs.title"/></title>
+				<title><openmrs:message code="openmrs.title"/></title>
 			</c:otherwise>
 		</c:choose>
 
@@ -46,7 +46,7 @@
 			</c:if>
 			/* variable used in js to know the context path */
 			var openmrsContextPath = '${pageContext.request.contextPath}';
-			var dwrLoadingMessage = '<spring:message code="general.loading" />';
+			var dwrLoadingMessage = '<openmrs:message code="general.loading" />';
 			var jsDateFormat = '<openmrs:datePattern localize="false"/>';
 			var jsLocale = '<%= org.openmrs.api.context.Context.getLocale() %>';
 
@@ -60,7 +60,7 @@
 					var div = document.getElementById("openmrs_dwr_error");
 					div.style.display = ""; // show the error div
 					var msgDiv = document.getElementById("openmrs_dwr_error_msg");
-					msgDiv.innerHTML = '<spring:message code="error.dwr"/>' + " <b>" + msg + "</b>";
+					msgDiv.innerHTML = '<openmrs:message code="error.dwr"/>' + " <b>" + msg + "</b>";
 				}
 				
 			};
@@ -80,16 +80,16 @@
 	<div id="pageBody">
 		<div id="contentMinimal">
 			<c:if test="${msg != null}">
-				<div id="openmrs_msg"><spring:message code="${msg}" text="${msg}" arguments="${msgArgs}" /></div>
+				<div id="openmrs_msg"><openmrs:message code="${msg}" text="${msg}" arguments="${msgArgs}" /></div>
 			</c:if>
 			<c:if test="${err != null}">
-				<div id="openmrs_error"><spring:message code="${err}" text="${err}" arguments="${errArgs}"/></div>
+				<div id="openmrs_error"><openmrs:message code="${err}" text="${err}" arguments="${errArgs}"/></div>
 			</c:if>
 			<div id="openmrs_dwr_error" style="display:none" class="error">
 				<div id="openmrs_dwr_error_msg"></div>
 				<div id="openmrs_dwr_error_close" class="smallMessage">
-					<i><spring:message code="error.dwr.stacktrace"/></i> 
-					<a href="#" onclick="this.parentNode.parentNode.style.display='none'"><spring:message code="error.dwr.hide"/></a>
+					<i><openmrs:message code="error.dwr.stacktrace"/></i> 
+					<a href="#" onclick="this.parentNode.parentNode.style.display='none'"><openmrs:message code="error.dwr.hide"/></a>
 				</div>
 			</div>
 

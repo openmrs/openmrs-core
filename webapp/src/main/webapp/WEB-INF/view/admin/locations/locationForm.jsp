@@ -5,7 +5,7 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Location.title"/></h2>
+<h2><openmrs:message code="Location.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationForm.afterTitle" type="html" parameters="locationId=${location.locationId}" />
 
@@ -13,22 +13,22 @@
 	<form action="" method="post">
 		<div class="retiredMessage">
 			<div>
-				<spring:message code="general.retiredBy"/>
+				<openmrs:message code="general.retiredBy"/>
 				${location.retiredBy.personName}
 				<openmrs:formatDate date="${location.dateRetired}" type="medium" />
 				-
 				${location.retireReason}
-				<input type="submit" value='<spring:message code="Location.unretireLocation"/>' name="unretireLocation"/>
+				<input type="submit" value='<openmrs:message code="Location.unretireLocation"/>' name="unretireLocation"/>
 			</div>
 		</div>
 	</form>
 </c:if>
 
 <spring:hasBindErrors name="location">
-	<spring:message code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.globalErrors}" var="error">
-			<spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/><br/><!-- ${error} -->
+			<openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/><br/><!-- ${error} -->
 		</c:forEach>
 	</div>
 	<br />
@@ -37,7 +37,7 @@
 <fieldset>
 	<table>
 		<tr>
-			<td><spring:message code="general.name"/></td>
+			<td><openmrs:message code="general.name"/></td>
 			<td colspan="5">
 				<spring:bind path="location.name">
 					<input type="text" name="name" value="${status.value}" size="35" />
@@ -46,7 +46,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="general.description"/></td>
+			<td valign="top"><openmrs:message code="general.description"/></td>
 			<td valign="top" colspan="5">
 				<spring:bind path="location.description">
 					<textarea name="description" rows="3" cols="40">${status.value}</textarea>
@@ -58,7 +58,7 @@
 			<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=false|layoutShowExtended=false|layoutShowErrors=false" />
 		</spring:nestedPath>
 		<tr>
-			<td valign="top"><spring:message code="Location.parentLocation"/></td>
+			<td valign="top"><openmrs:message code="Location.parentLocation"/></td>
 			<td colspan="5">
 				<spring:bind path="location.parentLocation">
 					<openmrs_tag:locationField formFieldName="parentLocation" initialValue="${status.value}" optionHeader="[blank]"/>
@@ -67,7 +67,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="Location.tags"/></td>
+			<td valign="top"><openmrs:message code="Location.tags"/></td>
 			<td colspan="5">
 				<spring:bind path="location.tags">
 					<input type="hidden" name="_tags"/>
@@ -81,7 +81,7 @@
 		</tr>
 		<c:if test="${!(location.creator == null)}">
 			<tr>
-				<td><spring:message code="general.createdBy" /></td>
+				<td><openmrs:message code="general.createdBy" /></td>
 				<td colspan="5">
 					${location.creator.personName} -
 					<openmrs:formatDate date="${location.dateCreated}" type="long" />
@@ -91,7 +91,7 @@
 	</table>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationForm.inForm" type="html" parameters="locationId=${location.locationId}" />
 	<br />
-	<input type="submit" value="<spring:message code="Location.save"/>" name="saveLocation">
+	<input type="submit" value="<openmrs:message code="Location.save"/>" name="saveLocation">
 </fieldset>
 </form>
 
@@ -100,16 +100,16 @@
 <c:if test="${not location.retired && not empty location.locationId}">
 	<form action="" method="post">
 		<fieldset>
-			<h4><spring:message code="Location.retireLocation"/></h4>
+			<h4><openmrs:message code="Location.retireLocation"/></h4>
 
-			<b><spring:message code="general.reason"/></b>
+			<b><openmrs:message code="general.reason"/></b>
 			<spring:bind path="location.retireReason">
 				<input type="text" value="${status.value}" size="40" name="retireReason" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 			<input type="hidden" name="retired" value="true" />
 			<br/>
-			<input type="submit" value='<spring:message code="Location.retireLocation"/>' name="retireLocation"/>
+			<input type="submit" value='<openmrs:message code="Location.retireLocation"/>' name="retireLocation"/>
 		</fieldset>
 	</form>
 </c:if>
@@ -117,10 +117,10 @@
 <br/>
 
 <fieldset>
-	<h4><spring:message code="Location.childLocations"/></h4>
+	<h4><openmrs:message code="Location.childLocations"/></h4>
 	<ul>
 		<c:if test="${empty location.childLocations}">
-			<li><spring:message code="general.none"/></li>
+			<li><openmrs:message code="general.none"/></li>
 		</c:if>
 		<c:forEach var="child" items="${location.childLocations}">
 			<li><openmrs:format location="${child}"/></li>

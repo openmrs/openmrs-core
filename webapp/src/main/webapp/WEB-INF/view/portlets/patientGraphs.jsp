@@ -46,7 +46,7 @@ table#labTestTable th {
 
 <c:set var="graphConceptString" value="${userConcepts}" />
 	
-	<div class="boxHeader${model.patientVariation}"><spring:message code="patientDashboard.graphs"/></div>
+	<div class="boxHeader${model.patientVariation}"><openmrs:message code="patientDashboard.graphs"/></div>
 	<div class="box${model.patientVariation}">
 		<table width="100%">
 			<tr>
@@ -75,7 +75,7 @@ table#labTestTable th {
 					<tr>
 						<td>
 						<div>
-						<div  style="margin: 0pt auto; height: 300px; width: 600px; align: center" align="center" id="conceptBox-${conceptId}"><spring:message
+						<div  style="margin: 0pt auto; height: 300px; width: 600px; align: center" align="center" id="conceptBox-${conceptId}"><openmrs:message
 							code="general.loading" /></div>
 						<div align="center">
 						<div style="width: 750px; overflow: auto; border: 1px solid black;">
@@ -89,7 +89,7 @@ table#labTestTable th {
 							limit="-1" />
 						</div>
 						<div align="center" valign="top" style="font-size: .9em"><a
-							href="?patientId=${patient.patientId}&patientGraphConceptRemove=true&patientGraphConcept=${conceptId}"><spring:message
+							href="?patientId=${patient.patientId}&patientGraphConceptRemove=true&patientGraphConcept=${conceptId}"><openmrs:message
 							code="general.remove" /></a> <br />
 						<br />
 						</div>
@@ -110,8 +110,8 @@ table#labTestTable th {
 			</c:forEach>
 			<tr>
 				<td>
-					<spring:message code="patientGraphs.addNewGraph" />:<br />
-					<spring:message code="Concept.find"/>
+					<openmrs:message code="patientGraphs.addNewGraph" />:<br />
+					<openmrs:message code="Concept.find"/>
 					<openmrs_tag:conceptField formFieldName="concept" formFieldId="conceptId" excludeDatatypes="N/A" includeDatatypes="Numeric" onSelectFunction="onConceptSelect" />
 						<script type="text/javascript">
 						function onConceptSelect(concept) {

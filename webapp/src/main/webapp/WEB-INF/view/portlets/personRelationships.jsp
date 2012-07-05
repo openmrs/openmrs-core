@@ -15,12 +15,12 @@
 		$j('#addRelationship').dialog({
 			autoOpen: false,
 			modal: true,
-			title: '<spring:message code="Relationship.add" javaScriptEscape="true"/>',
+			title: '<openmrs:message code="Relationship.add" javaScriptEscape="true"/>',
 			width: '30%',
 			zIndex: 100,
 			buttons: { 
-				'<spring:message code="general.save"/>': function() { handleAddRelationship(); },
-				'<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
+				'<openmrs:message code="general.save"/>': function() { handleAddRelationship(); },
+				'<openmrs:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
 			}
 		});
 
@@ -33,12 +33,12 @@
 		$j('#voidRelationship').dialog({
 			autoOpen: false,
 			modal: true,
-			title: '<spring:message code="Relationship.remove" javaScriptEscape="true"/>',
+			title: '<openmrs:message code="Relationship.remove" javaScriptEscape="true"/>',
 			width: '30%',
 			zIndex: 100,
 			buttons: { 
-				'<spring:message code="general.remove"/>': function() { handleVoidRelationship(); },
-				'<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
+				'<openmrs:message code="general.remove"/>': function() { handleVoidRelationship(); },
+				'<openmrs:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
 			}
 		});
 
@@ -73,7 +73,7 @@
 		function(data) { return data[2]; },
 		function(data) {
 			return '<a href="javascript:voidRelationshipDialog(' + data[0] + ')" title="">' +
-				'<img src="images/delete.gif" border="0" title="<spring:message code="general.remove"/>"/>' +
+				'<img src="images/delete.gif" border="0" title="<openmrs:message code="general.remove"/>"/>' +
 				'</a>';
 		}
 	];
@@ -84,7 +84,7 @@
 		relationships = {};
 		dwr.util.removeAllRows("relationshipTableContent");
 		if (rels.length == 0) {
-			$j("#no_relationships").html('<spring:message code="general.none" javaScriptEscape="true"/><br /><br />');
+			$j("#no_relationships").html('<openmrs:message code="general.none" javaScriptEscape="true"/><br /><br />');
 			hideDiv("relationshipTable");
 			showDiv("no_relationships");
 		} else {
@@ -121,13 +121,13 @@
 		var personIdA = $j("#add_rel_target_id").val();
 		
 		if (personIdA == personIdB) {
-			window.alert('<spring:message code="Relationship.error.same" javaScriptEscape="true"/>');
+			window.alert('<openmrs:message code="Relationship.error.same" javaScriptEscape="true"/>');
 			return;
 		}
 		
 		var relType = dwr.util.getValue('add_relationship_type');
 		if (relType == null || relType == '' || personIdA == null || personIdA == '' || personIdB == null || personIdB == '') {
-			window.alert('<spring:message code="Relationship.error.everything" javaScriptEscape="true"/>');
+			window.alert('<openmrs:message code="Relationship.error.everything" javaScriptEscape="true"/>');
 			return;
 		}
 		
@@ -178,24 +178,24 @@
 
 <div id="patientRelationshipPortlet">
 	<div id="no_relationships">
-		<spring:message code="general.loading"/><br />
+		<openmrs:message code="general.loading"/><br />
 	</div>
 
 	<table style="margin: 0px 0px 1em 2em;" cellpadding="3" cellspacing="0" id="relationshipTable" class="relTable">
 		<thead>
 			<tr bgcolor="whitesmoke">
-				<td><spring:message code="Relationship.relative"/></td>
-				<td><spring:message code="Relationship.relationship"/></td>
+				<td><openmrs:message code="Relationship.relative"/></td>
+				<td><openmrs:message code="Relationship.relationship"/></td>
 				<td></td>
 			</tr>
 		</thead>
 		<tbody id="relationshipTableContent"></tbody>
 	</table>
 
-	<a id="addRelationshipLink" href="#"><spring:message code="Relationship.add"/></a>
+	<a id="addRelationshipLink" href="#"><openmrs:message code="Relationship.add"/></a>
 	
 	<div id="addRelationship">
-		<spring:message code="Relationship.whatType"/>
+		<openmrs:message code="Relationship.whatType"/>
 		<table style="margin: 0px 0px 1em 2em;">
 			<c:forEach var="relType" items="${model.relationshipTypes}">
 				<tr>
@@ -220,18 +220,18 @@
 		</table>
 		
 		<span id="add_rel_details" style="display: none">
-			${model.person.personName}<spring:message code="Relationship.possessive"/>
-			<i><span id="add_relationship_name"><spring:message code="Relationship.whatType"/></span></i>
+			${model.person.personName}<openmrs:message code="Relationship.possessive"/>
+			<i><span id="add_relationship_name"><openmrs:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
-			<spring:message code="Relationship.target"/>
+			<openmrs:message code="Relationship.target"/>
 			<openmrs_tag:personField formFieldName="add_rel_target" formFieldId="add_rel_target_id" displayFieldId="add_rel_display_id" searchLabel="Find a Person" canAddNewPerson="true" />
 		</span>
 	</div>
 	
 	<div id="voidRelationship">
-		<div><spring:message code="Relationship.relative"/>: <span id="relationship_desc"></span></div>
+		<div><openmrs:message code="Relationship.relative"/>: <span id="relationship_desc"></span></div>
 		<br />
-		<label for="relationship_void_reason"><spring:message code="general.reason"/>: </label>
+		<label for="relationship_void_reason"><openmrs:message code="general.reason"/>: </label>
 		<input type="hidden" id="relationship_id"/>
 		<input type="text" id="relationship_void_reason"/>
 	</div>
