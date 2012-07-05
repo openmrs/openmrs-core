@@ -13,12 +13,12 @@
  */
 package org.openmrs.api;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,6 +37,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsUtil;
+
+import static java.util.Collections.synchronizedSet;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -175,7 +177,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderHistoryByConcept(PatientConcept)}
+	 * @see {@link OrderService#getOrderHistoryByConcept(Patient, Concept)}
 	 */
 	@Test
 	@Verifies(value = "should return empty list for concept without orders", method = "getOrderHistoryByConcept(Patient,Concept)")
@@ -345,32 +347,38 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
 	        throws Exception {
-		int N = 50;
-		final Set<String> uniqueOrderNumbers = new HashSet<String>(50);
-		List<Thread> threads = new ArrayList<Thread>();
-		for (int i = 0; i < N; i++) {
-			threads.add(new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					try {
-						Context.openSession();
-						uniqueOrderNumbers.add(service.getNewOrderNumber());
-					}
-					finally {
-						Context.closeSession();
-					}
+		final int numberOfConcurrentOrderNumberRequests = 16;
+		final Set<String> uniqueOrderNumbers = synchronizedSet(new HashSet<String>());
+		final CountDownLatch beginRequestingOrderNumbers = new CountDownLatch(1);
+		final CountDownLatch newOrderNumbersObtained = new CountDownLatch(numberOfConcurrentOrderNumberRequests);
+		Runnable orderNumberRequest = new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					beginRequestingOrderNumbers.await();
+					Context.openSession();
+					String orderNumber = service.getNewOrderNumber();
+					uniqueOrderNumbers.add(orderNumber);
 				}
-			}));
+				catch (InterruptedException e) {}
+				finally {
+					Context.closeSession();
+					newOrderNumbersObtained.countDown();
+				}
+			}
+		};
+		for (int i = 0; i < numberOfConcurrentOrderNumberRequests; i++) {
+			new Thread(orderNumberRequest).start();
 		}
-		for (int i = 0; i < N; ++i) {
-			threads.get(i).start();
-		}
-		for (int i = 0; i < N; ++i) {
-			threads.get(i).join();
-		}
-		//since we used a set we should have the size as N indicating that there were no duplicates
-		Assert.assertEquals(N, uniqueOrderNumbers.size());
+		
+		beginRequestingOrderNumbers.countDown();
+		newOrderNumbersObtained.await();
+		
+		Assert.assertEquals("Should receive a unique order number for each concurrent request",
+		    numberOfConcurrentOrderNumberRequests, uniqueOrderNumbers.size());
+		   
+		Assert.assertEquals(numberOfConcurrentOrderNumberRequests, uniqueOrderNumbers.size());
 	}
 	
 	/**
@@ -488,7 +496,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		String voidReason = "test reason";
 		orderService.voidOrder(order, voidReason);
 		
-		// assert that order is voided and void reason is set		
+		// assert that order is voided and void reason is set
 		Assert.assertTrue(order.isVoided());
 		Assert.assertEquals(voidReason, order.getVoidReason());
 	}
