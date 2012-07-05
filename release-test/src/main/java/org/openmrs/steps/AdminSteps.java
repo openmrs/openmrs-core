@@ -30,12 +30,12 @@ public class AdminSteps extends Steps {
 
 	@Given("I am on $title screen")
 	public void onHomePage(String title) {
-		assertPresenceOf(title().with(text(equalTo("OpenMRS - " + title))));
+		waitAndAssertFor(title().with(text(equalTo("OpenMRS - " + title))));
 	}
 
 	@Then("take me to $title page")
 	public void verifyAdminPage(String title) {
-		assertPresenceOf(title().with(text(equalTo("OpenMRS - " + title))));
+		waitAndAssertFor(title().with(text(equalTo("OpenMRS - " + title))));
 	}
 
 }

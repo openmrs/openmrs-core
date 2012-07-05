@@ -28,6 +28,7 @@ import org.jbehave.core.reporters.StoryReporterBuilder;
 import org.jbehave.core.steps.CandidateSteps;
 import org.jbehave.core.steps.InstanceStepsFactory;
 import org.openmrs.steps.UniversalSteps;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -85,6 +86,7 @@ public abstract class Story extends JUnitStory {
 	
 	private void createDriver() {
 		this.driver = new FirefoxDriver();
+        this.driver.manage().window().setSize(new Dimension(1024,768));
 		// Use this driver if using Firefox 5.  There is currently a bug in selenium with ff5
 		//this.driver = new ChromeDriver();
 	}

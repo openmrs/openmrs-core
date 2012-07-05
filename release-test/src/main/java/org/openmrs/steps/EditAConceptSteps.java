@@ -20,7 +20,9 @@ import org.openmrs.Steps;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.lift.Finders;
+import org.openqa.selenium.lift.find.HtmlTagFinder;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.openqa.selenium.lift.Finders.*;
 import static org.openqa.selenium.lift.Matchers.attribute;
@@ -51,8 +53,7 @@ public class EditAConceptSteps extends Steps {
 	
 	@Then("Take me to the viewing concept page")
 	public void takeMeToViewingConceptPage() {
-		Assert.assertTrue("Page title was expected to start with 'OpenMRS - Viewing Concept' but was:" + title(), getTitle()
-		        .startsWith("OpenMRS - Viewing Concept"));
+        waitAndAssertFor(title().with(text(containsString("OpenMRS - Viewing Concept"))));
 	}
 	
 

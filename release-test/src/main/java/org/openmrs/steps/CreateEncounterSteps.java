@@ -22,7 +22,6 @@ import org.openqa.selenium.WebDriver;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.openmrs.Finders.selectbox;
 import static org.openqa.selenium.lift.Finders.*;
 import static org.openqa.selenium.lift.Matchers.attribute;
 import static org.openqa.selenium.lift.Matchers.text;
@@ -65,7 +64,7 @@ public class CreateEncounterSteps extends Steps {
 	
 	@Then("the encounter should be saved")
 	public void verifySavedEncounter() {
-		assertPresenceOf(div().with(text(containsString("Encounter saved"))));
+        waitAndAssertFor(div().with(text(containsString("Encounter saved"))));
 	}
 	
 }

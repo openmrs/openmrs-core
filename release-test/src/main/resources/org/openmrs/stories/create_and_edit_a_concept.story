@@ -21,7 +21,6 @@ Then The concept should get created with a success message
 When I navigate to the Dictionary page
 When I search for a concept by typing aspirin and wait for the search hits
 When I select ASPIRIN from the hits
-Then Take me to the viewing concept page
 When I choose to Edit
 And I change the fully specified name to ASPIRIN
 And I edit the synonym

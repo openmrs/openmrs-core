@@ -48,6 +48,6 @@ public class ChangeLocaleSteps extends ViewLocaleAndThemeSteps {
     
     @Then("display message $name")
 	public void verifySuccessMessage(String name) {
-		assertPresenceOf(div().with(text(containsString(name))));
+		waitAndAssertFor(div().with(text(containsString(name))));
 	}
 }

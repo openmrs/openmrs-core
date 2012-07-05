@@ -39,6 +39,7 @@ public class ChangeGlobalPropertySteps extends ViewGlobalPropertySteps {
     @When("I type $name as name")
 	public void enterGlobalPropertyName(String name) {
 		type(random(name), into(finderByXpath("//tbody[@id='globalPropsList']/tr[count(//tbody[@id='globalPropsList']/tr) - 5]/td[1]/input")));
+		type("warn", into(finderByXpath("//tbody[@id='globalPropsList']/tr[@class='evenRow'][85]/td[2]/input")));
 	}
     
     @When("I type $value as value")
@@ -53,6 +54,6 @@ public class ChangeGlobalPropertySteps extends ViewGlobalPropertySteps {
     
     @Then("display message $successMessage")
 	public void verifySuccessMessage(String successMessage) {
-		assertPresenceOf(div().with(text(containsString(successMessage))));
+		waitAndAssertFor(div().with(text(containsString(successMessage))));
 	}
 }

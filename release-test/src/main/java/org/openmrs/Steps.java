@@ -170,6 +170,11 @@ public abstract class Steps {
         }
     }
 
+    protected void waitAndAssertFor(Finder finder){
+        waitFor(finder);
+        assertPresenceOf(finder);
+    }
+
 	/**
 	 * Randomizes a give value
 	 *
@@ -212,18 +217,18 @@ public abstract class Steps {
 
     @When("I click on the $linkName link")
 	public void clickLinkWithName(String linkName) {
-		clickOn(link().with(text(equalTo(linkName))));
+        waitAndClickOn(link().with(text(equalTo(linkName))));
 	}
 
     @When("I choose to $domain")
 	public void addEncounter(String domain) {
-		clickOn(link().with(text(equalTo(domain))));
+		waitAndClickOn(link().with(text(equalTo(domain))));
 	}
 
     @When("I click on the button $buttonName")
     @Given("I click on the button $buttonName")
 	public void save(String buttonName) {
-		clickOn(button(buttonName));
+		waitAndClickOn(button(buttonName));
 	}
 
 }

@@ -51,7 +51,7 @@ public class LoginSteps extends Steps {
 		// this check is just in case a scenario has two dependencies and both of them 
 		// depend on the login_to_website story
 		if (!userAlreadyLoggedIn())
-			assertPresenceOf(button().with(attribute("value", equalTo("Log In"))));
+			waitAndAssertFor(button().with(attribute("value", equalTo("Log In"))));
 	}
 
 	//@When("I enter $username as the username and $password as the password and click the 'Log In' button")

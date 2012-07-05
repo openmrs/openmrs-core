@@ -105,7 +105,7 @@ public class CreateObservationSteps extends Steps {
 
     @Then("display message Observation saved")
     public void verifySuccessMessage() {
-        assertPresenceOf(div().with(text(containsString("Observation saved"))));
+        waitAndAssertFor(div().with(text(containsString("Observation saved"))));
     }
 
 }

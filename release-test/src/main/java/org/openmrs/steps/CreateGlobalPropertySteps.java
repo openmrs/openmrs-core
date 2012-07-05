@@ -27,10 +27,10 @@ public class CreateGlobalPropertySteps extends ViewGlobalPropertySteps {
     public CreateGlobalPropertySteps(WebDriver driver) {
         super(driver);
     }
-    
-    @When("I click input button $addProperty ")
-    public void clickOnAddGlobalPropertyButton(String addProperty) {
-    	clickOn(finderByXpath("//input[@value='" + addProperty + "']"));
+
+    @When("I press input button Add Property")
+    public void whenIPressInputButtonAddProperty() {
+    	clickOn(finderByXpath("//input[@value='Add Property']"));
     }
     
     @When("I type $name as name")

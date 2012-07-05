@@ -37,7 +37,7 @@ public class CreateAUserSteps extends Steps {
 
 	@When("I click on the Add User")
 	public void addUser() {
-		clickOn(link().with(text(equalTo("Add User"))));
+		waitAndClickOn(link().with(text(equalTo("Add User"))));
 	}
 
 	@When("I create a new person")

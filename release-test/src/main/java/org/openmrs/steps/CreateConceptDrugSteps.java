@@ -87,6 +87,6 @@ public class CreateConceptDrugSteps extends Steps {
 
 	@Then("the new drug should get saved")
 	public void verifyConceptDrug() {
-		assertPresenceOf(div().with(text(equalTo("Concept Drug saved"))));
+		waitAndAssertFor(div().with(text(equalTo("Concept Drug saved"))));
 	}
 }

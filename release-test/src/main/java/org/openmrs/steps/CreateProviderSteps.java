@@ -46,7 +46,7 @@ public class CreateProviderSteps extends Steps {
 
     @Then("the provider should be saved")
 	public void verifySavedEncounter() {
-		assertPresenceOf(div().with(text(containsString("Provider saved"))));
+        waitAndAssertFor(div().with(text(containsString("Provider saved"))));
 	}
 
     @When("I enter $providerName as provider name")
@@ -77,6 +77,6 @@ public class CreateProviderSteps extends Steps {
 
     @Then("the provider should be retired")
     public void verifyRetiredProvider() {
-        assertPresenceOf(div().with(text(containsString("Provider retired"))));
+        waitAndAssertFor(div().with(text(containsString("Provider retired"))));
     }
 }
