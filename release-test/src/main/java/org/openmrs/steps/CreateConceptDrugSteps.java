@@ -27,7 +27,10 @@ import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 public class CreateConceptDrugSteps extends Steps {
 
@@ -56,14 +59,13 @@ public class CreateConceptDrugSteps extends Steps {
 	}
 
 	@When("I mention $name, $concept, $doseStrength, $units, $maximumDose and $minimumDose")
-	public void addDrugDetails(String name, String concept, String doseStrength, String units, String maximumDose, String minimumDose) {
+	public void addDrugDetails(String name, String concept, String doseStrength, String units, String maximumDose, String minimumDose) throws InterruptedException {
 		type(name, into(textbox().with(attribute("name", equalTo("name")))));
 		//editing the concept
 		type(concept, into(textbox().with(attribute("id", equalTo("concept_selection")))));
-		String conceptSearchXpath = "//table[@id='table']/tbody/tr[2]/td/input[@id='concept_selection']";
-		waitFor(finderByXpath(conceptSearchXpath));
-		clickOn(finderByXpath(conceptSearchXpath));
-
+        Thread.sleep(1000);
+        WebElement conceptSelection = driver.findElement(By.id("concept_selection"));
+        conceptSelection.sendKeys(Keys.TAB);
 		//editing the combination
 		clickOn(checkbox().with(attribute("name", equalTo("combination"))));
 

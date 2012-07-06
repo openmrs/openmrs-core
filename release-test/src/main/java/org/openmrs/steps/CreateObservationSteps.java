@@ -98,11 +98,6 @@ public class CreateObservationSteps extends Steps {
         type(conceptAnswer, into(textbox().with(attribute("name", equalTo("valueNumeric")))));
     }
 
-    @When("I click the Save Observation button")
-    public void clickSaveObservationButton() {
-        clickOn(button("Save Observation"));
-    }
-
     @Then("display message Observation saved")
     public void verifySuccessMessage() {
         waitAndAssertFor(div().with(text(containsString("Observation saved"))));

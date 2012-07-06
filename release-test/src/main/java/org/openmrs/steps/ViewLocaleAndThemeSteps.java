@@ -41,7 +41,7 @@ public class ViewLocaleAndThemeSteps extends Steps {
     
     @Then("take me to Locales And Themes Management Page with $name as heading")
     public void verifyManagementPage(String name) {
-        assertPresenceOf(div().with(text(containsString(name))));
+        waitAndAssertFor(div().with(text(containsString(name))));
     }
     
     @Given("I am on the $name Page")

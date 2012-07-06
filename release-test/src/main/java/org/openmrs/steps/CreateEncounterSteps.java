@@ -18,7 +18,9 @@ import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -43,7 +45,7 @@ public class CreateEncounterSteps extends Steps {
 	}
 	
 	@When("I enter $name, $provider, $location, $date, $providerRole")
-	public void enterDetails(String name, String provider, String location, String date, String providerRole) {
+	public void enterDetails(String name, String provider, String location, String date, String providerRole) throws InterruptedException {
 		type(name, into(textbox().with(attribute("id", equalTo("patientId_id_selection")))));
         String autoCompleteXPath = "//ul[@class='ui-autocomplete ui-menu ui-widget ui-widget-content ui-corner-all']";
         waitFor(finderByXpath(autoCompleteXPath));
@@ -55,6 +57,9 @@ public class CreateEncounterSteps extends Steps {
         getWebDriver().findElement(By.id("addProviderButton")).click();
         selectFrom(providerRole, "roleIds[0]");
         type(provider, into(textbox().with(attribute("id", equalTo("providers[0]")))));
+        WebElement providerElement = driver.findElement(By.id("providers[0]"));
+        providerElement.sendKeys(Keys.TAB);
+        Thread.sleep(1000);
 	}
 
 	@When("I save the encounter")

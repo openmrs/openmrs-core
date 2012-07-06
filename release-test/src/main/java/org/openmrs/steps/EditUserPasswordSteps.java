@@ -17,7 +17,11 @@ import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.openqa.selenium.lift.Finders.*;
@@ -55,10 +59,11 @@ public class EditUserPasswordSteps extends Steps {
 
 	@When("I chose to edit the user")
 	public void editUser() {
-		clickOn(link().with(text(equalTo("6-7"))));
-		//String userXpath = "id('content')/x:div[2]/x:table/x:tbody/x:tr[1]/x:td[1]/x:a"; //html/body/div/div[3]/div[3]/table/tbody/tr/td/a
-		//waitFor(finderByXpath(userXpath));
-		//clickOn(finderByXpath(userXpath));
+    //TODO currently the user to edit is hard coded to the first row of the users search result. Need to change this.
+        WebElement openmrsSearchTable = driver.findElement(By.className("openmrsSearchTable"));
+        List<WebElement> trList = openmrsSearchTable.findElements(By.tagName("tr"));
+        if(trList.size() > 0)
+            trList.get(1).findElement(By.tagName("td")).findElement(By.tagName("a")).click();
 	}
 
 	@When("I changed the $password, $confirmPassword")

@@ -14,5 +14,5 @@ And I select Unknown Location as Location with index 1
 And I type 03/08/2011 as Observation Date
 And I type temp as Concept Question
 And I type 38 as Concept Answer
-And I click the Save Observation button
+And I click on the button Save Observation
 Then display message Observation saved
