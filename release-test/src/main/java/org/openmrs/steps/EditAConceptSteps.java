@@ -36,8 +36,8 @@ public class EditAConceptSteps extends Steps {
 	
 	@When("I navigate to the $dictionary page")
 	public void navigateToDictonaryPage(String dictionaryTitle) {
-		clickOn(link().with(text(equalTo(dictionaryTitle))));
-		assertPresenceOf(title().with(text(equalTo("OpenMRS - " + dictionaryTitle))));
+		waitAndClickOn(link().with(text(equalTo(dictionaryTitle))));
+		waitAndAssertFor(title().with(text(equalTo("OpenMRS - " + dictionaryTitle))));
 	}
 	
 	@When("I search for a concept by typing $aspirin and wait for the search hits")
