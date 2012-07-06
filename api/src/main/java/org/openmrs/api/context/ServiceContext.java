@@ -365,7 +365,6 @@ public class ServiceContext implements ApplicationContextAware {
 	/**
 	 * @param hl7Service the hl7Service to set
 	 */
-	// TODO spring is demanding that this be hl7Service:setHl7Service and not hL7Service:setHL7Service. why?
 	public void setHl7Service(HL7Service hl7Service) {
 		setService(HL7Service.class, hl7Service);
 	}
