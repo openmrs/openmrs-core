@@ -90,6 +90,15 @@
 	</form>
 </c:if>
 
+<c:if test="${visitType.retired && not empty visitType.visitTypeId}">
+	<form method="post">
+		<fieldset>
+			<h4><openmrs:message code="VisitType.unretireVisitType"/></h4>
+			<input type="submit" value='<openmrs:message code="VisitType.unretireVisitType"/>' name="unretire"/>
+		</fieldset>
+	</form>
+</c:if>
+
 <br/>
 
 <c:if test="${not empty visitType.visitTypeId}">

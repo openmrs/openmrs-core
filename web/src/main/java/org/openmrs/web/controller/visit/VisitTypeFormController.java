@@ -96,6 +96,13 @@ public class VisitTypeFormController extends SimpleFormController {
 				view = getSuccessView();
 			}
 
+			// if the user is unretiring the VisitType
+			else if (request.getParameter("unretire") != null) {
+				es.unretireVisitType(visitType);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "VisitType.unretiredSuccessfully");
+				view = getSuccessView();
+			}
+
 			// if the user is purging the visitType
 			else if (request.getParameter("purge") != null) {
 				
