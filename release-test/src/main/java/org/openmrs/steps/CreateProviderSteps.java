@@ -51,6 +51,7 @@ public class CreateProviderSteps extends Steps {
 
     @When("I enter $providerName as provider name")
     public void enterProviderName(String providerName)  {
+        waitFor(textbox().with(attribute("id", equalTo("inputNode"))));
         type(providerName, into(textbox().with(attribute("id", equalTo("inputNode")))));
     }
 

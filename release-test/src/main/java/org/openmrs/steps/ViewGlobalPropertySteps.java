@@ -41,6 +41,6 @@ public class ViewGlobalPropertySteps extends Steps {
     
     @Then("take me to Advanced Settings Page with $name as heading")
     public void verifyManagementPage(String name) {
-        assertPresenceOf(div().with(text(containsString(name))));
+        waitAndAssertFor(div().with(text(containsString(name))));
     }
 }
