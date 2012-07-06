@@ -49,6 +49,16 @@ import org.openmrs.util.Format.FORMAT_TYPE;
  * method. (Multi-level hierarchies are achieved by an Obs parent object being a member of another
  * Obs (grand)parent object) Read up on the obs table: http://openmrs.org/wiki/Obs_Table_Primer
  * 
+ * In an OpenMRS installation, there may be an occasion need to change an Obs. 
+ * For example, a site may decide to replace a concept in the dictionary with a more specific
+ * set of concepts. An observation is part of the official record of an encounter. There may 
+ * be legal, ethical, and auditing consequences from altering a record. It is recommended
+ * that you create a new Obs and void the old one:
+ *      Obs newObs = Obs.newInstance(oldObs); //copies values from oldObs
+ *      newObs.setPreviousVersion(oldObs);
+ *      Context.getObsService().saveObs(newObs,"Your reason for the change here");
+ *      Context.getObsService().voidObs(oldObs, "Your reason for the change here");
+ *
  * @see Encounter
  */
 public class Obs extends BaseOpenmrsData implements java.io.Serializable {
@@ -1098,10 +1108,19 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		
 	}
 	
+	/**
+	 * When ObsService updates an obs, it voids the old version, creates a new Obs with the updates,
+	 * and adds a reference to the previousVersion in the new Obs. 
+	 * getPreviousVersion returns the last version of this Obs. 
+	 */
 	public Obs getPreviousVersion() {
 		return previousVersion;
 	}
 	
+	/**
+	 * A previousVersion indicates that this Obs replaces an earlier one.
+	 * @param previousVersion the Obs that this Obs superceeds
+	 */
 	public void setPreviousVersion(Obs previousVersion) {
 		this.previousVersion = previousVersion;
 	}
