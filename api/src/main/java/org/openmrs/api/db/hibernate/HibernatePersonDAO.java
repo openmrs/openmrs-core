@@ -83,10 +83,6 @@ public class HibernatePersonDAO implements PersonDAO {
 		if (birthyear == null)
 			birthyear = 0;
 		
-		// TODO return the matched name instead of the primary name
-		// possible solution: "select new" org.openmrs.PersonListItem and return
-		// a list of those
-		
 		Set<Person> people = new LinkedHashSet<Person>();
 		
 		name = name.replaceAll("  ", " ");
