@@ -43,7 +43,7 @@ public class CreateObservationSteps extends Steps {
 
     @Then("take me to Observation Management Page with Observation Management as heading")
     public void verifyManagementPage() {
-        assertPresenceOf(div().with(text(containsString("Observation Management"))));
+        waitAndAssertFor(div().with(text(containsString("Observation Management"))));
     }
 
 

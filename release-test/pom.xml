@@ -210,7 +210,7 @@
 					<plugin>
 						<groupId>org.mortbay.jetty</groupId>
 						<artifactId>maven-jetty-plugin</artifactId>
-						<version>6.1.10</version>
+						<version>6.1.26</version>
 
 						<configuration>
                             <webApp>${basedir}/target/${openMRSVersion}/webapp</webApp>
@@ -229,7 +229,12 @@
                                     <value>8000</value>
                                 </systemProperty>
 							</systemProperties>
-
+                            <connectors>
+                                <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                                    <port>8000</port>
+                                    <soLingerTime>0</soLingerTime>
+                                </connector>
+                           </connectors>
 						</configuration>
 
 						<executions>
@@ -329,7 +334,7 @@
 					<plugin>
 						<groupId>org.mortbay.jetty</groupId>
 						<artifactId>maven-jetty-plugin</artifactId>
-						<version>6.1.10</version>
+						<version>6.1.26</version>
 
 						<configuration>
                             <webApp>${basedir}/target/${openMRSVersion}/webapp</webApp>
@@ -472,7 +477,7 @@
                     <plugin>
                         <groupId>org.mortbay.jetty</groupId>
                         <artifactId>maven-jetty-plugin</artifactId>
-                        <version>6.1.10</version>
+                        <version>6.1.26</version>
 
                         <configuration>
                             <webApp>${basedir}/target/${openMRSVersion}/webapp</webApp>

@@ -59,7 +59,8 @@ public class EditAConceptSteps extends Steps {
 
 	@When("I change the fully specified name to $aspirin")
 	public void editTheFullySpecifiedName(String newName) {
-		type(random(newName), into(textbox().with(attribute("id", equalTo("namesByLocale[en].name")))));
+		waitFor(textbox().with(attribute("id", equalTo("namesByLocale[en].name"))));
+        type(random(newName), into(textbox().with(attribute("id", equalTo("namesByLocale[en].name")))));
 	}
 	
 	@When("I edit the synonym")
