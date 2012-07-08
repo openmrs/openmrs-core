@@ -195,7 +195,7 @@ $j(document).ready( function() {
 			</td>
 		</tr>
 		<tr>
-			<th><openmrs:message code="Visit.type"/><span class="required"> *</span></th>
+			<th><openmrs:message code="Visit.visitType"/><span class="required"> *</span></th>
 			<td>
 			<spring:bind path="visitType">
 				<select name="${status.expression}">
