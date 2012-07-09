@@ -32,23 +32,31 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	
 	/**
 	 * Name to use when nothing else is available.
+	 * @deprecated since OpenMRS 1.7 we use ConceptNameType to mark these types of concept names.
 	 */
+	@Deprecated
 	public static final String DEFAULT = "default";
 	
 	/**
 	 * Short name for a concept. Does not indicate any preference for the name.
+	 * @deprecated since OpenMRS 1.7 we use ConceptNameType to mark these types of concept names.
 	 */
+	@Deprecated
 	public static final String SHORT = "short";
 	
 	/**
 	 * A different word with similar meaning.
+	 * @deprecated since OpenMRS 1.7 we use ConceptNameType to mark these types of concept names.
 	 */
+	@Deprecated
 	public static final String SYNONYM = "synonym";
 	
 	/**
 	 * Preferred name for a language. Can be applied to only one name within the set of names within
 	 * a language.
+	 * @deprecated since OpenMRS 1.7 we use ConceptNameType to mark these types of concept names.
 	 */
+	@Deprecated
 	public static final String PREFERRED = "preferred";
 	
 	// Fields
