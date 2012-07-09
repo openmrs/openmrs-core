@@ -295,7 +295,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Task which does not return TaskDefinition in getTaskDefinition should run without throwing exceptions.
+	 * Task which does not return TaskDefinition in getTaskDefinition should run without throwing
+	 * exceptions.
 	 * 
 	 * @throws Exception
 	 */
@@ -319,7 +320,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Task opens a session and stores the execution time.
 	 */
-	static class SessionTask extends AbstractTask {
+	public static class SessionTask extends AbstractTask {
 		
 		public void execute() {
 			try {
@@ -353,11 +354,11 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		td.setStartOnStartup(false);
 		td.setTaskClass(SessionTask.class.getName());
 		td.setStartTime(null);
+		td.setRepeatInterval(new Long(0));//0 indicates single execution
 		service.saveTask(td);
 		
 		service.scheduleTask(td);
 		Thread.sleep(500);
-		
 		td = service.getTaskByName(NAME);
 		assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td
 		        .getLastExecutionTime().getTime() / 1000, 1);
