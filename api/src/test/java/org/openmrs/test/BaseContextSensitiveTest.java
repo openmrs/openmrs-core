@@ -22,6 +22,7 @@ import java.awt.Window;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -58,11 +59,6 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
-import org.hibernate.impl.SessionFactoryImpl;
-import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.metadata.CollectionMetadata;
-import org.hibernate.persister.collection.CollectionPersister;
-import org.hibernate.persister.entity.EntityPersister;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -71,6 +67,7 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -221,6 +218,20 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		// we don't want to try to load core modules in tests
 		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "true");
+		
+		try {
+			File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
+			tempappdir.delete(); // so we can make it into a directory
+			tempappdir.mkdir(); // turn it into a directory
+			tempappdir.deleteOnExit(); // clean up when we're done with tests
+			
+			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
+			        .getAbsolutePath());
+			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = tempappdir.getAbsolutePath();
+		}
+		catch (IOException e) {
+			log.error("Unable to create temp dir", e);
+		}
 		
 		return runtimeProperties;
 	}
