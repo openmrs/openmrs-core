@@ -142,11 +142,11 @@ public class PatientDashboardController {
 		
 		map.put("ajaxEnabled", true);
 		map.put("ajaxOverviewDisabled", false);
-		map.put("ajaxRegimensDisabled", false);
+		map.put("ajaxRegimensDisabled", true);
 		map.put("ajaxVisitsEncountersDisabled", false);
-		map.put("ajaxDemographicsDisabled", false);
+		map.put("ajaxDemographicsDisabled", true);
 		map.put("ajaxGraphsDisabled", false);
-		map.put("ajaxFormEntryDisabled", false);
+		map.put("ajaxFormEntryDisabled", true);
 		
 		RequestContextHolder.currentRequestAttributes().setAttribute(WebConstants.AJAX_DASHBOARD_PATIENT + patientId,
 		    patient, RequestAttributes.SCOPE_SESSION);
