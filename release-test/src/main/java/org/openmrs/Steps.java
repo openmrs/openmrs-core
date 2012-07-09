@@ -57,7 +57,7 @@ public abstract class Steps {
 	}
 
 	protected void waitAndClickOn(Finder finder) {
-		waitFor(finder);
+		waitFor(finder, DEFAULT_TIMEOUT);
 		clickOn(finder);
 	}
 

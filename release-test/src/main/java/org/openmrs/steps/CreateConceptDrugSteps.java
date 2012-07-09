@@ -48,16 +48,6 @@ public class CreateConceptDrugSteps extends Steps {
 		clickOn(link().with(text(equalTo("Administration"))));
 	}
 
-	@When("I choose to manage concept drugs")
-	public void navigateToManageConceptDrugsUrl() {
-		clickOn(link().with(text(containsString("Manage Concept Drugs"))));
-	}
-
-	@When("I choose to add a new concept drug")
-	public void navigateToAddConceptDrugUrl() {
-		clickOn(link().with(text(equalTo("Add Concept Drug"))));
-	}
-
 	@When("I mention $name, $concept, $doseStrength, $units, $maximumDose and $minimumDose")
 	public void addDrugDetails(String name, String concept, String doseStrength, String units, String maximumDose, String minimumDose) throws InterruptedException {
 		type(name, into(textbox().with(attribute("name", equalTo("name")))));

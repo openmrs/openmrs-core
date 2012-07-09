@@ -34,16 +34,6 @@ public class CreateEncounterSteps extends Steps {
 		super(driver);
 	}
 	
-	@Given("I choose to manage encounters")
-	public void manageEncounters() {
-		clickOn(link().with(text(containsString("Manage Encounters"))));
-	}
-
-	@When("I choose to add an encounter")
-	public void addEncounter() {
-		clickOn(link().with(text(equalTo("Add Encounter"))));
-	}
-	
 	@When("I enter $name, $provider, $location, $date, $providerRole")
 	public void enterDetails(String name, String provider, String location, String date, String providerRole) throws InterruptedException {
 		type(name, into(textbox().with(attribute("id", equalTo("patientId_id_selection")))));
@@ -64,7 +54,7 @@ public class CreateEncounterSteps extends Steps {
 
 	@When("I save the encounter")
 	public void saveEncounter() {
-		clickOn(button("Save Encounter"));
+		waitAndClickOn(button("Save Encounter"));
 	}
 	
 	@Then("the encounter should be saved")

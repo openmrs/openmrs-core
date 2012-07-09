@@ -31,37 +31,23 @@ public class CreateRelationshipTypeSteps extends Steps {
 		super(driver);
 	}
 	
-	@Given("I am on Admin page")
-	public void iAmOnAdminPage() {
-		assertPresenceOf(title("OpenMRS - Administration"));
-	}
-
 	@Then("take me to Relationship Type Management Page with $name as heading")
-	public void verifyManagementPage(String name) {
+	public void verifyRelationshipPage(String name) {
 		assertPresenceOf(div().with(text(containsString(name))));
 	}
 	
 	@Given("I am on the $name Page")
 	public void onFindRelationshipTypeManagementPage(String name) {
-		verifyManagementPage(name);
+		verifyRelationshipPage(name);
 	}
 	
-	@When("I click on $addRelationshipTypeLink  link")
-	public void clickOnAddRelationshipType(String addRelationshipTypeLink) {
-		clickOn(link(addRelationshipTypeLink));
-	}
-	
+
 	@Then("take me to Add Relationship Type page with $heading as heading and has a button with label $buttonText")
 	public void verifyAddRelationshipTypePage(String heading, String buttonText) {
 		assertPresenceOf(div().with(text(containsString(heading))));
 		assertPresenceOf(button(buttonText));
 	}
-	
-	@Given("I am on the $name page")
-	public void givenIamOnAddRelationshipTypePage(String name) {
-		assertPresenceOf(div().with(text(containsString(name))));
-	}
-	
+
 	@When("I type $value as relationship of A to B")
 	public void enterRelationshipTypeOfAtoBName(String value) {
 		type(random(value), into(textbox().with(attribute("name", equalTo("aIsToB")))));

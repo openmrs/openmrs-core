@@ -18,7 +18,7 @@ And I select Boolean as the datatype
 And I click Save Concept button
 Then The concept should get created with a success message
 
-When I navigate to the Dictionary page
+When I click on the Dictionary link
 When I search for a concept by typing aspirin and wait for the search hits
 When I select ASPIRIN from the hits
 When I choose to Edit

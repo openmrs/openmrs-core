@@ -36,12 +36,6 @@ public class CreateAConceptSteps extends Steps {
 		assertPresenceOf(title().with(text(equalTo("OpenMRS - " + title))));
 	}
 	
-	@When("I click on the $dictionary link")
-	public void clickOnDictionaryLink(String dictionary) {
-		clickOn(link().with(text(equalTo(dictionary))));
-        
-        	}
-	
 	@Then("Take me to the $dictionary page")
 	public void takeMeToDictionaryPage(String dictionary) {
 		assertPresenceOf(title().with(text(equalTo("OpenMRS - " + dictionary))));

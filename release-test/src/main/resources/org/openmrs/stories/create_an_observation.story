@@ -1,11 +1,10 @@
 GivenStories: org/openmrs/stories/go_to_admin_page.story
 
-Given I am on Admin page
 When I click on the Manage Observations link
 Then take me to Observation Management Page with Observation Management as heading
 
 Given I am on the Observation Management Page
-When I click on Add Observation  link
+When I click on the Add Observation link
 Then take me to Add Observation page with Observation as heading and has a button with label Save Observation
 
 Given I am on the Add Observation page

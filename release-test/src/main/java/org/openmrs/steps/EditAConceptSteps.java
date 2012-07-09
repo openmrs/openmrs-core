@@ -34,12 +34,6 @@ public class EditAConceptSteps extends Steps {
 		super(driver);
 	}
 	
-	@When("I navigate to the $dictionary page")
-	public void navigateToDictonaryPage(String dictionaryTitle) {
-		waitAndClickOn(link().with(text(equalTo(dictionaryTitle))));
-		waitAndAssertFor(title().with(text(equalTo("OpenMRS - " + dictionaryTitle))));
-	}
-	
 	@When("I search for a concept by typing $aspirin and wait for the search hits")
 	public void searchForAConceptAndWaitForTheHits(String phrase) {
 		type(phrase, into(textbox().with(attribute("id", equalTo("inputNode")))));
@@ -103,6 +97,6 @@ public class EditAConceptSteps extends Steps {
 	
 	@Then("The concept should get saved with a success message")
 	public void theConceptShouldGetCreated() {
-		assertPresenceOf(Finders.div("openmrs_msg").with(text(equalTo("Concept saved successfully"))));
+		waitAndAssertFor(Finders.div("openmrs_msg").with(text(equalTo("Concept saved successfully"))));
 	}
 }
