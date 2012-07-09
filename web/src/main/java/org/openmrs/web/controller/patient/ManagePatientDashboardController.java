@@ -13,8 +13,13 @@
  */
 package org.openmrs.web.controller.patient;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -35,21 +40,44 @@ public class ManagePatientDashboardController implements MessageSourceAware {
 	 */
 	@RequestMapping("/admin/patients/managePatientDashboard.form")
 	protected String renderDashboard(ModelMap map) throws Exception {
-		map.put("overviewButtonLabel", source.getMessage("PatientDashboard.button.enable", null, Context.getLocale()));
-		map.put("regimensButtonLabel", source.getMessage("PatientDashboard.button.disable", null, Context.getLocale()));
-		map.put("visitsEncountersButtonLabel", source.getMessage("PatientDashboard.button.disable", null, Context.getLocale()));
-		map.put("demographicsButtonLabel", source.getMessage("PatientDashboard.button.enable", null, Context.getLocale()));
-		map.put("graphsButtonLabel", source.getMessage("PatientDashboard.button.disable", null, Context.getLocale()));
-		map.put("formentryButtonLabel", source.getMessage("PatientDashboard.button.enable", null, Context.getLocale()));
-		
-		map.put("overviewStatus", source.getMessage("PatientDashboard.status.disabled", null, Context.getLocale()));
-		map.put("regimensStatus", source.getMessage("PatientDashboard.status.enabled", null, Context.getLocale()));
-		map.put("visitsEncountersStatus", source.getMessage("PatientDashboard.status.enabled", null, Context.getLocale()));
-		map.put("demographicsStatus", source.getMessage("PatientDashboard.status.disabled", null, Context.getLocale()));
-		map.put("graphsStatus", source.getMessage("PatientDashboard.status.enabled", null, Context.getLocale()));
-		map.put("formentryStatus", source.getMessage("PatientDashboard.status.disabled", null, Context.getLocale()));
-		
+		if (Context.isAuthenticated()) {
+			AdministrationService as = Context.getAdministrationService();
+			List<GlobalProperty> properties = as.getGlobalPropertiesByPrefix("ajax.dashboard");
+			for (GlobalProperty property : properties) {
+				if (property.getProperty().equals("ajax.dashboard.overview")) {
+					map.put("overviewStatus", getStatus(property.getPropertyValue())[0]);
+					map.put("overviewButtonLabel", getStatus(property.getPropertyValue())[1]);
+				} else if (property.getProperty().equals("ajax.dashboard.regimens")) {
+					map.put("regimensStatus", getStatus(property.getPropertyValue())[0]);
+					map.put("regimensButtonLabel", getStatus(property.getPropertyValue())[1]);
+				} else if (property.getProperty().equals("ajax.dashboard.encountersvisits")) {
+					map.put("visitsEncountersStatus", getStatus(property.getPropertyValue())[0]);
+					map.put("visitsEncountersButtonLabel", getStatus(property.getPropertyValue())[1]);
+				} else if (property.getProperty().equals("ajax.dashboard.demographics")) {
+					map.put("demographicsStatus", getStatus(property.getPropertyValue())[0]);
+					map.put("demographicsButtonLabel", getStatus(property.getPropertyValue())[1]);
+				} else if (property.getProperty().equals("ajax.dashboard.graphs")) {
+					map.put("graphsStatus", getStatus(property.getPropertyValue())[0]);
+					map.put("graphsButtonLabel", getStatus(property.getPropertyValue())[1]);
+				} else if (property.getProperty().equals("ajax.dashboard.formentry")) {
+					map.put("formentryStatus", getStatus(property.getPropertyValue())[0]);
+					map.put("formentryButtonLabel", getStatus(property.getPropertyValue())[1]);
+				}
+			}
+		}
 		return "/admin/patients/managePatientDashboardForm";
+	}
+	
+	private String[] getStatus(String propertyValue) {
+		String[] status = { "", "" };
+		if (propertyValue.equals("enabled")) {
+			status[0] = source.getMessage("PatientDashboard.status.enabled", null, Context.getLocale());
+			status[1] = source.getMessage("PatientDashboard.button.disable", null, Context.getLocale());
+		} else if (propertyValue.equals("disabled")) {
+			status[0] = source.getMessage("PatientDashboard.status.disabled", null, Context.getLocale());
+			status[1] = source.getMessage("PatientDashboard.button.enable", null, Context.getLocale());
+		}
+		return status;
 	}
 	
 	@Override
