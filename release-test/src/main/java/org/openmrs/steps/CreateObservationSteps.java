@@ -45,8 +45,8 @@ public class CreateObservationSteps extends Steps {
 
     @Then("take me to Add Observation page with $heading as heading and has a button with label $buttonText")
     public void verifyAddObservationPage(String heading, String buttonText) {
-        assertPresenceOf(div().with(text(containsString(heading))));
-        assertPresenceOf(button("Save Observation"));
+        waitAndAssertFor(div().with(text(containsString(heading))));
+        waitAndAssertFor(button("Save Observation"));
 
     }
 
