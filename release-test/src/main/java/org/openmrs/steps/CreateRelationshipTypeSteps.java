@@ -33,7 +33,7 @@ public class CreateRelationshipTypeSteps extends Steps {
 	
 	@Then("take me to Relationship Type Management Page with $name as heading")
 	public void verifyRelationshipPage(String name) {
-		assertPresenceOf(div().with(text(containsString(name))));
+		waitAndAssertFor(div().with(text(containsString(name))));
 	}
 	
 	@Given("I am on the $name Page")
@@ -44,8 +44,8 @@ public class CreateRelationshipTypeSteps extends Steps {
 
 	@Then("take me to Add Relationship Type page with $heading as heading and has a button with label $buttonText")
 	public void verifyAddRelationshipTypePage(String heading, String buttonText) {
-		assertPresenceOf(div().with(text(containsString(heading))));
-		assertPresenceOf(button(buttonText));
+		waitAndAssertFor(div().with(text(containsString(heading))));
+		waitAndAssertFor(button(buttonText));
 	}
 
 	@When("I type $value as relationship of A to B")
