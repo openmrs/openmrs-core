@@ -42,6 +42,41 @@
 
 	<dependencyManagement>
 		<dependencies>
+            <!-- OpenMRS Dependencies -->
+            <dependency>
+                <groupId>org.openmrs.tools</groupId>
+                <artifactId>openmrs-tools</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.test</groupId>
+                <artifactId>openmrs-test</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.api</groupId>
+                <artifactId>openmrs-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.api</groupId>
+                <artifactId>openmrs-api</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.web</groupId>
+                <artifactId>openmrs-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.web</groupId>
+                <artifactId>openmrs-webapp</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
+            </dependency>
+
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>servlet-api</artifactId>
@@ -94,6 +129,17 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-tools</artifactId>
+                <version>2.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
 			<dependency>
 				<groupId>commons-collections</groupId>
@@ -295,6 +341,10 @@
 				<artifactId>hibernate-c3p0</artifactId>
 				<version>3.6.0.Final</version>
 				<exclusions>
+                    <exclusion>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-core</artifactId>
+                    </exclusion>
 					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
@@ -318,6 +368,10 @@
 				<artifactId>hibernate-ehcache</artifactId>
 				<version>3.6.0.Final</version>
 				<exclusions>
+                    <exclusion>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-core</artifactId>
+                    </exclusion>
 					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
@@ -341,6 +395,10 @@
 				<artifactId>hibernate-search</artifactId>
 				<version>3.4.0.Final</version>
 				<exclusions>
+                    <exclusion>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-core</artifactId>
+                    </exclusion>
 					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
@@ -364,6 +422,21 @@
 				<artifactId>liquibase-core</artifactId>
 				<version>2.0.5</version>
 			</dependency>
+            <dependency>
+                <groupId>org.openmrs.liquibase.ext</groupId>
+                <artifactId>modify-column</artifactId>
+                <version>2.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.liquibase.ext</groupId>
+                <artifactId>identity-insert</artifactId>
+                <version>1.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.liquibase.ext</groupId>
+                <artifactId>type-converter</artifactId>
+                <version>1.0.1</version>
+            </dependency>
 
 			<dependency>
 				<groupId>log4j</groupId>
@@ -584,6 +657,10 @@
 					<exclusion>
 						<groupId>hsqldb</groupId>
 						<artifactId>hsqldb</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -826,13 +903,6 @@
 		</plugins>
 	</build>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-oxm</artifactId>
-			<version>3.0.5.RELEASE</version>
-		</dependency>
-	</dependencies>
 	<reporting>
 		<plugins>
 			<!-- docfilessubdirs config set to include image resource -->
