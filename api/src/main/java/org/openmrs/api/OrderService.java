@@ -213,6 +213,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return the list of orders.
 	 * @should return orders with the given concept
 	 * @should return empty list for concept without orders
+	 * @since 1.10
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_ORDERS)
@@ -235,6 +236,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should get orders with dateActivated before the given date
 	 * @should not get orders with discontinuedDate before the given date
 	 * @should get orders with startDate before the given date
+	 * @since 1.10
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_ORDERS)
@@ -257,6 +259,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should get orders with dateActivated before the given date
 	 * @should not get orders with discontinuedDate before the given date
 	 * @should get orders with startDate before the given date
+	 * @since 1.10
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_ORDERS)
@@ -273,6 +276,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should get order sets
 	 * @should fail if null passed in
 	 * @throws APIException when error occurred
+	 * @since 1.10
 	 */
 	@Transactional(readOnly = true)
 	public List<Orderable<?>> getOrderables(String query) throws APIException;
@@ -304,7 +308,6 @@ public interface OrderService extends OpenmrsService {
 	 * Order. If this is was invalid Order, the {@link #voidOrder(Order, String)} method should
 	 * probably be used.
 	 * 
-	 * @since 1.9
 	 * @param order the order to be discontinued
 	 * @param reason for discontinuing the order
 	 * @param user the user discontinuing the order, defaults to authenticated user
@@ -316,7 +319,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if the passed in discontinue date is in the future
 	 * @should fail if the order is already discontinued
 	 * @should fail if the discontinue date is after the auto expire date
-	 */
+	 * @since 1.9	 
+*	 */
 	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public Order discontinueOrder(Order order, String reason, User user, Date discontinueDate) throws APIException;
 	
@@ -325,11 +329,11 @@ public interface OrderService extends OpenmrsService {
 	 * stopped. If this is was invalid Order, the {@link #voidOrder(Order, String)} method should be
 	 * used instead. This method uses dateDiscontinued = now and discontinuedBy = current use
 	 * 
-	 * @since 1.9
 	 * @param order the order to be discontinued
 	 * @param reason for discontinuing the order
 	 * @return the order that was discontinued
 	 * @throws APIException
+	 * @since 1.9
 	 */
 	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public Order discontinueOrder(Order order, String reason) throws APIException;
@@ -343,7 +347,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should fetch an orderable with given identifier
 	 * @should fail if null passed in
 	 * @should return null if no orderable found with given identifier
-	 */
+	 * @since 1.10	 
+ 	 */
 	@Transactional(readOnly = true)
 	public Orderable<?> getOrderable(String identifier) throws APIException;
 	
@@ -353,6 +358,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @return the new order number.
 	 * @should always return unique orderNumbers when called multiple times without saving orders
+	 * @since 1.10
 	 */
 	@Transactional(readOnly = true)
 	public String getNewOrderNumber();
