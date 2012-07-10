@@ -48,7 +48,7 @@
 </table>
 <br />
 
-<input type="submit" value='<openmrs:message code="Program.conversion.save"/>' onClick="$('theForm').submit()" />
+<input type="submit" value='<openmrs:message code="Program.conversion.save"/>' onClick="jQuery('#theForm').submit()" />
 </form>
 
 <script>

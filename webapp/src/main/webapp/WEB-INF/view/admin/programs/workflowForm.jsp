@@ -164,14 +164,14 @@ refreshStateTable();
 		var tmp = "";
 		for (var i = 0; i < displayedStates.length; ++i) {
 			var conceptId = displayedStates[i][0];
-			var isInitial = $('initial_' + conceptId).checked;
-			var isTerminal = $('terminal_' + conceptId).checked;
+			var isInitial = jQuery('#initial_' + conceptId).is(':checked');
+			var isTerminal = jQuery('#terminal_' + conceptId).is(':checked');
 			tmp += conceptId + ",";
 			tmp += isInitial + ",";
 			tmp += isTerminal + "|";
 		}
-		$('statesToSubmit').value = tmp;
-		$('theForm').submit();
+		jQuery('#statesToSubmit').val(tmp);
+		jQuery('#theForm').submit();
 	}
 </script>
 

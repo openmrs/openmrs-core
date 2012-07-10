@@ -21,23 +21,23 @@
 			}
 		);
 		
-		chooseFieldType($('fieldType').value);
+		chooseFieldType(jQuery('#fieldType').val());
 		
 	});
 
 
 	function chooseFieldType(fieldTypeId) {
 		if (fieldTypeId == 1) { // == 'Concept'
-			$('concept').style.display = "";
-			$('database').style.display = "none";
+			jQuery('#concept').css('display', "");
+			jQuery('#database').css('display', "none");
 		}
 		else if (fieldTypeId == 2) { // -- db element
-			$('database').style.display = "";
-			$('concept').style.display = "none";
+			jQuery('#database').css('display', "");
+			jQuery('#concept').css('display', "none");
 		}
 		else {
-			$('concept').style.display = "none";
-			$('database').style.display = "none";
+			jQuery('#concept').css('display', "none");
+			jQuery('#database').css('display', "none");
 		}
 	}
 

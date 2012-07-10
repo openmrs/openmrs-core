@@ -59,7 +59,7 @@
 		searchWidget = dojo.widget.manager.getWidgetById("pSearch");
 		
 		searchOn = new Array();
-		$('patientsFound').style.display = "none";
+		jQuery('#patientsFound').css('display', "none");
 		
 		var inputs = document.getElementsByTagName("input");
 		for (var i=0; i<inputs.length; i++) {
@@ -89,13 +89,13 @@
 		dojo.event.topic.subscribe("pSearch/objectsFound", 
 			function(msg) {
                 if(msg.objs.length == 1){
-                    $("patientListSize").innerHTML = 0;
+                    jQuery("#patientListSize").html(0);
                     dojo.style.hide("patientsSelect");
                 }else {
-                    $("patientListSize").innerHTML = msg.objs.length;
+                    jQuery("#patientListSize").html(msg.objs.length);
                     dojo.style.show("patientsSelect");
                 }
-				$('patientsFound').style.display = "";
+				jQuery('#patientsFound').css('display', "");
 			}
 		);
 		

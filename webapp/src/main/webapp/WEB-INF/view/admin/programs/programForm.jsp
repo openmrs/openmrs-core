@@ -189,7 +189,7 @@
 	</tr>
 </table>
 <br />
-<input type="submit" value='<openmrs:message code="Program.save"/>' onClick="$('theForm').submit()" />
+<input type="submit" value='<openmrs:message code="Program.save"/>' onClick="jQuery('#theForm').submit()" />
 </form>
 
 <script type="text/javascript">
