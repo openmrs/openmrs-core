@@ -21,11 +21,15 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.web.WebConstants;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 
 @Controller
 public class ManagePatientDashboardController implements MessageSourceAware {
@@ -38,44 +42,71 @@ public class ManagePatientDashboardController implements MessageSourceAware {
 	/**
 	 * render the patient dashboard model and direct to the view
 	 */
-	@RequestMapping("/admin/patients/managePatientDashboard.form")
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/admin/patients/managePatientDashboard.form")
 	protected String renderDashboard(ModelMap map) throws Exception {
 		if (Context.isAuthenticated()) {
 			AdministrationService as = Context.getAdministrationService();
 			List<GlobalProperty> properties = as.getGlobalPropertiesByPrefix("ajax.dashboard");
+			
+			if (properties.isEmpty()) {
+				List<GlobalProperty> newprops = new ArrayList<GlobalProperty>();
+				newprops.add(new GlobalProperty("ajax.dashboard.overview", "Disabled"));
+				newprops.add(new GlobalProperty("ajax.dashboard.regimens", "Onclick"));
+				newprops.add(new GlobalProperty("ajax.dashboard.encountersvisits", "Preload"));
+				newprops.add(new GlobalProperty("ajax.dashboard.demographics", "Onclick"));
+				newprops.add(new GlobalProperty("ajax.dashboard.graphs", "Disabled"));
+				newprops.add(new GlobalProperty("ajax.dashboard.formentry", "Preload"));
+				as.saveGlobalProperties(newprops);
+				properties = as.getGlobalPropertiesByPrefix("ajax.dashboard");
+			}
 			for (GlobalProperty property : properties) {
 				if (property.getProperty().equals("ajax.dashboard.overview")) {
-					map.put("overviewStatus", getStatus(property.getPropertyValue())[0]);
-					map.put("overviewButtonLabel", getStatus(property.getPropertyValue())[1]);
+					map.put("overviewStatus", property.getPropertyValue());
+					map.put("overviewStatusLabel", getStatus(property.getPropertyValue()));
 				} else if (property.getProperty().equals("ajax.dashboard.regimens")) {
-					map.put("regimensStatus", getStatus(property.getPropertyValue())[0]);
-					map.put("regimensButtonLabel", getStatus(property.getPropertyValue())[1]);
+					map.put("regimensStatus", property.getPropertyValue());
+					map.put("regimensStatusLabel", getStatus(property.getPropertyValue()));
 				} else if (property.getProperty().equals("ajax.dashboard.encountersvisits")) {
-					map.put("visitsEncountersStatus", getStatus(property.getPropertyValue())[0]);
-					map.put("visitsEncountersButtonLabel", getStatus(property.getPropertyValue())[1]);
+					map.put("visitsEncountersStatus", property.getPropertyValue());
+					map.put("visitsEncountersStatusLabel", getStatus(property.getPropertyValue()));
 				} else if (property.getProperty().equals("ajax.dashboard.demographics")) {
-					map.put("demographicsStatus", getStatus(property.getPropertyValue())[0]);
-					map.put("demographicsButtonLabel", getStatus(property.getPropertyValue())[1]);
+					map.put("demographicsStatus", property.getPropertyValue());
+					map.put("demographicsStatusLabel", getStatus(property.getPropertyValue()));
 				} else if (property.getProperty().equals("ajax.dashboard.graphs")) {
-					map.put("graphsStatus", getStatus(property.getPropertyValue())[0]);
-					map.put("graphsButtonLabel", getStatus(property.getPropertyValue())[1]);
+					map.put("graphsStatus", property.getPropertyValue());
+					map.put("graphsStatusLabel", getStatus(property.getPropertyValue()));
 				} else if (property.getProperty().equals("ajax.dashboard.formentry")) {
-					map.put("formentryStatus", getStatus(property.getPropertyValue())[0]);
-					map.put("formentryButtonLabel", getStatus(property.getPropertyValue())[1]);
+					map.put("formentryStatus", property.getPropertyValue());
+					map.put("formentryStatusLabel", getStatus(property.getPropertyValue()));
 				}
 			}
 		}
 		return "/admin/patients/managePatientDashboardForm";
 	}
 	
-	private String[] getStatus(String propertyValue) {
-		String[] status = { "", "" };
-		if (propertyValue.equals("enabled")) {
-			status[0] = source.getMessage("PatientDashboard.status.enabled", null, Context.getLocale());
-			status[1] = source.getMessage("PatientDashboard.button.disable", null, Context.getLocale());
-		} else if (propertyValue.equals("disabled")) {
-			status[0] = source.getMessage("PatientDashboard.status.disabled", null, Context.getLocale());
-			status[1] = source.getMessage("PatientDashboard.button.enable", null, Context.getLocale());
+	@RequestMapping(method = RequestMethod.POST, value = "/admin/patients/savePatientDashboard.form")
+	protected String saveTabStatus(WebRequest request, @RequestParam(required = true, value = "tabId") String tabId,
+	        @RequestParam(required = true, value = "status") String status) throws Exception {
+		System.out.println("*****" + tabId + "*******" + status);
+		if (Context.isAuthenticated()) {
+			AdministrationService as = Context.getAdministrationService();
+			GlobalProperty property = new GlobalProperty("ajax.dashboard." + tabId, status);
+			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Saved successfully", WebRequest.SCOPE_SESSION);
+			as.saveGlobalProperty(property);
+		}
+		
+		return "redirect:" + "/admin/patients/managePatientDashboard.form";
+	}
+	
+	private String getStatus(String propertyValue) {
+		String status = "";
+		if (propertyValue.equals("Onclick")) {
+			status = source.getMessage("PatientDashboard.status.onclick", null, Context.getLocale());
+		} else if (propertyValue.equals("Preload")) {
+			status = source.getMessage("PatientDashboard.status.preload", null, Context.getLocale());
+		} else if (propertyValue.equals("Disabled")) {
+			status = source.getMessage("PatientDashboard.status.disabled", null, Context.getLocale());
 		}
 		return status;
 	}
