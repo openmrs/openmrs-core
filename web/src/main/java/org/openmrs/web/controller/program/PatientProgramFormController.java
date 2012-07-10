@@ -82,7 +82,15 @@ public class PatientProgramFormController implements Controller {
 			location = null;
 		}
 		
-		Program program = pws.getProgram(Integer.valueOf(programIdStr));
+		Program program;
+		try {
+			program = pws.getProgram(Integer.valueOf(programIdStr));
+		}
+		catch (NumberFormatException e) {
+			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.programRequired");
+			return new ModelAndView(new RedirectView(returnPage));
+		}
+		
 		if (!pws.getPatientPrograms(patient, program, null, completionDate, enrollmentDate, null, false).isEmpty())
 			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.already");
 		else {

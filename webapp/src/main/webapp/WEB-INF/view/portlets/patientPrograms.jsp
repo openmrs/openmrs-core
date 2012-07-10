@@ -538,7 +538,13 @@
 	});
 
 	function handleEnrollInProgram() {
-		$j('#enrollForm').submit();
+		if ($j('#programSelector').val() == ""){
+			alert('<openmrs:message code="Program.error.programRequired" />');
+		}
+		else{
+			$j('#enrollForm').submit();
+		}
+
 	}
 </script>
 
