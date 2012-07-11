@@ -74,7 +74,7 @@ public abstract class Story extends JUnitStory {
 	}
 
     private StoryReporterBuilder createStoryReporter() {
-        return new StoryReporterBuilder().withDefaultFormats().withFormats(Format.HTML, Format.CONSOLE);
+        return new StoryReporterBuilder().withDefaultFormats().withFormats(Format.HTML, Format.CONSOLE, Format.XML);
     }
 
     @Override
