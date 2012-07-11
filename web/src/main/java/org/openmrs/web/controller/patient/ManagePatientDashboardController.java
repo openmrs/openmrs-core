@@ -58,7 +58,7 @@ public class ManagePatientDashboardController implements MessageSourceAware {
 				newprops.add(new GlobalProperty("ajax.dashboard.graphs", "Disabled"));
 				newprops.add(new GlobalProperty("ajax.dashboard.formentry", "Preload"));
 				as.saveGlobalProperties(newprops);
-				properties = as.getGlobalPropertiesByPrefix("ajax.dashboard");
+				properties = newprops;
 			}
 			for (GlobalProperty property : properties) {
 				if (property.getProperty().equals("ajax.dashboard.overview")) {

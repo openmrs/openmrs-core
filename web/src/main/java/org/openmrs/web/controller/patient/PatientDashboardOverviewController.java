@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.WebRequest;
 
 @Controller
 public class PatientDashboardOverviewController {
@@ -41,22 +42,22 @@ public class PatientDashboardOverviewController {
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping("/patientDashboardOverview.form")
-	protected String renderDashboard(@RequestParam(required = true, value = "patientId") Integer patientId, ModelMap map)
-	        throws Exception {
-		Patient patient = (Patient) RequestContextHolder.currentRequestAttributes().getAttribute(
-		    WebConstants.AJAX_DASHBOARD_PATIENT + patientId, RequestAttributes.SCOPE_SESSION);
-		String patientVariation = (String) RequestContextHolder.currentRequestAttributes().getAttribute(
-		    WebConstants.AJAX_DASHBOARD_PATIENT_VARIATION + patientId, RequestAttributes.SCOPE_SESSION);
-		PatientIdentifier identifier = (PatientIdentifier) RequestContextHolder.currentRequestAttributes().getAttribute(
-		    WebConstants.AJAX_DASHBOARD_IDENTIFIER + patientId, RequestAttributes.SCOPE_SESSION);
-		PersonName name = (PersonName) RequestContextHolder.currentRequestAttributes().getAttribute(
-		    WebConstants.AJAX_DASHBOARD_NAME + patientId, RequestAttributes.SCOPE_SESSION);
-		PersonAddress address = (PersonAddress) RequestContextHolder.currentRequestAttributes().getAttribute(
-		    WebConstants.AJAX_DASHBOARD_ADDRESS + patientId, RequestAttributes.SCOPE_SESSION);
-		String causeOfDeath = (String) RequestContextHolder.currentRequestAttributes().getAttribute(
-		    WebConstants.AJAX_DASHBOARD_CAUSE_OF_DEATH + patientId, RequestAttributes.SCOPE_SESSION);
-		Set<Link> links = (Set<Link>) RequestContextHolder.currentRequestAttributes().getAttribute(
-		    WebConstants.AJAX_DASHBOARD_ADD_ENCOUNTER_TO_VISIT_LINKS + patientId, RequestAttributes.SCOPE_SESSION);
+	protected String renderDashboard(WebRequest request,
+	        @RequestParam(required = true, value = "patientId") Integer patientId, ModelMap map) throws Exception {
+		Patient patient = (Patient) request.getAttribute(WebConstants.AJAX_DASHBOARD_PATIENT_VARIATION + patientId,
+		    WebRequest.SCOPE_SESSION);
+		String patientVariation = (String) request.getAttribute(WebConstants.AJAX_DASHBOARD_PATIENT_VARIATION + patientId,
+		    WebRequest.SCOPE_SESSION);
+		PatientIdentifier identifier = (PatientIdentifier) request.getAttribute(WebConstants.AJAX_DASHBOARD_IDENTIFIER
+		        + patientId, WebRequest.SCOPE_SESSION);
+		PersonName name = (PersonName) request.getAttribute(WebConstants.AJAX_DASHBOARD_NAME + patientId,
+		    WebRequest.SCOPE_SESSION);
+		PersonAddress address = (PersonAddress) request.getAttribute(WebConstants.AJAX_DASHBOARD_ADDRESS + patientId,
+		    WebRequest.SCOPE_SESSION);
+		String causeOfDeath = (String) request.getAttribute(WebConstants.AJAX_DASHBOARD_CAUSE_OF_DEATH + patientId,
+		    WebRequest.SCOPE_SESSION);
+		Set<Link> links = (Set<Link>) request.getAttribute(WebConstants.AJAX_DASHBOARD_ADD_ENCOUNTER_TO_VISIT_LINKS
+		        + patientId, RequestAttributes.SCOPE_SESSION);
 		
 		map.put("patient", patient);
 		map.put("patientVariation", patientVariation);
