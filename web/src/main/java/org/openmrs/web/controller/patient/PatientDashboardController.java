@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller.patient;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -22,11 +23,13 @@ import javax.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.web.extension.ExtensionUtil;
@@ -39,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.WebRequest;
 
 @Controller
 public class PatientDashboardController {
@@ -50,8 +54,8 @@ public class PatientDashboardController {
 	 * render the patient dashboard model and direct to the view
 	 */
 	@RequestMapping("/patientDashboard.form")
-	protected String renderDashboard(@RequestParam(required = true, value = "patientId") Integer patientId, ModelMap map)
-	        throws Exception {
+	protected String renderDashboard(WebRequest request,
+	        @RequestParam(required = true, value = "patientId") Integer patientId, ModelMap map) throws Exception {
 		
 		// get the patient
 		
@@ -140,6 +144,36 @@ public class PatientDashboardController {
 		Set<Link> links = ExtensionUtil.getAllAddEncounterToVisitLinks();
 		map.put("allAddEncounterToVisitLinks", links);
 		
+		AdministrationService as = Context.getAdministrationService();
+		List<GlobalProperty> properties = as.getGlobalPropertiesByPrefix("ajax.dashboard");
+		
+		if (properties.isEmpty()) {
+			List<GlobalProperty> newprops = new ArrayList<GlobalProperty>();
+			newprops.add(new GlobalProperty("ajax.dashboard.overview", "Disabled"));
+			newprops.add(new GlobalProperty("ajax.dashboard.regimens", "Onclick"));
+			newprops.add(new GlobalProperty("ajax.dashboard.encountersvisits", "Preload"));
+			newprops.add(new GlobalProperty("ajax.dashboard.demographics", "Onclick"));
+			newprops.add(new GlobalProperty("ajax.dashboard.graphs", "Disabled"));
+			newprops.add(new GlobalProperty("ajax.dashboard.formentry", "Preload"));
+			as.saveGlobalProperties(newprops);
+			properties = newprops;
+		}
+		for (GlobalProperty property : properties) {
+			if (property.getProperty().equals("ajax.dashboard.overview")) {
+				map.put("overviewStatus", property.getPropertyValue());
+			} else if (property.getProperty().equals("ajax.dashboard.regimens")) {
+				map.put("regimensStatus", property.getPropertyValue());
+			} else if (property.getProperty().equals("ajax.dashboard.encountersvisits")) {
+				map.put("visitsEncountersStatus", property.getPropertyValue());
+			} else if (property.getProperty().equals("ajax.dashboard.demographics")) {
+				map.put("demographicsStatus", property.getPropertyValue());
+			} else if (property.getProperty().equals("ajax.dashboard.graphs")) {
+				map.put("graphsStatus", property.getPropertyValue());
+			} else if (property.getProperty().equals("ajax.dashboard.formentry")) {
+				map.put("formentryStatus", property.getPropertyValue());
+			}
+		}
+		
 		map.put("ajaxEnabled", true);
 		map.put("ajaxOverviewDisabled", false);
 		map.put("ajaxRegimensDisabled", true);
@@ -148,20 +182,16 @@ public class PatientDashboardController {
 		map.put("ajaxGraphsDisabled", false);
 		map.put("ajaxFormEntryDisabled", true);
 		
-		RequestContextHolder.currentRequestAttributes().setAttribute(WebConstants.AJAX_DASHBOARD_PATIENT + patientId,
-		    patient, RequestAttributes.SCOPE_SESSION);
-		RequestContextHolder.currentRequestAttributes().setAttribute(
-		    WebConstants.AJAX_DASHBOARD_PATIENT_VARIATION + patientId, patientVariation, RequestAttributes.SCOPE_SESSION);
-		RequestContextHolder.currentRequestAttributes().setAttribute(WebConstants.AJAX_DASHBOARD_IDENTIFIER + patientId,
-		    identifier, RequestAttributes.SCOPE_SESSION);
-		RequestContextHolder.currentRequestAttributes().setAttribute(WebConstants.AJAX_DASHBOARD_NAME + patientId, name,
-		    RequestAttributes.SCOPE_SESSION);
-		RequestContextHolder.currentRequestAttributes().setAttribute(WebConstants.AJAX_DASHBOARD_ADDRESS + patientId,
-		    address, RequestAttributes.SCOPE_SESSION);
-		RequestContextHolder.currentRequestAttributes().setAttribute(WebConstants.AJAX_DASHBOARD_CAUSE_OF_DEATH + patientId,
-		    causeOfDeathOther, RequestAttributes.SCOPE_SESSION);
-		RequestContextHolder.currentRequestAttributes().setAttribute(
-		    WebConstants.AJAX_DASHBOARD_ADD_ENCOUNTER_TO_VISIT_LINKS + patientId, links, RequestAttributes.SCOPE_SESSION);
+		request.setAttribute(WebConstants.AJAX_DASHBOARD_PATIENT + patientId, patient, WebRequest.SCOPE_SESSION);
+		request.setAttribute(WebConstants.AJAX_DASHBOARD_PATIENT_VARIATION + patientId, patientVariation,
+		    WebRequest.SCOPE_SESSION);
+		request.setAttribute(WebConstants.AJAX_DASHBOARD_IDENTIFIER + identifier, patient, WebRequest.SCOPE_SESSION);
+		request.setAttribute(WebConstants.AJAX_DASHBOARD_NAME + patientId, name, WebRequest.SCOPE_SESSION);
+		request.setAttribute(WebConstants.AJAX_DASHBOARD_ADDRESS + patientId, address, WebRequest.SCOPE_SESSION);
+		request.setAttribute(WebConstants.AJAX_DASHBOARD_CAUSE_OF_DEATH + patientId, causeOfDeathOther,
+		    WebRequest.SCOPE_SESSION);
+		request.setAttribute(WebConstants.AJAX_DASHBOARD_ADD_ENCOUNTER_TO_VISIT_LINKS + patientId, links,
+		    WebRequest.SCOPE_SESSION);
 		
 		return "patientDashboardForm";
 	}
