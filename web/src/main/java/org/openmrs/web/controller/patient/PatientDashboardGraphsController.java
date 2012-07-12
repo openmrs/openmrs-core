@@ -44,7 +44,7 @@ public class PatientDashboardGraphsController {
 	@RequestMapping("/patientDashboardGraphs.form")
 	protected String renderDashboard(WebRequest request,
 	        @RequestParam(required = true, value = "patientId") Integer patientId, ModelMap map) throws Exception {
-		Patient patient = (Patient) request.getAttribute(WebConstants.AJAX_DASHBOARD_PATIENT_VARIATION + patientId,
+		Patient patient = (Patient) request.getAttribute(WebConstants.AJAX_DASHBOARD_PATIENT + patientId,
 		    WebRequest.SCOPE_SESSION);
 		String patientVariation = (String) request.getAttribute(WebConstants.AJAX_DASHBOARD_PATIENT_VARIATION + patientId,
 		    WebRequest.SCOPE_SESSION);

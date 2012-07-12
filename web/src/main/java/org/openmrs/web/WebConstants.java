@@ -105,4 +105,6 @@ public class WebConstants {
 	public static final String AJAX_DASHBOARD_CAUSE_OF_DEATH = "ajax_dashboard_cause_of_death_";
 	
 	public static final String AJAX_DASHBOARD_ADD_ENCOUNTER_TO_VISIT_LINKS = "ajax_dashboard_encounter_to_visit_links_";
+	
+	public static final String AJAX_DASHBOARD_LAST_VIEWED_TAB = "ajax_dashboard_last_viewed_tab";
 }

@@ -15,7 +15,9 @@ package org.openmrs.web.controller.patient;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -150,37 +152,39 @@ public class PatientDashboardController {
 		if (properties.isEmpty()) {
 			List<GlobalProperty> newprops = new ArrayList<GlobalProperty>();
 			newprops.add(new GlobalProperty("ajax.dashboard.overview", "Disabled"));
-			newprops.add(new GlobalProperty("ajax.dashboard.regimens", "Onclick"));
-			newprops.add(new GlobalProperty("ajax.dashboard.encountersvisits", "Preload"));
-			newprops.add(new GlobalProperty("ajax.dashboard.demographics", "Onclick"));
+			newprops.add(new GlobalProperty("ajax.dashboard.regimens", "Disabled"));
+			newprops.add(new GlobalProperty("ajax.dashboard.encountersvisits", "Disabled"));
+			newprops.add(new GlobalProperty("ajax.dashboard.demographics", "Disabled"));
 			newprops.add(new GlobalProperty("ajax.dashboard.graphs", "Disabled"));
-			newprops.add(new GlobalProperty("ajax.dashboard.formentry", "Preload"));
+			newprops.add(new GlobalProperty("ajax.dashboard.formentry", "Disabled"));
 			as.saveGlobalProperties(newprops);
 			properties = newprops;
 		}
+		Map<String, String> ajaxProperties = new HashMap<String, String>();
 		for (GlobalProperty property : properties) {
 			if (property.getProperty().equals("ajax.dashboard.overview")) {
-				map.put("overviewStatus", property.getPropertyValue());
+				ajaxProperties.put("ajaxOverview", property.getPropertyValue());
 			} else if (property.getProperty().equals("ajax.dashboard.regimens")) {
-				map.put("regimensStatus", property.getPropertyValue());
+				ajaxProperties.put("ajaxRegimens", property.getPropertyValue());
 			} else if (property.getProperty().equals("ajax.dashboard.encountersvisits")) {
-				map.put("visitsEncountersStatus", property.getPropertyValue());
+				ajaxProperties.put("ajaxVisitsEncounters", property.getPropertyValue());
 			} else if (property.getProperty().equals("ajax.dashboard.demographics")) {
-				map.put("demographicsStatus", property.getPropertyValue());
+				ajaxProperties.put("ajaxDemographics", property.getPropertyValue());
 			} else if (property.getProperty().equals("ajax.dashboard.graphs")) {
-				map.put("graphsStatus", property.getPropertyValue());
+				ajaxProperties.put("ajaxGraphs", property.getPropertyValue());
 			} else if (property.getProperty().equals("ajax.dashboard.formentry")) {
-				map.put("formentryStatus", property.getPropertyValue());
+				ajaxProperties.put("ajaxFormEntry", property.getPropertyValue());
 			}
 		}
 		
-		map.put("ajaxEnabled", true);
-		map.put("ajaxOverviewDisabled", false);
-		map.put("ajaxRegimensDisabled", true);
-		map.put("ajaxVisitsEncountersDisabled", false);
-		map.put("ajaxDemographicsDisabled", true);
-		map.put("ajaxGraphsDisabled", false);
-		map.put("ajaxFormEntryDisabled", true);
+		if (request.getAttribute(WebConstants.AJAX_DASHBOARD_LAST_VIEWED_TAB, WebRequest.SCOPE_SESSION) == null) {
+			ajaxProperties.put("ajaxOverview", "Disabled");
+		} else {
+			String disabledTab = (String) request.getAttribute(WebConstants.AJAX_DASHBOARD_LAST_VIEWED_TAB,
+			    WebRequest.SCOPE_SESSION);
+			ajaxProperties.put(disabledTab, "Disabled");
+		}
+		map.put("ajaxProperties", ajaxProperties);
 		
 		request.setAttribute(WebConstants.AJAX_DASHBOARD_PATIENT + patientId, patient, WebRequest.SCOPE_SESSION);
 		request.setAttribute(WebConstants.AJAX_DASHBOARD_PATIENT_VARIATION + patientId, patientVariation,
