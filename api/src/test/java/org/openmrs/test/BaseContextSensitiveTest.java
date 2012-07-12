@@ -54,7 +54,7 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.XmlDataSet;
-import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
+import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
@@ -567,7 +567,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (useInMemoryDatabase()) {
 			// use the hsql datatypefactory so that boolean properties work correctly
 			DatabaseConfig config = dbUnitConn.getConfig();
-			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new HsqldbDataTypeFactory());
+			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
 			
 			// for the hsql database
 			String sql = "SET REFERENTIAL_INTEGRITY FALSE";
