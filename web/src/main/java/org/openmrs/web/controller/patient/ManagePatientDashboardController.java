@@ -52,11 +52,11 @@ public class ManagePatientDashboardController implements MessageSourceAware {
 			if (properties.isEmpty()) {
 				List<GlobalProperty> newprops = new ArrayList<GlobalProperty>();
 				newprops.add(new GlobalProperty("ajax.dashboard.overview", "Disabled"));
-				newprops.add(new GlobalProperty("ajax.dashboard.regimens", "Onclick"));
-				newprops.add(new GlobalProperty("ajax.dashboard.encountersvisits", "Preload"));
-				newprops.add(new GlobalProperty("ajax.dashboard.demographics", "Onclick"));
+				newprops.add(new GlobalProperty("ajax.dashboard.regimens", "Disabled"));
+				newprops.add(new GlobalProperty("ajax.dashboard.encountersvisits", "Disabled"));
+				newprops.add(new GlobalProperty("ajax.dashboard.demographics", "Disabled"));
 				newprops.add(new GlobalProperty("ajax.dashboard.graphs", "Disabled"));
-				newprops.add(new GlobalProperty("ajax.dashboard.formentry", "Preload"));
+				newprops.add(new GlobalProperty("ajax.dashboard.formentry", "Disabled"));
 				as.saveGlobalProperties(newprops);
 				properties = newprops;
 			}
@@ -88,11 +88,11 @@ public class ManagePatientDashboardController implements MessageSourceAware {
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/patients/savePatientDashboard.form")
 	protected String saveTabStatus(WebRequest request, @RequestParam(required = true, value = "tabId") String tabId,
 	        @RequestParam(required = true, value = "status") String status) throws Exception {
-		System.out.println("*****" + tabId + "*******" + status);
 		if (Context.isAuthenticated()) {
 			AdministrationService as = Context.getAdministrationService();
 			GlobalProperty property = new GlobalProperty("ajax.dashboard." + tabId, status);
-			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Saved successfully", WebRequest.SCOPE_SESSION);
+			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, source.getMessage("PatientDashboard.saved.success", null,
+			    Context.getLocale()), WebRequest.SCOPE_SESSION);
 			as.saveGlobalProperty(property);
 		}
 		
