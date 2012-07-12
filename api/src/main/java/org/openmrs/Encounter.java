@@ -411,14 +411,15 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return provider for person
 	 * @should return null if there is no provider for person
 	 * @should return same provider for person if called twice
+	 * @should not return a voided provider
 	 */
 	public Person getProvider() {
 		if (encounterProviders == null || encounterProviders.isEmpty()) {
 			return null;
 		} else {
 			for (EncounterProvider encounterProvider : encounterProviders) {
-				//Return the first person in the list
-				if (encounterProvider.getProvider().getPerson() != null) {
+				// Return the first non-voided provider associated with a person in the list
+				if (!encounterProvider.isVoided() && encounterProvider.getProvider().getPerson() != null) {
 					return encounterProvider.getProvider().getPerson();
 				}
 			}
@@ -619,7 +620,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	public void addProvider(EncounterRole role, Provider provider) {
 		// first, make sure the provider isn't already there
 		for (EncounterProvider ep : encounterProviders) {
-			if (ep.getEncounterRole().equals(role) && ep.getProvider().equals(provider))
+			if (ep.getEncounterRole().equals(role) && ep.getProvider().equals(provider) && !ep.isVoided())
 				return;
 		}
 		EncounterProvider encounterProvider = new EncounterProvider();
@@ -652,7 +653,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 					encounterProvider.setVoided(true);
 					encounterProvider.setDateVoided(new Date());
 					encounterProvider.setVoidedBy(Context.getAuthenticatedUser());
-				} else {
+				} else if (!encounterProvider.isVoided()) {
 					hasProvider = true;
 				}
 			}

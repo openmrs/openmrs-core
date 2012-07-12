@@ -926,6 +926,39 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#getProvider()
+	 * @verifies should exclude voided providers
+	 */
+	@Test
+	public void getProvider_shouldExcludeVoidedProviders() throws Exception {
+		//given
+		Encounter encounter = new Encounter();
+		EncounterRole role = new EncounterRole();
+		
+		Provider provider = new Provider();
+		Provider anotherProvider = new Provider();
+		
+		Person person = new Person();
+		Person anotherPerson = new Person();
+		
+		provider.setPerson(person);
+		anotherProvider.setPerson(anotherPerson);
+		
+		// add the first provider
+		encounter.setProvider(role, provider);
+		
+		// replace with the second provider
+		encounter.setProvider(role, anotherProvider);
+		
+		//when
+		Person result = encounter.getProvider();
+		
+		//then
+		Assert.assertEquals(anotherPerson, result);
+		
+	}
+	
+	/**
+	 * @see Encounter#getProvider()
 	 * @verifies return same provider for person if called twice
 	 */
 	@Test
@@ -1163,6 +1196,41 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		
 		//should contain both the first (voided) and second (non voided) providers
 		Assert.assertTrue(encounter.getProvidersByRole(role, true).containsAll(Arrays.asList(provider1, provider2)));
+	}
+	
+	/**
+	 * @see Encounter#setProvider(EncounterRole,Provider)
+	 * @verifies previously voided provider correctly re-added
+	 */
+	@Test
+	public void setProvider_shouldAddPreviouslyVoidedProviderAgain() throws Exception {
+		//given
+		Encounter encounter = new Encounter();
+		EncounterRole role = new EncounterRole();
+		
+		Provider provider = new Provider();
+		Provider anotherProvider = new Provider();
+		
+		Person person = new Person();
+		Person anotherPerson = new Person();
+		
+		provider.setPerson(person);
+		anotherProvider.setPerson(anotherPerson);
+		
+		// add the first provider
+		encounter.setProvider(role, provider);
+		
+		// replace with the second provider
+		encounter.setProvider(role, anotherProvider);
+		
+		// now replace back with the first provider
+		encounter.setProvider(role, provider);
+		
+		//when
+		Person result = encounter.getProvider();
+		
+		//then
+		Assert.assertEquals(person, result);
 	}
 	
 	/**
