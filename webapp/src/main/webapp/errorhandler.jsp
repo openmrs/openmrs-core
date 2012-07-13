@@ -1,5 +1,6 @@
 <%@ page isErrorPage="true" import="java.io.*" %>
 
+<%@ taglib uri="/openmrs" prefix="openmrs" %>
 <%-- Exception Handler --%>
 <font color="red">
 <h2>An error has occurred!</h2>
@@ -10,6 +11,7 @@ The following error happened somewhere on this page:<br/>
 (The full error stack trace output is in the source of this page.)
 </font>
 
+<openmrs:extensionPoint pointId="org.openmrs.errorHandler" type="html" />
 <%
 org.apache.commons.logging.LogFactory.getLog(getClass()).error("Error on page " + request.getRequestURI(), exception);
 
