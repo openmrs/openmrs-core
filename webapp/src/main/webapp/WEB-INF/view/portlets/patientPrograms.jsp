@@ -7,56 +7,63 @@
 <openmrs:htmlInclude file="/dwr/util.js" />
 
 <script type="text/javascript">
-	function getDateString(d) {
-		var str = '';
-		if (d != null) {
-			var date = d.getDate();
-			if (date < 10)
-				str += "0";
-			str += date;
-			str += '-';
-			var month = d.getMonth() + 1;
-			if (month < 10)
-				str += "0";
-			str += month;
-			str += '-';
-			str += (d.getYear() + 1900);
-		}
-		return str;
-	}
 	
 	function isEmpty(o) {
 		return o == null || o == '';
 	}
 	
-	<%-- TODO: FORMATDATE AND PARSEDATE ARE TERRIBLE HACKS --%>
-	function formatDate(ymd) {
-		if (ymd == null || ymd == '')
-			return '';
-		<c:choose>
-			<c:when test="${model.locale == 'fr' || model.locale == 'en_GB' || model.locale == 'pt' || model.locale == 'it' || model.locale == 'es'}">
-				return ymd.substring(8, 10) + '/' + ymd.substring(5, 7) + '/' + ymd.substring(0, 4);
-			</c:when>
-			<c:otherwise>
-				return ymd.substring(5, 7) + '/' + ymd.substring(8, 10) + '/' + ymd.substring(0, 4);
-			</c:otherwise>
-		</c:choose>
-	}
+	/** 
+	 * Parses a string of a given format into a js date object.
+	 * see web/openmrs.js parseSimpleDate
+	 * 
+	 * @param date
+	 *		string object to parse
+	 * @param format
+	 *		if not given a default format is applied
+	 * @return a js date object or null if string can't be parsed
+	 */
+	function parseDate(date, format) {
+		if (date == null || date == '')
+			return null;
 	
-	function parseDate(date) {
+		if (format == null || typeof (format) == 'undefined')
+			format = '<openmrs:datePattern localize="false" />';
+		format = format.toLowerCase();
+		return parseSimpleDate(date, format);
+	}
+
+	/** 
+	 * Formats a js date object into a string of a given format.
+	 * Format should contain:
+	 * 'yyyy' for a year, 'mm' for a month, 'dd' for a day
+	 * 
+	 * @param date
+	 *		js date object to parse
+	 * @param format
+	 *		if not given a default format is applied
+	 * @return string representation of date
+	 */
+	function formatDate(date, format) {
 		if (date == null || date == '')
 			return '';
-		<c:choose>
-			<c:when test="${model.locale == 'fr' || model.locale == 'en_GB' || model.locale == 'pt' || model.locale == 'it' || model.locale == 'es'}">
-				// dd/mm/yyyy 01/34/6789
-				return date.substring(6,10) + '-' + date.substring(3,5) + '-' + date.substring(0,2);
-			</c:when>
-			<c:otherwise>
-				// mm/dd/yyyy 01/34/6789
-				return date.substring(6,10) + '-' + date.substring(0,2) + '-' + date.substring(3,5);
-			</c:otherwise>
-		</c:choose>
-	}
+		if (format == null || typeof (format) == 'undefined')
+				format = '<openmrs:datePattern localize="false"/>';
+		format = format.toLowerCase();
+
+		var yyyy = date.getYear() + 1900
+		var mm = date.getMonth() + 1;
+		if (mm < 10)
+			mm = "0" + mm;
+		var dd = date.getDate();
+		if (dd < 10)
+			dd = "0" + dd;
+
+		format = format.replace('yyyy', yyyy);
+		format = format.replace('mm', mm);
+		format = format.replace('dd', dd);
+
+		return format;
+ 	}
 	
 	var currentProgramBeingEdited = null;
 	var currentWorkflowBeingEdited = null;
@@ -70,7 +77,7 @@
 		var endDate = parseDate($('completionDateElement').value);
 		var locationId = $('programLocationElement').value;
 		currentProgramBeingEdited = null;
-		DWRProgramWorkflowService.updatePatientProgram(idToSave, startDate, endDate, locationId, function() {
+		DWRProgramWorkflowService.updatePatientProgram(idToSave, formatDate(startDate,'yyyy-mm-dd'), formatDate(endDate,'yyyy-mm-dd'), locationId, function() {
 				hideLayer('editPatientProgramPopup');
 				refreshPage();
 			});
@@ -95,7 +102,7 @@
 		var wfId = currentWorkflowBeingEdited;
 		var stateId = DWRUtil.getValue('changeToState');
 		var onDate = parseDate(DWRUtil.getValue('changeStateOnDate'));
-		DWRProgramWorkflowService.changeToState(ppId, wfId, stateId, onDate, function() {
+		DWRProgramWorkflowService.changeToState(ppId, wfId, stateId, formatDate(onDate,'yyyy-mm-dd'), function() {
 				currentWorkflowBeingEdited = null;
 				refreshPage();
 			});
@@ -131,8 +138,8 @@
 						function(state) {
 							++count;
 							var str = '';
-							if (!isEmpty(state.startDate)) str += ' <openmrs:message code="general.fromDate" javaScriptEscape="true"/> ' + getDateString(state.startDate);
-							if (!isEmpty(state.endDate)) str += ' <openmrs:message code="general.toDate" javaScriptEscape="true" /> ' + getDateString(state.endDate);
+							if (!isEmpty(state.startDate)) str += ' <openmrs:message code="general.fromDate" javaScriptEscape="true"/> ' + formatDate(state.startDate);
+							if (!isEmpty(state.endDate)) str += ' <openmrs:message code="general.toDate" javaScriptEscape="true" /> ' + formatDate(state.endDate);
 							if (count == goUntil)
 								str += ' <a href="javascript:handleVoidLastState()" style="color: red">[x]</a>';
 							return str;
@@ -143,7 +150,7 @@
 							str += '<openmrs:message code="general.createdBy" javaScriptEscape="true" />&nbsp;';
 							str += state.creator;
 							str += '&nbsp;<openmrs:message code="general.onDate" javaScriptEscape="true" />&nbsp;';
-							str += getDateString(state.dateCreated);
+							str += formatDate(state.dateCreated);
 							str += '</small>';
 							return str;
 						}
@@ -177,17 +184,17 @@
 		showLayer('editPatientProgramPopup');
 		DWRProgramWorkflowService.getPatientProgram(patientProgramId, function(program) {
 				$('programNameElement').innerHTML = program.name;
-				$('enrollmentDateElement').value = formatDate(program.dateEnrolledAsYmd);
-				$('completionDateElement').value = formatDate(program.dateCompletedAsYmd);
+				$('enrollmentDateElement').value = formatDate(program.dateEnrolled);
+				$('completionDateElement').value = formatDate(program.dateCompleted);
 				
 				setEditPatientProgramPopupSelectedLocation(program.location.locationId);
 				
 				$('createdByElement').innerHTML = program.creator;//program.creator is just a String object, not User class
-				$('dateCreatedElement').innerHTML = getDateString(program.dateCreated);
+				$('dateCreatedElement').innerHTML = formatDate(program.dateCreated);
 				//show changedBy and date_changed only if changedBy is not empty
 				if(!isEmpty(program.changedBy)){
 					$('changedByElement').innerHTML = program.changedBy;//program.creator is just a String object, not User class
-					$('dateChangedElement').innerHTML = getDateString(program.dateChanged);
+					$('dateChangedElement').innerHTML = formatDate(program.dateChanged);
 					showLayer('changedByTR');
 				}
 			});
