@@ -1,5 +1,6 @@
 <%@ page isErrorPage="true" import="java.io.*" %>
 
+<%@ taglib uri="/openmrs" prefix="openmrs" %>
 <%-- 
 	Exceptions thrown from within jsps e.g those with scripts calling code that requires authentication, are
 	forwarded here so we need to be able to handle them too, but by the time we are on this JSP, the actual  
@@ -29,6 +30,7 @@ The following error happened somewhere on this page:<br/>
 (The full error stack trace output is in the source of this page.)
 </font>
 
+<openmrs:extensionPoint pointId="org.openmrs.errorHandler" type="html" />
 <%
 org.apache.commons.logging.LogFactory.getLog(getClass()).error("Error on page " + request.getRequestURI(), exception);
 
