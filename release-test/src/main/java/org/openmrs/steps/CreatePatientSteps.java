@@ -34,7 +34,7 @@ public class CreatePatientSteps extends Steps {
 
 	@Given("I am on the Find/Create Patient Page")
 	public void onFindCreatePatientPage() {
-		assertPresenceOf(title().with(text(equalTo("OpenMRS - Find Patient"))));
+		waitAndAssertFor(title().with(text(equalTo("OpenMRS - Find Patient"))));
 
 	}
 
