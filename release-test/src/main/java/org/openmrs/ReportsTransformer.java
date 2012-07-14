@@ -32,6 +32,7 @@ public class ReportsTransformer {
 
 
     public static void main(String args[]) throws TransformerException, FileNotFoundException {
+        System.out.println("TRANSFORMING JBEHAVE XML TO JUNIT COMPATIBLE XML.");
         List<File> jbehaveReports = getXMLFiles(new File(cd, "/target/jbehave/"));
         for(File report : jbehaveReports){
             tranformReport(report);
@@ -45,12 +46,14 @@ public class ReportsTransformer {
         Source xslt = new StreamSource(new File(cd,
                 "src/main/resources/reports/jbehave-3.x-to-junit-1.0.xsl"));
 
-        Result resultOutput = new StreamResult(new FileOutputStream(cd + "/target/jbehave/TEST" +xmlPath.getName()));
+        String resultOutputPath = cd + "/target/jbehave/TEST" + xmlPath.getName();
+        Result resultOutput = new StreamResult(new FileOutputStream(resultOutputPath));
         DOMResult result = new DOMResult();
 
         Transformer transformer = TransformerFactory.newInstance().newTransformer(xslt);
         transformer.transform(xml, result);
         transformer.transform(xml, resultOutput);
+        System.out.println("GENERATING REPORT TO: " + resultOutputPath);
         return (Document) result.getNode();
     }
 
@@ -67,11 +70,4 @@ public class ReportsTransformer {
         return xmlFiles;
     }
 
-//    public static String getFileExtensionName(File f) {
-//        if (f.getName().indexOf(".") == -1) {
-//            return "";
-//        } else {
-//            return f.getName().substring(f.getName().length() - 3, f.getName().length());
-//        }
-//    }
 }
