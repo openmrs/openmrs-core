@@ -164,6 +164,16 @@
                                     </systemProperties>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>jbehave-to-junit</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.openmrs.ReportsTransformer</mainClass>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
 					<plugin>
