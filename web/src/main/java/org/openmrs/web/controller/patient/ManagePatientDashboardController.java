@@ -14,7 +14,9 @@
 package org.openmrs.web.controller.patient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,13 +62,15 @@ public class ManagePatientDashboardController implements MessageSourceAware {
 				as.saveGlobalProperties(newprops);
 				properties = newprops;
 			}
+			Map<String, String> ajaxProperties = new HashMap<String, String>();
+			Map<String, String> ajaxLabelProperties = new HashMap<String, String>();
 			for (GlobalProperty property : properties) {
 				String key = property.getProperty().replace(".dashboard.", "");
-				System.out.println(key);
-				String label = key + "Label";
-				map.put(key, property.getPropertyValue());
-				map.put(label, getStatus(property.getPropertyValue()));
+				ajaxProperties.put(key, property.getPropertyValue());
+				ajaxLabelProperties.put(key, getStatus(property.getPropertyValue()));
 			}
+			map.put("ajaxProperties", ajaxProperties);
+			map.put("ajaxLabelProperties", ajaxLabelProperties);
 		}
 		return "/admin/patients/managePatientDashboardForm";
 	}
@@ -76,7 +80,7 @@ public class ManagePatientDashboardController implements MessageSourceAware {
 	        @RequestParam(required = true, value = "status") String status) throws Exception {
 		if (Context.isAuthenticated()) {
 			AdministrationService as = Context.getAdministrationService();
-			GlobalProperty property = new GlobalProperty("ajax.dashboard." + tabId, status);
+			GlobalProperty property = new GlobalProperty(tabId.replace("ajax", "ajax.dashboard."), status);
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, source.getMessage("PatientDashboard.saved.success", null,
 			    Context.getLocale()), WebRequest.SCOPE_SESSION);
 			as.saveGlobalProperty(property);
