@@ -33,6 +33,7 @@ public class ReportsTransformer {
 
     public static void main(String args[]) throws TransformerException, FileNotFoundException {
         System.out.println("TRANSFORMING JBEHAVE XML TO JUNIT COMPATIBLE XML.");
+        System.out.println("LOOKING FOR XML FILES AT "+cd.getPath()+"/target/jbehave");
         List<File> jbehaveReports = getXMLFiles(new File(cd, "/target/jbehave/"));
         for(File report : jbehaveReports){
             tranformReport(report);
@@ -61,6 +62,7 @@ public class ReportsTransformer {
         List<File> xmlFiles = new ArrayList<File>();
 
         File[] files = folder.listFiles();
+        System.out.println("FOUND "+files.length+" FILES AT "+folder.getPath());
         for (File file : files) {
             String fileName = file.getName();
             if (file.isFile() && (fileName.endsWith(".xml") || fileName.endsWith(".XML"))) {
