@@ -1,3 +1,5 @@
+Scenario: Edit user password
+
 GivenStories: org/openmrs/stories/create_a_user.story
 
 Given I navigate to the the administration page

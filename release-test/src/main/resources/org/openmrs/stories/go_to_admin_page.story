@@ -1,3 +1,5 @@
+Scenario: Go to admin page
+
 GivenStories: org/openmrs/stories/login_to_website.story
 
 Given I am on Home screen

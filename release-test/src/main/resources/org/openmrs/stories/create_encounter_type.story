@@ -1,3 +1,5 @@
+Scenario: Create an encounter type
+
 GivenStories: org/openmrs/stories/login_to_website.story
 
 Given I login to the openmrs application

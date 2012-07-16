@@ -1,3 +1,5 @@
+Scenario: Create an observation
+
 GivenStories: org/openmrs/stories/go_to_admin_page.story
 
 When I click on the Manage Observations link

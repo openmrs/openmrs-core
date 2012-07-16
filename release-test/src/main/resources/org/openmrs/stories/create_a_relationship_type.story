@@ -1,3 +1,5 @@
+Scenario: Create a relationship type
+
 GivenStories: org/openmrs/stories/go_to_admin_page.story
 
 When I click on the Manage Relationship Types link

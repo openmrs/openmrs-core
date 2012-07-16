@@ -1,4 +1,4 @@
-Scenario: 
+Scenario: Installation Wizard
 
 Given I am on the OpenMRS Installation Wizard
 When I select English as the language I prefer

@@ -1,3 +1,5 @@
+Scenario: Create and delete a role
+
 GivenStories: org/openmrs/stories/go_to_admin_page.story
 
 When I choose to Manage Roles

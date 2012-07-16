@@ -1,3 +1,5 @@
+Scenario: Create and edit a concept
+
 GivenStories: org/openmrs/stories/login_to_website.story
 
 Given I am on Home screen

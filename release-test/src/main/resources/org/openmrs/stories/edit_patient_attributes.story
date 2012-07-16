@@ -1,3 +1,5 @@
+Scenario: Edit patient attributes
+
 GivenStories: org/openmrs/stories/go_to_admin_page.story
 
 Given I am on the manage patient page

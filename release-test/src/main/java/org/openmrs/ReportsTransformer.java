@@ -54,7 +54,7 @@ public class ReportsTransformer {
         Transformer transformer = TransformerFactory.newInstance().newTransformer(xslt);
         transformer.transform(xml, result);
         transformer.transform(xml, resultOutput);
-        System.out.println("GENERATING REPORT TO: " + resultOutputPath);
+        System.out.println("GENERATING REPORT TO: " + resultOutput.toString());
         return (Document) result.getNode();
     }
 
@@ -69,6 +69,7 @@ public class ReportsTransformer {
                 xmlFiles.add(file);
             }
         }
+        System.out.println("FOUND "+xmlFiles.size()+" XMLs at"+folder.getPath());
         return xmlFiles;
     }
 

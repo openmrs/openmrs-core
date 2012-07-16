@@ -1,3 +1,5 @@
+Scenario: Change a global property
+
 GivenStories: org/openmrs/stories/go_to_admin_page.story
 
 When I click on the Advanced Settings link

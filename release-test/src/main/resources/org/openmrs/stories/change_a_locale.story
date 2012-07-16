@@ -1,3 +1,5 @@
+Scenario: Change a locale
+
 GivenStories: org/openmrs/stories/go_to_admin_page.story
 
 Given I am on Admin page
