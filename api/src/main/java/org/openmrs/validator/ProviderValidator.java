@@ -18,8 +18,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Provider;
-import org.openmrs.ProviderAttribute;
-import org.openmrs.ProviderAttributeType;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -58,7 +56,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should be invalid if identifier is not set
+	 * @should be valid if identifier is not set
 	 * @should be valid if identifier is set
 	 * @should be invalid if provider is retired and the retired reason is not mentioned
 	 * @should be invalid if person or name is not set
@@ -83,10 +81,6 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Provider.class);
 		
 		Provider provider = (Provider) obj;
-		
-		if (StringUtils.isBlank(provider.getIdentifier())) {
-			errors.rejectValue("identifier", "Provider.error.identifier.required");
-		}
 		
 		if (provider.getPerson() == null && StringUtils.isBlank(provider.getName())) {
 			errors.rejectValue("name", "Provider.error.personOrName.required");
