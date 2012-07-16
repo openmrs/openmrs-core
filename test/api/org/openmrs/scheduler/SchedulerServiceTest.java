@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -67,7 +68,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 */
 	static class ExecutePrintingTask extends AbstractTask {
 		
-		public void execute() {
+		@Override
+        public void execute() {
 			synchronized (outputForConcurrentTasks) {
 				outputForConcurrentTasks.add(getTaskDefinition().getProperty("id"));
 			}
@@ -129,7 +131,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 */
 	static class SimpleTask extends AbstractTask {
 		
-		public void initialize(TaskDefinition config) {
+		@Override
+        public void initialize(TaskDefinition config) {
 			synchronized (outputForConcurrentInit) {
 				outputForConcurrentInit.add(config.getProperty("id"));
 			}
@@ -146,7 +149,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 		
-		public void execute() {
+		@Override
+        public void execute() {
 		}
 	}
 	
@@ -163,6 +167,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 * </pre>
 	 */
 	@Test
+	@Ignore("TRUNK-3596: SchedulerServiceTest:shouldAllowTwoTasksInitMethodsToRunConcurrently fails randomly")
 	public void shouldAllowTwoTasksInitMethodsToRunConcurrently() throws Exception {
 		SchedulerService schedulerService = Context.getSchedulerService();
 		
@@ -197,7 +202,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	static class SampleTask5 extends AbstractTask {
 		
-		public void initialize(TaskDefinition config) {
+		@Override
+        public void initialize(TaskDefinition config) {
 			synchronized (outputForInitExecSync) {
 				outputForInitExecSync.add("INIT-START-5");
 			}
@@ -213,7 +219,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 		
-		public void execute() {
+		@Override
+        public void execute() {
 			synchronized (outputForInitExecSync) {
 				outputForInitExecSync.add("IN EXECUTE");
 			}
@@ -274,7 +281,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		
 		public void execute() {
 			synchronized (outputList) {
-				outputList.add("TEST");	            
+				outputList.add("TEST");
             }
 		}
 
@@ -318,7 +325,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 * Task opens a session and stores the execution time.
 	 */
 	static class SessionTask extends AbstractTask {
-		public void execute() {
+		@Override
+        public void execute() {
             try {
                 // Do something
                 Context.openSession();
