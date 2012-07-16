@@ -36,7 +36,8 @@ public class CreateEncounterSteps extends Steps {
 	
 	@When("I enter $name, $provider, $location, $date, $providerRole")
 	public void enterDetails(String name, String provider, String location, String date, String providerRole) throws InterruptedException {
-		type(name, into(textbox().with(attribute("id", equalTo("patientId_id_selection")))));
+		Thread.sleep(2000);
+        type(name, into(textbox().with(attribute("id", equalTo("patientId_id_selection")))));
         String autoCompleteXPath = "//ul[@class='ui-autocomplete ui-menu ui-widget ui-widget-content ui-corner-all']";
         waitFor(finderByXpath(autoCompleteXPath));
         clickOn(finderByXpath(autoCompleteXPath));
@@ -49,7 +50,6 @@ public class CreateEncounterSteps extends Steps {
         type(provider, into(textbox().with(attribute("id", equalTo("providers[0]")))));
         WebElement providerElement = driver.findElement(By.id("providers[0]"));
         providerElement.sendKeys(Keys.TAB);
-        Thread.sleep(1000);
 	}
 
 	@When("I save the encounter")
