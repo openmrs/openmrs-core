@@ -46,7 +46,8 @@ public class EditConceptDrugSteps extends Steps {
 	@When("I change $name, $concept, $doseStrength, $units, $maximumDose and $minimumDose")
 	public void editDrug(String name, String concept, String doseStrength, String units, String maximumDose, String minimumDose) throws InterruptedException {
 		//editing $name into name textbox
-		type(name, into(textbox().with(attribute("name", equalTo("name")))));
+		Thread.sleep(2000);
+        type(name, into(textbox().with(attribute("name", equalTo("name")))));
 		type(concept, into(textbox().with(attribute("id", equalTo("concept_selection")))));
         Thread.sleep(1000);
         WebElement conceptSelection = driver.findElement(By.id("concept_selection"));

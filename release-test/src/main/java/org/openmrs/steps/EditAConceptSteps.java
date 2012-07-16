@@ -15,7 +15,6 @@ package org.openmrs.steps;
 
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
-import org.junit.Assert;
 import org.openmrs.Steps;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -24,7 +23,8 @@ import org.openqa.selenium.lift.find.HtmlTagFinder;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.openqa.selenium.lift.Finders.*;
+import static org.openqa.selenium.lift.Finders.textbox;
+import static org.openqa.selenium.lift.Finders.title;
 import static org.openqa.selenium.lift.Matchers.attribute;
 import static org.openqa.selenium.lift.Matchers.text;
 
@@ -36,7 +36,9 @@ public class EditAConceptSteps extends Steps {
 	
 	@When("I search for a concept by typing $aspirin and wait for the search hits")
 	public void searchForAConceptAndWaitForTheHits(String phrase) {
-		type(phrase, into(textbox().with(attribute("id", equalTo("inputNode")))));
+        HtmlTagFinder conceptName = textbox().with(attribute("id", equalTo("inputNode")));
+        waitFor(conceptName);
+        type(phrase, into(conceptName));
 		waitFor(Finders.table().with(attribute("id", equalTo("openmrsSearchTable"))));
 	}
 	
