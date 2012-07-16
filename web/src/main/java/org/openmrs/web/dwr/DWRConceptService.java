@@ -306,6 +306,24 @@ public class DWRConceptService {
 		
 		List<ConceptSearchResult> searchResults = cs.findConceptAnswers(text, locale, concept);
 		
+		//If no search results, use proficient languages
+		if (searchResults.size() == 0) {
+			User currentUser = Context.getAuthenticatedUser();
+			
+			List<Locale> locales = null;
+			if (currentUser != null)
+				locales = currentUser.getProficientLocales();
+			
+			if (locales != null) {
+				for(Locale lc : locales) {
+					searchResults = cs.findConceptAnswers(text, lc, concept);
+					if (searchResults.size() > 0) {
+						break;
+					}
+				}
+			}
+		}
+		
 		List<Drug> drugAnswers = new Vector<Drug>();
 		for (ConceptAnswer conceptAnswer : concept.getAnswers(false)) {
 			if (conceptAnswer.getAnswerDrug() != null)
