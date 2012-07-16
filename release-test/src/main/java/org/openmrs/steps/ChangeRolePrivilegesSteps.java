@@ -43,8 +43,8 @@ public class ChangeRolePrivilegesSteps extends Steps {
 	
 	@When("change the privilege from Add Allergies to Add Cohorts")
 	public void changePrivilege() {
-		clickOn(checkbox().with(attribute("id", equalTo("privileges.AddAllergies"))));
-		clickOn(checkbox().with(attribute("id", equalTo("privileges.AddCohorts"))));
+		waitAndClickOn(checkbox().with(attribute("id", equalTo("privileges.AddAllergies"))));
+		waitAndClickOn(checkbox().with(attribute("id", equalTo("privileges.AddCohorts"))));
 	}
 	
 	@When("save the role")
