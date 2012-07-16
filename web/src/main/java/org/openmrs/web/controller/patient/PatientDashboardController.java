@@ -57,7 +57,8 @@ public class PatientDashboardController {
 	 */
 	@RequestMapping("/patientDashboard.form")
 	protected String renderDashboard(WebRequest request,
-	        @RequestParam(required = true, value = "patientId") Integer patientId, ModelMap map) throws Exception {
+	        @RequestParam(required = true, value = "patientId") Integer patientId,
+	        @RequestParam(required = false, value = "lastTab") String lastTab, ModelMap map) throws Exception {
 		
 		// get the patient
 		
@@ -151,38 +152,26 @@ public class PatientDashboardController {
 		
 		if (properties.isEmpty()) {
 			List<GlobalProperty> newprops = new ArrayList<GlobalProperty>();
-			newprops.add(new GlobalProperty("ajax.dashboard.overview", "Disabled"));
-			newprops.add(new GlobalProperty("ajax.dashboard.regimens", "Disabled"));
-			newprops.add(new GlobalProperty("ajax.dashboard.encountersvisits", "Disabled"));
-			newprops.add(new GlobalProperty("ajax.dashboard.demographics", "Disabled"));
-			newprops.add(new GlobalProperty("ajax.dashboard.graphs", "Disabled"));
-			newprops.add(new GlobalProperty("ajax.dashboard.formentry", "Disabled"));
+			newprops.add(new GlobalProperty("ajax.dashboard.Overview", "Preload"));
+			newprops.add(new GlobalProperty("ajax.dashboard.Regimens", "Preload"));
+			newprops.add(new GlobalProperty("ajax.dashboard.VisitsEncounters", "Preload"));
+			newprops.add(new GlobalProperty("ajax.dashboard.Demographics", "Preload"));
+			newprops.add(new GlobalProperty("ajax.dashboard.Graphs", "Preload"));
+			newprops.add(new GlobalProperty("ajax.dashboard.FormEntry", "Preload"));
 			as.saveGlobalProperties(newprops);
 			properties = newprops;
 		}
 		Map<String, String> ajaxProperties = new HashMap<String, String>();
 		for (GlobalProperty property : properties) {
-			if (property.getProperty().equals("ajax.dashboard.overview")) {
-				ajaxProperties.put("ajaxOverview", property.getPropertyValue());
-			} else if (property.getProperty().equals("ajax.dashboard.regimens")) {
-				ajaxProperties.put("ajaxRegimens", property.getPropertyValue());
-			} else if (property.getProperty().equals("ajax.dashboard.encountersvisits")) {
-				ajaxProperties.put("ajaxVisitsEncounters", property.getPropertyValue());
-			} else if (property.getProperty().equals("ajax.dashboard.demographics")) {
-				ajaxProperties.put("ajaxDemographics", property.getPropertyValue());
-			} else if (property.getProperty().equals("ajax.dashboard.graphs")) {
-				ajaxProperties.put("ajaxGraphs", property.getPropertyValue());
-			} else if (property.getProperty().equals("ajax.dashboard.formentry")) {
-				ajaxProperties.put("ajaxFormEntry", property.getPropertyValue());
-			}
+			ajaxProperties.put(property.getProperty().replace(".dashboard.", ""), property.getPropertyValue());
 		}
 		
-		if (request.getAttribute(WebConstants.AJAX_DASHBOARD_LAST_VIEWED_TAB, WebRequest.SCOPE_SESSION) == null) {
-			ajaxProperties.put("ajaxOverview", "Disabled");
+		if (lastTab == null) {
+			ajaxProperties.put("ajaxOverview", "Preload");
+			map.put("lastViewedTab", "ajaxOverview");
 		} else {
-			String disabledTab = (String) request.getAttribute(WebConstants.AJAX_DASHBOARD_LAST_VIEWED_TAB,
-			    WebRequest.SCOPE_SESSION);
-			ajaxProperties.put(disabledTab, "Disabled");
+			String disabledTab = "ajax" + lastTab;
+			ajaxProperties.put(disabledTab, "Preload");
 		}
 		map.put("ajaxProperties", ajaxProperties);
 		

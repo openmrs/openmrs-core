@@ -12,12 +12,12 @@
 
 <script type="text/javascript">
 	$j(document).ready(function() { 
-		var overviewId = "overview" + "${overviewStatus}" + "Radio";
-		var regimensId = "regimens" + "${regimensStatus}" + "Radio";
-		var visitsId = "encountersvisits" + "${visitsEncountersStatus}" + "Radio";
-		var demographicsId = "demographics" + "${demographicsStatus}" + "Radio";
-		var graphsId = "graphs" + "${graphsStatus}" + "Radio";
-		var formentryId = "formentry" + "${formentryStatus}" + "Radio";
+		var overviewId = "overview" + "${ajaxOverview}" + "Radio";
+		var regimensId = "regimens" + "${ajaxRegimens}" + "Radio";
+		var visitsId = "encountersvisits" + "${ajaxVisitsEncounters}" + "Radio";
+		var demographicsId = "demographics" + "${ajaxDemographics}" + "Radio";
+		var graphsId = "graphs" + "${ajaxGraphs}" + "Radio";
+		var formentryId = "formentry" + "${ajaxFormEntry}" + "Radio";
 		document.getElementById(overviewId).checked = true;
 		document.getElementById(regimensId).checked = true;
 		document.getElementById(visitsId).checked = true;
@@ -35,16 +35,16 @@
 		
 		var tabId = button.id.replace("Button","");
 		var onclickRadio = tabId + "OnclickRadio";
+		var backgroundRadio = tabId + "BackgroundRadio";
 		var preloadRadio = tabId + "PreloadRadio";
-		var disabledRadio = tabId + "DisabledRadio";
 
 		params["tabId"] = tabId;
 		if(document.getElementById(onclickRadio).checked) {
 			params["status"] = "Onclick"
+		} else if(document.getElementById(backgroundRadio).checked) {
+			params["status"] = "Background";
 		} else if(document.getElementById(preloadRadio).checked) {
 			params["status"] = "Preload";
-		} else if(document.getElementById(disabledRadio).checked) {
-			params["status"] = "Disabled";
 		}
 	    for(var key in params) {
 	        if(params.hasOwnProperty(key)) {
@@ -80,8 +80,8 @@
 					<td>${overviewStatusLabel}</td>
 					<td>
 						<input id="overviewOnclickRadio" type="radio" name="overview" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
+					    <input id="overviewBackgroundRadio" type="radio" name="overview" value="background"/><spring:message code="PatientDashboard.status.background"/>
 					    <input id="overviewPreloadRadio" type="radio" name="overview" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-					    <input id="overviewDisabledRadio" type="radio" name="overview" value="disabled"/><spring:message code="PatientDashboard.status.disabled"/>
 						<button id="overviewButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
 					</td>
 				</tr>
@@ -90,8 +90,8 @@
 					<td>${regimensStatusLabel}</td>
 					<td>
 						<input id="regimensOnclickRadio" type="radio" name="regimens" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
+					    <input id="regimensBackgroundRadio" type="radio" name="regimens" value="background"/><spring:message code="PatientDashboard.status.background"/>
 					    <input id="regimensPreloadRadio" type="radio" name="regimens" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-					    <input id="regimensDisabledRadio" type="radio" name="regimens" value="disabled"/><spring:message code="PatientDashboard.status.disabled"/>
 						<button id="regimensButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
 					</td>
 				</tr>
@@ -100,8 +100,8 @@
 					<td>${visitsEncountersStatusLabel}</td>
 					<td>
 						<input id="encountersvisitsOnclickRadio" type="radio" name="encountersvisits" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
+					    <input id="encountersvisitsBackgroundRadio" type="radio" name="encountersvisits" value="background"/><spring:message code="PatientDashboard.status.background"/>
 					    <input id="encountersvisitsPreloadRadio" type="radio" name="encountersvisits" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-					    <input id="encountersvisitsDisabledRadio" type="radio" name="encountersvisits" value="disabled"/><spring:message code="PatientDashboard.status.disabled"/>
 						<button id="encountersvisitsButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
 					</td>
 				</tr>
@@ -110,8 +110,8 @@
 					<td>${demographicsStatusLabel}</td>
 					<td>
 						<input id="demographicsOnclickRadio" type="radio" name="demographics" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
+					    <input id="demographicsBackgroundRadio" type="radio" name="demographics" value="background"/><spring:message code="PatientDashboard.status.background"/>
 					    <input id="demographicsPreloadRadio" type="radio" name="demographics" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-					    <input id="demographicsDisabledRadio" type="radio" name="demographics" value="disabled"/><spring:message code="PatientDashboard.status.disabled"/>
 						<button id="demographicsButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
 					</td>
 				</tr>
@@ -120,8 +120,8 @@
 					<td>${graphsStatusLabel}</td>
 					<td>
 						<input id="graphsOnclickRadio" type="radio" name="graphs" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
+					    <input id="graphsBackgroundRadio" type="radio" name="graphs" value="background"/><spring:message code="PatientDashboard.status.background"/>
 					    <input id="graphsPreloadRadio" type="radio" name="graphs" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-					    <input id="graphsDisabledRadio" type="radio" name="graphs" value="disabled"/><spring:message code="PatientDashboard.status.disabled"/>
 						<button id="graphsButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
 					</td>
 				</tr>
@@ -130,8 +130,8 @@
 					<td>${formentryStatusLabel}</td>
 					<td>
 						<input id="formentryOnclickRadio" type="radio" name="formentry" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
+					    <input id="formentryBackgroundRadio" type="radio" name="formentry" value="background"/><spring:message code="PatientDashboard.status.background"/>
 					    <input id="formentryPreloadRadio" type="radio" name="formentry" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-					    <input id="formentryDisabledRadio" type="radio" name="formentry" value="disabled"/><spring:message code="PatientDashboard.status.disabled"/>
 						<button id="formentryButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
 					</td>
 				</tr>

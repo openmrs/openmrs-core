@@ -153,6 +153,8 @@
 			
 			<script type="text/javascript">
 				var lastSearch;
+				<openmrs:authentication>var userId = "${authenticatedUser.userId}";</openmrs:authentication>
+				
 				$j(document).ready(function() {
 					new OpenmrsSearch("findPatients", false, doPatientSearch, doSelectionHandler,
 						[	{fieldName:"identifier", header:omsgs.identifier},
@@ -195,13 +197,27 @@
 				});
 
 				function doSelectionHandler(index, data) {
-					document.location = "${model.postURL}?patientId=" + data.patientId + "&phrase=" + lastSearch;
+					var tab = getTabCookie();
+					if (tab == null) {
+						document.location = "${model.postURL}?patientId=" + data.patientId + "&phrase=" + lastSearch;
+					} else {
+						tab = tab.replace("link","").replace("Tab","");
+						document.location = "${model.postURL}?patientId=" + data.patientId + "&phrase=" + lastSearch + "&lastTab=" + tab;
+					}
 				}
 
 				//searchHandler for the Search widget
 				function doPatientSearch(text, resultHandler, getMatchCount, opts) {
 					lastSearch = text;
 					DWRPatientService.findCountAndPatients(text, opts.start, opts.length, getMatchCount, resultHandler);
+				}
+				
+				function getTabCookie() {
+					var cookies = document.cookie.match('dashboardTab-' + userId + '=(.*?)(;|$)');
+					if (cookies) {
+						return unescape(cookies[1]);
+					}
+					return null;
 				}
 
 			</script>

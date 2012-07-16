@@ -51,35 +51,21 @@ public class ManagePatientDashboardController implements MessageSourceAware {
 			
 			if (properties.isEmpty()) {
 				List<GlobalProperty> newprops = new ArrayList<GlobalProperty>();
-				newprops.add(new GlobalProperty("ajax.dashboard.overview", "Disabled"));
-				newprops.add(new GlobalProperty("ajax.dashboard.regimens", "Disabled"));
-				newprops.add(new GlobalProperty("ajax.dashboard.encountersvisits", "Disabled"));
-				newprops.add(new GlobalProperty("ajax.dashboard.demographics", "Disabled"));
-				newprops.add(new GlobalProperty("ajax.dashboard.graphs", "Disabled"));
-				newprops.add(new GlobalProperty("ajax.dashboard.formentry", "Disabled"));
+				newprops.add(new GlobalProperty("ajax.dashboard.Overview", "Preload"));
+				newprops.add(new GlobalProperty("ajax.dashboard.Regimens", "Preload"));
+				newprops.add(new GlobalProperty("ajax.dashboard.VisitsEncounters", "Preload"));
+				newprops.add(new GlobalProperty("ajax.dashboard.Demographics", "Preload"));
+				newprops.add(new GlobalProperty("ajax.dashboard.Graphs", "Preload"));
+				newprops.add(new GlobalProperty("ajax.dashboard.FormEntry", "Preload"));
 				as.saveGlobalProperties(newprops);
 				properties = newprops;
 			}
 			for (GlobalProperty property : properties) {
-				if (property.getProperty().equals("ajax.dashboard.overview")) {
-					map.put("overviewStatus", property.getPropertyValue());
-					map.put("overviewStatusLabel", getStatus(property.getPropertyValue()));
-				} else if (property.getProperty().equals("ajax.dashboard.regimens")) {
-					map.put("regimensStatus", property.getPropertyValue());
-					map.put("regimensStatusLabel", getStatus(property.getPropertyValue()));
-				} else if (property.getProperty().equals("ajax.dashboard.encountersvisits")) {
-					map.put("visitsEncountersStatus", property.getPropertyValue());
-					map.put("visitsEncountersStatusLabel", getStatus(property.getPropertyValue()));
-				} else if (property.getProperty().equals("ajax.dashboard.demographics")) {
-					map.put("demographicsStatus", property.getPropertyValue());
-					map.put("demographicsStatusLabel", getStatus(property.getPropertyValue()));
-				} else if (property.getProperty().equals("ajax.dashboard.graphs")) {
-					map.put("graphsStatus", property.getPropertyValue());
-					map.put("graphsStatusLabel", getStatus(property.getPropertyValue()));
-				} else if (property.getProperty().equals("ajax.dashboard.formentry")) {
-					map.put("formentryStatus", property.getPropertyValue());
-					map.put("formentryStatusLabel", getStatus(property.getPropertyValue()));
-				}
+				String key = property.getProperty().replace(".dashboard.", "");
+				System.out.println(key);
+				String label = key + "Label";
+				map.put(key, property.getPropertyValue());
+				map.put(label, getStatus(property.getPropertyValue()));
 			}
 		}
 		return "/admin/patients/managePatientDashboardForm";
@@ -103,10 +89,10 @@ public class ManagePatientDashboardController implements MessageSourceAware {
 		String status = "";
 		if (propertyValue.equals("Onclick")) {
 			status = source.getMessage("PatientDashboard.status.onclick", null, Context.getLocale());
+		} else if (propertyValue.equals("Background")) {
+			status = source.getMessage("PatientDashboard.status.background", null, Context.getLocale());
 		} else if (propertyValue.equals("Preload")) {
 			status = source.getMessage("PatientDashboard.status.preload", null, Context.getLocale());
-		} else if (propertyValue.equals("Disabled")) {
-			status = source.getMessage("PatientDashboard.status.disabled", null, Context.getLocale());
 		}
 		return status;
 	}
