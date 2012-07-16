@@ -168,7 +168,6 @@ public class PatientDashboardController {
 		
 		if (lastTab == null) {
 			ajaxProperties.put("ajaxOverview", "Preload");
-			map.put("lastViewedTab", "ajaxOverview");
 		} else {
 			String disabledTab = "ajax" + lastTab;
 			ajaxProperties.put(disabledTab, "Preload");

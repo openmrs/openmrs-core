@@ -11,19 +11,14 @@
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
 
 <script type="text/javascript">
-	$j(document).ready(function() { 
-		var overviewId = "overview" + "${ajaxOverview}" + "Radio";
-		var regimensId = "regimens" + "${ajaxRegimens}" + "Radio";
-		var visitsId = "encountersvisits" + "${ajaxVisitsEncounters}" + "Radio";
-		var demographicsId = "demographics" + "${ajaxDemographics}" + "Radio";
-		var graphsId = "graphs" + "${ajaxGraphs}" + "Radio";
-		var formentryId = "formentry" + "${ajaxFormEntry}" + "Radio";
-		document.getElementById(overviewId).checked = true;
-		document.getElementById(regimensId).checked = true;
-		document.getElementById(visitsId).checked = true;
-		document.getElementById(demographicsId).checked = true;
-		document.getElementById(graphsId).checked = true;
-		document.getElementById(formentryId).checked = true;	
+	var ajaxProperties = {};
+	
+	$j(document).ready(function() {
+		<c:forEach var="entry" items="${ajaxProperties}">
+			ajaxProperties["${entry.key}"] = "${entry.value}";
+			var divId = "${entry.key}" + "${entry.value}" + "Radio";
+			document.getElementById(divId).checked = true;
+		</c:forEach>
 	})
 
 
@@ -75,66 +70,25 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr class="odd">
-					<td><spring:message code="patientDashboard.overview"/></td>
-					<td>${overviewStatusLabel}</td>
-					<td>
-						<input id="overviewOnclickRadio" type="radio" name="overview" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
-					    <input id="overviewBackgroundRadio" type="radio" name="overview" value="background"/><spring:message code="PatientDashboard.status.background"/>
-					    <input id="overviewPreloadRadio" type="radio" name="overview" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-						<button id="overviewButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
-					</td>
-				</tr>
-				<tr class="even">
-					<td><spring:message code="patientDashboard.regimens"/></td>
-					<td>${regimensStatusLabel}</td>
-					<td>
-						<input id="regimensOnclickRadio" type="radio" name="regimens" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
-					    <input id="regimensBackgroundRadio" type="radio" name="regimens" value="background"/><spring:message code="PatientDashboard.status.background"/>
-					    <input id="regimensPreloadRadio" type="radio" name="regimens" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-						<button id="regimensButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
-					</td>
-				</tr>
-				<tr class="odd">
-					<td><spring:message code="patientDashboard.visits"/>/<spring:message code="patientDashboard.encounters"/></td>
-					<td>${visitsEncountersStatusLabel}</td>
-					<td>
-						<input id="encountersvisitsOnclickRadio" type="radio" name="encountersvisits" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
-					    <input id="encountersvisitsBackgroundRadio" type="radio" name="encountersvisits" value="background"/><spring:message code="PatientDashboard.status.background"/>
-					    <input id="encountersvisitsPreloadRadio" type="radio" name="encountersvisits" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-						<button id="encountersvisitsButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
-					</td>
-				</tr>
-				<tr class="even">
-					<td><spring:message code="patientDashboard.demographics"/></td>
-					<td>${demographicsStatusLabel}</td>
-					<td>
-						<input id="demographicsOnclickRadio" type="radio" name="demographics" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
-					    <input id="demographicsBackgroundRadio" type="radio" name="demographics" value="background"/><spring:message code="PatientDashboard.status.background"/>
-					    <input id="demographicsPreloadRadio" type="radio" name="demographics" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-						<button id="demographicsButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
-					</td>
-				</tr>
-				<tr class="odd">
-					<td><spring:message code="patientDashboard.graphs"/></td>
-					<td>${graphsStatusLabel}</td>
-					<td>
-						<input id="graphsOnclickRadio" type="radio" name="graphs" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
-					    <input id="graphsBackgroundRadio" type="radio" name="graphs" value="background"/><spring:message code="PatientDashboard.status.background"/>
-					    <input id="graphsPreloadRadio" type="radio" name="graphs" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-						<button id="graphsButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
-					</td>
-				</tr>
-				<tr class="even">
-					<td><spring:message code="patientDashboard.formEntry"/></td>
-					<td>${formentryStatusLabel}</td>
-					<td>
-						<input id="formentryOnclickRadio" type="radio" name="formentry" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
-					    <input id="formentryBackgroundRadio" type="radio" name="formentry" value="background"/><spring:message code="PatientDashboard.status.background"/>
-					    <input id="formentryPreloadRadio" type="radio" name="formentry" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
-						<button id="formentryButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
-					</td>
-				</tr>
+				<c:forEach var="entry" items="${ajaxProperties}" varStatus="status">
+					<c:choose>
+    					<c:when test="${status.count % 2 ne 0}">
+        					<tr class="odd">
+    					</c:when>
+    					<c:otherwise>
+					        <tr class="even">
+					    </c:otherwise>
+					</c:choose>
+						<td><spring:message code="patientDashboard.${entry.key}"/></td>
+						<td>${ajaxLabelProperties[entry.key]}</td>
+						<td>
+							<input id="${entry.key}OnclickRadio" type="radio" name="${entry.key}" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
+						    <input id="${entry.key}BackgroundRadio" type="radio" name="${entry.key}" value="background"/><spring:message code="PatientDashboard.status.background"/>
+						    <input id="${entry.key}PreloadRadio" type="radio" name="${entry.key}" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
+							<button id="${entry.key}Button" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
+						</td>
+					</tr>
+				</c:forEach>
 			</tbody>
 		</table>
 	</div>
