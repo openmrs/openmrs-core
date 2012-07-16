@@ -19,7 +19,7 @@
 
 		<property name="name" type="java.lang.String" length="255" access="field"/>
 
-		<property name="identifier" type="java.lang.String" length="255" not-null="true" />
+		<property name="identifier" type="java.lang.String" length="255" />
 
 		<many-to-one name="creator" class="User" not-null="true" column="creator" />
 
