@@ -45,15 +45,9 @@
 			if (tabs.length && tabs[0].id)
 				c = tabs[0].id;
 		}
+		
 		changeTab(c);
-		for(var key in ajaxProperties) {
-			if (ajaxProperties[key] === 'Preload') {
-				var divId = '#' + key + 'Tab';
-				$j(divId).html('<p><img src="<openmrs:contextPath/>/images/loading.gif"/><spring:message code="general.loading"/></p>');
-				var url = "patientDashboard" + key.replace("ajax", "") + ".form?patientId=" + ${patient.patientId};
-				$j(divId).load(url);
-			}
-		}
+		startBackgroundLoading();
 	});
 	
 	function setTabCookie(tabType) {
@@ -68,6 +62,20 @@
 		return null;
 	}
 	
+	function startBackgroundLoading() {
+		for(var key in ajaxProperties) {
+			if (ajaxProperties[key] === 'Background') {
+				if (document.getElementById(key + 'Tab').innerHTML === "") {
+					var divId = '#' + key + 'Tab';
+					$j(divId).html('<p><img src="<openmrs:contextPath/>/images/loading.gif"/><spring:message code="general.loading"/></p>');
+					var url = "patientDashboard" + key.replace("ajax", "") + ".form?patientId=" + ${patient.patientId};
+					$j(divId).load(url);
+					while (document.getElementById(key + 'Tab').innerHTML === "") {}
+				}
+			}
+		}
+	}
+	
 	function changeTab(tabObj) {
 		if (!document.getElementById || !document.createTextNode) {return;}
 		if (typeof tabObj == "string")
@@ -75,11 +83,17 @@
 		
 		if (tabObj) {
 			var tabs = tabObj.parentNode.parentNode.getElementsByTagName('a');
+			var divId = "";
 			for (var i=0; i<tabs.length; i++) {
 				if (tabs[i].className.indexOf('current') != -1) {
 					manipulateClass('remove', tabs[i], 'current');
 				}
-				var divId = tabs[i].id.substring(0, tabs[i].id.lastIndexOf("Tab"));
+				var key = 'ajax' + tabs[i].id.replace("link", "").replace("Tab", "");
+				if (ajaxProperties[key] === 'Preload') {
+					divId = tabs[i].id.replace("link", "content");
+				} else {
+					divId = tabs[i].id.replace("link", "ajax");
+				}
 				var divObj = document.getElementById(divId);
 				if (divObj) {
 					if (tabs[i].id == tabObj.id)
@@ -88,8 +102,22 @@
 						divObj.style.display = "none";
 				}
 			}
-			addClass(tabObj, 'current');
 			
+			var key = 'ajax' + tabObj.id.replace("link", "").replace("Tab", "");
+			if (ajaxProperties[key] === 'Onclick') {
+				var divId = '#' + key + 'Tab';
+				var div = document.getElementById(key + 'Tab');
+				div.style.display = "";
+				if (div.innerHTML === "") {
+					$j(divId).html('<p><img src="<openmrs:contextPath/>/images/loading.gif"/><spring:message code="general.loading"/></p>');
+					var url = "patientDashboard" + key.replace("ajax", "") + ".form?patientId=" + ${patient.patientId};
+					$j(divId).load(url);
+				}
+			} else if (ajaxProperties[key] === 'Background') {
+				var div = document.getElementById(key + 'Tab');
+				div.style.display = "";
+			}
+			addClass(tabObj, 'current');
 			setTabCookie(tabObj.id);
 		}
 		return false;
@@ -128,42 +156,42 @@
 <div id="patientTabs" class="${patientVariation}">
 	<ul>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
-			<li><a id="patientOverviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.overview"/></a></li>
+			<li><a id="linkOverviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.overview"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Regimen Section">
-			<li><a id="patientRegimenTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.regimens"/></a></li>
+			<li><a id="linkRegimensTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.regimens"/></a></li>
 		</openmrs:hasPrivilege>
 		
 		<openmrs:globalProperty key="visits.enabled" defaultValue="true" var="visitsEnabled"/>
 		<c:choose>		
 			<c:when test='${visitsEnabled}'>
 				<openmrs:hasPrivilege privilege="Patient Dashboard - View Visits Section">
-					<li><a id="patientVisitsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.visits"/></a></li>
+					<li><a id="linkVisitsEncountersTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.visits"/></a></li>
 				</openmrs:hasPrivilege>
 			</c:when>
 			<c:otherwise>
 				<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
-					<li><a id="patientEncountersTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.encounters"/></a></li>
+					<li><a id="linkVisitsEncountersTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.encounters"/></a></li>
 				</openmrs:hasPrivilege>
 			</c:otherwise>
 			
 		</c:choose>
 		
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Demographics Section">
-			<li><a id="patientDemographicsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.demographics"/></a></li>
+			<li><a id="linkDemographicsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.demographics"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Graphs Section">
-			<li><a id="patientGraphsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.graphs"/></a></li>
+			<li><a id="linkGraphsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.graphs"/></a></li>
 		</openmrs:hasPrivilege>
 		<c:if test="${enableFormEntryTab}">
 			<openmrs:hasPrivilege privilege="Form Entry">
-				<li><a id="formEntryTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.formEntry"/></a></li>
+				<li><a id="linkFormEntryTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.formEntry"/></a></li>
 			</openmrs:hasPrivilege>
 		</c:if>
 		<openmrs:extensionPoint pointId="org.openmrs.patientDashboardTab" type="html">
 			<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 				<li>
-					<a id="${extension.tabId}Tab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="${extension.tabName}"/></a>
+					<a id="link${extension.tabId}Tab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="${extension.tabName}"/></a>
 				</li>
 			</openmrs:hasPrivilege>
 		</openmrs:extensionPoint>
@@ -172,9 +200,9 @@
 
 <div id="patientSections">
 	<c:choose>
-		<c:when test="${ajaxProperties['ajaxOverview'] == 'Disabled'}">
+		<c:when test="${ajaxProperties['ajaxOverview'] == 'Preload'}">
 			<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
-				<div id="patientOverview" style="display:none;">
+				<div id="contentOverviewTab" style="display:none;">
 					
 					<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.OverviewTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 					<openmrs:portlet url="patientOverview" id="patientDashboardOverview" patientId="${patient.patientId}"/>
@@ -188,9 +216,9 @@
 	</c:choose>
 	
 	<c:choose>
-		<c:when test="${ajaxProperties['ajaxRegimens'] == 'Disabled'}">
+		<c:when test="${ajaxProperties['ajaxRegimens'] == 'Preload'}">
 			<openmrs:hasPrivilege privilege="Patient Dashboard - View Regimen Section">	
-				<div id="patientRegimen" style="display:none;">
+				<div id="contentRegimensTab" style="display:none;">
 		
 					<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.RegimenTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 					<openmrs:globalProperty var="displayDrugSetIds" key="dashboard.regimen.displayDrugSetIds" defaultValue="ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS" />
@@ -205,12 +233,12 @@
 	</c:choose>
 	
 	<c:choose>
-		<c:when test="${ajaxProperties['ajaxVisitsEncounters'] == 'Disabled'}">
+		<c:when test="${ajaxProperties['ajaxVisitsEncounters'] == 'Preload'}">
 			<openmrs:globalProperty key="visits.enabled" defaultValue="true" var="visitsEnabled"/>
 			<c:choose>		
 				<c:when test='${visitsEnabled}'>
 					<openmrs:hasPrivilege privilege="Patient Dashboard - View Visits Section">
-						<div id="patientVisits" style="display:none;">
+						<div id="contentVisitsEncountersTab" style="display:none;">
 							
 							<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.VisitsTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 							<openmrs:portlet url="patientVisits" id="patientDashboardVisits" patientId="${patient.patientId}" />
@@ -220,7 +248,7 @@
 				</c:when>
 				<c:otherwise>
 					<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
-						<div id="patientEncounters" style="display:none;">
+						<div id="contentVisitsEncountersTab" style="display:none;">
 							
 							<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.EncountersTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 							<openmrs:globalProperty var="maxEncs" key="dashboard.maximumNumberOfEncountersToShow" defaultValue="" />
@@ -237,9 +265,9 @@
 	</c:choose>
 	
 	<c:choose>
-		<c:when test="${ajaxProperties['ajaxDemographics'] == 'Disabled'}">
+		<c:when test="${ajaxProperties['ajaxDemographics'] == 'Preload'}">
 			<openmrs:hasPrivilege privilege="Patient Dashboard - View Demographics Section">
-				<div id="patientDemographics" style="display:none;">
+				<div id="contentDemographicsTab" style="display:none;">
 					
 					<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.DemographicsTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 					<openmrs:portlet url="patientDemographics" id="patientDashboardDemographics" patientId="${patient.patientId}"/>
@@ -253,9 +281,9 @@
 	</c:choose>
 	
 	<c:choose>
-		<c:when test="${ajaxProperties['ajaxGraphs'] == 'Disabled'}">
+		<c:when test="${ajaxProperties['ajaxGraphs'] == 'Preload'}">
 			<openmrs:hasPrivilege privilege="Patient Dashboard - View Graphs Section">
-				<div id="patientGraphs" style="display:none;">
+				<div id="contentGraphsTab" style="display:none;">
 				
 					<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.GraphsTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 					<openmrs:portlet url="patientGraphs" id="patientGraphsPortlet" patientId="${patient.patientId}"/>
@@ -269,10 +297,10 @@
 	</c:choose>
 	
 	<c:choose>
-		<c:when test="${ajaxProperties['ajaxFormEntry'] == 'Disabled'}">
+		<c:when test="${ajaxProperties['ajaxFormEntry'] == 'Preload'}">
 			<c:if test="${enableFormEntryTab}">
 				<openmrs:hasPrivilege privilege="Form Entry">
-					<div id="formEntry" style="display:none;">
+					<div id="contentFormEntryTab" style="display:none;">
 					
 						<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.FormEntryTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 						<openmrs:portlet url="personFormEntry" id="formEntryPortlet" personId="${patient.personId}" parameters="showDecoration=true|showLastThreeEncounters=true|returnUrl=${pageContext.request.contextPath}/patientDashboard.form"/>
@@ -288,7 +316,7 @@
 		
 	<openmrs:extensionPoint pointId="org.openmrs.patientDashboardTab" type="html">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-			<div id="${extension.tabId}" style="display:none;">
+			<div id="content${extension.tabId}Tab" style="display:none;">
 				<c:catch var="ex">
 					<c:choose>
 						<c:when test="${extension.portletUrl == '' || extension.portletUrl == null}">
@@ -318,5 +346,6 @@
 	</openmrs:extensionPoint>
 	
 </div>
+<div id="saveLastViewedTab" style="display:none;"></div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
