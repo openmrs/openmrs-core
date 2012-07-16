@@ -1,8 +1,7 @@
 Scenario: Edit user password
 
-GivenStories: org/openmrs/stories/create_a_user.story
+GivenStories: org/openmrs/stories/go_to_admin_page.story
 
-Given I navigate to the the administration page
 When I click on the Manage Users
 And I search for user john
 And I chose to edit the user
