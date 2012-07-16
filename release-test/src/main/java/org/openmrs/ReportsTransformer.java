@@ -54,7 +54,6 @@ public class ReportsTransformer {
         Transformer transformer = TransformerFactory.newInstance().newTransformer(xslt);
         transformer.transform(xml, result);
         transformer.transform(xml, resultOutput);
-        System.out.println("GENERATING REPORT TO: " + resultOutput.toString());
         return (Document) result.getNode();
     }
 
