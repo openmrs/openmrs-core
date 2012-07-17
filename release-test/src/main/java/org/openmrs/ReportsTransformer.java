@@ -41,20 +41,22 @@ public class ReportsTransformer {
 
     }
 
-    public static Document tranformReport(File xmlPath) throws TransformerFactoryConfigurationError,
+    public static void tranformReport(File xmlPath) throws TransformerFactoryConfigurationError,
             TransformerException, FileNotFoundException {
         Source xml = new StreamSource(xmlPath);
         Source xslt = new StreamSource(new File(cd,
                 "src/main/resources/reports/jbehave-3.x-to-junit-1.0.xsl"));
+        String xmlName = xmlPath.getName();
 
-        String resultOutputPath = cd + "/target/jbehave/TEST" + xmlPath.getName();
-        Result resultOutput = new StreamResult(new FileOutputStream(resultOutputPath));
-        DOMResult result = new DOMResult();
-
-        Transformer transformer = TransformerFactory.newInstance().newTransformer(xslt);
-        transformer.transform(xml, result);
-        transformer.transform(xml, resultOutput);
-        return (Document) result.getNode();
+        if(!xmlName.contains("AfterStories") || !xmlName.contains("BeforeStories")){
+            String resultOutputPath = cd + "/target/jbehave/TEST" + xmlName;
+            Result resultOutput = new StreamResult(new FileOutputStream(resultOutputPath));
+            DOMResult result = new DOMResult();
+            Transformer transformer = TransformerFactory.newInstance().newTransformer(xslt);
+            transformer.transform(xml, result);
+            transformer.transform(xml, resultOutput);
+        }
+        
     }
 
     public static List<File> getXMLFiles(File folder) {
