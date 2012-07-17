@@ -48,7 +48,8 @@ public class ReportsTransformer {
                 "src/main/resources/reports/jbehave-3.x-to-junit-1.0.xsl"));
         String xmlName = xmlPath.getName();
 
-        if(!xmlName.contains("AfterStories") || !xmlName.contains("BeforeStories")){
+        if(!xmlName.contains("AfterStories") && !xmlName.contains("BeforeStories")){
+            System.out.println("PROCESSING XML::"+xmlName);
             String resultOutputPath = cd + "/target/jbehave/TEST" + xmlName;
             Result resultOutput = new StreamResult(new FileOutputStream(resultOutputPath));
             DOMResult result = new DOMResult();
