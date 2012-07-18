@@ -1603,7 +1603,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		//by default every word must at least weigh 1+
 		weight = 1.0;
-		//TODO make the numbers 5.0, 3.0, 1.0 etc constants
 		//Index terms rank highly since they were added for searching
 		
 		//This is the actual match
