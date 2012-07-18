@@ -270,7 +270,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 */
 	@Override
 	public Integer countHL7InQueue(int messageState, String query) throws APIException {
-		return dao.countHL7s(HL7InQueue.class, messageState, query);
+		return OpenmrsUtil.convertToInteger(dao.countHL7s(HL7InQueue.class, messageState, query));
 	}
 	
 	/**
@@ -278,7 +278,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 */
 	@Override
 	public Integer countHL7InError(String query) throws APIException {
-		return dao.countHL7s(HL7InError.class, null, query);
+		return OpenmrsUtil.convertToInteger(dao.countHL7s(HL7InError.class, null, query));
 	}
 	
 	/**
@@ -286,7 +286,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 */
 	@Override
 	public Integer countHL7InArchive(int messageState, String query) throws APIException {
-		return dao.countHL7s(HL7InArchive.class, messageState, query);
+		return OpenmrsUtil.convertToInteger(dao.countHL7s(HL7InArchive.class, messageState, query));
 	}
 	
 	/**
