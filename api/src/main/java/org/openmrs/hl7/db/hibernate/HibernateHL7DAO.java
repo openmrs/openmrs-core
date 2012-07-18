@@ -35,6 +35,7 @@ import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Source;
 import org.openmrs.hl7.Hl7InArchivesMigrateThread;
 import org.openmrs.hl7.db.HL7DAO;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * OpenMRS HL7 API database default hibernate implementation This class shouldn't be instantiated by
@@ -177,14 +178,14 @@ public class HibernateHL7DAO implements HL7DAO {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.db.HL7DAO#countHL7s(java.lang.Class, java.lang.Integer,
+	 * @see org.openmrs.hl7.db.HL7DAO#countHL7s(java.lang.Class, java.lang.Long,
 	 *      java.lang.String)
 	 */
 	@SuppressWarnings("rawtypes")
-	public Integer countHL7s(Class clazz, Integer messageState, String query) {
+	public Long countHL7s(Class clazz, Integer messageState, String query) {
 		Criteria crit = getHL7SearchCriteria(clazz, messageState, query);
 		crit.setProjection(Projections.rowCount());
-		return (Integer) crit.uniqueResult();
+		return (Long)crit.uniqueResult();
 	}
 	
 	/**
