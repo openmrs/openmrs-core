@@ -122,7 +122,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @see org.openmrs.api.db.PatientSetDAO#exportXml(org.openmrs.Cohort)
 	 */
 	public String exportXml(Cohort ps) throws DAOException {
-		// TODO: This is inefficient for large patient sets.
 		StringBuffer ret = new StringBuffer("<patientset>");
 		for (Integer patientId : ps.getMemberIds()) {
 			ret.append(exportXml(patientId));
@@ -427,9 +426,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					patientNode.appendChild(observationsNode);
 				}
 			}
-			
-			// TODO: put in orders that don't belong to any encounter
-			
+						
 			root.appendChild(patientNode);
 			
 		}
@@ -467,7 +464,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	/**
-	 * TODO: Fails to leave out patients who are voided Returns the set of patients that were in a
 	 * given program, workflow, and state, within a given date range
 	 * 
 	 * @param program The program the patient must have been in
@@ -535,7 +531,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	/**
-	 * TODO: Don't return voided patients Returns the set of patients that were ever in enrolled in
 	 * a given program. If fromDate != null, then only those patients who were in the program at any
 	 * time after that date if toDate != null, then only those patients who were in the program at
 	 * any time before that date
@@ -797,7 +792,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	/**
-	 * TODO: don't return voided patients Gets all patients with an obs's value_date column value
 	 * within <code>startTime</code> and <code>endTime</code>
 	 * 
 	 * @param conceptId
@@ -923,10 +917,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			clauses.add("patient.birthdate <= :maxBirthdate");
 		}
 		if (aliveOnly != null && aliveOnly) {
-			clauses.add("patient.dead = false"); // TODO: Should this use effectiveDate?  What if deathDate is null?
+			clauses.add("patient.dead = false");
 		}
 		if (deadOnly != null && deadOnly) {
-			clauses.add("patient.dead = true"); // TODO: Should this use effectiveDate?  What if deathDate is null?
+			clauses.add("patient.dead = true");
 		}
 		
 		Date maxBirthFromAge = null;
@@ -1046,7 +1040,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	/**
 	 * fromDate and toDate are both inclusive
-	 * TODO: finish this. 
 	 */
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept, Date fromDate, Date toDate)
 	        throws DAOException {
@@ -1233,7 +1226,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 	}
 	
-	// TODO this should be in some sort of central place...but where?
 	public static List<String> findObsValueColumnName(Concept c) {
 		String abbrev = c.getDatatype().getHl7Abbreviation();
 		List<String> columns = new Vector<String>();
@@ -1416,7 +1408,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	// TODO: this method seems to be missing a check for voided==false.
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll)
 	        throws DAOException {
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
@@ -1576,7 +1567,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	// TODO: don't return voided patients. Also, remove this method
 	public Cohort getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier) throws DAOException {
 		Query query;
 		StringBuffer sb = new StringBuffer();
@@ -1896,7 +1886,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	/* 
-	 * TODO: should we return voided patients?
 	 * This is a small hack to make the relationships work right in Neal's report code. It will be refactored
 	 * when I implement a relationship type filter for the cohort builder. -DJ
 	 */
@@ -1934,8 +1923,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	// TODO: Don't return voided patients
-	// TODO: Refactor this completely to make it useful now that relationships are bidirectional. (Or delete it.) 
 	@SuppressWarnings("unchecked")
 	public Map<Integer, List<Relationship>> getRelationships(Cohort patients, RelationshipType relType) {
 		Map<Integer, List<Relationship>> ret = new HashMap<Integer, List<Relationship>>();
@@ -2123,7 +2110,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	/**
-	 * TODO get rid of the potentially-expensive call to getAllPatients()
 	 * 
 	 * @see org.openmrs.api.db.PatientSetDAO#getPatientsByRelationship(org.openmrs.RelationshipType,
 	 *      boolean, boolean, org.openmrs.Person)
