@@ -111,7 +111,7 @@ public interface HL7DAO {
 	 * @return count of HL7 items
 	 */
 	@SuppressWarnings("rawtypes")
-	public Integer countHL7s(Class clazz, Integer messageState, String query);
+	public Long countHL7s(Class clazz, Integer messageState, String query);
 	
 	/* HL7InArchive */
 
