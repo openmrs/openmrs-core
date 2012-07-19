@@ -333,7 +333,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		}
 		if (!outcomesConcept.getAnswers().isEmpty()) {
 			for (ConceptAnswer conceptAnswer : outcomesConcept.getAnswers()) {
-				possibleOutcomes.add(conceptAnswer.getConcept());
+				possibleOutcomes.add(conceptAnswer.getAnswerConcept());
 			}
 			return possibleOutcomes;
 		}
