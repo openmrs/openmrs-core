@@ -802,7 +802,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 		        .list();
 	}
 	
-	//TODO:  eventually, this method should probably just run updateConceptSetDerived(Concept) inside an iteration of all concepts... (or something else less transactionally-intense)
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#updateConceptSetDerived()
 	 */
