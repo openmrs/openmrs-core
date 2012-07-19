@@ -238,9 +238,6 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 * @see org.openmrs.api.LocationService#saveLocationTag(org.openmrs.LocationTag)
 	 */
 	public LocationTag saveLocationTag(LocationTag tag) throws APIException {
-		if (tag.getName() == null) { // TODO check whether this is automatically handled by SaveHandler for OpenmrsMetadata
-			throw new APIException("Tag name is required");
-		}
 		return dao.saveLocationTag(tag);
 	}
 	
