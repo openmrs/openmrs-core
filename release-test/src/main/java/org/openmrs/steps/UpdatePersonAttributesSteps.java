@@ -4,7 +4,9 @@ import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.openmrs.Steps;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.lift.Finders;
+import org.openqa.selenium.lift.find.Finder;
 
 import static org.hamcrest.Matchers.*;
 import static org.openqa.selenium.lift.Finders.button;
@@ -22,7 +24,9 @@ public class UpdatePersonAttributesSteps extends Steps {
 
     @When("I change the attribute description to $description")
     public void changeTheAttributeDescriptionTo(String description){
-         type(description, into(finderByXpath("//textarea[@name='description']")));
+        Finder<WebElement,WebDriver> descriptionXpath = finderByXpath("//textarea[@name='description']");
+        waitFor(descriptionXpath);
+        type(description, into(descriptionXpath));
     }
 
     @When("I save the attribute type")
