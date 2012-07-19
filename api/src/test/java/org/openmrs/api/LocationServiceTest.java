@@ -542,6 +542,20 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link LocationService#saveLocationTag(LocationTag)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should throw exception if tag name is null", method = "saveLocationTag(LocationTag)")
+	public void saveLocationTag_shouldThrowExceptionIfTagNameIsNull() throws Exception {
+		LocationTag tag = new LocationTag();
+		
+		tag.setName(null);
+		tag.setDescription("desc");
+		
+		Context.getLocationService().saveLocationTag(tag);
+	}
+	
+	/**
 	 * Test a simple update to a location tag that is already in the database.
 	 * 
 	 * @see {@link LocationService#saveLocationTag(LocationTag)}

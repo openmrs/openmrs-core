@@ -256,6 +256,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return saved object
 	 * @should update location tag successfully
 	 * @should create location tag successfully
+	 * @should throw exception if tag name is null
 	 * @since 1.5
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_LOCATION_TAGS })
