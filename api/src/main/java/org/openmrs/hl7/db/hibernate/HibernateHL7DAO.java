@@ -185,7 +185,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	public Long countHL7s(Class clazz, Integer messageState, String query) {
 		Criteria crit = getHL7SearchCriteria(clazz, messageState, query);
 		crit.setProjection(Projections.rowCount());
-		return (Long)crit.uniqueResult();
+		return (Long) crit.uniqueResult();
 	}
 	
 	/**
