@@ -35,7 +35,10 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Validates {@link Concept} objects.
+ * Validates {@link Concept} objects. <br>
+ * These validations are also documented at <a
+ * href="https://wiki.openmrs.org/x/-gkdAg">https://wiki.openmrs.org/x/-gkdAg</a>. Any changes made
+ * to this source also need to be reflected on that page.
  */
 @Handler(supports = { Concept.class }, order = 50)
 public class ConceptValidator implements Validator {
