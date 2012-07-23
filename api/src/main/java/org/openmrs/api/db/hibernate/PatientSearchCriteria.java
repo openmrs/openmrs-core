@@ -204,9 +204,6 @@ public class PatientSearchCriteria {
 		// TODO simple name search to start testing, will need to make "real"
 		// name search
 		// i.e. split on whitespace, guess at first/last name, etc
-		// TODO return the matched name instead of the primary name
-		// possible solution: "select new" org.openmrs.PatientListItem and
-		// return a list of those
 		
 		name = name.replaceAll("  ", " ");
 		name = name.replace(", ", " ");
