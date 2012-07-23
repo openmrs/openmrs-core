@@ -170,8 +170,6 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	}
 	
 	/**
-	 * TODO: refactor this
-	 * 
 	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getPatientPrograms(org.openmrs.Cohort,
 	 *      java.util.Collection)
 	 */
