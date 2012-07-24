@@ -782,6 +782,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 			log.debug("words: " + words);
 			for (ConceptWord word : words) {
 				try {
+					if (word.getConceptName().getId() == null) {
+						//The concept name id must be assigned before saving the word, thus we force Hibernate to trigger the insert for concept name.
+						sessionFactory.getCurrentSession().saveOrUpdate(word.getConceptName());
+					}
 					sessionFactory.getCurrentSession().save(word);
 				}
 				catch (NonUniqueObjectException e) {
