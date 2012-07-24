@@ -63,12 +63,14 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ConceptValidator;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.controller.concept.ConceptReferenceTermWebValidator;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -246,6 +248,9 @@ public class ConceptFormController extends SimpleFormController {
 				
 				try {
 					new ConceptValidator().validate(concept, errors);
+					
+					validateConceptUsesPersistedObjects(concept, errors);
+					
 					if (!errors.hasErrors()) {
 						cs.saveConcept(concept);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
@@ -274,6 +279,24 @@ public class ConceptFormController extends SimpleFormController {
 		}
 		
 		return new ModelAndView(new RedirectView(getFormView()));
+	}
+	
+	/**
+	 * @param concept
+	 * @param errors
+	 * @should add error if source is not saved
+	 * @should add error if map type is not saved
+	 * @should add error if term b is not saved
+	 */
+	void validateConceptUsesPersistedObjects(Concept concept, Errors errors) {
+		if (concept.getConceptMappings() != null) {
+			int index = 0;
+			for (ConceptMap conceptMap : concept.getConceptMappings()) {
+				errors.pushNestedPath("conceptMappings[" + index + "].conceptReferenceTerm");
+				new ConceptReferenceTermWebValidator().validate(conceptMap.getConceptReferenceTerm(), errors);
+				errors.popNestedPath();
+			}
+		}
 	}
 	
 	/**
