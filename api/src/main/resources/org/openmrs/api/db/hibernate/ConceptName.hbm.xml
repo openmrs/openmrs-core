@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ConceptName" table="concept_name" batch-size="25">
+
+		<id name="conceptNameId" type="int" column="concept_name_id">
+			<generator class="native">
+				<param name="sequence">concept_name_concept_name_id_seq</param>
+			</generator>
+		</id>
+		
+		<many-to-one
+			name="concept"
+			column="concept_id"
+			class="Concept"
+			not-null="true"/>
+
+		<property name="name" type="java.lang.String" length="65535" not-null="true" />
+		<property name="locale" type="java.util.Locale" length="50" not-null="true"/>
+		
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
+		<many-to-one name="creator" class="User" column="creator" not-null="true"/>
+		
+		<property name="voided" type="java.lang.Boolean" column="voided"
+			length="1" not-null="true" />
+		<property name="dateVoided" type="java.util.Date"
+			column="date_voided" length="19" />
+		<property name="voidReason" type="java.lang.String"
+			column="void_reason" length="255" />
+		<many-to-one name="voidedBy" class="User" column="voided_by" />
+		
+		<set name="tags" table="concept_name_tag_map" cascade="save-update">
+			<key column="concept_name_id"/>
+			<many-to-many class="ConceptNameTag" column="concept_name_tag_id"/>
+		</set>
+		
+		<property name="conceptNameType" column="concept_name_type" length="50">
+			<type name="org.openmrs.util.HibernateEnumType">
+				<param name="enumClassName">org.openmrs.api.ConceptNameType</param>
+			</type>
+		</property>
+		
+		<property name="localePreferred" type="java.lang.Boolean" column="locale_preferred" 
+		          length="1" not-null="true"/>
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />		
+	</class>
+	
+</hibernate-mapping>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">   
+<hibernate-mapping>
+	<class name="org.openmrs.FieldType" table="field_type">
+		<id name="fieldTypeId" type="int" column="field_type_id" unsaved-value="0">
+			<generator class="native">
+				<param name="sequence">field_type_field_type_id_seq</param>
+			</generator>
+		</id>
+
+		<discriminator column="field_type_id" insert="false" />
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+		<property name="name" type="java.lang.String" column="name" length="50"  />
+		<property name="description" type="java.lang.String" column="description" length="2147483647" />
+		<property name="isSet" type="boolean" column="is_set" length="1" not-null="true" />
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

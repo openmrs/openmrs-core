@@ -1,0 +1,16 @@
+#Thu Mar 22 14:23:44 EDT 2012
+eclipse.preferences.version=1
+encoding//web/WEB-INF/messages_es.properties=UTF-8
+encoding//web/WEB-INF/messages_fr.properties=UTF-8
+encoding//web/WEB-INF/messages_it.properties=UTF-8
+encoding//web/WEB-INF/messages_pt.properties=UTF-8
+encoding//webapp/src/main/webapp/WEB-INF/messages.properties=UTF-8
+encoding//webapp/src/main/webapp/WEB-INF/messages_en_GB.properties=UTF-8
+encoding//webapp/src/main/webapp/WEB-INF/messages_es.properties=UTF-8
+encoding//webapp/src/main/webapp/WEB-INF/messages_fr.properties=UTF-8
+encoding//webapp/src/main/webapp/WEB-INF/messages_it.properties=UTF-8
+encoding//webapp/src/main/webapp/WEB-INF/module_messages_en_GB.properties=UTF-8
+encoding//webapp/src/main/webapp/WEB-INF/module_messages_es.properties=UTF-8
+encoding//webapp/src/main/webapp/WEB-INF/module_messages_fr.properties=UTF-8
+encoding//webapp/src/main/webapp/WEB-INF/module_messages_it.properties=UTF-8
+encoding//webapp/src/main/webapp/WEB-INF/module_messages_pt.properties=UTF-8

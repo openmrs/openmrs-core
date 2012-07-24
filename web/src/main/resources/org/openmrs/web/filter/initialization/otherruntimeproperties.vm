@@ -1,0 +1,33 @@
+#parse($headerTemplate)
+	<form method="post">
+		<input type="hidden" name="page" value="otherruntimeproperties.vm" /> 
+		<div class="content">
+            <table cellpadding="9" align="center" cellspacing="5" >
+		  <tr>
+                    <td colspan="2"><strong>$l10n.get("install.advanced.other")</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="question" >$l10n.get("install.advanced.other.modules") <br/> <i style="font-size:12px;">  $l10n.get("install.advanced.other.modules.disclaimer") </i>
+		     </td>
+		  </tr>
+		  <tr>
+                    <td>$l10n.get("general.yes"): <input type="radio" name="module_web_admin" value="yes" #if( $moduleWebAdmin == true )checked="checked"#end /></td>
+                    <td>$l10n.get("general.no"): <input type="radio" name="module_web_admin" value="no" #if( $moduleWebAdmin == false )checked="checked"#end /></td>
+		  </tr>
+		  <tr>
+                    <td colspan="2" class="question" >$l10n.get("install.advanced.other.update")</td>
+		  </tr>
+		  <tr>
+                    <td>$l10n.get("general.yes"): <input type="radio" name="auto_update_database" value="yes" #if( $autoUpdateDatabase == true )checked="checked"#end/></td>
+                    <td>$l10n.get("general.no"): <input type="radio" name="auto_update_database" value="no" #if( $autoUpdateDatabase == false )checked="checked"#end/></td>
+		  </tr>
+                <tr>
+			<td colspan="2" align="center">
+				<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+				<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
+			</td>
+                </tr>
+		</table>
+        </div>
+	</form>
+#parse($footerTemplate)

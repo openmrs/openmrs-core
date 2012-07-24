@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <concept concept_id="1" retired="false" datatype_id="2" class_id="7" is_set="true" creator="1" date_created="2005-01-01 00:00:00.0" uuid="957eba27-2b38-43e8-91a9-4dfe3956a32d"/>
+  <concept concept_id="2" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="92b910bd-298c-4ecf-a632-661ae2f446bf"/>
+  <concept concept_id="3" retired="false" datatype_id="2" class_id="7" is_set="true" creator="1" date_created="2005-01-01 00:00:00.0" uuid="997eba27-2b38-43e8-91a9-4dfe3956a32d"/>
+  <concept concept_id="4" retired="false" datatype_id="1" class_id="7" is_set="true" creator="1" date_created="2005-01-01 00:00:00.0" uuid="91b910bd-298c-4ecf-a632-661ae2f446bf"/>
+  <concept concept_id="5" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="947eba27-2b38-43e8-91a9-4dfe3956a32d"/>
+  <concept concept_id="6" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="93b910bd-298c-4ecf-a632-661ae2f446bf"/>
+  <concept concept_id="6" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="97b910bd-298c-4ecf-a632-661ae2f446bf"/>
+  
+
+  <concept_set concept_set_id="1" concept_set="1" concept_id="2" sort_weight="0" date_created="2005-01-01 00:00:00.0" creator="1" uuid="17b910bd-298c-4ecf-a632-661ae2f446bf"/>
+  <concept_set concept_set_id="2" concept_set="1" concept_id="3" sort_weight="0" date_created="2005-01-01 00:00:00.0" creator="1" uuid="12b910bd-298c-4ecf-a632-661ae2f446bf"/>
+  <concept_set concept_set_id="3" concept_set="3" concept_id="4" sort_weight="0" date_created="2005-01-01 00:00:00.0" creator="1" uuid="13b910bd-298c-4ecf-a632-661ae2f446bf"/>
+  <concept_set concept_set_id="4" concept_set="3" concept_id="5" sort_weight="0" date_created="2005-01-01 00:00:00.0" creator="1" uuid="14b910bd-298c-4ecf-a632-661ae2f446bf"/>
+  <concept_set concept_set_id="5" concept_set="4" concept_id="6" sort_weight="0" date_created="2005-01-01 00:00:00.0" creator="1" uuid="15b910bd-298c-4ecf-a632-661ae2f446bf"/>  
+</dataset>

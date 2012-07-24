@@ -1,0 +1,108 @@
+#parse($headerTemplate)
+	<form method="post">
+		<input type="hidden" name="page" value="wizardcomplete.vm" /> 
+		<div class="content">
+		<!-- TODO list off all collected properties here -->
+		 	<table cellpadding="9" align="center" cellspacing="5" >
+            	<tr>
+                    <td colspan="2"><h3>$l10n.get("install.complete.review")</h3></td>
+                </tr>
+                <tr>
+                    <td colspan="2">$l10n.get("install.complete.info")
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="question">$l10n.get("install.complete.db")</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.complete.db.connection")</th>
+                    <td>${databaseConnection}</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.db.name")</th>
+                    <td>${databaseName}</td>
+                </tr>
+                #if($installMethod != $INSTALL_METHOD_TESTING)
+                <tr>
+                    <th class="label">$l10n.get("install.complete.db.create")</th>
+                    <td>#if( $hasCurrentOpenmrsDatabase == false ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.complete.db.userAccount")</th>
+                    <td>#if( $createDatabaseUser == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.complete.db.tables")</th>
+                    <td>#if( $createTables == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.complete.db.demo")</th>
+                    <td>#if( $addDemoData == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" class="question">$l10n.get("install.complete.impl")</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.complete.impl.name")</th>
+                    <td>${implementationIdName}</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.complete.impl.id")</th>
+                    <td>${implementationId}</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.complete.impl.pass")</th>
+                    <td>${implementationIdPassPhrase}</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.complete.impl.desc")</th>
+                    <td>${implementationIdDescription}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="question">$l10n.get("install.complete.rp")</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.complete.rp.mod")</th>
+                    <td>#if( $moduleWebAdmin == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.complete.rp.up")</th>
+                    <td>#if( $autoUpdateDatabase == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
+                </tr>
+                #end
+                #if($localeToSave)
+                <tr>
+                    <th class="label">$l10n.get("LocalesAndThemes.locale")</th>
+                    <td>${localeToSave}</td>
+                </tr>
+                #end
+                <tr>
+                    <th class="label">$l10n.get("install.complete.rp.path")</th>
+                    <td>${runtimePropertiesPath}</td>
+                </tr>
+                #if($installMethod == $INSTALL_METHOD_TESTING)
+                <tr>
+                    <td colspan="2" class="question">$l10n.get("install.complete.settings")</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.testing.remoteUrl")</th>
+                    <td>${remoteUrl}</td>
+                </tr>
+                <tr>
+                    <th class="label">$l10n.get("install.testing.remote.username")</th>
+                    <td>${remoteUsername}</td>
+                </tr>
+                #end
+                <tr>
+                	<td colspan="2" align="center">
+						<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+						<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
+					</td>
+                </tr>
+            </table>
+        </div>
+	</form>
+	
+    <div id="progressbar"></div>
+#parse($footerTemplate)

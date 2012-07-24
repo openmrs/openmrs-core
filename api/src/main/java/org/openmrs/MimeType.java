@@ -1,0 +1,90 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
+package org.openmrs;
+
+/**
+ * MimeType
+ * 
+ * @deprecated This class is no longer used. Mimetypes are determined by the handler for a
+ *             ConceptComplex now.
+ */
+@Deprecated
+public class MimeType extends BaseOpenmrsMetadata implements java.io.Serializable {
+	
+	public static final long serialVersionUID = 8765L;
+	
+	// Fields
+	
+	private Integer mimeTypeId;
+	
+	private String mimeType;
+	
+	// Constructors
+	
+	/** default constructor */
+	public MimeType() {
+	}
+	
+	/** constructor with id */
+	public MimeType(Integer mimeTypeId) {
+		this.mimeTypeId = mimeTypeId;
+	}
+	
+	// Property accessors
+	
+	/**
+	 * @return Returns the mimeTypeId.
+	 */
+	public Integer getMimeTypeId() {
+		return mimeTypeId;
+	}
+	
+	/**
+	 * @param mimeTypeId The mimeTypeId to set.
+	 */
+	public void setMimeTypeId(Integer mimeTypeId) {
+		this.mimeTypeId = mimeTypeId;
+	}
+	
+	/**
+	 * @return Returns the mimeType.
+	 */
+	public String getMimeType() {
+		return mimeType;
+	}
+	
+	/**
+	 * @param mimeType The mimeType to set.
+	 */
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		
+		return getMimeTypeId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setMimeTypeId(id);
+		
+	}
+	
+}

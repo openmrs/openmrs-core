@@ -1,0 +1,88 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
+package org.openmrs;
+
+/**
+ * FieldType
+ */
+public class FieldType extends BaseOpenmrsMetadata implements java.io.Serializable {
+	
+	public static final long serialVersionUID = 35467L;
+	
+	// Fields
+	
+	private Integer fieldTypeId;
+	
+	private Boolean isSet = false;
+	
+	// Constructors
+	
+	/** default constructor */
+	public FieldType() {
+	}
+	
+	/** constructor with id */
+	public FieldType(Integer fieldTypeId) {
+		this.fieldTypeId = fieldTypeId;
+	}
+	
+	// Property accessors
+	
+	/**
+	 * @return Returns the fieldTypeId.
+	 */
+	public Integer getFieldTypeId() {
+		return fieldTypeId;
+	}
+	
+	/**
+	 * @param fieldTypeId The fieldTypeId to set.
+	 */
+	public void setFieldTypeId(Integer fieldTypeId) {
+		this.fieldTypeId = fieldTypeId;
+	}
+	
+	/**
+	 * @return Returns the isSet.
+	 */
+	public Boolean getIsSet() {
+		return isSet;
+	}
+	
+	/**
+	 * @param isSet The isSet to set.
+	 */
+	public void setIsSet(Boolean isSet) {
+		this.isSet = isSet;
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		
+		return getFieldTypeId();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setFieldTypeId(id);
+		
+	}
+	
+}

@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Concept" table="concept" batch-size="25">
+		
+		<cache usage="read-write"/>
+		
+		<id name="conceptId" type="java.lang.Integer"
+			column="concept_id"
+			unsaved-value="undefined">
+			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator" />
+		</id>
+
+		<discriminator column="concept_id" insert="false" />
+		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="38" unique="true" />
+
+		<property name="retired" type="java.lang.Boolean"
+			column="retired" length="1" not-null="true"/>
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+		<property name="version" type="java.lang.String"
+			column="version" length="50" /> 
+		<property name="dateChanged" type="java.util.Date"
+			column="date_changed" length="19" />
+		<property name="set" type="java.lang.Boolean" column="is_set"
+			length="1" not-null="true" />
+		
+		
+		<property name="retireReason" type="java.lang.String"
+			column="retire_reason" length="255" /> 
+		
+		<property name="dateRetired" type="java.util.Date"
+			column="date_retired" length="19" />
+		
+		<many-to-one name="retiredBy" class="User">
+			<column name="retired_by" />
+		</many-to-one>
+		
+		
+		
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-one association to ConceptDatatype -->
+		<many-to-one name="datatype" class="ConceptDatatype"
+			not-null="true">
+			<column name="datatype_id" />
+		</many-to-one>
+
+		<set name="names" lazy="true" cascade="all-delete-orphan,evict" inverse="true" access="field">
+			<key column="concept_id" not-null="true" />
+			<one-to-many class="ConceptName" />
+		</set>
+
+		<set name="descriptions" lazy="true" inverse="true" cascade="all" 
+			order-by="concept_description_id">
+			<key column="concept_id" />
+			<one-to-many class="ConceptDescription" />
+		</set>
+		
+		<set name="answers" lazy="true" cascade="all,delete-orphan"
+				table="concept_answer" order-by="sort_weight asc, concept_answer_id asc" access="field" inverse="true">
+			<key column="concept_id" not-null="true" />
+			<one-to-many class="ConceptAnswer"/>
+		</set>
+		
+		<!-- This will need to be changed to lazy="false" if we ever have a subobject that would need to store/load this 
+		     (Right now, ConceptNumerics, ConceptComplex, and ConceptDerived objects do not have child concepts (aka, are not sets) -->
+		<set name="conceptSets" table="concept_set" lazy="true"
+				cascade="all,delete-orphan" order-by="sort_weight asc" inverse="true">
+			<key not-null="true">
+				<column name="concept_set" />
+			</key>
+			<one-to-many class="ConceptSet"/>
+		</set>
+		
+		<set name="conceptMappings" inverse="true" cascade="all,delete-orphan,evict">
+			<key column="concept_id" not-null="true" />
+			<one-to-many class="ConceptMap" />
+		</set>
+		
+		<!-- bi-directional many-to-one association to ConceptClass -->
+		<many-to-one name="conceptClass" class="ConceptClass"
+			not-null="true">
+			<column name="class_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="changedBy" class="User"
+			not-null="true">
+			<column name="changed_by" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="creator" class="User"
+			not-null="true">
+			<column name="creator" />
+		</many-to-one>
+		
+		<joined-subclass name="org.openmrs.ConceptNumeric" table="concept_numeric" extends="org.openmrs.Concept" lazy="false">
+			<key column="concept_id" not-null="true" on-delete="cascade" />
+			<property name="hiAbsolute" type="java.lang.Double" column="hi_absolute" length="22" />
+			<property name="hiCritical" type="java.lang.Double" column="hi_critical" length="22" />
+			<property name="hiNormal" type="java.lang.Double" column="hi_normal" length="22" />
+			<property name="lowAbsolute" type="java.lang.Double" column="low_absolute" length="22" />
+			<property name="lowCritical" type="java.lang.Double" column="low_critical" length="22" />
+			<property name="lowNormal" type="java.lang.Double" column="low_normal" length="22" />
+			<property name="units" type="java.lang.String" column="units" length="50" />
+			<property name="precise" type="java.lang.Boolean" column="precise" length="1" not-null="true"/>
+		</joined-subclass>
+	
+	   <joined-subclass name="org.openmrs.ConceptComplex" table="concept_complex" extends="org.openmrs.Concept" lazy="false">
+	        <key column="concept_id" not-null="true" on-delete="cascade" />
+	        <property name="handler" type="java.lang.String" column="handler" length="255"/>
+	    </joined-subclass>	
+		
+	</class>
+
+</hibernate-mapping>

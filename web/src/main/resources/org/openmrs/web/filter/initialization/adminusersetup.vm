@@ -1,0 +1,33 @@
+#parse($headerTemplate)
+	<form method="post" autocomplete="off">
+		<input type="hidden" name="page" value="adminusersetup.vm" /> 
+        <div class="content">
+            <table cellpadding="9" align="center" cellspacing="5" >
+     		<tr>
+                    <td colspan="2"><strong>$l10n.get("install.advanced.admin")</strong></td>
+     		</tr>
+     		<tr>
+                    <td colspan="2" class="question" >$l10n.get("install.advanced.admin.password.info")</td>
+                </tr>
+                <tr>
+                    <td>$l10n.get("install.advanced.dbsetup.instDb.userName"):</td>
+                    <td><strong>admin</strong></td>
+                </tr>
+                <tr>
+                    <td>$l10n.get("install.simple.passwd"):</td>
+     			<td><input type="password" name="new_admin_password" value="" autocomplete="off" onKeyPress="return submitenter(this,event);"/></td>
+     		</tr>
+     		<tr>
+                    <td>$l10n.get("install.advanced.admin.password.retype"):</td>
+     			<td><input type="password" name="new_admin_password_confirm" value="" autocomplete="off" onKeyPress="return submitenter(this,event);"/></td>
+     		</tr>
+                <tr>
+			<td colspan="2" align="center">
+				<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+				<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
+			</td>
+                </tr>
+     	</table>
+        </div>
+	</form>
+#parse($footerTemplate)

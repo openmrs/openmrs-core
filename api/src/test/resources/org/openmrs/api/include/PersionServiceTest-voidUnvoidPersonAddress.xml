@@ -1,0 +1,9 @@
+<dataset>
+  <person person_id="1001" gender="M" birthdate="1975-04-08 00:00:00.0" dead="false" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" uuid="dagh524f-27ce-4bb2-86d6-6d1d05312bd5"/>
+  <person_address person_address_id="1001" person_id="1001" preferred="true" address1="1050 Wishard Blvd." address2="RG5" city_village="Indianapolis" state_province="IN" postal_code="46202" country="USA" latitude="" longitude="" creator="1" date_created="2005-09-22 00:00:00.0" voided="true" voided_by="1" date_voided="2009-05-17 10:00:00.0" void_reason="test" uuid="33ghghb5-821c-4e5e-ad1d-a9bce331e777"/>
+  <person_address person_address_id="1002" person_id="1001" preferred="false" address1="" address2="" city_village="Kapina" state_province="" postal_code="" country="" latitude="" longitude="" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason="" uuid="92gh0e23-d941-4bac-8ce4-ab0d0f7d8a91"/>
+
+  <person person_id="1002" gender="M" birthdate="1975-04-08 00:00:00.0" dead="false" creator="1" date_created="2005-09-22 00:00:00.0" voided="true" voided_by="1" date_voided="2009-05-17 10:00:00.0" void_reason="test" uuid="daghgh4f-27ce-4bb2-86d6-6d1d05312bd5"/>
+  <person_address person_address_id="1003" person_id="1002" preferred="true" address1="1300 Wishard Blvd." address2="RG5" city_village="Indianapolis" state_province="IN" postal_code="46202" country="USA" latitude="" longitude="" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" void_reason="" uuid="33ghd0b5-821c-4e5e-ad1d-a9bce331e118"/>
+
+</dataset>

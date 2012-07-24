@@ -1,0 +1,32 @@
+#parse($headerTemplate)
+
+<form method="post" autocomplete="off">
+			
+	<div class="content">
+		<table align="center" cellspacing="5" cellpadding="9">
+			<tr>
+				<td colspan="2" class="question">$l10n.get("update.maintenance.login").insert($superuserrole)</td>
+			</tr>
+            <tr>
+                <td>$l10n.get("update.maintenance.username")</td>
+                <td><input type="text" name="username"/></td>
+            </tr>
+            <tr>
+                <td>$l10n.get("install.simple.passwd")</td>
+                <td><input type="password" name="password"/></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center"><input type="image" src="images/forward_button.png" name="continue"/></td>
+            </tr>
+		</table>
+	</div>
+	
+	<input type="hidden" name="page" value="maintenance.vm" /> 
+	
+</form>
+
+<script type="text/javascript">
+	document.forms[0].elements[0].focus();
+</script>
+
+#parse($footerTemplate)

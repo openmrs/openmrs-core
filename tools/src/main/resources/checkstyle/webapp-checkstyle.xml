@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+	  "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+	  "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
+<module name="Checker">
+        <module name="RegexpSingleline">
+            <property name="format" value="\s*\$\{[^\}]*[^\']\b(abstract|continue|for|new|switch|assert|default|package|synchronized|boolean|do|private|break|double|implements|protected|throw|byte|import|public|throws|case|enum|instanceof|transient|catch|extends|int|short|try|char|final|interface|static|void|class|finally|long|strictfp|volatile|float|native|super|while)\b[^\'].*\}.*"/>
+            <property name="message" value="Do not use Java keywords in EL expressions in JSP"/>
+        </module>
+</module>

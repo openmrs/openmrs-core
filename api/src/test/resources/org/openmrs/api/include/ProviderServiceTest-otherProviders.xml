@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<provider provider_id="200" name="Testname" identifier="Provider200" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="6913aa0a-e71e-11e0-950d-00248140a5eb" />
+  	<provider provider_id="201" person_id="502" identifier="Provider201" creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retire_reason="testing" uuid="74a4893e-e71e-11e0-950d-00248140a5eb" />
+</dataset>

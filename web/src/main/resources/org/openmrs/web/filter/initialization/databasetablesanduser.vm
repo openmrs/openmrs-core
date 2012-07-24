@@ -1,0 +1,61 @@
+#parse($headerTemplate)
+	<form method="post" autocomplete="off">
+		<input type="hidden" name="page" value="databasetablesanduser.vm" />
+		<div class="content">
+			<table cellpadding="9" align="center" cellspacing="5">
+				#if($installMethod != $INSTALL_METHOD_TESTING)
+		  		<tr>
+					<td colspan="2"><strong>$l10n.get("install.advanced.dbtables")</strong></td>
+				</tr>
+			 	<tr>
+					<td colspan="2" class="question" >$l10n.get("install.advanced.dbtables.quest").insert(${databaseName})</td>
+			 	</tr>
+			 	<tr>
+					<td>$l10n.get("general.yes"): <input type="radio" name="create_tables" value="yes" #if( $createTables == true )checked="checked"#end /></td>
+					<td>$l10n.get("general.no"): <input type="radio" name="create_tables" value="no" #if( $createTables == false )checked="checked"#end /></td>
+			 	</tr>
+				<tr>
+					<td colspan="2" class="question" >$l10n.get("install.advanced.dbtables.demo").insert(${databaseName})</td>
+		  		</tr>
+		  		<tr>
+					<td>$l10n.get("general.yes"): <input type="radio" name="add_demo_data" value="yes" #if( $addDemoData == true )checked="checked"#end/></td>
+					<td>$l10n.get("general.no"): <input type="radio" name="add_demo_data" value="no" #if( $addDemoData == false )checked="checked"#end/></td>
+				</tr>
+				#else
+					<tr>
+	                	<td colspan="2" align="center"><strong>$l10n.get("install.step").insert(${currentStepNumber}).insert(${numberOfSteps})</strong></td>
+					</tr>
+				#end
+				<tr>
+					<td colspan="2" class="question">$l10n.get("install.advanced.dbtables.user").insert(${databaseName})</td>
+	 			</tr>
+	 			<tr>
+					<td rowspan="3" class="yes" valign="top">$l10n.get("general.yes")<input type="radio" name="current_database_user" value="yes" #if( $hasCurrentDatabaseUser == true )checked="checked"#end/></td>
+					<td class="yes">$l10n.get("install.advanced.dbtables.user.login")</td>
+	 			</tr>
+				<tr>
+					<td>$l10n.get("install.advanced.dbsetup.instDb.userName") &nbsp;<input type="text" name="current_database_username" value="${currentDatabaseUsername}" onfocus="clickRadio('current_database_user', 'yes')" onKeyPress="return submitenter(this,event);" /></td>
+				</tr>
+				<tr>
+					<td>$l10n.get("install.simple.passwd") &nbsp;<input type="password" name="current_database_password" value="${currentDatabasePassword}" onfocus="clickRadio('current_database_user', 'yes')" onKeyPress="return submitenter(this,event);" /></td>
+				</tr>
+				<tr>
+					<td rowspan="3" class="no" valign="top">$l10n.get("general.no")<input type="radio" name="current_database_user" value="no" #if( $hasCurrentDatabaseUser == false )checked="checked"#end/></td>
+					<td class="no">$l10n.get("install.advanced.dbtables.user.create")</td>
+				</tr>
+				<tr>
+					<td>$l10n.get("install.advanced.dbsetup.instDb.userName")  &nbsp; <input type="text" name="create_user_username" value="${createUserUsername}" onfocus="clickRadio('current_database_user', 'no')" onKeyPress="return submitenter(this,event);" /></td>
+				</tr>
+				<tr>
+					<td>$l10n.get("install.simple.passwd") &nbsp; <input type="password" name="create_user_password" value="${createUserPassword}" onfocus="clickRadio('current_database_user', 'no')" onKeyPress="return submitenter(this,event);" /></td>
+				</tr>
+				<tr>
+			    	<td colspan="2" align="center">
+						<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+						<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
+			    	</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+#parse($footerTemplate)

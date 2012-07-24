@@ -1,0 +1,60 @@
+#parse($headerTemplate)
+
+    <form method="post" autocomplete="off">
+        <input type="hidden" name="page" value="databasesetup.vm" />
+			
+		<div class="content">
+            <table align="center" cellspacing="5" cellpadding="9">
+			  <tr>
+                    <td colspan="2"><strong>$l10n.get("install.advanced.dbsetup").insert(${currentStepNumber}).insert(${numberOfSteps})</strong></td>
+			  </tr>
+			  <tr>
+                    <td colspan="2" class="question">$l10n.get("install.advanced.dbsetup.capt")</td>
+                </tr>
+			     		<tr>
+                    <td colspan="2" >$l10n.get("install.advanced.dbsetup.conn") &nbsp;<input type="text" name="database_connection" size="45" value="${databaseConnection}" onKeyPress="return submitenter(this,event);"  /> <span style="font-size:12px;">$l10n.get("install.advanced.dbsetup.rep")</span></td>
+			     		</tr>
+			     		<tr>
+                    <td colspan="2" >$l10n.get("install.advanced.dbsetup.driver") &nbsp;<input type="text" name="database_driver" size="45" value="${databaseDriver}" onKeyPress="return submitenter(this,event);"  /> <span style="font-size:12px;">$l10n.get("install.advanced.dbsetup.driver.opt") </span></td>
+			     		</tr>
+			     		<tr>
+                    <td colspan="2" class="question">$l10n.get("install.advanced.dbsetup.instDb") </td>
+			     		</tr>
+                <tr>
+                    <td rowspan="2"  valign="top" class="yes">$l10n.get("general.yes") 
+                        <input type="radio" name="current_openmrs_database" value="yes" #if( $hasCurrentOpenmrsDatabase == true )checked="checked"#end/></td>
+                    <td class="yes">$l10n.get("install.advanced.dbsetup.instDb.name") </td>
+			  </tr>
+                <tr>
+                    <td>$l10n.get("install.db.name"): &nbsp;<input type="text" name="openmrs_current_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'yes')" onKeyPress="return submitenter(this,event);" /></td>
+                </tr>
+                <tr>
+                    <td rowspan="5"  valign="top" class="no">$l10n.get("general.no") 
+                        <input type="radio" name="current_openmrs_database" value="no" #if( $hasCurrentOpenmrsDatabase == false )checked="checked"#end/></td>
+                    <td class="no">$l10n.get("install.advanced.dbsetup.instDb.new")</td>
+                </tr>
+                <tr>
+                    <td>$l10n.get("install.db.name"): &nbsp;<input type="text" name="openmrs_new_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'no')" onKeyPress="return submitenter(this,event);" /></td>
+                </tr>
+                <tr>
+                    <td class="no"> $l10n.get("install.advanced.dbsetup.instDb.user")</td>
+                </tr>
+                <tr>
+                    <td> $l10n.get("install.advanced.dbsetup.instDb.userName") &nbsp;
+                    <input type="text" name="create_database_username" value="${createDatabaseUsername}" onfocus="clickRadio('current_openmrs_database', 'no')" onKeyPress="return submitenter(this,event);" /></td>
+                </tr>
+                <tr>
+                    <td>$l10n.get("install.simple.passwd") &nbsp;
+                    <input type="password" name="create_database_password" value="${createDatabasePassword}" onfocus="clickRadio('current_openmrs_database', 'no')" onKeyPress="return submitenter(this,event);" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+			<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+			<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
+                    </td>
+                </tr>
+			</table>
+		</div>
+	</form>
+
+#parse($footerTemplate)

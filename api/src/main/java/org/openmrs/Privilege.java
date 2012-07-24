@@ -1,0 +1,89 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
+package org.openmrs;
+
+/**
+ * Privilege
+ * 
+ * @version 1.0
+ */
+public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializable {
+	
+	public static final long serialVersionUID = 312L;
+	
+	// Fields
+	
+	private String privilege;
+	
+	// Constructors
+	
+	/** default constructor */
+	public Privilege() {
+	}
+	
+	/** constructor with id */
+	public Privilege(String privilege) {
+		this.privilege = privilege;
+	}
+	
+	public Privilege(String privilege, String description) {
+		this.privilege = privilege;
+		setDescription(description);
+	}
+	
+	// Property accessors
+	
+	/**
+	 * @return Returns the privilege.
+	 */
+	public String getPrivilege() {
+		return privilege;
+	}
+	
+	/**
+	 * @param privilege The privilege to set.
+	 */
+	public void setPrivilege(String privilege) {
+		this.privilege = privilege;
+	}
+	
+	public String getName() {
+		return this.getPrivilege();
+	}
+	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return this.privilege;
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		throw new UnsupportedOperationException();
+		
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		throw new UnsupportedOperationException();
+		
+	}
+}

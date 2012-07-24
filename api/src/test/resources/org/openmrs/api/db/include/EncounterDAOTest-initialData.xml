@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <encounter encounter_id="1" encounter_type="1" patient_id="2" location_id="1" encounter_datetime="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f13d6fae-baa9-4553-955d-920098bec08f"/>
+  <encounter_type encounter_type_id="1" name="Test Enc Type B" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="2b377dba-62c3-4e53-91ef-b51c68899890"/>
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="3941dd4b-0b6d-4481-b979-ccdd38c76cb4"/>
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="e78bc0fe-6370-4766-b46f-8f4c658fe22b"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="2238b039-7f77-4384-a912-360dd154f0d1"/>
+  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="b9cb4fb6-6ce3-4475-b08d-6e1a7d4345ce"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="8e045532-bab6-4ef0-9df2-cb8f94e2eb16"/>
+  <provider provider_id="1" person_id="2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c2299800-cca9-11e0-9572-0800200c9a66" />
+  <encounter_provider encounter_provider_id="1" encounter_id="1" encounter_role_id="1" provider_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="c1897cef-05d4-4f71-bc1f-078ddba780ae" />
+</dataset>

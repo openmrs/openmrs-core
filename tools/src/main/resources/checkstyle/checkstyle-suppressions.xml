@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+
+	<!--
+		Allow arden grammar-generated classes to use unconvential parameter
+		names
+	-->
+	<suppress checks="ParameterName" files="ArdenBaseLexer.java" />
+	<suppress checks="ParameterName" files="ArdenBaseTreeParser.java" />
+
+	<!-- Exception for arden compiled rules still in the repository -->
+	<suppress checks=".*" files=".*/arden/compiled/.*" />
+
+	<!--
+		Exception for arden auto-generated classes that don't yet include
+		OpenMRS license header
+	-->
+	<suppress checks="Header" files="ArdenBaseLexer.java" />
+	<suppress checks="Header" files="ArdenBaseParser.java" />
+	<suppress checks="Header" files="ArdenBaseParserTokenTypes.java" />
+	<suppress checks="Header" files="ArdenBaseTreeParser.java" />
+	<suppress checks="Header" files="ArdenBaseTreeParserTokenTypes.java" />
+
+	<!-- Exceptions for line length longer than 125 -->
+	<suppress checks="FileLength" files="ArdenBaseParser.java" />
+	<suppress checks="FileLength" files="ArdenBaseTreeParser.java" />
+
+	<!-- Exceptions for use of ex.printStackTrace() -->
+	<suppress id="IllegalPrintStackTrace" files="MLMObject.java" />
+
+	<!-- Exceptions for line length longer than 125 -->
+	<suppress checks="LineLength" files="ArdenBaseLexer.java" />
+	<suppress checks="LineLength" files="ArdenBaseParser.java" />
+	<suppress checks="LineLength" files="ArdenBaseTreeParser.java" />
+	<suppress checks="LineLength" files="ArdenServiceImpl.java" />
+	
+	<!-- Exceptions for method length conventions -->
+	<suppress checks="MethodLength" files="ArdenBaseParser.java" />
+	<suppress checks="MethodLength" files="ArdenBaseTreeParser.java" />
+	<suppress checks="MethodLength" files="ArdenServiceImpl.java" />
+
+	<!-- Exceptions for method naming conventions -->
+	<suppress checks="MethodName" files="ArdenBaseLexer.java" />
+	<suppress checks="MethodName" files="ArdenBaseParser.java" />
+	<suppress checks="MethodName" files="ArdenBaseTreeParser.java" />
+	<suppress checks="MethodName" files="ArdenClause.java" />
+	<suppress checks="MethodName" files="ArdenValue.java" />
+
+	<!--
+		Exceptions for throwing Throwable, Exception, or RuntimeException
+	-->
+	<suppress checks="IllegalThrows" files="ArdenServiceImpl.java" />
+	<suppress checks="IllegalThrows" files="MLMObject.java" />
+
+	<!-- Exception for classes without class-level Javadoc comment -->
+	<suppress checks="JavadocType" files="ArdenBaseParser.java" />
+	<suppress checks="JavadocType" files="ArdenBaseParserTokenTypes.java" />
+	<suppress checks="JavadocType" files="ArdenBaseTreeParserTokenTypes.java" />
+	<suppress checks="JavadocType" files="ArdenClause.java" />
+	<suppress checks="JavadocType" files="ArdenDataSource.java" />
+	<suppress checks="JavadocType" files="ArdenRule.java" />
+	<suppress checks="JavadocType" files="ArdenService.java" />
+	<suppress checks="JavadocType" files="ArdenValue.java" />
+
+	<!-- Exceptions for left curly brace convention -->
+	<suppress checks="LeftCurly" files="ArdenServiceImpl.java" />
+
+	<!-- Exceptions for operator wrapping -->
+	<suppress checks="OperatorWrap" files="ArdenServiceImpl.java" />
+
+</suppressions>

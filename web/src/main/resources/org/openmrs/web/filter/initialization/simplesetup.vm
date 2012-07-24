@@ -1,0 +1,41 @@
+#parse($headerTemplate)
+
+    <form method="post" autocomplete="off">
+        <input type="hidden" name="page" value="simplesetup.vm" />
+
+		<div class="content">
+            <table align="center" cellspacing="5" cellpadding="9">
+			  <tr>
+                    <td colspan="2"><strong>$l10n.get("install.simple.caption")</strong></td>
+			  </tr>
+                <tr>
+                    <td class="question">$l10n.get("install.simple.passwdinfo")
+                        <br />$l10n.get("install.simple.empty")</td>
+                </tr>
+                <tr>
+                    <td class="yes">$l10n.get("install.simple.passwd") &nbsp; <input type="password" name="database_root_password" value="${databaseRootPassword}" onKeyPress="return submitenter(this,event);" /></td>
+                </tr>
+                <tr>
+                    <td class="question">$l10n.get("install.simple.defpasswd") </b></td>
+                </tr>
+                <tr>
+                    <td class="yes">admin/${ADMIN_DEFAULT_PASSWORD}</td>
+                </tr>
+                <tr>
+                    <td class="question">$l10n.get("install.simple.addDemoData") - ${databaseName}?</td>
+                </tr>
+                <tr>
+                    <td class="yes">$l10n.get("general.yes"): <input type="radio" name="add_demo_data" value="yes" #if( $addDemoData == true )checked="checked"#end/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    $l10n.get("general.no"): <input type="radio" name="add_demo_data" value="no" #if( $addDemoData == false )checked="checked"#end/></td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+						<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+						<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
+                    </td>
+                </tr>
+			</table>
+		</div>
+	</form>
+	
+#parse($footerTemplate)

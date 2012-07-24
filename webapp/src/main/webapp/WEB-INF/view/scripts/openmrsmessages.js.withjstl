@@ -1,0 +1,125 @@
+/* Used for getting jstl code into the javascript files */
+<%@ include file="/WEB-INF/template/include.jsp" %>
+var omsgs = new Array();
+var gp = new Array();//array to hold only global properties
+var gp = new Array();//array to hold only global properties
+var userProperties = new Array();//Array to hold userProperties
+omsgs.minSearchCharactersGP="<openmrs:globalProperty key="minSearchCharacters" defaultValue="3"/>";
+omsgs.datePattern="<openmrs:datePattern />";
+omsgs.name="<openmrs:message javaScriptEscape="true" code="general.name"/>";
+
+omsgs.addNewPatient="<openmrs:message javaScriptEscape="true" code="Patient.addNew"/>";
+omsgs.addNewPersonMsg="<openmrs:message code='Person.addNew.msg' />";
+omsgs.addNewPerson="<openmrs:message code='Person.addNew'/>";
+omsgs.age="<openmrs:message code="Person.age" javaScriptEscape="true"/>";
+omsgs.birthdate="<openmrs:message code="Person.birthdate" javaScriptEscape="true"/>";
+omsgs.birthdateRequired="<openmrs:message code='Person.birthdate.required'/>";
+omsgs.cancel="<openmrs:message code='general.cancel'/>";
+omsgs.change="<openmrs:message code="general.change" />";
+omsgs.familyName="<openmrs:message code="PersonName.familyName" javaScriptEscape="true"/>";
+omsgs.format="<openmrs:message code='general.format'/>";
+omsgs.gender="<openmrs:message code="Person.gender" javaScriptEscape="true"/>";
+omsgs.genderRequired="<openmrs:message code='Person.gender.required'/>";
+omsgs.givenName="<openmrs:message code="PersonName.givenName" javaScriptEscape="true"/>";
+omsgs.identifier="<openmrs:message code="Patient.identifier" javaScriptEscape="true"/>";
+omsgs.includeDisabled="<openmrs:message code="SearchResults.includeDisabled" javaScriptEscape="true"/>";
+omsgs.includeRetired="<openmrs:message code="SearchResults.includeRetired" javaScriptEscape="true"/>";
+omsgs.includeVoided="<openmrs:message code="SearchResults.includeVoided" javaScriptEscape="true"/>";
+omsgs.includeVerbose="<openmrs:message code="SearchResults.includeVerbose" javaScriptEscape="true"/>";
+omsgs.minCharactersPhrase1="<openmrs:message code="SearchResults.minCharactersPhrase1" javaScriptEscape="true"/> ";
+omsgs.minCharactersPhrase2=" <openmrs:message code="SearchResults.minCharactersPhrase2" javaScriptEscape="true"/>";
+omsgs.middleName="<openmrs:message code="PersonName.middleName" javaScriptEscape="true"/>";
+omsgs.nameRequired="<openmrs:message code='Person.name.required'/>";
+omsgs.noObsFound="<openmrs:message code="ObsSearch.noneFound" />";
+omsgs.noPatientsFound="<openmrs:message javaScriptEscape="true" code="PatientSearch.noneFound"/>";
+omsgs.or="<openmrs:message code='Person.age.or'/>";
+omsgs.personCreate="<openmrs:message code='Person.create'/>";
+omsgs.resultsFor="<openmrs:message code="SearchResults.resultsFor" javaScriptEscape="true"/>";
+omsgs.resultsNotDisplayed="<openmrs:message code="SearchResults.resultsNotDisplayed" javaScriptEscape="true"/>";
+omsgs.searchResultsViewing="<openmrs:message code="SearchResults.viewing" javaScriptEscape="true"/>";
+omsgs.searchResultsOf="<openmrs:message code="SearchResults.of" javaScriptEscape="true"/>";
+omsgs.searchOnName="<openmrs:message javaScriptEscape="true" code="PatientSearch.searchOnName"/>";
+omsgs.select="<openmrs:message code="general.select" />";
+omsgs.systemId="<openmrs:message code="User.systemId" javaScriptEscape="true"/>";
+omsgs.userRoles="<openmrs:message code="User.roles" javaScriptEscape="true"/>";
+omsgs.username="<openmrs:message code="User.username" javaScriptEscape="true"/>";
+omsgs.yearsOld="<openmrs:message code="general.yearsOldAbbrev" javaScriptEscape="true"/>";
+omsgs.tabLabelPrefix="<openmrs:message code="Patient.merge.tabLabelPrefix" javaScriptEscape="true"/>";
+omsgs.conceptSource="<openmrs:message javaScriptEscape="true" code="ConceptReferenceTerm.source"/>";
+omsgs.conceptReferenceTermCode="<openmrs:message javaScriptEscape="true" code="ConceptReferenceTerm.code"/>";
+omsgs.referencTermSearchPlaceholder="<openmrs:message javaScriptEscape="true" code="ConceptReferenceTerm.searchBox.placeholder"/>";
+
+omsgs.genderArray=new Array();
+<openmrs:forEachRecord name='gender'>
+ var rec=new Array();
+ rec["key"]="${record.key}";
+ rec["value"]="${record.value}";
+ rec["msg"]="<openmrs:message code='Person.gender.${record.value}'/>";
+ omsgs.genderArray.push(rec);
+</openmrs:forEachRecord>
+
+omsgs.patientListingAttrs=new Array();
+<openmrs:forEachDisplayAttributeType personType="patient" displayType="listing" var="attrType">
+ omsgs.patientListingAttrs.push("${attrType.name}");
+</openmrs:forEachDisplayAttributeType>
+omsgs.patientListingHeaders=new Array();
+<openmrs:forEachDisplayAttributeType personType="patient" displayType="listing" var="attrType">
+ omsgs.patientListingHeaders.push('<openmrs:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
+</openmrs:forEachDisplayAttributeType>
+
+omsgs.personListingAttrs=new Array();
+<openmrs:forEachDisplayAttributeType personType="" displayType="listing" var="attrType">
+ omsgs.personListingAttrs.push("${attrType.name}");
+</openmrs:forEachDisplayAttributeType>
+omsgs.personListingHeaders=new Array();
+<openmrs:forEachDisplayAttributeType personType="" displayType="listing" var="attrType">
+ omsgs.personListingHeaders.push('<openmrs:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
+</openmrs:forEachDisplayAttributeType>
+
+omsgs.userListingAttrs=new Array();
+<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
+ omsgs.userListingAttrs.push("${attrType.name}");
+</openmrs:forEachDisplayAttributeType>
+omsgs.userListingHeaders=new Array();
+<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
+ omsgs.userListingHeaders.push('<openmrs:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
+</openmrs:forEachDisplayAttributeType>
+
+/* Global properties to be used in search widgets */
+gp.maxSearchResults=<openmrs:globalProperty key="searchWidget.batchSize" defaultValue="200"/>;
+gp.searchRunInSerialMode=<openmrs:globalProperty key="searchWidget.runInSerialMode" defaultValue="false"/>;
+gp.searchDelay=<openmrs:globalProperty key="searchWidget.searchDelayInterval" defaultValue="400"/>;
+gp.maximumResults=<openmrs:globalProperty key="searchWidget.maximumResults" defaultValue="2000"/>;
+
+/* General Labels and text to be used on SEARCH WIDGET */
+omsgs.encounterType="<openmrs:message code="Encounter.type" javaScriptEscape="true" />";
+omsgs.encounterForm="<openmrs:message code="Encounter.form" javaScriptEscape="true" />";
+omsgs.encounterProvider="<openmrs:message code="Encounter.provider" javaScriptEscape="true" />";
+omsgs.encounterLocation="<openmrs:message code="Encounter.location" javaScriptEscape="true" />";
+omsgs.encounterDate="<openmrs:message code="Encounter.datetime" javaScriptEscape="true" />";
+omsgs.last="<openmrs:message code="searchWidget.last" javaScriptEscape="true" />";
+omsgs.first="<openmrs:message code="searchWidget.first" javaScriptEscape="true" />";
+omsgs.minCharRequired="<openmrs:message code="searchWidget.minCharRequired" javaScriptEscape="true" arguments="_REQUIRED_NUMBER_" />";
+omsgs.next="<openmrs:message code="searchWidget.next" javaScriptEscape="true" />";
+omsgs.noMatchesFound="<openmrs:message code="searchWidget.noMatchesFound" javaScriptEscape="true" />";
+omsgs.page="<openmrs:message code="searchWidget.page" javaScriptEscape="true" />";
+omsgs.pages="<openmrs:message code="searchWidget.pages" javaScriptEscape="true" />";
+omsgs.patientName="<openmrs:message code="Patient.name" javaScriptEscape="true" />";
+omsgs.previous="<openmrs:message code="searchWidget.previous" javaScriptEscape="true" />";
+omsgs.pagesWithPlaceHolder="<openmrs:message code="searchWidget.pagesWithPlaceHolder" javaScriptEscape="true" arguments="_NUMBER_OF_PAGES_" />";
+omsgs.of="<openmrs:message code="general.of" javaScriptEscape="true" />";
+omsgs.onePage="<openmrs:message code="searchWidget.OnePage" javaScriptEscape="true" />";
+omsgs.sInfoLabel="<openmrs:message code="searchWidget.sInfoLabel" javaScriptEscape="true" arguments="_START_, _END_, _TOTAL_" />";
+omsgs.to="<openmrs:message code="general.to" javaScriptEscape="true" />";
+omsgs.viewingResultsFor="<openmrs:message code="searchWidget.viewingResults" javaScriptEscape="true" arguments="_SEARCH_TEXT_" />";
+omsgs.loadingWithArgument="<openmrs:message code="searchWidget.loadingWithPlaceHolder" javaScriptEscape="true" arguments="_NUMBER_OF_PAGES_" />";
+omsgs.showVerbose="<openmrs:message code="searchWidget.showVerbose" javaScriptEscape="true"/>";
+omsgs.viewingAll="<openmrs:message code="searchWidget.viewingAll" javaScriptEscape="true"/>";
+omsgs.showNumberofEntries="<openmrs:message code="searchWidget.showNumberOfEntries" javaScriptEscape="true" arguments="_MENU_"/>";
+
+/* User Properties*/
+userProperties.showRetired=<openmrs:userProperty key="showRetired" defaultValue="false"/>;
+userProperties.showVerbose=<openmrs:userProperty key="showVerbose" defaultValue="false"/>;
+
+omsgs.providerName="<openmrs:message code="Provider.name" javaScriptEscape="true" />";
+omsgs.providerIdentifier="<openmrs:message code="Provider.identifier" javaScriptEscape="true" />";

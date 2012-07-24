@@ -1,0 +1,76 @@
+.barsmall {
+	background-image: url("");
+	background-color: #8FABC7;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+table#bannerbar {
+	margin-top: 27px;
+	margin-bottom: 4px;
+}
+
+td#logocell {
+	width: 0px;
+}
+td#barcell {
+	border-top: 1px solid #8FABC7;
+	border-bottom: 1px solid #8FABC7;
+	
+}
+
+#logosmall {
+	margin-left: 2px; 
+	margin-top: 2px;
+}
+
+.box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited {
+	border: 1px solid #8FABC7;
+}
+
+.boxHeader {
+	background-color: #8FABC7;
+}
+
+#patientTabs {
+	border-bottom: 1px solid navy;
+}
+
+#patientTabs a:link, #patientTabs a:visited {
+	border: 1px solid navy;
+}
+
+a, a:link, a:hover, a:visited, a:active {
+	text-decoration: underline;
+	color: #8FABC7;
+}
+
+#userBar {
+	float: right;
+	padding: 0px 3px 0px 3px;
+	z-index: 11;
+	background-color: #ffffff;
+	right: 5px;
+}
+
+#userBar a:link, #userBar a:active, #userBar a:visited, #userBar a:hover,
+	#content a.offColor, #content a.offColor:link, #content a.offColor:active, #content a.offColor:visited, #content a.offColor:hover {
+		color: #eebb33;
+}
+
+#content {
+	padding: 70px 10px 10px 10px;
+	font-size: 1.2em;
+}
+
+img.logo-reduced61 {
+	width:0px;
+	height:0px;
+}
+img.bar-round-reduced50 {
+	height:0px;
+	margin-left:0px;
+	margin-top:0px;
+}

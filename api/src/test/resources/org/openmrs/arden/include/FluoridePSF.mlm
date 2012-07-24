@@ -1,0 +1,47 @@
+Maintenance:
+	Title:		Fluoride Supplementation PSF;;
+	Filename:	FluoridePSF;;
+	Version:	1.0;;
+	Institution:	Indiana University School of Medicine;;
+	Author:		Aaron E. Carroll;;
+	Specialist:	Pediatrics;;
+	Date:		10-17-2003 /*2:25:46 PM*/;;
+	Validation:	;;
+Library:
+	Purpose:	PSF question to determine whether a child is receiving fluoride supplementation.;;
+	Explanation:	Children should receive fluoride supplemetation if they are not drinking water supplemented with fluoride.;;
+	Keywords:	Fluoride, dental, oral health, PSF;;
+	Citations:	;;
+	Links:	;;
+Knowledge:
+	Type:	data_driven;;
+/*	Priority:	208;;
+	Evoke:	;;
+	Urgency:	;;
+*/
+Data:
+fluoride := read Last {Fluoride_supplemented from CHICA} Where it Occurred Within Past 180 Days;
+ww := read Last {well_water from CHICA} Where it Occurred Within Past 2 Years;
+;;
+	Priority:	208;;
+	Evoke:	;;
+Logic:
+If (fluoride = 1) then conclude False;
+If (ww = 0) then conclude False;
+conclude True;
+;;
+Action:
+write ("Is || firstname || receiving Fluoride to help protect || hisher || teeth?");
+write ("¿Esta || firstname || recibiendo fluor para ayudar a proteger sus dientes?") At Spanish;
+;;
+Urgency:	;;
+/*
+CHICA:
+Minimum Age: 6 months;
+Maximum Age: 10 years;
+CHICA Priority: 208;
+JIT Filename: ;
+If  (Box1) then Fluoride_supplemented = 1;
+If  (Box2) then Fluoride_supplemented = 0;;;
+*/
+end:

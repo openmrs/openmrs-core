@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs.activelist">
+
+	<class name="ActiveListItem" table="active_list" batch-size="25">
+		
+		<!--  cache usage="read-write"/ -->
+		
+		<id name="activeListId" type="java.lang.Integer"
+			column="active_list_id"
+			unsaved-value="undefined">
+			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator"/>
+		</id>
+
+		<discriminator column="active_list_id" insert="false"/>
+		
+		<property name="startDate" type="java.util.Date" column="start_date" not-null="true"/>
+		
+		<property name="endDate" type="java.util.Date" column="end_date"/>
+		
+		<property name="comments" type="java.lang.String" column="comments" length="255"/>
+		
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true"/>
+
+		<property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true"/>
+		
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19"/>
+		
+		<property name="dateVoided" type="java.util.Date" column="date_voided" not-null="false" length="19"/>
+		
+		<property name="voidReason" type="java.lang.String" column="void_reason"/>
+		
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-one association -->
+		<many-to-one name="activeListType" class="ActiveListType" not-null="true">
+			<column name="active_list_type_id"/>
+		</many-to-one>
+		
+		<many-to-one name="person" class="org.openmrs.Person" not-null="true">
+			<column name="person_id"/>
+		</many-to-one>
+		
+		<many-to-one name="concept" class="org.openmrs.Concept" not-null="true">
+			<column name="concept_id"/>
+		</many-to-one>
+		
+		<many-to-one name="startObs" class="org.openmrs.Obs" not-null="false">
+			<column name="start_obs_id"/>
+		</many-to-one>
+		
+		<many-to-one name="stopObs" class="org.openmrs.Obs" not-null="false">
+			<column name="stop_obs_id"/>
+		</many-to-one>
+		
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
+			<column name="creator"/>
+		</many-to-one>
+		
+		<many-to-one name="voidedBy" class="org.openmrs.User" not-null="false">
+			<column name="voided_by"/>
+		</many-to-one>
+
+	</class>
+
+</hibernate-mapping>

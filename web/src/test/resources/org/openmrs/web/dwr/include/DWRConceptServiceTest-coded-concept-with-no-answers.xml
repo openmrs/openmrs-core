@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <concept concept_id="1000" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="957eba27-2b38-43e8-91a9-4dfe3956a32d"/>
+  <concept_description concept_description_id="1000" concept_id="1000" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="0a6f34ea-043a-4e69-b418-1d7bb66b99b6"/>
+  <concept_name concept_id="1000" name="Some coded concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="8edfd54f-b189-43dd-86e0-913591978e48"/>
+</dataset>

@@ -1,0 +1,41 @@
+#parse($headerTemplate)
+	<form method="post" autocomplete="off">
+		<input type="hidden" name="page" value="implementationidsetup.vm" />
+		<div class="content">
+			<table cellpadding="9" align="center" cellspacing="5">
+		  		<tr>
+					<td colspan="3"><strong>$l10n.get("install.advanced.implid")</strong></td>
+				</tr>
+				<tr>
+					<td colspan="3" class="question">$l10n.get("install.advanced.implid.skip")</td>
+				</tr>
+				<tr>
+					<td>$l10n.get("install.complete.impl.name")</td>
+					<td><input type="text" name="implementation_name" value="${implementationIdName}" onKeyPress="return submitenter(this,event);" /></td>
+					<td>$l10n.get("install.advanced.implid.name")</td>
+				</tr>
+				<tr>
+					<td>$l10n.get("install.complete.impl.id")</td>
+					<td><input type="text" name="implementation_id" size="8" maxlength="20" value="${implementationId}" onKeyPress="return submitenter(this,event);" /></td>
+					<td>$l10n.get("install.advanced.implid.id")</td>
+				</tr>
+				<tr>
+					<td>$l10n.get("install.complete.impl.pass")</td>
+					<td><input type="text" name="pass_phrase" value="${implementationIdPassPhrase}" onKeyPress="return submitenter(this,event);" /></td>
+					<td>$l10n.get("install.advanced.implid.passphrase")</td>
+				</tr>
+				<tr>
+					<td>$l10n.get("install.complete.impl.desc")</td>
+					<td><textarea cols="43" rows="3" name="description">${implementationIdDescription}</textarea></td>
+					<td>$l10n.get("install.advanced.implid.desc")</td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+						<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+						<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
+					</td>
+				</tr>
+		</table>
+		</div>
+	</form>
+#parse($footerTemplate)

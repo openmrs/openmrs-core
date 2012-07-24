@@ -1,0 +1,196 @@
+#parse($headerTemplate)
+
+<script>
+	var lastIndex = 0;
+	var numberUnsuccessfulJQueryAttempts = 0;
+	var isDisplayingWarnings = false;	
+	function showProgress() {
+		
+		// schedule the next update check first so we're sure it happens (in case an error occurs)
+		// jQuery("#log").html(jQuery("#log").html() + "<br/> setting timeout");
+		
+		// only check the server again if the last post was successful
+		// (assumes checking the server takes less than 1 second)
+		if (numberUnsuccessfulJQueryAttempts < 5) {
+			setTimeout("showProgress()", 1000);
+			numberUnsuccessfulJQueryAttempts += 1; // this is to be reset in the jquery.post success func callback
+		}
+		else {
+			window.location = "index.htm";
+		}
+		
+		jQuery.post("${setupPageUrl}", {page: "updateProgress.vm.ajaxRequest"} , function(data) {
+			
+			numberUnsuccessfulJQueryAttempts = 0;
+			
+			// jQuery("#log").html(jQuery("#log").html() + " in post method.");
+			
+			/*If we have any warnings from the database update, show them*/
+			if(data != null && data.hasWarnings){
+				jQuery("#hiddenInputs").show();				
+				jQuery("#warnings").html(data.updateWarnings);
+				jQuery("#updateWarnings").show();
+				jQuery("#warningsAlert").show();
+				jQuery("#updateLogFile").html(data.updateLogFile);					
+				isDisplayingWarnings = true;
+			}
+			
+			if(data == null || !data.updatesRequired)
+			{
+				if(isDisplayingWarnings == true) {
+					// jQuery("#log").html(jQuery("#log").html() + " not redirecting now");
+					return;
+				}
+				
+				// jQuery("#log").html(jQuery("#log").html() + " redirecting now");
+				window.location="index.htm";
+				return;
+			}
+			
+			/* 
+			if (data == null) {
+				jQuery("#log").html(jQuery("#log").html() + " data is null");
+			}
+			*/
+			
+			if(data.hasErrors)
+			{
+				window.location="${setupPageUrl}";
+				return;
+			}
+			
+			jQuery("#lastActionMessage").html(data.message);
+			
+			/* put checkmarks next to all executed changesets except the last one (the last one is currently executing) */
+			for (var x = lastIndex; x < data.changesetIds.length; x++) {
+				var changesetId = data.changesetIds[x];
+				jQuery("#" + changesetId + "loading").hide();
+				jQuery("#" + changesetId + "checkmark").show();
+			}
+			
+			/* save the last point in the list for next time */
+			lastIndex = data.changesetIds.length - 1;
+			
+			/* show the loading image next to the last changeset because that one is currently executing */
+			jQuery("#" + data.executingChangesetId + "checkmark").hide();
+			jQuery("#" + data.executingChangesetId + "loading").show();
+			
+			jQuery("#logLinesDiv").show();
+			var logLines = "";
+			for(var i = 0; i < data.logLines.length; i++)
+			{
+				logLines += data.logLines[i] + "<br />";
+			}
+			jQuery("#logLines").html(logLines);
+			
+		}, "json");
+		
+	}
+		
+	#if( $updateJobStarted == true )
+		jQuery(function() { showProgress(); });
+	#end
+</script>
+
+<style>
+	.changesetImage, #logLinesDiv {
+		display: none;
+	}
+	#warningsAlert{
+		display:none; border: solid 1px #ff0000; background-color: #FAEBED; padding:3px;
+		text-align: center; width: 400px;
+	}
+</style>
+	
+<form method="post" autocomplete="off">
+	<input type="hidden" name="page" value="reviewchanges.vm" /> 
+			
+	<div class="content">
+		<table align="center" cellspacing="5" cellpadding="9">
+			<tr>
+				<td colspan="3" class="question">
+					#if($isDatabaseUpdateInProgress)
+						$l10n.get("update.warn.anotherUser")
+					#else
+						#if( $updateJobStarted != true )
+							$l10n.get("update.warn.updatesRequired")							
+						#else
+							$l10n.get("update.warn.updatesExecuted")
+						#end
+					#end
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<th></th>
+							<th>$l10n.get("update.review.desc")</th>
+							<th>$l10n.get("update.review.act")</th>
+							<th>$l10n.get("update.review.auth")</th>
+						</tr>						
+						#foreach ($change in $changes)
+							<tr>
+								<td>
+									<img id="${change.id}checkmark" class="changesetImage" src="images/checkmark.png"/>
+									<img id="${change.id}loading" class="changesetImage" src="images/loading.gif"/>
+								</td>
+								<td>${change.comments}</td>
+								<td>${change.description}</td>
+								<td>${change.author}</td>
+							</tr>
+						#end						
+					</table>
+				</td>
+			</tr>
+			#if( $updateJobStarted != true && $isDatabaseUpdateInProgress != true )
+				<tr>
+					<td colspan="2" align="center"><input type="image" src="images/forward_button.png" name="continue"/></td>
+				</tr>
+			#end			
+		</table>	
+						
+		<div id="updateWarnings" style="display:none; padding-top: 20px">
+			<div>
+			  <b>
+				$l10n.get("update.warn")			 	
+			  </b>			  
+			</div>
+			<br />
+			<b>$l10n.get("update.warn.saved")</b>
+			<div id="updateLogFile" style="padding-left:20px"></div>
+					
+			<div id="warnings"></div>
+		</div>
+		
+		<br />
+		
+		<div id="hiddenInputs" style="display:none">
+					
+			<br />
+			
+			<div id="warningsAlert">
+				$l10n.get("update.warn.alert")
+			</div>
+			
+			<br />
+			
+			<div>
+				<input type="button" value="Continue" class="button" onclick="javascript:window.location='index.htm'" />
+			</div>
+		</div>
+		
+		<br />
+		
+     	<div id="lastActionMessage"></div>
+       	
+       	<br />
+       	
+       	<div id="logLinesDiv">
+			$l10n.get("install.progress.server.log")
+			<div id="logLines"></div>
+		</div>		
+	</div>
+</form>
+<!-- div id="log">Used for debugging</div -->
+#parse($footerTemplate)
