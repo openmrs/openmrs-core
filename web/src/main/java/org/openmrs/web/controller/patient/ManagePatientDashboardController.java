@@ -50,7 +50,6 @@ public class ManagePatientDashboardController implements MessageSourceAware {
 		if (Context.isAuthenticated()) {
 			AdministrationService as = Context.getAdministrationService();
 			List<GlobalProperty> properties = as.getGlobalPropertiesByPrefix("ajax.dashboard");
-			
 			if (properties.isEmpty()) {
 				List<GlobalProperty> newprops = new ArrayList<GlobalProperty>();
 				newprops.add(new GlobalProperty("ajax.dashboard.Overview", "Preload"));
