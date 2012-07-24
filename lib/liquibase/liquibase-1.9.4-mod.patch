@@ -1,0 +1,4469 @@
+Index: META-INF/MANIFEST.MF
+===================================================================
+--- META-INF/MANIFEST.MF	(revision 978)
++++ META-INF/MANIFEST.MF	(working copy)
+@@ -8,7 +8,6 @@
+ Export-Package: liquibase,
+  liquibase.database,
+  liquibase.database.structure,
+- liquibase.migrator.servlet,
+  liquibase.ant,
+  liquibase.change,
+  liquibase.commandline,
+Index: src/java/liquibase/ant/DiffDatabaseTask.java
+===================================================================
+--- src/java/liquibase/ant/DiffDatabaseTask.java	(revision 978)
++++ src/java/liquibase/ant/DiffDatabaseTask.java	(working copy)
+@@ -16,6 +16,7 @@
+     private String baseUsername;
+     private String basePassword;
+     private String baseDefaultSchemaName;
++    private String diffTypes;
+ 
+     public String getBaseDriver() {
+         if (baseDriver == null) {
+@@ -59,6 +60,14 @@
+     public void setBaseDefaultSchemaName(String baseDefaultSchemaName) {
+         this.baseDefaultSchemaName = baseDefaultSchemaName;
+     }
++    
++    public String getDiffTypes() {
++    	return diffTypes;
++    }
++    
++    public void setDiffTypes(String diffTypes) {
++    	this.diffTypes = diffTypes;
++    }
+ 
+     public void execute() throws BuildException {
+         if (StringUtils.trimToNull(getBaseUrl()) == null) {
+@@ -84,6 +93,7 @@
+ 
+ 
+             Diff diff = new Diff(baseDatabase, liquibase.getDatabase());
++            diff.setDiffTypes(getDiffTypes());
+ //            diff.addStatusListener(new OutDiffStatusListener());
+             DiffResult diffResult = diff.compare();
+ 
+Index: src/java/liquibase/change/ModifyColumnChange.java
+===================================================================
+--- src/java/liquibase/change/ModifyColumnChange.java	(revision 978)
++++ src/java/liquibase/change/ModifyColumnChange.java	(working copy)
+@@ -1,198 +1,205 @@
+-package liquibase.change;
+-
+-import liquibase.database.*;
+-import liquibase.database.SQLiteDatabase.AlterTableVisitor;
+-import liquibase.database.sql.RawSqlStatement;
+-import liquibase.database.sql.SqlStatement;
+-import liquibase.database.sql.ReorganizeTableStatement;
+-import liquibase.database.structure.Column;
+-import liquibase.database.structure.DatabaseObject;
+-import liquibase.database.structure.Index;
+-import liquibase.database.structure.Table;
+-import liquibase.exception.JDBCException;
+-import liquibase.exception.UnsupportedChangeException;
+-import liquibase.exception.InvalidChangeDefinitionException;
+-import liquibase.util.StringUtils;
+-import org.w3c.dom.Document;
+-import org.w3c.dom.Element;
+-
+-import java.util.ArrayList;
+-import java.util.HashSet;
+-import java.util.List;
+-import java.util.Set;
+-
+-/**
+- * Modifies the data type of an existing column.
+- */
+-public class ModifyColumnChange extends AbstractChange implements ChangeWithColumns {
+-
+-    private String schemaName;
+-    private String tableName;
+-    private List<ColumnConfig> columns;
+-
+-    public ModifyColumnChange() {
+-        super("modifyColumn", "Modify Column");
+-        columns = new ArrayList<ColumnConfig>();
+-    }
+-
+-    public String getSchemaName() {
+-        return schemaName;
+-    }
+-
+-    public void setSchemaName(String schemaName) {
+-        this.schemaName = StringUtils.trimToNull(schemaName);
+-    }
+-
+-    public String getTableName() {
+-        return tableName;
+-    }
+-
+-    public void setTableName(String tableName) {
+-        this.tableName = tableName;
+-    }
+-
+-    public List<ColumnConfig> getColumns() {
+-    		return columns;
+-    }
+-
+-    public void addColumn(ColumnConfig column) {
+-      	columns.add(column);
+-    }
+-
+-    public void removeColumn(ColumnConfig column) {
+-      	columns.remove(column);
+-    }
+-
+-    public void validate(Database database) throws InvalidChangeDefinitionException {
+-        if (StringUtils.trimToNull(tableName) == null) {
+-            throw new InvalidChangeDefinitionException("tableName is required", this);
+-        }
+-
+-        for (ColumnConfig column : columns) {
+-            if (StringUtils.trimToNull(column.getName()) == null) {
+-                throw new InvalidChangeDefinitionException("column name is required", this);
+-            }
+-        }
+-    }
+-
+-    public SqlStatement[] generateStatements(Database database) throws UnsupportedChangeException {
+-    	
+-    	if (database instanceof SQLiteDatabase) {
+-    		// return special statements for SQLite databases
+-    		return generateStatementsForSQLiteDatabase(database);
+-        }
+-    	
+-    	List<SqlStatement> sql = new ArrayList<SqlStatement>();
+-    	
+-      for (ColumnConfig aColumn : columns) {
+-
+-          String schemaName = getSchemaName() == null?database.getDefaultSchemaName():getSchemaName();
+-          if(database instanceof SybaseASADatabase || database instanceof SybaseDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " MODIFY " + aColumn.getName() + " " + database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof MSSQLDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN " + aColumn.getName() + " " + database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof MySQLDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " MODIFY COLUMN " + aColumn.getName() + " " + database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof OracleDatabase || database instanceof MaxDBDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " MODIFY (" + aColumn.getName() + " " + database.getColumnType(aColumn.getType(), false) + ")"));
+-        } else if (database instanceof DerbyDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN "+aColumn.getName()+" SET DATA TYPE " + database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof HsqlDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN "+aColumn.getName()+" "+database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof CacheDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN " + aColumn.getName() + " " + database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof DB2Database) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN " + aColumn.getName() + " SET DATA TYPE " + database.getColumnType(aColumn.getType(), false)));
+-        		sql.add(new ReorganizeTableStatement(schemaName, getTableName()));
+-        } else {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN " + aColumn.getName() + " TYPE " + database.getColumnType(aColumn.getType(), false)));
+-        }
+-      }
+-        
+-      return sql.toArray(new SqlStatement[sql.size()]);
+-    }
+-    
+-    private SqlStatement[] generateStatementsForSQLiteDatabase(Database database) 
+-			throws UnsupportedChangeException {
+-
+-		// SQLite does not support this ALTER TABLE operation until now.
+-		// For more information see: http://www.sqlite.org/omitted.html.
+-		// This is a small work around...
+-    	
+-    	List<SqlStatement> statements = new ArrayList<SqlStatement>();
+-    	
+-    	// define alter table logic
+-		AlterTableVisitor rename_alter_visitor = 
+-		new AlterTableVisitor() {
+-			public ColumnConfig[] getColumnsToAdd() {
+-				return new ColumnConfig[0];
+-			}
+-			public boolean copyThisColumn(ColumnConfig column) {
+-				return true;
+-			}
+-			public boolean createThisColumn(ColumnConfig column) {
+-				for (ColumnConfig cur_column: columns) {
+-					if (cur_column.getName().equals(column.getName())) {
+-						column.setType(cur_column.getType());
+-						break;
+-					}
+-				}
+-				return true;
+-			}
+-			public boolean createThisIndex(Index index) {
+-				return true;
+-			}
+-		};
+-    		
+-    	try {
+-    		// alter table
+-			statements.addAll(SQLiteDatabase.getAlterTableStatements(
+-					rename_alter_visitor,
+-					database,getSchemaName(),getTableName()));
+-		} catch (JDBCException e) {
+-			System.err.println(e);
+-			e.printStackTrace();
+-		}
+-    	
+-    	return statements.toArray(new SqlStatement[statements.size()]);    	
+-    }
+-
+-    public String getConfirmationMessage() {
+-    		List<String> names = new ArrayList<String>(columns.size());
+-    		for (ColumnConfig col : columns) {
+-          	names.add(col.getName() + "(" + col.getType() + ")");
+-    		}
+-
+-        return "Columns " + StringUtils.join(names, ",") + " of " + getTableName() + " modified";
+-    }
+-
+-    public Element createNode(Document currentChangeLogFileDOM) {
+-        Element node = currentChangeLogFileDOM.createElement("modifyColumn");
+-        if (getSchemaName() != null) {
+-            node.setAttribute("schemaName", getSchemaName());
+-        }        
+-        node.setAttribute("tableName", getTableName());
+-        
+-        for (ColumnConfig col : getColumns()) {
+-          Element subNode = col.createNode(currentChangeLogFileDOM);
+-          node.appendChild(subNode);
+-        }
+-
+-        return node;
+-    }
+-
+-    public Set<DatabaseObject> getAffectedDatabaseObjects() {
+-      List<DatabaseObject> result = new ArrayList<DatabaseObject>(columns.size());
+-
+-      Table table = new Table(getTableName());
+-      for (ColumnConfig aColumn : columns) {
+-          Column each = new Column();
+-          each.setTable(table);
+-          each.setName(aColumn.getName());
+-          result.add(each);
+-      }
+-
+-      return new HashSet<DatabaseObject>(result);
+-    }
+-
+-}
++package liquibase.change;
++
++import java.util.ArrayList;
++import java.util.HashSet;
++import java.util.List;
++import java.util.Set;
++
++import liquibase.database.Database;
++import liquibase.database.SQLiteDatabase;
++import liquibase.database.SQLiteDatabase.AlterTableVisitor;
++import liquibase.database.sql.AutoIncrementConstraint;
++import liquibase.database.sql.ColumnConstraint;
++import liquibase.database.sql.ModifyColumnStatement;
++import liquibase.database.sql.NotNullConstraint;
++import liquibase.database.sql.PrimaryKeyConstraint;
++import liquibase.database.sql.SqlStatement;
++import liquibase.database.structure.Column;
++import liquibase.database.structure.DatabaseObject;
++import liquibase.database.structure.Index;
++import liquibase.database.structure.Table;
++import liquibase.exception.InvalidChangeDefinitionException;
++import liquibase.exception.JDBCException;
++import liquibase.exception.UnsupportedChangeException;
++import liquibase.util.StringUtils;
++
++import org.w3c.dom.Document;
++import org.w3c.dom.Element;
++
++/**
++ * Modifies the data type of an existing column.
++ */
++public class ModifyColumnChange extends AbstractChange implements ChangeWithColumns {
++
++    private String schemaName;
++    private String tableName;
++    private List<ColumnConfig> columns;
++
++    public ModifyColumnChange() {
++        super("modifyColumn", "Modify Column");
++        columns = new ArrayList<ColumnConfig>();
++    }
++
++    public String getSchemaName() {
++        return schemaName;
++    }
++
++    public void setSchemaName(String schemaName) {
++        this.schemaName = StringUtils.trimToNull(schemaName);
++    }
++
++    public String getTableName() {
++        return tableName;
++    }
++
++    public void setTableName(String tableName) {
++        this.tableName = tableName;
++    }
++
++    public List<ColumnConfig> getColumns() {
++    		return columns;
++    }
++
++    public void addColumn(ColumnConfig column) {
++      	columns.add(column);
++    }
++
++    public void removeColumn(ColumnConfig column) {
++      	columns.remove(column);
++    }
++
++    public void validate(Database database) throws InvalidChangeDefinitionException {
++        if (StringUtils.trimToNull(tableName) == null) {
++            throw new InvalidChangeDefinitionException("tableName is required", this);
++        }
++
++        for (ColumnConfig column : columns) {
++            if (StringUtils.trimToNull(column.getName()) == null) {
++                throw new InvalidChangeDefinitionException("column name is required", this);
++            }
++        }
++    }
++
++    public SqlStatement[] generateStatements(Database database) throws UnsupportedChangeException {
++    	
++    	if (database instanceof SQLiteDatabase) {
++    		// return special statements for SQLite databases
++    		return generateStatementsForSQLiteDatabase(database);
++        }
++    	
++    	List<SqlStatement> sql = new ArrayList<SqlStatement>();
++    	
++    	
++    	for (ColumnConfig aColumn : columns) {
++    		
++    		Set<ColumnConstraint> constraints = new HashSet<ColumnConstraint>();
++            if (aColumn.getConstraints() != null) {
++                if (aColumn.getConstraints().isNullable() != null && !aColumn.getConstraints().isNullable()) {
++                    constraints.add(new NotNullConstraint());
++                }
++                if (aColumn.getConstraints().isPrimaryKey() != null && aColumn.getConstraints().isPrimaryKey()) {
++                    constraints.add(new PrimaryKeyConstraint(aColumn.getConstraints().getPrimaryKeyName()));
++                }
++            }
++            if (aColumn.isAutoIncrement() != null && aColumn.isAutoIncrement()) {
++                constraints.add(new AutoIncrementConstraint(aColumn.getName()));
++            }
++            
++    		ModifyColumnStatement modColumnStatement = new ModifyColumnStatement(schemaName,
++    				getTableName(),
++    				aColumn.getName(),
++    				aColumn.getType(),
++    				aColumn.getDefaultValueObject(),
++    				constraints.toArray(new ColumnConstraint[constraints.size()]));
++
++    		sql.add(modColumnStatement);
++      
++      }
++        
++      return sql.toArray(new SqlStatement[sql.size()]);
++    }
++    
++    private SqlStatement[] generateStatementsForSQLiteDatabase(Database database) 
++			throws UnsupportedChangeException {
++
++		// SQLite does not support this ALTER TABLE operation until now.
++		// For more information see: http://www.sqlite.org/omitted.html.
++		// This is a small work around...
++    	
++    	List<SqlStatement> statements = new ArrayList<SqlStatement>();
++    	
++    	// define alter table logic
++		AlterTableVisitor rename_alter_visitor = 
++		new AlterTableVisitor() {
++			public ColumnConfig[] getColumnsToAdd() {
++				return new ColumnConfig[0];
++			}
++			public boolean copyThisColumn(ColumnConfig column) {
++				return true;
++			}
++			public boolean createThisColumn(ColumnConfig column) {
++				for (ColumnConfig cur_column: columns) {
++					if (cur_column.getName().equals(column.getName())) {
++						column.setType(cur_column.getType());
++						break;
++					}
++				}
++				return true;
++			}
++			public boolean createThisIndex(Index index) {
++				return true;
++			}
++		};
++    		
++    	try {
++    		// alter table
++			statements.addAll(SQLiteDatabase.getAlterTableStatements(
++					rename_alter_visitor,
++					database,getSchemaName(),getTableName()));
++		} catch (JDBCException e) {
++			System.err.println(e);
++			e.printStackTrace();
++		}
++    	
++    	return statements.toArray(new SqlStatement[statements.size()]);    	
++    }
++
++    public String getConfirmationMessage() {
++    		List<String> names = new ArrayList<String>(columns.size());
++    		for (ColumnConfig col : columns) {
++          	names.add(col.getName() + "(" + col.getType() + ")");
++    		}
++
++        return "Columns " + StringUtils.join(names, ",") + " of " + getTableName() + " modified";
++    }
++
++    public Element createNode(Document currentChangeLogFileDOM) {
++        Element node = currentChangeLogFileDOM.createElement("modifyColumn");
++        if (getSchemaName() != null) {
++            node.setAttribute("schemaName", getSchemaName());
++        }        
++        node.setAttribute("tableName", getTableName());
++        
++        for (ColumnConfig col : getColumns()) {
++          Element subNode = col.createNode(currentChangeLogFileDOM);
++          node.appendChild(subNode);
++        }
++
++        return node;
++    }
++
++    public Set<DatabaseObject> getAffectedDatabaseObjects() {
++      List<DatabaseObject> result = new ArrayList<DatabaseObject>(columns.size());
++
++      Table table = new Table(getTableName());
++      for (ColumnConfig aColumn : columns) {
++          Column each = new Column();
++          each.setTable(table);
++          each.setName(aColumn.getName());
++          result.add(each);
++      }
++
++      return new HashSet<DatabaseObject>(result);
++    }
++
++}
+Index: src/java/liquibase/database/sql/TagDatabaseStatement.java
+===================================================================
+--- src/java/liquibase/database/sql/TagDatabaseStatement.java	(revision 978)
++++ src/java/liquibase/database/sql/TagDatabaseStatement.java	(working copy)
+@@ -1,50 +1,49 @@
+-package liquibase.database.sql;
+-
+-import liquibase.database.Database;
+-import liquibase.database.MySQLDatabase;
+-import liquibase.exception.StatementNotSupportedOnDatabaseException;
+-import liquibase.exception.JDBCException;
+-
+-public class TagDatabaseStatement implements SqlStatement {
+-
+-    private String tag;
+-
+-    public TagDatabaseStatement(String tag) {
+-        this.tag = tag;
+-    }
+-
+-    public String getTag() {
+-        return tag;
+-    }
+-
+-    public String getSqlStatement(Database database) throws StatementNotSupportedOnDatabaseException {
+-        UpdateStatement statement = new UpdateStatement(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName());
+-        statement.addNewColumnValue("TAG", tag);
+-        if (database instanceof MySQLDatabase) {
+-            try {
+-                long version = Long.parseLong(database.getDatabaseProductVersion().substring(0,1));
+-
+-                if (version < 5) {
+-                    return new RawSqlStatement("UPDATE DATABASECHANGELOG C LEFT JOIN (SELECT MAX(DATEEXECUTED) as MAXDATE FROM (SELECT DATEEXECUTED FROM `DATABASECHANGELOG`) AS X) D ON C.DATEEXECUTED = D.MAXDATE SET C.TAG = '"+tag+"' WHERE D.MAXDATE IS NOT NULL").getSqlStatement(database);
+-                }
+-
+-            } catch (Throwable e) {
+-                ; //assume it is version 5
+-            }
+-            statement.setWhereClause("DATEEXECUTED = (SELECT MAX(DATEEXECUTED) FROM (SELECT DATEEXECUTED FROM " + database.escapeTableName(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName())+") AS X)");
+-        } else {
+-            statement.setWhereClause("DATEEXECUTED = (SELECT MAX(DATEEXECUTED) FROM " + database.escapeTableName(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName())+")");
+-        }
+-
+-        return statement.getSqlStatement(database);
+-
+-    }
+-
+-    public String getEndDelimiter(Database database) {
+-        return ";";
+-    }
+-
+-    public boolean supportsDatabase(Database database) {
+-        return true;
+-    }
+-}
++package liquibase.database.sql;
++
++import liquibase.database.Database;
++import liquibase.database.MySQLDatabase;
++import liquibase.exception.StatementNotSupportedOnDatabaseException;
++
++public class TagDatabaseStatement implements SqlStatement {
++
++    private String tag;
++
++    public TagDatabaseStatement(String tag) {
++        this.tag = tag;
++    }
++
++    public String getTag() {
++        return tag;
++    }
++
++    public String getSqlStatement(Database database) throws StatementNotSupportedOnDatabaseException {
++        UpdateStatement statement = new UpdateStatement(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName());
++        statement.addNewColumnValue("TAG", tag);
++        if (database instanceof MySQLDatabase) {
++            try {
++                long version = Long.parseLong(database.getDatabaseProductVersion().substring(0,1));
++
++                if (version < 5) {
++                    return new RawSqlStatement("UPDATE " + database.escapeTableName(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName()) + " C LEFT JOIN (SELECT MAX(DATEEXECUTED) as MAXDATE FROM (SELECT DATEEXECUTED FROM " + database.escapeTableName(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName()) + ") AS X) D ON C.DATEEXECUTED = D.MAXDATE SET C.TAG = '"+tag+"' WHERE D.MAXDATE IS NOT NULL").getSqlStatement(database);
++                }
++
++            } catch (Throwable e) {
++                ; //assume it is version 5
++            }
++            statement.setWhereClause("DATEEXECUTED = (SELECT MAX(DATEEXECUTED) FROM (SELECT DATEEXECUTED FROM " + database.escapeTableName(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName())+") AS X)");
++        } else {
++            statement.setWhereClause("DATEEXECUTED = (SELECT MAX(DATEEXECUTED) FROM " + database.escapeTableName(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName())+")");
++        }
++
++        return statement.getSqlStatement(database);
++
++    }
++
++    public String getEndDelimiter(Database database) {
++        return ";";
++    }
++
++    public boolean supportsDatabase(Database database) {
++        return true;
++    }
++}
+Index: src/java/liquibase/database/sql/AddColumnStatement.java
+===================================================================
+--- src/java/liquibase/database/sql/AddColumnStatement.java	(revision 978)
++++ src/java/liquibase/database/sql/AddColumnStatement.java	(working copy)
+@@ -1,160 +1,163 @@
+-package liquibase.database.sql;
+-
+-import liquibase.database.*;
+-import liquibase.exception.StatementNotSupportedOnDatabaseException;
+-
+-import java.util.Arrays;
+-import java.util.HashSet;
+-import java.util.Set;
+-
+-public class AddColumnStatement implements SqlStatement {
+-
+-    private String schemaName;
+-    private String tableName;
+-    private String columnName;
+-    private String columnType;
+-    private Object defaultValue;
+-    private Set<ColumnConstraint> constraints = new HashSet<ColumnConstraint>();
+-
+-    public AddColumnStatement(String schemaName, String tableName, String columnName, String columnType, Object defaultValue, ColumnConstraint... constraints) {
+-        this.schemaName = schemaName;
+-        this.tableName = tableName;
+-        this.columnName = columnName;
+-        this.columnType = columnType;
+-        this.defaultValue = defaultValue;
+-        if (constraints != null) {
+-            this.constraints.addAll(Arrays.asList(constraints));
+-        }
+-    }
+-
+-    public String getSchemaName() {
+-        return schemaName;
+-    }
+-
+-    public String getTableName() {
+-        return tableName;
+-    }
+-
+-    public String getColumnName() {
+-        return columnName;
+-    }
+-
+-    public String getColumnType() {
+-        return columnType;
+-    }
+-
+-    public Set<ColumnConstraint> getConstraints() {
+-        return constraints;
+-    }
+-
+-    public String getSqlStatement(Database database) throws StatementNotSupportedOnDatabaseException {
+-        if (isPrimaryKey() && (database instanceof CacheDatabase
+-                || database instanceof H2Database
+-                || database instanceof DB2Database
+-                || database instanceof DerbyDatabase
+-                || database instanceof SQLiteDatabase)) {
+-            throw new StatementNotSupportedOnDatabaseException("Adding primary key columns is not supported", this, database);
+-        }
+-
+-        String alterTable = "ALTER TABLE " + database.escapeTableName(getSchemaName(), getTableName()) + " ADD "+ database.escapeColumnName(getSchemaName(), getTableName(), getColumnName()) + " " + database.getColumnType(getColumnType(), isAutoIncrement());
+-
+-        if (defaultClauseBeforeNotNull(database)) {
+-            alterTable += getDefaultClause(database);
+-        }
+-
+-        if (primaryKeyBeforeNotNull(database)) {
+-            if (isPrimaryKey()) {
+-                alterTable += " PRIMARY KEY";
+-            }
+-        }
+-
+-        if (isAutoIncrement()) {
+-            alterTable += " "+database.getAutoIncrementClause();
+-        }
+-
+-        if (!isNullable()) {
+-            alterTable += " NOT NULL";
+-        } else {
+-            if (database instanceof SybaseDatabase || database instanceof SybaseASADatabase) {
+-                alterTable += " NULL";
+-            }
+-        }
+-
+-        if (!primaryKeyBeforeNotNull(database)) {
+-            if (isPrimaryKey()) {
+-                alterTable += " PRIMARY KEY";
+-            }
+-        }
+-        
+-        if (!defaultClauseBeforeNotNull(database)) {
+-            alterTable += getDefaultClause(database);
+-        }
+-        
+-        return alterTable;
+-    }
+-
+-    private boolean primaryKeyBeforeNotNull(Database database) {
+-        return !(database instanceof HsqlDatabase);
+-    }
+-
+-    public boolean isAutoIncrement() {
+-        for (ColumnConstraint constraint : getConstraints()) {
+-            if (constraint instanceof AutoIncrementConstraint) {
+-                return true;
+-            }
+-        }
+-        return false;
+-    }
+-
+-    public boolean isPrimaryKey() {
+-        for (ColumnConstraint constraint : getConstraints()) {
+-            if (constraint instanceof PrimaryKeyConstraint) {
+-                return true;
+-            }
+-        }
+-        return false;
+-    }
+-
+-    public String getEndDelimiter(Database database) {
+-        return ";";
+-    }
+-
+-    public boolean supportsDatabase(Database database) {
+-        return true;
+-    }
+-
+-    private boolean defaultClauseBeforeNotNull(Database database) {
+-        return database instanceof OracleDatabase
+-                || database instanceof HsqlDatabase
+-                || database instanceof DerbyDatabase
+-                || database instanceof DB2Database
+-                || database instanceof FirebirdDatabase;
+-    }
+-
+-    private String getDefaultClause(Database database) {
+-        String clause = "";
+-        if (getDefaultValue() != null) {
+-            if (database instanceof MSSQLDatabase) {
+-                clause += " CONSTRAINT " + ((MSSQLDatabase) database).generateDefaultConstraintName(tableName, getColumnName());
+-            }
+-            clause += " DEFAULT " + database.convertJavaObjectToString(getDefaultValue());
+-        }
+-        return clause;
+-    }
+-
+-    public boolean isNullable() {
+-        if (isPrimaryKey()) {
+-            return false;
+-        }
+-        for (ColumnConstraint constraint : getConstraints()) {
+-            if (constraint instanceof NotNullConstraint) {
+-                return false;
+-            }
+-        }
+-        return true;
+-    }
+-
+-    public Object getDefaultValue() {
+-        return defaultValue;
+-    }
+-}
++package liquibase.database.sql;
++
++import liquibase.database.*;
++import liquibase.exception.StatementNotSupportedOnDatabaseException;
++
++import java.util.Arrays;
++import java.util.HashSet;
++import java.util.Set;
++
++/**
++ * Represents statements like "ALTER TABLE tablename MODIFY COLUMN VOIDED tinyint(1) NOT NULL"
++ */
++public class AddColumnStatement implements SqlStatement {
++
++    private String schemaName;
++    private String tableName;
++    private String columnName;
++    private String columnType;
++    private Object defaultValue;
++    private Set<ColumnConstraint> constraints = new HashSet<ColumnConstraint>();
++
++    public AddColumnStatement(String schemaName, String tableName, String columnName, String columnType, Object defaultValue, ColumnConstraint... constraints) {
++        this.schemaName = schemaName;
++        this.tableName = tableName;
++        this.columnName = columnName;
++        this.columnType = columnType;
++        this.defaultValue = defaultValue;
++        if (constraints != null) {
++            this.constraints.addAll(Arrays.asList(constraints));
++        }
++    }
++
++    public String getSchemaName() {
++        return schemaName;
++    }
++
++    public String getTableName() {
++        return tableName;
++    }
++
++    public String getColumnName() {
++        return columnName;
++    }
++
++    public String getColumnType() {
++        return columnType;
++    }
++
++    public Set<ColumnConstraint> getConstraints() {
++        return constraints;
++    }
++
++    public String getSqlStatement(Database database) throws StatementNotSupportedOnDatabaseException {
++        if (isPrimaryKey() && (database instanceof CacheDatabase
++                || database instanceof H2Database
++                || database instanceof DB2Database
++                || database instanceof DerbyDatabase
++                || database instanceof SQLiteDatabase)) {
++            throw new StatementNotSupportedOnDatabaseException("Adding primary key columns is not supported", this, database);
++        }
++
++        String alterTable = "ALTER TABLE " + database.escapeTableName(getSchemaName(), getTableName()) + " ADD "+ database.escapeColumnName(getSchemaName(), getTableName(), getColumnName()) + " " + database.getColumnType(getColumnType(), isAutoIncrement());
++
++        if (defaultClauseBeforeNotNull(database)) {
++            alterTable += getDefaultClause(database);
++        }
++
++        if (primaryKeyBeforeNotNull(database)) {
++            if (isPrimaryKey()) {
++                alterTable += " PRIMARY KEY";
++            }
++        }
++
++        if (isAutoIncrement()) {
++            alterTable += " "+database.getAutoIncrementClause();
++        }
++
++        if (!isNullable()) {
++            alterTable += " NOT NULL";
++        } else {
++            if (database instanceof SybaseDatabase || database instanceof SybaseASADatabase) {
++                alterTable += " NULL";
++            }
++        }
++
++        if (!primaryKeyBeforeNotNull(database)) {
++            if (isPrimaryKey()) {
++                alterTable += " PRIMARY KEY";
++            }
++        }
++        
++        if (!defaultClauseBeforeNotNull(database)) {
++            alterTable += getDefaultClause(database);
++        }
++        
++        return alterTable;
++    }
++
++    private boolean primaryKeyBeforeNotNull(Database database) {
++        return !(database instanceof HsqlDatabase);
++    }
++
++    public boolean isAutoIncrement() {
++        for (ColumnConstraint constraint : getConstraints()) {
++            if (constraint instanceof AutoIncrementConstraint) {
++                return true;
++            }
++        }
++        return false;
++    }
++
++    public boolean isPrimaryKey() {
++        for (ColumnConstraint constraint : getConstraints()) {
++            if (constraint instanceof PrimaryKeyConstraint) {
++                return true;
++            }
++        }
++        return false;
++    }
++
++    public String getEndDelimiter(Database database) {
++        return ";";
++    }
++
++    public boolean supportsDatabase(Database database) {
++        return true;
++    }
++
++    private boolean defaultClauseBeforeNotNull(Database database) {
++        return database instanceof OracleDatabase
++                || database instanceof HsqlDatabase
++                || database instanceof DerbyDatabase
++                || database instanceof DB2Database
++                || database instanceof FirebirdDatabase;
++    }
++
++    private String getDefaultClause(Database database) {
++        String clause = "";
++        if (getDefaultValue() != null) {
++            if (database instanceof MSSQLDatabase) {
++                clause += " CONSTRAINT " + ((MSSQLDatabase) database).generateDefaultConstraintName(tableName, getColumnName());
++            }
++            clause += " DEFAULT " + database.convertJavaObjectToString(getDefaultValue());
++        }
++        return clause;
++    }
++
++    public boolean isNullable() {
++        if (isPrimaryKey()) {
++            return false;
++        }
++        for (ColumnConstraint constraint : getConstraints()) {
++            if (constraint instanceof NotNullConstraint) {
++                return false;
++            }
++        }
++        return true;
++    }
++
++    public Object getDefaultValue() {
++        return defaultValue;
++    }
++}
+Index: src/java/liquibase/diff/DiffResult.java
+===================================================================
+--- src/java/liquibase/diff/DiffResult.java	(revision 978)
++++ src/java/liquibase/diff/DiffResult.java	(working copy)
+@@ -1,970 +1,975 @@
+-package liquibase.diff;
+-
+-import java.io.BufferedReader;
+-import java.io.ByteArrayOutputStream;
+-import java.io.File;
+-import java.io.FileOutputStream;
+-import java.io.FileReader;
+-import java.io.FileWriter;
+-import java.io.IOException;
+-import java.io.PrintStream;
+-import java.io.RandomAccessFile;
+-import java.sql.*;
+-import java.util.ArrayList;
+-import java.util.Date;
+-import java.util.List;
+-import java.util.SortedSet;
+-import java.util.TreeSet;
+-
+-import javax.xml.parsers.DocumentBuilder;
+-import javax.xml.parsers.DocumentBuilderFactory;
+-import javax.xml.parsers.ParserConfigurationException;
+-
+-import liquibase.change.*;
+-
+-import liquibase.csv.CSVWriter;
+-import liquibase.database.Database;
+-import liquibase.database.structure.*;
+-import liquibase.exception.JDBCException;
+-import liquibase.log.LogFactory;
+-import liquibase.parser.LiquibaseSchemaResolver;
+-import liquibase.parser.xml.XMLChangeLogParser;
+-import liquibase.util.SqlUtil;
+-import liquibase.util.StringUtils;
+-import liquibase.xml.DefaultXmlWriter;
+-import liquibase.xml.XmlWriter;
+-
+-import org.w3c.dom.Document;
+-import org.w3c.dom.Element;
+-
+-public class DiffResult {
+-
+-    private Long baseId = new Date().getTime();
+-    private int changeNumber = 1;
+-
+-    private Database baseDatabase;
+-    private Database targetDatabase;
+-
+-    private DatabaseSnapshot baseSnapshot;
+-    private DatabaseSnapshot targetSnapshot;
+-
+-    private DiffComparison productName;
+-    private DiffComparison productVersion;
+-
+-    private SortedSet<Table> missingTables = new TreeSet<Table>();
+-    private SortedSet<Table> unexpectedTables = new TreeSet<Table>();
+-
+-    private SortedSet<View> missingViews = new TreeSet<View>();
+-    private SortedSet<View> unexpectedViews = new TreeSet<View>();
+-
+-    private SortedSet<Column> missingColumns = new TreeSet<Column>();
+-    private SortedSet<Column> unexpectedColumns = new TreeSet<Column>();
+-    private SortedSet<Column> changedColumns = new TreeSet<Column>();
+-
+-    private SortedSet<ForeignKey> missingForeignKeys = new TreeSet<ForeignKey>();
+-    private SortedSet<ForeignKey> unexpectedForeignKeys = new TreeSet<ForeignKey>();
+-
+-    private SortedSet<Index> missingIndexes = new TreeSet<Index>();
+-    private SortedSet<Index> unexpectedIndexes = new TreeSet<Index>();
+-
+-    private SortedSet<PrimaryKey> missingPrimaryKeys = new TreeSet<PrimaryKey>();
+-    private SortedSet<PrimaryKey> unexpectedPrimaryKeys = new TreeSet<PrimaryKey>();
+-
+-    private SortedSet<UniqueConstraint> missingUniqueConstraints = new TreeSet<UniqueConstraint>();
+-    private SortedSet<UniqueConstraint> unexpectedUniqueConstraints = new TreeSet<UniqueConstraint>();
+-
+-    private SortedSet<Sequence> missingSequences = new TreeSet<Sequence>();
+-    private SortedSet<Sequence> unexpectedSequences = new TreeSet<Sequence>();
+-
+-    private boolean diffData = false;
+-    private String dataDir = null;
+-    private String changeSetContext;
+-    private String changeSetAuthor;
+-
+-    public DiffResult(DatabaseSnapshot baseDatabase, DatabaseSnapshot targetDatabase) {
+-        this.baseDatabase = baseDatabase.getDatabase();
+-        this.targetDatabase = targetDatabase.getDatabase();
+-
+-        this.baseSnapshot = baseDatabase;
+-        this.targetSnapshot = targetDatabase;
+-    }
+-
+-    public DiffComparison getProductName() {
+-        return productName;
+-    }
+-
+-    public void setProductName(DiffComparison productName) {
+-        this.productName = productName;
+-    }
+-
+-    public DiffComparison getProductVersion() {
+-        return productVersion;
+-    }
+-
+-    public void setProductVersion(DiffComparison product) {
+-        this.productVersion = product;
+-    }
+-
+-    public void addMissingTable(Table table) {
+-        missingTables.add(table);
+-    }
+-
+-    public SortedSet<Table> getMissingTables() {
+-        return missingTables;
+-    }
+-
+-    public void addUnexpectedTable(Table table) {
+-        unexpectedTables.add(table);
+-    }
+-
+-    public SortedSet<Table> getUnexpectedTables() {
+-        return unexpectedTables;
+-    }
+-
+-    public void addMissingView(View viewName) {
+-        missingViews.add(viewName);
+-    }
+-
+-    public SortedSet<View> getMissingViews() {
+-        return missingViews;
+-    }
+-
+-    public void addUnexpectedView(View viewName) {
+-        unexpectedViews.add(viewName);
+-    }
+-
+-    public SortedSet<View> getUnexpectedViews() {
+-        return unexpectedViews;
+-    }
+-
+-    public void addMissingColumn(Column columnName) {
+-        missingColumns.add(columnName);
+-    }
+-
+-    public SortedSet<Column> getMissingColumns() {
+-        return missingColumns;
+-    }
+-
+-    public void addUnexpectedColumn(Column columnName) {
+-        unexpectedColumns.add(columnName);
+-    }
+-
+-    public SortedSet<Column> getUnexpectedColumns() {
+-        return unexpectedColumns;
+-    }
+-
+-    public void addChangedColumn(Column columnName) {
+-        changedColumns.add(columnName);
+-    }
+-
+-    public SortedSet<Column> getChangedColumns() {
+-        return changedColumns;
+-    }
+-
+-    public void addMissingForeignKey(ForeignKey fkName) {
+-        missingForeignKeys.add(fkName);
+-    }
+-
+-    public SortedSet<ForeignKey> getMissingForeignKeys() {
+-        return missingForeignKeys;
+-    }
+-
+-    public void addUnexpectedForeignKey(ForeignKey fkName) {
+-        unexpectedForeignKeys.add(fkName);
+-    }
+-
+-    public SortedSet<ForeignKey> getUnexpectedForeignKeys() {
+-        return unexpectedForeignKeys;
+-    }
+-
+-    public void addMissingIndex(Index fkName) {
+-        missingIndexes.add(fkName);
+-    }
+-
+-    public SortedSet<Index> getMissingIndexes() {
+-        return missingIndexes;
+-    }
+-
+-    public void addUnexpectedIndex(Index fkName) {
+-        unexpectedIndexes.add(fkName);
+-    }
+-
+-    public SortedSet<Index> getUnexpectedIndexes() {
+-        return unexpectedIndexes;
+-    }
+-
+-    public void addMissingPrimaryKey(PrimaryKey primaryKey) {
+-        missingPrimaryKeys.add(primaryKey);
+-    }
+-
+-    public SortedSet<PrimaryKey> getMissingPrimaryKeys() {
+-        return missingPrimaryKeys;
+-    }
+-
+-    public void addUnexpectedPrimaryKey(PrimaryKey primaryKey) {
+-        unexpectedPrimaryKeys.add(primaryKey);
+-    }
+-
+-    public SortedSet<PrimaryKey> getUnexpectedPrimaryKeys() {
+-        return unexpectedPrimaryKeys;
+-    }
+-
+-    public void addMissingSequence(Sequence sequence) {
+-        missingSequences.add(sequence);
+-    }
+-
+-    public SortedSet<Sequence> getMissingSequences() {
+-        return missingSequences;
+-    }
+-
+-    public void addUnexpectedSequence(Sequence sequence) {
+-        unexpectedSequences.add(sequence);
+-    }
+-
+-    public SortedSet<Sequence> getUnexpectedSequences() {
+-        return unexpectedSequences;
+-    }
+-
+-    public void addMissingUniqueConstraint(UniqueConstraint uniqueConstraint) {
+-        missingUniqueConstraints.add(uniqueConstraint);
+-    }
+-
+-    public SortedSet<UniqueConstraint> getMissingUniqueConstraints() {
+-        return this.missingUniqueConstraints;
+-    }
+-
+-    public void addUnexpectedUniqueConstraint(UniqueConstraint uniqueConstraint) {
+-        unexpectedUniqueConstraints.add(uniqueConstraint);
+-    }
+-
+-    public SortedSet<UniqueConstraint> getUnexpectedUniqueConstraints() {
+-        return unexpectedUniqueConstraints;
+-    }
+-
+-    public boolean shouldDiffData() {
+-        return diffData;
+-    }
+-
+-    public void setDiffData(boolean diffData) {
+-        this.diffData = diffData;
+-    }
+-
+-    public String getDataDir() {
+-        return dataDir;
+-    }
+-
+-    public void setDataDir(String dataDir) {
+-        this.dataDir = dataDir;
+-    }
+-
+-    public String getChangeSetContext() {
+-        return changeSetContext;
+-    }
+-
+-    public void setChangeSetContext(String changeSetContext) {
+-        this.changeSetContext = changeSetContext;
+-    }
+-
+-    public void printResult(PrintStream out) throws JDBCException {
+-        out.println("Base Database: " + targetDatabase.getConnectionUsername() + " " + targetDatabase.getConnectionURL());
+-        out.println("Target Database: " + baseDatabase.getConnectionUsername() + " " + baseDatabase.getConnectionURL());
+-
+-        printComparision("Product Name", productName, out);
+-        printComparision("Product Version", productVersion, out);
+-        printSetComparison("Missing Tables", getMissingTables(), out);
+-        printSetComparison("Unexpected Tables", getUnexpectedTables(), out);
+-        printSetComparison("Missing Views", getMissingViews(), out);
+-        printSetComparison("Unexpected Views", getUnexpectedViews(), out);
+-        printSetComparison("Missing Columns", getMissingColumns(), out);
+-        printSetComparison("Unexpected Columns", getUnexpectedColumns(), out);
+-        printColumnComparison(getChangedColumns(), out);
+-        printSetComparison("Missing Foreign Keys", getMissingForeignKeys(), out);
+-        printSetComparison("Unexpected Foreign Keys", getUnexpectedForeignKeys(), out);
+-        printSetComparison("Missing Primary Keys", getMissingPrimaryKeys(), out);
+-        printSetComparison("Unexpected Primary Keys", getUnexpectedPrimaryKeys(), out);
+-        printSetComparison("Missing Unique Constraints", getMissingUniqueConstraints(), out);
+-        printSetComparison("Unexpected Unique Constraints", getUnexpectedUniqueConstraints(), out);
+-        printSetComparison("Missing Indexes", getMissingIndexes(), out);
+-        printSetComparison("Unexpected Indexes", getUnexpectedIndexes(), out);
+-        printSetComparison("Missing Sequences", getMissingSequences(), out);
+-        printSetComparison("Unexpected Sequences", getUnexpectedSequences(), out);
+-    }
+-
+-    private void printSetComparison(String title, SortedSet<?> objects, PrintStream out) {
+-        out.print(title + ": ");
+-        if (objects.size() == 0) {
+-            out.println("NONE");
+-        } else {
+-            out.println();
+-            for (Object object : objects) {
+-                out.println("     " + object);
+-            }
+-        }
+-    }
+-
+-    private void printColumnComparison(SortedSet<Column> changedColumns, PrintStream out) {
+-        out.print("Changed Columns: ");
+-        if (changedColumns.size() == 0) {
+-            out.println("NONE");
+-        } else {
+-            out.println();
+-            for (Column column : changedColumns) {
+-                out.println("     " + column);
+-                Column baseColumn = baseSnapshot.getColumn(column);
+-                if (baseColumn != null) {
+-                    if (baseColumn.isDataTypeDifferent(column)) {
+-                        out.println("           from " + baseColumn.getDataTypeString(baseDatabase) + " to " + targetSnapshot.getColumn(column).getDataTypeString(targetDatabase));
+-                    }
+-                    if (baseColumn.isNullabilityDifferent(column)) {
+-                        Boolean nowNullable = targetSnapshot.getColumn(column).isNullable();
+-                        if (nowNullable == null) {
+-                            nowNullable = Boolean.TRUE;
+-                        }
+-                        if (nowNullable) {
+-                            out.println("           now nullable");
+-                        } else {
+-                            out.println("           now not null");
+-                        }
+-                    }
+-                }
+-            }
+-        }
+-    }
+-
+-    private void printComparision(String title, DiffComparison comparison, PrintStream out) {
+-        out.print(title + ":");
+-        if (comparison.areTheSame()) {
+-            out.println(" EQUAL");
+-        } else {
+-            out.println();
+-            out.println("     Base:   '" + comparison.getBaseVersion() + "'");
+-            out.println("     Target: '" + comparison.getTargetVersion() + "'");
+-        }
+-
+-    }
+-
+-    public void printChangeLog(String changeLogFile, Database targetDatabase) throws ParserConfigurationException, IOException, JDBCException {
+-        this.printChangeLog(changeLogFile, targetDatabase, new DefaultXmlWriter());
+-    }
+-
+-    public void printChangeLog(PrintStream out, Database targetDatabase) throws ParserConfigurationException, IOException, JDBCException {
+-        this.printChangeLog(out, targetDatabase, new DefaultXmlWriter());
+-    }
+-
+-    public void printChangeLog(String changeLogFile, Database targetDatabase, XmlWriter xmlWriter) throws ParserConfigurationException, IOException, JDBCException {
+-        File file = new File(changeLogFile);
+-        if (!file.exists()) {
+-            LogFactory.getLogger().info(file + " does not exist, creating");
+-            FileOutputStream stream = new FileOutputStream(file);
+-            printChangeLog(new PrintStream(stream), targetDatabase, xmlWriter);
+-            stream.close();
+-        } else {
+-            LogFactory.getLogger().info(file + " exists, appending");
+-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+-            printChangeLog(new PrintStream(out), targetDatabase, xmlWriter);
+-
+-            String xml = new String(out.toByteArray());
+-            xml = xml.replaceFirst("(?ms).*<databaseChangeLog[^>]*>", "");
+-            xml = xml.replaceFirst("</databaseChangeLog>", "");
+-            xml = xml.trim();
+-
+-            String lineSeparator = System.getProperty("line.separator");
+-            BufferedReader fileReader = new BufferedReader(new FileReader(file));
+-            String line;
+-            long offset = 0;
+-            while ((line = fileReader.readLine()) != null) {
+-                int index = line.indexOf("</databaseChangeLog>");
+-                if (index >= 0) {
+-                    offset += index;
+-                } else {
+-                    offset += line.getBytes().length;
+-                    offset += lineSeparator.getBytes().length;
+-                }
+-            }
+-            fileReader.close();
+-
+-            fileReader = new BufferedReader(new FileReader(file));
+-            fileReader.skip(offset);
+-
+-            fileReader.close();
+-
+-//            System.out.println("resulting XML: " + xml.trim());
+-
+-            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+-            randomAccessFile.seek(offset);
+-            randomAccessFile.writeBytes("    " + xml + lineSeparator);
+-            randomAccessFile.writeBytes("</databaseChangeLog>" + lineSeparator);
+-            randomAccessFile.close();
+-
+-//            BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file));
+-//            fileWriter.append(xml);
+-//            fileWriter.close();
+-        }
+-    }
+-
+-    /**
+-     * Prints changeLog that would bring the base database to be the same as the target database
+-     */
+-    public void printChangeLog(PrintStream out, Database targetDatabase, XmlWriter xmlWriter) throws ParserConfigurationException, IOException, JDBCException {
+-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+-        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+-        documentBuilder.setEntityResolver(new LiquibaseSchemaResolver());
+-
+-        Document doc = documentBuilder.newDocument();
+-
+-        Element changeLogElement = doc.createElement("databaseChangeLog");
+-        changeLogElement.setAttribute("xmlns", "http://www.liquibase.org/xml/ns/dbchangelog/" + XMLChangeLogParser.getSchemaVersion());
+-        changeLogElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+-        changeLogElement.setAttribute("xsi:schemaLocation", "http://www.liquibase.org/xml/ns/dbchangelog/" + XMLChangeLogParser.getSchemaVersion() + " http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-" + XMLChangeLogParser.getSchemaVersion() + ".xsd");
+-
+-        doc.appendChild(changeLogElement);
+-
+-        List<Change> changes = new ArrayList<Change>();
+-        addUnexpectedViewChanges(changes);
+-        addMissingTableChanges(changes, targetDatabase);
+-        addMissingColumnChanges(changes, targetDatabase);
+-        addChangedColumnChanges(changes);
+-        addMissingPrimaryKeyChanges(changes);
+-        addUnexpectedPrimaryKeyChanges(changes);
+-        addMissingUniqueConstraintChanges(changes);
+-        addUnexpectedUniqueConstraintChanges(changes);
+-        addMissingIndexChanges(changes);
+-        addUnexpectedIndexChanges(changes);
+-
+-        if (diffData) {
+-            addInsertDataChanges(changes, dataDir);
+-        }
+-
+-        addMissingForeignKeyChanges(changes);
+-        addUnexpectedForeignKeyChanges(changes);
+-        addUnexpectedColumnChanges(changes);
+-        addMissingSequenceChanges(changes);
+-        addUnexpectedSequenceChanges(changes);
+-        addMissingViewChanges(changes);
+-        addUnexpectedTableChanges(changes);
+-
+-        for (Change change : changes) {
+-            Element changeSet = doc.createElement("changeSet");
+-            changeSet.setAttribute("author", getChangeSetAuthor());
+-            changeSet.setAttribute("id", generateId());
+-            if (getChangeSetContext() != null) {
+-                changeSet.setAttribute("context", getChangeSetContext());
+-            }
+-
+-            changeSet.appendChild(change.createNode(doc));
+-            doc.getDocumentElement().appendChild(changeSet);
+-        }
+-
+-
+-        xmlWriter.write(doc, out);
+-
+-        out.flush();
+-    }
+-
+-    private String getChangeSetAuthor() {
+-        if (changeSetAuthor != null) {
+-            return changeSetAuthor;
+-        }
+-        String author = System.getProperty("user.name");
+-        if (StringUtils.trimToNull(author) == null) {
+-            return "diff-generated";
+-        } else {
+-            return author + " (generated)";
+-        }
+-    }
+-
+-    public void setChangeSetAuthor(String changeSetAuthor) {
+-        this.changeSetAuthor = changeSetAuthor;
+-    }
+-
+-    private String generateId() {
+-        return baseId.toString() + "-" + changeNumber++;
+-    }
+-
+-    private void addUnexpectedIndexChanges(List<Change> changes) {
+-        for (Index index : getUnexpectedIndexes()) {
+-
+-            DropIndexChange change = new DropIndexChange();
+-            change.setTableName(index.getTable().getName());
+-            change.setSchemaName(index.getTable().getSchema());
+-            change.setIndexName(index.getName());
+-
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addMissingIndexChanges(List<Change> changes) {
+-        for (Index index : getMissingIndexes()) {
+-
+-            CreateIndexChange change = new CreateIndexChange();
+-            change.setTableName(index.getTable().getName());
+-            change.setSchemaName(index.getTable().getSchema());
+-            change.setIndexName(index.getName());
+-            change.setUnique(index.isUnique());
+-
+-            for (String columnName : index.getColumns()) {
+-                ColumnConfig column = new ColumnConfig();
+-                column.setName(columnName);
+-                change.addColumn(column);
+-            }
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addUnexpectedPrimaryKeyChanges(List<Change> changes) {
+-        for (PrimaryKey pk : getUnexpectedPrimaryKeys()) {
+-
+-            if (!getUnexpectedTables().contains(pk.getTable())) {
+-                DropPrimaryKeyChange change = new DropPrimaryKeyChange();
+-                change.setTableName(pk.getTable().getName());
+-                change.setSchemaName(pk.getTable().getSchema());
+-                change.setConstraintName(pk.getName());
+-
+-                changes.add(change);
+-            }
+-        }
+-    }
+-
+-    private void addMissingPrimaryKeyChanges(List<Change> changes) {
+-        for (PrimaryKey pk : getMissingPrimaryKeys()) {
+-
+-            AddPrimaryKeyChange change = new AddPrimaryKeyChange();
+-            change.setTableName(pk.getTable().getName());
+-            change.setSchemaName(pk.getTable().getSchema());
+-            change.setConstraintName(pk.getName());
+-            change.setColumnNames(pk.getColumnNames());
+-
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addUnexpectedUniqueConstraintChanges(List<Change> changes) {
+-        for (UniqueConstraint uc : getUnexpectedUniqueConstraints()) {
+-
+-            if (!getUnexpectedTables().contains(uc.getTable())) {
+-                DropUniqueConstraintChange change = new DropUniqueConstraintChange();
+-                change.setTableName(uc.getTable().getName());
+-                change.setSchemaName(uc.getTable().getSchema());
+-                change.setConstraintName(uc.getName());
+-
+-                changes.add(change);
+-            }
+-        }
+-    }
+-
+-    private void addMissingUniqueConstraintChanges(List<Change> changes) {
+-        for (UniqueConstraint uc : getMissingUniqueConstraints()) {
+-
+-            AddUniqueConstraintChange change = new AddUniqueConstraintChange();
+-            change.setTableName(uc.getTable().getName());
+-            change.setSchemaName(uc.getTable().getSchema());
+-            change.setConstraintName(uc.getName());
+-            change.setColumnNames(uc.getColumnNames());
+-
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addUnexpectedForeignKeyChanges(List<Change> changes) {
+-        for (ForeignKey fk : getUnexpectedForeignKeys()) {
+-
+-            DropForeignKeyConstraintChange change = new DropForeignKeyConstraintChange();
+-            change.setConstraintName(fk.getName());
+-            change.setBaseTableName(fk.getForeignKeyTable().getName());
+-            change.setBaseTableSchemaName(fk.getForeignKeyTable().getSchema());
+-
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addMissingForeignKeyChanges(List<Change> changes) {
+-        for (ForeignKey fk : getMissingForeignKeys()) {
+-
+-            AddForeignKeyConstraintChange change = new AddForeignKeyConstraintChange();
+-            change.setConstraintName(fk.getName());
+-
+-            change.setReferencedTableName(fk.getPrimaryKeyTable().getName());
+-            change.setReferencedTableSchemaName(fk.getPrimaryKeyTable().getSchema());
+-            change.setReferencedColumnNames(fk.getPrimaryKeyColumns());
+-
+-            change.setBaseTableName(fk.getForeignKeyTable().getName());
+-            change.setBaseTableSchemaName(fk.getForeignKeyTable().getSchema());
+-            change.setBaseColumnNames(fk.getForeignKeyColumns());
+-
+-            change.setDeferrable(fk.isDeferrable());
+-            change.setInitiallyDeferred(fk.isInitiallyDeferred());
+-            change.setUpdateRule(fk.getUpdateRule());
+-            change.setDeleteRule(fk.getDeleteRule());
+-
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addUnexpectedSequenceChanges(List<Change> changes) {
+-        for (Sequence sequence : getUnexpectedSequences()) {
+-
+-            DropSequenceChange change = new DropSequenceChange();
+-            change.setSequenceName(sequence.getName());
+-            change.setSchemaName(sequence.getSchema());
+-            
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addMissingSequenceChanges(List<Change> changes) {
+-        for (Sequence sequence : getMissingSequences()) {
+-
+-            CreateSequenceChange change = new CreateSequenceChange();
+-            change.setSequenceName(sequence.getName());
+-            change.setSchemaName(sequence.getSchema());
+-            
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addUnexpectedColumnChanges(List<Change> changes) {
+-        for (Column column : getUnexpectedColumns()) {
+-            if (!shouldModifyColumn(column)) {
+-                continue;
+-            }
+-
+-            DropColumnChange change = new DropColumnChange();
+-            change.setTableName(column.getTable().getName());
+-            change.setSchemaName(column.getTable().getSchema());
+-            change.setColumnName(column.getName());
+-
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addMissingViewChanges(List<Change> changes) {
+-        for (View view : getMissingViews()) {
+-
+-            CreateViewChange change = new CreateViewChange();
+-            change.setViewName(view.getName());
+-            change.setSchemaName(view.getSchema());
+-            String selectQuery = view.getDefinition();
+-            if (selectQuery == null) {
+-                selectQuery = "COULD NOT DETERMINE VIEW QUERY";
+-            }
+-            change.setSelectQuery(selectQuery);
+-
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addChangedColumnChanges(List<Change> changes) {
+-        for (Column column : getChangedColumns()) {
+-            if (!shouldModifyColumn(column)) {
+-                continue;
+-            }
+-
+-            boolean foundDifference = false;
+-            Column baseColumn = baseSnapshot.getColumn(column);
+-            if (column.isDataTypeDifferent(baseColumn)) {
+-                ColumnConfig columnConfig = new ColumnConfig();
+-                columnConfig.setName(column.getName());
+-                columnConfig.setType(baseColumn.getDataTypeString(targetDatabase));
+-
+-                ModifyColumnChange change = new ModifyColumnChange();
+-                change.setTableName(column.getTable().getName());
+-                change.setSchemaName(column.getTable().getSchema());
+-                change.addColumn(columnConfig);
+-
+-                changes.add(change);
+-                foundDifference = true;
+-            }
+-            if (column.isNullabilityDifferent(baseColumn)) {
+-                if (baseColumn.isNullable() == null || baseColumn.isNullable()) {
+-                    DropNotNullConstraintChange change = new DropNotNullConstraintChange();
+-                    change.setTableName(column.getTable().getName());
+-                    change.setSchemaName(column.getTable().getSchema());
+-                    change.setColumnName(column.getName());
+-                    change.setColumnDataType(baseColumn.getDataTypeString(targetDatabase));
+-
+-                    changes.add(change);
+-                    foundDifference = true;
+-                } else {
+-                    AddNotNullConstraintChange change = new AddNotNullConstraintChange();
+-                    change.setTableName(column.getTable().getName());
+-                    change.setSchemaName(column.getTable().getSchema());
+-                    change.setColumnName(column.getName());
+-                    change.setColumnDataType(baseColumn.getDataTypeString(targetDatabase));
+-
+-                    changes.add(change);
+-                    foundDifference = true;
+-                }
+-
+-            }
+-            if (!foundDifference) {
+-                throw new RuntimeException("Unknown difference");
+-            }
+-        }
+-    }
+-
+-    private boolean shouldModifyColumn(Column column) {
+-        return column.getView() == null
+-                && !baseDatabase.isLiquibaseTable(column.getTable().getName());
+-
+-    }
+-
+-    private void addUnexpectedViewChanges(List<Change> changes) {
+-        for (View view : getUnexpectedViews()) {
+-
+-            DropViewChange change = new DropViewChange();
+-            change.setViewName(view.getName());
+-            change.setSchemaName(view.getSchema());
+-
+-            changes.add(change);
+-        }
+-    }
+-
+-
+-    private void addMissingColumnChanges(List<Change> changes, Database database) {
+-        for (Column column : getMissingColumns()) {
+-            if (!shouldModifyColumn(column)) {
+-                continue;
+-            }
+-
+-            AddColumnChange change = new AddColumnChange();
+-            change.setTableName(column.getTable().getName());
+-            change.setSchemaName(column.getTable().getSchema());
+-
+-            ColumnConfig columnConfig = new ColumnConfig();
+-            columnConfig.setName(column.getName());
+-
+-
+-            String dataType = column.getDataTypeString(database);
+-
+-            columnConfig.setType(dataType);
+-
+-            String defaultValueString = database.convertJavaObjectToString(column.getDefaultValue());
+-            if(defaultValueString !=null) {
+-              defaultValueString  = defaultValueString.replaceFirst("'","").replaceAll("'$", "");
+-            }
+-            columnConfig.setDefaultValue(defaultValueString);
+-
+-            if (column.getRemarks() != null) {
+-                columnConfig.setRemarks(column.getRemarks());
+-            }
+-            if (column.isNullable() != null && !column.isNullable()) {
+-                ConstraintsConfig constraintsConfig = columnConfig.getConstraints();
+-                if (constraintsConfig == null) {
+-                    constraintsConfig = new ConstraintsConfig();
+-                    columnConfig.setConstraints(constraintsConfig);
+-                }
+-                constraintsConfig.setNullable(false);
+-            }
+-
+-            change.addColumn(columnConfig);
+-
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addMissingTableChanges(List<Change> changes, Database database) {
+-        for (Table missingTable : getMissingTables()) {
+-            if (baseDatabase.isLiquibaseTable(missingTable.getName())) {
+-                continue;
+-            }
+-
+-            CreateTableChange change = new CreateTableChange();
+-            change.setTableName(missingTable.getName());
+-            change.setSchemaName(missingTable.getSchema());
+-            if (missingTable.getRemarks() != null) {
+-                change.setRemarks(missingTable.getRemarks());
+-            }
+-
+-            for (Column column : missingTable.getColumns()) {
+-                ColumnConfig columnConfig = new ColumnConfig();
+-                columnConfig.setName(column.getName());
+-                columnConfig.setType(column.getDataTypeString(database));
+-
+-                ConstraintsConfig constraintsConfig = null;
+-                if (column.isPrimaryKey()) {
+-                    PrimaryKey primaryKey = null;
+-                    for (PrimaryKey pk : getMissingPrimaryKeys()) {
+-                        if (pk.getTable().getName().equalsIgnoreCase(missingTable.getName())) {
+-                            primaryKey = pk;
+-                        }
+-                    }
+-
+-                    if (primaryKey == null || primaryKey.getColumnNamesAsList().size() == 1) {
+-                        constraintsConfig = new ConstraintsConfig();
+-                        constraintsConfig.setPrimaryKey(true);
+-
+-                        if (primaryKey != null) {
+-                            constraintsConfig.setPrimaryKeyName(primaryKey.getName());
+-                            getMissingPrimaryKeys().remove(primaryKey);
+-                        }
+-                    }
+-                }
+-
+-                if (column.isAutoIncrement()) {
+-                    columnConfig.setAutoIncrement(true);
+-                }
+-
+-                if (column.isNullable() != null && !column.isNullable()) {
+-                    if (constraintsConfig == null) {
+-                        constraintsConfig = new ConstraintsConfig();
+-                    }
+-
+-                    constraintsConfig.setNullable(false);
+-                }
+-                if (constraintsConfig != null) {
+-                    columnConfig.setConstraints(constraintsConfig);
+-                }
+-
+-                Object defaultValue = column.getDefaultValue();
+-                if (defaultValue == null) {
+-                    //do nothing
+-                } else if (column.isAutoIncrement()) {
+-                    //do nothing
+-                } else if (defaultValue instanceof Date) {
+-                    columnConfig.setDefaultValueDate((Date) defaultValue);
+-                } else if (defaultValue instanceof Boolean) {
+-                    columnConfig.setDefaultValueBoolean(((Boolean) defaultValue));
+-                } else if (defaultValue instanceof Number) {
+-                    columnConfig.setDefaultValueNumeric(((Number) defaultValue));
+-                } else {
+-                    columnConfig.setDefaultValue(defaultValue.toString());
+-                }
+-
+-                if (column.getRemarks() != null) {
+-                    columnConfig.setRemarks(column.getRemarks());
+-                }
+-
+-                change.addColumn(columnConfig);
+-            }
+-
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addUnexpectedTableChanges(List<Change> changes) {
+-        for (Table unexpectedTable : getUnexpectedTables()) {
+-            DropTableChange change = new DropTableChange();
+-            change.setTableName(unexpectedTable.getName());
+-            change.setSchemaName(unexpectedTable.getSchema());
+-
+-            changes.add(change);
+-        }
+-    }
+-
+-    private void addInsertDataChanges(List<Change> changes, String dataDir) throws JDBCException, IOException {
+-        try {
+-            String schema = baseSnapshot.getSchema();
+-            Statement stmt = baseSnapshot.getDatabase().getConnection().createStatement();
+-            for (Table table : baseSnapshot.getTables()) {
+-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + baseSnapshot.getDatabase().escapeTableName(schema, table.getName()));
+-
+-                ResultSetMetaData columnData = rs.getMetaData();
+-                int columnCount = columnData.getColumnCount();
+-
+-                // if dataDir is not null, print out a csv file and use loadData tag
+-                if (dataDir != null) {
+-                    String fileName = table.getName() + ".csv";
+-                    if (dataDir != null) {
+-                        fileName = dataDir + "/" + fileName;
+-                    }
+-
+-                    File parentDir = new File(dataDir);
+-                    if (!parentDir.exists()) {
+-                        parentDir.mkdirs();
+-                    }
+-                    if (!parentDir.isDirectory()) {
+-                        throw new RuntimeException(parentDir + " is not a directory");
+-                    }
+-
+-                    CSVWriter outputFile = new CSVWriter(new FileWriter(fileName));
+-                    outputFile.writeAll(rs, true);
+-                    outputFile.flush();
+-                    outputFile.close();
+-
+-                    LoadDataChange change = new LoadDataChange();
+-                    change.setFile(fileName);
+-                    change.setEncoding("UTF-8");
+-                    change.setSchemaName(schema);
+-                    change.setTableName(table.getName());
+-
+-                    for (int col = 1; col <= columnCount; col++) {
+-                        String colName = columnData.getColumnName(col);
+-                        int dataType = columnData.getColumnType(col);
+-                        String typeString = "STRING";
+-                        if (SqlUtil.isNumeric(dataType)) {
+-                            typeString = "NUMERIC";
+-                        } else if (SqlUtil.isBoolean(dataType)) {
+-                            typeString = "BOOLEAN";
+-                        } else if (SqlUtil.isDate(dataType)) {
+-                            typeString = "DATE";
+-                        }
+-
+-                        LoadDataColumnConfig columnConfig = new LoadDataColumnConfig();
+-                        columnConfig.setHeader(colName);
+-                        columnConfig.setType(typeString);
+-
+-                        change.addColumn(columnConfig);
+-                    }
+-
+-                    changes.add(change);
+-                } else { // if dataDir is null, build and use insert tags
+-
+-
+-                    // loop over all rows
+-                    while (rs.next()) {
+-                        InsertDataChange change = new InsertDataChange();
+-                        change.setSchemaName(schema);
+-                        change.setTableName(table.getName());
+-
+-                        // loop over all columns for this row
+-                        for (int col = 1; col <= columnCount; col++) {
+-                            ColumnConfig column = new ColumnConfig();
+-                            column.setName(columnData.getColumnName(col));
+-
+-                            // set the value for this column
+-                            int dataType = columnData.getColumnType(col);
+-                            if (SqlUtil.isNumeric(dataType)) {
+-                                String columnValue = rs.getString(col);
+-                                if (columnValue == null) {
+-                                    column.setValueNumeric((Number) null);
+-                                } else {
+-                                    // its some sort of non-null number
+-                                    if (dataType == Types.DOUBLE ||
+-                                            dataType == Types.NUMERIC ||
+-                                            dataType == Types.DECIMAL) {
+-                                        column.setValueNumeric(new Double(columnValue));
+-                                    } else if (dataType == Types.FLOAT ||
+-                                            dataType == Types.REAL) {
+-                                        column.setValueNumeric(new Float(columnValue));
+-                                    } else {
+-                                        // its an integer type of column
+-                                        column.setValueNumeric(new Integer(columnValue));
+-                                    }
+-
+-                                }
+-
+-                            } else if (SqlUtil.isBoolean(dataType)) {
+-                                column.setValueBoolean(rs.getBoolean(col));
+-                            } else if (SqlUtil.isDate(dataType)) {
+-                                column.setValueDate(rs.getDate(col));
+-                            } else { //string
+-                                column.setValue(rs.getString(col));
+-                            }
+-
+-                            change.addColumn(column);
+-
+-                        }
+-
+-                        // for each row, add a new change
+-                        // (there will be one group per table)
+-                        changes.add(change);
+-                    }
+-
+-                }
+-            }
+-
+-        } catch (Exception e) {
+-            throw new RuntimeException(e);
+-        }
+-    }
+-}
++package liquibase.diff;
++
++import java.io.BufferedReader;
++import java.io.ByteArrayOutputStream;
++import java.io.File;
++import java.io.FileOutputStream;
++import java.io.FileReader;
++import java.io.FileWriter;
++import java.io.IOException;
++import java.io.PrintStream;
++import java.io.RandomAccessFile;
++import java.sql.*;
++import java.util.ArrayList;
++import java.util.Date;
++import java.util.List;
++import java.util.SortedSet;
++import java.util.TreeSet;
++
++import javax.xml.parsers.DocumentBuilder;
++import javax.xml.parsers.DocumentBuilderFactory;
++import javax.xml.parsers.ParserConfigurationException;
++
++import liquibase.change.*;
++
++import liquibase.csv.CSVWriter;
++import liquibase.database.Database;
++import liquibase.database.structure.*;
++import liquibase.exception.JDBCException;
++import liquibase.log.LogFactory;
++import liquibase.parser.LiquibaseSchemaResolver;
++import liquibase.parser.xml.XMLChangeLogParser;
++import liquibase.util.SqlUtil;
++import liquibase.util.StringUtils;
++import liquibase.xml.DefaultXmlWriter;
++import liquibase.xml.XmlWriter;
++
++import org.w3c.dom.Document;
++import org.w3c.dom.Element;
++
++public class DiffResult {
++
++    private Long baseId = new Date().getTime();
++    private int changeNumber = 1;
++
++    private Database baseDatabase;
++    private Database targetDatabase;
++
++    private DatabaseSnapshot baseSnapshot;
++    private DatabaseSnapshot targetSnapshot;
++
++    private DiffComparison productName;
++    private DiffComparison productVersion;
++
++    private SortedSet<Table> missingTables = new TreeSet<Table>();
++    private SortedSet<Table> unexpectedTables = new TreeSet<Table>();
++
++    private SortedSet<View> missingViews = new TreeSet<View>();
++    private SortedSet<View> unexpectedViews = new TreeSet<View>();
++
++    private SortedSet<Column> missingColumns = new TreeSet<Column>();
++    private SortedSet<Column> unexpectedColumns = new TreeSet<Column>();
++    private SortedSet<Column> changedColumns = new TreeSet<Column>();
++
++    private SortedSet<ForeignKey> missingForeignKeys = new TreeSet<ForeignKey>();
++    private SortedSet<ForeignKey> unexpectedForeignKeys = new TreeSet<ForeignKey>();
++
++    private SortedSet<Index> missingIndexes = new TreeSet<Index>();
++    private SortedSet<Index> unexpectedIndexes = new TreeSet<Index>();
++
++    private SortedSet<PrimaryKey> missingPrimaryKeys = new TreeSet<PrimaryKey>();
++    private SortedSet<PrimaryKey> unexpectedPrimaryKeys = new TreeSet<PrimaryKey>();
++
++    private SortedSet<UniqueConstraint> missingUniqueConstraints = new TreeSet<UniqueConstraint>();
++    private SortedSet<UniqueConstraint> unexpectedUniqueConstraints = new TreeSet<UniqueConstraint>();
++
++    private SortedSet<Sequence> missingSequences = new TreeSet<Sequence>();
++    private SortedSet<Sequence> unexpectedSequences = new TreeSet<Sequence>();
++
++    private boolean diffData = false;
++    private String dataDir = null;
++    private String changeSetContext;
++    private String changeSetAuthor;
++
++    public DiffResult(DatabaseSnapshot baseDatabase, DatabaseSnapshot targetDatabase) {
++        this.baseDatabase = baseDatabase.getDatabase();
++        this.targetDatabase = targetDatabase.getDatabase();
++
++        this.baseSnapshot = baseDatabase;
++        this.targetSnapshot = targetDatabase;
++    }
++
++    public DiffComparison getProductName() {
++        return productName;
++    }
++
++    public void setProductName(DiffComparison productName) {
++        this.productName = productName;
++    }
++
++    public DiffComparison getProductVersion() {
++        return productVersion;
++    }
++
++    public void setProductVersion(DiffComparison product) {
++        this.productVersion = product;
++    }
++
++    public void addMissingTable(Table table) {
++        missingTables.add(table);
++    }
++
++    public SortedSet<Table> getMissingTables() {
++        return missingTables;
++    }
++
++    public void addUnexpectedTable(Table table) {
++        unexpectedTables.add(table);
++    }
++
++    public SortedSet<Table> getUnexpectedTables() {
++        return unexpectedTables;
++    }
++
++    public void addMissingView(View viewName) {
++        missingViews.add(viewName);
++    }
++
++    public SortedSet<View> getMissingViews() {
++        return missingViews;
++    }
++
++    public void addUnexpectedView(View viewName) {
++        unexpectedViews.add(viewName);
++    }
++
++    public SortedSet<View> getUnexpectedViews() {
++        return unexpectedViews;
++    }
++
++    public void addMissingColumn(Column columnName) {
++        missingColumns.add(columnName);
++    }
++
++    public SortedSet<Column> getMissingColumns() {
++        return missingColumns;
++    }
++
++    public void addUnexpectedColumn(Column columnName) {
++        unexpectedColumns.add(columnName);
++    }
++
++    public SortedSet<Column> getUnexpectedColumns() {
++        return unexpectedColumns;
++    }
++
++    public void addChangedColumn(Column columnName) {
++        changedColumns.add(columnName);
++    }
++
++    public SortedSet<Column> getChangedColumns() {
++        return changedColumns;
++    }
++
++    public void addMissingForeignKey(ForeignKey fkName) {
++        missingForeignKeys.add(fkName);
++    }
++
++    public SortedSet<ForeignKey> getMissingForeignKeys() {
++        return missingForeignKeys;
++    }
++
++    public void addUnexpectedForeignKey(ForeignKey fkName) {
++        unexpectedForeignKeys.add(fkName);
++    }
++
++    public SortedSet<ForeignKey> getUnexpectedForeignKeys() {
++        return unexpectedForeignKeys;
++    }
++
++    public void addMissingIndex(Index fkName) {
++        missingIndexes.add(fkName);
++    }
++
++    public SortedSet<Index> getMissingIndexes() {
++        return missingIndexes;
++    }
++
++    public void addUnexpectedIndex(Index fkName) {
++        unexpectedIndexes.add(fkName);
++    }
++
++    public SortedSet<Index> getUnexpectedIndexes() {
++        return unexpectedIndexes;
++    }
++
++    public void addMissingPrimaryKey(PrimaryKey primaryKey) {
++        missingPrimaryKeys.add(primaryKey);
++    }
++
++    public SortedSet<PrimaryKey> getMissingPrimaryKeys() {
++        return missingPrimaryKeys;
++    }
++
++    public void addUnexpectedPrimaryKey(PrimaryKey primaryKey) {
++        unexpectedPrimaryKeys.add(primaryKey);
++    }
++
++    public SortedSet<PrimaryKey> getUnexpectedPrimaryKeys() {
++        return unexpectedPrimaryKeys;
++    }
++
++    public void addMissingSequence(Sequence sequence) {
++        missingSequences.add(sequence);
++    }
++
++    public SortedSet<Sequence> getMissingSequences() {
++        return missingSequences;
++    }
++
++    public void addUnexpectedSequence(Sequence sequence) {
++        unexpectedSequences.add(sequence);
++    }
++
++    public SortedSet<Sequence> getUnexpectedSequences() {
++        return unexpectedSequences;
++    }
++
++    public void addMissingUniqueConstraint(UniqueConstraint uniqueConstraint) {
++        missingUniqueConstraints.add(uniqueConstraint);
++    }
++
++    public SortedSet<UniqueConstraint> getMissingUniqueConstraints() {
++        return this.missingUniqueConstraints;
++    }
++
++    public void addUnexpectedUniqueConstraint(UniqueConstraint uniqueConstraint) {
++        unexpectedUniqueConstraints.add(uniqueConstraint);
++    }
++
++    public SortedSet<UniqueConstraint> getUnexpectedUniqueConstraints() {
++        return unexpectedUniqueConstraints;
++    }
++
++    public boolean shouldDiffData() {
++        return diffData;
++    }
++
++    public void setDiffData(boolean diffData) {
++        this.diffData = diffData;
++    }
++
++    public String getDataDir() {
++        return dataDir;
++    }
++
++    public void setDataDir(String dataDir) {
++        this.dataDir = dataDir;
++    }
++
++    public String getChangeSetContext() {
++        return changeSetContext;
++    }
++
++    public void setChangeSetContext(String changeSetContext) {
++        this.changeSetContext = changeSetContext;
++    }
++
++    public void printResult(PrintStream out) throws JDBCException {
++        out.println("Base Database: " + targetDatabase.getConnectionUsername() + " " + targetDatabase.getConnectionURL());
++        out.println("Target Database: " + baseDatabase.getConnectionUsername() + " " + baseDatabase.getConnectionURL());
++
++        printComparision("Product Name", productName, out);
++        printComparision("Product Version", productVersion, out);
++        printSetComparison("Missing Tables", getMissingTables(), out);
++        printSetComparison("Unexpected Tables", getUnexpectedTables(), out);
++        printSetComparison("Missing Views", getMissingViews(), out);
++        printSetComparison("Unexpected Views", getUnexpectedViews(), out);
++        printSetComparison("Missing Columns", getMissingColumns(), out);
++        printSetComparison("Unexpected Columns", getUnexpectedColumns(), out);
++        printColumnComparison(getChangedColumns(), out);
++        printSetComparison("Missing Foreign Keys", getMissingForeignKeys(), out);
++        printSetComparison("Unexpected Foreign Keys", getUnexpectedForeignKeys(), out);
++        printSetComparison("Missing Primary Keys", getMissingPrimaryKeys(), out);
++        printSetComparison("Unexpected Primary Keys", getUnexpectedPrimaryKeys(), out);
++        printSetComparison("Missing Unique Constraints", getMissingUniqueConstraints(), out);
++        printSetComparison("Unexpected Unique Constraints", getUnexpectedUniqueConstraints(), out);
++        printSetComparison("Missing Indexes", getMissingIndexes(), out);
++        printSetComparison("Unexpected Indexes", getUnexpectedIndexes(), out);
++        printSetComparison("Missing Sequences", getMissingSequences(), out);
++        printSetComparison("Unexpected Sequences", getUnexpectedSequences(), out);
++    }
++
++    private void printSetComparison(String title, SortedSet<?> objects, PrintStream out) {
++        out.print(title + ": ");
++        if (objects.size() == 0) {
++            out.println("NONE");
++        } else {
++            out.println();
++            for (Object object : objects) {
++                out.println("     " + object);
++            }
++        }
++    }
++
++    private void printColumnComparison(SortedSet<Column> changedColumns, PrintStream out) {
++        out.print("Changed Columns: ");
++        if (changedColumns.size() == 0) {
++            out.println("NONE");
++        } else {
++            out.println();
++            for (Column column : changedColumns) {
++                out.println("     " + column);
++                Column baseColumn = baseSnapshot.getColumn(column);
++                if (baseColumn != null) {
++                    if (baseColumn.isDataTypeDifferent(column)) {
++                        out.println("           from " + baseColumn.getDataTypeString(baseDatabase) + " to " + targetSnapshot.getColumn(column).getDataTypeString(targetDatabase));
++                    }
++                    if (baseColumn.isNullabilityDifferent(column)) {
++                        Boolean nowNullable = targetSnapshot.getColumn(column).isNullable();
++                        if (nowNullable == null) {
++                            nowNullable = Boolean.TRUE;
++                        }
++                        if (nowNullable) {
++                            out.println("           now nullable");
++                        } else {
++                            out.println("           now not null");
++                        }
++                    }
++                }
++            }
++        }
++    }
++
++    private void printComparision(String title, DiffComparison comparison, PrintStream out) {
++        out.print(title + ":");
++        if (comparison.areTheSame()) {
++            out.println(" EQUAL");
++        } else {
++            out.println();
++            out.println("     Base:   '" + comparison.getBaseVersion() + "'");
++            out.println("     Target: '" + comparison.getTargetVersion() + "'");
++        }
++
++    }
++
++    public void printChangeLog(String changeLogFile, Database targetDatabase) throws ParserConfigurationException, IOException, JDBCException {
++        this.printChangeLog(changeLogFile, targetDatabase, new DefaultXmlWriter());
++    }
++
++    public void printChangeLog(PrintStream out, Database targetDatabase) throws ParserConfigurationException, IOException, JDBCException {
++        this.printChangeLog(out, targetDatabase, new DefaultXmlWriter());
++    }
++
++    public void printChangeLog(String changeLogFile, Database targetDatabase, XmlWriter xmlWriter) throws ParserConfigurationException, IOException, JDBCException {
++        File file = new File(changeLogFile);
++        if (!file.exists()) {
++            LogFactory.getLogger().info(file + " does not exist, creating");
++            FileOutputStream stream = new FileOutputStream(file);
++            printChangeLog(new PrintStream(stream), targetDatabase, xmlWriter);
++            stream.close();
++        } else {
++            LogFactory.getLogger().info(file + " exists, appending");
++            ByteArrayOutputStream out = new ByteArrayOutputStream();
++            printChangeLog(new PrintStream(out), targetDatabase, xmlWriter);
++
++            String xml = new String(out.toByteArray());
++            xml = xml.replaceFirst("(?ms).*<databaseChangeLog[^>]*>", "");
++            xml = xml.replaceFirst("</databaseChangeLog>", "");
++            xml = xml.trim();
++
++            String lineSeparator = System.getProperty("line.separator");
++            BufferedReader fileReader = new BufferedReader(new FileReader(file));
++            String line;
++            long offset = 0;
++            while ((line = fileReader.readLine()) != null) {
++                int index = line.indexOf("</databaseChangeLog>");
++                if (index >= 0) {
++                    offset += index;
++                } else {
++                    offset += line.getBytes().length;
++                    offset += lineSeparator.getBytes().length;
++                }
++            }
++            fileReader.close();
++
++            fileReader = new BufferedReader(new FileReader(file));
++            fileReader.skip(offset);
++
++            fileReader.close();
++
++//            System.out.println("resulting XML: " + xml.trim());
++
++            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
++            randomAccessFile.seek(offset);
++            randomAccessFile.writeBytes("    " + xml + lineSeparator);
++            randomAccessFile.writeBytes("</databaseChangeLog>" + lineSeparator);
++            randomAccessFile.close();
++
++//            BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file));
++//            fileWriter.append(xml);
++//            fileWriter.close();
++        }
++    }
++
++    /**
++     * Prints changeLog that would bring the base database to be the same as the target database
++     */
++    public void printChangeLog(PrintStream out, Database targetDatabase, XmlWriter xmlWriter) throws ParserConfigurationException, IOException, JDBCException {
++        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
++        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
++        documentBuilder.setEntityResolver(new LiquibaseSchemaResolver());
++
++        Document doc = documentBuilder.newDocument();
++
++        Element changeLogElement = doc.createElement("databaseChangeLog");
++        changeLogElement.setAttribute("xmlns", "http://www.liquibase.org/xml/ns/dbchangelog/" + XMLChangeLogParser.getSchemaVersion());
++        changeLogElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
++        changeLogElement.setAttribute("xsi:schemaLocation", "http://www.liquibase.org/xml/ns/dbchangelog/" + XMLChangeLogParser.getSchemaVersion() + " http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-" + XMLChangeLogParser.getSchemaVersion() + ".xsd");
++
++        doc.appendChild(changeLogElement);
++
++        List<Change> changes = new ArrayList<Change>();
++        addUnexpectedViewChanges(changes);
++        addMissingTableChanges(changes, targetDatabase);
++        addMissingColumnChanges(changes, targetDatabase);
++        addChangedColumnChanges(changes);
++        addMissingPrimaryKeyChanges(changes);
++        addUnexpectedPrimaryKeyChanges(changes);
++        addMissingUniqueConstraintChanges(changes);
++        addUnexpectedUniqueConstraintChanges(changes);
++        addMissingIndexChanges(changes);
++        addUnexpectedIndexChanges(changes);
++
++        if (diffData) {
++            addInsertDataChanges(changes, dataDir);
++        }
++
++        addMissingForeignKeyChanges(changes);
++        addUnexpectedForeignKeyChanges(changes);
++        addUnexpectedColumnChanges(changes);
++        addMissingSequenceChanges(changes);
++        addUnexpectedSequenceChanges(changes);
++        addMissingViewChanges(changes);
++        addUnexpectedTableChanges(changes);
++
++        for (Change change : changes) {
++            Element changeSet = doc.createElement("changeSet");
++            changeSet.setAttribute("author", getChangeSetAuthor());
++            changeSet.setAttribute("id", generateId());
++            if (getChangeSetContext() != null) {
++                changeSet.setAttribute("context", getChangeSetContext());
++            }
++
++            changeSet.appendChild(change.createNode(doc));
++            doc.getDocumentElement().appendChild(changeSet);
++        }
++
++
++        xmlWriter.write(doc, out);
++
++        out.flush();
++    }
++
++    private String getChangeSetAuthor() {
++        if (changeSetAuthor != null) {
++            return changeSetAuthor;
++        }
++        String author = System.getProperty("user.name");
++        if (StringUtils.trimToNull(author) == null) {
++            return "diff-generated";
++        } else {
++            return author + " (generated)";
++        }
++    }
++
++    public void setChangeSetAuthor(String changeSetAuthor) {
++        this.changeSetAuthor = changeSetAuthor;
++    }
++
++    private String generateId() {
++        return baseId.toString() + "-" + changeNumber++;
++    }
++
++    private void addUnexpectedIndexChanges(List<Change> changes) {
++        for (Index index : getUnexpectedIndexes()) {
++
++            DropIndexChange change = new DropIndexChange();
++            change.setTableName(index.getTable().getName());
++            change.setSchemaName(index.getTable().getSchema());
++            change.setIndexName(index.getName());
++
++            changes.add(change);
++        }
++    }
++
++    private void addMissingIndexChanges(List<Change> changes) {
++        for (Index index : getMissingIndexes()) {
++
++            CreateIndexChange change = new CreateIndexChange();
++            change.setTableName(index.getTable().getName());
++            change.setSchemaName(index.getTable().getSchema());
++            change.setIndexName(index.getName());
++            change.setUnique(index.isUnique());
++
++            for (String columnName : index.getColumns()) {
++                ColumnConfig column = new ColumnConfig();
++                column.setName(columnName);
++                change.addColumn(column);
++            }
++            changes.add(change);
++        }
++    }
++
++    private void addUnexpectedPrimaryKeyChanges(List<Change> changes) {
++        for (PrimaryKey pk : getUnexpectedPrimaryKeys()) {
++
++            if (!getUnexpectedTables().contains(pk.getTable())) {
++                DropPrimaryKeyChange change = new DropPrimaryKeyChange();
++                change.setTableName(pk.getTable().getName());
++                change.setSchemaName(pk.getTable().getSchema());
++                change.setConstraintName(pk.getName());
++
++                changes.add(change);
++            }
++        }
++    }
++
++    private void addMissingPrimaryKeyChanges(List<Change> changes) {
++        for (PrimaryKey pk : getMissingPrimaryKeys()) {
++
++            AddPrimaryKeyChange change = new AddPrimaryKeyChange();
++            change.setTableName(pk.getTable().getName());
++            change.setSchemaName(pk.getTable().getSchema());
++            change.setConstraintName(pk.getName());
++            change.setColumnNames(pk.getColumnNames());
++
++            changes.add(change);
++        }
++    }
++
++    private void addUnexpectedUniqueConstraintChanges(List<Change> changes) {
++        for (UniqueConstraint uc : getUnexpectedUniqueConstraints()) {
++
++            if (!getUnexpectedTables().contains(uc.getTable())) {
++                DropUniqueConstraintChange change = new DropUniqueConstraintChange();
++                change.setTableName(uc.getTable().getName());
++                change.setSchemaName(uc.getTable().getSchema());
++                change.setConstraintName(uc.getName());
++
++                changes.add(change);
++            }
++        }
++    }
++
++    private void addMissingUniqueConstraintChanges(List<Change> changes) {
++        for (UniqueConstraint uc : getMissingUniqueConstraints()) {
++
++            AddUniqueConstraintChange change = new AddUniqueConstraintChange();
++            change.setTableName(uc.getTable().getName());
++            change.setSchemaName(uc.getTable().getSchema());
++            change.setConstraintName(uc.getName());
++            change.setColumnNames(uc.getColumnNames());
++
++            changes.add(change);
++        }
++    }
++
++    private void addUnexpectedForeignKeyChanges(List<Change> changes) {
++        for (ForeignKey fk : getUnexpectedForeignKeys()) {
++
++            DropForeignKeyConstraintChange change = new DropForeignKeyConstraintChange();
++            change.setConstraintName(fk.getName());
++            change.setBaseTableName(fk.getForeignKeyTable().getName());
++            change.setBaseTableSchemaName(fk.getForeignKeyTable().getSchema());
++
++            changes.add(change);
++        }
++    }
++
++    private void addMissingForeignKeyChanges(List<Change> changes) {
++        for (ForeignKey fk : getMissingForeignKeys()) {
++
++            AddForeignKeyConstraintChange change = new AddForeignKeyConstraintChange();
++            change.setConstraintName(fk.getName());
++
++            change.setReferencedTableName(fk.getPrimaryKeyTable().getName());
++            change.setReferencedTableSchemaName(fk.getPrimaryKeyTable().getSchema());
++            change.setReferencedColumnNames(fk.getPrimaryKeyColumns());
++
++            change.setBaseTableName(fk.getForeignKeyTable().getName());
++            change.setBaseTableSchemaName(fk.getForeignKeyTable().getSchema());
++            change.setBaseColumnNames(fk.getForeignKeyColumns());
++
++            change.setDeferrable(fk.isDeferrable());
++            change.setInitiallyDeferred(fk.isInitiallyDeferred());
++            change.setUpdateRule(fk.getUpdateRule());
++            change.setDeleteRule(fk.getDeleteRule());
++
++            changes.add(change);
++        }
++    }
++
++    private void addUnexpectedSequenceChanges(List<Change> changes) {
++        for (Sequence sequence : getUnexpectedSequences()) {
++
++            DropSequenceChange change = new DropSequenceChange();
++            change.setSequenceName(sequence.getName());
++            change.setSchemaName(sequence.getSchema());
++            
++            changes.add(change);
++        }
++    }
++
++    private void addMissingSequenceChanges(List<Change> changes) {
++        for (Sequence sequence : getMissingSequences()) {
++
++            CreateSequenceChange change = new CreateSequenceChange();
++            change.setSequenceName(sequence.getName());
++            change.setSchemaName(sequence.getSchema());
++            
++            changes.add(change);
++        }
++    }
++
++    private void addUnexpectedColumnChanges(List<Change> changes) {
++        for (Column column : getUnexpectedColumns()) {
++            if (!shouldModifyColumn(column)) {
++                continue;
++            }
++
++            DropColumnChange change = new DropColumnChange();
++            change.setTableName(column.getTable().getName());
++            change.setSchemaName(column.getTable().getSchema());
++            change.setColumnName(column.getName());
++
++            changes.add(change);
++        }
++    }
++
++    private void addMissingViewChanges(List<Change> changes) {
++        for (View view : getMissingViews()) {
++
++            CreateViewChange change = new CreateViewChange();
++            change.setViewName(view.getName());
++            change.setSchemaName(view.getSchema());
++            String selectQuery = view.getDefinition();
++            if (selectQuery == null) {
++                selectQuery = "COULD NOT DETERMINE VIEW QUERY";
++            }
++            change.setSelectQuery(selectQuery);
++
++            changes.add(change);
++        }
++    }
++
++    private void addChangedColumnChanges(List<Change> changes) {
++        for (Column column : getChangedColumns()) {
++            if (!shouldModifyColumn(column)) {
++                continue;
++            }
++
++            boolean foundDifference = false;
++            Column baseColumn = baseSnapshot.getColumn(column);
++            if (column.isDataTypeDifferent(baseColumn)) {
++                ColumnConfig columnConfig = new ColumnConfig();
++                columnConfig.setName(column.getName());
++                columnConfig.setType(baseColumn.getDataTypeString(targetDatabase));
++
++                ModifyColumnChange change = new ModifyColumnChange();
++                change.setTableName(column.getTable().getName());
++                change.setSchemaName(column.getTable().getSchema());
++                change.addColumn(columnConfig);
++
++                changes.add(change);
++                foundDifference = true;
++            }
++            if (column.isNullabilityDifferent(baseColumn)) {
++                if (baseColumn.isNullable() == null || baseColumn.isNullable()) {
++                    DropNotNullConstraintChange change = new DropNotNullConstraintChange();
++                    change.setTableName(column.getTable().getName());
++                    change.setSchemaName(column.getTable().getSchema());
++                    change.setColumnName(column.getName());
++                    change.setColumnDataType(baseColumn.getDataTypeString(targetDatabase));
++
++                    changes.add(change);
++                    foundDifference = true;
++                } else {
++                    AddNotNullConstraintChange change = new AddNotNullConstraintChange();
++                    change.setTableName(column.getTable().getName());
++                    change.setSchemaName(column.getTable().getSchema());
++                    change.setColumnName(column.getName());
++                    change.setColumnDataType(baseColumn.getDataTypeString(targetDatabase));
++
++                    changes.add(change);
++                    foundDifference = true;
++                }
++
++            }
++            if (!foundDifference) {
++                throw new RuntimeException("Unknown difference");
++            }
++        }
++    }
++
++    private boolean shouldModifyColumn(Column column) {
++        return column.getView() == null
++                && !baseDatabase.isLiquibaseTable(column.getTable().getName());
++
++    }
++
++    private void addUnexpectedViewChanges(List<Change> changes) {
++        for (View view : getUnexpectedViews()) {
++
++            DropViewChange change = new DropViewChange();
++            change.setViewName(view.getName());
++            change.setSchemaName(view.getSchema());
++
++            changes.add(change);
++        }
++    }
++
++
++    private void addMissingColumnChanges(List<Change> changes, Database database) {
++        for (Column column : getMissingColumns()) {
++            if (!shouldModifyColumn(column)) {
++                continue;
++            }
++
++            AddColumnChange change = new AddColumnChange();
++            change.setTableName(column.getTable().getName());
++            change.setSchemaName(column.getTable().getSchema());
++
++            ColumnConfig columnConfig = new ColumnConfig();
++            columnConfig.setName(column.getName());
++
++
++            String dataType = column.getDataTypeString(database);
++
++            columnConfig.setType(dataType);
++
++            String defaultValueString = database.convertJavaObjectToString(column.getDefaultValue());
++            if(defaultValueString !=null) {
++              defaultValueString  = defaultValueString.replaceFirst("'","").replaceAll("'$", "");
++            }
++            columnConfig.setDefaultValue(defaultValueString);
++
++            if (column.getRemarks() != null) {
++                columnConfig.setRemarks(column.getRemarks());
++            }
++            if (column.isNullable() != null && !column.isNullable()) {
++                ConstraintsConfig constraintsConfig = columnConfig.getConstraints();
++                if (constraintsConfig == null) {
++                    constraintsConfig = new ConstraintsConfig();
++                    columnConfig.setConstraints(constraintsConfig);
++                }
++                constraintsConfig.setNullable(false);
++            }
++
++            change.addColumn(columnConfig);
++
++            changes.add(change);
++        }
++    }
++
++    private void addMissingTableChanges(List<Change> changes, Database database) {
++        for (Table missingTable : getMissingTables()) {
++            if (baseDatabase.isLiquibaseTable(missingTable.getName())) {
++                continue;
++            }
++
++            CreateTableChange change = new CreateTableChange();
++            change.setTableName(missingTable.getName());
++            change.setSchemaName(missingTable.getSchema());
++            if (missingTable.getRemarks() != null) {
++                change.setRemarks(missingTable.getRemarks());
++            }
++
++            for (Column column : missingTable.getColumns()) {
++                ColumnConfig columnConfig = new ColumnConfig();
++                columnConfig.setName(column.getName());
++                columnConfig.setType(column.getDataTypeString(database));
++
++                ConstraintsConfig constraintsConfig = null;
++                if (column.isPrimaryKey()) {
++                    PrimaryKey primaryKey = null;
++                    for (PrimaryKey pk : getMissingPrimaryKeys()) {
++                        if (pk.getTable().getName().equalsIgnoreCase(missingTable.getName())) {
++                            primaryKey = pk;
++                        }
++                    }
++
++                    if (primaryKey == null || primaryKey.getColumnNamesAsList().size() == 1) {
++                        constraintsConfig = new ConstraintsConfig();
++                        constraintsConfig.setPrimaryKey(true);
++
++                        if (primaryKey != null) {
++                            constraintsConfig.setPrimaryKeyName(primaryKey.getName());
++                            getMissingPrimaryKeys().remove(primaryKey);
++                        }
++                    }
++                }
++
++                if (column.isAutoIncrement()) {
++                    columnConfig.setAutoIncrement(true);
++                }
++
++                if (column.isNullable() != null && !column.isNullable()) {
++                    if (constraintsConfig == null) {
++                        constraintsConfig = new ConstraintsConfig();
++                    }
++
++                    constraintsConfig.setNullable(false);
++                }
++                if (constraintsConfig != null) {
++                    columnConfig.setConstraints(constraintsConfig);
++                }
++
++                Object defaultValue = column.getDefaultValue();
++                if (defaultValue == null) {
++                    //do nothing
++                } else if (column.isAutoIncrement()) {
++                    //do nothing
++                } else if (defaultValue instanceof Date) {
++                    columnConfig.setDefaultValueDate((Date) defaultValue);
++                } else if (defaultValue instanceof Boolean) {
++                    columnConfig.setDefaultValueBoolean(((Boolean) defaultValue));
++                } else if (defaultValue instanceof Number) {
++                    columnConfig.setDefaultValueNumeric(((Number) defaultValue));
++                } else {
++                    columnConfig.setDefaultValue(defaultValue.toString());
++                }
++
++                if (column.getRemarks() != null) {
++                    columnConfig.setRemarks(column.getRemarks());
++                }
++
++                change.addColumn(columnConfig);
++            }
++
++            changes.add(change);
++        }
++    }
++
++    private void addUnexpectedTableChanges(List<Change> changes) {
++        for (Table unexpectedTable : getUnexpectedTables()) {
++            DropTableChange change = new DropTableChange();
++            change.setTableName(unexpectedTable.getName());
++            change.setSchemaName(unexpectedTable.getSchema());
++
++            changes.add(change);
++        }
++    }
++
++    private void addInsertDataChanges(List<Change> changes, String dataDir) throws JDBCException, IOException {
++        try {
++            String schema = baseSnapshot.getSchema();
++            Statement stmt = baseSnapshot.getDatabase().getConnection().createStatement();
++            for (Table table : baseSnapshot.getTables()) {
++                ResultSet rs = stmt.executeQuery("SELECT * FROM " + baseSnapshot.getDatabase().escapeTableName(schema, table.getName()));
++
++                ResultSetMetaData columnData = rs.getMetaData();
++                int columnCount = columnData.getColumnCount();
++
++                // if dataDir is not null, print out a csv file and use loadData tag
++                if (dataDir != null) {
++                    String fileName = table.getName() + ".csv";
++                    if (dataDir != null) {
++                        fileName = dataDir + "/" + fileName;
++                    }
++
++                    File parentDir = new File(dataDir);
++                    if (!parentDir.exists()) {
++                        parentDir.mkdirs();
++                    }
++                    if (!parentDir.isDirectory()) {
++                        throw new RuntimeException(parentDir + " is not a directory");
++                    }
++
++                    CSVWriter outputFile = new CSVWriter(new FileWriter(fileName));
++                    outputFile.writeAll(rs, true);
++                    outputFile.flush();
++                    outputFile.close();
++
++                    LoadDataChange change = new LoadDataChange();
++                    change.setFile(fileName);
++                    change.setEncoding("UTF-8");
++                    change.setSchemaName(schema);
++                    change.setTableName(table.getName());
++
++                    for (int col = 1; col <= columnCount; col++) {
++                        String colName = columnData.getColumnName(col);
++                        int dataType = columnData.getColumnType(col);
++                        String typeString = "STRING";
++                        if (SqlUtil.isNumeric(dataType)) {
++                            typeString = "NUMERIC";
++                        } else if (SqlUtil.isBoolean(dataType)) {
++                            typeString = "BOOLEAN";
++                        } else if (SqlUtil.isDate(dataType)) {
++                            typeString = "DATE";
++                        }
++
++                        LoadDataColumnConfig columnConfig = new LoadDataColumnConfig();
++                        columnConfig.setHeader(colName);
++                        columnConfig.setType(typeString);
++
++                        change.addColumn(columnConfig);
++                    }
++
++                    changes.add(change);
++                } else { // if dataDir is null, build and use insert tags
++
++                	GroupedChange groupOfChanges = new GroupedChange();
++                	
++                    // loop over all rows
++                    while (rs.next()) {
++                        InsertDataChange change = new InsertDataChange();
++                        change.setSchemaName(schema);
++                        change.setTableName(table.getName());
++
++                        // loop over all columns for this row
++                        for (int col = 1; col <= columnCount; col++) {
++                            ColumnConfig column = new ColumnConfig();
++                            column.setName(columnData.getColumnName(col));
++
++                            // set the value for this column
++                            int dataType = columnData.getColumnType(col);
++                            if (SqlUtil.isNumeric(dataType)) {
++                                String columnValue = rs.getString(col);
++                                if (columnValue == null) {
++                                    column.setValueNumeric((Number) null);
++                                } else {
++                                    // its some sort of non-null number
++                                    if (dataType == Types.DOUBLE ||
++                                            dataType == Types.NUMERIC ||
++                                            dataType == Types.DECIMAL) {
++                                        column.setValueNumeric(new Double(columnValue));
++                                    } else if (dataType == Types.FLOAT ||
++                                            dataType == Types.REAL) {
++                                        column.setValueNumeric(new Float(columnValue));
++                                    } else {
++                                        // its an integer type of column
++                                        column.setValueNumeric(new Integer(columnValue));
++                                    }
++
++                                }
++
++                            } else if (SqlUtil.isBoolean(dataType)) {
++                                column.setValueBoolean(rs.getBoolean(col));
++                            } else if (SqlUtil.isDate(dataType)) {
++                                column.setValueDate(rs.getDate(col));
++                            } else { //string
++                                column.setValue(rs.getString(col));
++                            }
++
++                            change.addColumn(column);
++                        }
++                        
++                        // for each row, add a new change
++                		// (there will be one group per table)
++                		groupOfChanges.addChange(change);
++                    }
++                    
++                    // (there will be one group per table)
++                    //changes.add(change);
++                    if (groupOfChanges.getChanges().size() > 0)
++                		changes.add(groupOfChanges);
++                    
++                }
++            }
++        
++        } catch (Exception e) {
++            throw new RuntimeException(e);
++        }
++    }
++}
+Index: src/java/liquibase/preconditions/ColumnExistsPrecondition.java
+===================================================================
+--- src/java/liquibase/preconditions/ColumnExistsPrecondition.java	(revision 978)
++++ src/java/liquibase/preconditions/ColumnExistsPrecondition.java	(working copy)
+@@ -1,12 +1,18 @@
+ package liquibase.preconditions;
+ 
++import java.sql.PreparedStatement;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++
++import liquibase.DatabaseChangeLog;
+ import liquibase.database.Database;
++import liquibase.database.DatabaseConnection;
++import liquibase.database.MySQLDatabase;
+ import liquibase.database.structure.DatabaseSnapshot;
+-import liquibase.DatabaseChangeLog;
++import liquibase.exception.JDBCException;
++import liquibase.exception.PreconditionErrorException;
++import liquibase.exception.PreconditionFailedException;
+ import liquibase.util.StringUtils;
+-import liquibase.exception.PreconditionFailedException;
+-import liquibase.exception.PreconditionErrorException;
+-import liquibase.exception.JDBCException;
+ 
+ public class ColumnExistsPrecondition implements Precondition {
+     private String schemaName;
+@@ -38,15 +44,47 @@
+     }
+ 
+     public void check(Database database, DatabaseChangeLog changeLog) throws PreconditionFailedException, PreconditionErrorException {
+-        DatabaseSnapshot databaseSnapshot;
+-        try {
+-            databaseSnapshot = database.createDatabaseSnapshot(getSchemaName(), null);
+-        } catch (JDBCException e) {
+-            throw new PreconditionErrorException(e, changeLog, this);
+-        }
+-        if (databaseSnapshot.getColumn(getTableName(), getColumnName()) == null) {
+-            throw new PreconditionFailedException("Column "+database.escapeColumnName(getSchemaName(), getTableName(), getColumnName())+" does not exist", changeLog, this);
+-        }
++    	if (database instanceof MySQLDatabase) {
++    		PreparedStatement statement = null;
++            DatabaseConnection connection = database.getConnection();
++            try {
++            	String mysql_sql = "select * from information_schema.columns where table_schema = ? and table_name = ? and column_name = ?";
++                statement = connection.prepareStatement(mysql_sql);
++                if (getSchemaName() != null)
++                	statement.setString(1, getSchemaName());
++                else
++                	statement.setString(1, connection.getCatalog());
++                
++                statement.setString(2, getTableName());
++                statement.setString(3, getColumnName());
++                
++                ResultSet resultSet = statement.executeQuery();
++                if (!resultSet.next()) {
++                	throw new PreconditionFailedException("Column "+database.escapeColumnName(getSchemaName(), getTableName(), getColumnName())+" does not exist", changeLog, this);
++                }
++            } catch (SQLException e) {
++                throw new PreconditionErrorException(e, changeLog, this);
++            } finally {
++                try {
++                    if (statement != null) {
++                        statement.close();
++                    }
++                } catch (SQLException e) {
++                    ;
++                }
++            }
++    	}
++    	else {
++	        DatabaseSnapshot databaseSnapshot;
++	        try {
++	            databaseSnapshot = database.createDatabaseSnapshot(getSchemaName(), null);
++	        } catch (JDBCException e) {
++	            throw new PreconditionErrorException(e, changeLog, this);
++	        }
++	        if (databaseSnapshot.getColumn(getTableName(), getColumnName()) == null) {
++	            throw new PreconditionFailedException("Column "+database.escapeColumnName(getSchemaName(), getTableName(), getColumnName())+" does not exist", changeLog, this);
++	        }
++    	}
+     }
+ 
+     public String getTagName() {
+Index: src/java/liquibase/preconditions/IndexExistsPrecondition.java
+===================================================================
+--- src/java/liquibase/preconditions/IndexExistsPrecondition.java	(revision 978)
++++ src/java/liquibase/preconditions/IndexExistsPrecondition.java	(working copy)
+@@ -1,6 +1,12 @@
+ package liquibase.preconditions;
+ 
++import java.sql.PreparedStatement;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++
+ import liquibase.database.Database;
++import liquibase.database.DatabaseConnection;
++import liquibase.database.MySQLDatabase;
+ import liquibase.database.structure.DatabaseSnapshot;
+ import liquibase.DatabaseChangeLog;
+ import liquibase.util.StringUtils;
+@@ -29,15 +35,47 @@
+     }
+ 
+     public void check(Database database, DatabaseChangeLog changeLog) throws PreconditionFailedException, PreconditionErrorException {
+-        DatabaseSnapshot databaseSnapshot;
+-        try {
+-            databaseSnapshot = database.createDatabaseSnapshot(getSchemaName(), null);
+-        } catch (JDBCException e) {
+-            throw new PreconditionErrorException(e, changeLog, this);
+-        }
+-        if (databaseSnapshot.getIndex(getIndexName()) == null) {
+-            throw new PreconditionFailedException("Index "+database.escapeStringForDatabase(getIndexName())+" does not exist", changeLog, this);
+-        }
++    	if (database instanceof MySQLDatabase) {
++    		PreparedStatement statement = null;
++            DatabaseConnection connection = database.getConnection();
++            try {
++            	// check to see if mysql knows about this index
++            	String mysql_sql = "select * from information_schema.statistics where table_schema = ? and index_name = ?";
++                statement = connection.prepareStatement(mysql_sql);
++                if (getSchemaName() != null)
++                	statement.setString(1, getSchemaName());
++                else
++                	statement.setString(1, connection.getCatalog());
++                
++                statement.setString(2, getIndexName());
++                
++                ResultSet resultSet = statement.executeQuery();
++                if (!resultSet.next()) {
++                	throw new PreconditionFailedException("Index "+database.escapeStringForDatabase(getIndexName())+" does not exist", changeLog, this);
++                }
++            } catch (SQLException e) {
++                throw new PreconditionErrorException(e, changeLog, this);
++            } finally {
++                try {
++                    if (statement != null) {
++                        statement.close();
++                    }
++                } catch (SQLException e) {
++                    ;
++                }
++            }
++    	}
++    	else {
++	        DatabaseSnapshot databaseSnapshot;
++	        try {
++	            databaseSnapshot = database.createDatabaseSnapshot(getSchemaName(), null);
++	        } catch (JDBCException e) {
++	            throw new PreconditionErrorException(e, changeLog, this);
++	        }
++	        if (databaseSnapshot.getIndex(getIndexName()) == null) {
++	            throw new PreconditionFailedException("Index "+database.escapeStringForDatabase(getIndexName())+" does not exist", changeLog, this);
++	        }
++    	}
+     }
+ 
+     public String getTagName() {
+Index: src/build.xml
+===================================================================
+--- src/build.xml	(revision 978)
++++ src/build.xml	(working copy)
+@@ -1,651 +1,662 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-
+-<!--
+-This is the main ant build script of Liquibase. It requires Ant 1.7.0+.
+-
+-The available targets at the current stage:
+-
+- prepare:    creates the output folders, builds the classpath and
+-             sets some properties (reference to build.properties).
+-             Custom property values can be set through build.local.properties
+-             (not versioned)
+-
+- retroweave: weaves the generated bytecode for jdk1.5 so Liquibase can be
+-             used on a jdk1.4 environment
+-
+- package:    builds the output artifacts (*.jar, *.zip, *.tar.gz). Both sources
+-             and binary artifacts are packaged, including jdk1.4 targeted ones
+-
+- compile:    compiles the sources (1.5 bytecode)
+-
+- clean:      cleans the output folders and all the previously generated artifacts
+-
+- site:       builds the project's site from static resources (*.html)
+-
+- javadoc:    project's javadocs (under build-reports/api)
+-
+- doxygen:    doxygen documentation (under build-reports/doxygen)
+-
+- test:       executes the unit tests
+-
+- test-int:   executes the integration tests (requires a running accesible db runtime)
+-
+- all:        performs a complete build of the project
+--->
+-
+-<project name="liquibase" default="all">
+-
+-    <property file="build.local.properties"/>
+-    <property file="build.properties"/>
+-
+-    <!-- target: PREPARE -->
+-    <target name="prepare" description="Creation of the output folders, classpath">
+-        <property file="build.local.properties"/>
+-        <property file="build.properties"/>
+-
+-        <tstamp>
+-            <format property="build.start" pattern="MM/DD/yyyy hh:mm aa"></format>
+-        </tstamp>
+-
+-        <condition property="jvm.ok">
+-              <equals arg1="${ant.java.version}" arg2="${target.java.version}"/>
+-        </condition>
+-
+-        <mkdir dir="${build.dir}"/>
+-        <mkdir dir="${build.test.dir}"/>
+-        <mkdir dir="${build.db.test.dir}"/>
+-
+-        <mkdir dir="${build14.dir}"/>
+-        <mkdir dir="${build14.test.dir}"/>
+-        <mkdir dir="${build14.db.test.dir}"/>
+-
+-        <mkdir dir="${package.dir}/liquibase-${build.version}"/>
+-        <mkdir dir="${package.dir}/liquibase-${build.version}-src"/>
+-        <mkdir dir="${release.dir}"/>
+-        <mkdir dir="${release.site.dir}"/>
+-        <mkdir dir="${lib.deps.dir}"/>
+-        <mkdir dir="${reports.dir}"/>
+-        <mkdir dir="${reports.dir}/api"/>
+-        <mkdir dir="${reports.dir}/doxygen"/>
+-
+-        <!-- Build classpath -->
+-        <path id="classpath">
+-            <fileset dir="${lib.dir}">
+-                <include name="**/*.jar"/>
+-            </fileset>
+-            <fileset dir="${lib.compile.dir}">
+-                <include name="**/*.jar"/>
+-            </fileset>
+-            <pathelement location="${build.dir}"/>
+-            <pathelement path="${user.home}/.IntelliJIdea50/config/plugins/clover-idea5.jar"/>
+-            <fileset dir="${release.dir}">
+-                <include name="**/*.jar"/>
+-            </fileset>
+-        </path>
+-
+-        <!-- Task definitions -->
+-        <taskdef name="retroweaver" classname="net.sourceforge.retroweaver.ant.RetroWeaverTask">
+-            <classpath>
+-                <fileset dir="${lib.dir}">
+-                    <include name="*.jar"/>
+-                </fileset>
+-                <fileset dir="${lib.compile.dir}">
+-                    <include name="*.jar"/>
+-                </fileset>
+-                <fileset dir="${lib.14jvm.dir}">
+-                    <include name="*.jar"/>
+-                </fileset>
+-            </classpath>
+-        </taskdef>
+-    </target>
+-
+-    <target name="check-jvm" depends="prepare" unless="jvm.ok">
+-        <fail message="Wrong JVM - ${ant.java.version}"/>
+-      </target>
+-
+-    <!-- target: CLEAN -->
+-    <target name="clean">
+-        <property file="build.properties"/>
+-
+-        <delete dir="${build.dir}"/>
+-        <delete dir="${build.test.dir}"/>
+-        <delete dir="${build.db.test.dir}"/>
+-
+-        <delete dir="${build14.dir}"/>
+-        <delete dir="${build14.test.dir}"/>
+-        <delete dir="${build14.db.test.dir}"/>
+-
+-        <delete dir="${release.dir}"/>
+-        <delete dir="${lib.deps.dir}"/>
+-        <delete dir="${reports.dir}"/>
+-        <delete dir="${package.dir}"/>
+-        <delete dir="${coverage.build.dir}"/>
+-    </target>
+-
+-    <!-- target: COMPILE -->
+-    <target name="compile" depends="prepare, check-jvm">
+-        <copy todir="${build.dir}" filtering="true">
+-            <filterset>
+-                <filter token="BUILD.VERSION" value="${build.version}"/>
+-            </filterset>
+-            <fileset dir="${src.dir}/java"
+-                     includes="**/*.properties, **/*.xml, **/*.config, **/*.txt, **/*.jdo, **/*.tld, **/*.xsd, **/*.css, **/*.html"/>
+-        </copy>
+-        <copy todir="${build.dir}">
+-            <fileset dir="${src.dir}/java" includes="**/*.jpg, **/*.png, **/*.gif"/>
+-        </copy>
+-        <copy todir="${build.dir}">
+-            <fileset dir="${src.dir}/java" includes="**/help/**"/>
+-        </copy>
+-        <copy todir="${build.dir}/liquibase/">
+-            <fileset dir="${src.dir}" includes="buildinfo.properties"/>
+-        </copy>
+-
+-        <javac srcdir="${src.dir}/java" destdir="${build.dir}" deprecation="${deprecation}" debug="${debug}"
+-               optimize="${optimize}" source="1.5">
+-            <classpath refid="classpath"/>
+-        </javac>
+-
+-        <mkdir dir="${build.test.dir}"/>
+-        <javac srcdir="${src.dir}/java-test" destdir="${build.test.dir}" deprecation="${deprecation}"
+-               debug="${debug}" optimize="${optimize}" source="1.5">
+-            <classpath refid="classpath"/>
+-        </javac>
+-        <copy todir="${build.test.dir}">
+-            <fileset dir="${src.dir}/java-test"
+-                     includes="**/*.properties, **/*.xml, **/*.txt, **/*.config, **/*.tld, **/*.xsd,**/*.sql,**/*.css,**/*.html"/>
+-        </copy>
+-
+-        <javac srcdir="${src.dir}/java-dbtest" destdir="${build.db.test.dir}" deprecation="${deprecation}"
+-               debug="${debug}" optimize="${optimize}" source="1.5">
+-            <classpath>
+-                <pathelement path="${build.dir}"/>
+-                <pathelement path="${build.test.dir}"/>
+-                <path refid="classpath"/>
+-            </classpath>
+-        </javac>
+-
+-        <propertyfile file="${build.dir}/buildinfo.properties">
+-            <entry key="build.version" value="${build.version}"/>
+-            <entry key="build.timestamp"
+-                   type="date"
+-                   pattern="yyyy-MM-dd'T'HH:mm:ss"
+-                   value="now"/>
+-        </propertyfile>
+-    </target>
+-
+-    <!-- target: RETROWEAVE -->
+-    <target name="retroweave" depends="prepare">
+-        <copy todir="${build14.dir}">
+-            <fileset dir="${build.dir}"/>
+-        </copy>
+-        <copy todir="${build14.test.dir}">
+-            <fileset dir="${build.test.dir}"/>
+-        </copy>
+-        <copy todir="${build14.test.dir}">
+-            <fileset dir="${build.test.dir}"/>
+-        </copy>
+-        <retroweaver srcdir="${build14.dir}"/>
+-        <retroweaver srcdir="${build14.test.dir}"/>
+-        <retroweaver srcdir="${build14.db.test.dir}"/>
+-    </target>
+-
+-    <!-- target: PACKAGE -->
+-    <target name="package" depends="compile">
+-        <jar destfile="${release.dir}/liquibase-SNAPSHOT.jar" manifest="${src.dir}/../META-INF/MANIFEST.MF">
+-            <zipfileset dir="${build.dir}"/>
+-        </jar>
+-
+-        <copy tofile="${package.dir}/liquibase-${build.version}/liquibase-${build.version}.jar"
+-              file="${release.dir}/liquibase-SNAPSHOT.jar"/>
+-        <copy todir="${package.dir}/liquibase-${build.version}">
+-            <fileset file="${src.dir}/changelog.txt"/>
+-            <fileset file="${src.dir}/lgpl.txt"/>
+-            <fileset dir="${src.dir}/zip"/>
+-            <fileset dir="${release.dir}/.." includes="samples/**"/>
+-            <fileset dir="${release.site.dir}" includes="samples/**"/>
+-        </copy>
+-        <copy todir="${package.dir}/liquibase-${build.version}/docs">
+-            <fileset dir="${release.site.dir}"/>
+-        </copy>
+-        <chmod file="${package.dir}/liquibase-${build.version}/liquibase" perm="a+x"/>
+-
+-        <zip destfile="${release.dir}/liquibase-${build.version}.zip" basedir="${package.dir}"
+-             includes="liquibase-${build.version}/**"/>
+-        <tar destfile="${release.dir}/liquibase-${build.version}.tar.gz" longfile="gnu" compression="gzip">
+-            <tarfileset dir="${package.dir}/liquibase-${build.version}" prefix="liquibase-${build.version}"
+-                        excludes="liquibase"/>
+-            <tarfileset dir="${package.dir}/liquibase-${build.version}" prefix="liquibase-${build.version}"
+-                        includes="liquibase" mode="755"/>
+-        </tar>
+-
+-        <copy todir="${package.dir}/liquibase-${build.version}-src">
+-            <fileset dir="${package.dir}/liquibase-${build.version}">
+-                <exclude name="docs/**"/>
+-                <exclude name="samples/**"/>
+-            </fileset>
+-        </copy>
+-        <copy todir="${package.dir}/liquibase-${build.version}-src/src">
+-            <fileset dir="${src.dir}">
+-                <include name="java/**"/>
+-                <include name="java-test/**"/>
+-                <include name="build.xml"/>
+-                <include name="build.properties"/>
+-            </fileset>
+-        </copy>
+-        <copy todir="${package.dir}/liquibase-${build.version}-src/lib">
+-            <fileset dir="${src.dir}/../lib"/>
+-        </copy>
+-        <copy todir="${package.dir}/liquibase-${build.version}-src/lib-compile">
+-            <fileset dir="${src.dir}/../lib-compile"/>
+-        </copy>
+-        <chmod file="${package.dir}/liquibase-${build.version}-src/liquibase" perm="a+x"/>
+-
+-        <zip destfile="${release.dir}/liquibase-${build.version}-src.zip" basedir="${package.dir}"
+-             includes="liquibase-${build.version}-src/**"/>
+-        <tar destfile="${release.dir}/liquibase-${build.version}-src.tar.gz" longfile="gnu" compression="gzip">
+-            <tarfileset dir="${package.dir}/liquibase-${build.version}-src" prefix="liquibase-${build.version}"
+-                        excludes="liquibase"/>
+-            <tarfileset dir="${package.dir}/liquibase-${build.version}-src" prefix="liquibase-${build.version}"
+-                        includes="liquibase" mode="755"/>
+-        </tar>
+-
+-        <antcall target="retroweave" inheritall="true" inheritrefs="true"/>
+-
+-        <jar destfile="${release.dir}/${ant.project.name}-SNAPSHOT-14jvm.jar"
+-             manifest="${src.dir}/../META-INF/MANIFEST.MF" index="true">
+-            <zipfileset dir="${build14.dir}"/>
+-            <zipgroupfileset dir="${lib.14jvm.dir}" includes="retroweaver-rt-*.jar"/>
+-        </jar>
+-
+-        <copy todir="${package.dir}/liquibase-${build.version}-14jvm">
+-            <fileset dir="${package.dir}/liquibase-${build.version}">
+-                <exclude name="liquibase-${build.version}.jar"/>
+-            </fileset>
+-            <fileset file="${release.dir}/${ant.project.name}-SNAPSHOT-14jvm.jar"/>
+-        </copy>
+-        <copy todir="${package.dir}/liquibase-${build.version}-14jvm/lib-14jvm">
+-            <fileset dir="${lib.14jvm.dir}"/>
+-        </copy>
+-        <chmod file="${package.dir}/liquibase-${build.version}-14jvm/liquibase" perm="a+x"/>
+-
+-        <zip destfile="${release.dir}/liquibase-${build.version}-14jvm.zip" basedir="${package.dir}"
+-             includes="liquibase-${build.version}-14jvm/**"/>
+-        <tar destfile="${release.dir}/liquibase-${build.version}-14jvm.tar.gz" longfile="gnu" compression="gzip">
+-            <tarfileset dir="${package.dir}/liquibase-${build.version}-14jvm" prefix="liquibase-${build.version}"
+-                        excludes="liquibase"/>
+-            <tarfileset dir="${package.dir}/liquibase-${build.version}-14jvm" prefix="liquibase-${build.version}"
+-                        includes="liquibase" mode="755"/>
+-        </tar>
+-        <zip destfile="${release.dir}/liquibase-intellij-${build.version}-src.zip" basedir="${intellij.basedir}"
+-                excludes="build/**,build-test/**"/>
+-    </target>
+-
+-    <!-- target: SITE -->
+-    <target name="site" depends="prepare">
+-
+-        <copy todir="${release.site.dir}" filtering="true">
+-            <fileset dir="${src.dir}/site">
+-                <include name="**/*.html"/>
+-                <include name="**/*.htm"/>
+-            </fileset>
+-            <filterset id="site.filter.set">
+-                <filter token="BUILD.VERSION" value="${build.version}"/>
+-            </filterset>
+-        </copy>
+-
+-        <copy todir="${release.site.dir}">
+-            <fileset dir="${src.dir}/site">
+-                <exclude name="**/*.html"/>
+-                <exclude name="**/*.wnk"/>
+-                <exclude name="**/*.swf"/>
+-            </fileset>
+-        </copy>
+-        <copy todir="${release.site.dir}/xml/ns/dbchangelog">
+-            <fileset dir="${src.dir}/java/liquibase/">
+-                <include name="*.xsd"/>
+-            </fileset>
+-        </copy>
+-        <copy todir="${release.site.dir}/samples/">
+-            <fileset dir="${src.dir}/samples"/>
+-        </copy>
+-        <copy todir="${release.site.dir}/api">
+-            <fileset dir="${reports.dir}/api"/>
+-        </copy>
+-        <copy todir="${release.site.dir}/doxygen">
+-            <fileset dir="${reports.dir}/doxygen"/>
+-        </copy>
+-
+-        <zip destfile="${release.dir}/site-${build.version}.zip">
+-            <zipfileset dir="${release.site.dir}"/>
+-        </zip>
+-
+-    </target>
+-
+-    <!-- target: JAVADOC -->
+-    <target name="javadoc" depends="prepare">
+-        <javadoc
+-                destdir="${reports.dir}/api"
+-                author="true"
+-                version="true"
+-                use="true"
+-                windowtitle="LiquiBase ${build.version}) API"
+-                linksource="false"
+-                useexternalfile="yes"
+-                breakiterator="yes">
+-
+-            <fileset dir="${src.dir}/java" defaultexcludes="yes">
+-                <include name="**/*.java"/>
+-            </fileset>
+-            <classpath refid="classpath"/>
+-            <!--<bottom><![CDATA[-->
+-            <!--<i>Copyright &#169; 2006-2007 Sundog. All Rights Reserved.</i>-->
+-            <!--<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">-->
+-            <!--</script>-->
+-            <!--<script type="text/javascript">-->
+-            <!--_uacct = "UA-1719178-1";-->
+-            <!--urchinTracker();-->
+-            <!--</script>-->
+-            <!--]]>-->
+-            <!--</bottom>-->
+-        </javadoc>
+-    </target>
+-
+-    <!-- target: DOXYGEN -->
+-    <target name="doxygen" depends="prepare" if="run.doxygen">
+-        <taskdef name="doxygen" classname="org.doxygen.tools.DoxygenTask">
+-            <classpath>
+-                <fileset dir="${lib.dir}">
+-                    <include name="*.jar"/>
+-                </fileset>
+-                <fileset dir="${lib.compile.dir}">
+-                    <include name="*.jar"/>
+-                </fileset>
+-                <fileset dir="${lib.14jvm.dir}">
+-                    <include name="*.jar"/>
+-                </fileset>
+-            </classpath>
+-        </taskdef>
+-
+-        <doxygen configfilename="${src.dir}/../Doxyfile" verbose="true">
+-            <property name="PROJECT_NUMBER" value="${build.version}"/>
+-        </doxygen>
+-    </target>
+-
+-    <!-- target: TEST -->
+-    <target name="test" depends="prepare, compile">
+-        <mkdir dir="${reports.dir}/junit/"/>
+-        <mkdir dir="${reports.dir}/junit/${ant.project.name}/"/>
+-        <junit printsummary="yes" haltonfailure="no" fork="yes" forkmode="once" reloading="false"
+-               failureproperty="unit.tests.failed"
+-               jvm="${java.home}/bin/java">
+-            <env key="JAVA_HOME" path="${env.JAVA_HOME}"/>
+-            <classpath>
+-                <pathelement location="${coverage.build.dir}"/>
+-                <pathelement path="${build.dir}"/>
+-                <pathelement path="${build.test.dir}"/>
+-                <path refid="classpath"/>
+-            </classpath>
+-            <jvmarg value="-Demma.coverage.out.file=${coverage.output.dir}/coverage.emma"/>
+-            <formatter type="brief" usefile="false"/>
+-            <formatter type="xml"/>
+-            <batchtest todir="${reports.dir}/junit/${ant.project.name}">
+-                <fileset dir="${build.test.dir}">
+-                    <include name="**/*Test.class"/>
+-                    <exclude name="**/Base*"/>
+-                    <exclude name="**/Abstract*"/>
+-                    <exclude name="liquibase/test/*"/>
+-                </fileset>
+-            </batchtest>
+-        </junit>
+-
+-        <mkdir dir="${reports.dir}/junit-report/"/>
+-        <mkdir dir="${reports.dir}/junit-report/${ant.project.name}/"/>
+-        <junitreport todir="${reports.dir}/junit-report/${ant.project.name}">
+-            <fileset dir="${reports.dir}/junit/${ant.project.name}">
+-                <include name="TEST-*.xml"/>
+-            </fileset>
+-            <report format="frames" todir="${reports.dir}/junit-report/${ant.project.name}"/>
+-        </junitreport>
+-    </target>
+-
+-    <!-- target: TEST-INT -->
+-    <target name="test-int" depends="prepare, compile">
+-        <!-- TODO: we could use a property to choose the target database to be testes on execution time -->
+-        <mkdir dir="${reports.dir}/junit/"/>
+-        <mkdir dir="${reports.dir}/junit/${ant.project.name}/"/>
+-        <junit printsummary="yes" haltonfailure="no" fork="yes" forkmode="once" reloading="false"
+-               failureproperty="unit.tests.failed"
+-               jvm="${java.home}/bin/java">
+-            <env key="JAVA_HOME" path="${env.JAVA_HOME}"/>
+-            <classpath>
+-                <pathelement path="${build.dir}"/>
+-                <pathelement path="${build.test.dir}"/>
+-                <pathelement path="${build.db.test.dir}"/>
+-                <path refid="classpath"/>
+-            </classpath>
+-            <formatter type="xml"/>
+-            <batchtest todir="${reports.dir}/junit/${ant.project.name}">
+-                <fileset dir="${build.db.test.dir}">
+-                    <include name="**/*Test.class"/>
+-                    <exclude name="**/Base*"/>
+-                    <exclude name="**/Abstract*"/>
+-                </fileset>
+-            </batchtest>
+-        </junit>
+-
+-        <mkdir dir="${reports.dir}/junit-report/"/>
+-        <mkdir dir="${reports.dir}/junit-report/${ant.project.name}/"/>
+-        <junitreport todir="${reports.dir}/junit-report/${ant.project.name}">
+-            <fileset dir="${reports.dir}/junit/${ant.project.name}">
+-                <include name="TEST-*.xml"/>
+-            </fileset>
+-            <report format="frames" todir="${reports.dir}/junit-report/${ant.project.name}"/>
+-        </junitreport>
+-    </target>
+-    <!--
+-         Runs generic integration tests which do not require any database setup locally.
+-         These should be run before committing any changes to check to make sure liquibase as a whole is still running.
+-      -->
+-    <target name="test-int-generic" description="Integration tests that can be run on any computer without any setup"
+-            depends="prepare,compile">
+-        <mkdir dir="${reports.dir}/junit/"/>
+-        <mkdir dir="${reports.dir}/junit/${ant.project.name}/"/>
+-        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" reloading="false"
+-               failureproperty="unit.tests.failed"
+-               jvm="${java.home}/bin/java">
+-            <env key="JAVA_HOME" path="${env.JAVA_HOME}"/>
+-            <classpath>
+-                <pathelement path="${build.dir}"/>
+-                <pathelement path="${build.test.dir}"/>
+-                <pathelement path="${build.db.test.dir}"/>
+-                <path refid="classpath"/>
+-            </classpath>
+-            <formatter type="brief" usefile="false"/>
+-            <formatter type="xml"/>
+-            <batchtest todir="${reports.dir}/junit/${ant.project.name}">
+-                <fileset dir="${build.db.test.dir}">
+-                    <include name="**/DerbySampleChangeLogRunnerTest.class"/>
+-                    <include name="**/H2SampleChangeLogRunnerTest.class"/>
+-                    <include name="**/HsqlSampleChangeLogRunnerTest.class"/>
+-                </fileset>
+-            </batchtest>
+-        </junit>
+-    </target>
+-
+-    <target name="-coverage-post-compile" depends="compile">
+-        <taskdef resource="emma_ant.properties">
+-            <classpath>
+-                <pathelement location="${lib.compile.dir}/emma.jar"/>
+-                <pathelement location="${lib.compile.dir}/emma_ant.jar"/>
+-            </classpath>
+-        </taskdef>
+-        <path id="build.path">
+-            <pathelement path="${build.dir}"/>
+-        </path>
+-        <emma enabled="true">
+-            <instr
+-                    instrpathref="build.path"
+-                    destdir="${coverage.build.dir}"
+-                    metadatafile="${coverage.output.dir}/metadata.emma"
+-                    merge="true"
+-                    />
+-        </emma>
+-    </target>
+-
+-    <target name="code-coverage"
+-            depends="-coverage-post-compile,test" description="Generates code coverage reports for the unit tests">
+-
+-        <emma enabled="true">
+-            <report sourcepath="${src.dir}/java">
+-                <fileset dir="${coverage.output.dir}">
+-                    <include name="*.emma"/>
+-                </fileset>
+-
+-                <txt outfile="${reports.dir}/coverage-report/coverage.txt"/>
+-                <html outfile="${reports.dir}/coverage-report/coverage.html"/>
+-            </report>
+-        </emma>
+-    </target>
+-
+-    <target name="continuous-build" description="Used by the continuous build server and runs the generic tests"
+-            depends="prepare,compile,test,test-int-generic">
+-        <fail if="unit.tests.failed"/>
+-    </target>
+-
+-    <target name="maven" depends="prepare">
+-      <property environment="env"/>
+-        <echo>build version: ${build.version}</echo>
+-
+-        <delete file="${basedir}/../pom.xml"/>
+-        <delete file="${maven.basedir}/pom.xml"/>
+-
+-        <copy file="${basedir}/../pom.base.xml" tofile="${basedir}/../pom.xml" filtering="true">
+-            <filterset>
+-                <filter token="BUILD.VERSION" value="${build.version}"/>
+-                <filter token="MAVEN.BUILD.VERSION" value="${build.version}.${maven.build.version}"/>
+-            </filterset>
+-        </copy>
+-        <copy file="${maven.basedir}/pom.base.xml" tofile="${maven.basedir}/pom.xml" filtering="true">
+-            <filterset>
+-                <filter token="BUILD.VERSION" value="${build.version}"/>
+-                <filter token="MAVEN.BUILD.VERSION" value="${build.version}.${maven.build.version}"/>
+-            </filterset>
+-        </copy>
+-
+-        <typedef resource="org/apache/maven/artifact/ant/antlib.xml">
+-            <classpath>
+-                <fileset dir="${lib.compile.dir}">
+-                    <include name="*.jar"/>
+-                </fileset>
+-                <fileset dir="${maven.basedir}/lib">
+-                    <include name="*.jar"/>
+-                </fileset>
+-            </classpath>
+-        </typedef>
+-
+-        <pom id="core.maven.project" file="${basedir}/../pom.xml"/>
+-        <pom id="plugin.maven.project" file="${maven.basedir}/pom.xml"/>
+-
+-        <deploy file="${package.dir}/liquibase-${build.version}/liquibase-${build.version}.jar">
+-            <remoteRepository url="file://${maven.repository}"/>
+-            <pom refid="core.maven.project"/>
+-        </deploy>
+-
+-        <exec dir="${maven.basedir}" executable="cmd">
+-            <env key="JAVA_HOME" value="${env.JAVA_HOME}"/>
+-            <arg value="/c"/>
+-            <arg value="${env.M2_HOME}\bin\mvn.bat"/>
+-            <arg value="clean"/>
+-            <arg value="package"/>
+-            <arg value="plugin:xdoc"/>
+-            <arg value="site"/>
+-        </exec>
+-
+-        <deploy file="${maven.basedir}/target/liquibase-plugin-${build.version}.${maven.build.version}.jar">
+-            <remoteRepository url="file://${maven.repository}"/>
+-            <pom refid="plugin.maven.project"/>
+-        </deploy>
+-
+-        <!--TODO automate the coping the html files into the site... -->
+-        <copy todir="${src.dir}/site/phpincludes">
+-          <fileset dir="${maven.build.dir}/site">
+-            <include name="*-mojo.html"/>
+-          </fileset>
+-        </copy>
+-    </target>
+-
+-    <target name="maven-snapshot" depends="prepare">
+-      <property environment="env"/>
+-        <echo>build version: ${build.version}</echo>
+-
+-        <delete file="${basedir}/../pom.xml"/>
+-        <delete file="${maven.basedir}/pom.xml"/>
+-
+-        <copy file="${basedir}/../pom.base.xml" tofile="${basedir}/../pom.xml" filtering="true">
+-            <filterset>
+-                <filter token="BUILD.VERSION" value="${build.version}-SNAPSHOT"/>
+-                <filter token="MAVEN.BUILD.VERSION" value="${build.version}.${maven.build.version}-SNAPSHOT"/>
+-            </filterset>
+-        </copy>
+-        <copy file="${maven.basedir}/pom.base.xml" tofile="${maven.basedir}/pom.xml" filtering="true">
+-            <filterset>
+-                <filter token="BUILD.VERSION" value="${build.version}-SNAPSHOT"/>
+-                <filter token="MAVEN.BUILD.VERSION" value="${build.version}.${maven.build.version}-SNAPSHOT"/>
+-            </filterset>
+-        </copy>
+-
+-        <typedef resource="org/apache/maven/artifact/ant/antlib.xml">
+-            <classpath>
+-                <fileset dir="${lib.compile.dir}">
+-                    <include name="*.jar"/>
+-                </fileset>
+-                <fileset dir="${maven.basedir}/lib">
+-                    <include name="*.jar"/>
+-                </fileset>
+-            </classpath>
+-        </typedef>
+-
+-        <pom id="core.maven.project" file="${basedir}/../pom.xml"/>
+-        <pom id="plugin.maven.project" file="${maven.basedir}/pom.xml"/>
+-
+-        <deploy file="${release.dir}/liquibase-SNAPSHOT.jar">
+-            <remoteRepository url="file://${maven.repository.snapshot}"/>
+-            <pom refid="core.maven.project"/>
+-        </deploy>
+-
+-        <exec dir="${maven.basedir}" executable="cmd">
+-            <env key="JAVA_HOME" value="${env.JAVA_HOME}"/>
+-            <arg value="/c"/>
+-            <arg value="${env.M2_HOME}\bin\mvn.bat"/>
+-            <arg value="clean"/>
+-            <arg value="package"/>
+-            <arg value="plugin:xdoc"/>
+-            <arg value="site"/>
+-        </exec>
+-
+-        <deploy file="${maven.basedir}/target/liquibase-plugin-${build.version}.${maven.build.version}-SNAPSHOT.jar">
+-            <remoteRepository url="file://${maven.repository.snapshot}"/>
+-            <pom refid="plugin.maven.project"/>
+-        </deploy>
+-
+-        <!--TODO automate the coping the html files into the site... -->
+-        <copy todir="${src.dir}/site/phpincludes">
+-          <fileset dir="${maven.build.dir}/site">
+-            <include name="*-mojo.html"/>
+-          </fileset>
+-        </copy>
+-    </target>
+-
+-
+-    <!-- target: ALL -->
+-    <target name="all" depends="prepare">
+-        <antcall target="clean" inheritAll="true" inheritRefs="true"/>
+-        <antcall target="prepare" inheritAll="true" inheritRefs="true"/>
+-        <antcall target="compile" inheritAll="true" inheritRefs="true"/>
+-        <antcall target="javadoc" inheritAll="true" inheritRefs="true"/>
+-        <antcall target="doxygen" inheritAll="true" inheritRefs="true"/>
+-        <antcall target="site" inheritAll="true" inheritRefs="true"/>
+-        <antcall target="package" inheritAll="true" inheritRefs="true"/>
+-    </target>
+-</project>
++<?xml version="1.0" encoding="UTF-8"?>
++
++<!--
++This is the main ant build script of Liquibase. It requires Ant 1.7.0+.
++
++The available targets at the current stage:
++
++ prepare:    creates the output folders, builds the classpath and
++             sets some properties (reference to build.properties).
++             Custom property values can be set through build.local.properties
++             (not versioned)
++
++ retroweave: weaves the generated bytecode for jdk1.5 so Liquibase can be
++             used on a jdk1.4 environment
++
++ package:    builds the output artifacts (*.jar, *.zip, *.tar.gz). Both sources
++             and binary artifacts are packaged, including jdk1.4 targeted ones
++
++ compile:    compiles the sources (1.5 bytecode)
++
++ clean:      cleans the output folders and all the previously generated artifacts
++
++ site:       builds the project's site from static resources (*.html)
++
++ javadoc:    project's javadocs (under build-reports/api)
++
++ doxygen:    doxygen documentation (under build-reports/doxygen)
++
++ test:       executes the unit tests
++
++ test-int:   executes the integration tests (requires a running accesible db runtime)
++
++ all:        performs a complete build of the project
++-->
++
++<project name="liquibase" default="all">
++
++    <property file="build.local.properties"/>
++    <property file="build.properties"/>
++
++    <!-- target: PREPARE -->
++    <target name="prepare" description="Creation of the output folders, classpath">
++        <property file="build.local.properties"/>
++        <property file="build.properties"/>
++
++        <tstamp>
++            <format property="build.start" pattern="MM/DD/yyyy hh:mm aa"></format>
++        </tstamp>
++
++        <condition property="jvm.ok">
++              <equals arg1="${ant.java.version}" arg2="${target.java.version}"/>
++        </condition>
++
++        <mkdir dir="${build.dir}"/>
++        <mkdir dir="${build.test.dir}"/>
++        <mkdir dir="${build.db.test.dir}"/>
++
++        <mkdir dir="${build14.dir}"/>
++        <mkdir dir="${build14.test.dir}"/>
++        <mkdir dir="${build14.db.test.dir}"/>
++
++        <mkdir dir="${package.dir}/liquibase-${build.version}"/>
++        <mkdir dir="${package.dir}/liquibase-${build.version}-src"/>
++        <mkdir dir="${release.dir}"/>
++        <mkdir dir="${release.site.dir}"/>
++        <mkdir dir="${lib.deps.dir}"/>
++        <mkdir dir="${reports.dir}"/>
++        <mkdir dir="${reports.dir}/api"/>
++        <mkdir dir="${reports.dir}/doxygen"/>
++
++        <!-- Build classpath -->
++        <path id="classpath">
++            <fileset dir="${lib.dir}">
++                <include name="**/*.jar"/>
++            </fileset>
++            <fileset dir="${lib.compile.dir}">
++                <include name="**/*.jar"/>
++            </fileset>
++            <pathelement location="${build.dir}"/>
++            <pathelement path="${user.home}/.IntelliJIdea50/config/plugins/clover-idea5.jar"/>
++            <fileset dir="${release.dir}">
++                <include name="**/*.jar"/>
++            </fileset>
++        </path>
++
++        <!-- Task definitions -->
++        <taskdef name="retroweaver" classname="net.sourceforge.retroweaver.ant.RetroWeaverTask">
++            <classpath>
++                <fileset dir="${lib.dir}">
++                    <include name="*.jar"/>
++                </fileset>
++                <fileset dir="${lib.compile.dir}">
++                    <include name="*.jar"/>
++                </fileset>
++                <fileset dir="${lib.14jvm.dir}">
++                    <include name="*.jar"/>
++                </fileset>
++            </classpath>
++        </taskdef>
++    </target>
++
++    <target name="check-jvm" depends="prepare" unless="jvm.ok">
++        <fail message="Wrong JVM - ${ant.java.version}"/>
++      </target>
++
++    <!-- target: CLEAN -->
++    <target name="clean">
++        <property file="build.properties"/>
++
++        <delete dir="${build.dir}"/>
++        <delete dir="${build.test.dir}"/>
++        <delete dir="${build.db.test.dir}"/>
++
++        <delete dir="${build14.dir}"/>
++        <delete dir="${build14.test.dir}"/>
++        <delete dir="${build14.db.test.dir}"/>
++
++        <delete dir="${release.dir}"/>
++        <delete dir="${lib.deps.dir}"/>
++        <delete dir="${reports.dir}"/>
++        <delete dir="${package.dir}"/>
++        <delete dir="${coverage.build.dir}"/>
++    </target>
++
++    <!-- target: COMPILE -->
++    <target name="compile" depends="prepare, check-jvm">
++        <copy todir="${build.dir}" filtering="true">
++            <filterset>
++                <filter token="BUILD.VERSION" value="${build.version}"/>
++            </filterset>
++            <fileset dir="${src.dir}/java"
++                     includes="**/*.properties, **/*.xml, **/*.config, **/*.txt, **/*.jdo, **/*.tld, **/*.xsd, **/*.css, **/*.html"/>
++        </copy>
++        <copy todir="${build.dir}">
++            <fileset dir="${src.dir}/java" includes="**/*.jpg, **/*.png, **/*.gif"/>
++        </copy>
++        <copy todir="${build.dir}">
++            <fileset dir="${src.dir}/java" includes="**/help/**"/>
++        </copy>
++        <copy todir="${build.dir}/liquibase/">
++            <fileset dir="${src.dir}" includes="buildinfo.properties"/>
++        </copy>
++
++        <javac srcdir="${src.dir}/java" destdir="${build.dir}" deprecation="${deprecation}" debug="${debug}"
++               optimize="${optimize}" source="1.5">
++            <classpath refid="classpath"/>
++        </javac>
++
++        <mkdir dir="${build.test.dir}"/>
++        <javac srcdir="${src.dir}/java-test" destdir="${build.test.dir}" deprecation="${deprecation}"
++               debug="${debug}" optimize="${optimize}" source="1.5">
++            <classpath refid="classpath"/>
++        </javac>
++        <copy todir="${build.test.dir}">
++            <fileset dir="${src.dir}/java-test"
++                     includes="**/*.properties, **/*.xml, **/*.txt, **/*.config, **/*.tld, **/*.xsd,**/*.sql,**/*.css,**/*.html"/>
++        </copy>
++
++        <javac srcdir="${src.dir}/java-dbtest" destdir="${build.db.test.dir}" deprecation="${deprecation}"
++               debug="${debug}" optimize="${optimize}" source="1.5">
++            <classpath>
++                <pathelement path="${build.dir}"/>
++                <pathelement path="${build.test.dir}"/>
++                <path refid="classpath"/>
++            </classpath>
++        </javac>
++
++        <propertyfile file="${build.dir}/buildinfo.properties">
++            <entry key="build.version" value="${build.version}"/>
++            <entry key="build.timestamp"
++                   type="date"
++                   pattern="yyyy-MM-dd'T'HH:mm:ss"
++                   value="now"/>
++        </propertyfile>
++    </target>
++
++    <!-- target: RETROWEAVE -->
++    <target name="retroweave" depends="prepare">
++        <copy todir="${build14.dir}">
++            <fileset dir="${build.dir}"/>
++        </copy>
++        <copy todir="${build14.test.dir}">
++            <fileset dir="${build.test.dir}"/>
++        </copy>
++        <copy todir="${build14.test.dir}">
++            <fileset dir="${build.test.dir}"/>
++        </copy>
++        <retroweaver srcdir="${build14.dir}"/>
++        <retroweaver srcdir="${build14.test.dir}"/>
++        <retroweaver srcdir="${build14.db.test.dir}"/>
++    </target>
++
++    <!-- target: PACKAGE -->
++    <target name="package" depends="compile">
++        <jar destfile="${release.dir}/liquibase-SNAPSHOT.jar" manifest="${src.dir}/../META-INF/MANIFEST.MF">
++            <zipfileset dir="${build.dir}"/>
++        </jar>
++
++        <copy tofile="${package.dir}/liquibase-${build.version}/liquibase-${build.version}.jar"
++              file="${release.dir}/liquibase-SNAPSHOT.jar"/>
++        <copy todir="${package.dir}/liquibase-${build.version}">
++            <fileset file="${src.dir}/changelog.txt"/>
++            <fileset file="${src.dir}/lgpl.txt"/>
++            <fileset dir="${src.dir}/zip"/>
++            <fileset dir="${release.dir}/.." includes="samples/**"/>
++            <fileset dir="${release.site.dir}" includes="samples/**"/>
++        </copy>
++        <copy todir="${package.dir}/liquibase-${build.version}/docs">
++            <fileset dir="${release.site.dir}"/>
++        </copy>
++        <chmod file="${package.dir}/liquibase-${build.version}/liquibase" perm="a+x"/>
++
++        <zip destfile="${release.dir}/liquibase-${build.version}.zip" basedir="${package.dir}"
++             includes="liquibase-${build.version}/**"/>
++        <tar destfile="${release.dir}/liquibase-${build.version}.tar.gz" longfile="gnu" compression="gzip">
++            <tarfileset dir="${package.dir}/liquibase-${build.version}" prefix="liquibase-${build.version}"
++                        excludes="liquibase"/>
++            <tarfileset dir="${package.dir}/liquibase-${build.version}" prefix="liquibase-${build.version}"
++                        includes="liquibase" mode="755"/>
++        </tar>
++
++        <copy todir="${package.dir}/liquibase-${build.version}-src">
++            <fileset dir="${package.dir}/liquibase-${build.version}">
++                <exclude name="docs/**"/>
++                <exclude name="samples/**"/>
++            </fileset>
++        </copy>
++        <copy todir="${package.dir}/liquibase-${build.version}-src/src">
++            <fileset dir="${src.dir}">
++                <include name="java/**"/>
++                <include name="java-test/**"/>
++                <include name="build.xml"/>
++                <include name="build.properties"/>
++            </fileset>
++        </copy>
++        <copy todir="${package.dir}/liquibase-${build.version}-src/lib">
++            <fileset dir="${src.dir}/../lib"/>
++        </copy>
++        <copy todir="${package.dir}/liquibase-${build.version}-src/lib-compile">
++            <fileset dir="${src.dir}/../lib-compile"/>
++        </copy>
++        <chmod file="${package.dir}/liquibase-${build.version}-src/liquibase" perm="a+x"/>
++
++        <zip destfile="${release.dir}/liquibase-${build.version}-src.zip" basedir="${package.dir}"
++             includes="liquibase-${build.version}-src/**"/>
++        <tar destfile="${release.dir}/liquibase-${build.version}-src.tar.gz" longfile="gnu" compression="gzip">
++            <tarfileset dir="${package.dir}/liquibase-${build.version}-src" prefix="liquibase-${build.version}"
++                        excludes="liquibase"/>
++            <tarfileset dir="${package.dir}/liquibase-${build.version}-src" prefix="liquibase-${build.version}"
++                        includes="liquibase" mode="755"/>
++        </tar>
++
++        <antcall target="retroweave" inheritall="true" inheritrefs="true"/>
++
++        <jar destfile="${release.dir}/${ant.project.name}-SNAPSHOT-14jvm.jar"
++             manifest="${src.dir}/../META-INF/MANIFEST.MF" index="true">
++            <zipfileset dir="${build14.dir}"/>
++            <zipgroupfileset dir="${lib.14jvm.dir}" includes="retroweaver-rt-*.jar"/>
++        </jar>
++
++        <copy todir="${package.dir}/liquibase-${build.version}-14jvm">
++            <fileset dir="${package.dir}/liquibase-${build.version}">
++                <exclude name="liquibase-${build.version}.jar"/>
++            </fileset>
++            <fileset file="${release.dir}/${ant.project.name}-SNAPSHOT-14jvm.jar"/>
++        </copy>
++        <copy todir="${package.dir}/liquibase-${build.version}-14jvm/lib-14jvm">
++            <fileset dir="${lib.14jvm.dir}"/>
++        </copy>
++        <chmod file="${package.dir}/liquibase-${build.version}-14jvm/liquibase" perm="a+x"/>
++
++        <zip destfile="${release.dir}/liquibase-${build.version}-14jvm.zip" basedir="${package.dir}"
++             includes="liquibase-${build.version}-14jvm/**"/>
++        <tar destfile="${release.dir}/liquibase-${build.version}-14jvm.tar.gz" longfile="gnu" compression="gzip">
++            <tarfileset dir="${package.dir}/liquibase-${build.version}-14jvm" prefix="liquibase-${build.version}"
++                        excludes="liquibase"/>
++            <tarfileset dir="${package.dir}/liquibase-${build.version}-14jvm" prefix="liquibase-${build.version}"
++                        includes="liquibase" mode="755"/>
++        </tar>
++        
++    </target>
++
++    <!-- target: SITE -->
++    <target name="site" depends="prepare">
++
++        <copy todir="${release.site.dir}" filtering="true">
++            <fileset dir="${src.dir}/site">
++                <include name="**/*.html"/>
++                <include name="**/*.htm"/>
++            </fileset>
++            <filterset id="site.filter.set">
++                <filter token="BUILD.VERSION" value="${build.version}"/>
++            </filterset>
++        </copy>
++
++        <copy todir="${release.site.dir}">
++            <fileset dir="${src.dir}/site">
++                <exclude name="**/*.html"/>
++                <exclude name="**/*.wnk"/>
++                <exclude name="**/*.swf"/>
++            </fileset>
++        </copy>
++        <copy todir="${release.site.dir}/xml/ns/dbchangelog">
++            <fileset dir="${src.dir}/java/liquibase/">
++                <include name="*.xsd"/>
++            </fileset>
++        </copy>
++        <copy todir="${release.site.dir}/samples/">
++            <fileset dir="${src.dir}/samples"/>
++        </copy>
++        <copy todir="${release.site.dir}/api">
++            <fileset dir="${reports.dir}/api"/>
++        </copy>
++        <copy todir="${release.site.dir}/doxygen">
++            <fileset dir="${reports.dir}/doxygen"/>
++        </copy>
++
++        <zip destfile="${release.dir}/site-${build.version}.zip">
++            <zipfileset dir="${release.site.dir}"/>
++        </zip>
++
++    </target>
++
++    <!-- target: JAVADOC -->
++    <target name="javadoc" depends="prepare">
++        <javadoc
++                destdir="${reports.dir}/api"
++                author="true"
++                version="true"
++                use="true"
++                windowtitle="LiquiBase ${build.version}) API"
++                linksource="false"
++                useexternalfile="yes"
++                breakiterator="yes">
++
++            <fileset dir="${src.dir}/java" defaultexcludes="yes">
++                <include name="**/*.java"/>
++            </fileset>
++            <classpath refid="classpath"/>
++            <!--<bottom><![CDATA[-->
++            <!--<i>Copyright &#169; 2006-2007 Sundog. All Rights Reserved.</i>-->
++            <!--<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">-->
++            <!--</script>-->
++            <!--<script type="text/javascript">-->
++            <!--_uacct = "UA-1719178-1";-->
++            <!--urchinTracker();-->
++            <!--</script>-->
++            <!--]]>-->
++            <!--</bottom>-->
++        </javadoc>
++    </target>
++
++    <!-- target: DOXYGEN -->
++    <target name="doxygen" depends="prepare" if="run.doxygen">
++        <taskdef name="doxygen" classname="org.doxygen.tools.DoxygenTask">
++            <classpath>
++                <fileset dir="${lib.dir}">
++                    <include name="*.jar"/>
++                </fileset>
++                <fileset dir="${lib.compile.dir}">
++                    <include name="*.jar"/>
++                </fileset>
++                <fileset dir="${lib.14jvm.dir}">
++                    <include name="*.jar"/>
++                </fileset>
++            </classpath>
++        </taskdef>
++
++        <doxygen configfilename="${src.dir}/../Doxyfile" verbose="true">
++            <property name="PROJECT_NUMBER" value="${build.version}"/>
++        </doxygen>
++    </target>
++
++    <!-- target: TEST -->
++    <target name="test" depends="prepare, compile">
++        <mkdir dir="${reports.dir}/junit/"/>
++        <mkdir dir="${reports.dir}/junit/${ant.project.name}/"/>
++        <junit printsummary="yes" haltonfailure="no" fork="yes" forkmode="once" reloading="false"
++               failureproperty="unit.tests.failed"
++               jvm="${java.home}/bin/java">
++            <env key="JAVA_HOME" path="${env.JAVA_HOME}"/>
++            <classpath>
++                <pathelement location="${coverage.build.dir}"/>
++                <pathelement path="${build.dir}"/>
++                <pathelement path="${build.test.dir}"/>
++                <path refid="classpath"/>
++            </classpath>
++            <jvmarg value="-Demma.coverage.out.file=${coverage.output.dir}/coverage.emma"/>
++            <formatter type="brief" usefile="false"/>
++            <formatter type="xml"/>
++            <batchtest todir="${reports.dir}/junit/${ant.project.name}">
++                <fileset dir="${build.test.dir}">
++                    <include name="**/*Test.class"/>
++                    <exclude name="**/Base*"/>
++                    <exclude name="**/Abstract*"/>
++                    <exclude name="liquibase/test/*"/>
++                </fileset>
++            </batchtest>
++        </junit>
++
++        <mkdir dir="${reports.dir}/junit-report/"/>
++        <mkdir dir="${reports.dir}/junit-report/${ant.project.name}/"/>
++        <junitreport todir="${reports.dir}/junit-report/${ant.project.name}">
++            <fileset dir="${reports.dir}/junit/${ant.project.name}">
++                <include name="TEST-*.xml"/>
++            </fileset>
++            <report format="frames" todir="${reports.dir}/junit-report/${ant.project.name}"/>
++        </junitreport>
++    	
++    	<!-- TODO add other execs for different OS's. Switch to osfamily with Ant 1.7 -->
++		<exec os="Windows XP" executable="C:/Program Files/Mozilla Firefox/firefox.exe" failifexecutionfails="false">
++			<arg value="file:///${reports.dir}/junit-report/${ant.project.name}/index.html"/>
++		</exec>
++		<exec os="Linux" executable="firefox" failifexecutionfails="false">
++			<arg value="file:///${reports.dir}/junit-report/${ant.project.name}/index.html"/>
++		</exec>
++		<exec os="Mac OS X" executable="open" failifexecutionfails="false">
++			<arg line="-a Firefox"/>
++			<arg value="file:///${reports.dir}/junit-report/${ant.project.name}/index.html"/>
++		</exec>
++    </target>
++
++    <!-- target: TEST-INT -->
++    <target name="test-int" depends="prepare, compile">
++        <!-- TODO: we could use a property to choose the target database to be testes on execution time -->
++        <mkdir dir="${reports.dir}/junit/"/>
++        <mkdir dir="${reports.dir}/junit/${ant.project.name}/"/>
++        <junit printsummary="yes" haltonfailure="no" fork="yes" forkmode="once" reloading="false"
++               failureproperty="unit.tests.failed"
++               jvm="${java.home}/bin/java">
++            <env key="JAVA_HOME" path="${env.JAVA_HOME}"/>
++            <classpath>
++                <pathelement path="${build.dir}"/>
++                <pathelement path="${build.test.dir}"/>
++                <pathelement path="${build.db.test.dir}"/>
++                <path refid="classpath"/>
++            </classpath>
++            <formatter type="xml"/>
++            <batchtest todir="${reports.dir}/junit/${ant.project.name}">
++                <fileset dir="${build.db.test.dir}">
++                    <include name="**/*Test.class"/>
++                    <exclude name="**/Base*"/>
++                    <exclude name="**/Abstract*"/>
++                </fileset>
++            </batchtest>
++        </junit>
++
++        <mkdir dir="${reports.dir}/junit-report/"/>
++        <mkdir dir="${reports.dir}/junit-report/${ant.project.name}/"/>
++        <junitreport todir="${reports.dir}/junit-report/${ant.project.name}">
++            <fileset dir="${reports.dir}/junit/${ant.project.name}">
++                <include name="TEST-*.xml"/>
++            </fileset>
++            <report format="frames" todir="${reports.dir}/junit-report/${ant.project.name}"/>
++        </junitreport>
++    </target>
++    <!--
++         Runs generic integration tests which do not require any database setup locally.
++         These should be run before committing any changes to check to make sure liquibase as a whole is still running.
++      -->
++    <target name="test-int-generic" description="Integration tests that can be run on any computer without any setup"
++            depends="prepare,compile">
++        <mkdir dir="${reports.dir}/junit/"/>
++        <mkdir dir="${reports.dir}/junit/${ant.project.name}/"/>
++        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" reloading="false"
++               failureproperty="unit.tests.failed"
++               jvm="${java.home}/bin/java">
++            <env key="JAVA_HOME" path="${env.JAVA_HOME}"/>
++            <classpath>
++                <pathelement path="${build.dir}"/>
++                <pathelement path="${build.test.dir}"/>
++                <pathelement path="${build.db.test.dir}"/>
++                <path refid="classpath"/>
++            </classpath>
++            <formatter type="brief" usefile="false"/>
++            <formatter type="xml"/>
++            <batchtest todir="${reports.dir}/junit/${ant.project.name}">
++                <fileset dir="${build.db.test.dir}">
++                    <include name="**/DerbySampleChangeLogRunnerTest.class"/>
++                    <include name="**/H2SampleChangeLogRunnerTest.class"/>
++                    <include name="**/HsqlSampleChangeLogRunnerTest.class"/>
++                </fileset>
++            </batchtest>
++        </junit>
++    </target>
++
++    <target name="-coverage-post-compile" depends="compile">
++        <taskdef resource="emma_ant.properties">
++            <classpath>
++                <pathelement location="${lib.compile.dir}/emma.jar"/>
++                <pathelement location="${lib.compile.dir}/emma_ant.jar"/>
++            </classpath>
++        </taskdef>
++        <path id="build.path">
++            <pathelement path="${build.dir}"/>
++        </path>
++        <emma enabled="true">
++            <instr
++                    instrpathref="build.path"
++                    destdir="${coverage.build.dir}"
++                    metadatafile="${coverage.output.dir}/metadata.emma"
++                    merge="true"
++                    />
++        </emma>
++    </target>
++
++    <target name="code-coverage"
++            depends="-coverage-post-compile,test" description="Generates code coverage reports for the unit tests">
++
++        <emma enabled="true">
++            <report sourcepath="${src.dir}/java">
++                <fileset dir="${coverage.output.dir}">
++                    <include name="*.emma"/>
++                </fileset>
++
++                <txt outfile="${reports.dir}/coverage-report/coverage.txt"/>
++                <html outfile="${reports.dir}/coverage-report/coverage.html"/>
++            </report>
++        </emma>
++    </target>
++
++    <target name="continuous-build" description="Used by the continuous build server and runs the generic tests"
++            depends="prepare,compile,test,test-int-generic">
++        <fail if="unit.tests.failed"/>
++    </target>
++
++    <target name="maven" depends="prepare">
++      <property environment="env"/>
++        <echo>build version: ${build.version}</echo>
++
++        <delete file="${basedir}/../pom.xml"/>
++        <delete file="${maven.basedir}/pom.xml"/>
++
++        <copy file="${basedir}/../pom.base.xml" tofile="${basedir}/../pom.xml" filtering="true">
++            <filterset>
++                <filter token="BUILD.VERSION" value="${build.version}"/>
++                <filter token="MAVEN.BUILD.VERSION" value="${build.version}.${maven.build.version}"/>
++            </filterset>
++        </copy>
++        <copy file="${maven.basedir}/pom.base.xml" tofile="${maven.basedir}/pom.xml" filtering="true">
++            <filterset>
++                <filter token="BUILD.VERSION" value="${build.version}"/>
++                <filter token="MAVEN.BUILD.VERSION" value="${build.version}.${maven.build.version}"/>
++            </filterset>
++        </copy>
++
++        <typedef resource="org/apache/maven/artifact/ant/antlib.xml">
++            <classpath>
++                <fileset dir="${lib.compile.dir}">
++                    <include name="*.jar"/>
++                </fileset>
++                <fileset dir="${maven.basedir}/lib">
++                    <include name="*.jar"/>
++                </fileset>
++            </classpath>
++        </typedef>
++
++        <pom id="core.maven.project" file="${basedir}/../pom.xml"/>
++        <pom id="plugin.maven.project" file="${maven.basedir}/pom.xml"/>
++
++        <deploy file="${package.dir}/liquibase-${build.version}/liquibase-${build.version}.jar">
++            <remoteRepository url="file://${maven.repository}"/>
++            <pom refid="core.maven.project"/>
++        </deploy>
++
++        <exec dir="${maven.basedir}" executable="cmd">
++            <env key="JAVA_HOME" value="${env.JAVA_HOME}"/>
++            <arg value="/c"/>
++            <arg value="${env.M2_HOME}\bin\mvn.bat"/>
++            <arg value="clean"/>
++            <arg value="package"/>
++            <arg value="plugin:xdoc"/>
++            <arg value="site"/>
++        </exec>
++
++        <deploy file="${maven.basedir}/target/liquibase-plugin-${build.version}.${maven.build.version}.jar">
++            <remoteRepository url="file://${maven.repository}"/>
++            <pom refid="plugin.maven.project"/>
++        </deploy>
++
++        <!--TODO automate the coping the html files into the site... -->
++        <copy todir="${src.dir}/site/phpincludes">
++          <fileset dir="${maven.build.dir}/site">
++            <include name="*-mojo.html"/>
++          </fileset>
++        </copy>
++    </target>
++
++    <target name="maven-snapshot" depends="prepare">
++      <property environment="env"/>
++        <echo>build version: ${build.version}</echo>
++
++        <delete file="${basedir}/../pom.xml"/>
++        <delete file="${maven.basedir}/pom.xml"/>
++
++        <copy file="${basedir}/../pom.base.xml" tofile="${basedir}/../pom.xml" filtering="true">
++            <filterset>
++                <filter token="BUILD.VERSION" value="${build.version}-SNAPSHOT"/>
++                <filter token="MAVEN.BUILD.VERSION" value="${build.version}.${maven.build.version}-SNAPSHOT"/>
++            </filterset>
++        </copy>
++        <copy file="${maven.basedir}/pom.base.xml" tofile="${maven.basedir}/pom.xml" filtering="true">
++            <filterset>
++                <filter token="BUILD.VERSION" value="${build.version}-SNAPSHOT"/>
++                <filter token="MAVEN.BUILD.VERSION" value="${build.version}.${maven.build.version}-SNAPSHOT"/>
++            </filterset>
++        </copy>
++
++        <typedef resource="org/apache/maven/artifact/ant/antlib.xml">
++            <classpath>
++                <fileset dir="${lib.compile.dir}">
++                    <include name="*.jar"/>
++                </fileset>
++                <fileset dir="${maven.basedir}/lib">
++                    <include name="*.jar"/>
++                </fileset>
++            </classpath>
++        </typedef>
++
++        <pom id="core.maven.project" file="${basedir}/../pom.xml"/>
++        <pom id="plugin.maven.project" file="${maven.basedir}/pom.xml"/>
++
++        <deploy file="${release.dir}/liquibase-SNAPSHOT.jar">
++            <remoteRepository url="file://${maven.repository.snapshot}"/>
++            <pom refid="core.maven.project"/>
++        </deploy>
++
++        <exec dir="${maven.basedir}" executable="cmd">
++            <env key="JAVA_HOME" value="${env.JAVA_HOME}"/>
++            <arg value="/c"/>
++            <arg value="${env.M2_HOME}\bin\mvn.bat"/>
++            <arg value="clean"/>
++            <arg value="package"/>
++            <arg value="plugin:xdoc"/>
++            <arg value="site"/>
++        </exec>
++
++        <deploy file="${maven.basedir}/target/liquibase-plugin-${build.version}.${maven.build.version}-SNAPSHOT.jar">
++            <remoteRepository url="file://${maven.repository.snapshot}"/>
++            <pom refid="plugin.maven.project"/>
++        </deploy>
++
++        <!--TODO automate the coping the html files into the site... -->
++        <copy todir="${src.dir}/site/phpincludes">
++          <fileset dir="${maven.build.dir}/site">
++            <include name="*-mojo.html"/>
++          </fileset>
++        </copy>
++    </target>
++
++
++    <!-- target: ALL -->
++    <target name="all" depends="prepare">
++        <antcall target="clean" inheritAll="true" inheritRefs="true"/>
++        <antcall target="prepare" inheritAll="true" inheritRefs="true"/>
++        <antcall target="compile" inheritAll="true" inheritRefs="true"/>
++        <antcall target="javadoc" inheritAll="true" inheritRefs="true"/>
++        <antcall target="doxygen" inheritAll="true" inheritRefs="true"/>
++        <antcall target="site" inheritAll="true" inheritRefs="true"/>
++        <antcall target="package" inheritAll="true" inheritRefs="true"/>
++    </target>
++</project>
+Index: src/java-test/liquibase/change/ModifyColumnChangeTest.java
+===================================================================
+--- src/java-test/liquibase/change/ModifyColumnChangeTest.java	(revision 978)
++++ src/java-test/liquibase/change/ModifyColumnChangeTest.java	(working copy)
+@@ -1,62 +1,89 @@
+-package liquibase.change;
+-
+-import liquibase.database.OracleDatabase;
+-import static org.junit.Assert.*;
+-import org.junit.Before;
+-import org.junit.Test;
+-import org.w3c.dom.Document;
+-import org.w3c.dom.Element;
+-import org.w3c.dom.NodeList;
+-
+-import javax.xml.parsers.DocumentBuilderFactory;
+-
+-/**
+- * Tests for {@link ModifyColumnChange}
+- */
+-public class ModifyColumnChangeTest extends AbstractChangeTest {
+-
+-    ModifyColumnChange change;
+-
+-    @Before
+-    public void setUp() throws Exception {
+-        change = new ModifyColumnChange();
+-        change.setTableName("TABLE_NAME");
+-
+-        ColumnConfig col1 = new ColumnConfig();
+-        col1.setName("NAME");
+-        col1.setType("integer(3)");
+-
+-        change.addColumn(col1);
+-    }
+-
+-    @Test
+-    public void getRefactoringName() throws Exception {
+-        assertEquals("Modify Column", change.getChangeName());
+-    }
+-
+-    @Test
+-    public void generateStatement() throws Exception {
+-        OracleDatabase database = new OracleDatabase();
+-        assertEquals("ALTER TABLE TABLE_NAME MODIFY (NAME integer(3))", change.generateStatements(database)[0].getSqlStatement(database));
+-    }
+-
+-    @Test
+-    public void getConfirmationMessage() throws Exception {
+-        assertEquals("Columns NAME(integer(3)) of TABLE_NAME modified", change.getConfirmationMessage());
+-    }
+-
+-    @Test
+-    public void createNode() throws Exception {
+-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+-
+-        Element node = change.createNode(document);
+-        assertEquals("modifyColumn", node.getTagName());
+-        assertEquals("TABLE_NAME", node.getAttribute("tableName"));
+-
+-        NodeList columns = node.getElementsByTagName("column");
+-        assertEquals(1, columns.getLength());
+-        assertEquals("column", ((Element) columns.item(0)).getTagName());
+-        assertEquals("NAME", ((Element) columns.item(0)).getAttribute("name"));
+-        assertEquals("integer(3)", ((Element) columns.item(0)).getAttribute("type"));
+-    }
+-}
++package liquibase.change;
++
++import static org.junit.Assert.assertEquals;
++
++import javax.xml.parsers.DocumentBuilderFactory;
++
++import liquibase.database.Database;
++import liquibase.database.MySQLDatabase;
++import liquibase.database.OracleDatabase;
++
++import org.junit.Before;
++import org.junit.Test;
++import org.w3c.dom.Document;
++import org.w3c.dom.Element;
++import org.w3c.dom.NodeList;
++
++/**
++ * Tests for {@link ModifyColumnChange}
++ */
++public class ModifyColumnChangeTest extends AbstractChangeTest {
++
++    ModifyColumnChange change;
++
++    @Before
++    public void setUp() throws Exception {
++        change = new ModifyColumnChange();
++        change.setTableName("TABLE_NAME");
++
++        ColumnConfig col1 = new ColumnConfig();
++        col1.setName("NAME");
++        col1.setType("integer(3)");
++
++        change.addColumn(col1);
++    }
++
++    @Test
++    public void getRefactoringName() throws Exception {
++        assertEquals("Modify Column", change.getChangeName());
++    }
++
++    @Test
++    public void generateStatement() throws Exception {
++        OracleDatabase database = new OracleDatabase();
++        assertEquals("ALTER TABLE TABLE_NAME MODIFY ( NAME integer(3) )", change.generateStatements(database)[0].getSqlStatement(database));
++    }
++
++    @Test
++    public void getConfirmationMessage() throws Exception {
++        assertEquals("Columns NAME(integer(3)) of TABLE_NAME modified", change.getConfirmationMessage());
++    }
++
++    @Test
++    public void createNode() throws Exception {
++        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
++
++        Element node = change.createNode(document);
++        assertEquals("modifyColumn", node.getTagName());
++        assertEquals("TABLE_NAME", node.getAttribute("tableName"));
++
++        NodeList columns = node.getElementsByTagName("column");
++        assertEquals(1, columns.getLength());
++        assertEquals("column", ((Element) columns.item(0)).getTagName());
++        assertEquals("NAME", ((Element) columns.item(0)).getAttribute("name"));
++        assertEquals("integer(3)", ((Element) columns.item(0)).getAttribute("type"));
++    }
++    
++    @Test
++    public void generateFullStatementForMysql() throws Exception {
++        Database database = new MySQLDatabase();
++        ModifyColumnChange mysqlchange = new ModifyColumnChange();
++        mysqlchange.setTableName("TABLE_NAME");
++
++        ColumnConfig col1 = new ColumnConfig();
++        col1.setName("NAME");
++        col1.setType("integer(3)");
++        col1.setAutoIncrement(true);
++        col1.setDefaultValueNumeric(0);
++        
++        ConstraintsConfig constraints = new ConstraintsConfig();
++        constraints.setPrimaryKey(true);
++        constraints.setNullable(false);
++        col1.setConstraints(constraints);
++
++        mysqlchange.addColumn(col1);
++        assertEquals("ALTER TABLE `TABLE_NAME` MODIFY `NAME` integer(3) NOT NULL DEFAULT 0 AUTO_INCREMENT PRIMARY KEY", mysqlchange.generateStatements(database)[0].getSqlStatement(database));
++    }
++
++    
++}

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<joined-subclass name="org.openmrs.activelist.Problem" extends="org.openmrs.activelist.ActiveListItem" table="active_list_problem" lazy="false">
+		<key column="active_list_id" not-null="true" on-delete="cascade"/>
+		<property name="modifier" column="status">
+			<type name="org.openmrs.util.HibernateEnumType">
+				<param name="enumClassName">org.openmrs.activelist.ProblemModifier</param>
+			</type>
+		</property>
+		<property name="sortWeight" type="java.lang.Double" column="sort_weight" length="22"/>
+	</joined-subclass>
+</hibernate-mapping>

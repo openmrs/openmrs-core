@@ -1,0 +1,412 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+	  "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+	  "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
+<module name="Checker">
+
+	<!--                                                -->
+	<!--           CHECKSTYLE CONFIGURATION             -->
+	<!--                                                -->
+
+	<!--
+		All reported file names will be relative to the specified directory.
+	-->
+	<property name="basedir" value="${src.dir}" />
+
+	<!--
+		Limit checks by their severity (e.g., error or warning) 
+	-->
+	<module name="SeverityMatchFilter">
+		<property name="severity" value="${checkstyle.severityMatchFilter}"
+			default="error" />
+	</module>
+
+	<!--
+		SuppressionFilter can supply a file that contains a list of specific
+		audits that should be suppressed.
+		http://checkstyle.sourceforge.net/config.html
+	-->
+	<module name="SuppressionFilter">
+		<property name="file"
+			value="${metadata.dir}/${checkstyle.suppressions.file}" />
+	</module>
+
+	<!--                                                -->
+	<!--                FILE CHECKS                     -->
+	<!--                                                -->
+
+	<!--
+		Verify that all java files have the OpenMRS license header.
+	-->
+	<module name="Header">
+		<property name="headerFile" value="${metadata.dir}/${checkstyle.header.file}" />
+		<property name="fileExtensions" value="java" />
+		<property name="id" value="header" />
+	</module>
+
+	<!--
+		Define a maximum number of lines in a java file.
+	-->
+	<module name="FileLength">
+		<property name="fileExtensions" value="java" />
+		<property name="max" value="${checkstyle.fileLength.maxLines}" />
+	</module>
+
+	<!--
+		Check for use of System.out.println()
+	-->
+	<module name="RegexpSingleline">
+		<property name="format" value="System\.out\.println\(\)" />
+		<property name="message"
+			value="System.out.println() should not be used. Use logging convention instead." />
+	</module>
+
+	<!--
+		Check for use of ex.printStackTrace()
+	-->
+	<module name="RegexpSingleline">
+		<property name="id" value="IllegalPrintStackTrace" />
+		<property name="format" value="\.printStackTrace\(\)" />
+		<property name="message"
+			value="ex.PrintStackTrace() should not be used. Use logging convention instead." />
+	</module>
+
+	<!--
+		Check source files for tab (\t) characters. If "eachLine" is true,
+		then check will report on each offending line
+	-->
+	<!--
+		<module name="FileTabCharacter"> <property name="eachLine"
+		value="${checkstyle.fileTabCharacter.eachLine}"/> </module>
+	-->
+
+	<!-- Find lines with trailing spaces -->
+	<!--
+		<module name="RegexpSingleline"> <property name="format"
+		value="\s+$"/> <property name="minimum" value="0"/> <property
+		name="maximum" value="0"/> </module>
+	-->
+
+	<!--                                                -->
+	<!--        PACKAGE DOCUMENTATION CHECKS            -->
+	<!--                                                -->
+	<!-- Require a package level Javadoc -->
+	<!--
+		<module name="JavadocPackage"> <property name="allowLegacy"
+		value="${checkstyle.javadocPackage.allowLegacy}" /> </module>
+	-->
+
+	<!--                                                -->
+	<!--                MISCELLANEOUS CHECKS            -->
+	<!--                                                -->
+
+	<!-- Ensure translation files contain the same keys -->
+	<module name="Translation">
+		<property name="severity" value="${checkstyle.translation.severity}"
+			default="error" />
+	</module>
+
+	<!--                                                -->
+	<!--                 FILE LEVEL CHECKS              -->
+	<!--                                                -->
+
+	<!-- TreeWalker is used to process individual Java files -->
+	<module name="TreeWalker">
+		<!-- Defines expected tab width for checks that require a tab width -->
+		<property name="tabWidth" value="${checkstyle.tabWidth}" />
+
+		<!--                                                -->
+		<!--              CODING STYLE CHECKS               -->
+		<!--                                                -->
+
+		<!-- Do not use "import com.example.*"" -->
+		<module name="AvoidStarImport" />
+
+		<!--
+			Check for package names that do not follow convention. 
+		-->
+		<module name="PackageName" />
+
+		<!--
+			Check that class and interface names follow convention.
+		-->
+		<module name="TypeName">
+			<property name="format" value="${checkstyle.typeName.format}" />
+		</module>
+
+		<!-- 
+			Check for one outer class per file
+		-->
+		<module name="OuterTypeNumber" />
+
+		<!-- 
+			Check for method names that do not follow convention.
+		-->
+		<module name="MethodName" />
+
+		<!--
+			Check for overly long methods (too many lines).
+		-->
+		<module name="MethodLength">
+			<property name="max" value="${checkstyle.methodLength.max}" />
+		</module>
+
+		<!--
+			Check for parameter names that do not follow convention
+		-->
+		<module name="ParameterName">
+			<property name="format" value="${checklist.parameterName.format}" />
+		</module>
+
+		<module name="ParameterNumber">
+			<property name="max" value="${checkstyle.parameterNumber.max}" />
+		</module>
+
+		<!--
+			Check for duplicate imports.
+		-->
+		<module name="RedundantImport" />
+
+		<!--
+			Check for illegal imports. By default this is only sun.* packages
+		-->
+		<module name="IllegalImport" />
+
+		<!--
+			Check for catch statements that catch Exception, Throwable, or
+			RunTimeException. In most (if not all) cases, these exceptions should
+			not be caught; rather, more specific exceptions should be caught.
+		-->
+		<module name="IllegalCatch">
+			<property name="illegalClassNames" value=" java.lang.Throwable, java.lang.RuntimeException"/>
+		</module>
+
+		<!--
+			Prevent specific types from being thrown. Defaults to
+			java.lang.Throwable, java.lang.Error, and java.lang.RuntimeException.
+		-->
+		<module name="IllegalThrows" />
+
+		<!--
+			Check for instantiation of specific classes. For example, check for
+			constructor invocations for java.lang.Boolean, which should be
+			replaced with predefined constants TRUE and FALSE. Other
+			possibilities would be classes that should always be created via a
+			factory method.
+		-->
+		<module name="IllegalInstantiation">
+			<property name="classes" value="java.lang.Boolean" />
+		</module>
+
+		<!--
+			Check for assignments within subexpressions, which may reduce the
+			readability of code or represent an assignment where a comparison was
+			intended.
+		-->
+		<module name="InnerAssignment" />
+
+		<!--
+			Check for long lines
+		-->
+		<module name="LineLength">
+			<property name="max" value="125" />
+			<property name="ignorePattern" value="^ *\* *[^ ]+$" />
+		</module>
+
+		<!-- 
+			Check for switch statements without a "default" case
+		 -->
+		<module name="MissingSwitchDefault" />
+
+		<!--
+			Check for switch statement cases with java code, but without a break,
+			return, or throw.
+		-->
+		<module name="FallThrough" />
+
+		<!--
+			Check that there are no "magic numbers", where a magic number is a
+			numeric literal that is not defined as a constant. By default, -1, 0,
+			1, and 2 are not considered to be magic numbers.
+		-->
+		<module name="MagicNumber" />
+
+		<!--
+			Check that literal Longs use a capital "L" to avoid confusion with
+			the number one (1).
+		-->
+		<module name="UpperEll" />
+
+		<!--
+			Check for classes that override equals() without overriding
+			hashCode().
+		-->
+		<module name="EqualsHashCode" />
+
+		<!--
+			Check for too many nested if statements.
+		-->
+		<module name="NestedIfDepth">
+			<property name="max" value="${checkstyle.nestedIfDepth.max}" />
+		</module>
+
+		<!--
+			Check for too many nested try/catch blocks.
+		-->
+		<module name="NestedTryDepth">
+			<property name="max" value="${checkstyle.nestedTryDepth.max}" />
+		</module>
+
+		<!--
+			Check that the java.lang.Override annotation is present when the
+			{@inheritDoc} javadoc tag is present.
+		-->
+		<module name="MissingOverride">
+			<property name="javaFiveCompatibility" value="false" />
+		</module>
+
+		<!--
+			Check that string literals are not used with == or !=. 
+		-->
+		<module name="StringLiteralEquality" />
+
+		<!--
+			Check to see if classes override Object's clone() method.
+		-->
+		<module name="NoClone" />
+
+		<!--
+			Checks that the order of modifiers conforms to the suggestions in the
+			Java Language specification, sections 8.1.1, 8.3.1 and 8.4.3. The
+			correct order is: public, protected, private, abstract, static,
+			final, transient, volatile, synchronized, native, strictfp.
+		-->
+		<module name="ModifierOrder" />
+
+		<!--
+			Check for overly complicated boolean return statements.
+		-->
+		<module name="SimplifyBooleanReturn" />
+
+		<!--
+			Check for (expression == true) or (expression == false), which can be
+			simpllified as (expression) and (!expression), respectively.
+		-->
+		<!--
+		<module name="SimplifyBooleanExpression" />
+		-->
+
+		<!--
+			Check for redundant modifiers. Since interface methods are implicitly
+			public according to the Java Language Specification, declaring
+			methods within interfaces as public is redundant.
+			http://java.sun.com/docs/books/jls/third_edition/html/names.html#104285
+		-->
+		<!--
+			<module name="RedundantModifier" />
+		-->
+
+		<!--
+			Check for empty blocks
+			(http://checkstyle.sourceforge.net/config_blocks.html)
+		-->
+		<!--
+			option: text = require at least some text, stmt = require at least
+			one statement
+		-->
+		<!--
+			<module name="EmptyBlock"> <property name="option"
+			value="${checkstyle.emptyBlock.option}" /> </module>
+		-->
+
+		<!-- Check names of constants -->
+		<!-- Allow for "log" constant name for logging -->
+		<!--
+			<module name="ConstantName"> <property name="format"
+			value="^(log)|([A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$" /> </module>
+		-->
+
+		<!--
+			ImportControl can check to see that packages aren't being imported in
+			the wrong context. For example, it could be used to prevent Hibernate
+			packages from being imported above the DAO layer.
+		-->
+		<!--
+			<module name="ImportControl"> <property name="file"
+			value="${checkstyle.importcontrol.file}"/> </module>
+		-->
+
+		<!--                                                -->
+		<!--              FORMAT CHECKS                     -->
+		<!--                                                -->
+
+		<module name="LeftCurly">
+			<property name="option" value="${checkstyle.leftCurly.policy}" />
+		</module>
+
+		<!-- 
+			Check for space between method name and opening parens
+		-->
+		<module name="MethodParamPad" />
+
+		<!--
+			Check for whitespace before and after certain tokens
+		-->
+		<module name="NoWhitespaceBefore" />
+		<module name="NoWhitespaceAfter">
+			<property name="tokens"
+				value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS" />
+		</module>
+		<module name="GenericWhitespace" />
+
+		<!--
+			Check that lines wrapped on an operator place the operator at the
+			beginning of the next line.
+		-->
+		<module name="OperatorWrap" />
+
+		<!--
+			Checks whether a space is after a left parenthesis and before a right
+			parenthesis, or such spaces are forbidden.
+		-->
+		<module name="TypecastParenPad" />
+
+		<!--                                                -->
+		<!--              DOCUMENTATION CHECKS              -->
+		<!--                                                -->
+
+		<!-- Public classes and interfaces should have a Javadoc comment -->
+		<module name="JavadocType">
+			<property name="scope" value="public" />
+			<property name="allowMissingParamTags" value="true" />
+			<property name="allowUnknownTags" value="true" />
+		</module>
+
+		<!--  Public methods should have Javadoc -->
+		<!--
+			<module name="JavadocMethod"> <property name="scope" value="public"
+			/> <property name="allowUndeclaredRTE" value="true" /> <property
+			name="allowThrowsTagsForSubclasses" value="true" /> <property
+			name="allowMissingParamTags" value="true" /> <property
+			name="allowMissingThrowsTags" value="true" /> <property
+			name="allowMissingReturnTag" value="true" /> <property
+			name="allowMissingJavadoc" value="true" /> <property
+			name="allowMissingPropertyJavadoc" value="true" /> </module>
+		-->
+
+		<!-- Public variables should have Javadoc -->
+		<!--
+			<module name="JavadocVariable"> <property name="scope" value="public"
+			/> </module>
+		-->
+
+		<!-- Avoid empty Javadoc comments -->
+		<!--
+			<module name="JavadocStyle"> <property name="checkFirstSentence"
+			value="false" /> <property name="checkEmptyJavadoc" value="true" />
+			</module>
+		-->
+
+	</module>
+</module>

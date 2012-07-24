@@ -1,0 +1,56 @@
+Maintenance:
+	Title:		Direct Tuberculosis Contact;;
+	Filename:	directtbcontact;;
+	Version:	0.5;;
+	Institution:	Indiana University School of Medicine;;
+	Author:		Paul Biondich;;
+	Specialist:	Pediatrics;;
+	Date:		07/23/06 2:10:00 PM;;
+	Validation:	;;
+Library:
+	Purpose:	PSF screening question that assesses direct exposure to someone with tuberculosis, which is a risk factor for TB exposure.;;
+	Explanation:  Uses new EXIST modifier.. need to discuss with group.;;
+	Keywords:	PSF, TB, tuberculosis, exposure;;
+	//Citations:	2004 Pediatric Tuberculosis Collaborative Group Report - AAP;;
+	Links:	;;
+Knowledge:
+	Type:	data_driven;;
+Data:
+Pos_Risk := read {ENVIRONMENTAL HISTORY from CHICA} Where it Occurred Within Past 1 Year;
+Neg_Risk := read {NEGATIVE ENVIRONMENTAL HISTORY from CHICA} Where it Occurred Within Past 1 Year;
+PPD := read Exist {PPD from CHICA} Where it Occurred Within Past 1 Year;
+//Study := read LAST {K22STUDY1};
+;;
+	Priority:	262;;
+	Evoke:	;;
+//	Urgency:	;;
+
+Logic:
+//If {Study = Control} then conclude False;
+
+//If (Pos_Risk = True) then conclude False;
+If any Pos_Risk is in ('TRAVEL TO TB ENDEMIC COUNTRY', 'TB EXPOSURE') then conclude False;
+
+//If (Neg_Risk = True) then conclude False;
+If any Neg_Risk is in ('TRAVEL TO TB ENDEMIC COUNTRY') then conclude False;
+
+//If (PPD = True) then conclude False;
+If PPD = 'POSITIVE' then conclude False;
+
+conclude True;
+;;
+Action:
+write ("Has || firstname || been exposed to anyone with tuberculosis (TB) disease?");
+// needs to be re-translated write("") At Spanish;
+;;
+
+/*
+CHICA:
+Minimum Age: 11 months;
+Maximum Age: 11 years;
+CHICA Priority: 262;
+JIT Filename: ;
+If  (Box1) then ENVIRONMENTAL HISTORY = DIRECT TUBERCULOSIS CONTACT;;
+If  (Box2) then NEGATIVE ENVIRONMENTAL HISTORY = DIRECT TUBERCULOSIS CONTACT;;
+*/
+end:

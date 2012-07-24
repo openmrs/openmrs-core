@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+    <joined-subclass name="org.openmrs.activelist.Allergy" extends="org.openmrs.activelist.ActiveListItem" table="active_list_allergy" lazy="false">
+		<key column="active_list_id" not-null="true" on-delete="cascade"/>
+		<property name="allergyType" column="allergy_type" length="50">
+			<type name="org.openmrs.util.HibernateEnumType">
+				<param name="enumClassName">org.openmrs.activelist.AllergyType</param>
+			</type>
+		</property>
+		<property name="severity" column="severity" length="50">
+		    <type name="org.openmrs.util.HibernateEnumType">
+		    	<param name="enumClassName">org.openmrs.activelist.AllergySeverity</param>
+		    </type>
+		</property>
+		<many-to-one name="reaction" class="org.openmrs.Concept">
+			<column name="reaction_concept_id"/>
+		</many-to-one>
+    </joined-subclass>
+</hibernate-mapping>
