@@ -30,8 +30,12 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptReferenceTermMap;
+import org.openmrs.ConceptSource;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
@@ -875,5 +879,64 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertTrue(mav.getModel().isEmpty());
 		
 		assertEquals(initialConceptMappingCount - 1, cs.getConcept(conceptId).getConceptMappings().size());
+	}
+	
+	/**
+	 * @see ConceptFormController#validateConceptUsesPersistedObjects(Concept,BindException)
+	 * @verifies add error if map type is not saved
+	 */
+	@Test
+	public void validateConceptReferenceTermUsesPersistedObjects_shouldAddErrorIfMapTypeIsNotSaved() throws Exception {
+		Concept concept = new Concept();
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term.setName("name");
+		term.setCode("code");
+		term.setConceptSource(new ConceptSource(1));
+		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), new ConceptMapType()));
+		concept.addConceptMapping(new ConceptMap(term, new ConceptMapType(1)));
+		BindException errors = new BindException(concept, "concept");
+		new ConceptFormController().validateConceptUsesPersistedObjects(concept, errors);
+		Assert.assertEquals(1, errors.getErrorCount());
+		Assert.assertEquals(true, errors
+		        .hasFieldErrors("conceptMappings[0].conceptReferenceTerm.conceptReferenceTermMaps[0].conceptMapType"));
+	}
+	
+	/**
+	 * @see ConceptFormController#validateConceptUsesPersistedObjects(Concept,BindException)
+	 * @verifies add error if source is not saved
+	 */
+	@Test
+	public void validateConceptReferenceTermUsesPersistedObjects_shouldAddErrorIfSourceIsNotSaved() throws Exception {
+		Concept concept = new Concept();
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term.setName("name");
+		term.setCode("code");
+		term.setConceptSource(new ConceptSource());
+		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), new ConceptMapType(1)));
+		concept.addConceptMapping(new ConceptMap(term, new ConceptMapType(1)));
+		BindException errors = new BindException(concept, "concept");
+		new ConceptFormController().validateConceptUsesPersistedObjects(concept, errors);
+		Assert.assertEquals(1, errors.getErrorCount());
+		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptReferenceTerm.conceptSource"));
+	}
+	
+	/**
+	 * @see ConceptFormController#validateConceptUsesPersistedObjects(Concept,BindException)
+	 * @verifies add error if term b is not saved
+	 */
+	@Test
+	public void validateConceptReferenceTermUsesPersistedObjects_shouldAddErrorIfTermBIsNotSaved() throws Exception {
+		Concept concept = new Concept();
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term.setName("name");
+		term.setCode("code");
+		term.setConceptSource(new ConceptSource(1));
+		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(), new ConceptMapType(1)));
+		concept.addConceptMapping(new ConceptMap(term, new ConceptMapType(1)));
+		BindException errors = new BindException(concept, "concept");
+		new ConceptFormController().validateConceptUsesPersistedObjects(concept, errors);
+		Assert.assertEquals(1, errors.getErrorCount());
+		Assert.assertEquals(true, errors
+		        .hasFieldErrors("conceptMappings[0].conceptReferenceTerm.conceptReferenceTermMaps[0].termB"));
 	}
 }
