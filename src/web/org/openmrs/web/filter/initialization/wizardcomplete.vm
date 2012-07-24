@@ -1,0 +1,30 @@
+#parse($headerTemplate)
+	<form method="post">
+		<input type="hidden" name="page" value="wizardcomplete.vm" /> 
+		<div class="content">
+		<!-- TODO list off all collected properties here -->
+            <table cellpadding="9" align="center" cellspacing="5" >
+                <tr>
+                    <td colspan="2"><strong>Step 6 of 6</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="question" >All required input has been collected and is ready to be processed.</td>
+                </tr>
+                <tr>
+                    <td>Click the "finish" button to create tables, data, etc.</td>
+                </tr>
+                <tr>
+                    <td>This could take up to several minutes.  When complete you will be taken to the OpenMRS main screen.</td>
+                </tr>
+                <tr>
+                    <td colspan= "2">
+                        <input class="button" name="back" type="submit" value="Back"/>&nbsp; &nbsp;
+                        <input class="button" id="start" type="submit" value="Finish"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+	</form>
+	
+    <div id="progressbar"></div>
+#parse($footerTemplate)

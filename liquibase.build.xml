@@ -1,0 +1,251 @@
+<?xml version="1.0"?>
+<!-- *********************************************************** -->
+<!-- ** Ant build script for OpenMRS for Liquibase tasks      ** -->
+<!-- **                                                       ** -->
+<!-- *********************************************************** -->
+<project name="OpenMRS-liquibase-targets">
+	
+	<!-- Library versions and JARs -->
+    <property name="lib.dir" location="lib" />
+    <property file="${lib.dir}/lib.properties" />
+	<fileset id="lib.files" dir="${lib.dir}">
+        <include name="**/*.jar" />
+    </fileset>
+	<path id="lib.path">
+        <fileset refid="lib.files" />
+	</path>
+	
+	<!-- import default properties -->
+	<property file="build.properties" />
+	<import file="properties.xml" />
+	
+	<!-- setup the path and properties for liquibase targets -->
+	<mkdir dir="build" />
+	<path id="classpath">
+        <fileset dir="${liquibase.dir}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${database.dir}">
+            <include name="*.jar"/>
+        </fileset>
+		<path refid="api.compile.classpath"/>
+		<pathelement location="${build.dir}" />
+    </path>
+
+    <property name="db.changelog.file" value="root.changelog.xml"/>
+    <property name="database.url" value="jdbc:mysql://localhost:3306"/>
+    <property name="database.username" value="root"/>
+    <property name="database.password" value="password"/>
+    <property name="database.driver" value="com.mysql.jdbc.Driver"/>
+    <property name="prompt.user.if.not.local.database" value="true"/>
+	<property name="openmrs.version" value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}-${openmrs.version.suffix}"/>
+    <taskdef resource="liquibasetasks.properties">
+    	<classpath refid="classpath"/>
+    </taskdef>
+	
+	<target name="generate-offline-sql-diff-mysql" description="Create the /dist/update-to-latest-mysql-diff.sql file for running on systems that don't use the openmrs webapp">
+		<antcall target="-run-changelog-with-output">
+			<param name="changelog" value="${metadata.dir}/model/liquibase-update-to-latest.xml"/>
+			<param name="dburl" value="${database.url}" />
+			<param name="outputfile" value="dist/update-to-latest-mysql-diff.sql"/>
+		</antcall>
+		
+		<echo message="Created dist/update-to-latest.sql"/>
+	</target>
+	
+	<target name="generate-offline-sql-create-mysql" description="Create the /dist/1-x-x-schema-and-core.sql file for running on systems that don't use the openmrs webapp">
+		<mkdir dir="${build.dir}/liquibase"/>
+		<unzip src="${metadata.dir}/model/liquibase-data.zip" dest="${build.dir}/liquibase"></unzip>
+		
+		<property name="dbname" value="openmrs-ant-${openmrs.version}" />
+		<antcall target="-recreate-db"><param name="db" value="${dbname}"/></antcall>
+				
+		<antcall target="-run-changelog-with-output">
+			<param name="changelog" value="${build.dir}/liquibase/liquibase-schema-only.xml"/>
+			<param name="dburl" value="${database.url}/${dbname}"/>
+			<param name="outputfile" value="dist/${openmrs.version}-schema-only.sql"/>
+		</antcall>
+		
+		<antcall target="-run-changelog-with-output">
+			<param name="changelog" value="${build.dir}/liquibase/liquibase-core-data.xml"/>
+			<param name="dburl" value="${database.url}/${dbname}"/>
+			<param name="outputfile" value="dist/${openmrs.version}-core-data.sql"/>
+		</antcall>
+		
+		<concat destfile="dist/${openmrs.version}-schema-and-core.sql">
+			<fileset dir="dist" includes="${openmrs.version}-schema-only.sql" />
+			<fileset dir="dist" includes="${openmrs.version}-core-data.sql" />
+		</concat>
+
+		<echo message="Created dist/${openmrs.version}-schema-and-core.sql"/>
+	</target>
+	
+	<target name="generate-data.zip-for-release" description="Create a new /metadata/model/liquibase-data.zip file using the latest liquibase-update-to-latest.sql file">
+		<mkdir dir="${build.dir}/liquibase"/>
+		<unzip src="${metadata.dir}/model/liquibase-data.zip" dest="${build.dir}/liquibase"></unzip>
+		
+		<!-- 
+		   Create the liquibase-schema-only.xml file
+		  -->
+		<property name="database.empty" value="openmrs-ant-one-${openmrs.version}" />
+		<property name="database.schema-only" value="openmrs-ant-two-${openmrs.version}" />
+		<antcall target="-recreate-db"><param name="db" value="${database.empty}"/></antcall>
+		<antcall target="-recreate-db"><param name="db" value="${database.schema-only}"/></antcall>
+		<antcall target="-run-changelog">
+			<param name="changelog" value="${build.dir}/liquibase/liquibase-schema-only.xml"/>
+			<param name="dburl" value="${database.url}/${database.schema-only}"/>
+		</antcall>
+		<antcall target="-run-changelog">
+			<param name="changelog" value="${metadata.dir}/model/liquibase-update-to-latest.xml"/>
+			<param name="dburl" value="${database.url}/${database.schema-only}"/>
+		</antcall>
+		<antcall target="-diffDatabase">
+			<param name="olddbname" value="${database.empty}"/>
+			<param name="dbname" value="${database.schema-only}"/>
+			<param name="outputfile" value="${build.dir}/liquibase/new-liquibase-schema-only.xml"/>
+		</antcall>
+		
+		<!-- 
+		   Create the liquibase-core-data.xml file
+		  -->
+		<property name="database.schema-and-core" value="${database.empty}"/>
+		<antcall target="-run-changelog">
+			<param name="changelog" value="${build.dir}/liquibase/liquibase-schema-only.xml"/>
+			<param name="dburl" value="${database.url}/${database.schema-and-core}"/>
+		</antcall>
+		<antcall target="-run-changelog">
+			<param name="changelog" value="${build.dir}/liquibase/liquibase-core-data.xml"/>
+			<param name="dburl" value="${database.url}/${database.schema-and-core}"/>
+		</antcall>
+		<antcall target="-run-changelog">
+			<param name="changelog" value="${metadata.dir}/model/liquibase-update-to-latest.xml"/>
+			<param name="dburl" value="${database.url}/${database.schema-and-core}"/>
+		</antcall>
+		<antcall target="-diffDatabase">
+			<param name="olddbname" value="${database.schema-only}"/>
+			<param name="dbname" value="${database.schema-and-core}"/>
+			<param name="outputfile" value="${build.dir}/liquibase/new-liquibase-core-data.xml"/>
+		</antcall>
+		
+		<!-- 
+		   Create the liquibase-demo-data.xml file
+		  -->
+		<property name="database.demo" value="${database.schema-only}"/>
+		<antcall target="-recreate-db"><param name="db" value="${database.demo}"/></antcall>
+		<antcall target="-run-changelog">
+			<param name="changelog" value="${build.dir}/liquibase/liquibase-schema-only.xml"/>
+			<param name="dburl" value="${database.url}/${database.demo}"/>
+		</antcall>
+		<antcall target="-run-changelog">
+			<param name="changelog" value="${build.dir}/liquibase/liquibase-core-data.xml"/>
+			<param name="dburl" value="${database.url}/${database.demo}"/>
+		</antcall>
+		<antcall target="-run-changelog">
+			<param name="changelog" value="${build.dir}/liquibase/liquibase-demo-data.xml"/>
+			<param name="dburl" value="${database.url}/${database.demo}"/>
+		</antcall>
+		<antcall target="-run-changelog">
+			<param name="changelog" value="${metadata.dir}/model/liquibase-update-to-latest.xml"/>
+			<param name="dburl" value="${database.url}/${database.demo}"/>
+		</antcall>
+		<antcall target="-diffDatabase">
+			<param name="olddbname" value="${database.schema-and-core}"/>
+			<param name="dbname" value="${database.demo}"/>
+			<param name="outputfile" value="${build.dir}/liquibase/new-liquibase-demo-data.xml"/>
+		</antcall>
+		
+		<move file="${build.dir}/liquibase/new-liquibase-schema-only.xml" tofile="${build.dir}/liquibase/liquibase-schema-only.xml" overwrite="true"/>
+		<move file="${build.dir}/liquibase/new-liquibase-core-data.xml" tofile="${build.dir}/liquibase/liquibase-core-data.xml" overwrite="true"/>
+		<move file="${build.dir}/liquibase/new-liquibase-demo-data.xml" tofile="${build.dir}/liquibase/liquibase-demo-data.xml" overwrite="true"/>
+		
+		<zip destfile="metadata/model/new-liquibase-data.zip">
+			<zipfileset dir="${build.dir}/liquibase">
+				<include name="liquibase-schema-only.xml"/>
+				<include name="liquibase-core-data.xml"/>
+				<include name="liquibase-demo-data.xml"/>
+			</zipfileset>
+		</zip>
+		
+		<echo message="All done. Created metadata/model/new-liquibase-data.zip"/>
+	</target>
+	
+	<target name="tmp">
+		<property name="database.schema-and-core" value="openmrs-ant-one-${openmrs.version}" />
+		<property name="database.schema-only" value="openmrs-ant-two-${openmrs.version}" />
+				
+		<antcall target="-diffDatabase">
+			<param name="olddbname" value="${database.schema-only}"/>
+			<param name="dbname" value="${database.schema-and-core}"/>
+			<param name="outputfile" value="${build.dir}/liquibase/new2-liquibase-demo-data.xml"/>
+		</antcall>
+	</target>
+	
+	<!-- Drop and recreate the database in the ${db} property -->
+	<target name="-recreate-db">
+		<sql 
+			driver="${database.driver}" 
+			userid="${database.username}"
+			password="${database.password}"
+			url="${database.url}"
+			classpathref="classpath">
+				drop database if exists `${db}`;
+				create database `${db}` default character set utf8;
+		</sql>
+	</target>
+	
+	<!-- Execute the given ${changelog} property on the given ${dburl} to ${outputfile} -->
+	<target name="-run-changelog-with-output">
+		<updateDatabase 
+			changelogfile="${changelog}"
+			driver="${database.driver}"
+			url="${dburl}"
+			username="${database.username}"
+			password="${database.password}"
+			promptOnNonLocalDatabase="${prompt.user.if.not.local.database}"
+			classpathref="classpath"
+			databaseChangeLogTableName="liquibasechangelog"
+			databaseChangeLogLockTableName="liquibasechangeloglock"
+			outputfile="${outputfile}"
+		/>
+	</target>
+
+	<!-- Execute the given ${changelog} property on the given ${dburl} -->
+	<target name="-run-changelog">
+		<updateDatabase 
+			changelogfile="${changelog}"
+			driver="${database.driver}"
+			url="${dburl}"
+			username="${database.username}"
+			password="${database.password}"
+			promptOnNonLocalDatabase="${prompt.user.if.not.local.database}"
+			classpathref="classpath"
+			databaseChangeLogTableName="liquibasechangelog"
+			databaseChangeLogLockTableName="liquibasechangeloglock"
+		/>
+	</target>
+	
+	<!-- Compare the database in ${dbname} with ${olddbname} and put the output in ${outputfile} -->
+	<target name="-diffDatabase">
+		<diffDatabaseToChangeLog
+			driver="${database.driver}"
+			url="${database.url}/${olddbname}"
+			username="${database.username}"
+			password="${database.password}"
+			
+			basedriver="${database.driver}"
+			baseurl="${database.url}/${dbname}"
+			baseusername="${database.username}"
+			basepassword="${database.password}"
+			
+			diffTypes="tables,columns,views,primaryKeys,uniqueConstraints,indexes,foreignKeys,sequences,data"
+			promptOnNonLocalDatabase="${prompt.user.if.not.local.database}"
+			classpathref="classpath"
+			databaseChangeLogTableName="liquibasechangelog"
+			databaseChangeLogLockTableName="liquibasechangeloglock"
+			
+			outputfile="${outputfile}" />
+		
+		<echo message="Dumped data in the ${dbname} database to ${outputfile} file"/>
+	</target>
+	
+</project>

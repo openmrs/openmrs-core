@@ -1,0 +1,76 @@
+Maintenance:
+	Title:		HiRiskLeadScreen;;
+	Filename:	HiRiskLeadScreen;;
+	Version:	1.0;;
+	Institution:	iCHSR;;
+	Author:		Steve Downs;;
+	Specialist:	Pediatrics;;
+	Date:		12/29/2003 6:18:13 PM;;
+	Validation:	;;
+Library:
+	Purpose:	PWS prompt to obtain blood lead if child has a risk factor;;
+	Explanation:	;;
+	Keywords:	lead risk based screening PWS;;
+	Citations:	;;
+	Links:	;;
+Knowledge:
+	Type:	data_driven;;
+/*	Priority:	748;;
+	Evoke:	;;
+	Urgency:	;;
+*/
+Data:
+Last_Pb := read Last 2 {BLOOD LEAD LEVEL IN LAST YEAR from RMRS} Where it Occurred Within Past 330 Days;
+Qual_Pb := read Last {CHICA REPORTED LEAD from CHICA} Where it Occurred Within Past 330 Days;
+/* 
+HousePre50 := read Last {HouseBltPre1950 from CHICA} Where it Occurred Within Past 2 Years;
+RenovatedPre78 := read Last {RenovatedPre78 from CHICA} Where it Occurred Within Past 365 Days;
+HiPbSibFriend := read Last {HiPbSibFriend from CHICA} Where it Occurred Within Past 365 Days;
+*/
+EnvHx := read {ENVIRONMENTAL HISTORY from CHICA} Where it Occurred Within Past 365 Days;
+
+;;
+	Priority:	748;;
+	Evoke:	;;
+
+Logic:
+//answer_list := ('HOME BUILT BEFORE 1960', 'HOME RENOVATED BEFORE 1978', 'TB EXPOSURE');
+if (Last_Pb >= 14) then LeadRisk = "has lead level greater than 14 mg/dcl";conclude True; endif;
+if (Qual_Pb = 'LESS THAN 10 MG/DL') then conclude False;
+if any ( EnvHx is in ('HOME BUILT BEFORE 1950', 'HOME RENOVATED BEFORE 1978', 'TB EXPOSURE') ) then  LeadRisk  = "***high risk TB patient***";
+conclude True;     // For testing purposes
+
+endif;
+/* if (EnvHx = 'HOME BUILT BEFORE 1960') then  LeadRisk  = "lives in a house built before 1950";
+elseif (EnvHx = 'HOME RENOVATED BEFORE 1978') then  LeadRisk  = "lives in a pre-1978 house undergoing renovation";
+elseif (EnvHx = 'TB EXPOSURE') then  LeadRisk  = "has a friend or sibling with elevated blood lead";
+*/
+conclude False;
+
+
+;;
+Action:
+write (|| firstname || " reportedly " || LeadRisk ||".  Drawing a blood lead level is recommended annually:");
+;;
+	Urgency:	;;
+/*
+CHICA:
+Minimum Age: 10 months;
+Maximum Age: 36 months;
+CHICA Priority: 748;
+JIT Filename: ;
+If  (Box2) then Qualitative_Blood_Lead = 10-14mg/dl;
+If  (Box4) then Qualitative_Blood_Lead = 15-19mg/dl;
+If  (Box5) then Qualitative_Blood_Lead = Pending;
+If  (Box6) then Qualitative_Blood_Lead = >19mg/dl;
+If  (Box3) then Qualitative_Blood_Lead = < 10mg/dl;;;
+PWS Leaves:
+Box1 := Blood Pb done this year----->
+Box2 := 10-14 mg/dl: CBC+rpt Pb 3mo
+Box3 := Previous blood lead <10 (OK)
+Box4 := 15-19: above+call hlth dept
+Box5 := Blood lead ordered today
+Box6 := >19: above+call Dr. Merk
+;;
+*/
+end:

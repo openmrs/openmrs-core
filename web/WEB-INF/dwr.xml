@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dwr PUBLIC
+    "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN"
+    "http://directwebremoting.org/schema/dwr20.dtd">
+
+<dwr>
+
+	<allow>
+		<create creator="new" javascript="JDate">
+	      <param name="class" value="java.util.Date"/>
+		</create>
+		
+		<convert match="java.lang.Exception" converter="exception">
+			<param name="exclude" value="stackTrace"/>
+		</convert>
+		
+		<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.PersonListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.ConceptListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.ConceptDrugListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.EncounterListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.UserListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.ObsListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.FormFieldListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.FieldListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.FormListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.LocationListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.RelationshipListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.ListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.DrugOrderListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.DrugSetItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.PatientProgramItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.PatientStateItem"/>
+		<convert converter="bean" match="org.openmrs.PatientAddress"/>
+		<convert converter="bean" match="org.openmrs.notification.web.dwr.AlertListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.EnteredField"/>
+		<convert converter="bean" match="org.openmrs.Cohort" >
+			<param name="exclude" value="patients"/>
+		</convert>
+
+	
+		<create creator="new" javascript="DWRPatientService">
+			<param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
+			<include method="findPatients"/>
+			<include method="getPatient"/>
+			<include method="getSimilarPatients"/>
+			<include method="findDuplicatePatients" />
+			<include method="addIdentifier" />
+			<include method="exitPatientFromCare" />
+			<include method="changeHealthCenter" />
+		</create>
+		
+		<create creator="new" javascript="DWRPersonService">
+			<param name="class" value="org.openmrs.web.dwr.DWRPersonService" />
+			<include method="getSimilarPeople"/>
+			<include method="findPeople"/>
+			<include method="findPeopleByRoles"/>
+			<include method="createPerson"/>
+			<include method="getPerson"/>
+		</create>
+	
+		<create creator="new" javascript="DWRConceptService">
+			<param name="class" value="org.openmrs.web.dwr.DWRConceptService" />
+			<include method="findConcepts" />
+			<include method="findConceptAnswers" />
+			<include method="getQuestionsForAnswer" />
+			<include method="getConceptSet" />
+			<include method="getConcept" />
+			<include method="findProposedConcepts" />
+			<include method="isValidNumericValue" />
+			<include method="getConceptNumericUnits" />
+			<include method="getDrug" />
+			<include method="getDrugs" />
+			<include method="findDrugs" />
+			<include method="getAnswersForQuestion" />
+		</create>
+		
+		<create creator="new" javascript="DWREncounterService">
+			<param name="class" value="org.openmrs.web.dwr.DWREncounterService" />
+			<include method="findEncounters"/>
+			<include method="getEncounter"/>
+			<include method="findLocations"/>
+			<include method="getLocations"/>
+			<include method="getLocation"/>
+		</create>
+		
+		<create creator="new" javascript="DWRUserService">
+			<param name="class" value="org.openmrs.web.dwr.DWRUserService" />
+			<include method="findUsers"/>
+			<include method="getAllUsers"/>
+			<include method="getUser"/>
+		</create>
+		
+		<create creator="new" javascript="DWRObsService">
+			<param name="class" value="org.openmrs.web.dwr.DWRObsService" />
+			<include method="voidObservation"/>
+			<include method="voidObservation"/>
+			<include method="getObservations"/>
+			<include method="createObs"/>
+			<include method="createNewObs"/>
+			<include method="getObsByPatientConceptEncounter"/>
+			<include method="getObs"/>
+		</create>
+		
+		<create creator="new" javascript="DWRFormService">
+			<param name="class" value="org.openmrs.web.dwr.DWRFormService" />
+			<include method="getFormField"/>
+			<include method="getFormFields"/>
+			<include method="getField"/>
+			<include method="getForms"/>
+			<include method="getJSTree"/>
+			<include method="findFields"/>
+			<include method="findForms"/>
+			<include method="findFieldsAndConcepts"/>
+			<include method="saveFormField"/>
+			<include method="deleteFormField"/>
+		</create>
+
+		<create creator="new" javascript="DWRMessageService">
+			<param name="class" value="org.openmrs.notification.web.dwr.DWRMessageService" />
+			<include method="sendFeedback"/>
+			<include method="sendMessage"/>
+		</create>
+		
+		<create creator="new" javascript="DWRAlertService">
+			<param name="class" value="org.openmrs.notification.web.dwr.DWRAlertService" />
+			<include method="getAlerts"/>
+			<include method="markAlertRead"/>
+		</create>
+		
+		<create creator="new" javascript="DWRPatientSetService">
+			<param name="class" value="org.openmrs.web.dwr.DWRPatientSetService"/>
+			<include method="getPatients"/>
+			<include method="getMyPatientSet"/>
+			<include method="getMyPatientSetSize"/>
+			<include method="getFromMyPatientSet"/>
+			<include method="addToMyPatientSet"/>
+			<include method="removeFromMyPatientSet"/>
+			<include method="setMyPatientSet"/>
+			<include method="clearMyPatientSet"/>
+		</create>
+
+		<create creator="new" javascript="DWRRelationshipService">
+			<param name="class" value="org.openmrs.web.dwr.DWRRelationshipService"/>
+			<include method="getRelationshipTypes"/>
+			<include method="getRelationshipTypeId"/>
+			<include method="createRelationship"/>
+			<include method="voidRelationship"/>
+			<include method="setRelationshipTo"/>
+			<include method="getRelationships"/>
+			<include method="getRelationshipsToPerson"/>
+			<include method="getRelationshipsFromPerson"/>
+		</create>
+
+		<create creator="new" javascript="DWROrderService">
+			<param name="class" value="org.openmrs.web.dwr.DWROrderService"/>
+			<include method="createDrugOrder"/>
+			<include method="voidOrder"/>
+			<include method="discontinueOrder"/>
+			<include method="getDrugOrdersByPatientId"/>
+			<include method="getCurrentDrugOrdersByPatientId"/>
+			<include method="getCompletedDrugOrdersByPatientId"/>
+			<include method="getUnitsByDrugId"/>
+			<include method="getCurrentDrugSet" />
+			<include method="getCurrentDrugOrdersByPatientIdDrugSetId" />
+			<include method="getCompletedDrugSet" />
+			<include method="getCompletedDrugOrdersByPatientIdDrugSetId" />
+			<include method="voidCurrentDrugSet" />
+			<include method="voidCompletedDrugSet" />
+			<include method="discontinueDrugSet" />
+			<include method="getCurrentOtherDrugSet" />
+			<include method="getCurrentOtherDrugOrdersByPatientIdDrugSetId" />
+			<include method="getCompletedOtherDrugSet" />
+			<include method="getCompletedOtherDrugOrdersByPatientIdDrugSetId" />
+			<include method="voidCurrentDrugOrders" />
+			<include method="discontinueCurrentDrugOrders" />
+		</create>
+		
+		<create creator="new" javascript="DWRProgramWorkflowService">
+			<param name="class" value="org.openmrs.web.dwr.DWRProgramWorkflowService"/>
+			<include method="getPatientProgram"/>
+			<include method="getPatientStates"/>
+			<include method="updatePatientProgram"/>
+			<include method="deletePatientProgram"/>
+			<include method="getPossibleNextStates"/>
+			<include method="changeToState"/>
+			<include method="voidLastState"/>
+			<include method="getWorkflowsByProgram"/>
+			<include method="getStatesByWorkflow"/>
+		</create>
+
+		<create creator="new" javascript="DWRCohortService">
+			<param name="class" value="org.openmrs.web.dwr.DWRCohortService" />
+			<include method="addPatientToCohort"/>
+			<include method="removePatientFromCohort"/>
+			<include method="getCohorts"/>
+			<include method="getCohortsContainingPatient"/>
+		</create>
+		
+		<create creator="new" javascript="DWRAdministrationService">
+			<param name="class" value="org.openmrs.web.dwr.DWRAdministrationService" />
+			<include method="getGlobalProperty"/>
+			<include method="setGlobalProperty"/>
+		</create>
+				
+	</allow>
+	
+	<signatures>
+		<![CDATA[
+			import org.openmrs.web.dwr.DWRPatientService;
+			import org.openmrs.web.dwr.DWRPersonService;
+			import org.openmrs.web.dwr.DWRConceptService;
+			import org.openmrs.web.dwr.DWREncounterService;
+			import org.openmrs.web.dwr.DWRPatientService;
+			import org.openmrs.web.dwr.DWRUserService;
+			import org.openmrs.web.dwr.DWRObsService;
+			import org.openmrs.notification.web.dwr.DWRMessageService;
+			import java.util.Date;
+			import java.util.List;
+			DWRPatientService.findDuplicatePatients(String[] searchOn);
+			DWRConceptService.findConcepts(String phrase, boolean includeRetired, List<String> includeClassNames, List<String> excludeClassNames, List<String> includeDatatypes, List<String> excludeDatatypes, boolean includeDrugConcepts);
+			DWRConceptService.findConceptAnswers(String phrase, Integer conceptId, boolean includeRetired, boolean includeDrugConcepts);
+			DWRConceptService.isValidNumericValue(Float value, Integer conceptId);
+			DWRConceptService.getDrugs(Integer conceptId, boolean showConcept);
+			DWRConceptService.findDrugs(String phrase, boolean includeRetired);
+			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
+			DWRPersonService.getSimilarPeople(String name, String birthdate, String age, String gender);
+			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
+			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
+			DWRObsService.getObservations(Integer encounterId);
+			DWRObsService.createObs(Integer patientId, Integer encounterId, Integer conceptId, String valueText, Date obsDate);
+			DWRMessageService.sendFeedback(String sender, String subject, String content);
+			DWRMessageService.sendMessage( String recipients, String sender, String subject, String content );
+		]]>
+	</signatures>
+  	
+</dwr>

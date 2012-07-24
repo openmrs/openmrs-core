@@ -1,0 +1,43 @@
+#parse($headerTemplate)
+
+#if ($success)
+<div style="color: green">
+Modules uploaded successfully.  Restart OpenMRS or your server to continue.
+</div>
+#else
+
+<b>The following modules are core to OpenMRS but could not be found and/or started:</b> #foreach ($entry in ${errorAtStartup.modules.entrySet()}) ${entry.key} #end
+<br/>
+<br/>
+Please upload a new version of each of these modules and restart OpenMRS to continue.
+<br/>
+Modules can usually be found at <a href="http://modules.openmrs.org" target="modules">http://modules.openmrs.org</a>.
+<br/><br/>
+
+<form method="post" enctype="multipart/form-data">
+#foreach ($entry in ${errorAtStartup.modules.entrySet()}) 
+${entry.key} v${entry.value}: <input type="file" name="module"/>
+#end
+<br/>
+<input type="submit" value="Upload Modules"/>
+</form>
+
+<br/>
+<a onclick="$('#fullerrormessage').toggle()" href="#">Show/hide full error message</a>
+<br/>
+
+<div id="fullerrormessage" style="display: none">
+${errorAtStartup.message}<br/>
+<pre>
+${stacktrace}
+</pre>
+
+<br/>
+See the server log for full output.	
+
+</div>
+
+#end
+
+
+#parse($footerTemplate)
