@@ -140,7 +140,6 @@ public class ConceptReferenceTermFormController {
 			try {
 				result.pushNestedPath("conceptReferenceTerm");
 				ValidationUtils.invokeValidator(new ConceptReferenceTermValidator(), conceptReferenceTerm, result);
-				ValidationUtils.invokeValidator(new ConceptReferenceTermWebValidator(), conceptReferenceTerm, result);
 			}
 			finally {
 				result.popNestedPath();
