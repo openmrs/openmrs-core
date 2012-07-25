@@ -247,6 +247,38 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
 	 */
 	@Test
+	@Verifies(value = "should fail if a mapped concept map type does not exist in the database", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAMappedConceptMapTypeDoesNotExistInTheDatabase() throws Exception {
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term.setName("name");
+		term.setCode("code");
+		term.setConceptSource(Context.getConceptService().getConceptSource(1));
+		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), new ConceptMapType()));
+		Errors errors = new BindException(term, "term");
+		new ConceptReferenceTermValidator().validate(term, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[0].conceptMapType"));
+	}
+	
+	/**
+	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if a mapped concept reference term does not exist in the database", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAMappedConceptReferenceTermDoesNotExistInTheDatabase() throws Exception {
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term.setName("name");
+		term.setCode("code");
+		term.setConceptSource(Context.getConceptService().getConceptSource(1));
+		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(), new ConceptMapType(1)));
+		Errors errors = new BindException(term, "term");
+		new ConceptReferenceTermValidator().validate(term, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[0].termB"));
+	}
+	
+	/**
+	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 */
+	@Test
 	@Verifies(value = "should fail if termB of a concept reference term map is not set", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfTermBOfAConceptReferenceTermMapIsNotSet() throws Exception {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
