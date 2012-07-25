@@ -11,13 +11,14 @@
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
 
 <script type="text/javascript">
-	var ajaxProperties = {};
-	
 	$j(document).ready(function() {
 		<c:forEach var="entry" items="${ajaxProperties}">
-			ajaxProperties["${entry.key}"] = "${entry.value}";
-			var divId = "${entry.key}" + "${entry.value}" + "Radio";
-			document.getElementById(divId).checked = true;
+			var radioId = "${entry.key}" + "${entry.value}" + "Radio";
+			document.getElementById(radioId).checked = true;
+		</c:forEach>
+		<c:forEach var="dynamicEntry" items="${dynamicModuleAjaxProperties}">
+			var radioId = "${dynamicEntry.key}" + "${dynamicEntry.value}" + "Radio";
+			document.getElementById(radioId).checked = true;
 		</c:forEach>
 	})
 
@@ -70,15 +71,9 @@
 				</tr>
 			</thead>
 			<tbody>
+				<c:set var="count" value="0" scope="page" />
 				<c:forEach var="entry" items="${ajaxProperties}" varStatus="status">
-					<c:choose>
-    					<c:when test="${status.count % 2 ne 0}">
-        					<tr class="odd">
-    					</c:when>
-    					<c:otherwise>
-					        <tr class="even">
-					    </c:otherwise>
-					</c:choose>
+					<tr class="${status.index % 2 == 0 ? 'odd' : 'even'}">
 						<td><spring:message code="patientDashboard.${entry.key}"/></td>
 						<td>${ajaxLabelProperties[entry.key]}</td>
 						<td>
@@ -88,7 +83,38 @@
 							<button id="${entry.key}Button" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
 						</td>
 					</tr>
+					<c:set var="count" value="${count + 1}" scope="page"/>
 				</c:forEach>
+				<openmrs:extensionPoint pointId="org.openmrs.patientDashboardTab" type="html">
+					<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+						<c:set var="keyValue" value="ajax${extension.tabId}Extension" scope="page"/>
+						<tr class="${count % 2 == 0 ? 'odd' : 'even'}">
+							<td><spring:message code="${extension.tabName}"/></td>
+							<c:choose>
+		    					<c:when test="${ajaxLabelProperties[keyValue] == null}">
+		        					<td><spring:message code="PatientDashboard.status.preload"/></td>
+		    					</c:when>
+		    					<c:otherwise>
+							       <td>${ajaxLabelProperties[keyValue]}</td>
+							    </c:otherwise>
+							</c:choose>
+							<td>
+								<input id="ajax${extension.tabId}ExtensionOnclickRadio" type="radio" name="${extension.tabId}" value="onclick"/><spring:message code="PatientDashboard.status.onclick"/>
+							    <input id="ajax${extension.tabId}ExtensionBackgroundRadio" type="radio" name="${extension.tabId}" value="background"/><spring:message code="PatientDashboard.status.background"/>
+							    <c:choose>
+			    					<c:when test="${ajaxLabelProperties[entry.key] == null}">
+			        					 <input id="ajax${extension.tabId}ExtensionPreloadRadio" type="radio" name="${extension.tabId}" value="preload" checked="true"/><spring:message code="PatientDashboard.status.preload"/>
+			    					</c:when>
+			    					<c:otherwise>
+								        <input id="ajax${extension.tabId}ExtensionPreloadRadio" type="radio" name="${extension.tabId}" value="preload"/><spring:message code="PatientDashboard.status.preload"/>
+								    </c:otherwise>
+								</c:choose>
+								<button id="ajax${extension.tabId}ExtensionButton" onclick="return changeStatusClicked(this);"><spring:message code="PatientDashboard.button.save"/></button>
+							</td>
+						</tr>
+						<c:set var="count" value="${count + 1}" scope="page"/>
+					</openmrs:hasPrivilege>
+				</openmrs:extensionPoint>
 			</tbody>
 		</table>
 	</div>

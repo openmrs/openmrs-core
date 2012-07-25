@@ -89,7 +89,7 @@
 					manipulateClass('remove', tabs[i], 'current');
 				}
 				var key = 'ajax' + tabs[i].id.replace("link", "").replace("Tab", "");
-				if (ajaxProperties[key] === 'Preload') {
+				if (ajaxProperties[key] == null || ajaxProperties[key] === 'Preload') {
 					divId = tabs[i].id.replace("link", "content");
 				} else {
 					divId = tabs[i].id.replace("link", "ajax");
