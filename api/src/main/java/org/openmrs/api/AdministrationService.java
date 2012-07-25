@@ -35,6 +35,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
+import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.reporting.AbstractReportObject;
@@ -733,4 +734,19 @@ public interface AdministrationService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public void validate(Object object, Errors errors) throws APIException;
+	
+	/**
+	 * Returns a list of locales used by the given user when searching.
+	 * <p>
+	 * The list is constructed from a currently selected locale and allowed user proficient locales.
+	 * 
+	 * @param user
+	 * @return locales
+	 * @throws APIException
+	 * @since 1.7.4, 1.8.4, 1.9.1, 1.10
+	 * @should include currently selected full locale and langugage
+	 * @should include users proficient locales
+	 * @should exclude not allowed locales
+	 */
+	public List<Locale> getSearchLocales(User user) throws APIException;
 }
