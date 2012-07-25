@@ -43,6 +43,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -516,6 +517,25 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * Test for TRUNK-3630
+	 * @see VisitService#getVisits(Collection,Collection,Collection,Collection,Date,Date,Date,Date,Map,boolean,boolean)
+	 * @verifies get visits that are still open even if minStartDatetime is specified
+	 */
+	@Test
+	public void getVisits_shouldGetVisitsThatAreStillOpenEvenIfMinStartDatetimeIsSpecified() throws Exception {
+		Date minEndDatetime = new SimpleDateFormat("yyyy-MM-dd").parse("2061-01-01");
+		// this should get all open non-voided visits (which are ids 1, 2, 3, 4, 5 in standardTestDataset)
+		List<Visit> visits = Context.getVisitService().getVisits(null, null, null, null, null, null, minEndDatetime, null,
+		    null, true, false);
+		Assert.assertEquals(5, visits.size());
+		Assert.assertTrue(TestUtil.containsId(visits, 1));
+		Assert.assertTrue(TestUtil.containsId(visits, 2));
+		Assert.assertTrue(TestUtil.containsId(visits, 3));
+		Assert.assertTrue(TestUtil.containsId(visits, 4));
+		Assert.assertTrue(TestUtil.containsId(visits, 5));
+	}
+	
+	/**
 	 * @see {@link VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)}
 	 */
 	@Test
@@ -905,4 +925,5 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		visitTypes = visitService.getAllVisitTypes(false);
 		assertEquals("get all visit types excluding retired", 2, visitTypes.size());
 	}
+	
 }
