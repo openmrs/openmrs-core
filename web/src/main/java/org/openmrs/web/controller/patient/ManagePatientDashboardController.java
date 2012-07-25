@@ -63,12 +63,18 @@ public class ManagePatientDashboardController implements MessageSourceAware {
 			}
 			Map<String, String> ajaxProperties = new HashMap<String, String>();
 			Map<String, String> ajaxLabelProperties = new HashMap<String, String>();
+			Map<String, String> dynamicModuleAjaxProperties = new HashMap<String, String>();
 			for (GlobalProperty property : properties) {
 				String key = property.getProperty().replace(".dashboard.", "");
-				ajaxProperties.put(key, property.getPropertyValue());
+				if (!property.getProperty().endsWith("Extension")) {
+					ajaxProperties.put(key, property.getPropertyValue());
+				} else {
+					dynamicModuleAjaxProperties.put(key, property.getPropertyValue());
+				}
 				ajaxLabelProperties.put(key, getStatus(property.getPropertyValue()));
 			}
 			map.put("ajaxProperties", ajaxProperties);
+			map.put("dynamicModuleAjaxProperties", dynamicModuleAjaxProperties);
 			map.put("ajaxLabelProperties", ajaxLabelProperties);
 		}
 		return "/admin/patients/managePatientDashboardForm";
