@@ -182,8 +182,10 @@ public class HibernateVisitDAO implements VisitDAO {
 			// the user only asked for currently active visits, so stop time needs to be null or after right now
 			criteria.add(Restrictions.or(Restrictions.isNull("stopDatetime"), Restrictions.gt("stopDatetime", new Date())));
 		} else {
-			if (minEndDatetime != null)
-				criteria.add(Restrictions.ge("stopDatetime", minEndDatetime));
+			if (minEndDatetime != null) {
+				criteria.add(Restrictions.or(Restrictions.isNull("stopDatetime"), Restrictions.ge("stopDatetime",
+				    minEndDatetime)));
+			}
 			if (maxEndDatetime != null)
 				criteria.add(Restrictions.le("stopDatetime", maxEndDatetime));
 		}
