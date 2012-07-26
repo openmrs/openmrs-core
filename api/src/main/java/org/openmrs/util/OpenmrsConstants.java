@@ -1018,6 +1018,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
 	
+	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
+	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -1434,6 +1436,12 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(GP_CONCEPT_DRUG_ROUTE_CONCEPT_CLASSES, "",
 		                "A comma-separated list of the allowed concept classes for the route field of the concept drug management form."));
+		
+		props
+		        .add(new GlobalProperty(
+		                GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE,
+		                "true",
+		                "Indicates whether names in the concept_name table are case sensitive or not. Setting this to false for MySQL with a case insensitive collation improves search performance."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
