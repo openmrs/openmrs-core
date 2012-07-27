@@ -581,12 +581,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 			if (loc == null)
 				throw new DAOException("Locale must be not null");
 			
+			String caseSensitiveNamesInConceptNameTable = Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE, "true");
+
 			criteria.createAlias("names", "names");
 			MatchMode matchmode = MatchMode.EXACT;
 			if (searchOnPhrase)
 				matchmode = MatchMode.ANYWHERE;
 			
-			criteria.add(Expression.ilike("names.name", name, matchmode));
+			if (Boolean.valueOf(caseSensitiveNamesInConceptNameTable)) {
+				criteria.add(Restrictions.ilike("names.name", name, matchmode));
+			} else {
+				if (searchOnPhrase) {
+					criteria.add(Restrictions.like("names.name", name, matchmode));
+				} else {
+					criteria.add(Restrictions.eq("names.name", name));
+				}
+			}
+
 			criteria.add(Restrictions.eq("names.voided", false));
 			
 			String language = loc.getLanguage();

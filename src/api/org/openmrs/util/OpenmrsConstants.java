@@ -450,7 +450,7 @@ public final class OpenmrsConstants {
 	/**
 	 * @deprecated replacing with ADD/EDIT/DELETE privileges
 	 */
-	public static final String PRIV_MANAGE_RELATIONSHIPS = "Manage Relationships";
+    public static final String PRIV_MANAGE_RELATIONSHIPS = "Manage Relationships";
 	
 	public static final String PRIV_VIEW_RELATIONSHIPS = "View Relationships";
 	
@@ -846,6 +846,8 @@ public final class OpenmrsConstants {
 	 */
 	public static final String GP_GRAPH_COLOR_CRITICAL = "graph.color.critical";
 	
+	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
+
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -1161,6 +1163,11 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_BUG_URL, "http://errors.openmrs.org/scrap",
 		        "The openmrs url where to submit bug reports"));
 
+		props.add(new GlobalProperty(
+		        GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE,
+		        "true",
+		        "Indicates whether names in the concept_name table are case sensitive or not. Setting this to false for MySQL with a case insensitive collation improves search performance."));
+
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
@@ -1201,7 +1208,7 @@ public final class OpenmrsConstants {
 	 * @return Collection of locales available to openmrs
 	 * @deprecated
 	 */
-	public static final Collection<Locale> OPENMRS_LOCALES() {
+    public static final Collection<Locale> OPENMRS_LOCALES() {
 		List<Locale> languages = new Vector<Locale>();
 		
 		languages.add(Locale.US);
@@ -1217,14 +1224,14 @@ public final class OpenmrsConstants {
 	/**
 	 * @deprecated use {@link LocaleUtility#getDefaultLocale()}
 	 */
-	public static final Locale GLOBAL_DEFAULT_LOCALE = LocaleUtility.DEFAULT_LOCALE;
+    public static final Locale GLOBAL_DEFAULT_LOCALE = LocaleUtility.DEFAULT_LOCALE;
 	
 	/**
 	 * @return Collection of locales that the concept dictionary should be aware of
 	 * @see ConceptService#getLocalesOfConceptNames()
 	 * @deprecated
 	 */
-	public static final Collection<Locale> OPENMRS_CONCEPT_LOCALES() {
+    public static final Collection<Locale> OPENMRS_CONCEPT_LOCALES() {
 		List<Locale> languages = new Vector<Locale>();
 		
 		languages.add(Locale.ENGLISH);
@@ -1243,7 +1250,7 @@ public final class OpenmrsConstants {
 	 * @return Mapping of Locales to locale specific date pattern
 	 * @deprecated use the {@link org.openmrs.api.context.Context#getDateFormat()}
 	 */
-	public static final Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS() {
+    public static final Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS() {
 		if (OPENMRS_LOCALE_DATE_PATTERNS == null) {
 			Map<String, String> patterns = new HashMap<String, String>();
 			
