@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+   
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+	
+	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+		<property name="prefix" value="/WEB-INF/view/" />
+		<property name="suffix" value=""/>
+	</bean>
+	
+	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="**/openmrsmessages.js">jstlContentController</prop>
+				<prop key="**/drugOrder.js">jstlContentController</prop>
+				<prop key="**/*.js">staticContentController</prop>
+				<prop key="**/*">staticContentController</prop>
+			</props>
+		</property>
+	</bean>
+
+	<util:map id="urlRewrites">
+		<entry key="/scripts/jquery/jquery-1.3.2.min.js" value="/scripts/jquery/jquery.min.js"/>
+		<entry key="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" value="/scripts/jquery-ui/js/jquery-ui.custom.min.js"/>
+		<entry key="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" value="/scripts/jquery-ui/css/redmond/jquery-ui.custom.css"/>
+	</util:map>
+	
+	<bean id="addRewritesToHtmlIncludeTag" class="org.openmrs.web.taglib.HtmlIncludeTag">
+		<property name="rewrites">
+			<ref local="urlRewrites"/>
+		</property>
+	</bean>
+	
+	<bean id="staticContentController" class="org.openmrs.web.controller.PseudoStaticContentController">
+		<property name="interpretJstl"><value>false</value></property>
+		<property name="rewrites">
+			<ref local="urlRewrites"/>
+		</property>
+	</bean>
+	
+	<bean id="jstlContentController" class="org.openmrs.web.controller.PseudoStaticContentController">
+		<property name="interpretJstl"><value>true</value></property>
+	</bean>
+
+</beans>

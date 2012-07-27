@@ -1,0 +1,34 @@
+#parse($headerTemplate)
+	<form method="post" autocomplete="off">
+		<input type="hidden" name="page" value="adminusersetup.vm" /> 
+        <div class="content">
+            <table cellpadding="9" align="center" cellspacing="5" >
+     		<tr>
+                    <td colspan="2"><strong>Step 4 of 6</strong></td>
+     		</tr>
+     		<tr>
+                    <td colspan="2" class="question" >Currently the default administrator user/pass is <strong>admin:test</strong>. Please specify a new password for that user</td>
+                </tr>
+                <tr>
+                    <td>Username:</td>
+                    <td><strong>admin</strong></td>
+                </tr>
+                <tr>
+                    <td>Password:</td>
+     			<td><input type="password" name="new_admin_password" value="" autocomplete="off"/></td>
+     		</tr>
+     		<tr>
+                    <td>Retype password:</td>
+     			<td><input type="password" name="new_admin_password_confirm" value="" autocomplete="off"/></td>
+     		</tr>
+                <tr>
+                    <td colspan= "2">
+                        <input type="submit" style="display: none"/> <!-- the first submit button that will be used when the user pushed the "enter" key in the form -->
+                        <input class="button" name="back" type="submit" value="Back"/> &nbsp; &nbsp;
+                        <input class="button" type="submit" value="Continue"/>
+                    </td>
+                </tr>
+     	</table>
+        </div>
+	</form>
+#parse($footerTemplate)

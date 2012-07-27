@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ConceptMap" table="concept_map">
+
+		<id name="conceptMapId" type="java.lang.Integer"
+			column="concept_map_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		
+		<discriminator column="concept_map_id" insert="false" />
+		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="38" unique="true" />
+
+		<many-to-one name="concept" column="concept_id" class="Concept" not-null="true"/>
+			
+		<property name="sourceCode" type="java.lang.String" column="source_code" length="255" />
+		
+		<property name="comment" type="java.lang.String" length="255" />
+		<property name="dateCreated" type="java.util.Date" column="date_created" length="19" />
+
+		<many-to-one name="source" class="ConceptSource" not-null="true" />
+
+		<many-to-one name="creator" class="User" not-null="true" />
+
+	</class>
+
+</hibernate-mapping>

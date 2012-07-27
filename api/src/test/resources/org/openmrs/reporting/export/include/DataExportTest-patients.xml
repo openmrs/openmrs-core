@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="981a3245-14c7-4875-b535-a375aafd765c"/>
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="e705dbc7-7909-44d9-bebc-a1c748eed9a7"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="23967daf-2228-436c-92b1-4bfa954cd743"/>
+  <person person_id="2" gender="M" birthdate="2000-01-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="9b84e53b-d760-4bef-8528-dc0c28212459"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1cf11ab5-3974-480b-b16f-dbcae07c92fd"/>
+</dataset>
