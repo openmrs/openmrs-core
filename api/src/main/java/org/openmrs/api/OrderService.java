@@ -320,7 +320,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if the order is already discontinued
 	 * @should fail if the discontinue date is after the auto expire date
 	 * @since 1.9	 
-*	 */
+	 *	 */
 	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public Order discontinueOrder(Order order, String reason, User user, Date discontinueDate) throws APIException;
 	
@@ -348,7 +348,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if null passed in
 	 * @should return null if no orderable found with given identifier
 	 * @since 1.10	 
- 	 */
+	 */
 	@Transactional(readOnly = true)
 	public Orderable<?> getOrderable(String identifier) throws APIException;
 	

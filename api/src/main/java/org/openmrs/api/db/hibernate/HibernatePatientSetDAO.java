@@ -426,7 +426,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					patientNode.appendChild(observationsNode);
 				}
 			}
-						
+			
 			root.appendChild(patientNode);
 			
 		}
