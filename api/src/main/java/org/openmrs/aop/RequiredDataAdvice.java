@@ -26,6 +26,7 @@ import org.openmrs.OpenmrsObject;
 import org.openmrs.Retireable;
 import org.openmrs.User;
 import org.openmrs.Voidable;
+import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.ConceptNameSaveHandler;
@@ -263,7 +264,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		
 		// loop over all child collections of OpenmrsObjects and recursively save on those
 		for (Field field : allInheritedFields) {
-			if (reflect.isCollectionField(field)) {
+			if (reflect.isCollectionField(field) && !isHandlerMarkedAsDisabled(handlerType, field)) {
 				
 				// the collection we'll be looping over
 				Collection<OpenmrsObject> childCollection = getChildCollection(openmrsObject, field);
@@ -362,6 +363,31 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		catch (ClassCastException ex) {
 			ex.printStackTrace();
 		}
+		return false;
+	}
+	
+	/**
+	 * Checks if the given field is annotated with a @DisableHandler annotation to specify
+	 * that the given handlerType should be disabled
+	 *
+	 * @param handlerType
+	 * @param field
+	 * @return true if the handlerType has been marked as disabled, false otherwise
+	 */
+	protected static boolean isHandlerMarkedAsDisabled(Class<? extends RequiredDataHandler> handlerType, Field field) {
+		
+		// if the annotation isn't present, return false
+		if (!field.isAnnotationPresent(DisableHandlers.class)) {
+			return false;
+		} else {
+			// otherwise we need to see if the handler type is one of the types specified in the annotation
+			for (Class<? extends RequiredDataHandler> h : field.getAnnotation(DisableHandlers.class).handlerTypes()) {
+				if (h.isAssignableFrom(handlerType)) {
+					return true;
+				}
+			}
+		}
+		
 		return false;
 	}
 }
