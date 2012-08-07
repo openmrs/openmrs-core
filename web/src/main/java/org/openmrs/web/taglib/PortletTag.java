@@ -13,19 +13,18 @@
  */
 package org.openmrs.web.taglib;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.PageContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.taglibs.standard.tag.common.core.ImportSupport;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsUtil;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.PageContext;
+import java.io.IOException;
+import java.util.Map;
 
 public class PortletTag extends ImportSupport {
 	
@@ -70,19 +69,7 @@ public class PortletTag extends ImportSupport {
 			if (url.equals(""))
 				pageContext.getOut().print("Every portlet must be defined with a URI");
 			else {
-				// all portlets are contained in the /WEB-INF/view/portlets/ folder and end with .portlet
-				if (!url.endsWith("portlet"))
-					url += ".portlet";
-				
-				// module specific portlets are in /WEB-INF/view/module/*/portlets/
-				if (moduleId != null && moduleId.length() > 0) {
-					Module mod = ModuleFactory.getModuleById(moduleId);
-					if (mod == null)
-						log.warn("no module found with id: " + moduleId);
-					else
-						url = "/module/" + moduleId + "/portlets/" + url;
-				} else
-					url = "/portlets/" + url;
+				url = generatePortletUrl(url, moduleId);
 				
 				// opening portlet tag
 				if (moduleId != null && moduleId.length() > 0)
@@ -137,6 +124,54 @@ public class PortletTag extends ImportSupport {
 		encounterId = null;
 		userId = null;
 		parameterMap = null;
+	}
+	
+	/**
+	 * Generates the portlet url.
+	 * <ul><li>Core portlets are expected to be in the /WEB-INF/view/portlets/ folder.</li>
+	 * <li>Module portlets are expected to be in the /WEB-INF/view/module/{@code moduleId}/portlets/ folder.</li></ul>
+	 * @param portletUrl The portlet url.
+	 * @param moduleId The optional portlet module id.
+	 * @return The url for the portlet.
+	 * @should return the correct url for a core portlet
+	 * @should return the correct url for a module portlet
+	 * @should replace period in a module id with a forward slash when building a module portlet url
+	 * @should not update the moduleId field for a module portlet
+	 * @should return a core portlet url when the specified module cannot be found
+	 * @should append .portlet to the url if not specified
+	 * @should treat both an empty and null module id as core portlets
+	 */
+	protected String generatePortletUrl(String portletUrl, String moduleId) {
+		String result = null;
+		
+		// all portlets must end with .portlet
+		if (!portletUrl.endsWith(".portlet")) {
+			portletUrl += ".portlet";
+		}
+		
+		// module specific portlets are in /WEB-INF/view/module/*/portlets/
+		if (moduleId != null && moduleId.length() > 0) {
+			Module mod = ModuleFactory.getModuleById(moduleId);
+			if (mod == null) {
+				// Could not find the module, the standard portlet url will be used
+				log.warn("no module found with id: " + moduleId);
+			} else {
+				if (moduleId.contains(".")) {
+					// Module Id's that contain a '.' result in the module being in a sub-folder
+					moduleId = moduleId.replace(".", "/");
+				}
+				
+				result = "/module/" + moduleId + "/portlets/" + portletUrl;
+			}
+		}
+		
+		// If the resulting url has not already been defined then use the standard portlet url scheme
+		if (result == null) {
+			//Core portlets are contained in the /WEB-INF/view/portlets/ folder
+			result = "/portlets/" + portletUrl;
+		}
+		
+		return result;
 	}
 	
 	public void setUrl(String url) throws JspTagException {
