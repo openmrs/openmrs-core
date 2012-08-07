@@ -6,8 +6,12 @@ function showCalendar(obj, yearsPrevious) {
 	
 	//set appendText to something so it doesn't automagically pop into the page
 	var opts = { appendText: " " };
-	if (yearsPrevious)
-		opts["yearRange"] = "c-" + yearsPrevious + ":c10";
+	
+	//set yearPrevious to 110 if it has'nt been parsed in an argument
+	if (!yearsPrevious){
+		yearsPrevious= 110;
+	}
+	opts["yearRange"] = "c-" + yearsPrevious + ":c10";
 	
 	if (gp.weekStart)
 		opts["firstDay"] = gp.weekStart;
