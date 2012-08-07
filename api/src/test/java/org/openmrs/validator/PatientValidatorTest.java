@@ -13,10 +13,17 @@
  */
 package org.openmrs.validator;
 
+import java.util.Date;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,4 +77,38 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		validator.validate(pa, errors);
 		Assert.assertTrue(errors.hasErrors());
 	}
+	
+	/**
+	 * @see PatientValidator#validate(Object,Errors)
+	 * @verifies not fail when patient has only one identifier and its not preferred
+	 */
+	@Test
+	public void validate_shouldNotFailWhenPatientHasOnlyOneIdentifierAndItsNotPreferred() throws Exception {
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		Patient patient = new Patient();
+		PersonName pName = new PersonName();
+		pName.setGivenName("Tom");
+		pName.setMiddleName("E.");
+		pName.setFamilyName("Patient");
+		patient.addName(pName);
+		patient.setGender("male");
+		PersonAddress pAddress = new PersonAddress();
+		pAddress.setAddress1("123 My street");
+		pAddress.setAddress2("Apt 402");
+		pAddress.setCityVillage("Anywhere city");
+		pAddress.setCountry("Some Country");
+		Set<PersonAddress> pAddressList = patient.getAddresses();
+		pAddressList.add(pAddress);
+		patient.setAddresses(pAddressList);
+		patient.addAddress(pAddress);
+		PatientIdentifier patientIdentifier1 = new PatientIdentifier();
+		patientIdentifier1.setLocation(new Location(1));
+		patientIdentifier1.setIdentifier("012345678");
+		patientIdentifier1.setDateCreated(new Date());
+		patientIdentifier1.setIdentifierType(patientIdentifierType);
+		patient.addIdentifier(patientIdentifier1);
+		
+		Context.getPatientService().savePatient(patient);
+	}
+	
 }
