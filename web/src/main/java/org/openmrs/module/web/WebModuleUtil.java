@@ -114,7 +114,7 @@ public class WebModuleUtil {
 			}
 		}
 		catch (Exception e) {
-			log.error("unable to load module loggers " + e.getMessage());
+			log.warn("Unable to load module loggers", e);
 		}
 		
 		if (log.isDebugEnabled())
