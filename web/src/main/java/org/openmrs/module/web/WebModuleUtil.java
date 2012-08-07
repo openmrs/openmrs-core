@@ -106,8 +106,13 @@ public class WebModuleUtil {
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		//register the module loggers
-		if (mod.getLog4j() != null) {
-			DOMConfigurator.configure(mod.getLog4j().getDocumentElement());
+		try {
+			if (mod.getLog4j() != null) {
+				DOMConfigurator.configure(mod.getLog4j().getDocumentElement());
+			}
+		}
+		catch (Exception e) {
+			log.warn("Unable to load module loggers", e);
 		}
 		
 		if (log.isDebugEnabled())
