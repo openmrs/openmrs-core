@@ -506,13 +506,17 @@ public final class Module {
 	 * @return a list of full Extension objects
 	 */
 	private List<Extension> expandExtensionNames() {
-		if (extensions.size() != extensionNames.size()) {
+		ModuleClassLoader moduleClsLoader = ModuleFactory.getModuleClassLoader(this);
+		if (moduleClsLoader == null) {
+			log.debug(String.format("Module class loader is not available, maybe the module %s is stopped/stopping",
+			    getName()));
+		} else if (extensions.size() != extensionNames.size()) {
 			for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
 				String point = entry.getKey();
 				String className = entry.getValue();
 				log.debug("expanding extension names: " + point + " : " + className);
 				try {
-					Class<?> cls = ModuleFactory.getModuleClassLoader(this).loadClass(className);
+					Class<?> cls = moduleClsLoader.loadClass(className);
 					Extension ext = (Extension) cls.newInstance();
 					ext.setPointId(point);
 					ext.setModuleId(this.getModuleId());
