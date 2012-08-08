@@ -792,6 +792,11 @@ public class ModuleFactory {
 		List<Module> dependentModulesStopped = new Vector<Module>();
 		
 		if (mod != null) {
+			
+			if (!ModuleFactory.isModuleStarted(mod)) {
+				return dependentModulesStopped;
+			}
+
 			try {
 				if (mod.getModuleActivator() != null)// if extends BaseModuleActivator
 					mod.getModuleActivator().willStop();
