@@ -14,7 +14,6 @@
 package org.openmrs.web.controller.patient;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -163,7 +162,6 @@ public class ShortPatientFormController {
 	@ModelAttribute("identifierTypes")
 	public List<PatientIdentifierType> getIdentifierTypes() {
 		final List<PatientIdentifierType> list = Context.getPatientService().getAllPatientIdentifierTypes();
-		Collections.sort(list);
 		return list;
 	}
 	

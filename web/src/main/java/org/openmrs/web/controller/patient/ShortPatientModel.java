@@ -68,10 +68,10 @@ public class ShortPatientModel {
 			this.personAddress = patient.getPersonAddress();
 			List<PatientIdentifier> activeIdentifiers = patient.getActiveIdentifiers();
 			if (activeIdentifiers.isEmpty()) {
-				final PatientIdentifierType defit = getDefaultIdentifierType();
-				activeIdentifiers.add(new PatientIdentifier(null, defit,
-				        (LocationUtility.getUserDefaultLocation() != null) ? LocationUtility.getUserDefaultLocation()
-				                : LocationUtility.getDefaultLocation()));
+				final PatientIdentifierType defaultIdentifierType = getDefaultIdentifierType();
+				activeIdentifiers.add(new PatientIdentifier(null, defaultIdentifierType, (LocationUtility
+				        .getUserDefaultLocation() != null) ? LocationUtility.getUserDefaultLocation() : LocationUtility
+				        .getDefaultLocation()));
 			}
 			
 			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(activeIdentifiers), FactoryUtils
@@ -109,23 +109,12 @@ public class ShortPatientModel {
 	 * @return the default patient identifier type (lexically first required id type)
 	 */
 	private PatientIdentifierType getDefaultIdentifierType() {
-		PatientIdentifierType defit = null;
-		PatientIdentifierType firstit = null;
-		for (PatientIdentifierType pit : Context.getPatientService().getAllPatientIdentifierTypes()) {
-			if (pit.getRequired()) {
-				/* find lexically first required identifier type */
-				defit = defit != null ? defit : pit;
-				if (defit.getName().compareToIgnoreCase(pit.getName()) > 0) {
-					defit = pit;
-				}
-			}
-			/* find lexically first identifier type */
-			firstit = firstit != null ? firstit : pit;
-			if (firstit.getName().compareToIgnoreCase(pit.getName()) > 0) {
-				firstit = pit;
-			}
+		List<PatientIdentifierType> types = Context.getPatientService().getAllPatientIdentifierTypes();
+		if (types.isEmpty()) {
+			return null;
+		} else {
+			return types.iterator().next();
 		}
-		return defit != null ? defit : firstit;
 	}
 	
 	/**

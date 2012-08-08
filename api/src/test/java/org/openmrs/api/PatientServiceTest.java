@@ -24,6 +24,7 @@ import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -61,6 +62,7 @@ import org.openmrs.activelist.Allergy;
 import org.openmrs.activelist.Problem;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
+import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.serialization.SerializationException;
@@ -3090,5 +3092,29 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotSame(idLocation, duplicateId.getLocation());//sanity check
 		PatientIdentifier pi = new PatientIdentifier(duplicateId.getIdentifier(), idType, idLocation);
 		Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(pi));
+	}
+	
+	/**
+	 * @see PatientService#getAllPatientIdentifierTypes(boolean)
+	 * @verifies order as default comparator
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldOrderAsDefaultComparator() throws Exception {
+		List<PatientIdentifierType> list = patientService.getAllPatientIdentifierTypes();
+		List<PatientIdentifierType> sortedList = new ArrayList<PatientIdentifierType>(list);
+		Collections.sort(sortedList, new PatientIdentifierTypeDefaultComparator());
+		Assert.assertEquals(sortedList, list);
+	}
+	
+	/**
+	 * @see PatientService#getPatientIdentifierTypes(String,String,Boolean,Boolean)
+	 * @verifies order as default comparator
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldOrderAsDefaultComparator() throws Exception {
+		List<PatientIdentifierType> list = patientService.getPatientIdentifierTypes(null, null, false, null);
+		List<PatientIdentifierType> sortedList = new ArrayList<PatientIdentifierType>(list);
+		Collections.sort(sortedList, new PatientIdentifierTypeDefaultComparator());
+		Assert.assertEquals(sortedList, list);
 	}
 }

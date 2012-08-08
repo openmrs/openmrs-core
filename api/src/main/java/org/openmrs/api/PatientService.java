@@ -28,6 +28,7 @@ import org.openmrs.activelist.Allergy;
 import org.openmrs.activelist.Problem;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.serialization.SerializationException;
@@ -382,23 +383,29 @@ public interface PatientService extends OpenmrsService {
 	
 	/**
 	 * Get all patientIdentifier types
+	 * <p>
+	 * Ordered same as {@link PatientIdentifierTypeDefaultComparator}.
 	 * 
 	 * @return patientIdentifier types list
 	 * @throws APIException
 	 * @should fetch all non retired patient identifier types
+	 * @should order as default comparator
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_IDENTIFIER_TYPES })
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes() throws APIException;
 	
 	/**
-	 * Get all patientIdentifier types
+	 * Get all patientIdentifier types.
+	 * <p>
+	 * Ordered same as {@link PatientIdentifierTypeDefaultComparator}.
 	 * 
 	 * @param includeRetired true/false whether retired types should be included
 	 * @return patientIdentifier types list
 	 * @throws APIException
 	 * @should fetch patient identifier types including retired when include retired is true
 	 * @should fetch patient identifier types excluding retired when include retired is false
+	 * @should order as default comparator
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_IDENTIFIER_TYPES })
@@ -406,6 +413,8 @@ public interface PatientService extends OpenmrsService {
 	
 	/**
 	 * Get all patientIdentifier types that match the given criteria
+	 * <p>
+	 * Ordered same as {@link PatientIdentifierTypeDefaultComparator}.
 	 * 
 	 * @param name name of the type to match on
 	 * @param format the string format to match on
@@ -423,6 +432,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should fetch patient identifier types without check digit when given has check digit is
 	 *         false
 	 * @should fetch any patient identifier types when given has check digit is null
+	 * @should order as default comparator
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_IDENTIFIER_TYPES })
