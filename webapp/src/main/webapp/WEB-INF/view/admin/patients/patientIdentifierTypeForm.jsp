@@ -142,6 +142,19 @@
 
 <br/>
 
+<c:if test="${patientIdentifierType.retired && not empty patientIdentifierType.patientIdentifierTypeId}">
+	<form id="unretire" method="post">
+		<fieldset>
+			<h4><spring:message code="PatientIdentifierType.unretirePatientIdentifierType"/></h4>
+			<input type="submit"
+			value='<spring:message code="PatientIdentifierType.unretirePatientIdentifierType"/>'
+			name="unretire" />
+		</fieldset>
+	</form>
+</c:if>
+
+<br/>
+
 <c:if test="${not empty patientIdentifierType.patientIdentifierTypeId}">
 	<openmrs:hasPrivilege privilege="Purge Identifier Types">
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
