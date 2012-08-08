@@ -19,6 +19,21 @@
 
 <h2><openmrs:message code="PatientIdentifierType.title"/></h2>
 
+<c:if test="${patientIdentifierType.retired && not empty patientIdentifierType.patientIdentifierTypeId}">
+	<form action="" method="post">
+		<div class="retiredMessage">
+			<div>
+				<openmrs:message code="general.retiredBy"/>
+				${patientIdentifierType.retiredBy.personName}
+				<openmrs:formatDate date="${patientIdentifierType.dateRetired}" type="medium" />
+				-
+				${patientIdentifierType.retireReason}
+				<input type="submit" value='<openmrs:message code="PatientIdentifierType.unretirePatientIdentifierType"/>' name="unretire"/>
+			</div>
+		</div>
+	</form>
+</c:if>
+
 <form method="post">
 <fieldset>
 <table>
@@ -154,22 +169,9 @@
 			<input type="submit" value='<openmrs:message code="PatientIdentifierType.retirePatientIdentifierType"/>' name="retire"/>
 		</fieldset>
 	</form>
+	
+	<br/>
 </c:if>
-
-<br/>
-
-<c:if test="${patientIdentifierType.retired && not empty patientIdentifierType.patientIdentifierTypeId}">
-	<form id="unretire" method="post">
-		<fieldset>
-			<h4><openmrs:message code="PatientIdentifierType.unretirePatientIdentifierType"/></h4>
-			<input type="submit"
-			value='<openmrs:message code="PatientIdentifierType.unretirePatientIdentifierType"/>'
-			name="unretire" />
-		</fieldset>
-	</form>
-</c:if>
-
-<br/>
 
 <c:if test="${not empty patientIdentifierType.patientIdentifierTypeId}">
 	<openmrs:hasPrivilege privilege="Purge Identifier Types">
