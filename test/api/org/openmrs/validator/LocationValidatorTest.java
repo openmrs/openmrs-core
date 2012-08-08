@@ -46,22 +46,6 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link LocationValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if description is null or empty", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmpty() throws Exception {
-		Location location = new Location();
-		location.setName("County General");
-		
-		Errors errors = new BindException(location, "location");
-		new LocationValidator().validate(location, errors);
-		
-		Assert.assertFalse(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-	}
-	
-	/**
-	 * @see {@link LocationValidator#validate(Object,Errors)}
-	 */
-	@Test
 	@Verifies(value = "should fail validation if retired and retireReason is null or empty", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfRetiredAndRetireReasonIsNullOrEmpty() throws Exception {
 		Location location = new Location();
