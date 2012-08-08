@@ -75,6 +75,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should cascade save encounter providers
 	 * @should cascade delete encounter providers
 	 * @should void and create new obs when saving encounter
+	 * @should fail if user is not supposed to edit encounters of type of given encounter
 	 */
 	@Authorized( { PrivilegeConstants.ADD_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter saveEncounter(Encounter encounter) throws APIException;
@@ -86,6 +87,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @return encounter with given internal identifier
 	 * @throws APIException
 	 * @should throw error if given null parameter
+	 * @should fail if user is not allowed to view
+	 * @should return encounter if user is allowed to view it
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
@@ -226,6 +229,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should cascade to orders
 	 * @should throw error with null reason parameter
 	 * @should not void providers
+	 * @should fail if user is not supposed to edit encounters of type of given encounter
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter voidEncounter(Encounter encounter, String reason);
@@ -237,6 +241,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should cascade unvoid to obs
 	 * @should cascade unvoid to orders
 	 * @should unvoid and unmark all attributes
+	 * @should fail if user is not supposed to edit encounters of type of given encounter
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter unvoidEncounter(Encounter encounter) throws APIException;
@@ -247,6 +252,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounter encounter object to be purged
 	 * @should purgeEncounter
+	 * @should fail if user is not supposed to edit encounters of type of given encounter
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTERS })
 	public void purgeEncounter(Encounter encounter) throws APIException;
@@ -258,6 +264,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounter encounter object to be purged
 	 * @param cascade Purge any related observations as well?
 	 * @should cascade purge to obs and orders
+	 * @should fail if user is not supposed to edit encounters of type of given encounter
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTERS })
 	public void purgeEncounter(Encounter encounter, boolean cascade) throws APIException;
@@ -881,4 +888,32 @@ public interface EncounterService extends OpenmrsService {
 	 * @should return true when the encounter type's edit privilege column is null
 	 */
 	public boolean canEditAllEncounterTypes(User subject);
+	
+	/**
+	 * Checks if passed in user can edit given encounter. If user is not specified, then
+	 * authenticated user will be taken by default
+	 * 
+	 * @param encounter the encounter instance to be checked
+	 * @param subject the user, who requests edit access
+	 * @return true if user has privilege denoted by <em>editPrivilege</em> given on encounter type
+	 * 
+	 * @should return true if user can edit encounter
+	 * @should return false if user can not edit encounter
+	 * @should fail if encounter is null
+	 */
+	public boolean canEditEncounter(Encounter encounter, User subject);
+	
+	/**
+	 * Checks if passed in user can view given encounter. If user is not specified, then
+	 * authenticated user will be taken by default
+	 * 
+	 * @param encounter the encounter instance to be checked
+	 * @param subject the user, who requests view access
+	 * @return true if user has privilege denoted by <em>viewPrivilege</em> given on encounter type
+	 * 
+	 * @should return true if user can view encounter
+	 * @should return false if user can not view encounter
+	 * @should fail if encounter is null
+	 */
+	public boolean canViewEncounter(Encounter encounter, User subject);
 }

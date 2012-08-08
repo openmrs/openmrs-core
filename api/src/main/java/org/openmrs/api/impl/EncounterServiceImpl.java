@@ -93,6 +93,12 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
 		
+		// if authenticated user is not supposed to edit encounter of certain type
+		if (!canEditEncounter(encounter, null)) {
+			throw new APIException(String.format("Privilege %s required to edit encounters of this type", encounter
+			        .getEncounterType().getEditPrivilege()));
+		}
+		
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
 		if (encounter.getEncounterId() == null) {
 			
@@ -191,7 +197,15 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncounter(java.lang.Integer)
 	 */
 	public Encounter getEncounter(Integer encounterId) throws APIException {
-		return dao.getEncounter(encounterId);
+		Encounter encounter = dao.getEncounter(encounterId);
+		if (encounter == null) {
+			return null;
+		} else if (canViewEncounter(encounter, null)) {
+			return encounter;
+		} else {
+			throw new APIException(String.format("Privilege %s required to view encounters of this type", encounter
+			        .getEncounterType().getViewPrivilege()));
+		}
 	}
 	
 	/**
@@ -296,6 +310,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#voidEncounter(org.openmrs.Encounter, java.lang.String)
 	 */
 	public Encounter voidEncounter(Encounter encounter, String reason) {
+		
+		// if authenticated user is not supposed to edit encounter of certain type
+		if (!canEditEncounter(encounter, null)) {
+			throw new APIException(String.format("Privilege %s required to void encounters of this type", encounter
+			        .getEncounterType().getEditPrivilege()));
+		}
+		
 		if (reason == null)
 			throw new IllegalArgumentException("The argument 'reason' is required and so cannot be null");
 		
@@ -329,6 +350,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#unvoidEncounter(org.openmrs.Encounter)
 	 */
 	public Encounter unvoidEncounter(Encounter encounter) throws APIException {
+		
+		// if authenticated user is not supposed to edit encounter of certain type
+		if (!canEditEncounter(encounter, null)) {
+			throw new APIException(String.format("Privilege %s required to unvoid encounters of this type", encounter
+			        .getEncounterType().getEditPrivilege()));
+		}
+		
 		String voidReason = encounter.getVoidReason();
 		if (voidReason == null)
 			voidReason = "";
@@ -357,6 +385,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#purgeEncounter(org.openmrs.Encounter)
 	 */
 	public void purgeEncounter(Encounter encounter) throws APIException {
+		// if authenticated user is not supposed to edit encounter of certain type
+		if (!canEditEncounter(encounter, null)) {
+			throw new APIException(String.format("Privilege %s required to purge encounters of this type", encounter
+			        .getEncounterType().getEditPrivilege()));
+		}
 		dao.deleteEncounter(encounter);
 	}
 	
@@ -364,6 +397,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#purgeEncounter(Encounter, boolean)
 	 */
 	public void purgeEncounter(Encounter encounter, boolean cascade) throws APIException {
+		
+		// if authenticated user is not supposed to edit encounter of certain type
+		if (!canEditEncounter(encounter, null)) {
+			throw new APIException(String.format("Privilege %s required to purge encounters of this type", encounter
+			        .getEncounterType().getEditPrivilege()));
+		}
+		
 		if (cascade) {
 			ObsService obsService = Context.getObsService();
 			List<Encounter> justThisEncounter = new ArrayList<Encounter>();
@@ -748,7 +788,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatient(org.openmrs.Patient, boolean, java.lang.String, java.lang.Integer, java.lang.Integer)
+	 * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatient(org.openmrs.Patient,
+	 *      boolean, java.lang.String, java.lang.Integer, java.lang.Integer)
 	 */
 	@Override
 	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
@@ -758,7 +799,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatientCount(org.openmrs.Patient, boolean, java.lang.String)
+	 * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatientCount(org.openmrs.Patient,
+	 *      boolean, java.lang.String)
 	 */
 	@Override
 	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query)
@@ -822,11 +864,53 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * Convenient method that safely checks if user has a given encounter privilege
+	 * @see org.openmrs.api.EncounterService#canEditEncounter(org.openmrs.Encounter, org.openmrs.User)
+	 */
+	@Override
+	public boolean canEditEncounter(Encounter encounter, User user) {
+		// if passed in encounter is null raise an exception
+		if (encounter == null) {
+			throw new IllegalArgumentException("The encounter argument can not be null");
+		}
+		// return true either if given encounter or encounter's type is null
+		if (encounter.getEncounterType() == null) {
+			return Boolean.TRUE;
+		}
+		// if user is not specified, then use authenticated user from context by default
+		if (user == null) {
+			user = Context.getAuthenticatedUser();
+		}
+		
+		return userHasEncounterPrivilege(encounter.getEncounterType().getEditPrivilege(), user);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#canViewEncounter(org.openmrs.Encounter, org.openmrs.User)
+	 */
+	@Override
+	public boolean canViewEncounter(Encounter encounter, User user) {
+		// if passed in encounter is null raise an exception
+		if (encounter == null) {
+			throw new IllegalArgumentException("The encounter argument can not be null");
+		}
+		// return true if given encounter's type is null
+		if (encounter.getEncounterType() == null) {
+			return Boolean.TRUE;
+		}
+		// if user is not specified, then use authenticated user from context by default
+		if (user == null) {
+			user = Context.getAuthenticatedUser();
+		}
+		
+		return userHasEncounterPrivilege(encounter.getEncounterType().getViewPrivilege(), user);
+	}
+	
+	/**
+	 * Convenient method that safely checks if user has given encounter privilege
 	 * 
-	 * @param privilege the privilege to test 
+	 * @param privilege the privilege to test
 	 * @param user the user instance to check if it has given privilege
-	 * @return true if given user has specified privilege 
+	 * @return true if given user has specified privilege
 	 */
 	private boolean userHasEncounterPrivilege(Privilege privilege, User user) {
 		//If the encounter privilege is null, everyone can see and edit the encounter.
