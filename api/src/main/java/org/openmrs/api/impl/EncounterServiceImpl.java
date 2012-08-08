@@ -872,7 +872,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (encounter == null) {
 			throw new IllegalArgumentException("The encounter argument can not be null");
 		}
-		// return true either if given encounter or encounter's type is null
+		// since we restrict by encounter type, if it does not exist, then anyone is allowed to edit the encounter
 		if (encounter.getEncounterType() == null) {
 			return Boolean.TRUE;
 		}
@@ -893,7 +893,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (encounter == null) {
 			throw new IllegalArgumentException("The encounter argument can not be null");
 		}
-		// return true if given encounter's type is null
+		// since we restrict by encounter type, if it does not exist, then anyone is allowed to view the encounter
 		if (encounter.getEncounterType() == null) {
 			return Boolean.TRUE;
 		}

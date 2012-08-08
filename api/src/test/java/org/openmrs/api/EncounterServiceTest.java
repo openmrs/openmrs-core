@@ -2211,8 +2211,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link EncounterService#getEncounter(Integer)}
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail if user is not allowed to view encounter", method = "getEncounter(Integer)")
-	public void getEncounter_shouldFailIfUserIsNotAllowedToViewEncounter() throws Exception {
+	@Verifies(value = "should fail if user is not allowed to view encounter by given id", method = "getEncounter(Integer)")
+	public void getEncounter_shouldFailIfUserIsNotAllowedToViewEncounterByGivenId() throws Exception {
 		// get encounter that has type with view privilege set
 		Encounter encounter = getEncounterWithViewPrivilege();
 		

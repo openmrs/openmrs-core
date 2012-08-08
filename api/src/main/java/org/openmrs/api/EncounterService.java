@@ -87,7 +87,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @return encounter with given internal identifier
 	 * @throws APIException
 	 * @should throw error if given null parameter
-	 * @should fail if user is not allowed to view
+	 * @should fail if user is not allowed to view encounter by given id
 	 * @should return encounter if user is allowed to view it
 	 */
 	@Transactional(readOnly = true)
