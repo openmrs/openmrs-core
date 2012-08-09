@@ -833,6 +833,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param length number of results to return (default to return all results if <code>null<code>)
 	 * @return encounters and empty encounters with only visit set
 	 * @throws APIException
+	 * @since 1.9
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_VISITS })
@@ -848,6 +849,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param query
 	 * @return number of results
 	 * @throws APIException
+	 * @since 1.9
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_VISITS })
