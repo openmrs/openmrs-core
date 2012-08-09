@@ -100,7 +100,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllProviders_shouldGetAllProviders() throws Exception {
 		List<Provider> providers = service.getAllProviders();
-		assertEquals(8, providers.size());
+		assertEquals(9, providers.size());
 	}
 	
 	/**
@@ -229,7 +229,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderByMatchingQueryStringWithAnyUnVoidedPersonNamesMiddleName() throws Exception {
-		assertEquals(5, service.getProviders("Tes", 0, null, null).size());
+		assertEquals(6, service.getProviders("Tes", 0, null, null).size());
 	}
 	
 	/**
@@ -259,7 +259,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void purgeProvider_shouldDeleteAProvider() throws Exception {
 		Provider provider = service.getProvider(2);
 		service.purgeProvider(provider);
-		assertEquals(7, Context.getProviderService().getAllProviders().size());
+		assertEquals(8, Context.getProviderService().getAllProviders().size());
 	}
 	
 	/**
