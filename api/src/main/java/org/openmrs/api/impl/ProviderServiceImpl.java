@@ -110,12 +110,20 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	}
 	
 	/**
+	 * @see org.openmrs.api.ProviderService#getProvidersByPerson( org.openmrs.Person, boolean )
+	 */
+	@Override
+	public Collection<Provider> getProvidersByPerson(Person person, boolean includeRetired) {
+		return dao.getProvidersByPerson(person, includeRetired);
+	}
+	
+	/**
 	 * @see org.openmrs.api.ProviderService#getProvidersByPerson(org.openmrs.Person)
 	 */
 	@Override
 	public Collection<Provider> getProvidersByPerson(Person person) {
 		Validate.notNull(person, "Person must not be null");
-		return dao.getProvidersByPerson(person);
+		return getProvidersByPerson(person, true);
 	}
 	
 	/**

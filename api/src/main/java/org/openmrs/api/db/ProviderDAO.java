@@ -61,9 +61,9 @@ public interface ProviderDAO {
 	public Provider getProviderByUuid(String uuid);
 	
 	/**
-	 * @see ProviderService#getProvidersByPerson(Person)
+	 * @see ProviderService#getProvidersByPerson( Person, boolean )
 	 */
-	public Collection<Provider> getProvidersByPerson(Person person);
+	public Collection<Provider> getProvidersByPerson(Person person, boolean includeRetired);
 	
 	/**
 	 * @param name
