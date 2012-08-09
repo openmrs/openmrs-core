@@ -550,11 +550,15 @@ public interface ConceptService extends OpenmrsService {
 	public List<Drug> findDrugs(String phrase, boolean includeVoided) throws APIException;
 	
 	/**
-	 * Find drugs in the system. The string search can match either drug.name or drug.concept.name
+	 * Find drugs in the system. The string search can match either drug.name or drug.concept.name, drug.drugId or drug.concept.conceptId
 	 * 
 	 * @param phrase Search phrase
 	 * @throws APIException
 	 * @return A List<Drug> object containing all Drug matches
+	 * 
+	 * @should return drugs by drug id
+	 * @should return drugs by drug concept id
+	 * @should not fail if there is no drug by given id
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
