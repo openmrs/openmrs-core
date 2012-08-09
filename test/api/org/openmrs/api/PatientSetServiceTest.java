@@ -34,7 +34,9 @@ import org.openmrs.DrugOrder;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.PatientState;
 import org.openmrs.Person;
+import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
@@ -358,5 +360,19 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("Xanadu", ret.get(6));
 		Assert.assertEquals("Xanadu", ret.get(7));
 		Assert.assertEquals("Xanadu", ret.get(8));
+	}
+	
+	/**
+	 * @see {@link PatientSetService#getCurrentStates(Cohort, ProgramWorkflow)}
+	 */
+	@Test
+	@Verifies(value = "should return an empty map if cohort is empty", method = "getCurrentStates(Cohort, ProgramWorkflow)")
+	public void getCurrentStates_shouldReturnAnEmptyMapIfCohortIsEmpty() throws Exception {
+		Cohort nobody = new Cohort();
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		ProgramWorkflow one = pws.getWorkflow(1);
+		
+		Map<Integer, PatientState> results = Context.getPatientSetService().getCurrentStates(nobody, one);
+		Assert.assertEquals(results.size(), 0);
 	}
 }

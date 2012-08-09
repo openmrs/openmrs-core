@@ -44,6 +44,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
@@ -1729,26 +1730,29 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf) throws DAOException {
 		Map<Integer, PatientState> ret = new HashMap<Integer, PatientState>();
 		
-		Date now = new Date();
-		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientState.class);
-		criteria.setCacheMode(CacheMode.IGNORE);
-		//criteria.add(Restrictions.in("patientProgram.patient.personId", ids));
-		
-		// only include this where clause if patients were passed in
-		if (ps != null)
-			criteria.createCriteria("patientProgram").add(Restrictions.in("patient.personId", ps.getMemberIds()));
-		
-		//criteria.add(Restrictions.eq("state.programWorkflow", wf));
-		criteria.createCriteria("state").add(Restrictions.eq("programWorkflow", wf));
-		criteria.add(Restrictions.eq("voided", false));
-		criteria.add(Restrictions.or(Restrictions.isNull("startDate"), Restrictions.le("startDate", now)));
-		criteria.add(Restrictions.or(Restrictions.isNull("endDate"), Restrictions.ge("endDate", now)));
-		log.debug("criteria: " + criteria);
-		List<PatientState> temp = criteria.list();
-		for (PatientState state : temp) {
-			Integer ptId = state.getPatientProgram().getPatient().getPatientId();
-			ret.put(ptId, state);
+		if (ps == null || ps.getMemberIds().size() > 0) {
+			Date now = new Date();
+			
+			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientState.class);
+			criteria.setFetchMode("patient", FetchMode.JOIN);
+			criteria.setCacheMode(CacheMode.IGNORE);
+			//criteria.add(Restrictions.in("patientProgram.patient.personId", ids));
+			
+			// only include this where clause if patients were passed in
+			if (ps != null)
+				criteria.createCriteria("patientProgram").add(Restrictions.in("patient.personId", ps.getMemberIds()));
+			
+			//criteria.add(Restrictions.eq("state.programWorkflow", wf));
+			criteria.createCriteria("state").add(Restrictions.eq("programWorkflow", wf));
+			criteria.add(Restrictions.eq("voided", false));
+			criteria.add(Restrictions.or(Restrictions.isNull("startDate"), Restrictions.le("startDate", now)));
+			criteria.add(Restrictions.or(Restrictions.isNull("endDate"), Restrictions.ge("endDate", now)));
+			log.debug("criteria: " + criteria);
+			List<PatientState> temp = criteria.list();
+			for (PatientState state : temp) {
+				Integer ptId = state.getPatientProgram().getPatient().getPatientId();
+				ret.put(ptId, state);
+			}
 		}
 		
 		return ret;
