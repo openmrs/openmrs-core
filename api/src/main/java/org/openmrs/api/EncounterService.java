@@ -815,6 +815,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @return a list of {@link Encounter}s
 	 * @throws APIException
 	 * @should return the unvoided encounters not assigned to any visit
+	 * @since 1.9
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
