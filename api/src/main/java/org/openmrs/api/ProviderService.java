@@ -129,6 +129,21 @@ public interface ProviderService extends OpenmrsService {
 	public Collection<Provider> getProvidersByPerson(Person person);
 	
 	/**
+	 * Gets the Providers for the given person including or excluding retired.
+	 * 
+	 * @param person
+	 * @param includeRetired
+	 * @return providers or empty collection
+	 * @should return all providers by person including retired if includeRetired is true
+	 * @should return all providers by person and exclude retired if includeRetired is false
+	 * @should fail if person is null
+	 * @since 1.10, 1.9.1
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	public Collection<Provider> getProvidersByPerson(Person person, boolean includeRetired);
+	
+	/**
 	 * @param query
 	 * @param start
 	 * @param length
