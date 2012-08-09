@@ -837,6 +837,45 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#getDrugs(String)}
+	 */
+	@Test
+	@Verifies(value = "return drugs by drug id", method = "getDrugs(String)")
+	public void getDrugs_shouldReturnDrugsByDrugId() throws Exception {
+		Integer drugId = 2;
+		Drug drug = Context.getConceptService().getDrug(drugId);
+		List<Drug> drugs = Context.getConceptService().getDrugs(String.valueOf(drugId));
+		Assert.assertTrue(drugs.contains(drug));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getDrugs(String)}
+	 */
+	@Test
+	@Verifies(value = "not fail if there is no drug by given id", method = "getDrugs(String)")
+	public void getDrugs_shouldNotFailIfThereisNoDrugByGivenDrugId() throws Exception {
+		List<Drug> drugs = Context.getConceptService().getDrugs("123456");
+		Assert.assertNotNull(drugs);
+	}
+	
+	/**
+	 * @see {@link ConceptService#getDrugs(String)}
+	 */
+	@Test
+	@Verifies(value = "return drugs by drug concept id", method = "getDrugs(String)")
+	public void getDrugs_shouldReturnDrugsByDrugConceptId() throws Exception {
+		Integer conceptId = 792;
+		Drug drug = Context.getConceptService().getDrug(2);
+		
+		// assert that given drug has concept with tested id
+		Assert.assertNotNull(drug.getConcept());
+		Assert.assertEquals(drug.getConcept().getConceptId(), conceptId);
+		
+		List<Drug> drugs = Context.getConceptService().getDrugs(String.valueOf(conceptId));
+		Assert.assertTrue(drugs.contains(drug));
+	}
+	
+	/**
 	 * This tests for being able to find concepts with names in en_GB locale when the user is in the
 	 * en locale.
 	 * 
