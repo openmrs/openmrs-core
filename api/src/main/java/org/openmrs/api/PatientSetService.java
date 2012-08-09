@@ -495,6 +495,15 @@ public interface PatientSetService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(Collection<Integer> patientIds);
 	
+	/**
+	 * Gets statistical information about current states of patients within given cohort for specific program workflow 
+	 * 
+	 * @param ps the patient's cohort object
+	 * @param wf the program workflow instance
+	 * @return map containing statistic information about patient states in cohort
+	 * 
+	 * @should return an empty map if cohort is empty
+	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf);
 	
