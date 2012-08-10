@@ -26,9 +26,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openmrs.Concept;
-import org.openmrs.ConceptName;
-import org.openmrs.EncounterType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.User;
@@ -632,7 +629,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getUserService().saveUser(user, null);
 		
 		//when
-		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales(Context.getAuthenticatedUser());
+		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
 		
 		//then
 		Assert.assertTrue("en_US", searchLocales.contains(new Locale("en", "US")));
@@ -656,7 +653,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.setLocale(new Locale("en", "GB"));
 		
 		//when
-		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales(Context.getAuthenticatedUser());
+		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
 		
 		//then
 		Assert.assertEquals(Context.getLocale(), searchLocales.get(0));
@@ -678,7 +675,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getUserService().saveUser(user, null);
 		
 		//when
-		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales(user);
+		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
 		
 		//then
 		Assert.assertTrue("en_GB", searchLocales.contains(new Locale("en", "GB")));

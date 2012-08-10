@@ -1228,7 +1228,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#getSearchLocales(org.openmrs.User)
 	 */
 	@Override
-	public List<Locale> getSearchLocales(User user) throws APIException {
+	public List<Locale> getSearchLocales() throws APIException {
 		Set<Locale> locales = new LinkedHashSet<Locale>();
 		
 		Locale currentLocale = Context.getLocale();
@@ -1238,24 +1238,26 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		//the currently used language
 		locales.add(new Locale(currentLocale.getLanguage()));
 		
+		//add user's proficient locales
+		User user = Context.getAuthenticatedUser();
 		if (user != null) {
 			List<Locale> proficientLocales = user.getProficientLocales();
 			if (proficientLocales != null) {
 				locales.addAll(proficientLocales);
-				
-				//limit proficient locales to only allowed locales
-				List<Locale> allowedLocales = getAllowedLocales();
-				if (allowedLocales != null) {
-					Set<Locale> retainLocales = new HashSet<Locale>();
-					
-					for (Locale allowedLocale : allowedLocales) {
-						retainLocales.add(allowedLocale);
-						retainLocales.add(new Locale(allowedLocale.getLanguage()));
-					}
-					
-					locales.retainAll(retainLocales);
-				}
 			}
+		}
+		
+		//limit locales to only allowed locales
+		List<Locale> allowedLocales = getAllowedLocales();
+		if (allowedLocales != null) {
+			Set<Locale> retainLocales = new HashSet<Locale>();
+			
+			for (Locale allowedLocale : allowedLocales) {
+				retainLocales.add(allowedLocale);
+				retainLocales.add(new Locale(allowedLocale.getLanguage()));
+			}
+			
+			locales.retainAll(retainLocales);
 		}
 		
 		return new ArrayList<Locale>(locales);

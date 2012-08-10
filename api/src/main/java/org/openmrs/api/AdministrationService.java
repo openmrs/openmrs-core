@@ -736,11 +736,10 @@ public interface AdministrationService extends OpenmrsService {
 	public void validate(Object object, Errors errors) throws APIException;
 	
 	/**
-	 * Returns a list of locales used by the given user when searching.
+	 * Returns a list of locales used by the user when searching.
 	 * <p>
 	 * The list is constructed from a currently selected locale and allowed user proficient locales.
 	 * 
-	 * @param user
 	 * @return locales
 	 * @throws APIException
 	 * @since 1.7.4, 1.8.4, 1.9.1, 1.10
@@ -748,5 +747,5 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should include users proficient locales
 	 * @should exclude not allowed locales
 	 */
-	public List<Locale> getSearchLocales(User user) throws APIException;
+	public List<Locale> getSearchLocales() throws APIException;
 }

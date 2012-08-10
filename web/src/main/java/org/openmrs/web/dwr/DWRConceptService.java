@@ -39,7 +39,6 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.Field;
-import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
@@ -111,12 +110,10 @@ public class DWRConceptService {
 		
 		// TODO add localization for messages
 		
-		User currentUser = Context.getAuthenticatedUser();
-		
 		Locale defaultLocale = Context.getLocale();
 		
 		// get the list of locales to search on
-		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales(currentUser);
+		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
 		
 		// debugging output
 		if (log.isDebugEnabled()) {
@@ -284,7 +281,7 @@ public class DWRConceptService {
 			throw new Exception("Unable to find a concept with id: " + conceptId);
 		
 		List<ConceptSearchResult> searchResults = new ArrayList<ConceptSearchResult>();
-		List<Locale> locales = Context.getAdministrationService().getSearchLocales(Context.getAuthenticatedUser());
+		List<Locale> locales = Context.getAdministrationService().getSearchLocales();
 		
 		for (Locale lc : locales) {
 			List<ConceptSearchResult> results = cs.findConceptAnswers(text, lc, concept);
@@ -511,11 +508,9 @@ public class DWRConceptService {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
 		Vector<Object> objectList = new Vector<Object>();
-		User currentUser = Context.getAuthenticatedUser();
-		Locale defaultLocale = Context.getLocale();
 		
 		// get the list of locales to search on
-		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales(currentUser);
+		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
 		
 		// debugging output
 		if (log.isDebugEnabled()) {
