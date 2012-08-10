@@ -27,7 +27,11 @@ public class Foo {
 	
 	private Map<Integer, String> attributeMap;
 	
-	Foo(String attributeString, int attributeInt) {
+	public Foo() {
+		
+	}
+	
+	public Foo(String attributeString, int attributeInt) {
 		this.attributeString = attributeString;
 		this.attributeInt = attributeInt;
 	}
