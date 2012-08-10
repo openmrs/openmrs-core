@@ -30,7 +30,7 @@
 			</a>
 		</li>
 		<li <c:if test='<%= request.getRequestURI().contains("SetDerived") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/concepts/conceptSetDerived.form">
+			<a href="${pageContext.request.contextPath}/admin/concepts/conceptSetDerived.form" style="display:none">
 				<openmrs:message code="ConceptSetDerived.manage"/>
 			</a>
 		</li>	
