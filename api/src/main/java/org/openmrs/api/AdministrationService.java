@@ -33,7 +33,6 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
-import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.reporting.AbstractReportObject;
@@ -704,7 +703,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @return locales
 	 * @throws APIException
-	 * @since 1.7.4, 1.8.4, 1.9.1, 1.10
+	 * @since 1.8.4, 1.9.1, 1.10
 	 * @should include currently selected full locale and langugage
 	 * @should include users proficient locales
 	 * @should exclude not allowed locales
