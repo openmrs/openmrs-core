@@ -19,6 +19,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,6 +27,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -589,5 +591,74 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		int afterPurgeSize = adminService.getAllGlobalProperties().size();
 		
 		Assert.assertEquals(originalSize, afterPurgeSize);
+	}
+	
+	/**
+	 * @see AdministrationService#getSearchLocales(User)
+	 * @verifies exclude not allowed locales
+	 */
+	@Test
+	public void getSearchLocales_shouldExcludeNotAllowedLocales() throws Exception {
+		//given
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_US, pl, es"));
+		
+		User user = Context.getAuthenticatedUser();
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "es_CL, en_US, pl");
+		Context.getUserService().saveUser(user, null);
+		
+		//when
+		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
+		
+		//then
+		Assert.assertTrue("en_US", searchLocales.contains(new Locale("en", "US")));
+		Assert.assertTrue("pl", searchLocales.contains(new Locale("pl")));
+		Assert.assertTrue("es", searchLocales.contains(new Locale("es")));
+		Assert.assertFalse("es_CL", searchLocales.contains(new Locale("es", "CL")));
+	}
+	
+	/**
+	 * @see AdministrationService#getSearchLocales(User)
+	 * @verifies include currently selected full locale and langugage
+	 */
+	@Test
+	public void getSearchLocales_shouldIncludeCurrentlySelectedFullLocaleAndLangugage() throws Exception {
+		//given
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB"));
+		User user = Context.getAuthenticatedUser();
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "");
+		Context.getUserService().saveUser(user, null);
+		Context.setLocale(new Locale("en", "GB"));
+		
+		//when
+		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
+		
+		//then
+		Assert.assertEquals(Context.getLocale(), searchLocales.get(0));
+		Assert.assertEquals(new Locale(Context.getLocale().getLanguage()), searchLocales.get(1));
+	}
+	
+	/**
+	 * @see AdministrationService#getSearchLocales(User)
+	 * @verifies include users proficient locales
+	 */
+	@Test
+	public void getSearchLocales_shouldIncludeUsersProficientLocales() throws Exception {
+		//given
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, en_US, pl"));
+		
+		User user = Context.getAuthenticatedUser();
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "en_GB, en_US");
+		Context.getUserService().saveUser(user, null);
+		
+		//when
+		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
+		
+		//then
+		Assert.assertTrue("en_GB", searchLocales.contains(new Locale("en", "GB")));
+		Assert.assertTrue("en_US", searchLocales.contains(new Locale("en", "US")));
+		Assert.assertFalse("pl", searchLocales.contains(new Locale("pl")));
 	}
 }
