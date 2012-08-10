@@ -267,6 +267,8 @@ public class DWRConceptService {
 	 *         query
 	 * @throws Exception if given conceptId is not found
 	 * @should not fail if the specified concept has no answers (regression test for TRUNK-2807)
+	 * @should search for concept answers in all search locales
+	 * @should not return duplicates
 	 */
 	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts)
 	        throws Exception {
@@ -287,7 +289,7 @@ public class DWRConceptService {
 		for (Locale lc : locales) {
 			List<ConceptSearchResult> results = cs.findConceptAnswers(text, lc, concept);
 			if (results != null) {
-				results.addAll(searchResults);
+				searchResults.addAll(results);
 			}
 		}
 		
@@ -298,7 +300,12 @@ public class DWRConceptService {
 		}
 		
 		List<Object> items = new Vector<Object>();
+		Set<Integer> uniqueItems = new HashSet<Integer>();
 		for (ConceptSearchResult searchResult : searchResults) {
+			if (!uniqueItems.add(searchResult.getConcept().getConceptId())) {
+				continue; //Skip already added items
+			}
+			
 			items.add(new ConceptListItem(searchResult));
 			// add drugs for concept if desired
 			if (includeDrugConcepts) {

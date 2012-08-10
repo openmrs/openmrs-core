@@ -1241,6 +1241,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (user != null) {
 			List<Locale> proficientLocales = user.getProficientLocales();
 			if (proficientLocales != null) {
+				locales.addAll(proficientLocales);
+				
 				//limit proficient locales to only allowed locales
 				List<Locale> allowedLocales = getAllowedLocales();
 				if (allowedLocales != null) {
@@ -1251,10 +1253,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 						retainLocales.add(new Locale(allowedLocale.getLanguage()));
 					}
 					
-					proficientLocales.retainAll(retainLocales);
+					locales.retainAll(retainLocales);
 				}
-				
-				locales.addAll(proficientLocales); //allowed user proficient locales
 			}
 		}
 		

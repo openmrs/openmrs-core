@@ -26,6 +26,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.EncounterType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
@@ -645,6 +647,14 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getSearchLocales_shouldIncludeCurrentlySelectedFullLocaleAndLangugage() throws Exception {
+		//given
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB"));
+		User user = Context.getAuthenticatedUser();
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "");
+		Context.getUserService().saveUser(user, null);
+		Context.setLocale(new Locale("en", "GB"));
+		
 		//when
 		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales(Context.getAuthenticatedUser());
 		
