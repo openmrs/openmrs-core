@@ -41,12 +41,12 @@ public class OpenmrsSecurityManager extends SecurityManager {
 		int skipClasses = 1;
 		Class<?>[] classContext = getClassContext();
 		for (Class<?> clazz : classContext) {
-	        if (SecurityManager.class.isAssignableFrom(clazz)) {
-	        	skipClasses++;
-	        } else {
-	        	break;
-	        }
-        }
+			if (SecurityManager.class.isAssignableFrom(clazz)) {
+				skipClasses++;
+			} else {
+				break;
+			}
+		}
 		
 		//Adjust the depth so that "0" is the not this "getCallerClass" method
 		return getClassContext()[callStackDepth + skipClasses];
