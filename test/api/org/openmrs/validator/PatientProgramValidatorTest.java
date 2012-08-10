@@ -286,4 +286,36 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		new PatientProgramValidator().validate(pp, errors);
 		Assert.assertEquals(true, errors.hasFieldErrors("states"));
 	}
+
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 * this test is to specifically validate fix for https://tickets.openmrs.org/browse/TRUNK-3670
+	 */
+	@Test
+	@Verifies(value = "should not fail if a non-voided patient state is associated with a retired workflow", method = "validate(Object,Errors)")
+	public void validate_shouldNotFailIfPatientStateIsInRetiredWorkflow() throws Exception {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Patient patient = Context.getPatientService().getPatient(6);
+
+		// create a patient program
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+
+		// add a test workflow, and put the patient in a state in that workflow
+		ProgramWorkflow testWorkflow = pp.getProgram().getWorkflow(1);
+		PatientState newPatientState = new PatientState();
+		newPatientState.setState(testWorkflow.getState(1));
+		pp.getStates().add(newPatientState);
+
+		// now retire the workflow
+		testWorkflow.setRetired(true);
+		testWorkflow.setRetiredBy(Context.getAuthenticatedUser());
+		testWorkflow.setRetireReason("test");
+
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		Assert.assertEquals(false, errors.hasFieldErrors("states"));
+	}
+
 }
