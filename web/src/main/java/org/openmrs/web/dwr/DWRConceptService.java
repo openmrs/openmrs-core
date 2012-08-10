@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.dwr;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +37,6 @@ import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.Drug;
 import org.openmrs.Field;
-import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
@@ -83,7 +83,6 @@ public class DWRConceptService {
 	 * @param start the beginning index
 	 * @param length the number of matching concepts to return
 	 * @return a list of conceptListItems matching the given arguments
-	 * 
 	 * @should return concept by given id if exclude and include lists are empty
 	 * @should return concept by given id if classname is included
 	 * @should not return concept by given id if classname is not included
@@ -91,7 +90,7 @@ public class DWRConceptService {
 	 * @should return concept by given id if datatype is included
 	 * @should not return concept by given id if datatype is not included
 	 * @should not return concept by given id if datatype is excluded
-	 * @should include 
+	 * @should include
 	 * @since 1.8
 	 */
 	public List<Object> findBatchOfConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
@@ -104,36 +103,15 @@ public class DWRConceptService {
 		
 		// TODO add localization for messages
 		
-		User currentUser = Context.getAuthenticatedUser();
-		
 		Locale defaultLocale = Context.getLocale();
 		
-		// get the list of locales to search on from the user's
-		// defined proficient locales (if applicable)
-		List<Locale> localesToSearchOn = null;
-		if (currentUser != null)
-			localesToSearchOn = currentUser.getProficientLocales();
-		
-		if (localesToSearchOn == null)
-			// we're working with an anonymous user right now or
-			// with a user that has not defined any proficient locales
-			localesToSearchOn = new Vector<Locale>();
-		
-		// add the user's locale
-		if (localesToSearchOn.size() == 0) {
-			localesToSearchOn.add(defaultLocale);
-			
-			// if country is specified, also add the generic language locale
-			if (!"".equals(defaultLocale.getCountry())) {
-				localesToSearchOn.add(new Locale(defaultLocale.getLanguage()));
-			}
-			
-		}
+		// get the list of locales to search on
+		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
 		
 		// debugging output
 		if (log.isDebugEnabled()) {
 			StringBuffer searchLocalesString = new StringBuffer();
-			for (Locale loc : localesToSearchOn) {
+			for (Locale loc : searchLocales) {
 				searchLocalesString.append(loc.toString() + " ");
 			}
 			log.debug("searching locales: " + searchLocalesString);
@@ -202,8 +180,8 @@ public class DWRConceptService {
 						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
 				
 				// perform the search
-				searchResults.addAll(cs.getConcepts(phrase, localesToSearchOn, includeRetired, includeClasses,
-				    excludeClasses, includeDatatypes, excludeDatatypes, null, start, length));
+				searchResults.addAll(cs.getConcepts(phrase, searchLocales, includeRetired, includeClasses, excludeClasses,
+				    includeDatatypes, excludeDatatypes, null, start, length));
 				
 				//TODO Should we still include drugs, if yes, smartly harmonize the paging between the two different DB tables
 				//look ups to match the values of start and length not to go over the value of count of matches returned to the search widget
@@ -214,10 +192,8 @@ public class DWRConceptService {
 			}
 			
 			if (searchResults.size() < 1) {
-				objectList.add(Context.getMessageSourceService()
-				        .getMessage("general.noMatchesFoundInLocale",
-				            new Object[] { "<b>" + phrase + "</b>", OpenmrsUtil.join(localesToSearchOn, ", ") },
-				            Context.getLocale()));
+				objectList.add(Context.getMessageSourceService().getMessage("general.noMatchesFoundInLocale",
+				    new Object[] { "<b>" + phrase + "</b>", OpenmrsUtil.join(searchLocales, ", ") }, Context.getLocale()));
 			} else {
 				// turn searchResults into concept list items
 				// if user wants drug concepts included, append those
@@ -280,6 +256,8 @@ public class DWRConceptService {
 	 * @return list of {@link ConceptListItem} or {@link ConceptDrugListItem} answers that match the
 	 *         query
 	 * @throws Exception if given conceptId is not found
+	 * @should search for concept answers in all search locales
+	 * @should not return duplicates
 	 */
 	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts)
 	                                                                                                                          throws Exception {
@@ -287,7 +265,6 @@ public class DWRConceptService {
 		if (includeVoided == true)
 			throw new APIException("You should not include voideds in the search.");
 		
-		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		
 		Concept concept = cs.getConcept(conceptId);
@@ -295,7 +272,15 @@ public class DWRConceptService {
 		if (concept == null)
 			throw new Exception("Unable to find a concept with id: " + conceptId);
 		
-		List<ConceptSearchResult> searchResults = cs.findConceptAnswers(text, locale, concept);
+		List<ConceptSearchResult> searchResults = new ArrayList<ConceptSearchResult>();
+		List<Locale> locales = Context.getAdministrationService().getSearchLocales();
+		
+		for (Locale lc : locales) {
+			List<ConceptSearchResult> results = cs.findConceptAnswers(text, lc, concept);
+			if (results != null) {
+				searchResults.addAll(results);
+			}
+		}
 		
 		List<Drug> drugAnswers = new Vector<Drug>();
 		for (ConceptAnswer conceptAnswer : concept.getAnswers()) {
@@ -304,7 +289,12 @@ public class DWRConceptService {
 		}
 		
 		List<Object> items = new Vector<Object>();
+		Set<Integer> uniqueItems = new HashSet<Integer>();
 		for (ConceptSearchResult searchResult : searchResults) {
+			if (!uniqueItems.add(searchResult.getConcept().getConceptId())) {
+				continue; //Skip already added items
+			}
+			
 			items.add(new ConceptListItem(searchResult));
 			// add drugs for concept if desired
 			if (includeDrugConcepts) {
@@ -312,7 +302,7 @@ public class DWRConceptService {
 				if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
 					for (Drug d : cs.getDrugsByConcept(searchResult.getConcept())) {
 						if (drugAnswers.contains(d))
-							items.add(new ConceptDrugListItem(d, locale));
+							items.add(new ConceptDrugListItem(d, Context.getLocale()));
 					}
 			}
 		}
@@ -506,35 +496,14 @@ public class DWRConceptService {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
 		Vector<Object> objectList = new Vector<Object>();
-		User currentUser = Context.getAuthenticatedUser();
-		Locale defaultLocale = Context.getLocale();
 		
-		// get the list of locales to search on from the user's
-		// defined proficient locales (if applicable)
-		List<Locale> localesToSearchOn = null;
-		if (currentUser != null)
-			localesToSearchOn = currentUser.getProficientLocales();
-		
-		if (localesToSearchOn == null)
-			// we're working with an anonymous user right now or
-			// with a user that has not defined any proficient locales
-			localesToSearchOn = new Vector<Locale>();
-		
-		// add the user's locale
-		if (localesToSearchOn.size() == 0) {
-			localesToSearchOn.add(defaultLocale);
-			
-			// if country is specified, also add the generic language locale
-			if (!"".equals(defaultLocale.getCountry())) {
-				localesToSearchOn.add(new Locale(defaultLocale.getLanguage()));
-			}
-			
-		}
+		// get the list of locales to search on
+		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
 		
 		// debugging output
 		if (log.isDebugEnabled()) {
 			StringBuffer searchLocalesString = new StringBuffer();
-			for (Locale loc : localesToSearchOn) {
+			for (Locale loc : searchLocales) {
 				searchLocalesString.append(loc.toString() + " ");
 			}
 			log.debug("searching locales: " + searchLocalesString);
@@ -580,7 +549,7 @@ public class DWRConceptService {
 				int matchCount = 0;
 				if (getMatchCount) {
 					//get the count of matches
-					matchCount += cs.getCountOfConcepts(phrase, localesToSearchOn, includeRetired, includeClasses,
+					matchCount += cs.getCountOfConcepts(phrase, searchLocales, includeRetired, includeClasses,
 					    excludeClasses, includeDatatypes, excludeDatatypes, null);
 					if (phrase.matches("\\d+")) {
 						// user searched on a number. Insert concept with
