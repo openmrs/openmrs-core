@@ -777,6 +777,8 @@
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<useReleaseProfile>false</useReleaseProfile>
+						<arguments>-Prelease</arguments>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -787,7 +789,7 @@
 						<execution>
 							<id>attach-sources</id>
 							<goals>
-								<goal>jar-no-fork</goal>
+								<goal>jar</goal>
 							</goals>
 						</execution>
 					</executions>
@@ -797,13 +799,12 @@
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>2.8.1</version>
 					<configuration>
-						<tags>
-							<tag>
-								<name>should</name>
-								<placement>a</placement>
-								<head>Should:</head>
-							</tag>
-						</tags>
+						<taglet>org.openmrs.tools.doclet.ShouldTaglet</taglet>
+						<tagletArtifact>
+							<groupId>org.openmrs.tools</groupId>
+							<artifactId>openmrs-tools</artifactId>
+							<version>${project.version}</version>
+						</tagletArtifact>
 					</configuration>
 					<executions>
 						<execution>
@@ -945,7 +946,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.6.1</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these
@@ -958,12 +958,6 @@
 						border=0/&gt;&lt;/a&gt;</header>
 					<footer>&lt;a href="http://www.openmrs.org"
 						target=_top&gt;${project.name}&lt;/a&gt;</footer>
-					<taglet>org.openmrs.tools.doclet.ShouldTaglet</taglet>
-					<tagletArtifact>
-						<groupId>org.openmrs.tools</groupId>
-						<artifactId>openmrs-tools</artifactId>
-						<version>${project.version}</version>
-					</tagletArtifact>
 				</configuration>
 			</plugin>
 			<plugin>
