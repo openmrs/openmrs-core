@@ -487,7 +487,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getAllPrivileges_shouldReturnAllPrivilegesInTheSystem() throws Exception {
 		executeDataSet(XML_FILENAME);
 		List<Privilege> privileges = Context.getUserService().getAllPrivileges();
-		Assert.assertEquals(1, privileges.size());
+		Assert.assertEquals(115, privileges.size());
 	}
 	
 	/**
@@ -781,7 +781,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		
 		UserService userService = Context.getUserService();
-		User user = userService.getUser(505);		
+		User user = userService.getUser(505);
 		Assert.assertNotSame("", user.getUserProperty("some key"));
 		
 		userService.removeUserProperty(user, "some key");
@@ -828,7 +828,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Privilege p = new Privilege("new privilege name", "new privilege desc");
 		Context.getUserService().savePrivilege(p);
 		
-		Privilege savedPrivilege = Context.getUserService().getPrivilege("new privilege name");		
+		Privilege savedPrivilege = Context.getUserService().getPrivilege("new privilege name");
 		Assert.assertNotNull(savedPrivilege);
 		
 	}
@@ -920,10 +920,10 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//		Set<Role> inheritedRoles = new HashSet<Role>();
 		//		inheritedRoles.add(role);
 		//		role.setInheritedRoles(inheritedRoles);
-		//		
+		//
 		//		Context.getUserService().saveRole(role);
 		
-		// stack overflow error getting thrown in handlers 
+		// stack overflow error getting thrown in handlers
 	}
 
 	/**
