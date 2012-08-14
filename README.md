@@ -1,5 +1,4 @@
-
-OpenMRS is an patient-based medical record system focusing on providing care 
+OpenMRS is an patient-based medical record system focusing on giving providers a free customizable EMR.
 
 Read more at http://openmrs.org/about
 
