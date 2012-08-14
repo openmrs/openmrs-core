@@ -783,10 +783,28 @@ public class OpenmrsUtil {
 		return ret;
 	}
 	
+	/**
+	 * Also see TRUNK-3665
+	 * 
+	 * @deprecated replaced by {@link #delimitedStringToConceptList(String,String)}
+	 */
+	@Deprecated
 	public static List<Concept> delimitedStringToConceptList(String delimitedString, String delimiter, Context context) {
+		return delimitedStringToConceptList(delimitedString, delimiter);
+	}
+	
+	/**
+	 * Parses and loads a delimited list of concept ids or names
+	 * @param delimitedString the delimited list of concept ids or names
+	 * @param delimiter the delimiter, e.g. ","
+	 * @return the list of concepts
+	 * 
+	 * @since 1.10, 1.9.2, 1.8.5
+	 */
+	public static List<Concept> delimitedStringToConceptList(String delimitedString, String delimiter) {
 		List<Concept> ret = null;
 		
-		if (delimitedString != null && context != null) {
+		if (delimitedString != null) {
 			String[] tokens = delimitedString.split(delimiter);
 			for (String token : tokens) {
 				Integer conceptId = null;
