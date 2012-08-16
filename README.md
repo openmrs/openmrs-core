@@ -1,11 +1,12 @@
+<<<<<<< HEAD
 
-OpenMRS is an patient-based medical record system focusing on providing care 
+OpenMRS is an patient-based medical record system focusing on giving providers a free customizable EMR.
 
 Read more at http://openmrs.org/about
 
 Find documentation on our wiki: http://wiki.openmrs.org
 
-The file tree is set up as follows:
+The project tree is set up as follows:
 
 <table>
  <tr>
