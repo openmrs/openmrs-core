@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 OpenMRS is an patient-based medical record system focusing on giving providers a free customizable EMR.
 
 Read more at http://openmrs.org/about
@@ -43,7 +41,7 @@ The project tree is set up as follows:
  </tr>
  <tr>
   <td>build.xml</td>
-  <td>(deprecated)ANT build file containing convenience methods into the maven build</td>
+  <td>(deprecated) ANT build file containing convenience methods into the maven build</td>
  </tr>
  <tr>
   <td>license.txt</td>
