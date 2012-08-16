@@ -5,7 +5,7 @@ Read more at http://openmrs.org/about
 
 Find documentation on our wiki: http://wiki.openmrs.org
 
-The project tree is set up as follows:
+The file tree is set up as follows:
 
 <table>
  <tr>
@@ -15,7 +15,6 @@ The project tree is set up as follows:
  <tr>
   <td>api/</td>
   <td>java and resource files for building the java api jar file.</td>
-  <td>A standalone maven module</td>
  </tr>
  <tr>
   <td>release-test</td>
@@ -32,12 +31,10 @@ The project tree is set up as follows:
  <tr>
   <td>web/</td>
   <td>java and resource files that are used in the webapp/war file.</td>
-  <td>A standalone maven module</td>
  </tr>
  <tr>
   <td>webapp/</td>
   <td>jsp files used in building the war file.</td>
-  <td>A standalone maven module</td>
  </tr>
  <tr> 
   <td>build.properties</td>
