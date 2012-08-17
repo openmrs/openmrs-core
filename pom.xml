@@ -27,9 +27,9 @@
 	</organization>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs/branches/1.8.x/</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs/branches/1.8.x/</developerConnection>
-		<url>http://svn.openmrs.org/openmrs/branches/1.8.x/</url>
+		<connection>scm:git:https://github.com/openmrs/openmrs-core</connection>
+		<developerConnection>scm:git:https://github.com/openmrs/openmrs-core</developerConnection>
+		<url>https://github.com/openmrs/openmrs-core</url>
 	</scm>
 
 	<modules>
@@ -554,25 +554,15 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!-- 
-					Using modified version of plugin with patch applied from issue:
-					http://jira.codehaus.org/browse/MOJO-1539
-					Allows building without svn using revisionOnScmFailure
-				-->
 				<plugin>
-					<groupId>org.openmrs.codehaus.mojo</groupId>
+					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>buildnumber-maven-plugin</artifactId>
-					<version>1.0-beta-4-mod</version>
+					<version>1.1</version>
 					<configuration>
-						<doCheck>false</doCheck>
-						<doUpdate>false</doUpdate>
-						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
+						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 						<revisionOnScmFailure>0</revisionOnScmFailure>
-						<useLastCommittedRevision>true</useLastCommittedRevision>
-						<providerImplementations>
-							<svn>javasvn</svn>
-						</providerImplementations>
+						<shortRevisionLength>6</shortRevisionLength>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -725,7 +715,7 @@
 
 		<plugins>
 			<plugin>
-				<groupId>org.openmrs.codehaus.mojo</groupId>
+				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
 				<executions>
 					<execution>
