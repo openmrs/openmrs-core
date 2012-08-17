@@ -27,9 +27,9 @@
 	</organization>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs/branches/1.9.x</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs/branches/1.9.x</developerConnection>
-		<url>http://svn.openmrs.org/openmrs/branches/1.9.x</url>
+		<connection>scm:git:https://github.com/openmrs/openmrs-core</connection>
+		<developerConnection>scm:git:https://github.com/openmrs/openmrs-core</developerConnection>
+		<url>https://github.com/openmrs/openmrs-core</url>
 	</scm>
 
 	<modules>
@@ -734,17 +734,12 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>buildnumber-maven-plugin</artifactId>
-					<version>1.0</version>
+					<version>1.1</version>
 					<configuration>
-						<doCheck>false</doCheck>
-						<doUpdate>false</doUpdate>
-						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
+						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 						<revisionOnScmFailure>0</revisionOnScmFailure>
-						<useLastCommittedRevision>true</useLastCommittedRevision>
-						<providerImplementations>
-							<svn>javasvn</svn>
-						</providerImplementations>
+						<shortRevisionLength>6</shortRevisionLength>
 					</configuration>
 				</plugin>
 				<plugin>
