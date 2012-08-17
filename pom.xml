@@ -712,9 +712,9 @@
 					<version>1.1</version>
 					<configuration>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
-                        <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 						<revisionOnScmFailure>0</revisionOnScmFailure>
-                        <shortRevisionLength>6</shortRevisionLength>
+						<shortRevisionLength>6</shortRevisionLength>
 					</configuration>
 				</plugin>
 				<plugin>
