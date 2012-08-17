@@ -289,8 +289,8 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
-     * this test is to specifically validate fix for https://tickets.openmrs.org/browse/TRUNK-3670
-     */
+	 * this test is to specifically validate fix for https://tickets.openmrs.org/browse/TRUNK-3670
+	 */
 	@Test
 	@Verifies(value = "should not fail if a non-voided patient state is associated with a retired workflow", method = "validate(Object,Errors)")
 	public void validate_shouldNotFailIfPatientStateIsInRetiredWorkflow() throws Exception {
