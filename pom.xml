@@ -28,9 +28,9 @@
 	</organization>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs/trunk/</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs/trunk/</developerConnection>
-		<url>http://svn.openmrs.org/openmrs/trunk/</url>
+		<connection>scm:git:https://github.com/openmrs/openmrs-core</connection>
+		<developerConnection>scm:git:https://github.com/openmrs/openmrs-core</developerConnection>
+		<url>https://github.com/openmrs/openmrs-core</url>
 	</scm>
 
 	<modules>
@@ -709,17 +709,12 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>buildnumber-maven-plugin</artifactId>
-					<version>1.0</version>
+					<version>1.1</version>
 					<configuration>
-						<doCheck>false</doCheck>
-						<doUpdate>false</doUpdate>
-						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
+                                                <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 						<revisionOnScmFailure>0</revisionOnScmFailure>
-						<useLastCommittedRevision>true</useLastCommittedRevision>
-						<providerImplementations>
-							<svn>javasvn</svn>
-						</providerImplementations>
+                                                <shortRevisionLength>6</shortRevisionLength>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -1006,8 +1001,7 @@
 		<maven.build.timestamp.format>MMM dd yyyy hh:mm aa</maven.build.timestamp.format>
 		<TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
 
-		<openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
-			${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
+		<openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion} ${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
 		<openmrs.version.short>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}-${parsedVersion.qualifier}</openmrs.version.short>
 		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}</openmrs.version.shortnumericonly>
 
