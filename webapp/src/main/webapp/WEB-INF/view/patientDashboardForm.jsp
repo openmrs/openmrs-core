@@ -340,7 +340,6 @@
 									portletId is null: '${extension.extensionId}'
 								</c:when>
 								<c:otherwise>
-									hooo
 									<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.${extension.tabId}TabHeader" type="html" parameters="patientId=${patient.patientId}" />
 									<openmrs:portlet url="${extension.portletUrl}" id="${extension.tabId}" moduleId="${extension.moduleId}"/>
 									
