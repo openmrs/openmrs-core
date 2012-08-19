@@ -41,9 +41,18 @@
 											value="${ item.globalProperty }" />
 									</c:when>
 									<c:otherwise>
-										<form:input
-											path="settings[${status.index}].globalProperty.propertyValue"
-											size="50" maxlength="4000" /></td>
+										<c:choose>
+											<c:when test="${fn:length(item.globalProperty.propertyValue) > 20}">
+												<form:textarea
+													path="settings[${status.index}].globalProperty.propertyValue"
+													cols="50"/></td>
+										    </c:when>
+										    <c:otherwise>
+												<form:input
+													path="settings[${status.index}].globalProperty.propertyValue"
+													size="50" maxlength="4000" /></td>
+										    </c:otherwise>
+										</c:choose>
 									</c:otherwise>
 								</c:choose>
 								<form:errors path="settings[${status.index}].globalProperty.propertyValue" cssClass="error"/>
