@@ -3,3 +3,6 @@
 *.ipr
 *.iws
 target/
+.settings/
+.project
+.classpath
