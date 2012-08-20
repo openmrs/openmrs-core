@@ -169,4 +169,17 @@ public class WebUtil {
 			return null;
 	}
 	
+	/**
+	 * Method that returns WebConstants.WEBAPP_NAME or an empty string WebConstants.WEBAPP_NAME is empty.
+	 *
+	 * @return return WebConstants.WEBAPP_NAME or empty string if WebConstants.WEBAPP_NAME is null
+	 * @should return empty string if WebConstants.WEBAPP_NAME is null
+	 */
+	public static String getContextPath() {
+		return webappNameIsEmpty() ? "" : "/" + WebConstants.WEBAPP_NAME;
+	}
+	
+	private static boolean webappNameIsEmpty() {
+		return WebConstants.WEBAPP_NAME == null || WebConstants.WEBAPP_NAME.equals("");
+	}
 }
