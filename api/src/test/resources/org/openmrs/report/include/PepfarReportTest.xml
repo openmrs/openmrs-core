@@ -6,6 +6,6 @@
   <patient patient_id="2" creator="1" date_created="2006-02-15 00:00:00.0" voided="false"/>
   <patient_program patient_program_id="1" patient_id="2" program_id="1" date_enrolled="2006-10-14 00:00:00.0" creator="1" date_created="2007-09-20 00:00:00.0" voided="false" uuid="164ebabc-5ad6-4b43-9069-f1b13fcc3caf"/>
   <person person_id="2" gender="M" birthdate="1980-12-25" birthdate_estimated="false" dead="false" creator="1" date_created="2006-02-15 00:00:00.0" voided="false" uuid="ed45b240-a036-4501-a96e-3e48d6fdb0dc"/>
-  <person_name person_name_id="2" preferred="true" person_id="2" given_name="Fred" middle_name="C" family_name="Dobbs" creator="3" date_created="2006-02-15 00:00:00.0" voided="false" uuid="fa5c3ec2-1b0f-4c0f-868a-654fa17b7d8e"/>
-  <program program_id="1" concept_id="1" creator="2" date_created="2007-09-20 16:00:32.0" retired="false" name="program name" description="desc" uuid="e92536a9-3955-42d2-94a2-b1746c0b0077"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="Fred" middle_name="C" family_name="Dobbs" creator="1" date_created="2006-02-15 00:00:00.0" voided="false" uuid="fa5c3ec2-1b0f-4c0f-868a-654fa17b7d8e"/>
+  <program program_id="1" concept_id="1" creator="1" date_created="2007-09-20 16:00:32.0" retired="false" name="program name" description="desc" uuid="e92536a9-3955-42d2-94a2-b1746c0b0077"/>
 </dataset>

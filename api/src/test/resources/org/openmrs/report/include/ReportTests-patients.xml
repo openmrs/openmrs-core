@@ -16,12 +16,11 @@
   <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="1bc8a705-24af-474b-911d-099578300fb2"/>
   <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f9239eea-8c32-4487-b766-2a5e312307f4"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="0d726f0a-946b-4263-8446-78719e90a85a"/>
-  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_identifier_id="5" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="d7c31242-a76c-4a0b-9381-53c50becd188"/>
   <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="3e13d6c9-8b02-4680-adb0-cbd5dde431b0"/>
-  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="cfce5972-507d-4fb5-b475-0df085f51ee6"/>
   <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" birthdate="1970-01-01 00:00:00.0"  uuid="9ebc26eb-bd09-4c90-866a-a4c30c50992b"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="cfce5972-507d-4fb5-b475-0df085f51ee6"/>
   <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe"  uuid="36620591-4a41-4c04-83b2-b85478c5cf96"/>
+
   <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
   <patient_identifier patient_identifier_id="1" patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" identifier="1234" identifier_type="1" preferred="1" voided="false" location_id="1"  uuid="2d901f13-6af3-4d8a-84a0-dd1658793fba"/>
   
