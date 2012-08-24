@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
@@ -23,6 +24,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
+import static org.openmrs.util.AddressMatcher.containsAddress;
+import static org.openmrs.util.NameMatcher.containsFullName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,6 +110,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	private static final String ENCOUNTERS_FOR_VISITS_XML = "org/openmrs/api/include/PersonServiceTest-encountersForVisits.xml";
 	
+	private static final String PATIENT_MERGE_XML = "org/openmrs/api/include/PatientServiceTest-mergePatients.xml";
+	
 	// Services
 	protected static PatientService patientService = null;
 	
@@ -124,12 +129,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Before
 	public void runBeforeAllTests() throws Exception {
-		if (patientService == null) {
-			patientService = Context.getPatientService();
-			personService = Context.getPersonService();
-			adminService = Context.getAdministrationService();
-			locationService = Context.getLocationService();
-		}
+		patientService = Context.getPatientService();
+		personService = Context.getPersonService();
+		adminService = Context.getAdministrationService();
+		locationService = Context.getLocationService();
 	}
 	
 	/**
@@ -3117,4 +3120,51 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Collections.sort(sortedList, new PatientIdentifierTypeDefaultComparator());
 		Assert.assertEquals(sortedList, list);
 	}
+	
+	@Test
+	@Verifies(value = "should merge patients and maintain two similar but different names", method = "mergePatients")
+	public void mergePatients_shouldMaintainSimilarButDifferentNames() throws Exception {
+		executeDataSet(PATIENT_MERGE_XML);
+		Patient preferredPatient = patientService.getPatient(10000);
+		Patient nonPreferredPatient = patientService.getPatient(10001);
+		
+		patientService.mergePatients(preferredPatient, nonPreferredPatient);
+		Set<PersonName> names = preferredPatient.getNames();
+		
+		assertThat(names, containsFullName("President John Fitzgerald Kennedy Esq."));
+		assertThat(names, containsFullName("John Fitzgerald Kennedy"));
+		
+	}
+	
+	@Test
+	@Verifies(value = "should merge patients and maintain two similar but different addresses", method = "mergePatients")
+	public void mergePatients_shouldMaintainSimilarButDifferentAddresses() throws Exception {
+		executeDataSet(PATIENT_MERGE_XML);
+		Patient preferredPatient = patientService.getPatient(10000);
+		Patient nonPreferredPatient = patientService.getPatient(10001);
+		
+		patientService.mergePatients(preferredPatient, nonPreferredPatient);
+		Set<PersonAddress> addresses = preferredPatient.getAddresses();
+		
+		assertThat(
+		    addresses,
+		    containsAddress("a1:Apartment ABC, a2:123 fake st, cv:Faketown, sp:null, c:null, cd:null, nc:null, pc:1234, lat:null, long:null"));
+		assertThat(
+		    addresses,
+		    containsAddress("a1:Apartment ABC, a2:123 fake st, cv:Faketown, sp:Fakeland, c:null, cd:null, nc:null, pc:null, lat:null, long:null"));
+		
+	}
+	
+	@Test
+	@Verifies(value = "should merge 3 patients names and addresses into 2", method = "mergePatients")
+	public void mergePatients_shouldMergePatientNames() throws Exception {
+		executeDataSet(PATIENT_MERGE_XML);
+		Patient preferredPatient = patientService.getPatient(10001);
+		Patient nonPreferredPatient = patientService.getPatient(10000);
+		
+		patientService.mergePatients(preferredPatient, nonPreferredPatient);
+		assertThat(preferredPatient.getAddresses().size(), equalTo(2));
+		
+	}
+	
 }
