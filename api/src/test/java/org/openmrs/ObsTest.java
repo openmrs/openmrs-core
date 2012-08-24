@@ -41,6 +41,8 @@ public class ObsTest {
 	
 	private static final String VERO = "Vero";
 	
+	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
+	
 	/**
 	 * Tests the addToGroup method in ObsGroup
 	 * 
@@ -425,5 +427,135 @@ public class ObsTest {
 		obs.setValueCodedName(new ConceptName("True", Locale.US));
 		
 		Assert.assertEquals(VERO, obs.getValueAsString(Locale.ITALIAN));
+	}
+	
+	/**
+	 * @see {@link Obs#setFormField(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should set the underlying formNamespaceAndPath in the correct pattern", method = "setFormField(String,String)")
+	public void setFormField_shouldSetTheUnderlyingFormNamespaceAndPathInTheCorrectPattern() throws Exception {
+		final String ns = "my ns";
+		final String path = "my path";
+		Obs obs = new Obs();
+		obs.setFormField(ns, path);
+		java.lang.reflect.Field formNamespaceAndPathProperty = Obs.class.getDeclaredField("formNamespaceAndPath");
+		formNamespaceAndPathProperty.setAccessible(true);
+		Assert.assertEquals(ns + FORM_NAMESPACE_PATH_SEPARATOR + path, formNamespaceAndPathProperty.get(obs));
+	}
+	
+	/**
+	 * @see {@link Obs#getFormFieldNamespace()}
+	 */
+	@Test
+	@Verifies(value = "should return null if the namespace is not specified", method = "getFormFieldNamespace()")
+	public void getFormFieldNamespace_shouldReturnNullIfTheNamespaceIsNotSpecified() throws Exception {
+		Obs obs = new Obs();
+		obs.setFormField("", "my path");
+		Assert.assertNull(obs.getFormFieldNamespace());
+	}
+	
+	/**
+	 * @see {@link Obs#getFormFieldNamespace()}
+	 */
+	@Test
+	@Verifies(value = "should return the correct namespace for a form field with a path", method = "getFormFieldNamespace()")
+	public void getFormFieldNamespace_shouldReturnTheCorrectNamespaceForAFormFieldWithAPath() throws Exception {
+		final String ns = "my ns";
+		final String path = "my path";
+		Obs obs = new Obs();
+		obs.setFormField(ns, path);
+		Assert.assertEquals(ns, obs.getFormFieldNamespace());
+	}
+	
+	/**
+	 * @see {@link Obs#getFormFieldNamespace()}
+	 */
+	@Test
+	@Verifies(value = "should return the namespace for a form field that has no path", method = "getFormFieldNamespace()")
+	public void getFormFieldNamespace_shouldReturnTheNamespaceForAFormFieldThatHasNoPath() throws Exception {
+		final String ns = "my ns";
+		Obs obs = new Obs();
+		obs.setFormField(ns, null);
+		Assert.assertEquals(ns, obs.getFormFieldNamespace());
+	}
+	
+	/**
+	 * @see {@link Obs#getFormFieldPath()}
+	 */
+	@Test
+	@Verifies(value = "should return null if the path is not specified", method = "getFormFieldPath()")
+	public void getFormFieldPath_shouldReturnNullIfThePathIsNotSpecified() throws Exception {
+		Obs obs = new Obs();
+		obs.setFormField("my ns", "");
+		Assert.assertNull(obs.getFormFieldPath());
+	}
+	
+	/**
+	 * @see {@link Obs#getFormFieldPath()}
+	 */
+	@Test
+	@Verifies(value = "should return the correct path for a form field with a namespace", method = "getFormFieldPath()")
+	public void getFormFieldPath_shouldReturnTheCorrectPathForAFormFieldWithANamespace() throws Exception {
+		final String ns = "my ns";
+		final String path = "my path";
+		Obs obs = new Obs();
+		obs.setFormField(ns, path);
+		Assert.assertEquals(path, obs.getFormFieldPath());
+	}
+	
+	/**
+	 * @see {@link Obs#getFormFieldPath()}
+	 */
+	@Test
+	@Verifies(value = "should return the path for a form field that has no namespace", method = "getFormFieldPath()")
+	public void getFormFieldPath_shouldReturnThePathForAFormFieldThatHasNoNamespace() throws Exception {
+		final String path = "my path";
+		Obs obs = new Obs();
+		obs.setFormField("", path);
+		Assert.assertEquals(path, obs.getFormFieldPath());
+	}
+	
+	/**
+	 * @see {@link Obs#setFormField(String,String)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should reject a namepace and path combination longer than the max length", method = "setFormField(String,String)")
+	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() throws Exception {
+		StringBuffer nsBuffer = new StringBuffer(125);
+		for (int i = 0; i < 125; i++) {
+			nsBuffer.append("n");
+		}
+		StringBuffer pathBuffer = new StringBuffer(130);
+		for (int i = 0; i < 130; i++) {
+			nsBuffer.append("p");
+		}
+		
+		final String ns = nsBuffer.toString();
+		final String path = pathBuffer.toString();
+		Obs obs = new Obs();
+		obs.setFormField(ns, path);
+	}
+	
+	/**
+	 * @see {@link Obs#setFormField(String,String)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should reject a namepace containing the separator", method = "setFormField(String,String)")
+	public void setFormField_shouldRejectANamepaceContainingTheSeparator() throws Exception {
+		final String ns = "my ns" + FORM_NAMESPACE_PATH_SEPARATOR;
+		Obs obs = new Obs();
+		obs.setFormField(ns, "");
+	}
+	
+	/**
+	 * @see {@link Obs#setFormField(String,String)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should reject a path containing the separator", method = "setFormField(String,String)")
+	public void setFormField_shouldRejectAPathContainingTheSeparator() throws Exception {
+		final String path = FORM_NAMESPACE_PATH_SEPARATOR + "my path";
+		Obs obs = new Obs();
+		obs.setFormField("", path);
 	}
 }
