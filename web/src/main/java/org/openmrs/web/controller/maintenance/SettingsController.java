@@ -106,6 +106,8 @@ public class SettingsController {
 			// TODO: move this to a GlobalPropertyListener
 			// refresh log level from global property(ies)
 			OpenmrsUtil.applyLogLevels();
+			
+			OpenmrsUtil.setupLogAppenders();
 		}
 		
 	}

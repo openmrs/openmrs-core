@@ -1273,6 +1273,12 @@ public final class OpenmrsConstants {
 		                "org.openmrs.api:" + LOG_LEVEL_INFO,
 		                "Logging levels for log4j.xml. Valid format is class:level,class:level. If class not specified, 'org.openmrs.api' presumed. Valid levels are trace, debug, info, warn, error or fatal"));
 		
+		props.add(new GlobalProperty(GP_LOG_LOCATION, "",
+		        "A directory where the OpenMRS log file appender is stored. The log file name is 'openmrs.log'."));
+		
+		props.add(new GlobalProperty(GP_LOG_LAYOUT, "%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n",
+		        "A log layout pattern which is used by the OpenMRS file appender."));
+		
 		props
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR,
@@ -1637,6 +1643,27 @@ public final class OpenmrsConstants {
 	
 	// Global property key for global logger level
 	public static final String GLOBAL_PROPERTY_LOG_LEVEL = "log.level";
+	
+	/**
+	 * It points to a directory where 'openmrs.log' is stored.
+	 * 
+	 * @since 1.10, 1.9.2, 1.8.5, 1.7.5
+	 */
+	public static final String GP_LOG_LOCATION = "log.location";
+	
+	/**
+	 * It specifies a log layout pattern used by the OpenMRS file appender.
+	 * 
+	 * @since 1.10, 1.9.2, 1.8.5, 1.7.5
+	 */
+	public static final String GP_LOG_LAYOUT = "log.layout";
+	
+	/**
+	 * It specifies a default name of the OpenMRS file appender.
+	 * 
+	 * @since 1.10, 1.9.2, 1.8.5, 1.7.5
+	 */
+	public static final String LOG_OPENMRS_FILE_APPENDER = "OPENMRS FILE APPENDER";
 	
 	// Global logger category
 	public static final String LOG_CLASS_DEFAULT = "org.openmrs.api";
