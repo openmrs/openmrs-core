@@ -1547,7 +1547,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (searchCriteria != null) {
 			ProjectionList pl = Projections.projectionList();
 			pl.add(Projections.distinct(Projections.groupProperty("cw1.concept")));
-			pl.add(Projections.property("cw1.word"));
+			pl.add(Projections.groupProperty("cw1.word"));
 			//if we have multiple words for the same concept, get the one with a highest weight
 			pl.add(Projections.max("cw1.weight"), "maxWeight");
 			//TODO In case a concept has multiple names that contains words that match the search phrase, 
