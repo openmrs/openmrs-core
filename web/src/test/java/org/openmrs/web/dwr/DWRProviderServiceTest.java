@@ -64,7 +64,7 @@ public class DWRProviderServiceTest extends BaseWebContextSensitiveTest {
 	        throws Exception {
 		
 		Vector<Object> providers = service.findProvider("provider", true, 0, 10);
-		Assert.assertEquals(3, providers.size());
+		Assert.assertEquals(4, providers.size());
 		
 		Assert.assertTrue(CollectionUtils.exists(providers, new Predicate() {
 			

@@ -62,6 +62,7 @@ public class PatientValidator extends PersonValidator {
 	 * @should fail validation if voidReason is blank when patient is voided
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 * @should fail validation if a preferred patient identifier is not chosen for voided patients
+	 * @should not fail when patient has only one identifier and its not preferred
 	 */
 	public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled())
@@ -86,7 +87,7 @@ public class PatientValidator extends PersonValidator {
 				preferredIdentifierChosen = true;
 			}
 		}
-		if (!preferredIdentifierChosen) {
+		if (!preferredIdentifierChosen && identifiers.size() != 1) {
 			errors.reject("error.preferredIdentifier");
 		}
 		

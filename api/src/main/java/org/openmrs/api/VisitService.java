@@ -241,6 +241,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should get visits by indications
 	 * @should get visits started between the given start dates
 	 * @should get visits ended between the given end dates
+	 * @should get visits that are still open even if minStartDatetime is specified
 	 * @should return all visits if includeVoided is set to true
 	 * @should get all visits with given attribute values
 	 * @should not find any visits if none have given attribute values

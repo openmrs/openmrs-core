@@ -96,16 +96,22 @@ public class HibernateProviderDAO implements ProviderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ProviderDAO#getProvidersByPerson(org.openmrs.Person)
+	 * @see org.openmrs.api.db.ProviderDAO#getProvidersByPerson(org.openmrs.Person, boolean)
 	 */
 	@Override
-	public Collection<Provider> getProvidersByPerson(Person person) {
+	public Collection<Provider> getProvidersByPerson(Person person, boolean includeRetired) {
 		Criteria criteria = getSession().createCriteria(Provider.class);
+		if (!includeRetired) {
+			criteria.add(Expression.eq("retired", true));
+		} else {
+			//push retired Provider to the end of the returned list
+			criteria.addOrder(Order.asc("retired"));
+		}
 		criteria.add(Restrictions.eq("person", person));
+		
 		criteria.addOrder(Order.asc("providerId"));
-		@SuppressWarnings("unchecked")
-		List<Provider> list = criteria.list();
-		return list;
+		
+		return criteria.list();
 	}
 	
 	/**

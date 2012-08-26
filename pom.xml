@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>1.9.1-SNAPSHOT</version>
+	<version>1.9.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -802,7 +802,43 @@
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<useReleaseProfile>false</useReleaseProfile>
+						<arguments>-Prelease</arguments>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>2.1.2</version>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.8.1</version>
+					<configuration>
+						<taglet>org.openmrs.tools.doclet.ShouldTaglet</taglet>
+						<tagletArtifact>
+							<groupId>org.openmrs.tools</groupId>
+							<artifactId>openmrs-tools</artifactId>
+							<version>${project.version}</version>
+						</tagletArtifact>
+					</configuration>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>
@@ -909,7 +945,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.6.1</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active
@@ -920,12 +955,6 @@
 						border=0/&gt;&lt;/a&gt;</header>
 					<footer>&lt;a href="http://www.openmrs.org"
 						target=_top&gt;${project.name}&lt;/a&gt;</footer>
-					<taglet>org.openmrs.tools.doclet.ShouldTaglet</taglet>
-					<tagletArtifact>
-						<groupId>org.openmrs.tools</groupId>
-						<artifactId>openmrs-tools</artifactId>
-						<version>${project.version}</version>
-					</tagletArtifact>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -979,7 +1008,7 @@
       <openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}</openmrs.version.shortnumericonly>
 
       <springVersion>3.0.5.RELEASE</springVersion>
-      <customArgLineForTesting></customArgLineForTesting>
+      <customArgLineForTesting />
    </properties>
    
 </project>

@@ -122,6 +122,12 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 				}
 				
 			}
+			// if the user unretiring patient identifier type
+			else if (request.getParameter("unretire") != null) {
+				ps.unretirePatientIdentifierType(identifierType);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.unretiredSuccessfully");
+				toReturn = new ModelAndView(new RedirectView(getSuccessView()));
+			}
 			
 		}
 		

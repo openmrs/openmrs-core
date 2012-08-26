@@ -403,7 +403,9 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	/**
 	 * @return states sorted by {@link PatientState#compareTo(PatientState)}
 	 */
-	private SortedSet<PatientState> getSortedStates() {
-		return Collections.unmodifiableSortedSet(new TreeSet<PatientState>(getStates()));
+	private List<PatientState> getSortedStates() {
+		List<PatientState> sortedStates = new ArrayList<PatientState>(getStates());
+		Collections.sort(sortedStates);
+		return sortedStates;
 	}
 }
