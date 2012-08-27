@@ -84,7 +84,6 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 					
 					currentConcept = cs.getNextConcept(currentConcept);
 				}
-				
 				//we have reached the end, get rid of the GP
 				if (currentConcept == null)
 					as.purgeGlobalProperty(gp);

@@ -407,7 +407,7 @@ public class DWRConceptService {
 		// find drugs for this concept
 		Set<Drug> drugs = new HashSet<Drug>();
 		
-		// also find drugs by given phrase, assuming that 
+		// also find drugs by given phrase, assuming that
 		// this phrase is a list of concept words
 		drugs.addAll(cs.getDrugs(phrase));
 		
