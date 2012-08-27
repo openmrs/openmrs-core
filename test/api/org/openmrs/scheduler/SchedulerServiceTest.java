@@ -259,7 +259,6 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	public void saveTask_shouldSaveTaskToTheDatabase() throws Exception {
 		SchedulerService service = Context.getSchedulerService();
 		Assert.assertEquals(1, service.getRegisteredTasks().size());
-		
 		TaskDefinition def = new TaskDefinition();
 		final String TASK_NAME = "This is my test! 123459876";
 		def.setName(TASK_NAME);
@@ -268,7 +267,6 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		def.setTaskClass(ExecutePrintingTask.class.getName());
 		service.saveTask(def);
 		Assert.assertEquals(2, service.getRegisteredTasks().size());
-		
 		def = service.getTaskByName(TASK_NAME);
 		Assert.assertEquals(Context.getAuthenticatedUser().getUserId(), def.getCreator().getUserId());
 	}

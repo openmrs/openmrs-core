@@ -472,7 +472,7 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(Collection<Integer> patientIds);
-	
+
 	/**
 	 * Gets statistical information about current states of patients within given cohort for
 	 * specific program workflow

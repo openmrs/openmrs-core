@@ -361,7 +361,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("Xanadu", ret.get(7));
 		Assert.assertEquals("Xanadu", ret.get(8));
 	}
-	
+
 	/**
 	 * @see {@link PatientSetService#getCurrentStates(Cohort, ProgramWorkflow)}
 	 */
