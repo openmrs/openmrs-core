@@ -13,14 +13,6 @@
  */
 package org.openmrs.web.controller.form;
 
-import java.util.List;
-import java.util.Vector;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.FieldType;
@@ -29,10 +21,18 @@ import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Vector;
 
 public class FieldTypeListController extends SimpleFormController {
 	
@@ -67,19 +67,24 @@ public class FieldTypeListController extends SimpleFormController {
 			String textFieldType = msa.getMessage("FieldType.fieldType");
 			String noneDeleted = msa.getMessage("FieldType.nonedeleted");
 			if (fieldTypeList != null) {
-				for (String p : fieldTypeList) {
+				for (String fieldTypeId : fieldTypeList) {
 					//TODO convenience method deleteFieldType(Integer) ??
 					try {
-						fs.purgeFieldType(fs.getFieldType(Integer.valueOf(p)));
+						fs.purgeFieldType(fs.getFieldType(Integer.valueOf(fieldTypeId)));
 						if (!success.equals(""))
 							success += "<br/>";
-						success += textFieldType + " " + p + " " + deleted;
+						success += textFieldType + " " + fieldTypeId + " " + deleted;
 					}
 					catch (APIException e) {
 						log.warn("Error deleting field type", e);
 						if (!error.equals(""))
 							error += "<br/>";
-						error += textFieldType + " " + p + " " + notDeleted;
+						error += textFieldType + " " + fieldTypeId + " " + notDeleted;
+					}
+					catch (DataIntegrityViolationException e) {
+						log.error("Unable to delete a field type because it is in use. fieldTypeId: " + fieldTypeId, e);
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "FieldType.cannot.delete");
+						return new ModelAndView(new RedirectView(getSuccessView()));
 					}
 				}
 			} else {
