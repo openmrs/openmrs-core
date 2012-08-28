@@ -1,0 +1,2 @@
+#Unsetting the text attribute on a path to tell git not to attempt any end-of-line conversion upon checkin or checkout.
+* -text
