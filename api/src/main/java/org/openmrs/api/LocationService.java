@@ -24,7 +24,6 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.LocationDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * API methods for managing Locations <br/>
@@ -33,24 +32,23 @@ import org.springframework.transaction.annotation.Transactional;
  * <code>
  *   List<Location> locations = Context.getLocationService().getAllLocations();
  * </code>
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.Location
  */
-@Transactional()
 public interface LocationService extends OpenmrsService {
 	
 	/**
 	 * Set the data access object that the service will use to interact with the database. This is
 	 * set by spring in the applicationContext-service.xml file
-	 *
+	 * 
 	 * @param dao
 	 */
 	public void setLocationDAO(LocationDAO dao);
 	
 	/**
 	 * Save location to database (create if new or update if changed)
-	 *
+	 * 
 	 * @param location is the location to be saved to the database
 	 * @should throw APIException if location has no name
 	 * @should overwrite transient tag if tag with same name exists
@@ -69,81 +67,74 @@ public interface LocationService extends OpenmrsService {
 	/**
 	 * Returns a location given that locations primary key <code>locationId</code> A null value is
 	 * returned if no location exists with this location.
-	 *
+	 * 
 	 * @param locationId integer primary key of the location to find
 	 * @return Location object that has location.locationId = <code>locationId</code> passed in.
 	 * @should return null when no location match given location id
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public Location getLocation(Integer locationId) throws APIException;
 	
 	/**
 	 * Returns a location given the location's exact <code>name</code> A null value is returned if
 	 * there is no location with this name
-	 *
+	 * 
 	 * @param name the exact name of the location to match on
 	 * @return Location matching the <code>name</code> to Location.name
 	 * @should return null when no location match given location name
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public Location getLocation(String name) throws APIException;
 	
 	/**
 	 * Returns the default location for this implementation.
-	 *
+	 * 
 	 * @return The default location for this implementation.
 	 * @should return default location for the implementation
 	 * @should return Unknown Location if the global property is something else that doesnot exist
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public Location getDefaultLocation() throws APIException;
 	
 	/**
 	 * Returns a location by uuid
-	 *
+	 * 
 	 * @param uuid is the uuid of the desired location
 	 * @return location with the given uuid
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public Location getLocationByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Returns a location tag by uuid
-	 *
+	 * 
 	 * @param uuid is the uuid of the desired location tag
 	 * @return location tag with the given uuid
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public LocationTag getLocationTagByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Returns all locations, includes retired locations. This method delegates to the
 	 * #getAllLocations(boolean) method
-	 *
+	 * 
 	 * @return locations that are in the database
 	 * @should return all locations including retired
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getAllLocations() throws APIException;
 	
 	/**
 	 * Returns all locations.
-	 *
+	 * 
 	 * @param includeRetired whether or not to include retired locations
 	 * @should return all locations when includeRetired is true
 	 * @should return only unretired locations when includeRetires is false
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getAllLocations(boolean includeRetired) throws APIException;
 	
@@ -151,11 +142,10 @@ public interface LocationService extends OpenmrsService {
 	 * Returns locations that match the beginning of the given string. A null list will never be
 	 * returned. An empty list will be returned if there are no locations. Search is case
 	 * insensitive. matching this <code>nameFragment</code>
-	 *
+	 * 
 	 * @param nameFragment is the string used to search for locations
 	 * @should return empty list when no location match the name fragment
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getLocations(String nameFragment) throws APIException;
 	
@@ -165,61 +155,57 @@ public interface LocationService extends OpenmrsService {
 	 * returned if there are no locations. Search is case insensitive. matching this
 	 * <code>nameFragment</code>. If start and length are not specified, then all matches are
 	 * returned
-	 *
-	 * @param nameFragment   is the string used to search for locations
+	 * 
+	 * @param nameFragment is the string used to search for locations
 	 * @param includeRetired Specifies if retired locations should be returned
-	 * @param start          the beginning index
-	 * @param length         the number of matching locations to return
+	 * @param start the beginning index
+	 * @param length the number of matching locations to return
 	 * @since 1.8
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
 	        throws APIException;
 	
 	/**
 	 * Returns locations that contain the given tag.
-	 *
+	 * 
 	 * @param tag LocationTag criterion
 	 * @should get locations by tag
 	 * @should return empty list when no locations has the given tag
 	 * @since 1.5
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getLocationsByTag(LocationTag tag) throws APIException;
 	
 	/**
 	 * Returns locations that are mapped to all given tags.
-	 *
+	 * 
 	 * @param tags Set of LocationTag criteria
 	 * @should get locations having all tags
 	 * @should return empty list when no location has the given tags
 	 * @should return all unretired locations given an empty tag list
 	 * @since 1.5
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) throws APIException;
 	
 	/**
 	 * Returns locations that are mapped to any of the given tags.
-	 *
+	 * 
 	 * @param tags Set of LocationTag criteria
 	 * @should get locations having any tag
 	 * @should return empty list when no location has the given tags
 	 * @should return empty list when given an empty tag list
 	 * @since 1.5
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getLocationsHavingAnyTag(List<LocationTag> tags) throws APIException;
 	
 	/**
 	 * Retires the given location. This effectively removes the location from circulation or use.
-	 *
+	 * 
 	 * @param location location to be retired
-	 * @param reason   is the reason why the location is being retired
+	 * @param reason is the reason why the location is being retired
 	 * @should retire location successfully
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_LOCATIONS })
@@ -228,7 +214,7 @@ public interface LocationService extends OpenmrsService {
 	/**
 	 * Unretire the given location. This restores a previously retired location back into
 	 * circulation and use.
-	 *
+	 * 
 	 * @param location
 	 * @return the newly unretired location
 	 * @throws APIException
@@ -240,7 +226,7 @@ public interface LocationService extends OpenmrsService {
 	/**
 	 * Completely remove a location from the database (not reversible) This method delegates to
 	 * #purgeLocation(location, boolean) method
-	 *
+	 * 
 	 * @param location the Location to clean out of the database.
 	 * @should delete location successfully
 	 */
@@ -249,7 +235,7 @@ public interface LocationService extends OpenmrsService {
 	
 	/**
 	 * Save location tag to database (create if new or update if changed)
-	 *
+	 * 
 	 * @param tag is the tag to be saved to the database
 	 * @should throw APIException if tag has no name
 	 * @should return saved object
@@ -264,52 +250,48 @@ public interface LocationService extends OpenmrsService {
 	/**
 	 * Returns a location tag given that locations primary key <code>locationTagId</code>. A null
 	 * value is returned if no tag exists with this ID.
-	 *
+	 * 
 	 * @param locationTagId integer primary key of the location tag to find
 	 * @return LocationTag object that has LocationTag.locationTagId = <code>locationTagId</code>
 	 *         passed in.
 	 * @should return null when no location tag match given id
 	 * @since 1.5
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public LocationTag getLocationTag(Integer locationTagId) throws APIException;
 	
 	/**
 	 * Returns a location tag given the location's exact name (tag). A null value is returned if
 	 * there is no tag with this name.
-	 *
+	 * 
 	 * @param tag the exact name of the tag to match on
 	 * @return LocationTag matching the name to LocationTag.tag
 	 * @should get location tag by name
 	 * @should return null when no location tag match given name
 	 * @since 1.5
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public LocationTag getLocationTagByName(String tag) throws APIException;
 	
 	/**
 	 * Returns all location tags, includes retired location tags. This method delegates to the
 	 * #getAllLocationTags(boolean) method.
-	 *
+	 * 
 	 * @return location tags that are in the database
 	 * @should return all location tags including retired
 	 * @since 1.5
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<LocationTag> getAllLocationTags() throws APIException;
 	
 	/**
 	 * Returns all location tags.
-	 *
+	 * 
 	 * @param includeRetired whether or not to include retired location tags
 	 * @should return all location tags if includeRetired is true
 	 * @should return only unretired location tags if includeRetired is false
 	 * @since 1.5
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<LocationTag> getAllLocationTags(boolean includeRetired) throws APIException;
 	
@@ -317,19 +299,18 @@ public interface LocationService extends OpenmrsService {
 	 * Returns location tags that match the beginning of the given string. A null list will never be
 	 * returned. An empty list will be returned if there are no tags. Search is case insensitive.
 	 * matching this <code>search</code>
-	 *
+	 * 
 	 * @param search is the string used to search for tags
 	 * @should return empty list when no location tag match given search string
 	 * @since 1.5
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<LocationTag> getLocationTags(String search) throws APIException;
 	
 	/**
 	 * Retire the given location tag. This effectively removes the tag from circulation or use.
-	 *
-	 * @param tag    location tag to be retired
+	 * 
+	 * @param tag location tag to be retired
 	 * @param reason is the reason why the location tag is being retired
 	 * @should retire location tag successfully
 	 * @should retire location tag with given reason
@@ -341,7 +322,7 @@ public interface LocationService extends OpenmrsService {
 	/**
 	 * Unretire the given location tag. This restores a previously retired tag back into circulation
 	 * and use.
-	 *
+	 * 
 	 * @param tag
 	 * @return the newly unretired location tag
 	 * @throws APIException
@@ -353,7 +334,7 @@ public interface LocationService extends OpenmrsService {
 	
 	/**
 	 * Completely remove a location tag from the database (not reversible).
-	 *
+	 * 
 	 * @param tag the LocationTag to clean out of the database.
 	 * @should delete location tag
 	 * @since 1.5
@@ -364,26 +345,25 @@ public interface LocationService extends OpenmrsService {
 	/**
 	 * Return the number of all locations that start with the given name fragment, if the name
 	 * fragment is null or an empty string, then the number of all locations will be returned
-	 *
-	 * @param nameFragment   is the string used to search for locations
+	 * 
+	 * @param nameFragment is the string used to search for locations
 	 * @param includeRetired Specifies if retired locations should be counted or ignored
 	 * @return the number of all locations starting with the given nameFragment
 	 * @since 1.8
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public Integer getCountOfLocations(String nameFragment, Boolean includeRetired);
 	
 	/**
-	 * Returns all root locations (i.e. those who have no parentLocation), optionally including retired ones.
-	 *
+	 * Returns all root locations (i.e. those who have no parentLocation), optionally including
+	 * retired ones.
+	 * 
 	 * @param includeRetired
 	 * @return return all root locations depends on includeRetired
 	 * @should return all root locations when includeRetired is true
 	 * @should return only unretired root locations when includeRetired is false
 	 * @since 1.9
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getRootLocations(boolean includeRetired);
 	
@@ -391,9 +371,9 @@ public interface LocationService extends OpenmrsService {
 	 * Given an Address object, returns all the possible values for the specified AddressField. This
 	 * method is not implemented in core, but is meant to overridden by implementing modules such as
 	 * the Address Hierarchy module.
-	 *
+	 * 
 	 * @param incomplete the incomplete address
-	 * @param field      the address field we are looking for possible values for
+	 * @param field the address field we are looking for possible values for
 	 * @return a list of possible address values for the specified field
 	 * @should return empty list if no possible address matches
 	 * @should return null if method not implemented
@@ -405,19 +385,18 @@ public interface LocationService extends OpenmrsService {
 	/**
 	 * Returns the xml of default address template.
 	 * 
-	 * @return a string value of the default address template. If the GP is
-	 *         empty, the default template is returned
+	 * @return a string value of the default address template. If the GP is empty, the default
+	 *         template is returned
 	 * @see OpenmrsConstants#GLOBAL_PROPERTY_ADDRESS_TEMPLATE
 	 * @see OpenmrsConstants#DEFAULT_ADDRESS_TEMPLATE
 	 * @since 1.9
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public String getAddressTemplate() throws APIException;
 	
 	/**
 	 * Saved default address template to global properties
-	 *
+	 * 
 	 * @param xml is a string to be saved as address template
 	 * @should throw APIException if the string is empty
 	 * @should update default address template successfully
@@ -432,7 +411,6 @@ public interface LocationService extends OpenmrsService {
 	 * @since 1.9
 	 * @should return all location attribute types including retired ones
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
 	List<LocationAttributeType> getAllLocationAttributeTypes();
 	
@@ -443,7 +421,6 @@ public interface LocationService extends OpenmrsService {
 	 * @should return the location attribute type with the given id
 	 * @should return null if no location attribute type exists with the given id
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
 	LocationAttributeType getLocationAttributeType(Integer id);
 	
@@ -454,7 +431,6 @@ public interface LocationService extends OpenmrsService {
 	 * @should return the location attribute type with the given uuid
 	 * @should return null if no location attribute type exists with the given uuid
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
 	LocationAttributeType getLocationAttributeTypeByUuid(String uuid);
 	
@@ -509,7 +485,6 @@ public interface LocationService extends OpenmrsService {
 	 * @should get the location attribute with the given uuid
 	 * @should return null if no location attribute has the given uuid
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_LOCATIONS)
 	LocationAttribute getLocationAttributeByUuid(String uuid);
 	

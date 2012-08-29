@@ -37,6 +37,7 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default implementation of the {@link VisitService}. This class should not be used on its own. The
@@ -44,6 +45,7 @@ import org.openmrs.validator.ValidateUtil;
  * 
  * @since 1.9
  */
+@Transactional
 public class VisitServiceImpl extends BaseOpenmrsService implements VisitService {
 	
 	private VisitDAO dao;
@@ -64,6 +66,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#getAllVisitTypes()
 	 */
+	@Transactional(readOnly = true)
 	public List<VisitType> getAllVisitTypes() {
 		return getVisitDAO().getAllVisitTypes();
 	}
@@ -72,6 +75,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#getAllVisitTypes(boolean)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<VisitType> getAllVisitTypes(boolean includeRetired) {
 		return dao.getAllVisitTypes(includeRetired);
 	}
@@ -79,6 +83,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitType(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public VisitType getVisitType(Integer visitTypeId) {
 		return getVisitDAO().getVisitType(visitTypeId);
 	}
@@ -86,6 +91,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitTypeByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public VisitType getVisitTypeByUuid(String uuid) {
 		return getVisitDAO().getVisitTypeByUuid(uuid);
 	}
@@ -93,6 +99,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitTypes(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public List<VisitType> getVisitTypes(String fuzzySearchPhrase) {
 		return getVisitDAO().getVisitTypes(fuzzySearchPhrase);
 	}
@@ -130,6 +137,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#getAllVisits()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<Visit> getAllVisits() throws APIException {
 		return dao.getVisits(null, null, null, null, null, null, null, null, null, true, false);
 	}
@@ -138,6 +146,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#getVisit(java.lang.Integer)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Visit getVisit(Integer visitId) throws APIException {
 		return dao.getVisit(visitId);
 	}
@@ -146,6 +155,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#getVisitByUuid(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Visit getVisitByUuid(String uuid) throws APIException {
 		return dao.getVisitByUuid(uuid);
 	}
@@ -212,6 +222,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 *      java.util.Date, java.util.Date, boolean, boolean)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
 	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues,
@@ -227,6 +238,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
+	@Transactional(readOnly = true)
 	public List<Visit> getVisitsByPatient(Patient patient) throws APIException {
 		//Don't bother to hit the database
 		if (patient == null || patient.getId() == null)
@@ -239,6 +251,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#getActiveVisitsByPatient(org.openmrs.Patient)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException {
 		return getVisitsByPatient(patient, false, false);
 	}
@@ -248,6 +261,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
+	@Transactional(readOnly = true)
 	public List<Visit> getVisitsByPatient(Patient patient, boolean includeInactive, boolean includeVoided)
 	        throws APIException {
 		if (patient == null || patient.getId() == null)
@@ -261,6 +275,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#getAllVisitAttributeTypes()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<VisitAttributeType> getAllVisitAttributeTypes() {
 		return dao.getAllVisitAttributeTypes();
 	}
@@ -269,6 +284,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#getVisitAttributeType(java.lang.Integer)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public VisitAttributeType getVisitAttributeType(Integer id) {
 		return dao.getVisitAttributeType(id);
 	}
@@ -277,6 +293,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#getVisitAttributeTypeByUuid(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public VisitAttributeType getVisitAttributeTypeByUuid(String uuid) {
 		return dao.getVisitAttributeTypeByUuid(uuid);
 	}
@@ -318,6 +335,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#getVisitAttributeByUuid(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public VisitAttribute getVisitAttributeByUuid(String uuid) {
 		return dao.getVisitAttributeByUuid(uuid);
 	}

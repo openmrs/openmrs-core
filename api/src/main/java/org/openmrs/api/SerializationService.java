@@ -18,7 +18,6 @@ import java.util.List;
 import org.openmrs.annotation.Logging;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.SerializationException;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains methods for retrieving registered Serializer instances, and for
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @since 1.5
  */
-@Transactional
 public interface SerializationService extends OpenmrsService {
 	
 	/**

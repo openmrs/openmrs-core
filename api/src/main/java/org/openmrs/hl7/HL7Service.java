@@ -25,7 +25,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.hl7.db.HL7DAO;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
@@ -38,7 +37,6 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
 /**
  * OpenMRS HL7 API
  */
-@Transactional
 public interface HL7Service extends OpenmrsService {
 	
 	/**
@@ -70,7 +68,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @param hl7SourceId
 	 * @return <code>HL7Source</code>object for given identifier
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_SOURCE)
 	public HL7Source getHL7Source(Integer hl7SourceId) throws APIException;
 	
@@ -80,7 +77,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @param name string to 'search' on
 	 * @return hl7 source object
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_SOURCE)
 	public HL7Source getHL7SourceByName(String name) throws APIException;
 	
@@ -88,7 +84,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @deprecated use {@link #getHL7SourceByName(String)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_SOURCE)
 	public HL7Source getHL7Source(String name);
 	
@@ -97,7 +92,6 @@ public interface HL7Service extends OpenmrsService {
 	 * 
 	 * @return list of hl7 source objects
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_SOURCE)
 	public List<HL7Source> getAllHL7Sources() throws APIException;
 	
@@ -105,7 +99,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @deprecated use {@link #getAllHL7Sources()}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_SOURCE)
 	public Collection<HL7Source> getHL7Sources();
 	
@@ -166,7 +159,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @return the desired hl7InQueue object or null if none found
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public HL7InQueue getHL7InQueue(Integer hl7InQueueId) throws APIException;
 	
@@ -178,7 +170,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.9
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.PRIV_VIEW_HL7_IN_QUEUE)
 	public HL7InQueue getHL7InQueueByUuid(String uuid) throws APIException;
 	
@@ -188,7 +179,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @return all hl7 queue items
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public List<HL7InQueue> getAllHL7InQueues() throws APIException;
 	
@@ -203,7 +193,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.7
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public List<HL7InQueue> getHL7InQueueBatch(int start, int length, int messageState, String query) throws APIException;
 	
@@ -216,7 +205,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.7
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public Integer countHL7InQueue(int messageState, String query) throws APIException;
 	
@@ -230,7 +218,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.7
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public List<HL7InError> getHL7InErrorBatch(int start, int length, String query) throws APIException;
 	
@@ -242,7 +229,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.7
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public Integer countHL7InError(String query) throws APIException;
 	
@@ -257,7 +243,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.7
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public List<HL7InArchive> getHL7InArchiveBatch(int start, int length, int messageState, String query)
 	        throws APIException;
@@ -271,7 +256,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.7
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public Integer countHL7InArchive(int messageState, String query) throws APIException;
 	
@@ -279,7 +263,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @deprecated use {@link #getAllHL7InQueues()}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public Collection<HL7InQueue> getHL7InQueues();
 	
@@ -288,7 +271,6 @@ public interface HL7Service extends OpenmrsService {
 	 * 
 	 * @return the first queue item
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public HL7InQueue getNextHL7InQueue() throws APIException;
 	
@@ -332,7 +314,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @param hl7InArchiveId the id to search on
 	 * @return the matching archive item
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId);
 	
@@ -344,7 +325,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @since Version 1.7
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public HL7InArchive getHL7InArchiveByUuid(String uuid) throws APIException;
 	
@@ -359,7 +339,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.5
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public List<HL7InArchive> getHL7InArchiveByState(Integer state) throws APIException;
 	
@@ -370,7 +349,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.7
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public List<HL7InQueue> getHL7InQueueByState(Integer state) throws APIException;
 	
@@ -379,7 +357,6 @@ public interface HL7Service extends OpenmrsService {
 	 * 
 	 * @return list of archive items
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public List<HL7InArchive> getAllHL7InArchives() throws APIException;
 	
@@ -387,7 +364,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @deprecated use {@link #getAllHL7InArchives()}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public Collection<HL7InArchive> getHL7InArchives();
 	
@@ -437,7 +413,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @param hl7InErrorId the id to search on
 	 * @return the matching error item
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_EXCEPTION)
 	public HL7InError getHL7InError(Integer hl7InErrorId) throws APIException;
 	
@@ -449,7 +424,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @throws APIException
 	 * @sine 1.9
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.PRIV_VIEW_HL7_IN_EXCEPTION)
 	public HL7InError getHL7InErrorByUuid(String uuid) throws APIException;
 	
@@ -459,7 +433,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @return a List<HL7InError> object with all <code>HL7InError</code> items from the database
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_EXCEPTION)
 	public List<HL7InError> getAllHL7InErrors() throws APIException;
 	
@@ -467,7 +440,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @deprecated use {@link #getAllHL7InErrors()}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_EXCEPTION)
 	public Collection<HL7InError> getHL7InErrors();
 	

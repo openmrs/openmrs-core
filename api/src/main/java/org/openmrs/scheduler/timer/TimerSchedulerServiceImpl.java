@@ -41,10 +41,12 @@ import org.openmrs.scheduler.TaskFactory;
 import org.openmrs.scheduler.db.SchedulerDAO;
 import org.openmrs.util.OpenmrsMemento;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Simple scheduler service that uses JDK timer to trigger and execute scheduled tasks.
  */
+@Transactional
 public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements SchedulerService {
 	
 	/**
@@ -348,6 +350,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * 
 	 * @return all registerd tasks
 	 */
+	@Transactional(readOnly = true)
 	public Collection<TaskDefinition> getRegisteredTasks() {
 		return getSchedulerDAO().getTasks();
 	}
@@ -357,6 +360,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * 
 	 * @param id the identifier of the task
 	 */
+	@Transactional(readOnly = true)
 	public TaskDefinition getTask(Integer id) {
 		if (log.isDebugEnabled())
 			log.debug("get task " + id);
@@ -368,6 +372,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * 
 	 * @param name name of the task
 	 */
+	@Transactional(readOnly = true)
 	public TaskDefinition getTaskByName(String name) {
 		if (log.isDebugEnabled())
 			log.debug("get task " + name);

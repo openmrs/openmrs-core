@@ -22,6 +22,7 @@ import org.openmrs.activelist.ActiveListType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ActiveListService;
 import org.openmrs.api.db.ActiveListDAO;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default implementation of the active list service. This class should not be used on its own. The
@@ -31,6 +32,7 @@ import org.openmrs.api.db.ActiveListDAO;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.ActiveListService
  */
+@Transactional
 public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveListService {
 	
 	private ActiveListDAO dao;
@@ -47,6 +49,7 @@ public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveL
 	 *      org.openmrs.activelist.ActiveListType)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<ActiveListItem> getActiveListItems(Person p, ActiveListType type) throws APIException {
 		return dao.getActiveListItems(p, type);
 	}
@@ -56,6 +59,7 @@ public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveL
 	 *      org.openmrs.Person, org.openmrs.activelist.ActiveListType)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public <T extends ActiveListItem> List<T> getActiveListItems(Class<T> clazz, Person p, ActiveListType type)
 	        throws APIException {
 		return dao.getActiveListItems(clazz, p, type);
@@ -65,6 +69,7 @@ public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveL
 	 * @see org.openmrs.api.ActiveListService#getActiveListItem(java.lang.Class, java.lang.Integer)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws APIException {
 		return dao.getActiveListItem(clazz, activeListItemId);
 	}
@@ -72,6 +77,7 @@ public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveL
 	/**
 	 * @see org.openmrs.api.ActiveListService#getActiveListItemByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public ActiveListItem getActiveListItemByUuid(String uuid) throws APIException {
 		return dao.getActiveListItemByUuid(uuid);
 	}

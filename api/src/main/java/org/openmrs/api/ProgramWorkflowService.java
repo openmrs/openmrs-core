@@ -31,7 +31,6 @@ import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains methods pertaining to management of Programs, ProgramWorkflows, ProgramWorkflowStates,
@@ -44,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
  *   Context.getProgramWorkflowService().saveProgram(program);
  * </pre>
  */
-@Transactional
 public interface ProgramWorkflowService extends OpenmrsService {
 	
 	/**
@@ -85,13 +83,11 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return null when programId does not exist
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public Program getProgram(Integer programId) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getProgramByName(String)}
 	 */
-	@Transactional(readOnly = true)
 	public Program getProgram(String name);
 	
 	/**
@@ -106,7 +102,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should fail when two programs found with same name
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public Program getProgramByName(String name) throws APIException;
 	
 	/**
@@ -117,7 +112,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public List<Program> getAllPrograms() throws APIException;
 	
 	/**
@@ -130,7 +124,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return all programs excluding retired when includeRetired equals false
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public List<Program> getAllPrograms(boolean includeRetired) throws APIException;
 	
 	/**
@@ -152,7 +145,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return empty list when nameFragment does not match any
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public List<Program> getPrograms(String nameFragment) throws APIException;
 	
 	/**
@@ -219,7 +211,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return program with given uuid
 	 * @should throw error when multiple programs with same uuid are found
 	 */
-	@Transactional(readOnly = true)
 	public Program getProgramByUuid(String uuid);
 	
 	/**
@@ -233,7 +224,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return program state with the given uuid
 	 * @should throw error when multiple program states with same uuid are found
 	 */
-	@Transactional(readOnly = true)
 	public PatientState getPatientStateByUuid(String uuid);
 	
 	/**
@@ -262,7 +252,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return null if program does not exist
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Transactional(readOnly = true)
 	public PatientProgram getPatientProgram(Integer patientProgramId) throws APIException;
 	
 	/**
@@ -297,7 +286,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return empty list when matches not found
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Transactional(readOnly = true)
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
 	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
 	        throws APIException;
@@ -359,7 +347,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @return outcome concepts or empty List if none exist
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public List<Concept> getPossibleOutcomes(Integer programId);
 	
 	// **************************
@@ -374,7 +361,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflowByUuid(String uuid);
 	
 	/**
@@ -402,7 +388,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return concept state conversion for given identifier
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public ConceptStateConversion getConceptStateConversion(Integer conceptStateConversionId) throws APIException;
 	
 	/**
@@ -413,7 +398,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return all concept state conversions
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public List<ConceptStateConversion> getAllConceptStateConversions() throws APIException;
 	
 	/**
@@ -466,7 +450,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return concept state conversion for given workflow and trigger
 	 */
-	@Transactional(readOnly = true)
 	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger) throws APIException;
 	
 	// **************************
@@ -491,7 +474,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public List<Program> getPrograms() throws APIException;
 	
 	// **************************
@@ -531,7 +513,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflow(Integer id) throws APIException;
 	
 	/**
@@ -544,7 +525,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflow(Program program, String name) throws APIException;
 	
 	/**
@@ -570,7 +550,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return a state with the given uuid
 	 * @should throw an error when multiple states with same uuid are found
 	 */
-	@Transactional(readOnly = true)
 	public ProgramWorkflowState getStateByUuid(String uuid);
 	
 	/**
@@ -583,7 +562,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getStates() throws APIException;
 	
 	/**
@@ -598,7 +576,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getStates(boolean includeVoided) throws APIException;
 	
 	/**
@@ -613,7 +590,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public ProgramWorkflowState getState(Integer id) throws APIException;
 	
 	/**
@@ -630,7 +606,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public ProgramWorkflowState getState(ProgramWorkflow programWorkflow, String name) throws APIException;
 	
 	/**
@@ -645,7 +620,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram, ProgramWorkflow workflow)
 	        throws APIException;
 	
@@ -663,7 +637,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public boolean isLegalTransition(ProgramWorkflowState fromState, ProgramWorkflowState toState) throws APIException;
 	
 	// **************************
@@ -719,7 +692,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Transactional(readOnly = true)
 	public Collection<PatientProgram> getPatientPrograms(Patient patient) throws APIException;
 	
 	/**
@@ -739,7 +711,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Transactional(readOnly = true)
 	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate) throws APIException;
 	
 	/**
@@ -754,7 +725,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Transactional(readOnly = true)
 	public Collection<PatientProgram> getCurrentPrograms(Patient patient, Date onDate) throws APIException;
 	
 	/**
@@ -773,7 +743,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Transactional(readOnly = true)
 	public boolean isInProgram(Patient patient, Program program, Date fromDate, Date toDate) throws APIException;
 	
 	// **************************
@@ -790,7 +759,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Transactional(readOnly = true)
 	public PatientState getPatientState(Integer patientStateId) throws APIException;
 	
 	/**
@@ -805,7 +773,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Transactional(readOnly = true)
 	public PatientState getLatestState(PatientProgram patientProgram, ProgramWorkflow programWorkflow) throws APIException;
 	
 	/**
@@ -819,7 +786,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Transactional(readOnly = true)
 	public Set<ProgramWorkflow> getCurrentWorkflowsByPatient(Patient patient) throws APIException;
 	
 	/**
@@ -833,7 +799,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Transactional(readOnly = true)
 	public Set<ProgramWorkflow> getCurrentWorkflowsByPatientProgram(PatientProgram program) throws APIException;
 	
 	/**
@@ -863,7 +828,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return a patient program with the given uuid
 	 * @should throw an error when multiple patient programs with same uuid are found
 	 */
-	@Transactional(readOnly = true)
 	public PatientProgram getPatientProgramByUuid(String uuid);
 	
 	/**
@@ -882,7 +846,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should not fail when given cohort is empty
 	 * @should not fail when given program is empty
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
 	
@@ -918,7 +881,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param concept - The Concept being used.
 	 * @return - A List of Programs
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	public List<Program> getProgramsByConcept(Concept concept);
 	
@@ -928,7 +890,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param concept - The Concept being used.
 	 * @return - A List of ProgramWorkflows
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept);
 	
@@ -938,7 +899,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param concept - The Concept being used.
 	 * @return - A List of ProgramWorkflowStates
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
 	
@@ -976,7 +936,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Transactional(readOnly = true)
 	public List<ConceptStateConversion> getAllConversions() throws APIException;
 	
 	/**
@@ -999,6 +958,5 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return a program state with the given uuid
 	 * @should throw an error when multiple program states with same uuid are found
 	 */
-	@Transactional(readOnly = true)
 	public ConceptStateConversion getConceptStateConversionByUuid(String uuid);
 }
