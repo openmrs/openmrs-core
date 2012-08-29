@@ -29,11 +29,13 @@ import org.openmrs.api.db.DatatypeDAO;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeException;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Standard implementation of {@link DatatypeService}
  * @since 1.9
  */
+@Transactional
 public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeService {
 	
 	private List<Class<? extends CustomDatatype>> datatypeClasses;
@@ -189,6 +191,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 * @see org.openmrs.api.DatatypeService#getClobDatatypeStorage(java.lang.Integer)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public ClobDatatypeStorage getClobDatatypeStorage(Integer id) {
 		return dao.getClobDatatypeStorage(id);
 	}
@@ -197,6 +200,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 * @see org.openmrs.api.DatatypeService#getClobDatatypeStorageByUuid(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public ClobDatatypeStorage getClobDatatypeStorageByUuid(String uuid) {
 		return dao.getClobDatatypeStorageByUuid(uuid);
 	}

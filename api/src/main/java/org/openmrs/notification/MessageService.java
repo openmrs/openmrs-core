@@ -19,9 +19,7 @@ import java.util.Map;
 
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 public interface MessageService {
 	
 	// Set dependencies for message services

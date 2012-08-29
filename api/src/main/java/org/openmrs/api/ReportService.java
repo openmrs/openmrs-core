@@ -27,7 +27,6 @@ import org.openmrs.report.ReportRenderer;
 import org.openmrs.report.ReportSchema;
 import org.openmrs.report.ReportSchemaXml;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains methods pertaining to creating/updating/deleting/retiring/registering/evaluating
@@ -35,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @deprecated see reportingcompatibility module
  */
-@Transactional
 @Deprecated
 public interface ReportService {
 	
@@ -61,7 +59,6 @@ public interface ReportService {
 	 * @return a List<ReportSchema> object containing all of the {@link ReportSchema}s
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public List<ReportSchema> getReportSchemas() throws APIException;
 	
 	/**
@@ -71,7 +68,6 @@ public interface ReportService {
 	 * @return the matching {@link ReportSchema} object
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public ReportSchema getReportSchema(Integer reportSchemaId) throws APIException;
 	
 	/**
@@ -107,7 +103,6 @@ public interface ReportService {
 	 * 
 	 * @return All registered report renderers
 	 */
-	@Transactional(readOnly = true)
 	public Collection<ReportRenderer> getReportRenderers();
 	
 	/**
@@ -116,7 +111,6 @@ public interface ReportService {
 	 * 
 	 * @return all rendering modes for the given schema, in their preferred order
 	 */
-	@Transactional(readOnly = true)
 	public List<RenderingMode> getRenderingModes(ReportSchema schema);
 	
 	/**
@@ -125,7 +119,6 @@ public interface ReportService {
 	 * @param clazz The ReportRenderer implementation class to retrieve
 	 * @return - The {@link ReportRenderer} that has been registered that matches the passed class
 	 */
-	@Transactional(readOnly = true)
 	public ReportRenderer getReportRenderer(Class<? extends ReportRenderer> clazz);
 	
 	/**
@@ -135,7 +128,6 @@ public interface ReportService {
 	 * @return The {@link ReportRenderer} that has been registered that matches the passed class
 	 *         name
 	 */
-	@Transactional(readOnly = true)
 	public ReportRenderer getReportRenderer(String className);
 	
 	/**
@@ -152,7 +144,6 @@ public interface ReportService {
 	 * @return Map of registered {@link org.openmrs.report#ReportRenderer}s
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public Map<Class<? extends ReportRenderer>, ReportRenderer> getRenderers() throws APIException;
 	
 	/**
@@ -185,7 +176,6 @@ public interface ReportService {
 	 * 
 	 * @return ReportSchemaXml object that is associated with the given id
 	 */
-	@Transactional(readOnly = true)
 	public ReportSchemaXml getReportSchemaXml(Integer reportSchemaXmlId);
 	
 	/**
@@ -222,7 +212,6 @@ public interface ReportService {
 	 * 
 	 * @return List of ReportSchemaXml objects
 	 */
-	@Transactional(readOnly = true)
 	public List<ReportSchemaXml> getReportSchemaXmls();
 	
 	/**
@@ -230,7 +219,6 @@ public interface ReportService {
 	 * 
 	 * @return macros
 	 */
-	@Transactional(readOnly = true)
 	public Properties getReportXmlMacros();
 	
 	/**

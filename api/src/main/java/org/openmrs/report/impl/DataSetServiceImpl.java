@@ -25,6 +25,7 @@ import org.openmrs.report.DataSet;
 import org.openmrs.report.DataSetDefinition;
 import org.openmrs.report.DataSetProvider;
 import org.openmrs.report.EvaluationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default implementation of the data set service.
@@ -32,6 +33,7 @@ import org.openmrs.report.EvaluationContext;
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
+@Transactional(readOnly = true)
 public class DataSetServiceImpl implements DataSetService {
 	
 	public Log log = LogFactory.getLog(this.getClass());

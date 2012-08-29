@@ -34,11 +34,13 @@ import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 /**
  * API functions related to Cohorts
  */
+@Transactional
 public class CohortServiceImpl extends BaseOpenmrsService implements CohortService {
 	
 	private Log log = LogFactory.getLog(this.getClass());
@@ -98,6 +100,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * @see org.openmrs.api.CohortService#getCohort(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getCohort(Integer id) {
 		return dao.getCohort(id);
 	}
@@ -106,6 +109,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @see org.openmrs.api.CohortService#getCohorts()
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public List<Cohort> getCohorts() {
 		return getAllCohorts();
 	}
@@ -121,6 +125,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * @see org.openmrs.api.CohortService#getCohortByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getCohortByUuid(String uuid) {
 		return dao.getCohortByUuid(uuid);
 	}
@@ -160,10 +165,12 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * @see org.openmrs.api.CohortService#getCohortsContainingPatient(org.openmrs.Patient)
 	 */
+	@Transactional(readOnly = true)
 	public List<Cohort> getCohortsContainingPatient(Patient patient) {
 		return dao.getCohortsContainingPatientId(patient.getPatientId());
 	}
 	
+	@Transactional(readOnly = true)
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) {
 		return dao.getCohortsContainingPatientId(patientId);
 	}
@@ -171,6 +178,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * @see org.openmrs.api.CohortService#getCohorts(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public List<Cohort> getCohorts(String nameFragment) throws APIException {
 		return dao.getCohorts(nameFragment);
 	}
@@ -178,6 +186,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * @see org.openmrs.api.CohortService#getAllCohorts()
 	 */
+	@Transactional(readOnly = true)
 	public List<Cohort> getAllCohorts() throws APIException {
 		return getAllCohorts(false);
 	}
@@ -185,6 +194,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * @see org.openmrs.api.CohortService#getAllCohorts(boolean)
 	 */
+	@Transactional(readOnly = true)
 	public List<Cohort> getAllCohorts(boolean includeVoided) throws APIException {
 		return dao.getAllCohorts(includeVoided);
 	}
@@ -192,6 +202,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * @see org.openmrs.api.CohortService#getCohort(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getCohort(String name) throws APIException {
 		return dao.getCohort(name);
 	}
@@ -212,6 +223,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @throws APIException
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	private CohortDefinitionProvider getCohortDefinitionProvider(Class<? extends CohortDefinition> definitionClass)
 	        throws APIException {
 		CohortDefinitionProvider ret = cohortDefinitionProviders.get(definitionClass);
@@ -227,6 +239,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @deprecated see reportingcompatibility module
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Cohort evaluate(CohortDefinition definition, EvaluationContext evalContext) throws APIException {
 		CohortDefinitionProvider provider = getCohortDefinitionProvider(definition.getClass());
 		return provider.evaluate(definition, evalContext);
@@ -237,6 +250,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @deprecated see reportingcompatibility module
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public CohortDefinition getAllPatientsCohortDefinition() {
 		PatientSearch ps = new PatientSearch();
 		ps.setFilterClass(PatientCharacteristicFilter.class);
@@ -248,6 +262,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @deprecated see reportingcompatibility module
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public CohortDefinition getCohortDefinition(Class<CohortDefinition> clazz, Integer id) {
 		CohortDefinitionProvider provider = getCohortDefinitionProvider(clazz);
 		return provider.getCohortDefinition(id);
@@ -259,6 +274,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@SuppressWarnings("unchecked")
 	@Deprecated
+	@Transactional(readOnly = true)
 	public CohortDefinition getCohortDefinition(String key) {
 		try {
 			
@@ -278,6 +294,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @deprecated see reportingcompatibility module
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
 		
 		List<CohortDefinitionItemHolder> ret = new ArrayList<CohortDefinitionItemHolder>();
@@ -316,6 +333,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @deprecated see reportingcompatibility module
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders() {
 		if (cohortDefinitionProviders == null)
 			cohortDefinitionProviders = new LinkedHashMap<Class<? extends CohortDefinition>, CohortDefinitionProvider>();
@@ -329,6 +347,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @deprecated see reportingcompatibility module
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> defClass,
 	        CohortDefinitionProvider cohortDefProvider) throws APIException {
 		getCohortDefinitionProviders().put(defClass, cohortDefProvider);
@@ -339,6 +358,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @deprecated see reportingcompatibility module
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public void removeCohortDefinitionProvider(Class<? extends CohortDefinitionProvider> providerClass) {
 		
 		// TODO: should this be looking through the values or the keys?
@@ -364,6 +384,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@SuppressWarnings("unchecked")
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class providerClass) {
 		CohortDefinitionProvider provider = getCohortDefinitionProvider(providerClass);
 		return provider.getAllCohortDefinitions();

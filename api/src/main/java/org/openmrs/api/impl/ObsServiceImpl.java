@@ -44,12 +44,14 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default implementation of the Observation Service
  * 
  * @see org.openmrs.api.ObsService
  */
+@Transactional
 public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	/**
@@ -161,6 +163,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public Obs getObs(Integer obsId) throws APIException {
 		return dao.getObs(obsId);
 	}
@@ -231,6 +234,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated use {@link #getAllMimeTypes()}
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<MimeType> getMimeTypes() throws APIException {
 		return getAllMimeTypes();
 	}
@@ -240,6 +244,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<MimeType> getAllMimeTypes() throws APIException {
 		return dao.getAllMimeTypes(true);
 	}
@@ -249,6 +254,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) {
 		return dao.getAllMimeTypes(includeRetired);
 	}
@@ -276,6 +282,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public MimeType getMimeType(Integer mimeTypeId) throws APIException {
 		return dao.getMimeType(mimeTypeId);
 	}
@@ -294,6 +301,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 *      java.util.List, java.util.List, List, List, java.util.List, java.lang.Integer,
 	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean)
 	 */
+	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
 	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
@@ -313,6 +321,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
 	 *      java.util.Date, java.util.Date, boolean)
 	 */
+	@Transactional(readOnly = true)
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, boolean includeVoidedObs) throws APIException {
@@ -326,6 +335,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * 
 	 * @see org.openmrs.api.ObsService#getObservations(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public List<Obs> getObservations(String searchString) {
 		
 		// search on patient identifier
@@ -431,6 +441,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#getObservationsByPerson(org.openmrs.Person)
 	 */
+	@Transactional(readOnly = true)
 	public List<Obs> getObservationsByPerson(Person who) {
 		List<Person> whom = new Vector<Person>();
 		whom.add(who);
@@ -442,6 +453,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated use {@link #getObservationsByPerson(Person)}
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Set<Obs> getObservations(Person who, boolean includeVoided) {
 		if (includeVoided == true)
 			throw new APIException("Voided observations are no longer allowed to be queried");
@@ -458,6 +470,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer personType, boolean includeVoided) {
 		List<Concept> questions = new Vector<Concept>();
 		questions.add(c);
@@ -531,6 +544,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided) {
 		List<Obs> obs = getObservationsByPersonAndConcept(who, question);
 		Set<Obs> obsSet = new HashSet<Obs>();
@@ -542,6 +556,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getObservationsByPersonAndConcept(org.openmrs.Person,
 	 *      org.openmrs.Concept)
 	 */
+	@Transactional(readOnly = true)
 	public List<Obs> getObservationsByPersonAndConcept(Person who, Concept question) throws APIException {
 		List<Person> whom = new Vector<Person>();
 		if (who != null && who.getPersonId() != null)
@@ -558,6 +573,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Obs> getLastNObservations(Integer n, Person who, Concept question, boolean includeVoided) {
 		List<Person> whom = new Vector<Person>();
 		whom.add(who);
@@ -573,6 +589,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Obs> getObservations(Concept question, String sort, Integer personType, boolean includeVoided) {
 		List<Concept> questions = new Vector<Concept>();
 		questions.add(question);
@@ -590,6 +607,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType, boolean includeVoided) {
 		List<Concept> answers = new Vector<Concept>();
 		answers.add(answer);
@@ -604,6 +622,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Object[]> getNumericAnswersForConcept(Concept question, Boolean sortByValue, Integer personType,
 	        boolean includeVoided) {
 		List<String> sortList = new Vector<String>();
@@ -631,6 +650,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated use org.openmrs.Encounter#getObs()
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Set<Obs> getObservations(Encounter whichEncounter) {
 		return whichEncounter.getObs();
 	}
@@ -640,6 +660,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Obs> getVoidedObservations() {
 		return getObservations(null, null, null, null, null, null, null, null, null, null, null, true);
 	}
@@ -650,6 +671,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Obs> findObservations(String search, boolean includeVoided, Integer personType) {
 		// ignoring voided and personTypes now
 		return getObservations(search);
@@ -660,6 +682,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated -- should use obs.getGroupMembers
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Obs> findObsByGroupId(Integer obsGroupId) {
 		return getObservations(null, null, null, null, null, null, null, null, obsGroupId, null, null, false);
 	}
@@ -667,6 +690,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#getObsByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public Obs getObsByUuid(String uuid) throws APIException {
 		return dao.getObsByUuid(uuid);
 	}
@@ -676,6 +700,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided) {
 		return getObservations(null, null, concepts, null, null, null, null, null, null, fromDate, toDate, includeVoided);
 	}
@@ -685,6 +710,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate) {
 		return getObservations(null, null, concepts, null, null, null, null, null, null, fromDate, toDate, false);
 	}
@@ -694,6 +720,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate) {
 		List<Person> persons = new Vector<Person>();
 		
@@ -707,6 +734,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#getComplexObs(Integer, String)
 	 */
+	@Transactional(readOnly = true)
 	public Obs getComplexObs(Integer obsId, String view) throws APIException {
 		Obs obs = dao.getObs(obsId);
 		
@@ -739,6 +767,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @param obs A complex Obs.
 	 * @return ComplexObsHandler for the complex Obs. or null on error.
 	 */
+	@Transactional(readOnly = true)
 	public ComplexObsHandler getHandler(Obs obs) throws APIException {
 		if (obs.getConcept().isComplex()) {
 			// Get the ConceptComplex from the ConceptService then return its
@@ -812,6 +841,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, boolean)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided) {
 		return OpenmrsUtil.convertToInteger(dao.getObservationCount(null, null, null, null, null, null, null, null, null,
 		    conceptNames, true));

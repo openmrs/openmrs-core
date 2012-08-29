@@ -22,7 +22,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.notification.db.AlertDAO;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Alerts in the system Use:<br/>
@@ -34,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
  *   Context.getAlertService().saveAlert(alert);
  * </pre>
  */
-@Transactional
 public interface AlertService extends OpenmrsService {
 	
 	/**
@@ -86,7 +84,6 @@ public interface AlertService extends OpenmrsService {
 	 * @return alert with given internal identifier
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public Alert getAlert(Integer alertId) throws APIException;
 	
 	/**
@@ -116,7 +113,6 @@ public interface AlertService extends OpenmrsService {
 	 * @deprecated use #getAlerts(User, boolean, boolean)
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts(User user) throws APIException;
 	
 	/**
@@ -127,14 +123,12 @@ public interface AlertService extends OpenmrsService {
 	 * @see #getAlerts(User, boolean, boolean)
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public List<Alert> getAllActiveAlerts(User user) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAlertsByUser(User)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Alert> getAlerts(User user) throws APIException;
 	
 	/**
@@ -147,7 +141,6 @@ public interface AlertService extends OpenmrsService {
 	 * @return alerts that are unread and not expired
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public List<Alert> getAlertsByUser(User user) throws APIException;
 	
 	/**
@@ -155,7 +148,6 @@ public interface AlertService extends OpenmrsService {
 	 *             <code>user</code>
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Alert> getAlerts() throws APIException;
 	
 	/**
@@ -167,7 +159,6 @@ public interface AlertService extends OpenmrsService {
 	 * @return alerts for this user with these options
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws APIException;
 	
 	/**
@@ -176,7 +167,6 @@ public interface AlertService extends OpenmrsService {
 	 * @return list of unexpired alerts
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts() throws APIException;
 	
 	/**
@@ -186,7 +176,6 @@ public interface AlertService extends OpenmrsService {
 	 * @return list of alerts
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException;
 	
 	/**
