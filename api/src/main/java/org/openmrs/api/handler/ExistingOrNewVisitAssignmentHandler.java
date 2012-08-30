@@ -42,9 +42,9 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 	
 	/**
 	 * @see org.openmrs.api.handler.ExistingVisitAssignmentHandler#beforeCreateEncounter(org.openmrs.Encounter)
-	 * 
 	 * @should assign existing visit if match found
 	 * @should assign new visit if no match found
+	 * @should resolve encounter and visit type uuids as global property values
 	 */
 	@Override
 	public void beforeCreateEncounter(Encounter encounter) {
@@ -83,6 +83,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		    OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING, "");
 		
 		//Value should be in this format "3:4, 5:2, 1:2, 2:2" for encounterTypeId:visitTypeId
+		// or encounterTypeUuid:visitTypeUuid o a mixture of uuids and id
 		if (!StringUtils.isBlank(value)) {
 			String targetEncounterTypeId = encounter.getEncounterType().getId().toString();
 			
@@ -91,9 +92,18 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 				int index = mapping.indexOf(':');
 				if (index > 0) {
 					String encounterTypeId = mapping.substring(0, index).trim();
-					if (targetEncounterTypeId.equals(encounterTypeId)) {
+					if (targetEncounterTypeId.equals(encounterTypeId)
+					        || encounter.getEncounterType().getUuid().equals(encounterTypeId)) {
 						String visitTypeId = mapping.substring(index + 1).trim();
-						VisitType visitType = Context.getVisitService().getVisitType(Integer.parseInt(visitTypeId));
+						VisitType visitType = null;
+						try {
+							visitType = Context.getVisitService().getVisitType(Integer.parseInt(visitTypeId));
+						}
+						catch (NumberFormatException e) {
+							//ignore, could be a uuid
+						}
+						if (visitType == null)
+							visitType = Context.getVisitService().getVisitTypeByUuid(visitTypeId);
 						if (visitType != null) {
 							return visitType;
 						}

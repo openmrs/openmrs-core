@@ -1409,7 +1409,7 @@ public final class OpenmrsConstants {
 		        .add(new GlobalProperty(
 		                GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING,
 		                "",
-		                "Specifies how encounter types are mapped to visit types when automatically assigning encounters to visits. e.g 1:1, 2:1, 3:2 in the format encounterTypeId:visitTypeId"));
+		                "Specifies how encounter types are mapped to visit types when automatically assigning encounters to visits. e.g 1:1, 2:1, 3:2 in the format encounterTypeId:visitTypeId Or encounterTypeUuid:visitTypeUuid or a combination of encounter/visit type uuids and ids e.g 1:759799ab-c9a5-435e-b671-77773ada74e4"));
 		
 		props
 		        .add(new GlobalProperty(

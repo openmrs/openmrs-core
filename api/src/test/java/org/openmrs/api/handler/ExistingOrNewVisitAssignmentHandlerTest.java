@@ -130,4 +130,37 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 		Assert.assertEquals(1, encounter.getEncounterType().getEncounterTypeId().intValue());
 		Assert.assertEquals(Context.getVisitService().getVisitType(2), encounter.getVisit().getVisitType());
 	}
+	
+	/**
+	 * @see {@link ExistingOrNewVisitAssignmentHandler#beforeCreateEncounter(Encounter)}
+	 */
+	@Test
+	@Verifies(value = "should resolve encounter and visit type uuids as global property values", method = "beforeCreateEncounter(Encounter)")
+	public void beforeCreateEncounter_shouldResolveEncounterAndVisitTypeUuidsAsGlobalPropertyValues() throws Exception {
+		final String encounterTypeUuid = "759799ab-c9a5-435e-b671-77773ada74e4";
+		final String visitTypeUuid = "c0c579b0-8e59-401d-8a4a-976a0b183519";
+		Encounter encounter = Context.getEncounterService().getEncounter(1);
+		Assert.assertNull(encounter.getVisit());
+		Assert.assertEquals(encounterTypeUuid, encounter.getEncounterType().getUuid());
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(encounter.getEncounterDatetime());
+		calendar.set(Calendar.YEAR, 1900);
+		
+		encounter.setEncounterDatetime(calendar.getTime());
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING, encounterTypeUuid
+		        + ":" + visitTypeUuid);
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		new ExistingOrNewVisitAssignmentHandler().beforeCreateEncounter(encounter);
+		
+		Assert.assertNotNull(encounter.getVisit());
+		
+		//should be set according toencounterTypeUuid:visitTypeUuid
+		Assert.assertEquals(1, encounter.getEncounterType().getEncounterTypeId().intValue());
+		Assert
+		        .assertEquals(Context.getVisitService().getVisitTypeByUuid(visitTypeUuid), encounter.getVisit()
+		                .getVisitType());
+	}
 }
