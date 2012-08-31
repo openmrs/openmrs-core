@@ -14,6 +14,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.openmrs.customdatatype.Customizable;
@@ -209,4 +210,14 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 		this.encounters = encounters;
 	}
 	
+	public void addEncounter(Encounter encounter) {
+		if (encounters == null) {
+			encounters = new HashSet<Encounter>();
+		}
+		
+		if (encounter != null) {
+			encounter.setVisit(this);
+			encounters.add(encounter);
+		}
+	}
 }
