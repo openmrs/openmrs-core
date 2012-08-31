@@ -36,7 +36,6 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
-import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
@@ -61,7 +60,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
+	                                             BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		ConceptProposal cp = (ConceptProposal) obj;
@@ -108,7 +107,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -240,7 +239,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		map.put("states", OpenmrsConstants.CONCEPT_PROPOSAL_STATES());
 		map.put("matchingProposals", matchingProposals);
-		map.put("locales", LocaleUtility.getLocalesInOrder());
+		map.put("locales", Context.getAdministrationService().getAllowedLocales());
 		
 		return map;
 	}
