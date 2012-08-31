@@ -1036,6 +1036,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			conceptName.setLocale(locale == null ? Context.getLocale() : locale);
 			conceptName.setDateCreated(new Date());
 			conceptName.setCreator(Context.getAuthenticatedUser());
+			//If this is pre 1.9
+			if(conceptName.getUuid() == null)
+				conceptName.setUuid(UUID.randomUUID().toString());
 			mappedConcept.addName(conceptName);
 			mappedConcept.setChangedBy(Context.getAuthenticatedUser());
 			mappedConcept.setDateChanged(new Date());
@@ -1056,6 +1059,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			ob.setObsDatetime(cp.getEncounter().getEncounterDatetime());
 			ob.setLocation(cp.getEncounter().getLocation());
 			ob.setPerson(cp.getEncounter().getPatient());
+			if(ob.getUuid() == null)
+				ob.setUuid(UUID.randomUUID().toString());
 			cp.setObs(ob);
 		}
 		
