@@ -39,11 +39,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Tests methods in the {@link VisitService}
@@ -891,14 +892,13 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should save new visit with encounters successfully", method = "saveVisit(Visit)")
 	public void saveVisit_shouldSaveNewVisitWithEncountersSuccessfully() throws Exception {
+		
 		VisitService vs = Context.getVisitService();
 		Integer originalSize = vs.getAllVisits().size();
 		Visit visit = new Visit(new Patient(2), new VisitType(1), new Date());
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(4);
-		HashSet<Encounter> encounters = new HashSet<Encounter>();
-		encounters.add(encounter);
-		visit.setEncounters(encounters);
+		visit.addEncounter(encounter);
 		
 		vs.saveVisit(visit);
 		
@@ -907,6 +907,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 		Context.clearSession();
 		
+		// reload the visit
 		visit = Context.getVisitService().getVisit(visitId);
 		
 		assertNotNull(visit.getId());
@@ -914,15 +915,17 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(visit.getCreator());
 		assertNotNull(visit.getDateCreated());
 		assertEquals(originalSize + 1, vs.getAllVisits().size());
-		assertTrue("Encounter size is not 1", visit.getEncounters().size() == 1);
+		assertEquals(1, visit.getEncounters().size());
+		assertEquals(new Integer(4), ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
 	}
 	
 	/**
 	 * @see {@link VisitService#saveVisit(Visit)}
 	 */
 	@Test
-	@Verifies(value = "should associate encounter with visit on save encounter and add encounter to visit", method = "saveVisit(Visit)")
-	public void saveVisit_shouldAssociateEncounterWithVisitOnSaveEncounterAndAddEncounterToVisit() throws Exception {
+	@Verifies(value = "should associate encounter with visit on save encounter", method = "saveVisit(Visit)")
+	public void saveVisit_shouldAssociateEncounterWithVisitOnSaveEncounter() throws Exception {
+		
 		VisitService vs = Context.getVisitService();
 		Visit visit = vs.getVisit(1);
 		
@@ -933,15 +936,16 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		visit.addEncounter(encounter);
 		
 		Context.getEncounterService().saveEncounter(encounter);
-		
-		int visitId = visit.getVisitId();
+		Integer encounterId = encounter.getEncounterId();
 		
 		Context.flushSession();
 		Context.clearSession();
 		
-		visit = Context.getVisitService().getVisit(visitId);
+		// reload the visit
+		visit = Context.getVisitService().getVisit(1);
 		
 		assertEquals(1, visit.getEncounters().size());
+		assertEquals(encounterId, ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
 	}
 	
 	/**
@@ -950,6 +954,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "save visit should persist new encounter", method = "saveVisit(Visit)")
 	public void saveVisit_shouldPersistNewEncounter() throws Exception {
+		
 		VisitService vs = Context.getVisitService();
 		Visit visit = vs.getVisit(1);
 		
@@ -961,14 +966,16 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		vs.saveVisit(visit);
 		
-		int visitId = visit.getVisitId();
-		
 		Context.flushSession();
 		Context.clearSession();
 		
-		visit = Context.getVisitService().getVisit(visitId);
+		Integer encounterId = encounter.getEncounterId();
+		
+		// reload the visit
+		visit = Context.getVisitService().getVisit(1);
 		
 		assertEquals(1, visit.getEncounters().size());
+		assertEquals(encounterId, ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
 	}
 	
 	/**
