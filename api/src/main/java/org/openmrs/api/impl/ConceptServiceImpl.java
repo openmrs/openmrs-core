@@ -1022,6 +1022,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (mappedConcept == null)
 			throw new APIException("Illegal Mapped Concept");
 		
+		ConceptName conceptName = null;
 		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT) || !StringUtils.hasText(cp.getFinalText())) {
 			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
 			cp.setFinalText("");
@@ -1030,11 +1031,14 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			checkIfLocked();
 			
 			String finalText = cp.getFinalText();
-			ConceptName conceptName = new ConceptName(finalText, null);
+			conceptName = new ConceptName(finalText, null);
 			conceptName.setConcept(mappedConcept);
 			conceptName.setLocale(locale == null ? Context.getLocale() : locale);
 			conceptName.setDateCreated(new Date());
 			conceptName.setCreator(Context.getAuthenticatedUser());
+			//If this is pre 1.9
+			if(conceptName.getUuid() == null)
+				conceptName.setUuid(UUID.randomUUID().toString());
 			mappedConcept.addName(conceptName);
 			mappedConcept.setChangedBy(Context.getAuthenticatedUser());
 			mappedConcept.setDateChanged(new Date());
@@ -1048,11 +1052,15 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			ob.setEncounter(cp.getEncounter());
 			ob.setConcept(cp.getObsConcept());
 			ob.setValueCoded(cp.getMappedConcept());
+			if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM))
+				ob.setValueCodedName(conceptName);
 			ob.setCreator(Context.getAuthenticatedUser());
 			ob.setDateCreated(new Date());
 			ob.setObsDatetime(cp.getEncounter().getEncounterDatetime());
 			ob.setLocation(cp.getEncounter().getLocation());
 			ob.setPerson(cp.getEncounter().getPatient());
+			if(ob.getUuid() == null)
+				ob.setUuid(UUID.randomUUID().toString());
 			cp.setObs(ob);
 		}
 		
