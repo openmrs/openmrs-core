@@ -68,14 +68,7 @@
 				if (document.getElementById(key + 'Tab').innerHTML === "") {
 					var divId = '#' + key + 'Tab';
 					$j(divId).html('<p><img src="<openmrs:contextPath/>/images/loading.gif"/><spring:message code="general.loading"/></p>');
-					var keySuffix = key.substring(key.length - 9,key.length);
-					var url = "";
-					if (keySuffix === 'Extension') {
-						var params = document.getElementById(key + 'Url').value;
-						url = "patientDashboardModuleExtension.form?" + params;
-					} else {
-						url = "patientDashboard" + key.replace("ajax", "") + ".form?patientId=" + ${patient.patientId};
-					}
+					var url = "patientDashboard" + key.replace("ajax", "") + ".form?patientId=" + ${patient.patientId};
 					$j(divId).load(url);
 					while (document.getElementById(key + 'Tab').innerHTML === "") {}
 				}
@@ -117,14 +110,7 @@
 				div.style.display = "";
 				if (div.innerHTML === "") {
 					$j(divId).html('<p><img src="<openmrs:contextPath/>/images/loading.gif"/><spring:message code="general.loading"/></p>');
-					var keySuffix = key.substring(key.length - 9,key.length);
-					var url = "";
-					if (keySuffix === 'Extension') {
-						var params = document.getElementById(key + 'Url').value;
-						url = "patientDashboardModuleExtension.form?" + params;
-					} else {
-						url = "patientDashboard" + key.replace("ajax", "") + ".form?patientId=" + ${patient.patientId};
-					}
+					var url = "patientDashboard" + key.replace("ajax", "") + ".form?patientId=" + ${patient.patientId};
 					$j(divId).load(url);
 				}
 			} else if (ajaxProperties[key] === 'Background') {
@@ -205,7 +191,7 @@
 		<openmrs:extensionPoint pointId="org.openmrs.patientDashboardTab" type="html">
 			<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 				<li>
-					<a id="link${extension.tabId}ExtensionTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="${extension.tabName}"/></a>
+					<a id="link${extension.tabId}Tab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="${extension.tabName}"/></a>
 				</li>
 			</openmrs:hasPrivilege>
 		</openmrs:extensionPoint>
@@ -329,44 +315,36 @@
 	</c:choose>		
 		
 	<openmrs:extensionPoint pointId="org.openmrs.patientDashboardTab" type="html">
-		<c:set var="keyValue" value="ajax${extension.tabId}Extension" scope="page"/>
-		<c:choose>
-			<c:when test="${ajaxProperties[keyValue] == null || ajaxProperties[keyValue] == 'Preload'}">
-				<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-					<div id="content${extension.tabId}ExtensionTab" style="display:none;">
-						<c:catch var="ex">
-							<c:choose>
-								<c:when test="${extension.portletUrl == '' || extension.portletUrl == null}">
-									portletId is null: '${extension.extensionId}'
-								</c:when>
-								<c:otherwise>
-									<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.${extension.tabId}TabHeader" type="html" parameters="patientId=${patient.patientId}" />
-									<openmrs:portlet url="${extension.portletUrl}" id="${extension.tabId}" moduleId="${extension.moduleId}"/>
-									
-								</c:otherwise>
-							</c:choose>
-						</c:catch>
-						<c:if test="${not empty ex}">
-							<div class="error">
-								<spring:message code="fix.error.plain"/> <br/>
-								<b>${ex}</b>
-								<div style="height: 200px; width: 800px; overflow: scroll">
-									<c:forEach var="row" items="${ex.cause.stackTrace}">
-										${row}<br/>
-									</c:forEach>
-								</div>
-							</div>
-						</c:if>
+		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+			<div id="content${extension.tabId}Tab" style="display:none;">
+				<c:catch var="ex">
+					<c:choose>
+						<c:when test="${extension.portletUrl == '' || extension.portletUrl == null}">
+							portletId is null: '${extension.extensionId}'
+						</c:when>
+						<c:otherwise>
+						
+							<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.${extension.tabId}TabHeader" type="html" parameters="patientId=${patient.patientId}" />
+							<openmrs:portlet url="${extension.portletUrl}" id="${extension.tabId}" moduleId="${extension.moduleId}"/>
+							
+						</c:otherwise>
+					</c:choose>
+				</c:catch>
+				<c:if test="${not empty ex}">
+					<div class="error">
+						<spring:message code="fix.error.plain"/> <br/>
+						<b>${ex}</b>
+						<div style="height: 200px; width: 800px; overflow: scroll">
+							<c:forEach var="row" items="${ex.cause.stackTrace}">
+								${row}<br/>
+							</c:forEach>
+						</div>
 					</div>
-				</openmrs:hasPrivilege>
-			</c:when>
-			<c:otherwise>
-				<div id="ajax${extension.tabId}ExtensionTab" style="display:none;"></div>
-				<c:set var="privilege" value="${fn:replace(extension.requiredPrivilege, ' ', '@@')}" scope="page"/>
-				<input type="hidden" id="ajax${extension.tabId}ExtensionUrl" value="extensionUrl=${extension.portletUrl}&extensionTabId=${extension.tabId}&extensionModuleId=${extension.moduleId}&requiredPrivilege=${privilege}&extensionId=${extension.extensionId}&patientId=${patient.patientId}" />
-			</c:otherwise>
-		</c:choose>
+				</c:if>
+			</div>
+		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>
 	
 </div>
+<div id="saveLastViewedTab" style="display:none;"></div>
 <%@ include file="/WEB-INF/template/footer.jsp" %>
