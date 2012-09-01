@@ -892,7 +892,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should save new visit with encounters successfully", method = "saveVisit(Visit)")
 	public void saveVisit_shouldSaveNewVisitWithEncountersSuccessfully() throws Exception {
-
+		
 		VisitService vs = Context.getVisitService();
 		Integer originalSize = vs.getAllVisits().size();
 		Visit visit = new Visit(new Patient(2), new VisitType(1), new Date());
@@ -925,7 +925,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should associate encounter with visit on save encounter", method = "saveVisit(Visit)")
 	public void saveVisit_shouldAssociateEncounterWithVisitOnSaveEncounter() throws Exception {
-
+		
 		VisitService vs = Context.getVisitService();
 		Visit visit = vs.getVisit(1);
 		
@@ -937,7 +937,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		Context.getEncounterService().saveEncounter(encounter);
 		Integer encounterId = encounter.getEncounterId();
-
+		
 		Context.flushSession();
 		Context.clearSession();
 		
@@ -954,7 +954,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "save visit should persist new encounter", method = "saveVisit(Visit)")
 	public void saveVisit_shouldPersistNewEncounter() throws Exception {
-
+		
 		VisitService vs = Context.getVisitService();
 		Visit visit = vs.getVisit(1);
 		
@@ -973,22 +973,9 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		// reload the visit
 		visit = Context.getVisitService().getVisit(1);
-
+		
 		assertEquals(1, visit.getEncounters().size());
 		assertEquals(encounterId, ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
-	}
-
-	/**
-	 * @see {@link VisitService#getAllVisitTypes(boolean)}
-	 */
-	@Test
-	@Verifies(value = "get all visit types based on include retired flag", method = "getAllVisitTypes(boolean)")
-	public void getAllVisitTypes_shouldGetAllVisitTypesBasedOnIncludeRetiredFlag() throws Exception {
-		VisitService visitService = Context.getVisitService();
-		List<VisitType> visitTypes = visitService.getAllVisitTypes(true);
-		assertEquals("get all visit types including retired", 3, visitTypes.size());
-		visitTypes = visitService.getAllVisitTypes(false);
-		assertEquals("get all visit types excluding retired", 2, visitTypes.size());
 	}
 	
 }
