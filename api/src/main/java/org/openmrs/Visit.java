@@ -210,6 +210,11 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 		this.encounters = encounters;
 	}
 	
+	/**
+	 * adds an individual encounter to a visit
+	 *
+	 * @param encounter the encounter to add
+	 */
 	public void addEncounter(Encounter encounter) {
 		if (encounters == null) {
 			encounters = new HashSet<Encounter>();
