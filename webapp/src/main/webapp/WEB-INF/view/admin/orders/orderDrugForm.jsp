@@ -93,7 +93,7 @@
 			<td valign="top"><openmrs:message code="Order.orderer"/></td>
 			<td valign="top">
 				<spring:bind path="order.orderer">
-					<openmrs:fieldGen type="org.openmrs.Provider" formFieldName="${status.expression}" val="${status.editor.value}" />
+					<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.editor.value}" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -163,6 +163,15 @@
 			<td valign="top"><openmrs:message code="DrugOrder.quantity"/></td>
 			<td valign="top">
 				<spring:bind path="order.quantity">
+					<openmrs:fieldGen type="java.lang.Integer" formFieldName="${status.expression}" val="${status.editor.value}" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top"><openmrs:message code="DrugOrder.quantityUnits"/></td>
+			<td valign="top">
+				<spring:bind path="order.quantityUnits">
 					<openmrs:fieldGen type="java.lang.Integer" formFieldName="${status.expression}" val="${status.editor.value}" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
