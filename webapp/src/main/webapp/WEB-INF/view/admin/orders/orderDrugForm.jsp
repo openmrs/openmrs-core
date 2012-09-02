@@ -93,7 +93,7 @@
 			<td valign="top"><openmrs:message code="Order.orderer"/></td>
 			<td valign="top">
 				<spring:bind path="order.orderer">
-					<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.editor.value}" />
+					<openmrs:fieldGen type="org.openmrs.Provider" formFieldName="${status.expression}" val="${status.editor.value}" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -135,7 +135,7 @@
 		<tr>
 			<td valign="top"><openmrs:message code="DrugOrder.units"/></td>
 			<td valign="top">
-				<spring:bind path="order.units">
+				<spring:bind path="order.doseUnits">
 					<openmrs:fieldGen type="java.lang.String" formFieldName="${status.expression}" val="${status.value}" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
@@ -153,16 +153,7 @@
 		<tr>
 			<td valign="top"><openmrs:message code="DrugOrder.prn"/></td>
 			<td valign="top">
-				<spring:bind path="order.prn">
-					<openmrs:fieldGen type="java.lang.Boolean" formFieldName="${status.expression}" val="${status.editor.value}" parameters="isNullable=false" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<td valign="top"><openmrs:message code="DrugOrder.complex"/></td>
-			<td valign="top">
-				<spring:bind path="order.complex">
+				<spring:bind path="order.asNeeded">
 					<openmrs:fieldGen type="java.lang.Boolean" formFieldName="${status.expression}" val="${status.editor.value}" parameters="isNullable=false" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
