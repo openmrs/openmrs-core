@@ -140,6 +140,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @should copy every property of given personName
 	 */
 	public static PersonName newInstance(PersonName pn) {
+		if (pn == null)
+			throw new IllegalArgumentException();
 		PersonName newName = new PersonName(new Integer(pn.getPersonNameId()));
 		if (pn.getGivenName() != null)
 			newName.setGivenName(new String(pn.getGivenName()));
