@@ -2,17 +2,6 @@
 <dataset>
   <global_property property="patient.identifierRegex" property_value="^0*@SEARCH@([A-Z]+-[0-9])?$" uuid="c92cce6d-7e7d-4c53-a3c9-faaac17f8f8b"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="92ab9667-4686-49af-8be8-65a4b58fc49c"/>
-  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="true"/>
-  <patient patient_id="4" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient patient_id="5" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient patient_id="6" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient patient_id="7" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="e997ac86-4d8a-40f3-bedb-da84d35917b8"/>
-  <patient_identifier patient_identifier_id="2" patient_id="2" identifier="12345" identifier_type="1" preferred="0" location_id="1" creator="1" date_created="2004-01-01 00:00:00.0" voided="false" uuid="504c83c7-cfbf-4ae7-a4da-bdfa3236689f"/>
-  <patient_identifier patient_identifier_id="3" patient_id="3" identifier="4567" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="acc345a8-0ae9-4cad-92ec-7a5b0b25752f"/>
-  <patient_identifier patient_identifier_id="4" patient_id="4" identifier="5634" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="true" uuid="e1bcf220-d116-4d98-93a4-2adf6282f797"/>
-  <patient_identifier patient_identifier_id="5" patient_id="5" identifier="563422" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f4798e60-b9ef-47d8-afa7-54a1dc9e27c1"/>
   <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="c5576187-9a67-43a7-9b7c-04db22851211"/>
   <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="61b38324-e2fd-4feb-95b7-9e9a2a4400df"/>
   <person person_id="3" gender="M" dead="true" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="5c521595-4e12-46b0-8248-b8f2d3697766"/>
@@ -27,4 +16,15 @@
   <person_name person_name_id="6" preferred="true" person_id="6" given_name="Jeannette" middle_name=" " family_name="Claudent" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="355d1361-a63d-4897-b853-0f2c389138d0"/>
   <person_name person_name_id="7" preferred="true" person_id="7" given_name="John" middle_name="Ho" family_name="Claudio" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f7ea8cea-43de-4cff-8a44-21db2aaaabb8"/>
   <person_name person_name_id="33" preferred="false" person_id="2" given_name="Some other name" middle_name=" " family_name="Last Name of other name" creator="1" date_created="2004-01-01 00:00:00.0" voided="false" uuid="c9714a2d-a97e-4673-80f8-ac8dd5ced083"/>
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="true"/>
+  <patient patient_id="4" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient patient_id="5" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient patient_id="6" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient patient_id="7" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="e997ac86-4d8a-40f3-bedb-da84d35917b8"/>
+  <patient_identifier patient_identifier_id="2" patient_id="2" identifier="12345" identifier_type="1" preferred="0" location_id="1" creator="1" date_created="2004-01-01 00:00:00.0" voided="false" uuid="504c83c7-cfbf-4ae7-a4da-bdfa3236689f"/>
+  <patient_identifier patient_identifier_id="3" patient_id="3" identifier="4567" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="acc345a8-0ae9-4cad-92ec-7a5b0b25752f"/>
+  <patient_identifier patient_identifier_id="4" patient_id="4" identifier="5634" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="true" uuid="e1bcf220-d116-4d98-93a4-2adf6282f797"/>
+  <patient_identifier patient_identifier_id="5" patient_id="5" identifier="563422" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f4798e60-b9ef-47d8-afa7-54a1dc9e27c1"/>
 </dataset>

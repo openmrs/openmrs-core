@@ -29,9 +29,7 @@ public class CachingPatientFilterTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldCachingPatientFilter() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/reporting/include/PatientFilterTest.xml");
-		authenticate();
 		
 		EvaluationContext ec = new EvaluationContext();
 		

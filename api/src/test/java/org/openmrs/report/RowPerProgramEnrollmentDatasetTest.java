@@ -39,9 +39,7 @@ public class RowPerProgramEnrollmentDatasetTest extends BaseContextSensitiveTest
 	 */
 	@Test
 	public void shouldSerialization() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/report/include/RowPerProgramEnrollment.xml");
-		authenticate();
 		
 		EvaluationContext evalContext = new EvaluationContext();
 		PatientSearch kids = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
