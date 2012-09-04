@@ -282,10 +282,16 @@ public class OptionsFormController extends SimpleFormController {
 			opts.setVerbose(new Boolean(props.get(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE)));
 			opts.setUsername(user.getUsername());
 			opts.setSecretQuestionNew(user.getSecretQuestion());
-			// Get a copy of the current person name and clear the id so that
-			// they are separate objects
-			PersonName personName = PersonName.newInstance(user.getPersonName());
-			personName.setPersonNameId(null);
+			
+			PersonName personName;
+			if (user.getPersonName() != null) {
+				// Get a copy of the current person name and clear the id so that
+				// they are separate objects
+				personName = PersonName.newInstance(user.getPersonName());
+				personName.setPersonNameId(null);
+			} else
+				// use blank person name
+				personName = new PersonName();
 			opts.setPersonName(personName);
 			opts.setNotification(props.get(OpenmrsConstants.USER_PROPERTY_NOTIFICATION));
 			opts.setNotificationAddress(props.get(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
