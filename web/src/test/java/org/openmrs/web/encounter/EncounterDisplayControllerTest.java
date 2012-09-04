@@ -46,11 +46,8 @@ public class EncounterDisplayControllerTest extends BaseWebContextSensitiveTest 
 	 */
 	@SuppressWarnings( { "unchecked" })
 	@Test
-	@SkipBaseSetup
 	public void shouldGetNormalEncounterPageData() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(DISPLAY_CONTROLLER_DATA);
-		authenticate();
 		
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setParameter("encounterId", "3");

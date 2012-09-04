@@ -47,11 +47,8 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	@SkipBaseSetup
 	public void shouldSerialize() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/report/include/RowPerObsDatasetTest.xml");
-		authenticate();
 		
 		EvaluationContext evalContext = new EvaluationContext();
 		DataSetService service = Context.getDataSetService();
@@ -100,7 +97,7 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 		StringWriter w = new StringWriter();
 		new TsvReportRenderer().render(data, null, w);
 		
-		expectedOutput = "\"patientId\"	\"question\"	\"questionConceptId\"	\"answer\"	\"answerConceptId\"	\"obsDatetime\"	\"encounterId\"	\"obsGroupId\"	\n\"2\"	\"WEIGHT\"	\"5089\"	\"100.0\"	\"\"	\"2005-01-01 00:00:00.0\"	\"1\"	\"\"	\n";
+		expectedOutput = "\"patientId\"	\"question\"	\"questionConceptId\"	\"answer\"	\"answerConceptId\"	\"obsDatetime\"	\"encounterId\"	\"obsGroupId\"	\n\"2\"	\"WEIGHT (KG)\"	\"5089\"	\"100.0\"	\"\"	\"2005-01-01 00:00:00.0\"	\"1\"	\"\"	\n";
 		// (This line was used to generate the above line of code)
 		// TestUtil.printAssignableToSingleString(w.toString());
 		

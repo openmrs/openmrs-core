@@ -2,12 +2,6 @@
 <dataset>
 
 <!-- active and retired program states -->
-    <program program_id="4" concept_id="9" outcomes_concept_id="25" creator="1" date_created="2008-08-15 16:07:11.0" changed_by="1" date_changed="2008-08-15 17:04:50.0" retired="false" name="HIV Program" description="hiv program" uuid="5dc2a3b0-863c-4074-8f84-45762c3aa04c"/>
-
-    <patient_program patient_program_id="11" patient_id="4" program_id="4" creator="1" voided="false" date_created="2012-01-10 12:00:00.0" uuid="9a0533e3-bc52-49e8-b4fe-fc7e96173266"/>
-
-    <program_workflow  program_id="4" program_workflow_id="501" concept_id="9" retired="false" creator="1"  date_created="2012-01-10 12:00:00.0" uuid="79fbc48b-215f-41af-982c-5071978be018"/>
-
     <concept concept_id="121" retired="false" datatype_id="6" class_id="11" is_set="false" creator="1" date_created="2012-01-10 12:00:00.0" version="" uuid="c22c8e48-1181-4a5b-9f32-f61c4c670ea6"/>
     <concept_name concept_id="121" name="Test State 1" locale="en" creator="1" date_created="2012-01-10 12:00:00.0" concept_name_id="11121" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="47bb0115-c589-4149-b7d0-3ffee92496ab"/>
     <concept_description concept_description_id="221" concept_id="121" description="test state 1. active" locale="en" creator="1" date_created="2012-01-10 12:00:00.0" uuid="eeaac4ad-f9d7-402d-a888-e9d67a62f991"/>
@@ -24,6 +18,12 @@
     <concept_name concept_id="124" name="Test State 4" locale="en" creator="1" date_created="2012-01-10 12:00:00.0" concept_name_id="11124" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="bda8fbe7-9b45-402c-bc9a-c92761894452"/>
     <concept_description concept_description_id="224" concept_id="124" description="test state 4. active" locale="en" creator="1" date_created="2012-01-10 12:00:00.0" uuid="e582a0ad-4559-4be0-8ddf-2032ca941302"/>
 
+	<program program_id="4" concept_id="9" outcomes_concept_id="25" creator="1" date_created="2008-08-15 16:07:11.0" changed_by="1" date_changed="2008-08-15 17:04:50.0" retired="false" name="HIV Program" description="hiv program" uuid="5dc2a3b0-863c-4074-8f84-45762c3aa04c"/>
+
+    <patient_program patient_program_id="11" patient_id="2" program_id="4" creator="1" voided="false" date_created="2012-01-10 12:00:00.0" uuid="9a0533e3-bc52-49e8-b4fe-fc7e96173266"/>
+
+    <program_workflow  program_id="4" program_workflow_id="501" concept_id="9" retired="false" creator="1"  date_created="2012-01-10 12:00:00.0" uuid="79fbc48b-215f-41af-982c-5071978be018"/>
+	
     <program_workflow_state program_workflow_state_id="1001" program_workflow_id="501" initial="true" terminal="false" concept_id="121" retired="false" creator="1" date_created="2012-01-10 12:00:00.0" uuid="b7257555-2b2e-11e1-bbc8-00218679225a" /> 
     <program_workflow_state program_workflow_state_id="1002" program_workflow_id="501" initial="false" terminal="false" concept_id="122" retired="false" creator="1" date_created="2012-01-10 12:00:00.0" uuid="79fbc48b-215f-41af-982c-5071978be018" /> 
     <program_workflow_state program_workflow_state_id="1003" program_workflow_id="501" initial="false" terminal="false" concept_id="123" retired="false" creator="1" date_created="2012-01-10 12:00:00.0" uuid="8c8d6f7e-4c5d-42b9-a23c-2c4a4202ae56" /> 

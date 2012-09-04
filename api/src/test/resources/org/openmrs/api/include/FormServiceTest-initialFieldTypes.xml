@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <concept concept_id="1" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="225b6937-6d47-4cf3-9735-2501f21bdb96"/>
-  <concept concept_id="2" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="95a8585d-fe14-4821-b238-9b781718efa5"/>
+  <concept concept_id="1" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="225b6937-6d47-4cf3-9735-2501f21bdb96"/>
+  <concept concept_id="2" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="95a8585d-fe14-4821-b238-9b781718efa5"/>
   <concept_description concept_description_id="1" concept_id="2" description="this is a description 2" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="6f94902e-4947-4579-994b-402f7ec32a42"/>
   <concept_name concept_id="2" name="Some concept name 2" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="69351e4a-74c0-4979-9785-616245689f68" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
   <field_type field_type_id="1" name="some field type" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="3bb44f69-e162-419a-a5f5-19bd1eaa0f3b"/>
