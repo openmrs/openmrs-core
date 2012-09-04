@@ -130,12 +130,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#saveConcept(Concept)}
 	 */
 	@Test
-	@SkipBaseSetup
 	@Verifies(value = "should save a ConceptNumeric as a concept", method = "saveConcept(Concept)")
 	public void saveConcept_shouldSaveAConceptNumericAsAConcept() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(INITIAL_CONCEPTS_XML);
-		authenticate();
 		//This will automatically add the given locale to the list of allowed locales
 		Context.setLocale(Locale.US);
 		// this tests saving a previously conceptnumeric as just a concept
@@ -160,12 +157,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#saveConcept(Concept)}
 	 */
 	@Test
-	@SkipBaseSetup
 	@Verifies(value = "should save a new ConceptNumeric", method = "saveConcept(Concept)")
 	public void saveConcept_shouldSaveANewConceptNumeric() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(INITIAL_CONCEPTS_XML);
-		authenticate();
 		Context.setLocale(Locale.US);
 		// this tests saving a never before in the database conceptnumeric
 		ConceptNumeric cn3 = new ConceptNumeric();
@@ -187,12 +181,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#saveConcept(Concept)}
 	 */
 	@Test
-	@SkipBaseSetup
 	@Verifies(value = "should save non ConceptNumeric object as conceptNumeric", method = "saveConcept(Concept)")
 	public void saveConcept_shouldSaveNonConceptNumericObjectAsConceptNumeric() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(INITIAL_CONCEPTS_XML);
-		authenticate();
 		
 		// this tests saving a current concept as a newly changed conceptnumeric
 		// assumes there is already a concept in the database
@@ -950,13 +941,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @verifies {@link ConceptService#saveConcept(Concept)} test = should create new concept in
 	 *           database
 	 */
-	@SkipBaseSetup
 	@Test
 	@Verifies(value = "should create new concept in database", method = "saveConcept(Concept)")
 	public void saveConcept_shouldCreateNewConceptInDatabase() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(INITIAL_CONCEPTS_XML);
-		authenticate();
 		
 		Concept conceptToAdd = new Concept();
 		ConceptName cn = new ConceptName("new name", Context.getLocale());
@@ -970,13 +958,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @verifies {@link ConceptService#saveConcept(Concept)} test = should update concept already
 	 *           existing in database
 	 */
-	//@SkipBaseSetup
 	@Test
 	@Verifies(value = "should update concept already existing in database", method = "saveConcept(Concept)")
 	public void saveConcept_shouldUpdateConceptAlreadyExistingInDatabase() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(INITIAL_CONCEPTS_XML);
-		authenticate();
 		
 		// using isSet() as a value to check and change
 		assertFalse(conceptService.getConcept(2).isSet());
@@ -1109,11 +1094,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void saveConcept_shouldNotUpdateConceptDataTypeIfConceptIsAttachedToAnObservation() throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
-		Concept concept = conceptService.getConcept(1);
+		Concept concept = conceptService.getConcept(2);
 		assertNotNull(concept);
 		
 		ObsService obsService = Context.getObsService();
-		Obs obs = new Obs(new Person(1), concept, new Date(), new Location(1));
+		Obs obs = new Obs(Context.getPersonService().getPerson(1), concept, new Date(), Context.getLocationService()
+		        .getLocation(1));
 		obs.setValueCoded(Context.getConceptService().getConcept(7));
 		obsService.saveObs(obs, "Creating a new observation with a concept");
 		
