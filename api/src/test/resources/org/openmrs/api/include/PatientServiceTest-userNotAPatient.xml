@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
   <person person_id="202" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="fa6995c5-2774-4231-ac40-b4aa2b9ca22e"/>
-  <person person_id="303" gender="M" dead="false" creator="2" date_created="2005-01-01 00:00:00.0" voided="false" uuid="796ac6f7-be83-4bfc-bf96-08ed61a98236"/>
+  <person person_id="303" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="796ac6f7-be83-4bfc-bf96-08ed61a98236"/>
   <person_name person_name_id="2" preferred="true" person_id="202" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="c12b5aa7-4a92-448f-944a-8f412dcac848"/>
-  <person_name person_name_id="3" preferred="true" person_id="303" given_name="John" middle_name=" " family_name="Doe" creator="2" date_created="2005-01-01 00:00:00.0" voided="false" uuid="bd2130f4-66b4-460c-899e-4e907785836b"/>
+  <person_name person_name_id="3" preferred="true" person_id="303" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="bd2130f4-66b4-460c-899e-4e907785836b"/>
   <users user_id="202" person_id="202" system_id="2ndusersystemid" username="2nduser" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="eeee30f4-66b4-460c-89ae-4e9077858333"/>
 </dataset>

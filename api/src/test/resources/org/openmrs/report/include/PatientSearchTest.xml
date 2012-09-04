@@ -1,22 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <concept concept_id="1" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="64db1cdd-291c-4169-8d18-b89840f437b8"/>
   <concept_class concept_class_id="1" name="Finding" description="A medical discovery" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="a40e8722-f2d7-4429-850c-10683796e1ed"/>
   <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="dae964e6-8bc9-40ef-9549-54d9a3c4a0f3"/>
+  <concept concept_id="1" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="64db1cdd-291c-4169-8d18-b89840f437b8"/>
   <concept_description concept_description_id="1" concept_id="1" description="cd4 count" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="215a3733-93bf-43ed-a26c-0ae479979ab3"/>
   <concept_name concept_id="1" name="NEW CD4 COUNT" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="13ee4fe0-7043-4eb6-8fef-af60d0a92f0b" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
-  <encounter encounter_id="1" patient_id="2" location_id="1" encounter_datetime="2005-01-01 00:00:00.0" creator="1" date_created="2005-02-01 00:00:00.0" voided="false" uuid="6b0295b6-df79-485f-a1de-d0beb49079af"/>
-  <encounter encounter_id="2" patient_id="2" location_id="1" encounter_datetime="2005-02-01 00:00:00.0" creator="1" date_created="2005-03-01 00:00:00.0" voided="false" uuid="a0ff6aff-a092-44c1-8bdc-770e21e85347"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="f1771d8e-bf1f-4dc5-957f-0d40a5eebf08"/>
   <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="fe834114-1829-4596-8089-c569518a1b6f"/>
-  <obs obs_id="1" person_id="2" concept_id="1" encounter_id="1" obs_datetime="2007-05-01 00:00:00.0" location_id="1" value_numeric="100.0" creator="1" date_created="2005-03-01 00:00:00.0" voided="false" uuid="be41b0b2-e853-4ba3-aaf2-1d3292d0b02a"/>
-  <obs obs_id="2" person_id="3" concept_id="1" encounter_id="2" obs_datetime="2007-03-01 00:00:00.0" location_id="2" value_numeric="200.0" creator="1" date_created="2005-05-01 00:00:00.0" voided="false" uuid="c954942a-37d2-4b36-aff9-b7926944269f"/>
-  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="0b7cf2fa-b377-455c-8750-231cf34a21ac"/>
-  <patient_identifier patient_identifier_id="2" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="94d07935-a336-45e1-9b24-93b8f781966c"/>
   <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="6e9b8dd2-86dd-4af0-8643-24f4066b7440"/>
   <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="a76e8d23-0c38-408c-b2a8-ea5540f01b51"/>
   <person person_id="3" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="7470a4e7-ddcc-44ef-ac24-ecc444c98ad8"/>
   <person_name person_name_id="2" preferred="true" person_id="3" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="84889c43-32cb-4625-8bd8-d1dd1c04a38c"/>
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="0b7cf2fa-b377-455c-8750-231cf34a21ac"/>
+  <patient_identifier patient_identifier_id="2" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="94d07935-a336-45e1-9b24-93b8f781966c"/>
+  <encounter encounter_id="1" patient_id="2" location_id="1" encounter_datetime="2005-01-01 00:00:00.0" creator="1" date_created="2005-02-01 00:00:00.0" voided="false" uuid="6b0295b6-df79-485f-a1de-d0beb49079af"/>
+  <encounter encounter_id="2" patient_id="2" location_id="1" encounter_datetime="2005-02-01 00:00:00.0" creator="1" date_created="2005-03-01 00:00:00.0" voided="false" uuid="a0ff6aff-a092-44c1-8bdc-770e21e85347"/>
+  <obs obs_id="1" person_id="2" concept_id="1" encounter_id="1" obs_datetime="2007-05-01 00:00:00.0" location_id="1" value_numeric="100.0" creator="1" date_created="2005-03-01 00:00:00.0" voided="false" uuid="be41b0b2-e853-4ba3-aaf2-1d3292d0b02a"/>
+  <obs obs_id="2" person_id="3" concept_id="1" encounter_id="2" obs_datetime="2007-03-01 00:00:00.0" location_id="2" value_numeric="200.0" creator="1" date_created="2005-05-01 00:00:00.0" voided="false" uuid="c954942a-37d2-4b36-aff9-b7926944269f"/>
 </dataset>

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <concept concept_id="1" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="cd7aa206-b9fe-4704-b815-a914a76b0eb5"/>
+  <concept concept_id="1" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="cd7aa206-b9fe-4704-b815-a914a76b0eb5"/>
   <concept_description concept_description_id="1" concept_id="1" description="A TB drug" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="2ce39a36-e93d-4489-9f31-259372244237"/>
   <concept_name concept_id="1" name="Isoniazid" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="a354c039-98ba-4351-bac9-f0cc4b2bc903" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
   <drug drug_id="1" concept_id="1" name="INH 300mg" combination="false" dose_strength="300.0" units="mg" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="e40c80cb-0a17-47fe-b64a-076b056f42e0"/>

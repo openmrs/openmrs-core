@@ -548,7 +548,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "return list of non voided orders by encounter", method = "getOrdersByEncounter(Encounter)")
 	public void getOrdersByEncounter_shouldReturnListOfNonVoidedOrdersByEncounter() throws Exception {
 		executeDataSet(ORDERS_DATASET_XML);
-		Encounter encounter = new Encounter(1);
+		Encounter encounter = new Encounter(3);
 		List<Order> orders = Context.getOrderService().getOrdersByEncounter(encounter);
 		Assert.assertEquals(3, orders.size());
 	}

@@ -7,13 +7,13 @@
   <cohort_member cohort_id="2" patient_id="2"/>
   <cohort_member cohort_id="2" patient_id="3"/>  
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="214d9f25-fa06-4a3a-a723-c683cb942ee0"/>
-  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="27354e11-2794-4136-99d5-a96c0ec7c203"/>
-  <patient_identifier patient_identifier_id="2" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1c057603-0f3d-41eb-aafb-f8da0d9bdd13"/>
-  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="b34addab-7343-4d9b-83e7-384dd940a1bb"/>
   <person person_id="2" gender="M" birthdate="1950-04-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="d0fe1d2f-cf18-47a6-8ce7-f6d1c8ea31fa"/>
   <person person_id="3" gender="F" birthdate="1960-07-07" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="8093af4f-0a67-4811-bc3d-97ccdf00ca96"/>
   <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="e16fb9f6-da1a-4d8d-9b57-039cf800ed33"/>
   <person_name person_name_id="3" preferred="true" person_id="3" given_name="Jane" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="6016899a-54c4-4c8f-9447-4a9297718869"/>
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="b34addab-7343-4d9b-83e7-384dd940a1bb"/>
+  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="27354e11-2794-4136-99d5-a96c0ec7c203"/>
+  <patient_identifier patient_identifier_id="2" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1c057603-0f3d-41eb-aafb-f8da0d9bdd13"/>
 </dataset>
