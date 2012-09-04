@@ -777,7 +777,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should find encounter role based on uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
 	public EncounterRole getEncounterRoleByUuid(String uuid) throws APIException;
 	
 	/**
