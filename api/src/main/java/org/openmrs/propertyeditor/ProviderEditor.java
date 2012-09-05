@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
  * In version 1.9, added ability for this to also retrieve objects by uuid
  * 
  * @see Provider
+ * @since 1.10.0
  */
 public class ProviderEditor extends PropertyEditorSupport {
 	
