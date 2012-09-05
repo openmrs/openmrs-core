@@ -756,6 +756,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_APPLICATION_NAME = "application.name";
 	
+	public static final String GLOBAL_PROPERTY_REQUIRE_EMAIL_AS_USERNAME = "user.requireEmailAsUsername";
+		
 	/**
 	 * Array of all core global property names that represent comma-separated lists of
 	 * PersonAttributeTypes. (If you rename a PersonAttributeType then these global properties are
@@ -764,7 +766,7 @@ public final class OpenmrsConstants {
 	public static final String[] GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES = { GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES,
 	        GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES,
 	        GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES,
-	        GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES };
+	        GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, GLOBAL_PROPERTY_REQUIRE_EMAIL_AS_USERNAME };
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX = "patient.identifierRegex";
 	
@@ -1448,6 +1450,9 @@ public final class OpenmrsConstants {
 		                GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE,
 		                "true",
 		                "Indicates whether names in the concept_name table are case sensitive or not. Setting this to false for MySQL with a case insensitive collation improves search performance."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_REQUIRE_EMAIL_AS_USERNAME, "false",
+						        "Whether an email address is allowed as a username"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
