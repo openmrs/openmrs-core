@@ -365,6 +365,7 @@ public class Patient extends Person implements java.io.Serializable {
 	/**
 	 * Returns the person represented
 	 * @return the person represented by this object
+	 * @since 1.10.0
 	 */
 	public Person getPerson() {
 		return this;
