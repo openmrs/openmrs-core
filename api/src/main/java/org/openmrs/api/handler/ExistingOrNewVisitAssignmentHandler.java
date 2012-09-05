@@ -91,19 +91,19 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 			for (String mapping : mappings) {
 				int index = mapping.indexOf(':');
 				if (index > 0) {
-					String encounterTypeId = mapping.substring(0, index).trim();
-					if (targetEncounterTypeId.equals(encounterTypeId)
-					        || encounter.getEncounterType().getUuid().equals(encounterTypeId)) {
-						String visitTypeId = mapping.substring(index + 1).trim();
+					String encounterTypeIdOrUuid = mapping.substring(0, index).trim();
+					if (targetEncounterTypeId.equals(encounterTypeIdOrUuid)
+					        || encounter.getEncounterType().getUuid().equals(encounterTypeIdOrUuid)) {
+						String visitTypeIdOrUuid = mapping.substring(index + 1).trim();
 						VisitType visitType = null;
 						try {
-							visitType = Context.getVisitService().getVisitType(Integer.parseInt(visitTypeId));
+							visitType = Context.getVisitService().getVisitType(Integer.parseInt(visitTypeIdOrUuid));
 						}
 						catch (NumberFormatException e) {
 							//ignore, could be a uuid
 						}
 						if (visitType == null)
-							visitType = Context.getVisitService().getVisitTypeByUuid(visitTypeId);
+							visitType = Context.getVisitService().getVisitTypeByUuid(visitTypeIdOrUuid);
 						if (visitType != null) {
 							return visitType;
 						}
