@@ -172,7 +172,7 @@
 			<td valign="top"><openmrs:message code="DrugOrder.quantityUnits"/></td>
 			<td valign="top">
 				<spring:bind path="order.quantityUnits">
-					<openmrs:fieldGen type="java.lang.Integer" formFieldName="${status.expression}" val="${status.editor.value}" />
+					<openmrs:fieldGen type="java.lang.String" formFieldName="${status.expression}" val="${status.editor.value}" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
