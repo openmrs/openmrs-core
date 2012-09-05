@@ -457,4 +457,18 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(0, dao.getConcepts("VOIDED", null, false, new ArrayList<ConceptClass>(),
 		    new ArrayList<ConceptDatatype>()).size());
 	}
+
+	/**
+	 * @see {@link ConceptDAO#getConceptsByAnswer(Concept)}
+	 */
+	@Test
+	@Verifies(value = "return concepts for the given answer concept", method = "getConceptsByAnswer(Concept)")
+	public void getConceptsByAnswer_returnConceptsForTheGivenAnswerConcept() throws Exception {
+		Concept concept = dao.getConcept(22);
+		List<Concept> conceptsByAnswer = dao.getConceptsByAnswer(concept);
+		Assert.assertNotNull(conceptsByAnswer);
+		Assert.assertEquals(1, conceptsByAnswer.size());
+		Concept conceptByAnswer = conceptsByAnswer.get(0);
+		Assert.assertEquals(21, conceptByAnswer.getConceptId().intValue());
+	}
 }
