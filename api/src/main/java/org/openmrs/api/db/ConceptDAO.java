@@ -243,6 +243,7 @@ public interface ConceptDAO {
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptsByAnswer(org.openmrs.Concept)
+	 * @should return concepts for the given answer concept
 	 */
 	public List<Concept> getConceptsByAnswer(Concept concept) throws DAOException;
 	
