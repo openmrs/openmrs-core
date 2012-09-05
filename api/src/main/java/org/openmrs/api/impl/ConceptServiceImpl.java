@@ -1210,7 +1210,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#updateConceptWords()
+	 * @see org.openmrs.api.ConceptService#updateConceptIndexes()
 	 */
 	@Deprecated
 	public void updateConceptWords() throws APIException {
@@ -1218,7 +1218,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#updateConceptWord(org.openmrs.Concept)
+	 * @see org.openmrs.api.ConceptService#updateConceptIndex(org.openmrs.Concept))
 	 */
 	@Deprecated
 	public void updateConceptWord(Concept concept) throws APIException {

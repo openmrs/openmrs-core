@@ -1113,14 +1113,14 @@ public interface ConceptService extends OpenmrsService {
 	public List<Concept> getConceptsWithDrugsInFormulary() throws APIException;
 	
 	/**
-	 * @deprecated use {@link #updateConceptWord(Concept)}
+	 * @deprecated use {@link #updateConceptIndex(org.openmrs.Concept)}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConceptWord(Concept concept) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #updateConceptWords()}
+	 * @deprecated use {@link #updateConceptIndexes()}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
