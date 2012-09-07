@@ -214,7 +214,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * adds an individual encounter to a visit
 	 *
 	 * @param encounter the encounter to add
-     * @since 1.9.2, 1.10.0
+	 * @since 1.9.2, 1.10.0
 	 */
 	public void addEncounter(Encounter encounter) {
 		if (encounters == null) {
