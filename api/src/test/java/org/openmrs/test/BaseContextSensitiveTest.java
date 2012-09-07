@@ -217,7 +217,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// properties
 		if (useInMemoryDatabase() == true) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			runtimeProperties.setProperty(Environment.URL, "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30");
+			runtimeProperties.setProperty(Environment.URL, "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000");
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
 			runtimeProperties.setProperty(Environment.PASS, "");
