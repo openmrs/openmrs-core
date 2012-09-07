@@ -44,10 +44,10 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
 	protected Set<String> tmpMappingResources = new HashSet<String>();
 	
-	// @since 1.9
+	// @since 1.6.3, 1.7.2, 1.8.0, 1.9
 	protected ChainingInterceptor chainingInterceptor = new ChainingInterceptor();
 	
-	// @since 1.9
+	// @since 1.6.3, 1.7.2, 1.8.0, 1.9
 	// This will be sorted on keys before being used
 	@Autowired(required = false)
 	public Map<String, Interceptor> interceptors = new HashMap<String, Interceptor>();
