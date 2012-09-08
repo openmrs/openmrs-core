@@ -27,6 +27,7 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
@@ -34,6 +35,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
 import org.openmrs.propertyeditor.PatientEditor;
+import org.openmrs.propertyeditor.ProviderEditor;
 import org.openmrs.propertyeditor.UserEditor;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -68,6 +70,7 @@ public class OrderFormController extends SimpleFormController {
 		binder.registerCustomEditor(User.class, new UserEditor());
 		binder.registerCustomEditor(Patient.class, new PatientEditor());
 		binder.registerCustomEditor(Encounter.class, new EncounterEditor());
+		binder.registerCustomEditor(Provider.class, new ProviderEditor());
 	}
 	
 	/**
