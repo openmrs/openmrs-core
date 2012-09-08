@@ -55,7 +55,7 @@
 					   ${order.dose}
 					</td>
 					<td valign="top">
-					   ${order.units}
+					   ${order.doseUnits}
 					</td>
 					<td valign="top">
 					   ${order.frequency}
