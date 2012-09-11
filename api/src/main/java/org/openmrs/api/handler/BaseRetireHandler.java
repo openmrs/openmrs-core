@@ -44,8 +44,6 @@ public class BaseRetireHandler implements RetireHandler<Retireable> {
 	/**
 	 * This method sets "retired" to true, the retired reason, and the retiredBy/dateRetired (if
 	 * those are null).<br/>
-	 * <br/>
-	 * TODO do the check here for an empty retireReason?
 	 * 
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
