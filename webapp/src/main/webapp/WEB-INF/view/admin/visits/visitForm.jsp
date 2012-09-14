@@ -41,7 +41,7 @@ function addEncounter() {
 	row.parentNode.insertBefore(newrow, row);
 	numberOfClonedElements++;
 	// set up the autocomplete for selecting encounters to add
-	new AutoComplete('visitEncounters[' + index + ']-display', new CreateCallback({maxresults:100}).encounterCallback(), {
+	new AutoComplete('visitEncounters[' + index + ']-display', new CreateCallback({maxresults:100, patientId:${param.patientId}}).encounterCallback(), {
 		select: function(event, ui) {
 			jquerySelectEscaped('visitEncounters[' + index + ']').val(ui.item.object.encounterId);
 		},
