@@ -430,29 +430,20 @@
 				<version>1.6.0</version>
 				<scope>runtime</scope>
 			</dependency>
-
 			<dependency>
 				<groupId>ca.uhn.hapi</groupId>
-				<artifactId>hapi</artifactId>
-				<version>0.5</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-cli</groupId>
-						<artifactId>commons-cli</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.jdom</groupId>
-						<artifactId>jdom</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>xalan</groupId>
-						<artifactId>xalan</artifactId>
-					</exclusion>
-				</exclusions>
+				<artifactId>hapi-base</artifactId>
+				<version>2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>ca.uhn.hapi</groupId>
+				<artifactId>hapi-structures-v25</artifactId>
+				<version>2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>ca.uhn.hapi</groupId>
+				<artifactId>hapi-structures-v26</artifactId>
+				<version>2.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openmrs.simpleframework</groupId>
