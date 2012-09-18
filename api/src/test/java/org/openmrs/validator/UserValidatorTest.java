@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -25,7 +26,7 @@ import org.springframework.validation.Errors;
 /**
  * Tests methods on the {@link UserValidator} class.
  */
-public class UserValidatorTest {
+public class UserValidatorTest  extends BaseContextSensitiveTest  {
 	
 	/**
 	 * @see {@link UserValidator#isUserNameValid(String)}
