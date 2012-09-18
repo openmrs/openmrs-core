@@ -177,4 +177,42 @@ public class UserValidatorTest {
 		UserValidator userValidator = new UserValidator();
 		Assert.assertFalse(userValidator.isUserNameValid("  "));
 	}
+	/**
+	 * @see {@link UserValidator#isUserNameAsEmailValid(String)}
+	 */
+	@Test
+	@Verifies(value = "should not validate when username is whitespace only", method = "isUserNameAsEmailValid(String)")
+	public void isUserNameAsEmail_valid() {		
+		UserValidator userValidator = new UserValidator();
+		String[] invalids = new String[] {
+				   "mkyong","mkyong@.com.my","mkyong123@gmail.a",
+				   "mkyong123@.com","mkyong123@.com.com",
+	                           ".mkyong@mkyong.com","mkyong()*@gmail.com",
+				    "mkyong@%*.com", "mkyong..2002@gmail.com",
+				   "mkyong.@gmail.com","mkyong@mkyong@gmail.com", 
+	                           "mkyong@gmail.com.1a" 
+				   };
+		for (String email: invalids){
+			Assert.assertFalse(userValidator.isUserNameAsEmailValid(email));
+		}
+
+	}	
+	/**
+	 * @see {@link UserValidator#isUserNameAsEmailValid(String)}
+	 */
+	@Test
+	@Verifies(value = "should validate when username is email and EmailAsUsername is true", method = "isUserNameAsEmailValid(String)")
+	public void isUserNameAsEmail_invalid() {
+		UserValidator userValidator = new UserValidator();
+		String[] valids = new String[] {
+				   "mkyong@yahoo.com", "mkyong-100@yahoo.com",
+                   "mkyong.100@yahoo.com" ,"mkyong111@mkyong.com", 
+	   "mkyong-100@mkyong.net","mkyong.100@mkyong.com.au",
+	   "mkyong@1.com", "mkyong@gmail.com.com"
+	    };
+		for (String email: valids){
+			Assert.assertTrue(userValidator.isUserNameAsEmailValid(email));
+		}
+
+	}
 }
