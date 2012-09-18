@@ -17,12 +17,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
-import org.springframework.util.StringUtils;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -36,6 +39,9 @@ public class UserValidator implements Validator {
 	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
+	
+	private static final Pattern EMAIL_PATTERN = Pattern
+	        .compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
@@ -54,14 +60,15 @@ public class UserValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if retired and retireReason is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
+	 * @should fail validation if email as username enabled and email invalid
+	 * @should fail validation if email as username disabled and email provided
 	 */
-	
 	public void validate(Object obj, Errors errors) {
 		User user = (User) obj;
 		if (user == null) {
 			errors.rejectValue("user", "error.general");
 		} else {
-			if (user.isRetired() && !StringUtils.hasText(user.getRetireReason()))
+			if (user.isRetired() && StringUtils.isBlank(user.getRetireReason()))
 				errors.rejectValue("retireReason", "error.null");
 			if (user.getPerson() == null) {
 				errors.rejectValue("person", "error.null");
@@ -74,13 +81,24 @@ public class UserValidator implements Validator {
 					errors.rejectValue("person.dead", "error.null");
 				if (person.getVoided() == null)
 					errors.rejectValue("person.voided", "error.null");
-				if (person.getPersonName() == null || !StringUtils.hasText(person.getPersonName().toString()))
+				if (person.getPersonName() == null || StringUtils.isEmpty(person.getPersonName().toString()))
 					errors.rejectValue("person", "Person.names.length");
 			}
 		}
-		
-		if (!isUserNameValid(user.getUsername()))
-			errors.rejectValue("username", "error.username.pattern");
+		AdministrationService as = Context.getAdministrationService();
+		boolean emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false"));
+		if (emailAsUsername) {
+			boolean isValidUserName = isUserNameAsEmailValid(user.getUsername());
+			if (!isValidUserName) {
+				errors.rejectValue("username", "error.username.email");
+			}
+		} else {
+			boolean isValidUserName = isUserNameValid(user.getUsername());
+			if (!isValidUserName) {
+				errors.rejectValue("username", "error.username.pattern");
+			}
+		}
 	}
 	
 	/**
@@ -112,9 +130,8 @@ public class UserValidator implements Validator {
 		// $ = end of line
 		// complete meaning = 2-50 characters, the first must be a letter, digit, or _, and the rest may also be - or .
 		String expression = "^[\\w][\\Q_\\E\\w-\\.]{1,49}$";
-		
 		// empty usernames are allowed
-		if (!StringUtils.hasLength((username)))
+		if (StringUtils.isEmpty(username))
 			return true;
 		
 		try {
@@ -129,4 +146,21 @@ public class UserValidator implements Validator {
 		}
 	}
 	
+	/**
+	 * Returns true if the given username is a valid e-mail.
+	 * 
+	 * @param username
+	 * @return true if valid
+	 * 
+	 * @should return false if email invalid
+	 * @should return true if email valid
+	 */
+	public boolean isUserNameAsEmailValid(String username) {
+		if (StringUtils.isBlank(username)) {
+			return false;
+		}
+		
+		Matcher matcher = EMAIL_PATTERN.matcher(username);
+		return matcher.matches();
+	}
 }
