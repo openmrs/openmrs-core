@@ -994,7 +994,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 		    Restrictions.eq("tag", name));
 		
 		if (crit.list().size() < 1) {
-			log.warn("No concept name tag found with name: " + name);
 			return null;
 		}
 		
