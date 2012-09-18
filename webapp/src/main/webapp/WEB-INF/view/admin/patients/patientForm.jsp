@@ -335,7 +335,7 @@
 		<div id="pNames">
 			<div class="tabBar" id="pNameTabBar">
 				<c:forEach var="name" items="${patient.names}" varStatus="varStatus">
-					<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="name${varStatus.index}" <c:if test="${name.voided}">class='voided'</c:if>><span>${name.givenName}</span>&nbsp;<span>${name.familyName}</span></a>
+					<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="name${varStatus.index}" <c:if test="${name.voided}">class='voided'</c:if>><span><c:out value="${name.givenName}" /></span>&nbsp;<span><c:out value="${name.familyName}"/></span></a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="nameTab" style="display: none"><span></span>&nbsp;<span></span></a>
 				<input type="button" onClick="return addNew('name');" class="addNew" id="name" value='<openmrs:message code="Patient.addNewName"/>'/>

@@ -28,12 +28,12 @@ public class DWRProgramWorkflowServiceTest extends BaseWebContextSensitiveTest {
 	@Before
 	public void setUp() throws Exception {
 		dwrProgramWorkflowService = new DWRProgramWorkflowService();
+		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 	}
 	
 	@Test
 	@Verifies(value = "should get possible outcomes for a program", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldReturnOutcomeConceptsFromProgram() throws Exception {
-		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		Vector<ListItem> possibleOutcomes = dwrProgramWorkflowService.getPossibleOutcomes(4);
 		assertFalse(possibleOutcomes.isEmpty());
 		assertEquals(2, possibleOutcomes.size());

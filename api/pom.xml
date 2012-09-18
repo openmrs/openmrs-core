@@ -33,6 +33,10 @@
          <artifactId>commons-io</artifactId>
       </dependency>
       <dependency>
+		<groupId>com.google.guava</groupId>
+		<artifactId>guava</artifactId>
+      </dependency>
+      <dependency>
          <groupId>org.azeckoski</groupId>
          <artifactId>reflectutils</artifactId>
       </dependency>
@@ -90,7 +94,15 @@
       </dependency>
       <dependency>
          <groupId>ca.uhn.hapi</groupId>
-         <artifactId>hapi</artifactId>
+         <artifactId>hapi-base</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>ca.uhn.hapi</groupId>
+         <artifactId>hapi-structures-v25</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>ca.uhn.hapi</groupId>
+         <artifactId>hapi-structures-v26</artifactId>
       </dependency>
       <dependency>
          <groupId>org.openmrs.simpleframework</groupId>

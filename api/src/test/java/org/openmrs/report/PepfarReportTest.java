@@ -77,10 +77,7 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldPepfarReport() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/report/include/PepfarReportTest.xml");
-		
-		authenticate();
 		
 		Cohort inputCohort = null;
 		
