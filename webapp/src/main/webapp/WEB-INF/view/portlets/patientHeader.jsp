@@ -12,7 +12,7 @@
 <c:if test="${not empty model.patientReasonForExit}">
 	<div id="patientHeader" class="boxHeaderRed">
 </c:if>
-<div id="patientHeaderPatientName">${model.patient.personName}</div>
+<div id="patientHeaderPatientName"><c:out value="${model.patient.personName}" /></div>
 <div id="patientHeaderPreferredIdentifier">
 	<c:if test="${fn:length(model.patient.activeIdentifiers) > 0}">
 		<c:forEach var="identifier" items="${model.patient.activeIdentifiers}"
