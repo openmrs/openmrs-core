@@ -535,23 +535,23 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @param libCacheFolder 
 	 */
 	public static void deleteOldLibCaches(File libCacheFolder) {
-		if (libCacheFolder.exists()) {
-			FilenameFilter cacheDirFilter = new FilenameFilter() {
-				
-				@Override
-				public boolean accept(File dir, String name) {
-					return name.endsWith(LIBCACHESUFFIX);
-				}
-			};
-			FilenameFilter lockFilter = new FilenameFilter() {
-				
-				@Override
-				public boolean accept(File dir, String name) {
-					return name.equals("lock");
-				}
-			};
-			File tempLocation = libCacheFolder.getParentFile();
-			File[] listFiles = tempLocation.listFiles(cacheDirFilter);
+		FilenameFilter cacheDirFilter = new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(LIBCACHESUFFIX);
+			}
+		};
+		FilenameFilter lockFilter = new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.equals("lock");
+			}
+		};
+		File tempLocation = libCacheFolder.getParentFile();
+		File[] listFiles = tempLocation.listFiles(cacheDirFilter);
+		if (listFiles != null) {
 			for (File cacheDir : listFiles) {
 				//check if it is a directory, but is not the current lib cache
 				if (cacheDir.isDirectory() && !cacheDir.equals(libCacheFolder)) {
