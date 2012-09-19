@@ -15,11 +15,15 @@ package org.openmrs.validator;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -182,7 +186,7 @@ public class UserValidatorTest  extends BaseContextSensitiveTest  {
 	 * @see {@link UserValidator#isUserNameAsEmailValid(String)}
 	 */
 	@Test
-	@Verifies(value = "should not validate when username is whitespace only", method = "isUserNameAsEmailValid(String)")
+	@Verifies(value = "should not valid", method = "isUserNameAsEmailValid(String)")
 	public void isUserNameAsEmail_valid() {		
 		UserValidator userValidator = new UserValidator();
 		String[] invalids = new String[] {
@@ -202,7 +206,7 @@ public class UserValidatorTest  extends BaseContextSensitiveTest  {
 	 * @see {@link UserValidator#isUserNameAsEmailValid(String)}
 	 */
 	@Test
-	@Verifies(value = "should validate when username is email and EmailAsUsername is true", method = "isUserNameAsEmailValid(String)")
+	@Verifies(value = "should validate", method = "isUserNameAsEmailValid(String)")
 	public void isUserNameAsEmail_invalid() {
 		UserValidator userValidator = new UserValidator();
 		String[] valids = new String[] {
@@ -214,6 +218,34 @@ public class UserValidatorTest  extends BaseContextSensitiveTest  {
 		for (String email: valids){
 			Assert.assertTrue(userValidator.isUserNameAsEmailValid(email));
 		}
-
+	}
+	@Test
+	@Verifies(value = "should invalid", method = "validate(Object, Errors)")
+	public void invalidUsernameAsEmail_turnOff() {
+		User user = new User();
+		user.setUsername("test@example.com");
+		
+		AdministrationService as = Context.getAdministrationService(); 
+		as.saveGlobalProperty(  new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_EMAIL_AS_USERNAME, "false"));
+				
+		Errors errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("username"));
+	}
+	
+	@Test
+	@Verifies(value = "should valid", method = "validate(Object, Errors)")
+	public void invalidUsernameAsEmail_turnOn() {
+		User user = new User();
+		user.setUsername("test@example.com");
+		
+		AdministrationService as = Context.getAdministrationService(); 
+		as.saveGlobalProperty(  new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_EMAIL_AS_USERNAME, "true"));
+				
+		Errors errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		
+		Assert.assertFalse(errors.hasFieldErrors("username"));
 	}
 }
