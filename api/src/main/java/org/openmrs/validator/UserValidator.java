@@ -19,6 +19,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
@@ -143,16 +144,8 @@ public class UserValidator implements Validator {
 		if (!StringUtils.hasLength((username))){
 			return false;
 		}
-		String expression = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-		try {
-			//Make the comparison case-insensitive.
-			Pattern pattern = Pattern.compile(expression);
-			Matcher matcher = pattern.matcher(username);
-			return matcher.matches();
-		}
-		catch (PatternSyntaxException pex) {
-			log.error("Username Pattern Syntax exception in UserValidator", pex);
-			return false;
-		}
+		EmailValidator  validator = EmailValidator.getInstance();
+		return validator.isValid(username);	
+		
 	}	
 }
