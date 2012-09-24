@@ -13,6 +13,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.search.annotations.Indexed;
 import org.simpleframework.xml.Attribute;
 
 /**
@@ -20,6 +21,7 @@ import org.simpleframework.xml.Attribute;
  * 
  * @see Concept
  */
+@Indexed
 public class ConceptNumeric extends Concept implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 47323L;

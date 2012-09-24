@@ -1029,14 +1029,14 @@ public interface ConceptService extends OpenmrsService {
 	public List<Concept> getConceptsWithDrugsInFormulary() throws APIException;
 	
 	/**
-	 * @deprecated use {@link #updateConceptIndex(org.openmrs.Concept)}
+	 * @deprecated since 1.8 use {@link #updateConceptIndex(org.openmrs.Concept)}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConceptWord(Concept concept) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #updateConceptIndexes()}
+	 * @deprecated since 1.8 use {@link #updateConceptIndexes()}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
@@ -1057,7 +1057,7 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptNameTag getConceptNameTagByUuid(String uuid);
 	
 	/**
-	 * @deprecated use {@link #updateConceptIndexes(Integer, Integer)}
+	 * @deprecated since 1.8use {@link #updateConceptIndexes(Integer, Integer)}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
@@ -1922,4 +1922,22 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
 	public ConceptMapType getDefaultConceptMapType() throws APIException;
+	
+	/**
+	 * Determines if the given concept name is a duplicate.
+	 * 
+	 * @param name
+	 * @return true if it is a duplicate name
+	 * @since 1.10
+	 */
+	public boolean isConceptNameDuplicate(ConceptName name);
+	
+	/**
+	 * Reads a GP which specifies if the case is ignored by the db when searching for concept names.
+	 * <p>
+	 * It is an optimization parameter, which can speed up searching.
+	 * 
+	 * @return true if search is case sensitive
+	 */
+	public boolean isConceptNameSearchCaseSensitive();
 }

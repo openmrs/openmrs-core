@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Indexed;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
@@ -20,6 +22,7 @@ import org.simpleframework.xml.Root;
  * ConceptDatatype
  */
 @Root
+@Indexed
 public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 473L;
@@ -69,7 +72,7 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 	public static final String COMPLEX_UUID = "8d4a6242-c2cc-11de-8d13-0010c6dffd0f";
 	
 	// Fields
-	
+	@DocumentId
 	private Integer conceptDatatypeId;
 	
 	private String hl7Abbreviation;

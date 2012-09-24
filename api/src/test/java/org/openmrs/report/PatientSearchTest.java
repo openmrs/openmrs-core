@@ -49,6 +49,7 @@ public class PatientSearchTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet("org/openmrs/report/include/PatientSearchTest.xml");
+		Context.getConceptService().updateConceptIndexes();
 	}
 	
 	/**

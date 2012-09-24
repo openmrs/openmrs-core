@@ -195,6 +195,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should get orderable concepts by name and drug class", method = "getOrderables(String)")
 	public void getOrderables_shouldGetOrderableConceptsByNameAndDrugClass() throws Exception {
 		executeDataSet(simpleOrderEntryDatasetFilename);
+		Context.getConceptService().updateConceptIndexes();
 		
 		String query = "Ampi";
 		

@@ -20,15 +20,19 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.search.FullTextSession;
+import org.hibernate.search.Search;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.util.ConfigHelper;
-import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -38,6 +42,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
@@ -311,7 +316,6 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @see org.openmrs.api.context.Context#startup(Properties)
 	 */
 	public void startup(Properties properties) {
-		
 	}
 	
 	/**
@@ -398,6 +402,57 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 		}
 		
+	}
+	
+	@Override
+	public void updateSearchIndexForType(Class<?> type) {
+		//From http://docs.jboss.org/hibernate/search/3.3/reference/en-US/html/manual-index-changes.html#search-batchindex-flushtoindexes
+		FullTextSession session = Search.getFullTextSession(sessionFactory.getCurrentSession());
+		session.purgeAll(type);
+		
+		//Prepare session for batch work
+		session.flush();
+		session.clear();
+		
+		FlushMode flushMode = session.getFlushMode();
+		CacheMode cacheMode = session.getCacheMode();
+		try {
+			session.setFlushMode(FlushMode.MANUAL);
+			session.setCacheMode(CacheMode.IGNORE);
+			
+			//Scrollable results will avoid loading too many objects in memory
+			ScrollableResults results = session.createCriteria(type).setFetchSize(1000).scroll(ScrollMode.FORWARD_ONLY);
+			int index = 0;
+			while (results.next()) {
+				index++;
+				session.index(results.get(0)); //index each element
+				if (index % 1000 == 0) {
+					session.flushToIndexes(); //apply changes to indexes
+					session.clear(); //free memory since the queue is processed
+				}
+			}
+			session.flushToIndexes();
+			session.clear();
+		}
+		finally {
+			session.setFlushMode(flushMode);
+			session.setCacheMode(cacheMode);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#updateSearchIndexForObject(java.lang.Object)
+	 */
+	@Override
+	public void updateSearchIndexForObject(Object object) {
+		FullTextSession session = Search.getFullTextSession(sessionFactory.getCurrentSession());
+		session.index(object);
+		session.flushToIndexes();
+	}
+	
+	@Override
+	public void updateSearchIndexInBackground() {
+		Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().start();
 	}
 	
 }

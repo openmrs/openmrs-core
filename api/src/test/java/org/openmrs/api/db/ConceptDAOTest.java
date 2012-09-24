@@ -427,16 +427,6 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		assertNull(dao.getConcept(5497));
 	}
 	
-	@Test
-	@Verifies(value = "should update concept in datastore", method = "updateConcept")
-	public void updateConceptWord_shouldUpdateConceptWithWords() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
-		Concept concept = dao.getConcept(5497);
-		dao.updateConceptWord(concept);
-		
-		assertNotNull(dao.getConcept(5497));
-	}
-	
 	/**
 	 * @see {@link
 	 *      ConceptDAO#getConcepts(String,Locale,null,List<QConceptClass;>,List<QConceptDatatype;>)}
@@ -446,8 +436,9 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() throws Exception {
 		Concept concept = dao.getConcept(7);
 		Context.getConceptService().updateConceptIndex(concept);
-		Assert.assertEquals(0, dao.getConcepts("VOIDED", null, false, new ArrayList<ConceptClass>(),
-		    new ArrayList<ConceptDatatype>()).size());
+		List<Concept> concepts = dao.getConcepts("VOIDED", null, false, new ArrayList<ConceptClass>(),
+		    new ArrayList<ConceptDatatype>());
+		Assert.assertEquals(0, concepts.size());
 	}
 	
 	/**

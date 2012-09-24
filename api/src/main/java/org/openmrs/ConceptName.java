@@ -19,8 +19,14 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.search.annotations.ClassBridge;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.search.bridge.ConceptNameClassBridge;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -32,13 +38,16 @@ import org.simpleframework.xml.Root;
  * locale.
  */
 @Root
+@Indexed
+@ClassBridge(name = "name", impl = ConceptNameClassBridge.class, store = Store.YES)
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
 	
-	// Fields
+	@DocumentId
 	private Integer conceptNameId;
 	
+	@ContainedIn
 	private Concept concept;
 	
 	private String name;

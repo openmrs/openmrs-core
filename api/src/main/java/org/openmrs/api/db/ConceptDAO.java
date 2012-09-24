@@ -283,12 +283,6 @@ public interface ConceptDAO {
 	 */
 	public List<Concept> getConceptsWithDrugsInFormulary() throws DAOException;
 	
-	/**
-	 * @see org.openmrs.api.ConceptService#updateConceptWord(org.openmrs.Concept)
-	 * @should update conceptWords for this concept in datastore
-	 */
-	public void updateConceptWord(Concept concept) throws DAOException;
-	
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
 	
 	public ConceptNameTag getConceptNameTag(Integer i);
@@ -651,4 +645,9 @@ public interface ConceptDAO {
 	 * @see ConceptService#getDefaultConceptMapType()
 	 */
 	public ConceptMapType getDefaultConceptMapType() throws DAOException;
+	
+	/**
+	 * @see ConceptService#isConceptNameDuplicate(ConceptName)
+	 */
+	public boolean isConceptNameDuplicate(ConceptName name);
 }

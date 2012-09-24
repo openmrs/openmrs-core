@@ -121,4 +121,31 @@ public interface ContextDAO {
 	 * @param runtimeProperties The current user specific runtime properties
 	 */
 	public void mergeDefaultRuntimeProperties(Properties runtimeProperties);
+	
+	/**
+	 * Updates all search indexes in a background thread.
+	 */
+	public void updateSearchIndexInBackground();
+	
+	/**
+	 * Updates a search index for the given object.
+	 * <p>
+	 * Not that it flushes the search index before a transaction is committed. If the transaction is
+	 * rolled back, changes to the index will not be reverted.
+	 * 
+	 * @param object
+	 */
+	@Transactional
+	public void updateSearchIndexForObject(Object object);
+	
+	/**
+	 * Recreates a search index for objects of the given type.
+	 * <p>
+	 * Note that it flushes the Hibernate session and the search index before a transaction is
+	 * committed. If the transaction is rolled back, changes to the index will not be reverted.
+	 * 
+	 * @param type
+	 */
+	@Transactional
+	public void updateSearchIndexForType(Class<?> type);
 }

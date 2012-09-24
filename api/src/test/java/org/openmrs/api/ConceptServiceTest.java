@@ -13,12 +13,16 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.TestUtil.containsId;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +37,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.dbunit.dataset.IDataSet;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -91,6 +96,29 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeAllTests() throws Exception {
 		conceptService = Context.getConceptService();
+	}
+	
+	/**
+	 * Updates the search index to clean up after each test.
+	 * 
+	 * @see org.openmrs.test.BaseContextSensitiveTest#updateSearchIndex()
+	 */
+	@Before
+	@Override
+	public void updateSearchIndex() {
+		super.updateSearchIndex();
+	}
+	
+	/**
+	 * Updates the search index after executing each dataset.
+	 * 
+	 * @see org.openmrs.test.BaseContextSensitiveTest#executeDataSet(org.dbunit.dataset.IDataSet)
+	 */
+	@Override
+	public void executeDataSet(IDataSet dataset) throws Exception {
+		super.executeDataSet(dataset);
+		
+		updateSearchIndex();
 	}
 	
 	/**
@@ -2115,6 +2143,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		concept3.addName(new ConceptName(name, new Locale("en")));
 		Context.getConceptService().saveConcept(concept3);
 		
+		updateSearchIndex();
+		
 		//when
 		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en"), false);
 		
@@ -2145,12 +2175,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		concept3.addName(new ConceptName(name, new Locale("en")));
 		Context.getConceptService().saveConcept(concept3);
 		
+		updateSearchIndex();
+		
 		//when
 		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en", "US"), false);
 		
 		//then
-		Assert.assertEquals(2, concepts.size());
-		Assert.assertTrue(concepts.containsAll(Arrays.asList(concept1, concept3)));
+		assertThat(concepts.get(0), is(concept1));
+		assertThat(concepts, containsInAnyOrder(concept1, concept2, concept3));
 	}
 	
 	/**
@@ -2403,21 +2435,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return a search result whose concept name contains all word tokens", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
 	public void getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAllWordTokens() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
-		Concept conceptWithMultipleMatchingNames = conceptService.getConcept(798);
-		
-		//recalculate the weights just in case the logic for calculating the weights is changed
-		conceptService.updateConceptIndex(conceptWithMultipleMatchingNames);
-		conceptService.updateConceptIndex(conceptService.getConcept(240));
-		conceptService.updateConceptIndex(conceptService.getConcept(357));
-		conceptService.updateConceptIndex(conceptService.getConcept(328));
-		conceptService.updateConceptIndex(conceptService.getConcept(1240));
 		
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("SALBUTAMOL INHALER", Collections
-		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
 		
 		Assert.assertEquals(1, searchResults.size());
-		Assert.assertEquals(conceptWithMultipleMatchingNames, searchResults.get(0).getConcept());
-		Assert.assertEquals("SALBUTAMOL INHALER", searchResults.get(0).getConceptName().getName());
+		Assert.assertEquals("SALBUTAMOL INHALER", searchResults.get(0).getWord());
 	}
 	
 	/**

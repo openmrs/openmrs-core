@@ -64,8 +64,6 @@ import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.scheduler.SchedulerException;
-import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
@@ -75,6 +73,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+
+import com.google.common.collect.Lists;
 
 /**
  * Default Implementation of ConceptService service layer classes
@@ -297,6 +297,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		new ConceptValidator().validate(concept, errors);
 		if (errors.hasErrors())
 			throw new APIException("Validation errors found: " + errors.getAllErrors());
+		
+		concept.setDateChanged(new Date());
 		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
@@ -1834,8 +1836,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public List<ConceptSearchResult> findConceptAnswers(String phrase, Locale locale, Concept concept) throws APIException {
 		
-		List<ConceptWord> conceptWords = getConceptAnswers(phrase, locale, concept);
-		return createSearchResultsList(conceptWords);
+		List<ConceptSearchResult> concepts = getConcepts(phrase, Lists.newArrayList(locale), false, null, null, null, null,
+		    concept, null, null);
+		
+		return concepts;
 	}
 	
 	/**
@@ -1914,12 +1918,12 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public void updateConceptIndexes(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
-		checkIfLocked();
+		/*checkIfLocked();
 		Integer i = conceptIdStart;
 		ConceptService cs = Context.getConceptService();
 		while (i++ <= conceptIdEnd) {
 			updateConceptWord(cs.getConcept(i));
-		}
+		}*/
 	}
 	
 	/**
@@ -1927,8 +1931,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public void updateConceptIndex(Concept concept) throws APIException {
-		checkIfLocked();
-		dao.updateConceptWord(concept);
+		Context.updateSearchIndexForObject(concept);
 	}
 	
 	/**
@@ -1936,41 +1939,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public void updateConceptIndexes() throws APIException {
-		checkIfLocked();
-		SchedulerService ss = Context.getSchedulerService();
-		
-		// ABKTODO: this whole pattern should be moved into the scheduler,
-		// providing a call like scheduleThisIfNotRunning()
-		TaskDefinition conceptIndexUpdateTaskDef = ss.getTaskByName(CONCEPT_WORD_UPDATE_TASK_NAME);
-		if (conceptIndexUpdateTaskDef == null) {
-			conceptIndexUpdateTaskDef = createConceptIndexUpdateTask();
-			try {
-				ss.saveTask(conceptIndexUpdateTaskDef);
-				conceptWordUpdateTask = ss.scheduleTask(conceptIndexUpdateTaskDef);
-			}
-			catch (SchedulerException e) {
-				log.error("Failed to schedule concept-word update task, because:", e);
-			}
-		} else {
-			// task definition exists. get the task itself
-			conceptWordUpdateTask = conceptIndexUpdateTaskDef.getTaskInstance();
-			if (conceptWordUpdateTask == null) {
-				try {
-					ss.rescheduleTask(conceptIndexUpdateTaskDef);
-				}
-				catch (SchedulerException e) {
-					log.error("Failed to schedule concept-word update task, because:", e);
-				}
-			} else if (!conceptWordUpdateTask.isExecuting()) {
-				try {
-					ss.rescheduleTask(conceptIndexUpdateTaskDef);
-				}
-				catch (SchedulerException e) {
-					log.error("Failed to re-schedule concept-word update task, because:", e);
-				}
-			}
-		}
-		
+		Context.updateSearchIndexForType(Concept.class);
 	}
 	
 	/**
@@ -2306,5 +2275,22 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public ConceptMapType getDefaultConceptMapType() throws APIException {
 		//We need to fetch it in DAO since it must be done in the MANUAL fush mode to prevent pre-mature flushes.
 		return dao.getDefaultConceptMapType();
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#isConceptNameDuplicate(org.openmrs.ConceptName)
+	 */
+	@Override
+	public boolean isConceptNameDuplicate(ConceptName name) {
+		return dao.isConceptNameDuplicate(name);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#isConceptNameSearchCaseSensitive()
+	 */
+	@Override
+	public boolean isConceptNameSearchCaseSensitive() {
+		return "true".equals(Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE, "true"));
 	}
 }
