@@ -61,6 +61,7 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 		
 		//Set the program to null so that the patient program is rejected on validation with
 		//an APIException, since it is a RuntimeException, all transactions should be rolled back
+		notPrefPrograms.get(0).setProgram(null);
 		
 		boolean failed = false;
 		try {
