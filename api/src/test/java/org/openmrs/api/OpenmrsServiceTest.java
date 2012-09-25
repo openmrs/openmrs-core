@@ -14,7 +14,6 @@
 package org.openmrs.api;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -35,7 +34,7 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Tests that if two service methods are called (one from inside the other) the first one will
-	 * be rolled back if there is an error during the second one.
+	 * not be rolled back if there is an error during the second one.
 	 * 
 	 * <pre>
 	 * We are testing with the merge patient method since it is transactional and calls multiple other 
@@ -53,29 +52,15 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 		Collection<Program> programs = programService.getAllPrograms(false);
 		
 		int originalPrefEncounterCount = encounterService.getEncountersByPatient(prefPatient).size();
-		Assert.assertTrue(encounterService.getEncountersByPatient(notPrefPatient).size() > 0);
+		int originalNotPrefEncounterCount = encounterService.getEncountersByPatient(notPrefPatient).size();
+		Assert.assertTrue(originalNotPrefEncounterCount > 0);
 		
-		//Add another program to the not preferred patient for testing purposes
-		PatientProgram pp = new PatientProgram();
-		pp.setPatient(notPrefPatient);
-		pp.setProgram(programs.iterator().next());
-		pp.setDateEnrolled(new Date());
-		pp.setCreator(Context.getAuthenticatedUser());
-		programService.savePatientProgram(pp);
-		
-		Cohort preferredCohort = new Cohort(prefPatient.getPatientId().toString());
-		int originalPrefProgramCount = programService.getPatientPrograms(preferredCohort, programs).size();
 		Cohort notPreferredCohort = new Cohort(notPrefPatient.getPatientId().toString());
 		List<PatientProgram> notPrefPrograms = programService.getPatientPrograms(notPreferredCohort, programs);
-		int originalNotPrefProgramCount = notPrefPrograms.size();
-		//we should have atleast 2 patient programs for a concrete test
-		Assert.assertTrue(originalNotPrefProgramCount > 1);
+		Assert.assertTrue(notPrefPrograms.size() > 0);
 		
-		//Set the program to null so that the second patient program is rejected on validation with
-		//an APIException, since it is a RuntimeException, hibernate should technically trigger 
-		//a roll back when programService.savePatientProgram is called from the patient merge method
-		//for this patient program
-		notPrefPrograms.get(1).setProgram(null);
+		//Set the program to null so that the patient program is rejected on validation with
+		//an APIException, since it is a RuntimeException, all transactions should be rolled back
 		
 		boolean failed = false;
 		try {
@@ -86,10 +71,7 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 		}
 		Assert.assertTrue(failed);
 		
-		//Since the encounters are moved first, that logic have been rolled back
+		//Since the encounters are moved first, that logic should have been rolled back
 		Assert.assertEquals(originalPrefEncounterCount, encounterService.getEncountersByPatient(prefPatient).size());
-		
-		//The first valid patient program should have been rolled back too
-		Assert.assertEquals(originalPrefProgramCount, programService.getPatientPrograms(preferredCohort, programs).size());
 	}
 }
