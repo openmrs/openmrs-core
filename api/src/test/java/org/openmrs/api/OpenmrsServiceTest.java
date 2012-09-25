@@ -26,6 +26,7 @@ import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.springframework.test.annotation.NotTransactional;
 
 /**
  * Contains methods to test behavior of OpenmrsService methods
@@ -34,7 +35,7 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Tests that if two service methods are called (one from inside the other) the first one will
-	 * not be rolled back if there is an error during the second one.
+	 * be rolled back if there is an error during the second one.
 	 * 
 	 * <pre>
 	 * We are testing with the merge patient method since it is transactional and calls multiple other 
@@ -42,6 +43,7 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 	 * </pre>
 	 */
 	@Test
+	@NotTransactional
 	public void shouldCheckThatAMethodIsNotRolledBackInCaseOfAnErrorInAnotherInvokedInsideIt() throws Exception {
 		PatientService patientService = Context.getPatientService();
 		EncounterService encounterService = Context.getEncounterService();
@@ -51,8 +53,7 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 		Collection<Program> programs = programService.getAllPrograms(false);
 		
 		int originalPrefEncounterCount = encounterService.getEncountersByPatient(prefPatient).size();
-		int originalNotPrefEncounterCount = encounterService.getEncountersByPatient(notPrefPatient).size();
-		Assert.assertTrue(originalNotPrefEncounterCount > 0);
+		Assert.assertTrue(encounterService.getEncountersByPatient(notPrefPatient).size() > 0);
 		
 		//Add another program to the not preferred patient for testing purposes
 		PatientProgram pp = new PatientProgram();
@@ -85,12 +86,10 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 		}
 		Assert.assertTrue(failed);
 		
-		//Since the encounters are moved first, that logic shouldn't have been rolled back
-		Assert.assertEquals(originalPrefEncounterCount + originalNotPrefEncounterCount, encounterService
-		        .getEncountersByPatient(prefPatient).size());
+		//Since the encounters are moved first, that logic have been rolled back
+		Assert.assertEquals(originalPrefEncounterCount, encounterService.getEncountersByPatient(prefPatient).size());
 		
-		//The first valid patient program should not have been rolled back, so only the second should have been rolled back
-		Assert.assertEquals(originalPrefProgramCount + originalNotPrefProgramCount - 1, programService.getPatientPrograms(
-		    preferredCohort, programs).size());
+		//The first valid patient program should have been rolled back too
+		Assert.assertEquals(originalPrefProgramCount, programService.getPatientPrograms(preferredCohort, programs).size());
 	}
 }

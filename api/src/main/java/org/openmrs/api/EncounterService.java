@@ -704,7 +704,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 * @return EncounterRole
 	 * @since 1.9
-	 */@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
+	 */
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
 	public EncounterRole getEncounterRole(Integer encounterRoleId) throws APIException;
 	
 	/**
