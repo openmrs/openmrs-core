@@ -24,19 +24,20 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.Daemon;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.db.AlertDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This class should not be instantiated by itself.
  * 
  * @see org.openmrs.notification.AlertService
  */
+@Transactional
 public class AlertServiceImpl extends BaseOpenmrsService implements Serializable, AlertService {
 	
 	private static final long serialVersionUID = 564561231321112365L;
@@ -116,6 +117,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	/**
 	 * @see org.openmrs.notification.AlertService#getAlert(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public Alert getAlert(Integer alertId) throws APIException {
 		return dao.getAlert(alertId);
 	}
@@ -150,6 +152,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts(User user) throws APIException {
 		log.debug("Getting all alerts for user " + user);
 		return getAlerts(user, true, true);
@@ -158,6 +161,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	/**
 	 * @see org.openmrs.notification.AlertService#getAllActiveAlerts(org.openmrs.User)
 	 */
+	@Transactional(readOnly = true)
 	public List<Alert> getAllActiveAlerts(User user) throws APIException {
 		log.debug("Getting all active alerts for user " + user);
 		return getAlerts(user, true, false);
@@ -168,6 +172,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Alert> getAlerts(User user) throws APIException {
 		log.debug("Getting unread alerts for user " + user);
 		return getAlertsByUser(user);
@@ -176,6 +181,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	/**
 	 * @see org.openmrs.notification.AlertService#getAlertsByUser(org.openmrs.User)
 	 */
+	@Transactional(readOnly = true)
 	public List<Alert> getAlertsByUser(User user) throws APIException {
 		log.debug("Getting unread alerts for user " + user);
 		
@@ -194,6 +200,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public List<Alert> getAlerts() throws APIException {
 		return getAlertsByUser(null);
 	}
@@ -201,6 +208,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	/**
 	 * @see org.openmrs.notification.AlertService#getAlerts(org.openmrs.User, boolean, boolean)
 	 */
+	@Transactional(readOnly = true)
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws APIException {
 		log.debug("Getting alerts for user " + user + " read? " + includeRead + " expired? " + includeExpired);
 		return dao.getAlerts(user, includeRead, includeExpired);
@@ -209,6 +217,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	/**
 	 * @see org.openmrs.notification.AlertService#getAllAlerts()
 	 */
+	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts() throws APIException {
 		log.debug("Getting alerts for all users");
 		return getAllAlerts(false);
@@ -217,6 +226,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	/**
 	 * @see org.openmrs.notification.AlertService#getAllAlerts(boolean)
 	 */
+	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException {
 		log.debug("Getting alerts for all users");
 		return dao.getAllAlerts(includeExpired);

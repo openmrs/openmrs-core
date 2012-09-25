@@ -61,6 +61,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
+import org.springframework.transaction.annotation.Transactional;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
@@ -84,6 +85,7 @@ import ca.uhn.hl7v2.parser.GenericParser;
  * 
  * @see org.openmrs.hl7.HL7Service
  */
+@Transactional
 public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
 	private final Log log = LogFactory.getLog(this.getClass());
@@ -179,6 +181,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7Source(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public HL7Source getHL7Source(Integer hl7SourceId) {
 		return dao.getHL7Source(hl7SourceId);
 	}
@@ -186,6 +189,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getAllHL7Sources()
 	 */
+	@Transactional(readOnly = true)
 	public List<HL7Source> getAllHL7Sources() throws APIException {
 		return dao.getAllHL7Sources();
 	}
@@ -193,6 +197,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7SourceByName(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public HL7Source getHL7SourceByName(String name) throws APIException {
 		return dao.getHL7SourceByName(name);
 	}
@@ -202,6 +207,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public HL7Source getHL7Source(String name) {
 		return Context.getHL7Service().getHL7SourceByName(name);
 	}
@@ -211,6 +217,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Collection<HL7Source> getHL7Sources() {
 		return Context.getHL7Service().getAllHL7Sources();
 	}
@@ -236,6 +243,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getAllHL7InQueues()
 	 */
+	@Transactional(readOnly = true)
 	public List<HL7InQueue> getAllHL7InQueues() throws APIException {
 		return dao.getAllHL7InQueues();
 	}
@@ -244,6 +252,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#getHL7InQueueBatch(int, int, java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<HL7InQueue> getHL7InQueueBatch(int start, int length, int messageState, String query) throws APIException {
 		return dao.getHL7Batch(HL7InQueue.class, start, length, messageState, query);
 	}
@@ -252,6 +261,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#getHL7InErrorBatch(int, int, java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<HL7InError> getHL7InErrorBatch(int start, int length, String query) throws APIException {
 		return dao.getHL7Batch(HL7InError.class, start, length, null, query);
 	}
@@ -260,6 +270,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveBatch(int, int, java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<HL7InArchive> getHL7InArchiveBatch(int start, int length, int messageState, String query)
 	        throws APIException {
 		return dao.getHL7Batch(HL7InArchive.class, start, length, messageState, query);
@@ -269,6 +280,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#countHL7InQueue(int, java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Integer countHL7InQueue(int messageState, String query) throws APIException {
 		return OpenmrsUtil.convertToInteger(dao.countHL7s(HL7InQueue.class, messageState, query));
 	}
@@ -277,6 +289,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#countHL7InError(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Integer countHL7InError(String query) throws APIException {
 		return OpenmrsUtil.convertToInteger(dao.countHL7s(HL7InError.class, null, query));
 	}
@@ -285,6 +298,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#countHL7InArchive(int, java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Integer countHL7InArchive(int messageState, String query) throws APIException {
 		return OpenmrsUtil.convertToInteger(dao.countHL7s(HL7InArchive.class, messageState, query));
 	}
@@ -321,11 +335,13 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InQueue(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public HL7InQueue getHL7InQueue(Integer hl7InQueueId) {
 		return dao.getHL7InQueue(hl7InQueueId);
 	}
 	
 	@Override
+	@Transactional(readOnly = true)
 	public HL7InQueue getHL7InQueueByUuid(String uuid) throws APIException {
 		return dao.getHL7InQueueByUuid(uuid);
 	}
@@ -335,6 +351,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Collection<HL7InQueue> getHL7InQueues() {
 		return Context.getHL7Service().getAllHL7InQueues();
 	}
@@ -342,6 +359,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getNextHL7InQueue()
 	 */
+	@Transactional(readOnly = true)
 	public HL7InQueue getNextHL7InQueue() {
 		return dao.getNextHL7InQueue();
 	}
@@ -358,6 +376,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveByState(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public List<HL7InArchive> getHL7InArchiveByState(Integer state) throws APIException {
 		return dao.getHL7InArchiveByState(state);
 	}
@@ -365,6 +384,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InQueueByState(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public List<HL7InQueue> getHL7InQueueByState(Integer state) throws APIException {
 		return dao.getHL7InQueueByState(state);
 	}
@@ -372,6 +392,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getAllHL7InArchives()
 	 */
+	@Transactional(readOnly = true)
 	public List<HL7InArchive> getAllHL7InArchives() throws APIException {
 		return dao.getAllHL7InArchives();
 	}
@@ -405,6 +426,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InArchive(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId) {
 		return dao.getHL7InArchive(hl7InArchiveId);
 	}
@@ -414,6 +436,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Collection<HL7InArchive> getHL7InArchives() {
 		return Context.getHL7Service().getAllHL7InArchives();
 	}
@@ -446,6 +469,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getAllHL7InErrors()
 	 */
+	@Transactional(readOnly = true)
 	public List<HL7InError> getAllHL7InErrors() throws APIException {
 		return dao.getAllHL7InErrors();
 	}
@@ -478,11 +502,13 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InError(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public HL7InError getHL7InError(Integer hl7InErrorId) {
 		return dao.getHL7InError(hl7InErrorId);
 	}
 	
 	@Override
+	@Transactional(readOnly = true)
 	public HL7InError getHL7InErrorByUuid(String uuid) throws APIException {
 		return dao.getHL7InErrorByUuid(uuid);
 	}
@@ -492,6 +518,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Collection<HL7InError> getHL7InErrors() {
 		return dao.getAllHL7InErrors();
 	}
@@ -520,6 +547,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @return Internal ID # of the specified user, or null if that user can't be found or is
 	 *         ambiguous
 	 */
+	@Transactional(readOnly = true)
 	public Integer resolveUserId(XCN xcn) throws HL7Exception {
 		// TODO: properly handle family and given names. For now I'm treating
 		// givenName+familyName as a username.
@@ -574,6 +602,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#resolvePersonId(ca.uhn.hl7v2.model.v25.datatype.XCN)
 	 */
+	@Transactional(readOnly = true)
 	public Integer resolvePersonId(XCN xcn) throws HL7Exception {
 		String idNumber = xcn.getIDNumber().getValue();
 		String familyName = xcn.getFamilyName().getSurname().getValue();
@@ -607,6 +636,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @return internal identifier of the specified location, or null if it is not found or
 	 *         ambiguous
 	 */
+	@Transactional(readOnly = true)
 	public Integer resolveLocationId(PL pl) throws HL7Exception {
 		// TODO: Get rid of hack that allows first component to be an integer
 		// location.location_id
@@ -648,6 +678,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 *         patient is not found, or if the PID segment is ambiguous
 	 * @throws HL7Exception
 	 */
+	@Transactional(readOnly = true)
 	public Integer resolvePatientId(PID pid) throws HL7Exception {
 		Person p = resolvePersonFromIdentifiers(pid.getPatientIdentifierList());
 		if (p != null && p.isPatient())
@@ -661,6 +692,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 *         if the patient is not found
 	 * @throws HL7Exception
 	 */
+	@Transactional(readOnly = true)
 	public Person resolvePersonFromIdentifiers(CX[] identifiers) throws HL7Exception {
 		// TODO: Properly handle assigning authority. If specified it's
 		// currently treated as PatientIdentifierType.name
@@ -893,6 +925,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveByUuid(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public HL7InArchive getHL7InArchiveByUuid(String uuid) throws APIException {
 		if (Hl7InArchivesMigrateThread.isActive())
 			throw new APIException("cannot fetch archives during migration");
@@ -1246,6 +1279,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	}
 	
 	@Override
+	@Transactional(readOnly = true)
 	public HL7QueueItem getHl7QueueItemByUuid(String uuid) throws APIException {
 		HL7QueueItem result = getHL7InQueueByUuid(uuid);
 		if (result != null) {

@@ -42,7 +42,7 @@ import org.openmrs.order.DrugOrderSupport;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.validator.ValidateUtil;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default implementation of the Order-related services class. This class should not be invoked by
@@ -52,6 +52,7 @@ import org.openmrs.validator.ValidateUtil;
  * 
  * @see org.openmrs.api.OrderService
  */
+@Transactional
 public class OrderServiceImpl extends BaseOpenmrsService implements OrderService {
 	
 	protected final Log log = LogFactory.getLog(getClass());
@@ -137,6 +138,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Order getOrder(Integer orderId) throws APIException {
 		return getOrder(orderId, Order.class);
 	}
@@ -145,6 +147,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer, java.lang.Class)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public <o extends Order> o getOrder(Integer orderId, Class<o> orderClassType) throws APIException {
 		return dao.getOrder(orderId, orderClassType);
 	}
@@ -153,6 +156,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.Date, java.util.List, java.util.List)
 	 */
+	@Transactional(readOnly = true)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
 	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude) {
@@ -175,6 +179,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrdersByPatient(org.openmrs.Patient)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException {
 		return getOrdersByPatient(patient, false);
 	}
@@ -184,6 +189,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
+	@Transactional(readOnly = true)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided) {
 		if (patient == null)
 			throw new APIException("Unable to get drug orders if not given a patient");
@@ -220,6 +226,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws APIException {
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
@@ -231,6 +238,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getStandardRegimens()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<RegimenSuggestion> getStandardRegimens() {
 		DrugOrderSupport dos = null;
 		List<RegimenSuggestion> standardRegimens = null;
@@ -255,6 +263,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderByUuid(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Order getOrderByUuid(String uuid) throws APIException {
 		return dao.getOrderByUuid(uuid);
 	}
@@ -263,6 +272,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Order getOrderByOrderNumber(String orderNumber) {
 		return dao.getOrderByOrderNumber(orderNumber);
 	}
@@ -272,6 +282,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      org.openmrs.Concept)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
 		if (patient == null)
 			throw new IllegalArgumentException("patient is required");
@@ -290,6 +301,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      java.util.Date)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<Order> getActiveOrdersByPatient(Patient p, Date date) throws APIException {
 		
 		if (p == null)
@@ -310,6 +322,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      java.util.Date)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) {
 		if (p == null)
 			throw new IllegalArgumentException("patient is required");
@@ -328,6 +341,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderables(java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<Orderable<?>> getOrderables(String query) throws APIException {
 		
 		if (query == null)
@@ -439,6 +453,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderable(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public Orderable<?> getOrderable(String identifier) throws APIException {
 		if (identifier == null)
 			throw new IllegalArgumentException("Orderable identifier is required");
@@ -468,6 +483,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getNewOrderNumber()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public String getNewOrderNumber() {
 		Integer next;
 		synchronized (orderNumberCounter) {
@@ -489,6 +505,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatientAndIngredient(org.openmrs.Patient,
 	 *      org.openmrs.Concept)
 	 */
+	@Transactional(readOnly = true)
 	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient) throws APIException {
 		if (patient == null)
 			throw new IllegalArgumentException("patient is required");
@@ -502,6 +519,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrdersByPatient(org.openmrs.Patient, java.lang.Boolean)
 	 */
+	@Transactional(readOnly = true)
 	public List<Order> getOrdersByPatient(Patient patient, boolean includeVoided) throws APIException {
 		if (patient == null)
 			throw new APIException("Unable to get orders if I am not given a patient");
@@ -515,6 +533,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrdersByEncounter(org.openmrs.Encounter)
 	 */
+	@Transactional(readOnly = true)
 	public List<Order> getOrdersByEncounter(Encounter encounter) throws APIException {
 		if (encounter == null)
 			throw new APIException("Unable to get orders if I am not given an encounter");
@@ -528,6 +547,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrdersByOrderer(org.openmrs.User)
 	 */
+	@Transactional(readOnly = true)
 	public List<Order> getOrdersByOrderer(User orderer) throws APIException {
 		if (orderer == null)
 			throw new APIException("Unable to get orders if I am not given an orderer");

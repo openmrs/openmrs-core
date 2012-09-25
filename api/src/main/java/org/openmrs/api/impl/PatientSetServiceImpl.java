@@ -55,7 +55,9 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(readOnly = true)
 public class PatientSetServiceImpl extends BaseOpenmrsService implements PatientSetService {
 	
 	public final Log log = LogFactory.getLog(this.getClass());

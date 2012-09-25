@@ -28,11 +28,13 @@ import org.openmrs.reporting.ReportObjectFactory;
 import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.reporting.db.ReportObjectDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
+@Transactional
 public class ReportObjectServiceImpl extends BaseOpenmrsService implements ReportObjectService {
 	
 	private ReportObjectDAO reportObjectDAO;
@@ -57,6 +59,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getAllReportObjects()
 	 */
+	@Transactional(readOnly = true)
 	public List<AbstractReportObject> getAllReportObjects() {
 		return reportObjectDAO.getAllReportObjects();
 	}
@@ -64,6 +67,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getReportObject(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public AbstractReportObject getReportObject(Integer reportObjectId) throws APIException {
 		return reportObjectDAO.getReportObject(reportObjectId);
 	}
@@ -71,6 +75,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getReportObjectsByType(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws APIException {
 		return reportObjectDAO.getReportObjectsByType(reportObjectType);
 	}
@@ -78,6 +83,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getPatientSearch(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public PatientSearch getPatientSearch(Integer searchId) throws APIException {
 		return ((PatientSearchReportObject) getReportObject(searchId)).getPatientSearch();
 	}
@@ -85,6 +91,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getAllPatientSearches()
 	 */
+	@Transactional(readOnly = true)
 	public List<PatientSearch> getAllPatientSearches() throws APIException {
 		List<PatientSearch> allSearches = new ArrayList<PatientSearch>();
 		List<AbstractReportObject> allMatchingObjects = getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
@@ -99,6 +106,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getPatientSearch(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public PatientSearch getPatientSearch(String name) throws APIException {
 		List<AbstractReportObject> allMatchingObjects = getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
 		if (allMatchingObjects != null) {
@@ -113,6 +121,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getPatientFilterById(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public PatientFilter getPatientFilterById(Integer filterId) throws APIException {
 		return (PatientFilter) getReportObject(filterId);
 	}
@@ -120,6 +129,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getPatientFilterByName(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public PatientFilter getPatientFilterByName(String filterName) throws APIException {
 		// TODO: push this into the DAO layer
 		for (PatientFilter pf : getAllPatientFilters()) {
@@ -134,6 +144,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getAllPatientFilters()
 	 */
+	@Transactional(readOnly = true)
 	public List<PatientFilter> getAllPatientFilters() throws APIException {
 		ArrayList<PatientFilter> allPatientFilters = new ArrayList<PatientFilter>();
 		List<AbstractReportObject> allMatchingObjects = getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTFILTER);
@@ -187,6 +198,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getReportObjectTypes()
 	 */
+	@Transactional(readOnly = true)
 	public List<String> getReportObjectTypes() {
 		List<String> availableTypes = this.reportObjectFactory.getReportObjectTypes();
 		return availableTypes;
@@ -195,6 +207,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getReportObjectSubTypes(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public List<String> getReportObjectSubTypes(String type) {
 		List<String> availableTypes = this.reportObjectFactory.getReportObjectSubTypes(type);
 		return availableTypes;
@@ -211,6 +224,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getReportObjectClassBySubType(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public String getReportObjectClassBySubType(String subType) {
 		String className = this.reportObjectFactory.getReportObjectClassBySubType(subType);
 		return className;
@@ -219,6 +233,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getAllReportObjectClasses()
 	 */
+	@Transactional(readOnly = true)
 	public List<String> getAllReportObjectClasses() {
 		List<String> allClasses = this.reportObjectFactory.getAllReportObjectClasses();
 		return allClasses;
@@ -227,6 +242,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getReportObjectValidatorByClass(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public String getReportObjectValidatorByClass(String currentClassName) {
 		String validatorClass = this.reportObjectFactory.getReportObjectValidatorByClass(currentClassName);
 		return validatorClass;
@@ -235,6 +251,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getDefaultReportObjectValidator()
 	 */
+	@Transactional(readOnly = true)
 	public String getDefaultReportObjectValidator() {
 		String defaultValidator = this.reportObjectFactory.getDefaultValidator();
 		return defaultValidator;
@@ -273,6 +290,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getSearchHistory(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public CohortSearchHistory getSearchHistory(Integer reportObjectId) {
 		return (CohortSearchHistory) getReportObject(reportObjectId);
 	}
@@ -281,6 +299,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	 * @see org.openmrs.reporting.ReportObjectService#getSearchHistories()
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public List<CohortSearchHistory> getSearchHistories() {
 		return getAllSearchHistories();
 	}
@@ -288,6 +307,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getAllSearchHistories()
 	 */
+	@Transactional(readOnly = true)
 	public List<CohortSearchHistory> getAllSearchHistories() {
 		List<AbstractReportObject> temp = getReportObjectsByType("Search History"); // TODO make this a constant
 		List<CohortSearchHistory> ret = new ArrayList<CohortSearchHistory>();

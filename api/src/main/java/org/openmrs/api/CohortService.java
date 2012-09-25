@@ -25,7 +25,6 @@ import org.openmrs.cohort.CohortDefinitionItemHolder;
 import org.openmrs.cohort.CohortDefinitionProvider;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * API methods related to Cohorts and CohortDefinitions
@@ -40,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.cohort.CohortDefinition
  * @see org.openmrs.cohort.CohortDefinitionProvider
  */
-@Transactional
 public interface CohortService extends OpenmrsService {
 	
 	/**
@@ -111,7 +109,6 @@ public interface CohortService extends OpenmrsService {
 	 * @throws APIException
 	 * @should get cohort by id
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_COHORTS })
 	public Cohort getCohort(Integer id) throws APIException;
 	
@@ -232,7 +229,6 @@ public interface CohortService extends OpenmrsService {
 	 * @deprecated see reportingcompatibility module
 	 * @should not overwrite previously set providers if called twice
 	 */
-	@Transactional(readOnly = true)
 	@Deprecated
 	public void setCohortDefinitionProviders(
 	        Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap) throws APIException;
@@ -246,7 +242,6 @@ public interface CohortService extends OpenmrsService {
 	 * @throws APIException
 	 * @should overwrite provider if duplicate CcohortDefinition class
 	 */
-	@Transactional(readOnly = true)
 	@Deprecated
 	public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> cohortDefClass,
 	        CohortDefinitionProvider cohortDef) throws APIException;
@@ -260,7 +255,6 @@ public interface CohortService extends OpenmrsService {
 	 * @see #setCohortDefinitionProviders(Map)
 	 * @should not return null if not providers have been set
 	 */
-	@Transactional(readOnly = true)
 	@Deprecated
 	public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders()
 	        throws APIException;
@@ -275,7 +269,6 @@ public interface CohortService extends OpenmrsService {
 	 * @throws APIException
 	 * @should not fail if providerClass not set
 	 */
-	@Transactional(readOnly = true)
 	@Deprecated
 	public void removeCohortDefinitionProvider(Class<? extends CohortDefinitionProvider> providerClass) throws APIException;
 	
@@ -288,14 +281,12 @@ public interface CohortService extends OpenmrsService {
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	@Deprecated
 	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() throws APIException;
 	
 	/**
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Transactional(readOnly = true)
 	@Deprecated
 	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class<? extends CohortDefinitionProvider> providerClass)
 	        throws APIException;
@@ -303,28 +294,24 @@ public interface CohortService extends OpenmrsService {
 	/**
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Transactional(readOnly = true)
 	@Deprecated
 	public CohortDefinition getCohortDefinition(Class<CohortDefinition> clazz, Integer id) throws APIException;
 	
 	/**
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Transactional(readOnly = true)
 	@Deprecated
 	public CohortDefinition getCohortDefinition(String cohortKey) throws APIException;
 	
 	/**
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Transactional(readOnly = true)
 	@Deprecated
 	public CohortDefinition saveCohortDefinition(CohortDefinition definition) throws APIException;
 	
 	/**
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Transactional
 	@Deprecated
 	public void purgeCohortDefinition(CohortDefinition definition) throws APIException;
 	
@@ -338,14 +325,12 @@ public interface CohortService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return all patients with blank patient search cohort definition provider
 	 */
-	@Transactional(readOnly = true)
 	@Deprecated
 	public Cohort evaluate(CohortDefinition definition, EvaluationContext evalContext) throws APIException;
 	
 	/**
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Transactional(readOnly = true)
 	@Deprecated
 	public CohortDefinition getAllPatientsCohortDefinition() throws APIException;
 	
@@ -357,7 +342,6 @@ public interface CohortService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_COHORTS })
 	public Cohort getCohortByUuid(String uuid);
 	

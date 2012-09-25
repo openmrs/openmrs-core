@@ -28,6 +28,7 @@ import org.openmrs.messagesource.PresentationMessage;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Extensible implementation of the MessageSourceService, which relies on injected implementations
@@ -36,6 +37,7 @@ import org.springframework.context.NoSuchMessageException;
  * ResourceBundleMessageSourceService can be specified in the applicationContext-service.xml file to
  * use the usual .properties files to provide messages.
  */
+@Transactional
 public class MessageSourceServiceImpl implements MessageSourceService {
 	
 	private Log log = LogFactory.getLog(getClass());

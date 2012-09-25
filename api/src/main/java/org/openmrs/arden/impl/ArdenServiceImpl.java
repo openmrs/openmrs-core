@@ -33,6 +33,7 @@ import org.openmrs.arden.ArdenBaseParser;
 import org.openmrs.arden.ArdenBaseTreeParser;
 import org.openmrs.arden.ArdenService;
 import org.openmrs.arden.MLMObject;
+import org.springframework.transaction.annotation.Transactional;
 
 import antlr.BaseAST;
 
@@ -42,6 +43,7 @@ import antlr.BaseAST;
  * @author Vibha Anand
  * @version 1.0
  */
+@Transactional
 public class ArdenServiceImpl implements ArdenService {
 	
 	private final Log log = LogFactory.getLog(getClass());

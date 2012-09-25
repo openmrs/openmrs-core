@@ -31,7 +31,9 @@ import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.Template;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class MessageServiceImpl implements MessageService {
 	
 	private static final Log log = LogFactory.getLog(MessageServiceImpl.class);
@@ -241,6 +243,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @return the prepared Message
 	 */
 	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
 	public Message prepareMessage(String templateName, Map data) throws MessageException {
 		try {
 			Template template = (Template) getTemplatesByName(templateName).get(0);
@@ -258,6 +261,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @return list of Templates
 	 */
 	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
 	public List getAllTemplates() throws MessageException {
 		return templateDAO.getTemplates();
 	}
@@ -268,6 +272,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param id template identifier
 	 * @return Template
 	 */
+	@Transactional(readOnly = true)
 	public Template getTemplate(Integer id) throws MessageException {
 		return templateDAO.getTemplate(id);
 	}
@@ -279,6 +284,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @return list of Templates
 	 */
 	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
 	public List getTemplatesByName(String name) throws MessageException {
 		return templateDAO.getTemplatesByName(name);
 	}
@@ -314,6 +320,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @deprecated
 	 */
 	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
 	public Message prepare(String templateName, Map data) throws MessageException {
 		return prepareMessage(templateName, data);
 	}
@@ -322,6 +329,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @see org.openmrs.notification.MessageService#prepare(org.openmrs.notification.Template)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public Message prepare(Template template) throws MessageException {
 		return prepareMessage(template);
 	}
