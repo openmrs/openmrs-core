@@ -175,7 +175,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	private class TestTask extends AbstractTask {
 		
 		public void execute() {
-			Context.getAuthenticatedUser().getPersonName().toString();
+			Context.getAuthenticatedUser().getPersonName().getFullName();
 		}
 	}
 }

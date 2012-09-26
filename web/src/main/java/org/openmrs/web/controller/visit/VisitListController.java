@@ -132,7 +132,7 @@ public class VisitListController {
 				row.put("encounterProviders", getProviders(encounter));
 				row.put("encounterLocation", (encounter.getLocation() != null) ? encounter.getLocation().getName() : "");
 				row.put("encounterEnterer", (encounter.getCreator() != null) ? encounter.getCreator().getPersonName()
-				        .toString() : "");
+				        .getFullName() : "");
 				row.put("formViewURL", getViewFormURL(request, formToViewUrlMap, formToEditUrlMap, encounter));
 			}
 			

@@ -131,7 +131,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	private String formatUserName(User u) {
-		return u.getPersonName().toString();
+		return u.getPersonName().getFullName();
 	}
 	
 	private String formatUser(User u) {
@@ -347,7 +347,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					if (u != null) {
 						Element temp = doc.createElement("provider");
 						temp.setAttribute("provider_id", u.getPersonId().toString());
-						temp.appendChild(doc.createTextNode(u.getPersonName().toString()));
+						temp.appendChild(doc.createTextNode(u.getPersonName().getFullName()));
 						metadataNode.appendChild(temp);
 					}
 				}

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import ca.uhn.hl7v2.util.StringUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
@@ -498,12 +499,17 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	@Override
 	public String toString() {
-		// TODO find all uses of this toString() method and 
-		// change them to use the getFullName() method.  This
-		// to string should print out the #getPersonNameId() and 
+		//This to string should print out the #getPersonNameId() and
 		// all of the values for each part
-		
-		return getFullName();
+		StringBuilder sb = new StringBuilder();
+		sb.append("personNameId: " + personNameId);
+		if (!givenName.isEmpty())
+			sb.append(" givenName: " + givenName);
+		if (!middleName.isEmpty())
+			sb.append(" middleName: " + middleName);
+		if (!familyName.isEmpty())
+			sb.append(" familyName: " + familyName);
+		return "Person[ " + sb.toString() + " ]";
 	}
 	
 	/**

@@ -153,6 +153,6 @@ public class FormatTagTest extends BaseContextSensitiveTest {
 		tag.setObject(object);
 		Assert.assertEquals(Tag.SKIP_BODY, tag.doStartTag());
 		Assert.assertNotNull(pageContext.getAttribute(ATTRIBUTE_OBJECT_VALUE));
-		Assert.assertEquals(pageContext.getAttribute(ATTRIBUTE_OBJECT_VALUE), expected);
+		Assert.assertEquals(expected, pageContext.getAttribute(ATTRIBUTE_OBJECT_VALUE));
 	}
 }
