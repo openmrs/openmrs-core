@@ -126,12 +126,23 @@ public final class Module {
 		log.debug("Creating module " + name);
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof Module) {
 			Module mod = (Module) obj;
-			return getModuleId().equals(mod.getModuleId());
+			return getPackageName().equals(mod.getPackageName());
 		}
 		return false;
+	}
+	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		if (getPackageName() == null)
+			return super.hashCode();
+		return getPackageName().hashCode();
 	}
 	
 	/**

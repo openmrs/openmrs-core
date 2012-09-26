@@ -160,7 +160,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		List<URL> result = new LinkedList<URL>();
 		
 		File tmpModuleDir = getLibCacheFolderForModule(module);
-		File tmpModuleJar = new File(tmpModuleDir, module.getModuleId() + ".jar");
+		File tmpModuleJar = new File(tmpModuleDir, module.getPackageName() + ".jar");
 		
 		if (!tmpModuleJar.exists()) {
 			try {
@@ -200,7 +200,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			result.add(moduleFileURL);
 		}
 		catch (MalformedURLException e) {
-			log.warn("Unable to add files from module to URL list: " + module.getModuleId(), e);
+			log.warn("Unable to add files from module to URL list: " + module.getPackageName(), e);
 		}
 		
 		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
@@ -241,9 +241,9 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @return File directory where the files will be placed
 	 */
 	public static File getLibCacheFolderForModule(Module module) {
-		File tmpModuleDir = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
+		File tmpModuleDir = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getPackageName());
 		
-		// each module gets its own folder named /moduleId/
+		// each module gets its own folder named /packageName/
 		if (!tmpModuleDir.exists()) {
 			tmpModuleDir.mkdir();
 			tmpModuleDir.deleteOnExit();
@@ -279,25 +279,25 @@ public class ModuleClassLoader extends URLClassLoader {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
 		
-		for (String moduleId : ModuleConstants.CORE_MODULES.keySet()) {
-			Module module = ModuleFactory.getModuleById(moduleId);
+		for (String packageName : ModuleConstants.CORE_MODULES.keySet()) {
+			Module module = ModuleFactory.getModuleByPackage(packageName);
 			
 			if (module == null && !ModuleUtil.ignoreCoreModules()) {
-				log.error("Unable to find an openmrs core loaded module with id: " + moduleId);
+				log.error("Unable to find an openmrs core loaded module with id: " + packageName);
 				throw new APIException(
 				        "Should not be here.  All 'core' required modules by the api should be started and their classloaders should be available");
 			}
 			
 			// if this is already the classloader for one of the core modules, don't put it on the import list
-			if (module != null && !moduleId.equals(this.getModule().getModuleId())) {
-				publicImportsMap.put(moduleId, module);
+			if (module != null && !packageName.equals(this.getModule().getPackageName())) {
+				publicImportsMap.put(packageName, module);
 			}
 		}
 		
 		for (String requiredPackage : getModule().getRequiredModules()) {
 			Module requiredModule = ModuleFactory.getModuleByPackage(requiredPackage);
 			if (ModuleFactory.isModuleStarted(requiredModule)) {
-				publicImportsMap.put(requiredModule.getModuleId(), requiredModule);
+				publicImportsMap.put(requiredModule.getPackageName(), requiredModule);
 			}
 		}
 		requiredModules = publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
@@ -315,7 +315,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		for (String awareOfPackage : getModule().getAwareOfModules()) {
 			Module awareOfModule = ModuleFactory.getModuleByPackage(awareOfPackage);
 			if (ModuleFactory.isModuleStarted(awareOfModule)) {
-				publicImportsMap.put(awareOfModule.getModuleId(), awareOfModule);
+				publicImportsMap.put(awareOfModule.getPackageName(), awareOfModule);
 			}
 		}
 		awareOfModules = publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
@@ -443,7 +443,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param name String path and name of the class to load
 	 * @param resolve boolean whether or not to resolve this class before returning
 	 * @param requestor ModuleClassLoader with which to try loading
-	 * @param seenModules Set<String> moduleIds that have been tried already
+	 * @param seenModules Set<String> packageNames that have been tried already
 	 * @return Class that has been loaded or null if none
 	 * @throws ClassNotFoundException if no class found
 	 */
@@ -463,7 +463,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			log.trace("stacktrace: " + output.toString());
 		}
 		
-		if ((seenModules != null) && seenModules.contains(getModule().getModuleId())) {
+		if ((seenModules != null) && seenModules.contains(getModule().getPackageName())) {
 			return null;
 		}
 		
@@ -519,13 +519,13 @@ public class ModuleClassLoader extends URLClassLoader {
 			seenModules = new HashSet<String>();
 		
 		// add this module to the list of modules we've tried already
-		seenModules.add(getModule().getModuleId());
+		seenModules.add(getModule().getPackageName());
 		
 		// look through this module's imports to see if the class
 		// can be loaded from them
 		if (requiredModules != null) {
 			for (Module publicImport : requiredModules) {
-				if (seenModules.contains(publicImport.getModuleId()))
+				if (seenModules.contains(publicImport.getPackageName()))
 					continue;
 				
 				ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
@@ -547,7 +547,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		// look through this module's aware of imports to see if the class
 		// can be loaded from them.
 		for (Module publicImport : awareOfModules) {
-			if (seenModules.contains(publicImport.getModuleId()))
+			if (seenModules.contains(publicImport.getPackageName()))
 				continue;
 			
 			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
@@ -600,7 +600,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			//						+ ", requestor=" + requestor);
 			//				throw new ClassNotFoundException("class "
 			//						+ cls.getName() + " is not visible for module "
-			//						+ requestor.getModule().getModuleId()
+			//						+ requestor.getModule().getPackageName()
 			//						+ ", no filter found for library " + lib);
 			//			}
 			//			if (!filter.isClassVisible(cls.getName())) {
@@ -609,7 +609,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			//						+ ", requestor=" + requestor);
 			//				throw new ClassNotFoundException("class "
 			//						+ cls.getName() + " is not visible for module "
-			//						+ requestor.getModule().getModuleId());
+			//						+ requestor.getModule().getPackageName());
 			//			}
 		}
 	}
@@ -699,7 +699,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 			
 			// create the directory to hold the jar's files
-			File libCacheModuleFolder = new File(cacheFolder, getModule().getModuleId());
+			File libCacheModuleFolder = new File(cacheFolder, getModule().getPackageName());
 			
 			// error while creating the file
 			if (!libCacheModuleFolder.exists() && !libCacheModuleFolder.mkdirs()) {
@@ -803,7 +803,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 		}
 		
-		if ((seenModules != null) && seenModules.contains(getModule().getModuleId()))
+		if ((seenModules != null) && seenModules.contains(getModule().getPackageName()))
 			return null;
 		
 		URL result = super.findResource(name);
@@ -830,11 +830,11 @@ public class ModuleClassLoader extends URLClassLoader {
 		if (seenModules == null)
 			seenModules = new HashSet<String>();
 		
-		seenModules.add(getModule().getModuleId());
+		seenModules.add(getModule().getPackageName());
 		
 		if (requiredModules != null) {
 			for (Module publicImport : requiredModules) {
-				if (seenModules.contains(publicImport.getModuleId()))
+				if (seenModules.contains(publicImport.getPackageName()))
 					continue;
 				
 				ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
@@ -853,7 +853,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		//look through the aware of modules.
 		for (Module publicImport : awareOfModules) {
-			if (seenModules.contains(publicImport.getModuleId()))
+			if (seenModules.contains(publicImport.getPackageName()))
 				continue;
 			
 			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
@@ -876,14 +876,14 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param result URL of the file found
 	 * @param name String path and name of the file to find
 	 * @param requestor ModuleClassLoader in which to start
-	 * @param seenModules Set<String> moduleIds that have been checked already
+	 * @param seenModules Set<String> packageNames that have been checked already
 	 * @throws IOException
 	 * @see #findResources(String)
 	 * @see #findResource(String, ModuleClassLoader, Set)
 	 */
 	protected void findResources(final List<URL> result, final String name, final ModuleClassLoader requestor,
 	        Set<String> seenModules) throws IOException {
-		if ((seenModules != null) && seenModules.contains(getModule().getModuleId())) {
+		if ((seenModules != null) && seenModules.contains(getModule().getPackageName())) {
 			return;
 		}
 		for (Enumeration<URL> enm = super.findResources(name); enm.hasMoreElements();) {
@@ -904,10 +904,10 @@ public class ModuleClassLoader extends URLClassLoader {
 		if (seenModules == null) {
 			seenModules = new HashSet<String>();
 		}
-		seenModules.add(getModule().getModuleId());
+		seenModules.add(getModule().getPackageName());
 		if (requiredModules != null) {
 			for (Module publicImport : requiredModules) {
-				if (seenModules.contains(publicImport.getModuleId()))
+				if (seenModules.contains(publicImport.getPackageName()))
 					continue;
 				
 				ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
@@ -919,7 +919,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		//look through the aware of modules.
 		for (Module publicImport : awareOfModules) {
-			if (seenModules.contains(publicImport.getModuleId()))
+			if (seenModules.contains(publicImport.getPackageName()))
 				continue;
 			
 			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
