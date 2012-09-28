@@ -13,8 +13,6 @@
  */
 package org.openmrs.module;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -429,31 +427,50 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * @param PackageName
-	 * @return Module matching package name or null if none
-	 * @deprecated
+	 * @param moduleId
+	 * @return Module matching module id or null if none
 	 * @see #getModuleByPackage(String)
+	 * @should get a loaded module with a matching module id
+	 * @should fail if there are multiple loaded modules matching the module id
 	 */
-	@Deprecated
 	public static Module getModuleById(String moduleId) {
+		List<Module> matchingModules = new ArrayList<Module>();
 		for (Module mod : getLoadedModulesMap().values()) {
-			if (mod.getPackageName().equals(moduleId))
-				return mod;
+			if (mod.getModuleId().equals(moduleId))
+				matchingModules.add(mod);
 		}
+		
+		if (matchingModules.size() > 1) {
+			throw new ModuleException("Found multiple loaded modules matching the id: " + moduleId
+			        + ", please use getModuleByPackage(String)");
+		} else if (matchingModules.size() == 1) {
+			return matchingModules.get(0);
+		}
+		
 		return null;
 	}
 	
 	/**
 	 * @param moduleId
-	 * @return Module matching package name, if it is started or null otherwise
-	 * @deprecated
+	 * @return Module matching the module id, if it is started or null otherwise
 	 * @see #getStartedModuleByPackage(String)
+	 * @should get a started module with a matching module id
+	 * @should fail if there are multiple started modules matching the module id
 	 */
 	public static Module getStartedModuleById(String moduleId) {
+		List<Module> matchingModules = new ArrayList<Module>();
 		for (Module mod : getStartedModulesMap().values()) {
-			if (mod.getPackageName().equals(moduleId))
-				return mod;
+			if (mod.getModuleId().equals(moduleId))
+				matchingModules.add(mod);
 		}
+		
+		if (matchingModules.size() > 1) {
+			throw new ModuleException("Found multiple started modules matching the id: " + moduleId
+			        + ", please use getStartedModuleByPackage(String)");
+		} else if (matchingModules.size() == 1) {
+			return matchingModules.get(0);
+		}
+		
 		return null;
 	}
 	
@@ -473,11 +490,7 @@ public class ModuleFactory {
 	 * @return Module matching module package or null if none
 	 */
 	public static Module getModuleByPackage(String modulePackage) {
-		for (Module mod : getLoadedModulesMap().values()) {
-			if (mod.getPackageName().equals(modulePackage))
-				return mod;
-		}
-		return null;
+		return getLoadedModulesMap().get(modulePackage);
 	}
 	
 	/**
@@ -910,7 +923,6 @@ public class ModuleFactory {
 	 * @return list of dependent modules that were stopped because this module was stopped. This
 	 *         will never be null.
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
 	        throws ModuleMustStartException {
 		

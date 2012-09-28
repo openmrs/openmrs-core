@@ -315,6 +315,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		ModuleFactory.getStartedModulesMap().clear();
 		Module module = new Module("For Unit Test");
 		module.setModuleId("ui.springmvc");
+		module.setPackageName("org.openmrs.module");
 		ModuleFactory.getStartedModulesMap().put(module.getModuleId(), module);
 		
 		String path = "/ui/springmvc/css/ui.css";
@@ -330,6 +331,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		ModuleFactory.getStartedModulesMap().clear();
 		Module module = new Module("For Unit Test");
 		module.setModuleId("ui");
+		module.setPackageName("org.openmrs.module");
 		ModuleFactory.getStartedModulesMap().put(module.getModuleId(), module);
 		
 		String path = "/ui/springmvc/css/ui.css";

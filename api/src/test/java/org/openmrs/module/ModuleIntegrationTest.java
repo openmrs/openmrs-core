@@ -27,6 +27,8 @@ import org.openmrs.test.StartModule;
         "org/openmrs/module/include/newmoduleiddemo-1.1-SNAPSHOT.omod" })
 public class ModuleIntegrationTest extends BaseContextSensitiveTest {
 	
+	private static final String DUPLICATE_MODULE_ID = "newmoduleiddemo";
+	
 	/**
 	 * Tests that 2 modules that have the same module id and different package names can be started
 	 */
@@ -36,7 +38,7 @@ public class ModuleIntegrationTest extends BaseContextSensitiveTest {
 		assertNotNull(newModuleServiceClass);
 		
 		ModuleClassLoader newmoduleiddemoClassLoader = (ModuleClassLoader) newModuleServiceClass.getClassLoader();
-		assertEquals("newmoduleiddemo", newmoduleiddemoClassLoader.getModule().getModuleId());
+		assertEquals(DUPLICATE_MODULE_ID, newmoduleiddemoClassLoader.getModule().getModuleId());
 		assertEquals("org.openmrs.module.newmoduleiddemo", newmoduleiddemoClassLoader.getModule().getPackageName());
 		
 		Class<?> duplicateModuleServiceClass = Context
@@ -44,7 +46,7 @@ public class ModuleIntegrationTest extends BaseContextSensitiveTest {
 		assertNotNull(duplicateModuleServiceClass);
 		
 		ModuleClassLoader duplicateiddemoClassLoader = (ModuleClassLoader) duplicateModuleServiceClass.getClassLoader();
-		assertEquals("newmoduleiddemo", duplicateiddemoClassLoader.getModule().getModuleId());
+		assertEquals(DUPLICATE_MODULE_ID, duplicateiddemoClassLoader.getModule().getModuleId());
 		assertEquals("org.openmrs.module.duplicate.newmoduleiddemo", duplicateiddemoClassLoader.getModule().getPackageName());
 		
 	}

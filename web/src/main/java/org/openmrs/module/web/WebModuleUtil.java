@@ -241,12 +241,12 @@ public class WebModuleUtil {
 					} else if (name.equals(mod.getModuleId() + "Context.xml")) {
 						String msg = "DEPRECATED: '" + name
 						        + "' should be named 'moduleApplicationContext.xml' now. Please update/upgrade. ";
-						throw new ModuleException(msg, mod.getModuleId());
+						throw new ModuleException(msg, mod.getPackageName());
 					}
 				}
 			}
 			catch (IOException io) {
-				log.warn("Unable to copy files from module " + mod.getModuleId() + " to the web layer", io);
+				log.warn("Unable to copy files from module " + mod.getPackageName() + " to the web layer", io);
 			}
 			finally {
 				if (jarFile != null) {
@@ -278,7 +278,7 @@ public class WebModuleUtil {
 					while (current != null) {
 						if ("allow".equals(current.getNodeName()) || "signatures".equals(current.getNodeName())
 						        || "init".equals(current.getNodeName())) {
-							((Element) current).setAttribute("moduleId", mod.getModuleId());
+							((Element) current).setAttribute("modulePackageName", mod.getPackageName());
 							outputRoot.appendChild(dwrmodulexml.importNode(current, true));
 						}
 						
@@ -338,7 +338,7 @@ public class WebModuleUtil {
 					mod.setStartupErrorMessage(msg, e);
 					
 					if (log.isWarnEnabled())
-						log.warn(msg + " for module: " + mod.getModuleId(), e);
+						log.warn(msg + " for module: " + mod.getPackageName(), e);
 					
 					try {
 						stopModule(mod, servletContext, true);
@@ -459,7 +459,7 @@ public class WebModuleUtil {
 			}
 			catch (Throwable t) {
 				log.warn("Unable to initialize servlet: ", t);
-				throw new ModuleException("Unable to initialize servlet: " + httpServlet, mod.getModuleId(), t);
+				throw new ModuleException("Unable to initialize servlet: " + httpServlet, mod.getPackageName(), t);
 			}
 			
 			// don't allow modules to overwrite servlets of other modules.
@@ -470,7 +470,7 @@ public class WebModuleUtil {
 				        + otherServletUsingSameName.getClass().getName();
 				throw new ModuleException("A servlet mapping with name " + name + " is already in use and pointing at: "
 				        + otherServletName + " from another installed module and this module is trying"
-				        + " to use that same name.  Either the module attempting to be installed (" + mod.getModuleId()
+				        + " to use that same name.  Either the module attempting to be installed (" + mod.getPackageName()
 				        + ") will not work or the other one will not.  Please consult the developers of these two"
 				        + " modules to sort this out.");
 			}
@@ -535,16 +535,16 @@ public class WebModuleUtil {
 			throw e;
 		}
 		catch (Exception e) {
-			throw new ModuleException("An error occurred initializing Filters for module: " + module.getModuleId(), e);
+			throw new ModuleException("An error occurred initializing Filters for module: " + module.getPackageName(), e);
 		}
 		moduleFilters.put(module, filters.values());
 		moduleFiltersByName.putAll(filters);
-		log.debug("Module: " + module.getModuleId() + " successfully loaded " + filters.size() + " filters.");
+		log.debug("Module: " + module.getPackageName() + " successfully loaded " + filters.size() + " filters.");
 		
 		// Load Filter Mappings
 		List<ModuleFilterMapping> modMappings = ModuleFilterMapping.retrieveFilterMappings(module);
 		moduleFilterMappings.addAll(modMappings);
-		log.debug("Module: " + module.getModuleId() + " successfully loaded " + modMappings.size() + " filter mappings.");
+		log.debug("Module: " + module.getPackageName() + " successfully loaded " + modMappings.size() + " filter mappings.");
 	}
 	
 	/**
@@ -575,7 +575,7 @@ public class WebModuleUtil {
 			catch (Exception e) {
 				log.warn("An error occurred while trying to destroy and remove module Filter.", e);
 			}
-			log.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
+			log.debug("Module: " + module.getPackageName() + " successfully unloaded " + filters.size() + " filters.");
 			moduleFilters.remove(module);
 			
 			for (Iterator<String> i = moduleFiltersByName.keySet().iterator(); i.hasNext();) {
@@ -762,15 +762,15 @@ public class WebModuleUtil {
 				
 				// loop over all of the children of the "dwr" tag
 				// and remove all "allow" and "signature" tags that have the
-				// same moduleId attr as the module being stopped
+				// same modulePackageName attr as the module being stopped
 				NodeList nodeList = outputRoot.getChildNodes();
 				int i = 0;
 				while (i < nodeList.getLength()) {
 					Node current = nodeList.item(i);
 					if ("allow".equals(current.getNodeName()) || "signatures".equals(current.getNodeName())) {
 						NamedNodeMap attrs = current.getAttributes();
-						Node attr = attrs.getNamedItem("moduleId");
-						if (attr != null && moduleId.equals(attr.getNodeValue())) {
+						Node attr = attrs.getNamedItem("modulePackageName");
+						if (attr != null && modulePackage.equals(attr.getNodeValue())) {
 							outputRoot.removeChild(current);
 						} else
 							i++;

@@ -934,21 +934,21 @@ public class ModuleUtil {
 		int ind = path.lastIndexOf('/');
 		if (ind <= 0) {
 			throw new IllegalArgumentException(
-			        "Input must be /packageName/resource. Input needs a / after the first character: " + path);
+			        "Input must be /moduleId/resource. Input needs a / after the first character: " + path);
 		}
-		String packageName = path.startsWith("/") ? path.substring(1, ind) : path.substring(0, ind);
-		packageName = packageName.replace('/', '.');
+		String moduleId = path.startsWith("/") ? path.substring(1, ind) : path.substring(0, ind);
+		moduleId = moduleId.replace('/', '.');
 		// iterate over progressively shorter module ids
-		//while (true) {
-		Module mod = ModuleFactory.getStartedModuleByPackage(packageName);
-		if (mod != null)
-			return mod;
-		// try the next shorter module id
-		//ind = packageName.lastIndexOf('.');
-		//if (ind < 0)
-		//break;
-		//packageName = packageName.substring(0, ind);
-		//}
+		while (true) {
+			Module mod = ModuleFactory.getStartedModuleById(moduleId);
+			if (mod != null)
+				return mod;
+			// try the next shorter module id
+			ind = moduleId.lastIndexOf('.');
+			if (ind < 0)
+				break;
+			moduleId = moduleId.substring(0, ind);
+		}
 		return null;
 	}
 	
