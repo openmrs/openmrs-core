@@ -100,13 +100,13 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		
 		Context.clearSession();
 		
-		ReportSchemaXml reportSchemaXmlFromDB = rs.getReportSchemaXml(1);
+		ReportSchemaXml reportSchemaXmlFromDB = rs.getReportSchemaXml(reportSchemaXml.getId());
 		
 		assertNotNull("The schema xml was not saved correctly, none found in the db", reportSchemaXmlFromDB);
 		
 		assertEquals(xml.toString().trim(), reportSchemaXmlFromDB.getXml().trim());
 		
-		assertEquals(new Integer(1), reportSchemaXmlFromDB.getReportSchemaId());
+		assertEquals(reportSchemaXml.getId(), reportSchemaXmlFromDB.getReportSchemaId());
 		
 		// assertTrue("The saved object and the actual object are not calling themselves equal", reportSchemaXml.equals(reportSchemaXmlFromDB));
 		
@@ -170,9 +170,9 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		ReportService rs = (ReportService) Context.getService(ReportService.class);
 		rs.saveReportSchemaXml(reportSchemaXml);
 		
-		ReportSchemaXml reportSchemaXmlFromDB = rs.getReportSchemaXml(2);
+		ReportSchemaXml reportSchemaXmlFromDB = rs.getReportSchemaXml(reportSchemaXml.getId());
 		// Get an extra object with the same id just to mess things up.
-		ReportSchemaXml reportSchemaXmlJodion = rs.getReportSchemaXml(2);
+		ReportSchemaXml reportSchemaXmlJodion = rs.getReportSchemaXml(1);
 		
 		//assertTrue("The saved object and the actual object are not calling themselves equal", reportSchemaXml.equals(reportSchemaXmlFromDB));
 		
