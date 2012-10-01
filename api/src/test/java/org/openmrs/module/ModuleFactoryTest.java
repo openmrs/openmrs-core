@@ -25,57 +25,53 @@ import org.openmrs.test.Verifies;
  * 
  */
 @SkipBaseSetup
-@StartModule({ "org/openmrs/module/include/newmoduleiddemo-1.0-SNAPSHOT.omod",
-		"org/openmrs/module/include/newmoduleiddemo-1.1-SNAPSHOT.omod" })
+@StartModule( { "org/openmrs/module/include/newmoduleiddemo-1.0-SNAPSHOT.omod",
+        "org/openmrs/module/include/newmoduleiddemo-1.1-SNAPSHOT.omod", "org/openmrs/module/include/dssmodule-1.44.omod" })
 public class ModuleFactoryTest extends BaseContextSensitiveTest {
-
+	
 	/**
 	 * @see {@link ModuleFactory#getModuleById(String)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should get a loaded module with a matching module id", method = "getModuleById(String)")
-	public void getModuleById_shouldGetALoadedModuleWithAMatchingModuleId()
-			throws Exception {
+	public void getModuleById_shouldGetALoadedModuleWithAMatchingModuleId() throws Exception {
 		final String moduleId = "dssmodule";
 		Module mod = ModuleFactory.getModuleById(moduleId);
 		Assert.assertNotNull(mod);
 		Assert.assertEquals(moduleId, mod.getModuleId());
 	}
-
+	
 	/**
 	 * @see {@link ModuleFactory#getStartedModuleById(String)}
 	 * 
 	 */
-	// @Test
+	@Test
 	@Verifies(value = "should get a started module with a matching module id", method = "getStartedModuleById(String)")
-	public void getStartedModuleById_shouldGetAStartedModuleWithAMatchingModuleId()
-			throws Exception {
+	public void getStartedModuleById_shouldGetAStartedModuleWithAMatchingModuleId() throws Exception {
 		final String moduleId = "dssmodule";
 		Module mod = ModuleFactory.getStartedModuleById(moduleId);
 		Assert.assertNotNull(mod);
 		Assert.assertEquals(moduleId, mod.getModuleId());
 	}
-
+	
 	/**
 	 * @see {@link ModuleFactory#getModuleById(String)}
 	 * 
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should fail if there are multiple loaded modules matching the module id", method = "getModuleById(String)")
-	public void getModuleById_shouldFailIfThereAreMultipleLoadedModulesMatchingTheModuleId()
-			throws Exception {
+	public void getModuleById_shouldFailIfThereAreMultipleLoadedModulesMatchingTheModuleId() throws Exception {
 		ModuleFactory.getModuleById("newmoduleiddemo");
 	}
-
+	
 	/**
 	 * @see {@link ModuleFactory#getStartedModuleById(String)}
 	 *      (expected=ModuleException.class)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should fail if there are multiple started modules matching the module id", method = "getStartedModuleById(String)")
-	public void getStartedModuleById_shouldFailIfThereAreMultipleStartedModulesMatchingTheModuleId()
-			throws Exception {
+	public void getStartedModuleById_shouldFailIfThereAreMultipleStartedModulesMatchingTheModuleId() throws Exception {
 		ModuleFactory.getStartedModuleById("newmoduleiddemo");
 	}
 }

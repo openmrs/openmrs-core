@@ -107,8 +107,7 @@ public class ModuleFactory {
 	 * Add a module to the list of openmrs modules
 	 * 
 	 * @param module
-	 * @param replaceIfExists unload a module that has the same packageName if one is loaded
-	 *            already
+	 * @param replaceIfExists unload a module that has the same packageName if one is loaded already
 	 * @return module the module that was loaded or if the module exists already with the same
 	 *         version, the old module
 	 */
@@ -427,11 +426,15 @@ public class ModuleFactory {
 	}
 	
 	/**
+	 * Finds a loaded module that matches the specified module id, throws a module Exception if
+	 * multiple modules, it is highly recommended to use {@link #getModuleByPackage(String)}
+	 * 
 	 * @param moduleId
 	 * @return Module matching module id or null if none
 	 * @see #getModuleByPackage(String)
 	 * @should get a loaded module with a matching module id
 	 * @should fail if there are multiple loaded modules matching the module id
+	 * @throws ModuleException
 	 */
 	public static Module getModuleById(String moduleId) {
 		List<Module> matchingModules = new ArrayList<Module>();
@@ -917,7 +920,8 @@ public class ModuleFactory {
 	 * Also calls module's {@link Activator#shutdown()}
 	 * 
 	 * @param mod module to stop
-	 * @param skipOverStartedProperty true if we don't want to set &lt;PackageName&gt;.started to false
+	 * @param skipOverStartedProperty true if we don't want to set &lt;PackageName&gt;.started to
+	 *            false
 	 * @param isFailedStartup true if this is being called as a cleanup because of a failed module
 	 *            startup
 	 * @return list of dependent modules that were stopped because this module was stopped. This
@@ -1224,7 +1228,7 @@ public class ModuleFactory {
 	 * @since 1.9
 	 * @return true if the module is started, false otherwise
 	 * @deprecated
-	 * @see 
+	 * @see
 	 */
 	@Deprecated
 	public static boolean isModuleStarted(String moduleId) {
@@ -1257,7 +1261,7 @@ public class ModuleFactory {
 	 * @throws ModuleException if this module isn't started or doesn't have a classloader
 	 * @see #getModuleClassLoader(Module)
 	 * @deprecated
-	 * @see 
+	 * @see
 	 */
 	@Deprecated
 	public static ModuleClassLoader getModuleClassLoader(String moduleId) throws ModuleException {

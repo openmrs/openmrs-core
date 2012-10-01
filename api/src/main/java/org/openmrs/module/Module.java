@@ -51,9 +51,13 @@ public final class Module {
 	
 	private String updateURL; // should be a URL to an update.rdf file
 	
-	private String updateVersion = null; // version obtained from the remote update.rdf file
+	private String updateVersion = null; // version obtained from the remote
 	
-	private String downloadURL = null; // will only be populated when the remote file is newer than the current module
+	// update.rdf file
+	
+	private String downloadURL = null; // will only be populated when the remote
+	
+	// file is newer than the current module
 	
 	private Activator activator;
 	
@@ -91,7 +95,8 @@ public final class Module {
 	
 	private boolean mandatory = Boolean.FALSE;
 	
-	// keep a reference to the file that we got this module from so we can delete
+	// keep a reference to the file that we got this module from so we can
+	// delete
 	// it if necessary
 	private File file = null;
 	
@@ -175,7 +180,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param activator the activator to set
+	 * @param activator
+	 *            the activator to set
 	 */
 	public void setActivator(Activator activator) {
 		this.activator = activator;
@@ -213,7 +219,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param moduleActivator the moduleActivator to set
+	 * @param moduleActivator
+	 *            the moduleActivator to set
 	 */
 	public void setModuleActivator(ModuleActivator moduleActivator) {
 		this.moduleActivator = moduleActivator;
@@ -227,7 +234,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param activatorName the activatorName to set
+	 * @param activatorName
+	 *            the activatorName to set
 	 */
 	public void setActivatorName(String activatorName) {
 		this.activatorName = activatorName;
@@ -241,7 +249,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param author the author to set
+	 * @param author
+	 *            the author to set
 	 */
 	public void setAuthor(String author) {
 		this.author = author;
@@ -255,7 +264,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param description the description to set
+	 * @param description
+	 *            the description to set
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -269,7 +279,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param name the name to set
+	 * @param name
+	 *            the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -283,15 +294,16 @@ public final class Module {
 	}
 	
 	/**
-	 * @param requireDatabaseVersion the requireDatabaseVersion to set
+	 * @param requireDatabaseVersion
+	 *            the requireDatabaseVersion to set
 	 */
 	public void setRequireDatabaseVersion(String requireDatabaseVersion) {
 		this.requireDatabaseVersion = requireDatabaseVersion;
 	}
 	
 	/**
-	 * This list of strings is just what is included in the config.xml file, the full package names:
-	 * e.g. org.openmrs.module.formentry
+	 * This list of strings is just what is included in the config.xml file, the
+	 * full package names: e.g. org.openmrs.module.formentry
 	 * 
 	 * @return the list of requiredModules
 	 */
@@ -300,9 +312,11 @@ public final class Module {
 	}
 	
 	/**
-	 * Convenience method to get the version of this given module that is required
+	 * Convenience method to get the version of this given module that is
+	 * required
 	 * 
-	 * @return the version of the given required module, or null if there are no version constraints
+	 * @return the version of the given required module, or null if there are no
+	 *         version constraints
 	 * @since 1.5
 	 * @should return null if no required modules exist
 	 * @should return null if no required module by given name exists
@@ -312,9 +326,11 @@ public final class Module {
 	}
 	
 	/**
-	 * This is a convenience method to set all the required modules without any version requirements
+	 * This is a convenience method to set all the required modules without any
+	 * version requirements
 	 * 
-	 * @param requiredModules the requiredModules to set for this module
+	 * @param requiredModules
+	 *            the requiredModules to set for this module
 	 * @should set modules when there is a null required modules map
 	 */
 	public void setRequiredModules(List<String> requiredModules) {
@@ -327,8 +343,9 @@ public final class Module {
 	}
 	
 	/**
-	 * @param requiredModulesMap <code>Map<String,String></code> of the <code>requiredModule</code>s
-	 *            to set
+	 * @param requiredModulesMap
+	 *            <code>Map<String,String></code> of the
+	 *            <code>requiredModule</code>s to set
 	 * @since 1.5
 	 */
 	public void setRequiredModulesMap(Map<String, String> requiredModulesMap) {
@@ -336,9 +353,9 @@ public final class Module {
 	}
 	
 	/**
-	 * Get the modules that are required for this module. The keys in this map are the module
-	 * package names. The values in the map are the required version. If no specific version is
-	 * required, it will be null.
+	 * Get the modules that are required for this module. The keys in this map
+	 * are the module package names. The values in the map are the required
+	 * version. If no specific version is required, it will be null.
 	 * 
 	 * @return a map from required module to the version that is required
 	 */
@@ -349,7 +366,8 @@ public final class Module {
 	/**
 	 * Sets the modules that this module is aware of.
 	 * 
-	 * @param awareOfModulesMap <code>Map<String,String></code> of the
+	 * @param awareOfModulesMap
+	 *            <code>Map<String,String></code> of the
 	 *            <code>awareOfModulesMap</code>s to set
 	 * @since 1.9
 	 */
@@ -358,8 +376,9 @@ public final class Module {
 	}
 	
 	/**
-	 * This list of strings is just what is included in the config.xml file, the full package names:
-	 * e.g. org.openmrs.module.formentry, for the modules that this module is aware of.
+	 * This list of strings is just what is included in the config.xml file, the
+	 * full package names: e.g. org.openmrs.module.formentry, for the modules
+	 * that this module is aware of.
 	 * 
 	 * @since 1.9
 	 * @return the list of awareOfModules
@@ -376,7 +395,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param requireOpenmrsVersion the requireOpenmrsVersion to set
+	 * @param requireOpenmrsVersion
+	 *            the requireOpenmrsVersion to set
 	 */
 	public void setRequireOpenmrsVersion(String requireOpenmrsVersion) {
 		this.requireOpenmrsVersion = requireOpenmrsVersion;
@@ -397,7 +417,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param moduleId the module id to set
+	 * @param moduleId
+	 *            the module id to set
 	 */
 	public void setModuleId(String moduleId) {
 		this.moduleId = moduleId;
@@ -411,10 +432,19 @@ public final class Module {
 	}
 	
 	/**
-	 * @param packageName the packageName to set
+	 * @param packageName
+	 *            the packageName to set
 	 */
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
+	}
+	
+	/**
+	 * @return the module package name, with all . replaced with /
+	 * @since 1.10
+	 */
+	public String getModulePackageAsPath() {
+		return packageName == null ? null : packageName.replace('.', '/');
 	}
 	
 	/**
@@ -425,7 +455,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param version the version to set
+	 * @param version
+	 *            the version to set
 	 */
 	public void setVersion(String version) {
 		this.version = version;
@@ -439,7 +470,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param updateURL the updateURL to set
+	 * @param updateURL
+	 *            the updateURL to set
 	 */
 	public void setUpdateURL(String updateURL) {
 		this.updateURL = updateURL;
@@ -453,7 +485,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param downloadURL the downloadURL to set
+	 * @param downloadURL
+	 *            the downloadURL to set
 	 */
 	public void setDownloadURL(String downloadURL) {
 		this.downloadURL = downloadURL;
@@ -467,7 +500,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param updateVersion the updateVersion to set
+	 * @param updateVersion
+	 *            the updateVersion to set
 	 */
 	public void setUpdateVersion(String updateVersion) {
 		this.updateVersion = updateVersion;
@@ -484,20 +518,22 @@ public final class Module {
 	}
 	
 	/**
-	 * @param extensions the extensions to set
+	 * @param extensions
+	 *            the extensions to set
 	 */
 	public void setExtensions(List<Extension> extensions) {
 		this.extensions = extensions;
 	}
 	
 	/**
-	 * A map of pointid to classname. The classname is expected to be a class that extends the
-	 * {@link Extension} object. <br/>
+	 * A map of pointid to classname. The classname is expected to be a class
+	 * that extends the {@link Extension} object. <br/>
 	 * <br/>
-	 * This map will be expanded into full Extension objects the first time {@link #getExtensions()}
-	 * is called
+	 * This map will be expanded into full Extension objects the first time
+	 * {@link #getExtensions()} is called
 	 * 
-	 * @param map from pointid to classname
+	 * @param map
+	 *            from pointid to classname
 	 * @see ModuleFileParser
 	 */
 	public void setExtensionNames(IdentityHashMap<String, String> map) {
@@ -509,9 +545,11 @@ public final class Module {
 	}
 	
 	/**
-	 * Expand the temporary extensionNames map of pointid-classname to full pointid-classobject. <br>
-	 * This has to be done after the fact because when the pointid-classnames are parsed, the
-	 * module's objects aren't fully realized yet and so not all classes can be loaded. <br/>
+	 * Expand the temporary extensionNames map of pointid-classname to full
+	 * pointid-classobject. <br>
+	 * This has to be done after the fact because when the pointid-classnames
+	 * are parsed, the module's objects aren't fully realized yet and so not all
+	 * classes can be loaded. <br/>
 	 * <br/>
 	 * 
 	 * @return a list of full Extension objects
@@ -560,7 +598,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param advicePoints the advicePoints to set
+	 * @param advicePoints
+	 *            the advicePoints to set
 	 */
 	public void setAdvicePoints(List<AdvicePoint> advicePoints) {
 		this.advicePoints = advicePoints;
@@ -575,8 +614,8 @@ public final class Module {
 	}
 	
 	/**
-	 * Gets a mapping from locale to properties used by this module. The locales are represented as
-	 * a string containing language and country codes.
+	 * Gets a mapping from locale to properties used by this module. The locales
+	 * are represented as a string containing language and country codes.
 	 * 
 	 * @return mapping from locales to properties
 	 */
@@ -587,7 +626,8 @@ public final class Module {
 	/**
 	 * Sets the map from locale to properties used by this module.
 	 * 
-	 * @param messages map of locale to properties for that locale
+	 * @param messages
+	 *            map of locale to properties for that locale
 	 */
 	public void setMessages(Map<String, Properties> messages) {
 		this.messages = messages;
@@ -642,9 +682,10 @@ public final class Module {
 	}
 	
 	/**
-	 * This property is set by the module owner to tell OpenMRS that once it is installed, it must
-	 * always startup. This is intended for modules with system-critical monitoring or security
-	 * checks that should always be in place.
+	 * This property is set by the module owner to tell OpenMRS that once it is
+	 * installed, it must always startup. This is intended for modules with
+	 * system-critical monitoring or security checks that should always be in
+	 * place.
 	 * 
 	 * @return true if this module has said that it should always start up
 	 */
@@ -657,8 +698,9 @@ public final class Module {
 	}
 	
 	/**
-	 * This is a convenience method to know whether this module is core to OpenMRS. A module is
-	 * 'core' when this module is essentially part of the core code and must exist at all times
+	 * This is a convenience method to know whether this module is core to
+	 * OpenMRS. A module is 'core' when this module is essentially part of the
+	 * core code and must exist at all times
 	 * 
 	 * @return true if this is an OpenMRS core module
 	 * @see {@link ModuleConstants#CORE_MODULES}
@@ -679,12 +721,15 @@ public final class Module {
 	}
 	
 	/**
-	 * Add the given exceptionMessage and throwable as the startup error for this module. This
-	 * method loops over the stacktrace and adds the detailed message
+	 * Add the given exceptionMessage and throwable as the startup error for
+	 * this module. This method loops over the stacktrace and adds the detailed
+	 * message
 	 * 
-	 * @param exceptionMessage optional. the default message to show on the first line of the error
-	 *            message
-	 * @param t throwable stacktrace to include in the error message
+	 * @param exceptionMessage
+	 *            optional. the default message to show on the first line of the
+	 *            error message
+	 * @param t
+	 *            throwable stacktrace to include in the error message
 	 */
 	public void setStartupErrorMessage(String exceptionMessage, Throwable t) {
 		if (t == null)
@@ -701,7 +746,8 @@ public final class Module {
 		sb.append(t.getMessage());
 		sb.append("\n");
 		
-		// loop over and append all stacktrace elements marking the "openmrs" ones 
+		// loop over and append all stacktrace elements marking the "openmrs"
+		// ones
 		for (StackTraceElement traceElement : t.getStackTrace()) {
 			if (traceElement.getClassName().contains("openmrs"))
 				sb.append(" ** ");
