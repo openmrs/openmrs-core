@@ -1549,4 +1549,29 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(obs);
 		assertEquals(obs, obsSaved.getPreviousVersion());
 	}
+	
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 * @verifies set void reason message equal to changeMessage
+	 */
+	@Test
+	public void saveObs_shouldSetVoidReasonMessageToChangeMessage() throws Exception {
+		
+		// Set changeMessage arg to saveObs() method - should equal void reason on new Obs
+		String changeMessage = "Testing TRUNK-3701";
+		
+		int obsId = 7;
+		ObsService obsService = Context.getObsService();
+		Obs obs = obsService.getObs(obsId);
+		
+		// change something on the obs and save it again
+		obs.setComment("Comment to make sure obs changes");
+		
+		Obs obsCreated = obsService.saveObs(obs, changeMessage);
+		obs = obsService.getObs(obsId); //refetch original (now voided) obs
+		
+		// check
+		assertEquals(changeMessage, obs.getVoidReason());
+	}
+	
 }

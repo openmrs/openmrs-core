@@ -2645,7 +2645,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Obs obs = Context.getObsService().getObs(7);
 		obs.setEncounter(null);
 		obs.setComment("this observation is for testing the merge");
-		Context.getObsService().saveObs(obs, "");
+		Context.getObsService().saveObs(obs, "Reason cannot be blank");
 		
 		//merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
