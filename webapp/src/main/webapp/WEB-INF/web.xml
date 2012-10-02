@@ -382,6 +382,11 @@
 		<!-- Don't use "load-on-startup" in case initial setup wizard is needed -->
 	</servlet>
 	
+	<servlet>
+		<servlet-name>jsp</servlet-name>
+		<servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+	</servlet>
+	
 	<!-- Gives access to servlets within modules -->
 	<servlet>
 		<servlet-name>module_servlet</servlet-name>
