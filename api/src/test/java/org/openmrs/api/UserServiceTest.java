@@ -13,10 +13,20 @@
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotSame;
 import static org.openmrs.test.TestUtil.containsId;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -1148,8 +1158,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
     @Test
     public void saveUserProperties_shouldRemoveAllExistingPropertiesAndAssignNewProperties() throws Exception {
-
-
         executeDataSet(XML_FILENAME);
 
         final UserService userService = Context.getUserService();
