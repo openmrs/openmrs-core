@@ -14,8 +14,6 @@
 package org.openmrs.api;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.openmrs.test.TestUtil.containsId;
 
 import java.util.*;
