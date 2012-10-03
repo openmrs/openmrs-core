@@ -22,8 +22,10 @@ import static org.openmrs.test.TestUtil.containsId;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -155,7 +157,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 		
 		List<User> allUsers = userService.getAllUsers();
-		assertEquals(10, allUsers.size());
+		assertEquals(11, allUsers.size());
 		
 		// there should still only be the one patient we created in the xml file
 		Cohort allPatientsSet = Context.getPatientSetService().getAllPatients();
@@ -515,7 +517,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getAllUsers_shouldNotContainsAnyDuplicateUsers() throws Exception {
 		executeDataSet(XML_FILENAME);
 		List<User> users = Context.getUserService().getAllUsers();
-		Assert.assertEquals(11, users.size());
+		Assert.assertEquals(12, users.size());
 		// TODO Need to test with duplicate data in the dataset (not sure if that's possible)
 		
 	}
@@ -1099,8 +1101,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This is a regression test for TRUNK-2108
-	 * <br/>
+	 * This is a regression test for TRUNK-2108 <br/>
+	 * 
 	 * @see UserService#getUsers(String,List,boolean)
 	 * @verifies not fail if roles are searched but name is empty
 	 */
@@ -1126,4 +1128,58 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(3, Context.getUserService().getUsers(null, roles, true, null, null).size());
 	}
 	
+	@Test
+	public void saveUserProperty_shouldAddNewPropertyToExistingUserProperties() throws Exception {
+		executeDataSet(XML_FILENAME);
+		
+		final UserService userService = Context.getUserService();
+		
+		//  retrieve a user who has UserProperties
+		User user = userService.getUser(5511);
+		
+		// Authenticate the test  user so that Context.getAuthenticatedUser() method returns above user
+		Context.authenticate(user.getUsername(), "testUser1234");
+		
+		final int numberOfUserProperties = user.getUserProperties().size();
+		assertEquals(1, user.getUserProperties().size());
+		final String USER_PROPERTY_KEY = "test-key";
+		final String USER_PROPERTY_VALUE = "test-value";
+		
+		User updatedUser = userService.saveUserProperty(USER_PROPERTY_KEY, USER_PROPERTY_VALUE);
+		
+		assertNotNull(updatedUser.getUserProperty(USER_PROPERTY_KEY));
+		assertEquals(USER_PROPERTY_VALUE, updatedUser.getUserProperty(USER_PROPERTY_KEY));
+		//make sure that properties count is incremented by one
+		assertEquals((numberOfUserProperties + 1), updatedUser.getUserProperties().size());
+		
+	}
+	
+	@Test
+	public void saveUserProperties_shouldRemoveAllExistingPropertiesAndAssignNewProperties() throws Exception {
+		executeDataSet(XML_FILENAME);
+		
+		final UserService userService = Context.getUserService();
+		
+		//  retrieve a user who has UserProperties
+		User user = userService.getUser(5511);
+		assertEquals(1, user.getUserProperties().size());
+		// Authenticate the test  user so that Context.getAuthenticatedUser() method returns above user
+		Context.authenticate(user.getUsername(), "testUser1234");
+		final String USER_PROPERTY_KEY_1 = "test-key1";
+		final String USER_PROPERTY_VALUE_1 = "test-value1";
+		final String USER_PROPERTY_KEY_2 = "test-key2";
+		final String USER_PROPERTY_VALUE_2 = "test-value2";
+		Map<String, String> propertiesMap = new HashMap<String, String>();
+		propertiesMap.put(USER_PROPERTY_KEY_1, USER_PROPERTY_VALUE_1);
+		propertiesMap.put(USER_PROPERTY_KEY_2, USER_PROPERTY_VALUE_2);
+		propertiesMap = Collections.unmodifiableMap(propertiesMap);
+		User updatedUser = userService.saveUserProperties(propertiesMap);
+		
+		//we should have only the new properties
+		assertEquals(2, updatedUser.getUserProperties().size());
+		
+		//Verify that the new properties were saved
+		assertEquals(USER_PROPERTY_VALUE_1, updatedUser.getUserProperty(USER_PROPERTY_KEY_1));
+		assertEquals(USER_PROPERTY_VALUE_2, updatedUser.getUserProperty(USER_PROPERTY_KEY_2));
+	}
 }
