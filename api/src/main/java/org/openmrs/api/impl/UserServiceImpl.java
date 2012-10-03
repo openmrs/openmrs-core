@@ -13,13 +13,7 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -639,6 +633,29 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public User saveUserProperty(String key, String value) {
+		User user = Context.getAuthenticatedUser();
+		if (user == null) {
+			throw new APIException("No Authenticated user found");
+		}
+		user.setUserProperty(key, value);
+		return dao.saveUser(user, null);
+	}
+	
+	@Override
+	public User saveUserProperties(Map<String, String> properties) {
+		User user = Context.getAuthenticatedUser();
+		if (user == null) {
+			throw new APIException("No Authenticated user found");
+		}
+		user.getUserProperties().clear();
+		for (String key : properties.keySet()) {
+			user.setUserProperty(key, properties.get(key));
+		}
+		return dao.saveUser(user, null);
 	}
 	
 }
