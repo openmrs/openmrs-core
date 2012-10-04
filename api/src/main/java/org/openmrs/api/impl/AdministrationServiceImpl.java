@@ -1224,6 +1224,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Override
 	public void validate(Object object, Errors errors) throws APIException {
+		if (object == null)
+			throw new APIException(Context.getMessageSourceService().getMessage("error.null"));
+		
 		dao.validate(object, errors);
 	}
 	
