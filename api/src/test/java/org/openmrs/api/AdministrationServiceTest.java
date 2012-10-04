@@ -35,6 +35,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+
 /**
  * TODO clean up and finish this test class. Should test all methods in the
  * {@link AdministrationService}
@@ -681,5 +684,16 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue("en_GB", searchLocales.contains(new Locale("en", "GB")));
 		Assert.assertTrue("en_US", searchLocales.contains(new Locale("en", "US")));
 		Assert.assertFalse("pl", searchLocales.contains(new Locale("pl")));
+	}
+	
+	/**
+	 * @see AdministrationService#validate(Object,Errors)
+	 * @verifies throws APIException if the input is null
+	 */
+	
+	@Test(expected = APIException.class)
+	public void validate_shouldThrowThrowAPIExceptionIfTheInputIsNull() throws Exception {
+		BindException errors = new BindException(new Object(), "");
+		Context.getAdministrationService().validate(null, errors);
 	}
 }
