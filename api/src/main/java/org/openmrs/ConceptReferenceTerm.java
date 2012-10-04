@@ -48,6 +48,19 @@ public class ConceptReferenceTerm extends BaseOpenmrsMetadata implements java.io
 	}
 	
 	/**
+	 * Convenience constructor with the required fields filled in
+	 * 
+	 * @param source the ConceptSource belongs in
+	 * @param code the code within that concept
+	 * @param name the user readable name of this term
+	 */
+	public ConceptReferenceTerm(ConceptSource source, String code, String name) {
+		this.conceptSource = source;
+		this.code = code;
+		setName(name);
+	}
+	
+	/**
 	 * @return the conceptReferenceTermId
 	 */
 	public Integer getConceptReferenceTermId() {

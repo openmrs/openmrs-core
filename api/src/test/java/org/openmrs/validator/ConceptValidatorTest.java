@@ -332,6 +332,30 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies not fail if a term has two new mappings on it
+	 */
+	@Test
+	public void validate_shouldNotFailIfATermHasTwoNewMappingsOnIt() throws Exception {
+		Concept concept = new Concept();
+		ConceptService cs = Context.getConceptService();
+		concept.addName(new ConceptName("my name", Context.getLocale()));
+		ConceptReferenceTerm newTerm = new ConceptReferenceTerm(cs.getConceptSource(1), "1234", "term one two three four");
+		ConceptMap map1 = new ConceptMap(newTerm, cs.getConceptMapType(1));
+		concept.addConceptMapping(map1);
+		ConceptReferenceTerm newTermTwo = new ConceptReferenceTerm(cs.getConceptSource(1), "12345",
+		        "term one two three four five");
+		ConceptMap map2 = new ConceptMap(newTermTwo, cs.getConceptMapType(1));
+		concept.addConceptMapping(map2);
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		
+		//the second mapping should be rejected
+		Assert.assertEquals(false, errors.hasFieldErrors("conceptMappings[1]"));
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
 	 * @verifies fail if there is a duplicate unretired concept name in the same locale different than the system locale
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
