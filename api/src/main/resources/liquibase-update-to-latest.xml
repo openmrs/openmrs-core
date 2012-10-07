@@ -7353,7 +7353,7 @@
 
     <changeSet id="20121007-orders_urgency" author="djazayeri">
         <preConditions onFail="MARK_RAN">
-            <not><columnExists tableName="orders" columnName="urgency"/></not>
+            <not><columnExists tableName="orders" columnName="urgency" defaultValue="ROUTINE" /></not>
         </preConditions>
         <comment>Adding urgency column to orders table</comment>
         <addColumn tableName="orders">
