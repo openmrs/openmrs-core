@@ -7362,6 +7362,11 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="20121007-test_order_laterality" author="djazayeri">
+        <comment>Changing test_order.laterality to be a varchar</comment>
+        <modifyDataType tableName="test_order" columnName="laterality" newDataType="varchar(20)"/>
+    </changeSet>
 	
 </databaseChangeLog>
 
