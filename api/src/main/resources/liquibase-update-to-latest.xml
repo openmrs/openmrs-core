@@ -7350,6 +7350,18 @@
 			referencedTableName="orders" referencedColumnNames="order_id" />
 
 	</changeSet>
+
+    <changeSet id="20121007-orders_urgency" author="djazayeri">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="urgency"/></not>
+        </preConditions>
+        <comment>Adding urgency column to orders table</comment>
+        <addColumn tableName="orders">
+            <column name="urgency" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
 	
 </databaseChangeLog>
 

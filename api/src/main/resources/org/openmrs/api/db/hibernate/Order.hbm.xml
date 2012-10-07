@@ -79,6 +79,12 @@
 			</type>
 		</property>
 
+        <property name="urgency" column="urgency" length="50" not-null="true">
+            <type name="org.openmrs.util.HibernateEnumType">
+                <param name="enumClassName">org.openmrs.Order$Urgency</param>
+            </type>
+        </property>
+
 		<joined-subclass name="DrugOrder" table="drug_order" extends="Order" lazy="false">
 			<key column="order_id" not-null="true" on-delete="cascade" />
 	    
