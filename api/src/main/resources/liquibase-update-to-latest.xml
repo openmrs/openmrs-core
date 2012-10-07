@@ -6361,4 +6361,36 @@
 		</comment>
 		<dropNotNullConstraint tableName="provider" columnName="identifier" columnDataType="varchar(255)" />
 	</changeSet>
+
+    <changeSet id="20121007-orders_urgency" author="djazayeri">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="urgency" /></not>
+        </preConditions>
+        <comment>Adding urgency column to orders table</comment>
+        <addColumn tableName="orders">
+            <column name="urgency" type="varchar(50)" defaultValue="ROUTINE">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20120503-djmod" author="dkayiwa and djazayeri">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="test_order" />
+            </not>
+        </preConditions>
+        <comment>Create test_order table</comment>
+        <createTable tableName="test_order">
+            <column name="order_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="laterality" type="varchar(20)" />
+            <column name="clinical_history" type="text" />
+        </createTable>
+        <addForeignKeyConstraint constraintName="test_order_order_id_fk"
+                                 baseTableName="test_order" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="order_id" />
+    </changeSet>
+
 </databaseChangeLog>
