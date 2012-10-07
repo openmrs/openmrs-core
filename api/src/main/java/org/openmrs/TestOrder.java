@@ -18,7 +18,7 @@ package org.openmrs;
  * This is a type of order that adds tests specific attributes like: laterality,
  * clinical history, etc.
  *
- * @since 1.9
+ * @since 1.9.2, 1.10
  */
 public class TestOrder extends Order {
 	

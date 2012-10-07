@@ -34,8 +34,11 @@ import org.apache.commons.logging.LogFactory;
 public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 4334343L;
-	
-	public enum Urgency {
+
+    /**
+     * @since 1.9.2, 1.10
+     */
+    public enum Urgency {
 		ROUTINE, STAT
 	}
 	
