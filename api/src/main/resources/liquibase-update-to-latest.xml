@@ -6385,12 +6385,16 @@
             <column name="order_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" />
             </column>
+            <column name="specimen_source" type="int" />
             <column name="laterality" type="varchar(20)" />
             <column name="clinical_history" type="text" />
         </createTable>
         <addForeignKeyConstraint constraintName="test_order_order_id_fk"
                                  baseTableName="test_order" baseColumnNames="order_id"
                                  referencedTableName="orders" referencedColumnNames="order_id" />
+        <addForeignKeyConstraint constraintName="test_order_specimen_source_fk"
+                                 baseTableName="test_order" baseColumnNames="specimen_source"
+                                 referencedTableName="concept" referencedColumnNames="concept_id" />
     </changeSet>
 
 </databaseChangeLog>

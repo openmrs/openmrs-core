@@ -27,6 +27,8 @@ public class TestOrder extends Order {
 	}
 	
 	public static final long serialVersionUID = 1L;
+
+    private Concept specimenSource;
 	
 	private Laterality laterality;
 	
@@ -37,8 +39,22 @@ public class TestOrder extends Order {
 	 */
 	public TestOrder() {
 	}
-	
-	/**
+
+    /**
+     * @return the specimenSource
+     */
+    public Concept getSpecimenSource() {
+        return specimenSource;
+    }
+
+    /**
+     * @param specimenSource the specimenSource to set
+     */
+    public void setSpecimenSource(Concept specimenSource) {
+        this.specimenSource = specimenSource;
+    }
+
+    /**
 	 * Gets the laterality.
 	 *
 	 * @return the laterality.

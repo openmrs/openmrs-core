@@ -100,6 +100,10 @@
 
             <key column="order_id" not-null="true" on-delete="cascade" />
 
+            <many-to-one name="specimenSource" class="org.openmrs.Concept">
+                <column name="specimen_source" />
+            </many-to-one>
+
             <property name="laterality" column="laterality" length="20" not-null="false">
                 <type name="org.openmrs.util.HibernateEnumType">
                     <param name="enumClassName">org.openmrs.TestOrder$Laterality</param>
