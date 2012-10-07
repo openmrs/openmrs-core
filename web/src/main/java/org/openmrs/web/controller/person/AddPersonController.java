@@ -15,6 +15,7 @@ package org.openmrs.web.controller.person;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -142,14 +143,24 @@ public class AddPersonController extends SimpleFormController {
 				
 				Integer d = null;
 				birthdate = birthdate.trim();
-				
-				String birthyear = "";
-				if (birthdate.length() > 6)
-					birthyear = birthdate.substring(6); //parse out the year. assuming XX-XX-XXXX
-					
 				age = age.trim();
+				int birthyear = -1;
 				
-				if (birthyear.length() > 3)
+				try {
+					//Do these if there's a value in the birthdate string
+					if (birthdate.length() > 0) {
+						Date birthdateFormatted = (Date) Context.getDateFormat().parse(birthdate);
+						Calendar calender = Calendar.getInstance();
+						calender.setTime(birthdateFormatted);
+						birthyear = calender.get(Calendar.YEAR);
+					}
+				}
+				catch (ParseException e) {
+					log.debug("Parse exception occurred : " + e);
+				}
+				
+				// -1 means the birth-year has not defined.
+				if (birthyear != -1)
 					d = Integer.valueOf(birthyear);
 				else if (age.length() > 0) {
 					Calendar c = Calendar.getInstance();
