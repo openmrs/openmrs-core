@@ -64,7 +64,7 @@
 							</c:otherwise>
 						</c:choose>
 					</td>
-					<td valign="top" rowspan="2"><input type="button" align="right" value='<openmrs:message code="general.remove" />' class="closeButton" onkeyup="edited(); remove(this)" /> </td> 
+					<td valign="top" rowspan="2"><input type="button" align="right" value='<openmrs:message code="general.remove" />' class="closeButton" onclick="edited(); remove(this)" /> </td> 
 					<td id="message" valign="top" rowspan="2"></td>
 				</tr>
 				<tr class="${status.index % 2 == 0 ? 'evenRow' : 'oddRow' }">
