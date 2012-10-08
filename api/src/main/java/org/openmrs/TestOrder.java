@@ -27,7 +27,7 @@ public class TestOrder extends Order {
 	
 	public static final long serialVersionUID = 1L;
 	
-	private Integer specimenSource;
+	private Concept specimenSource;
 	
 	private Laterality laterality;
 	
@@ -38,22 +38,22 @@ public class TestOrder extends Order {
 	 */
 	public TestOrder() {
 	}
-
+	
 	/**
 	 * Gets the specimen source.
 	 *
 	 * @return the specimen source.
 	 */
-	public Integer getSpecimenSource() {
+	public Concept getSpecimenSource() {
 		return specimenSource;
 	}
-
+	
 	/**
 	 * Sets the specimen source.
 	 * 
 	 * @param specimenSource the specimen source to set.
 	 */
-	public void setSpecimenSource(Integer specimenSource) {
+	public void setSpecimenSource(Concept specimenSource) {
 		this.specimenSource = specimenSource;
 	}
 	
@@ -61,7 +61,7 @@ public class TestOrder extends Order {
 	 * Gets the laterality.
 	 * 
 	 * @return the laterality.
-     * @since 1.10
+	 * @since 1.10
 	 */
 	public Laterality getLaterality() {
 		return laterality;
@@ -71,7 +71,7 @@ public class TestOrder extends Order {
 	 * Sets the laterality.
 	 * 
 	 * @param laterality the laterality to set.
-     * @since 1.10
+	 * @since 1.10
 	 */
 	public void setLaterality(Laterality laterality) {
 		this.laterality = laterality;
@@ -95,17 +95,4 @@ public class TestOrder extends Order {
 		this.clinicalHistory = clinicalHistory;
 	}
 	
-	/**
-	 * @see org.openmrs.Order#getId()
-	 */
-	public Integer getId() {
-		return getOrderId();
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 */
-	public void setId(Integer id) {
-		setOrderId(id);
-	}
 }
