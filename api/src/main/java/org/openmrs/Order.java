@@ -35,6 +35,13 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 4334343L;
 	
+	/**
+	 * @since 1.9.2, 1.10
+	 */
+	public enum Urgency {
+		ROUTINE, STAT
+	}
+	
 	private static final Log log = LogFactory.getLog(Order.class);
 	
 	// Fields
@@ -68,6 +75,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private String accessionNumber;
 	
 	private String discontinuedReasonNonCoded;
+	
+	private Urgency urgency = Urgency.ROUTINE;
 	
 	// Constructors
 	
@@ -116,6 +125,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setVoidedBy(getVoidedBy());
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
+		target.setUrgency(getUrgency());
 		return target;
 	}
 	
@@ -441,4 +451,19 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		
 	}
 	
+	/**
+	 * @return the urgency
+	 * @since 1.9.2
+	 */
+	public Urgency getUrgency() {
+		return urgency;
+	}
+	
+	/**
+	 * @param urgency the urgency to set
+	 * @since 1.9.2
+	 */
+	public void setUrgency(Urgency urgency) {
+		this.urgency = urgency;
+	}
 }
