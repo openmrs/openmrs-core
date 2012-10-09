@@ -79,7 +79,9 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	private ApplicationContext applicationContext;
 	
-	private Boolean refreshingContext = new Boolean(false);
+	private boolean contextRefreshedCheck = true;
+	
+	private final Object contextRefreshedLock = new Object();
 	
 	/**
 	 * Static variable holding whether or not to use the system classloader. By default this is
@@ -686,16 +688,18 @@ public class ServiceContext implements ApplicationContextAware {
 		
 		// if the context is refreshing, wait until it is
 		// done -- otherwise a null service might be returned
-		synchronized (refreshingContext) {
-			if (refreshingContext.booleanValue())
-				try {
+		synchronized (contextRefreshedLock) {
+			try {
+				while (!contextRefreshedCheck) {
 					log.warn("Waiting to get service: " + cls + " while the context is being refreshed");
-					refreshingContext.wait();
+					contextRefreshedLock.wait();
 					log.warn("Finished waiting to get service " + cls + " while the context was being refreshed");
 				}
-				catch (InterruptedException e) {
-					log.warn("Refresh lock was interrupted", e);
-				}
+				
+			}
+			catch (InterruptedException e) {
+				log.warn("Refresh lock was interrupted", e);
+			}
 		}
 		
 		Object service = services.get(cls);
@@ -821,8 +825,8 @@ public class ServiceContext implements ApplicationContextAware {
 	 * getService to wait until <code>doneRefreshingContext</code> is called
 	 */
 	public void startRefreshingContext() {
-		synchronized (refreshingContext) {
-			refreshingContext = true;
+		synchronized (contextRefreshedLock) {
+			contextRefreshedCheck = false;
 		}
 	}
 	
@@ -831,9 +835,9 @@ public class ServiceContext implements ApplicationContextAware {
 	 * getService that were waiting because <code>startRefreshingContext</code> was called
 	 */
 	public void doneRefreshingContext() {
-		synchronized (refreshingContext) {
-			refreshingContext.notifyAll();
-			refreshingContext = false;
+		synchronized (contextRefreshedLock) {
+			contextRefreshedCheck = true;
+			contextRefreshedLock.notifyAll();
 		}
 	}
 	
@@ -846,7 +850,9 @@ public class ServiceContext implements ApplicationContextAware {
 	 *         doneRefreshingContext()
 	 */
 	public boolean isRefreshingContext() {
-		return refreshingContext.booleanValue();
+		synchronized (contextRefreshedLock) {
+			return !contextRefreshedCheck;
+		}
 	}
 	
 	/**
