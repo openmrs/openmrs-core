@@ -84,7 +84,9 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	private ApplicationContext applicationContext;
 	
-	private Integer refreshingContextCheck = new Integer(0);
+	private boolean refreshingContextCheck = false;
+	
+	private final Object refreshingContextLock = new Object();
 	
 	/**
 	 * Static variable holding whether or not to use the system classloader. By default this is
@@ -701,11 +703,11 @@ public class ServiceContext implements ApplicationContextAware {
 		
 		// if the context is refreshing, wait until it is
 		// done -- otherwise a null service might be returned
-		synchronized (refreshingContextCheck) {
-			if (refreshingContextCheck.intValue() == 1)
+		synchronized (refreshingContextLock) {
+			if (refreshingContextCheck)
 				try {
 					log.warn("Waiting to get service: " + cls + " while the context is being refreshed");
-					refreshingContextCheck.wait();
+					refreshingContextLock.wait();
 					log.warn("Finished waiting to get service " + cls + " while the context was being refreshed");
 				}
 				catch (InterruptedException e) {
@@ -842,8 +844,8 @@ public class ServiceContext implements ApplicationContextAware {
 	 * getService to wait until <code>doneRefreshingContext</code> is called
 	 */
 	public void startRefreshingContext() {
-		synchronized (refreshingContextCheck) {
-			refreshingContextCheck = 1;
+		synchronized (refreshingContextLock) {
+			refreshingContextCheck = true;
 		}
 	}
 	
@@ -852,9 +854,9 @@ public class ServiceContext implements ApplicationContextAware {
 	 * getService that were waiting because <code>startRefreshingContext</code> was called
 	 */
 	public void doneRefreshingContext() {
-		synchronized (refreshingContextCheck) {
-			refreshingContextCheck.notifyAll();
-			refreshingContextCheck = 0;
+		synchronized (refreshingContextLock) {
+			refreshingContextLock.notifyAll();
+			refreshingContextCheck = false;
 		}
 	}
 	
@@ -867,7 +869,9 @@ public class ServiceContext implements ApplicationContextAware {
 	 *         doneRefreshingContext()
 	 */
 	public boolean isRefreshingContext() {
-		return (refreshingContextCheck.intValue() == 1);
+		synchronized (refreshingContextLock) {
+			return refreshingContextCheck;
+		}
 	}
 	
 	/**
@@ -937,9 +941,9 @@ public class ServiceContext implements ApplicationContextAware {
 			@Override
 			public void run() {
 				try {
-					synchronized (refreshingContextCheck) {
+					synchronized (refreshingContextLock) {
 						//Need to wait for application context to finish refreshing otherwise we get into trouble.
-						refreshingContextCheck.wait();
+						refreshingContextLock.wait();
 					}
 					
 					Daemon.runStartupForService(openmrsService);
