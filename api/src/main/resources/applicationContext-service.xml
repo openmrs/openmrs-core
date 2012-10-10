@@ -260,6 +260,7 @@
 		<property name="administrationDAO"><ref bean="adminDAO"/></property>	
 		<property name="eventListeners"><ref bean="openmrsEventListeners"/></property>
 		<property name="globalLocaleList"><ref bean="globalLocaleList"/></property>
+		<property name="implementationIdHttpClient"><ref bean="implementationIdHttpClient"/></property>
 	</bean>
 	<bean id="datatypeServiceTarget" class="org.openmrs.api.impl.DatatypeServiceImpl">
 		<property name="dao"><ref bean="datatypeDAO"/></property>
@@ -771,6 +772,9 @@
 	<bean id="personMergeLogValidator" class="org.openmrs.validator.PersonMergeLogValidator" />
 	<bean id="conceptReferenceTermValidator" class="org.openmrs.validator.ConceptReferenceTermValidator" />
 	<bean id="conceptMapTypeValidator" class="org.openmrs.validator.ConceptMapTypeValidator" />
+    <bean id="implementationIdHttpClient" class="org.openmrs.util.HttpClient">
+        <constructor-arg name="url" value="http://resources.openmrs.org/tools/implementationid"/>
+    </bean>
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 	
