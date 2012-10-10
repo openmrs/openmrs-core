@@ -69,6 +69,7 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.HttpClient;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
@@ -91,6 +92,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * An always up-to-date collection of the allowed locales.
 	 */
 	private GlobalLocaleList globalLocaleList;
+	
+	private HttpClient implementationIdHttpClient;
 	
 	/**
 	 * Default empty constructor
@@ -945,7 +948,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		data.put("description", description);
 		data.put("passphrase", passphrase);
 		
-		String response = OpenmrsUtil.postToUrl(OpenmrsConstants.IMPLEMENTATION_ID_REMOTE_CONNECTION_URL, data);
+		String response = implementationIdHttpClient.post(data);
 		response = response.trim();
 		
 		if ("".equals(response)) {
@@ -1262,4 +1265,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		
 		return new ArrayList<Locale>(locales);
 	}
+	
+	@Override
+	public void setImplementationIdHttpClient(HttpClient implementationIdHttpClient) {
+		this.implementationIdHttpClient = implementationIdHttpClient;
+	}
+	
 }
