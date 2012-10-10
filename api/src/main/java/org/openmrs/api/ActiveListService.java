@@ -110,4 +110,15 @@ public interface ActiveListService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	public ActiveListItem voidActiveListItem(ActiveListItem item, String reason) throws APIException;
+	
+	/**
+	 * Completely removes an ActiveListItem from the database (not reversible)
+	 * 
+	 * @param item the ActiveListItem to completely remove from the database
+	 * @throws APIException
+	 * @should delete item from database
+	 * @since 1.10
+	 */
+	public ActiveListItem purgeActiveListItem(ActiveListItem item) throws APIException;
+	
 }

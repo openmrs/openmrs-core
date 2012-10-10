@@ -15,6 +15,7 @@ package org.openmrs.validator;
 
 import java.util.Date;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
@@ -65,7 +66,7 @@ public class EncounterValidator implements Validator {
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");
-		
+
 		if (obj == null || !(obj instanceof Encounter))
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Encounter.class);
 		
@@ -73,7 +74,7 @@ public class EncounterValidator implements Validator {
 		
 		if (encounter != null) {
 			ValidationUtils.rejectIfEmpty(errors, "patient", "Encounter.error.patient.required", "Patient is required");
-			if (encounter.getVisit() != null && !encounter.getVisit().getPatient().equals(encounter.getPatient())) {
+			if (encounter.getVisit() != null && !ObjectUtils.equals(encounter.getVisit().getPatient(), encounter.getPatient())) {
 				errors.rejectValue("visit", "Encounter.visit.patients.dontMatch",
 				    "The patient for the encounter and visit should be the same");
 			}
