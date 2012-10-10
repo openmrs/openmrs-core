@@ -19,7 +19,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	private PatientDAO dao = null;
 	
-	PatientService pService = null;
+	private PatientService pService = null;
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -221,6 +221,44 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		//if actually the search returned the matching patient
 		Patient actualPatient = dao.getPatients("*ca", null, identifierTypes, false, 0, null).get(0);
 		Assert.assertEquals(patient2, actualPatient);
+	}
+	
+	/**
+	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @verifies not return null excluding retired
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldNotReturnNullExcludingRetired() throws Exception {
+		Assert.assertNotNull(dao.getAllPatientIdentifierTypes(false));
+	}
+	
+	/**
+	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @verifies not return retired
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldNotReturnRetired() throws Exception {
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getAllPatientIdentifierTypes(false);
+		Assert.assertEquals("patientIdentifierTypes list should have 2 elements", 2, patientIdentifierTypes.size());
+	}
+	
+	/**
+	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @verifies not return null including retired
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldNotReturnNullIncludingRetired() throws Exception {
+		Assert.assertNotNull(dao.getAllPatientIdentifierTypes(true));
+	}
+	
+	/**
+	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @verifies return all
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldReturnAll() throws Exception {
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getAllPatientIdentifierTypes(true);
+		Assert.assertEquals("patientIdentifierTypes list should have 3 elements", 3, patientIdentifierTypes.size());
 	}
 	
 }
