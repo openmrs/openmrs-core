@@ -39,6 +39,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
+import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
@@ -747,4 +748,11 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should exclude not allowed locales
 	 */
 	public List<Locale> getSearchLocales() throws APIException;
+	
+	/**
+	 * Used by Spring to set the http client for accessing the openmrs implementation service
+	 *
+	 * @param implementationHttpClient The implementation http client
+	 */
+	public void setImplementationIdHttpClient(HttpClient implementationHttpClient);
 }

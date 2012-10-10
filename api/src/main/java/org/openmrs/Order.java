@@ -36,6 +36,10 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		ORDER, DISCONTINUE
 	}
 	
+	public enum Urgency {
+		ROUTINE, STAT
+	}
+	
 	private Integer orderId;
 	
 	private Patient patient;
@@ -88,6 +92,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private String discontinuedReason;
 	
 	private String accessionNumber;
+	
+	private Urgency urgency = Urgency.ROUTINE;
 	
 	// Constructors
 	
@@ -144,6 +150,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setOrderNumber(getOrderNumber());
 		target.setPreviousOrderNumber(getPreviousOrderNumber());
 		target.setOrderAction(getOrderAction());
+		target.setUrgency(getUrgency());
 		
 		return target;
 	}
@@ -538,6 +545,22 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setId(Integer id) {
 		setOrderId(id);
+	}
+	
+	/**
+	 * @return the urgency
+	 * @since 1.10
+	 */
+	public Urgency getUrgency() {
+		return urgency;
+	}
+	
+	/**
+	 * @param urgency the urgency to set
+	 * @since 1.10
+	 */
+	public void setUrgency(Urgency urgency) {
+		this.urgency = urgency;
 	}
 	
 	/**
