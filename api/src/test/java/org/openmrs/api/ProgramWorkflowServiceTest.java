@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -161,8 +162,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Context.getProgramWorkflowService().saveProgram(program);
 		
 		assertEquals("Failed to create program", numBefore + 1, Context.getProgramWorkflowService().getAllPrograms().size());
-		Program p = Context.getProgramWorkflowService().getProgramByName("COUGH SYRUP");
-		//System.out.println("TEST Program = " + p);
+		Program p = Context.getProgramWorkflowService().getProgramByName("TEST PROGRAM");
 		assertNotNull("Program is null", p);
 		assertNotNull("Workflows is null", p.getWorkflows());
 		assertEquals("Wrong number of workflows", 1, p.getWorkflows().size());
@@ -409,6 +409,20 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		
 		pp = pws.getPatientProgram(patientProgramId);
 		Assert.assertEquals(originalDateCompleted, pp.getDateCompleted());
+	}
+	
+	@Test
+	@Verifies(value = "should return program when name matches", method = "getProgramByName()")
+	public void getProgramByName_shouldReturnProgramWhenNameMatches() {
+		Program p = pws.getProgramByName("program name");
+		assertNotNull(p);
+	}
+	
+	@Test
+	@Verifies(value = "should return null when program does not exist with given name", method = "getProgramByName()")
+	public void getProgramByName_shouldReturnNullWhenNoProgramForGivenName() {
+		Program p = pws.getProgramByName("unexisting program");
+		assertNull(p);
 	}
 	
 	//	/**

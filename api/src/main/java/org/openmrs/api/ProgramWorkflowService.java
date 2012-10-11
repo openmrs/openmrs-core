@@ -97,6 +97,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param name the exact name of the program to match on
 	 * @return Program matching the <code>name</code> to Program.name
 	 * @throws APIException
+	 * @throws ProgramNameDuplicatedException when there are more than one program in the dB with the given name.
 	 * @should return program when name matches
 	 * @should return null when program does not exist with given name
 	 * @should fail when two programs found with same name

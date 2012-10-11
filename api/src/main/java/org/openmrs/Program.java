@@ -58,6 +58,11 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 		setProgramId(programId);
 	}
 	
+	/** Constructor with name */
+	public Program(String name) {
+		setName(name);
+	}
+	
 	// ******************
 	// Instance methods
 	// ******************

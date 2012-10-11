@@ -25,6 +25,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
@@ -93,6 +94,22 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 			criteria.add(Expression.eq("retired", false));
 		}
 		return criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getProgramsByName(java.lang.String)
+	 */
+	public List<Program> getProgramsByName(String programName, boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Program.class);
+		criteria.add(Restrictions.eq("name", programName));
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired", false));
+		}
+		
+		@SuppressWarnings("unchecked")
+		List<Program> list = criteria.list();
+		
+		return list;
 	}
 	
 	/**
