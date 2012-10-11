@@ -89,7 +89,7 @@
 			<key column="order_id" not-null="true" on-delete="cascade" />
 	    
 			<!-- bi-directional many-to-one association to Drug -->
-			<many-to-one name="drug" class="Drug" >
+			<many-to-one name="drug" class="Drug" not-null="false">
 				<column name="drug_inventory_id" />
 			</many-to-one>
     	
