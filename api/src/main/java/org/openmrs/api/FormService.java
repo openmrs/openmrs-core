@@ -176,6 +176,7 @@ public interface FormService extends OpenmrsService {
 	 * @should return unretired forms when retired equals false
 	 * @should return retired forms when retired equals true
 	 * @should return all forms including retired and unretired when retired is null
+	 * @should return forms containing all form fields in containingAllFormFields
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_FORMS)
