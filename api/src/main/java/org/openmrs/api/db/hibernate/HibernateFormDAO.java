@@ -14,7 +14,9 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -397,46 +399,51 @@ public class HibernateFormDAO implements FormDAO {
 	 * @param containingAllFormFields
 	 * @param fields
 	 * @return
-	 * @throws DAOException
 	 */
 	private Criteria getFormCriteria(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
 	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
-	        Collection<Field> fields) throws DAOException {
+	        Collection<Field> fields) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class, "form");
 		
 		if (partialName != null && !"".equals(partialName)) {
-			crit.add(Expression.or(Expression.like("name", partialName, MatchMode.START), Expression.like("name", " "
+			crit.add(Restrictions.or(Restrictions.like("name", partialName, MatchMode.START), Restrictions.like("name", " "
 			        + partialName, MatchMode.ANYWHERE)));
 		}
 		if (published != null)
-			crit.add(Expression.eq("published", published));
+			crit.add(Restrictions.eq("published", published));
 		
 		if (!encounterTypes.isEmpty())
-			crit.add(Expression.in("encounterType", encounterTypes));
+			crit.add(Restrictions.in("encounterType", encounterTypes));
 		
 		if (retired != null)
-			crit.add(Expression.eq("retired", retired));
+			crit.add(Restrictions.eq("retired", retired));
 		
 		// TODO junit test
 		if (!containingAnyFormField.isEmpty())
-			crit.add(Expression.in("formField", containingAnyFormField));
+			crit.add(Restrictions.in("formField", containingAnyFormField));
 		
-		// TODO junit test
 		//select * from form where len(containingallformfields) = (select count(*) from form_field ff where ff.form_id = form_id and form_field_id in (containingallformfields);
 		if (!containingAllFormFields.isEmpty()) {
-			DetachedCriteria detachedCrit = DetachedCriteria.forClass(FormField.class, "ff");
-			detachedCrit.setProjection(Projections.count("formFieldId"));
-			detachedCrit.add(Expression.eqProperty("ff.formId", "form.formId"));
 			
-			crit.add(Subqueries.eq(containingAllFormFields.size(), detachedCrit));
+			// Convert form field persistents to integers
+			Set<Integer> allFormFieldIds = new HashSet<Integer>();
+			for (FormField ff : containingAllFormFields) {
+				allFormFieldIds.add(ff.getFormFieldId());
+			}
+			DetachedCriteria subquery = DetachedCriteria.forClass(FormField.class, "ff");
+			subquery.setProjection(Projections.count("ff.formFieldId"));
+			subquery.add(Restrictions.eqProperty("ff.form", "form"));
+			subquery.add(Restrictions.in("ff.formFieldId", allFormFieldIds));
+			
+			crit.add(Subqueries.eq(Long.valueOf(containingAllFormFields.size()), subquery));
 		}
 		
 		// get all forms (dupes included) that have this field on them
 		if (!fields.isEmpty()) {
 			Criteria crit2 = crit.createCriteria("formFields", "ff");
-			crit2.add(Expression.eqProperty("ff.form.formId", "form.formId"));
-			crit2.add(Expression.in("ff.field", fields));
+			crit2.add(Restrictions.eqProperty("ff.form.formId", "form.formId"));
+			crit2.add(Restrictions.in("ff.field", fields));
 		}
 		
 		return crit;
