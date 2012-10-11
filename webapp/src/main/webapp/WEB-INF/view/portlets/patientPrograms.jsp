@@ -591,7 +591,7 @@
 				<td>
 					<c:forEach items="${model.programs}" var="p">
 						<table id="workflowSection${p.programId}" style="display:none;" class="workflowSection">
-							<c:forEach items="${p.allWorkflows}" var="wf">
+							<c:forEach items="${p.workflows}" var="wf">
 								<tr>
 									<th align="left"><openmrs:format concept="${wf.concept}"/></th>
 									<td>
