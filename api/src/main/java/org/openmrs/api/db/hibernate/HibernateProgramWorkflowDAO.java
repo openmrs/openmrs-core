@@ -96,6 +96,15 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getProgramsByName(java.lang.String)
+	 */
+	public List<Program> getProgramsByName(String programName) {
+		Query query = sessionFactory.getCurrentSession().createQuery("from Program p where p.name=:programName");
+		query.setParameter("programName", programName);
+		return query.list();
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.ProgramWorkflowDAO#findPrograms(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")

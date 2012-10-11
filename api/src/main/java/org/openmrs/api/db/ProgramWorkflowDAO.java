@@ -223,6 +223,15 @@ public interface ProgramWorkflowDAO {
 	public Program getProgramByUuid(String uuid);
 	
 	/**
+	 * Retrieves the Programs from the dB which have the given name.
+	 * @param name the name of the Programs to retrieve.
+     * @should return an empty list when there is no program in the dB with given name
+     * @should return only and exactly the programs with the given name
+	 * @return all Programs with the given name.
+	 */
+	public List<Program> getProgramsByName(String name);
+	
+	/**
 	 * Auto generated method comment
 	 * 
 	 * @param uuid
