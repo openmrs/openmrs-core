@@ -1948,9 +1948,9 @@ public class OpenmrsUtil {
 	 * @param urlString valid http url to post data to
 	 * @param dataToPost Map<String, String> of key value pairs to post to urlString
 	 * @return response from urlString after posting
-     * @deprecated use org.openmrs.util.HttpClient
+	 * @deprecated use org.openmrs.util.HttpClient
 	 */
-    @Deprecated
+	@Deprecated
 	public static String postToUrl(String urlString, Map<String, String> dataToPost) {
 		OutputStreamWriter wr = null;
 		BufferedReader rd = null;
