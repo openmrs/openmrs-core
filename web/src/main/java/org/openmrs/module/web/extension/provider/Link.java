@@ -28,6 +28,8 @@ public class Link {
 	
 	private Map<String, String> queryParameters;
 	
+	private Boolean strike;
+	
 	public Link() {
 	}
 	
@@ -69,6 +71,20 @@ public class Link {
 	
 	public void setQueryParameters(Map<String, String> queryParameters) {
 		this.queryParameters = queryParameters;
+	}
+	
+	/**
+	 * @since 1.10 
+	 */
+	public Boolean getStrike() {
+		return strike;
+	}
+	
+	/**
+	 * @since 1.10 
+	 */
+	public void setStrike(Boolean strike) {
+		this.strike = strike;
 	}
 	
 }
