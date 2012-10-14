@@ -228,6 +228,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				// conceptName
 				ConceptName clone = uuidClonedConceptNameMap.get(nameInDB.getUuid());
 				clone.setUuid(UUID.randomUUID().toString());
+				clone.setDateCreated(null);
+				clone.setCreator(null);
 				concept.addName(clone);
 			}
 		}
