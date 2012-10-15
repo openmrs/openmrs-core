@@ -177,6 +177,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should cascade save to child obs groups
 	 * @should cascade update to new child obs groups
 	 * @should link original and updated obs
+	 * @should set void reason message to changeMessage
 	 */
 	@Authorized( { PrivilegeConstants.ADD_OBS, PrivilegeConstants.EDIT_OBS })
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException;
