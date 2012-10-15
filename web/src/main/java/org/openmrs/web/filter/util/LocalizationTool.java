@@ -81,7 +81,7 @@ public class LocalizationTool extends ResourceTool {
 		Object msg = super.get(code, resourceNamePrefixes, locale);
 		//if code's translation is blank, use the english equivalent
 		if (msg == null || StringUtils.isBlank(msg.toString())) {
-			msg = super.get(code, resourceNamePrefixes, getDefaultResourceBundle().getLocale().toString());
+			msg = super.get(code, resourceNamePrefixes, Locale.ENGLISH.toString());
 		}
 		
 		return msg;
