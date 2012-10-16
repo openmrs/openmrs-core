@@ -285,6 +285,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			checkedLocales.add(locale);
 		}
 		
+		concept.setDateChanged(new Date());
+		concept.setChangedBy(Context.getAuthenticatedUser());
+		
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		if (errors.hasErrors())

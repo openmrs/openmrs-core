@@ -659,6 +659,28 @@ public interface EncounterService extends OpenmrsService {
 	        throws APIException;
 	
 	/**
+	 * Search for encounters by patient id, name or patient identifier and returns a specific number of
+	 * them from the specified starting position. If start and length are not specified, then all
+	 * matches are returned
+	 * 
+	 * @param query patient name or identifier
+	 * @param patientId the patient id
+	 * @param start beginning index for the batch
+	 * @param length number of encounters to return in the batch
+	 * @param includeVoided Specifies whether voided encounters should be included
+	 * @return list of encounters for the given patient based on batch settings
+	 * @throws APIException
+	 * @since 1.10
+	 * @should get all the unique encounters that match the specified parameter values
+	 * @should not return voided encounters if includeVoided is set to true
+	 * @should return empty list for empty query
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
+	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
+	        boolean includeVoided) throws APIException;
+	
+	/**
 	 * Get all encounters for a cohort of patients
 	 * 
 	 * @param patients Cohort of patients to search

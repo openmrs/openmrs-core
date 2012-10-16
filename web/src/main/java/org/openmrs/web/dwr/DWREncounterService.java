@@ -33,6 +33,21 @@ public class DWREncounterService {
 	private static final Log log = LogFactory.getLog(DWREncounterService.class);
 	
 	/**
+	 * Returns a list of encounters for patients with a matching patientId, name, identifier or encounterId if
+	 * phrase is a number.
+	 * 
+	 * @param phrase patient name or identifier
+	 * @param patientId the patient id
+	 * @param includeVoided Specifies if voided encounters should be included or not
+	 * @return list of the matching encounters
+	 * @throws APIException
+	 * @since 1.10
+	 */
+	public Vector findEncounters(String phrase, Integer patientId, boolean includeVoided) throws APIException {
+		return findBatchOfEncounters(phrase, patientId, includeVoided, null, null);
+	}
+	
+	/**
 	 * Returns a list of encounters for patients with a matching name, identifier or encounterId if
 	 * phrase is a number.
 	 * 
@@ -61,6 +76,25 @@ public class DWREncounterService {
 	 */
 	public Vector findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length)
 	        throws APIException {
+		return findBatchOfEncounters(phrase, null, includeVoided, null, null);
+	}
+	
+	/**
+	 * Returns a list of matching encounters (depending on values of start and length parameters) if
+	 * the length parameter is not specified, then all matches will be returned from the start index
+	 * if specified.
+	 * 
+	 * @param phrase patient name or identifier
+	 * @param patientId the patient id
+	 * @param includeVoided Specifies if voided encounters should be included or not
+	 * @param start the beginning index
+	 * @param length the number of matching encounters to return
+	 * @return list of the matching encounters
+	 * @throws APIException
+	 * @since 1.10
+	 */
+	public Vector findBatchOfEncounters(String phrase, Integer patientId, boolean includeVoided, Integer start,
+	        Integer length) throws APIException {
 		
 		// List to return
 		// Object type gives ability to return error strings
@@ -88,7 +122,7 @@ public class DWREncounterService {
 			if (phrase == null || phrase.equals("")) {
 				//TODO get all concepts for testing purposes?
 			} else {
-				encs.addAll(es.getEncounters(phrase, start, length, includeVoided));
+				encs.addAll(es.getEncounters(phrase, patientId, start, length, includeVoided));
 			}
 			
 			if (encs.size() == 0) {
