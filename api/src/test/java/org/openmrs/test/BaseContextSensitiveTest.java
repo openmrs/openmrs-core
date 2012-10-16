@@ -136,8 +136,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	private static boolean isBaseSetup;
 	
 	/**
-	 * Stores a user authenticated for running tests which allows to discover a situation when some test
-	 * authenticates as a different user and we need to revert to the original one
+	 * Stores a user authenticated for running tests which allows to discover a situation when some
+	 * test authenticates as a different user and we need to revert to the original one
 	 */
 	private User authenticatedUser;
 	
@@ -676,9 +676,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
 		sf.getCache().evictCollectionRegions();
 		sf.getCache().evictEntityRegions();
-		if (sf.getCurrentSession() != null) {
-			sf.getCurrentSession().clear();
-		}
 	}
 	
 	/**

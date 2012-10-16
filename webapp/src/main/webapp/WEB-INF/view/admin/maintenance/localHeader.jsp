@@ -16,13 +16,6 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Audit">
-		<li <c:if test='<%= request.getRequestURI().contains("auditPatientIdentifiers") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/maintenance/auditPatientIdentifiers.htm">
-				<openmrs:message code="AuditPatientIdentifiers.manage"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="View Patients">
 		<li <c:if test='<%= request.getRequestURI().contains("quickReport") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/quickReport.htm">
@@ -65,7 +58,7 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="View Users">
+	<openmrs:hasPrivilege privilege="View Current Users">
 		<li <c:if test='<%= request.getRequestURI().contains("currentUsers") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/currentUsers.list">
 				<openmrs:message code="ViewCurrentUsers.list"/>

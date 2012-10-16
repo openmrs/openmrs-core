@@ -625,7 +625,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Concept> getConceptsByAnswer(Concept concept) {
-		// TODO broken until Hibernate fixes component and HQL code
 		String q = "select c from Concept c join c.answers ca where ca.answerConcept = :answer";
 		Query query = sessionFactory.getCurrentSession().createQuery(q);
 		query.setParameter("answer", concept);
@@ -994,7 +993,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 		    Restrictions.eq("tag", name));
 		
 		if (crit.list().size() < 1) {
-			log.warn("No concept name tag found with name: " + name);
 			return null;
 		}
 		

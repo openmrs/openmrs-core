@@ -138,7 +138,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			// historical purposes
 			try {
 				Context.addProxyPrivilege(PrivilegeConstants.DELETE_OBS);
-				String reason = changeMessage + "voidReason looks like" + " (new obsId: " + newObs.getObsId() + ")";
 				
 				// fetch a clean copy of this obs from the database so that
 				// we don't write the changes to the database when we save
@@ -147,7 +146,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 				obs = getObs(obs.getObsId());
 				
 				// calling this via the service so that AOP hooks are called
-				Context.getObsService().voidObs(obs, reason);
+				Context.getObsService().voidObs(obs, changeMessage);
 				
 			}
 			finally {

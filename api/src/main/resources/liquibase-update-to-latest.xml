@@ -7350,6 +7350,33 @@
 			referencedTableName="orders" referencedColumnNames="order_id" />
 
 	</changeSet>
+
+    <changeSet id="20121007-orders_urgency" author="djazayeri">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="urgency" /></not>
+        </preConditions>
+        <comment>Adding urgency column to orders table</comment>
+        <addColumn tableName="orders">
+            <column name="urgency" type="varchar(50)" defaultValue="ROUTINE">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20121007-test_order_laterality" author="djazayeri">
+        <comment>Changing test_order.laterality to be a varchar</comment>
+        <modifyDataType tableName="test_order" columnName="laterality" newDataType="varchar(20)"/>
+    </changeSet>
+
+    <changeSet id="20121008-order_specimen_source_fk" author="djazayeri">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="test_order_specimen_source_fk"/></not>
+        </preConditions>
+        <comment>Adding FK constraint for test_order.specimen_source if necessary</comment>
+        <addForeignKeyConstraint constraintName="test_order_specimen_source_fk"
+                                 baseTableName="test_order" baseColumnNames="specimen_source"
+                                 referencedTableName="concept" referencedColumnNames="concept_id" />
+    </changeSet>
 	
 </databaseChangeLog>
 

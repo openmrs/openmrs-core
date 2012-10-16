@@ -79,6 +79,12 @@
 			</type>
 		</property>
 
+        <property name="urgency" column="urgency" length="50" not-null="true">
+            <type name="org.openmrs.util.HibernateEnumType">
+                <param name="enumClassName">org.openmrs.Order$Urgency</param>
+            </type>
+        </property>
+
 		<joined-subclass name="DrugOrder" table="drug_order" extends="Order" lazy="false">
 			<key column="order_id" not-null="true" on-delete="cascade" />
 	    
@@ -108,9 +114,16 @@
 	
 		<joined-subclass name="TestOrder" table="test_order" extends="Order" lazy="false">
 			<key column="order_id" not-null="true" on-delete="cascade" />
-    	
-    		<property name="specimenSource" type="int" column="specimen_source" length="11" />    	
-    		<property name="laterality" type="int" column="laterality" length="11" />    	
+
+            <many-to-one name="specimenSource" class="org.openmrs.Concept">
+                <column name="specimen_source" />
+            </many-to-one>
+
+            <property name="laterality" column="laterality" length="20" not-null="false">
+                <type name="org.openmrs.util.HibernateEnumType">
+                    <param name="enumClassName">org.openmrs.TestOrder$Laterality</param>
+                </type>
+            </property>
     		<property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
 		</joined-subclass>
 
