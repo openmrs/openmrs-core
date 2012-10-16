@@ -59,7 +59,7 @@ public class PersonListItem {
 	private Boolean birthdateEstimated = false;
 	
 	private String deathDateString;
-
+	
 	private Integer age;
 	
 	private String address1;
@@ -137,7 +137,7 @@ public class PersonListItem {
 			birthdateEstimated = person.isBirthdateEstimated();
 			age = person.getAge();
 			voided = person.isPersonVoided();
-
+			
 			if (person.getDeathDate() != null) {
 				this.deathDateString = Format.format(person.getDeathDate());
 			}
@@ -257,11 +257,11 @@ public class PersonListItem {
 	public void setBirthdateEstimated(Boolean birthdateEstimated) {
 		this.birthdateEstimated = birthdateEstimated;
 	}
-
+	
 	public String getDeathDateString() {
 		return deathDateString;
 	}
-
+	
 	public void setDeathDateString(String deathDateString) {
 		this.deathDateString = deathDateString;
 	}
