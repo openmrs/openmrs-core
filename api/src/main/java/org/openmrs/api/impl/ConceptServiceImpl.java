@@ -285,6 +285,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			checkedLocales.add(locale);
 		}
 		
+		//See TRUNK-3337 for why we set changed by and date changed every time we save a concept.
+		concept.setDateChanged(new Date());
+		concept.setChangedBy(Context.getAuthenticatedUser());
+		
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		if (errors.hasErrors())
