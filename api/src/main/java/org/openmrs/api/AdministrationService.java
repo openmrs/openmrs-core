@@ -731,6 +731,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param errors
 	 * @should pass for a valid object
 	 * @should fail for an invalid object
+	 * @should throw throw APIException if the input is null
 	 */
 	@Transactional(readOnly = true)
 	public void validate(Object object, Errors errors) throws APIException;
