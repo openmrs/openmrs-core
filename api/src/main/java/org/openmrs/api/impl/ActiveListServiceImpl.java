@@ -115,7 +115,7 @@ public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveL
 	 * @see org.openmrs.api.ActiveListService#purgeActiveListItem(org.openmrs.activelist.ActiveListItem)
 	 */
 	@Override
-	public ActiveListItem purgeActiveListItem(ActiveListItem item) throws APIException {
-		return dao.deleteActiveListItem(item);
+	public void purgeActiveListItem(ActiveListItem item) throws APIException {
+		dao.deleteActiveListItem(item);
 	}
 }

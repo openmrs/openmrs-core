@@ -59,5 +59,5 @@ public interface ActiveListDAO {
 	/**
 	 * @see org.openmrs.api.ActiveListService#purgeActiveListItem(org.openmrs.activelist.ActiveListItem)
 	 */
-	public ActiveListItem deleteActiveListItem(ActiveListItem item) throws DAOException;
+	public void deleteActiveListItem(ActiveListItem item) throws DAOException;
 }

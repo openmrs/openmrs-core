@@ -101,8 +101,7 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	/**
 	 * @see org.openmrs.api.db.ActiveListDAO#deleteActiveListItem(org.openmrs.activelist.ActiveListItem)
 	 */
-	public ActiveListItem deleteActiveListItem(ActiveListItem item) throws DAOException {
+	public void deleteActiveListItem(ActiveListItem item) throws DAOException {
 		sessionFactory.getCurrentSession().delete(item);
-		return null;
 	}
 }
