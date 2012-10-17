@@ -20,9 +20,7 @@ import java.util.GregorianCalendar;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterRole;
 import org.openmrs.Patient;
-import org.openmrs.Provider;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -48,7 +46,22 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		encounter.setVisit(visit);
 		Errors errors = new BindException(encounter, "encounter");
 		new EncounterValidator().validate(encounter, errors);
-		Assert.assertTrue(errors.hasFieldErrors("visit"));
+		Assert.assertEquals("Encounter.visit.patients.dontMatch", errors.getFieldError("visit").getCode());
+	}
+	
+	/**
+	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if the visit has no patient", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfTheVisitHasNoPatient() {
+		Encounter encounter = new Encounter();
+		encounter.setPatient(new Patient(2));
+		Visit visit = new Visit();
+		encounter.setVisit(visit);
+		Errors errors = new BindException(encounter, "encounter");
+		new EncounterValidator().validate(encounter, errors);
+		Assert.assertEquals("Encounter.visit.patients.dontMatch", errors.getFieldError("visit").getCode());
 	}
 	
 	/**
