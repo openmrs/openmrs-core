@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -466,19 +465,6 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationService#retireLocation(Location,String)}
-	 */
-	@Ignore
-	// TODO Determine whether or not RetireHandler should throw IllegalArgumentException under these conditions 
-	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw IllegalArgumentException when no reason is given", method = "retireLocation(Location,String)")
-	public void retireLocation_shouldThrowIllegalArgumentExceptionWhenNoReasonIsGiven() throws Exception {
-		LocationService ls = Context.getLocationService();
-		Location loc = ls.getLocation("Test Parent Location");
-		ls.retireLocation(loc, "");
-	}
-	
-	/**
 	 * @see {@link LocationService#unretireLocation(Location)}
 	 */
 	@Test
@@ -811,19 +797,6 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(tag, newTag);
 		Assert.assertTrue(tag.isRetired());
 		Assert.assertEquals(reason, tag.getRetireReason());
-	}
-	
-	/**
-	 * @see {@link LocationService#retireLocationTag(LocationTag,String)}
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	@Ignore
-	// TODO Determine whether or not RetireHandler should throw IllegalArgumentException under these conditions 
-	@Verifies(value = "should throw IllegalArgumentException when no reason is given", method = "retireLocationTag(LocationTag,String)")
-	public void retireLocationTag_shouldThrowIllegalArgumentExceptionWhenNoReasonIsGiven() throws Exception {
-		LocationService ls = Context.getLocationService();
-		LocationTag tag = ls.getLocationTag(1);
-		ls.retireLocationTag(tag, "");
 	}
 	
 	/**
