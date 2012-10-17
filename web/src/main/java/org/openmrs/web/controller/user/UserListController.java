@@ -15,7 +15,12 @@ package org.openmrs.web.controller.user;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,7 +53,23 @@ public class UserListController {
 		
 		if (Context.isAuthenticated()) {
 			List<User> users = getUsers(action, name, role, includeDisabled);
+			Map<User, Set<Role>> userRolesMap = new HashMap<User, Set<Role>>(users.size());
+			for (User user : users) {
+				Set<Role> roles = null;
+				//only show the searched on role if it is inherited
+				if (role != null && !user.getRoles().contains(role)) {
+					roles = new LinkedHashSet<Role>();
+					roles.add(role);//inherited role should be displayed first
+					roles.addAll(user.getAllRoles());
+				} else {
+					roles = new HashSet<Role>(user.getAllRoles());
+					roles.remove(role);//don't display the searched on role
+				}
+				userRolesMap.put(user, roles);
+			}
 			model.put("users", users);
+			model.put("role", role);
+			model.put("userRolesMap", userRolesMap);
 		}
 	}
 	
