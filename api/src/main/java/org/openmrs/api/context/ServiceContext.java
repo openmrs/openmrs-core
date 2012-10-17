@@ -704,15 +704,15 @@ public class ServiceContext implements ApplicationContextAware {
 		// if the context is refreshing, wait until it is
 		// done -- otherwise a null service might be returned
 		synchronized (contextRefreshedLock) {
-			while (!contextRefreshedCheck) {
-				try {
-					log.warn("Waiting to get service: " + cls + " while the context is being refreshed");
+			try {
+				log.warn("Waiting to get service: " + cls + " while the context is being refreshed");
+				while (!contextRefreshedCheck) {
 					contextRefreshedLock.wait();
-					log.warn("Finished waiting to get service " + cls + " while the context was being refreshed");
 				}
-				catch (InterruptedException e) {
-					log.warn("Refresh lock was interrupted", e);
-				}
+				log.warn("Finished waiting to get service " + cls + " while the context was being refreshed");
+			}
+			catch (InterruptedException e) {
+				log.warn("Refresh lock was interrupted", e);
 			}
 		}
 		
@@ -856,8 +856,8 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void doneRefreshingContext() {
 		synchronized (contextRefreshedLock) {
-			contextRefreshedLock.notifyAll();
 			contextRefreshedCheck = true;
+			contextRefreshedLock.notifyAll();
 		}
 	}
 	
