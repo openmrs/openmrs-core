@@ -7377,6 +7377,16 @@
                                  baseTableName="test_order" baseColumnNames="specimen_source"
                                  referencedTableName="concept" referencedColumnNames="concept_id" />
     </changeSet>
+    
+    <changeSet id="20121016-1504" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="test_order" columnName="order_id"/>
+		</preConditions>
+		<comment>Removing auto increment from test_order.order_id column</comment>
+		<ext:modifyColumn tableName="test_order">
+		    <column name="order_id" type="int" />
+		</ext:modifyColumn>
+	</changeSet>
 	
 </databaseChangeLog>
 
