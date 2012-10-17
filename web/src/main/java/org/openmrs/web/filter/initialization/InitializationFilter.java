@@ -210,11 +210,16 @@ public class InitializationFilter extends StartupFilter {
 			referenceMap
 			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 		}
-		if (page == null) {
+		// if any body has already started installation and this is not an ajax request for the progress
+		if (isInstallationStarted() && !PROGRESS_VM_AJAXREQUEST.equals(page)) {
+			referenceMap.put("isInstallationStarted", isInstallationStarted());
+			httpResponse.setContentType("text/html");
+			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
+		} else if (page == null) {
 			checkLocaleAttributesForFirstTime(httpRequest);
 			referenceMap
 			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
-			httpResponse.setContentType("text/html");
+			httpResponse.setContentType("text/html");// if any body has already started installation
 			renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 		} else if (INSTALL_METHOD.equals(page)) {
 			// get props and render the second page
@@ -257,12 +262,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			// do step one of the wizard
 			httpResponse.setContentType("text/html");
-			// if any body has already started installation
-			if (isInstallationStarted()) {
-				renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
-			} else {
-				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
-			}
+			renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
 			httpResponse.setContentType("text/json");
 			httpResponse.setHeader("Cache-Control", "no-cache");
@@ -321,6 +321,7 @@ public class InitializationFilter extends StartupFilter {
 		
 		// if any body has already started installation
 		if (isInstallationStarted()) {
+			referenceMap.put("isInstallationStarted", isInstallationStarted());
 			httpResponse.setContentType("text/html");
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 			return;
@@ -678,7 +679,6 @@ public class InitializationFilter extends StartupFilter {
 			
 			referenceMap.put("tasksToExecute", wizardModel.tasksToExecute);
 			startInstallation();
-			referenceMap.put("isInstallationStarted", isInstallationStarted());
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (TESTING_REMOTE_DETAILS_SETUP.equals(page)) {
 			if (goBack(httpRequest)) {
