@@ -15,7 +15,11 @@ package org.openmrs.web.controller.user;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,7 +52,15 @@ public class UserListController {
 		
 		if (Context.isAuthenticated()) {
 			List<User> users = getUsers(action, name, role, includeDisabled);
+			Map<User, Set<Role>> userUmatchedRolesMap = new HashMap<User, Set<Role>>();
+			for (User user : users) {
+				Set<Role> unmatchedRoles = new HashSet<Role>(user.getAllRoles());
+				unmatchedRoles.remove(role);
+				userUmatchedRolesMap.put(user, unmatchedRoles);
+			}
 			model.put("users", users);
+			model.put("role", role);
+			model.put("userUmatchedRolesMap", userUmatchedRolesMap);
 		}
 	}
 	

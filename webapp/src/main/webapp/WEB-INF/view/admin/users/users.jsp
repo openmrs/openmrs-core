@@ -64,7 +64,10 @@
 			<th><openmrs:message code="User.username" javaScriptEscape="true"/></th>
 			<th><openmrs:message code="PersonName.givenName" javaScriptEscape="true"/></th>
 			<th><openmrs:message code="PersonName.familyName" javaScriptEscape="true"/></th>
-			<th><openmrs:message code="User.roles" javaScriptEscape="true"/></th>
+			<th>
+				<openmrs:message code="User.otherRoles" javaScriptEscape="true"/> 
+				(<i><openmrs:message code="User.inheritedRolesInItalics" javaScriptEscape="true"/></i>)
+			</th>
 			<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
 				<th><openmrs:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/></th>
 			</openmrs:forEachDisplayAttributeType>
@@ -80,7 +83,21 @@
 			<td><c:out value="${user.username}"/></td>
 			<td><c:out value="${user.givenName}"/></td>
 			<td><c:out value="${user.familyName}"/></td>
-			<td><c:out value="${user.roles}"/></td>
+			<td>
+				<c:if test="${fn:length(userUmatchedRolesMap[user]) > 0 || !fn:contains(user.roles, role)}">
+				[
+				<c:forEach var="r" items="${userUmatchedRolesMap[user]}" varStatus="varStatus">
+				<c:choose>
+					<c:when test="${varStatus.index == 0}">${r}</c:when>
+					<c:otherwise>, ${r}</c:otherwise>
+				</c:choose>
+				</c:forEach>
+				<c:if test="${!fn:contains(user.roles, role)}">
+					<c:if test="${fn:length(userUmatchedRolesMap[user]) > 0}">, </c:if><i>${role}</i>
+				</c:if>
+				]
+				</c:if>
+			</td>
 			<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
 				<td><c:if test="${user.person != null}">${user.person.attributeMap[attrType.name]}</c:if></td>
 			</openmrs:forEachDisplayAttributeType>
