@@ -84,18 +84,19 @@
 			<td><c:out value="${user.givenName}"/></td>
 			<td><c:out value="${user.familyName}"/></td>
 			<td>
-				<c:if test="${fn:length(userUmatchedRolesMap[user]) > 0 || !fn:contains(user.roles, role)}">
-				[
-				<c:forEach var="r" items="${userUmatchedRolesMap[user]}" varStatus="varStatus">
+				<c:if test="${fn:length(userRolesMap[user]) > 3}">
+				<span title="${userRolesMap[user]}">
+				</c:if>
+				<c:forEach var="r" items="${userRolesMap[user]}" varStatus="varStatus" end="2">
 				<c:choose>
-					<c:when test="${varStatus.index == 0}">${r}</c:when>
+					<c:when test="${varStatus.index == 0}">
+						<c:if test="${r == role}"><i></c:if>${r}<c:if test="${r == role}"></i></c:if>
+					</c:when>
 					<c:otherwise>, ${r}</c:otherwise>
 				</c:choose>
 				</c:forEach>
-				<c:if test="${!fn:contains(user.roles, role)}">
-					<c:if test="${fn:length(userUmatchedRolesMap[user]) > 0}">, </c:if><i>${role}</i>
-				</c:if>
-				]
+				<c:if test="${fn:length(userRolesMap[user]) > 3}">
+				, ....</span>
 				</c:if>
 			</td>
 			<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">

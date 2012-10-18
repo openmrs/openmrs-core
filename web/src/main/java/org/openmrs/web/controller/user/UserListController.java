@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,15 +53,23 @@ public class UserListController {
 		
 		if (Context.isAuthenticated()) {
 			List<User> users = getUsers(action, name, role, includeDisabled);
-			Map<User, Set<Role>> userUmatchedRolesMap = new HashMap<User, Set<Role>>();
+			Map<User, Set<Role>> userRolesMap = new HashMap<User, Set<Role>>(users.size());
 			for (User user : users) {
-				Set<Role> unmatchedRoles = new HashSet<Role>(user.getAllRoles());
-				unmatchedRoles.remove(role);
-				userUmatchedRolesMap.put(user, unmatchedRoles);
+				Set<Role> roles = null;
+				//only show the searched on role if it is inherited
+				if (role != null && !user.getRoles().contains(role)) {
+					roles = new LinkedHashSet<Role>();
+					roles.add(role);//inherited role should be displayed first
+					roles.addAll(user.getAllRoles());
+				} else {
+					roles = new HashSet<Role>(user.getAllRoles());
+					roles.remove(role);//don't display the searched on role
+				}
+				userRolesMap.put(user, roles);
 			}
 			model.put("users", users);
 			model.put("role", role);
-			model.put("userUmatchedRolesMap", userUmatchedRolesMap);
+			model.put("userRolesMap", userRolesMap);
 		}
 	}
 	
