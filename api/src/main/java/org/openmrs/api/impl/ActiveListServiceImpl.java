@@ -16,8 +16,6 @@ package org.openmrs.api.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.activelist.ActiveListItem;
 import org.openmrs.activelist.ActiveListType;
@@ -34,8 +32,6 @@ import org.openmrs.api.db.ActiveListDAO;
  * @see org.openmrs.api.ActiveListService
  */
 public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveListService {
-	
-	private static final Log log = LogFactory.getLog(ActiveListServiceImpl.class);
 	
 	private ActiveListDAO dao;
 	
@@ -113,5 +109,13 @@ public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveL
 	@Override
 	public ActiveListItem voidActiveListItem(ActiveListItem item, String reason) throws APIException {
 		return dao.saveActiveListItem(item);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ActiveListService#purgeActiveListItem(org.openmrs.activelist.ActiveListItem)
+	 */
+	@Override
+	public void purgeActiveListItem(ActiveListItem item) throws APIException {
+		dao.deleteActiveListItem(item);
 	}
 }
