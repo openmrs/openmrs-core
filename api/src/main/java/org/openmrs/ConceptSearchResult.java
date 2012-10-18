@@ -145,4 +145,29 @@ public class ConceptSearchResult implements java.io.Serializable {
 	public void setTransientWeight(Double transientWeight) {
 		this.transientWeight = transientWeight;
 	}
+	
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof ConceptSearchResult))
+			return false;
+		ConceptSearchResult other = (ConceptSearchResult) obj;
+		if (getConcept() == null)
+			return false;
+		return getConcept().equals(other.getConcept());
+	}
+	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		if (getConcept() == null)
+			return super.hashCode();
+		return getConcept().hashCode();
+	}
 }
