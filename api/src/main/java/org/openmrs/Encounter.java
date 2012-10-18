@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.VoidHandler;
@@ -59,6 +60,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Set<Order> orders;
 	
+	@AllowDirectAccess
 	private Set<Obs> obs;
 	
 	private Visit visit;
