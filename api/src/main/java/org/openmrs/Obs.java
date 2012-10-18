@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -87,6 +88,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * The list of obs grouped under this obs.
 	 */
+	@AllowDirectAccess
 	protected Set<Obs> groupMembers;
 	
 	protected Concept valueCoded;
