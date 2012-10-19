@@ -212,7 +212,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 		// if any body has already started installation and this is not an ajax request for the progress
 		if (isInstallationStarted() && !PROGRESS_VM_AJAXREQUEST.equals(page)) {
-			referenceMap.put("isInstallationStarted", isInstallationStarted());
+			referenceMap.put("isInstallationStarted", true);
 			httpResponse.setContentType("text/html");
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (page == null) {
@@ -321,7 +321,7 @@ public class InitializationFilter extends StartupFilter {
 		
 		// if any body has already started installation
 		if (isInstallationStarted()) {
-			referenceMap.put("isInstallationStarted", isInstallationStarted());
+			referenceMap.put("isInstallationStarted", true);
 			httpResponse.setContentType("text/html");
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 			return;
