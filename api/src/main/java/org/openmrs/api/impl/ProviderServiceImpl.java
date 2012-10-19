@@ -116,7 +116,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProviderService#getProvidersByPerson( org.openmrs.Person, boolean )
+	 * @see org.openmrs.api.ProviderService#getProvidersByPerson(org.openmrs.Person, boolean )
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -140,11 +140,20 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	@Transactional(readOnly = true)
 	public Integer getCountOfProviders(String query) {
-		return OpenmrsUtil.convertToInteger(dao.getCountOfProviders(query));
+		return getCountOfProviders(query, false);
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProviderService#getProviders(String, Integer, Integer, java.util.Map, boolean)
+	 * @see org.openmrs.api.ProviderService#getCountOfProviders(java.lang.String, boolean)
+	 */
+	@Override
+	public Integer getCountOfProviders(String query, boolean includeRetired) {
+		return OpenmrsUtil.convertToInteger(dao.getCountOfProviders(query, includeRetired));
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProviderService#getProviders(String, Integer, Integer, java.util.Map,
+	 *      boolean)
 	 */
 	@Override
 	@Transactional(readOnly = true)
