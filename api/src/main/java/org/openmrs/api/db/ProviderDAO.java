@@ -78,9 +78,10 @@ public interface ProviderDAO {
 	
 	/**
 	 * @param name
+	 * @param includeRetired
 	 * @return Count of providers satisfying the given query
 	 */
-	public Long getCountOfProviders(String name);
+	public Long getCountOfProviders(String name, boolean includeRetired);
 	
 	/**
 	 * @see ProviderService#getAllProviderAttributeTypes(boolean)
