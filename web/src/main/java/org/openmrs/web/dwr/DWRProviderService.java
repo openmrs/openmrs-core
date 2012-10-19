@@ -82,7 +82,7 @@ public class DWRProviderService {
 		Map<String, Object> providerMap = new HashMap<String, Object>();
 		Vector<Object> objectList = findProvider(name, includeRetired, start, length);
 		try {
-			providerMap.put("count", Context.getProviderService().getCountOfProviders(name));
+			providerMap.put("count", Context.getProviderService().getCountOfProviders(name, includeRetired));
 			providerMap.put("objectList", objectList);
 		}
 		catch (Exception e) {

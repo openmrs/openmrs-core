@@ -137,16 +137,14 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public List<Provider> getProviders(String name, Map<ProviderAttributeType, String> serializedAttributeValues,
-	        Integer start, Integer length, boolean includeRetired) {
-		Criteria criteria = prepareProviderCriteria(name);
+	                                   Integer start, Integer length, boolean includeRetired) {
+		Criteria criteria = prepareProviderCriteria(name, includeRetired);
 		if (start != null)
 			criteria.setFirstResult(start);
 		if (length != null)
 			criteria.setMaxResults(length);
 		
-		if (!includeRetired) {
-			criteria.add(Expression.eq("retired", false));
-		} else {
+		if (includeRetired) {
 			//push retired Provider to the end of the returned list
 			criteria.addOrder(Order.asc("retired"));
 		}
@@ -163,15 +161,18 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 * Creates a Provider Criteria based on name
 	 * 
 	 * @param name represents provider name
+	 * @param includeRetired
 	 * @return Criteria represents the hibernate criteria to search
 	 */
-	private Criteria prepareProviderCriteria(String name) {
+	private Criteria prepareProviderCriteria(String name, boolean includeRetired) {
 		if (StringUtils.isBlank(name)) {
 			name = "%";
 		}
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class).createAlias("person", "p",
-		    Criteria.LEFT_JOIN);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class)
+		        .createAlias("person", "p", Criteria.LEFT_JOIN);
+		if (!includeRetired)
+			criteria.add(Restrictions.eq("retired", false));
 		
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		
@@ -221,8 +222,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 * @see org.openmrs.api.db.ProviderDAO#getCountOfProviders(java.lang.String)
 	 */
 	@Override
-	public Long getCountOfProviders(String name) {
-		Criteria criteria = prepareProviderCriteria(name);
+	public Long getCountOfProviders(String name, boolean includeRetired) {
+		Criteria criteria = prepareProviderCriteria(name, includeRetired);
 		criteria.setProjection(Projections.countDistinct("providerId"));
 		return (Long) criteria.uniqueResult();
 	}
