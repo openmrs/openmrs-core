@@ -118,7 +118,6 @@
 				<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 					<span>
 						<a href="<c:url value="${extension.url}" />"><openmrs:message code="${extension.label}"/></a>
-                        <!--<a href="${pageContext.request.contextPath}/${extension.url}"><openmrs:message code="${extension.label}"/></a>-->
 					</span>
 					<c:if test="${extension.portletUrl != null}">
 						<openmrs:portlet url="${extension.portletUrl}" moduleId="${extension.moduleId}" id="${extension.portletUrl}" />
