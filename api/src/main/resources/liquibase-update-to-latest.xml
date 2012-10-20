@@ -7377,6 +7377,20 @@
                                  baseTableName="test_order" baseColumnNames="specimen_source"
                                  referencedTableName="concept" referencedColumnNames="concept_id" />
     </changeSet>
+    
+    <changeSet id="20121020-TRUNK-3610" author="lluismf">
+		<comment>
+			Rename global property autoCloseVisits.visitType to visits.autoCloseVisitType
+		</comment>
+		<update tableName="global_property">
+			<column name="property" value="visits.autoCloseVisitType"/>
+			<where>property='autoCloseVisits.visitType'</where>
+		</update>
+		<update tableName="scheduler_task_config">
+			<column name="description" value="Stops all active visits that match the visit type(s) specified by the value of the global property 'visits.autoCloseVisitType'"/>
+			<where>name='Auto Close Visits Task'</where>
+		</update>
+	</changeSet>
 	
 </databaseChangeLog>
 
