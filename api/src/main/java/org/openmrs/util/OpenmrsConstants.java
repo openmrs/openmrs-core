@@ -1012,7 +1012,7 @@ public final class OpenmrsConstants {
 	/**
 	 * Global property name for the visit type(s) to automatically close
 	 */
-	public static final String GP_VISIT_TYPES_TO_AUTO_CLOSE = "autoCloseVisits.visitType";
+	public static final String GP_VISIT_TYPES_TO_AUTO_CLOSE = "visits.autoCloseVisitType";
 	
 	/**
 	 * The name of the scheduled task that automatically stops the active visits
