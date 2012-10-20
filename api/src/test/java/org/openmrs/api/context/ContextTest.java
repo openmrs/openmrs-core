@@ -26,6 +26,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
+import org.openmrs.notification.MessageService;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
@@ -214,4 +215,19 @@ public class ContextTest extends BaseContextSensitiveTest {
 		
 		Context.logout();
 	}
+
+	/**
+	 * @see Context#getMessageService()
+	 * @verifies return a message service
+	 */
+	@Test
+	public void getMessageService_shouldReturnAMessageService() {
+		
+		MessageService msgService = Context.getMessageService();
+		Assert.assertNotNull(msgService);
+		Assert.assertNotNull(msgService.getMessagePreparator());
+		Assert.assertNotNull(msgService.getMessageSender()); 
+	
+	}
+	
 }

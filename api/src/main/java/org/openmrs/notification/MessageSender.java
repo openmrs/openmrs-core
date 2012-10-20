@@ -13,7 +13,11 @@
  */
 package org.openmrs.notification;
 
+import javax.mail.Session;
+
 public interface MessageSender {
 	
 	public void send(Message message) throws MessageException;
+	
+	void setMailSession(Session session);
 }

@@ -65,12 +65,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.ModuleMustStartException;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.notification.AlertService;
-import org.openmrs.notification.MessageException;
-import org.openmrs.notification.MessagePreparator;
-import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
-import org.openmrs.notification.mail.MailMessageSender;
-import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
@@ -532,22 +527,18 @@ public class Context {
 	 * Get the message service.
 	 * 
 	 * @return message service
+	 * @should return a message service
 	 */
 	public static MessageService getMessageService() {
+
 		MessageService ms = getServiceContext().getMessageService();
-		try {
-			// Message service dependencies
-			if (ms.getMessagePreparator() == null)
-				ms.setMessagePreparator(getMessagePreparator());
-			
-			if (ms.getMessageSender() == null)
-				ms.setMessageSender(getMessageSender());
-			
-		}
-		catch (Exception e) {
-			log.error("Unable to create message service due", e);
-		}
+
+		// Set mail session
+		javax.mail.Session mailSess = getMailSession();
+		ms.getMessageSender().setMailSession(mailSess);
+
 		return ms;
+	
 	}
 	
 	/**
@@ -564,49 +555,40 @@ public class Context {
 	 * @return a java mail session
 	 */
 	private static javax.mail.Session getMailSession() {
+		
+		// Lazy initialization
 		if (mailSession == null) {
 			AdministrationService adminService = getAdministrationService();
 			
-			Properties props = new Properties();
-			props.setProperty("mail.transport.protocol", adminService.getGlobalProperty("mail.transport_protocol"));
-			props.setProperty("mail.smtp.host", adminService.getGlobalProperty("mail.smtp_host"));
-			props.setProperty("mail.smtp.port", adminService.getGlobalProperty("mail.smtp_port"));
-			props.setProperty("mail.from", adminService.getGlobalProperty("mail.from"));
-			props.setProperty("mail.debug", adminService.getGlobalProperty("mail.debug"));
-			props.setProperty("mail.smtp.auth", adminService.getGlobalProperty("mail.smtp_auth"));
+			// Check if basic properties are defined before creating session
+			String host = adminService.getGlobalProperty("mail.smtp_host");
+			final String user = adminService.getGlobalProperty("mail.user");
+			final String pwd = adminService.getGlobalProperty("mail.password");
 			
-			Authenticator auth = new Authenticator() {
+			if(host == null || user == null || pwd == null) {
+				log.warn("Mail properties are not properly configured");
+			} else {
+			
+				Properties props = new Properties();
+				props.setProperty("mail.transport.protocol", adminService.getGlobalProperty("mail.transport_protocol"));
+				props.setProperty("mail.smtp.host", host);
+				props.setProperty("mail.smtp.port", adminService.getGlobalProperty("mail.smtp_port"));
+				props.setProperty("mail.from", adminService.getGlobalProperty("mail.from"));
+				props.setProperty("mail.debug", adminService.getGlobalProperty("mail.debug"));
+				props.setProperty("mail.smtp.auth", adminService.getGlobalProperty("mail.smtp_auth"));
 				
-				@Override
-				public PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"),
-					        getAdministrationService().getGlobalProperty("mail.password"));
-				}
-			};
-			
-			mailSession = Session.getInstance(props, auth);
+				Authenticator auth = new Authenticator() {
+					
+					@Override
+					public PasswordAuthentication getPasswordAuthentication() {
+						return new PasswordAuthentication(user, pwd);
+					}
+				};
+				
+				mailSession = Session.getInstance(props, auth);
+			}
 		}
 		return mailSession;
-	}
-	
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO Ideally, we
-	 * would be using Spring's method injection to set the dependencies for the message service.
-	 * 
-	 * @return the ServiceContext
-	 */
-	private static MessageSender getMessageSender() {
-		return new MailMessageSender(getMailSession());
-	}
-	
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO See todo for
-	 * message sender.
-	 * 
-	 * @return
-	 */
-	private static MessagePreparator getMessagePreparator() throws MessageException {
-		return new VelocityMessagePreparator();
 	}
 	
 	/**
@@ -1027,7 +1009,7 @@ public class Context {
 		// setting core global properties
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-			Context.addProxyPrivilege(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES);
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			Set<String> currentPropNames = new HashSet<String>();
 			Map<String, GlobalProperty> propsMissingDescription = new HashMap<String, GlobalProperty>();
 			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<String, GlobalProperty>();
@@ -1072,7 +1054,7 @@ public class Context {
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES);
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 	}
 	

@@ -488,14 +488,6 @@
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
-	<bean id="messageService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="messageServiceTarget"/></property>
-		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
-		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
-	</bean>
 	<bean id="patientSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="patientSetServiceTarget"/></property>
@@ -682,10 +674,10 @@
 	<!--  ******************************  MESSAGE SERVICES  ****************************** -->
 	
 	<!-- Messaging Service -->
-	<!--
     <bean id="messageService" class="org.openmrs.notification.impl.MessageServiceImpl">
-        <property name="daoContext">
-        	<ref bean="daoContext"/>
+        
+        <property name="templateDAO">
+        	<ref bean="templateDAO"/>
         </property>
 
         <property name="messagePreparator">
@@ -693,17 +685,10 @@
 		</property>        
 
         <property name="messageSender">
-			<bean id="mailMessageSender" class="org.openmrs.notification.mail.MailMessageSender">
-				<property name="mailSession">
-					<bean id="mailSession" class="org.springframework.jndi.JndiObjectFactoryBean">
-					    <property name="jndiName"><value>java:comp/env/mail/OpenmrsMailSession</value></property>
-					</bean>
-				</property>
-			</bean> 		
+			<bean id="mailMessageSender" class="org.openmrs.notification.mail.MailMessageSender"/>
 		</property>
-    </bean>   
-	-->		
-
+    
+    </bean> 
 
 	<!--  **************************  REPORT OBJECT FACTORY CONFIGURATION  *************************  -->
 	<!-- Configuration for reporting module - sets up the report object factory and admin interface -->
