@@ -1420,3 +1420,8 @@ td.dataTables_empty:hover{
 #conceptSidebar fieldset {
 	padding: 10px;
 }
+.localeSpecific td, a.selectedTab {
+	background-color: whitesmoke;
+	font-weight:bold;
+	text-decoration: none;
+}
