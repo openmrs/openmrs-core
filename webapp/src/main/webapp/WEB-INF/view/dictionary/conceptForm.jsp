@@ -74,8 +74,7 @@
 <style>
 	.inlineForm { padding: 0px; margin: 0px; display: inline; }
 	#conceptTable th { text-align: right; padding-right: 15px; }
-	#conceptNameTable th { text-align: left; }
-	.localeSpecific td, a.selectedTab { background-color: whitesmoke; }
+	#conceptNameTable th { text-align: left; }	
 	a.tab { border-bottom: 1px solid whitesmoke; padding-left: 3px; padding-right: 3px; }
 	.hidden, #newConceptSynonym, #newConceptMapping { display: none; }
 	.checkbox_void{ margin-left: 80px; }

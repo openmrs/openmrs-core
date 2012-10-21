@@ -17,9 +17,6 @@
 	#conceptNameTable th {
 		text-align: left;	
 	}
-	.localeSpecific td, a.selectedTab {
-		background-color: whitesmoke;
-	}
 	a.tab{
 		border-bottom: 1px solid whitesmoke;
 		padding-left: 3px;
