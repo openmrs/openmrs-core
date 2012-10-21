@@ -184,7 +184,6 @@
 				<prop key="admin/concepts/conceptProposal.form">conceptProposalForm</prop>
 				<prop key="admin/concepts/proposeConcept.form">proposeConceptForm</prop>
 				<prop key="admin/concepts/conceptIndex.form">conceptIndexForm</prop>
-				<prop key="admin/concepts/conceptSetDerived.form">conceptSetDerivedForm</prop>
 				<prop key="admin/hl7/hl7Source.list">hl7SourceList</prop>
 				<prop key="admin/hl7/hl7Source.form">hl7SourceForm</prop>
 
@@ -662,15 +661,6 @@
 		<property name="successView"><value>conceptIndex.form</value></property>
 	</bean>
 	<!-- ** /ConceptIndex ** -->
-	<!-- ** Concept Set Derived ** -->
-	<bean id="conceptSetDerivedForm"
-		class="org.openmrs.web.controller.concept.ConceptSetDerivedFormController">
-		<property name="commandName"><value>conceptId</value></property>
-		<property name="commandClass"><value>java.lang.String</value></property>
-		<property name="formView"><value>/admin/concepts/conceptSetDerivedForm</value></property>
-		<property name="successView"><value>conceptSetDerived.form</value></property>
-	</bean>
-	<!-- ** /Concept Set Derived ** -->
 	<!--  ** Concept Proposal ** -->
 	<bean id="conceptProposalList"
 		class="org.openmrs.web.controller.concept.ConceptProposalListController">

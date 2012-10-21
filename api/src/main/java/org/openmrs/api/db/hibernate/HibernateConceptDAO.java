@@ -65,7 +65,6 @@ import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
-import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.ConceptWord;
@@ -818,124 +817,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#updateConceptSetDerived()
-	 */
-	public void updateConceptSetDerived() throws DAOException {
-		sessionFactory.getCurrentSession().createQuery("delete ConceptSetDerived").executeUpdate();
-		try {
-			// remake the derived table by copying over the basic concept_set table
-			sessionFactory
-			        .getCurrentSession()
-			        .connection()
-			        .prepareStatement(
-			            "insert into concept_set_derived (concept_id, concept_set, sort_weight) select cs.concept_id, cs.concept_set, cs.sort_weight from concept_set cs where not exists (select concept_id from concept_set_derived csd where csd.concept_id = cs.concept_id and csd.concept_set = cs.concept_set)")
-			        .execute();
-			
-			// burst the concept sets -- make grandchildren direct children of grandparents
-			sessionFactory
-			        .getCurrentSession()
-			        .connection()
-			        .prepareStatement(
-			            "insert into concept_set_derived (concept_id, concept_set, sort_weight) select cs1.concept_id, cs2.concept_set, cs1.sort_weight from concept_set cs1 join concept_set cs2 where cs2.concept_id = cs1.concept_set and not exists (select concept_id from concept_set_derived csd where csd.concept_id = cs1.concept_id and csd.concept_set = cs2.concept_set)")
-			        .execute();
-			
-			// burst the concept sets -- make greatgrandchildren direct child of greatgrandparents
-			sessionFactory
-			        .getCurrentSession()
-			        .connection()
-			        .prepareStatement(
-			            "insert into concept_set_derived (concept_id, concept_set, sort_weight) select cs1.concept_id, cs3.concept_set, cs1.sort_weight from concept_set cs1 join concept_set cs2 join concept_set cs3 where cs1.concept_set = cs2.concept_id and cs2.concept_set = cs3.concept_id and not exists (select concept_id from concept_set_derived csd where csd.concept_id = cs1.concept_id and csd.concept_set = cs3.concept_set)")
-			        .execute();
-			
-			// TODO This 'algorithm' only solves three layers of children.  Options for correction:
-			//	1) Add a few more join statements to cover 5 layers (conceivable upper limit of layers)
-			//	2) Find the deepest layer and programmatically create the sql statements
-			//	3) Run the joins on
-		}
-		catch (SQLException e) {
-			throw new DAOException(e);
-		}
-	}
-	
-	/**
-	 * utility method used in updateConceptSetDerived(...)
-	 * 
-	 * @param List of parent Concept objects
-	 * @param Concept current
-	 * @return Set of ConceptSetDerived
-	 */
-	private Set<ConceptSetDerived> deriveChildren(List<Concept> parents, Concept current) {
-		Set<ConceptSetDerived> updates = new HashSet<ConceptSetDerived>();
-		
-		ConceptSetDerived derivedSet = null;
-		// make each child a direct child of each parent/grandparent
-		for (ConceptSet childSet : current.getConceptSets()) {
-			Concept child = childSet.getConcept();
-			log.debug("Deriving child: " + child.getConceptId());
-			Double sort_weight = childSet.getSortWeight();
-			for (Concept parent : parents) {
-				log.debug("Matching child: " + child.getConceptId() + " with parent: " + parent.getConceptId());
-				derivedSet = new ConceptSetDerived(parent, child, sort_weight++);
-				updates.add(derivedSet);
-			}
-			
-			//recurse if this child is a set as well
-			if (child.isSet()) {
-				log.debug("Concept id: " + child.getConceptId() + " is a set");
-				List<Concept> new_parents = new Vector<Concept>();
-				new_parents.addAll(parents);
-				new_parents.add(child);
-				updates.addAll(deriveChildren(new_parents, child));
-			}
-		}
-		
-		return updates;
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.ConceptDAO#updateConceptSetDerived(org.openmrs.Concept)
-	 */
-	public void updateConceptSetDerived(Concept concept) throws DAOException {
-		log.debug("Updating concept set derivisions for #" + concept.getConceptId().toString());
-		
-		// deletes current concept's sets and matching parent's sets
-		
-		//recursively get all parents
-		List<Concept> parents = getParents(concept);
-		
-		// delete this concept's children and their bursted parents
-		for (Concept parent : parents) {
-			sessionFactory
-			        .getCurrentSession()
-			        .createQuery(
-			            "delete from ConceptSetDerived csd where csd.concept in (select cs.concept from ConceptSet cs where cs.conceptSet = :c) and csd.conceptSet = :parent)")
-			        .setParameter("c", concept).setParameter("parent", parent).executeUpdate();
-		}
-		
-		//set of updates to be passed to the server (unique list)
-		Set<ConceptSetDerived> updates = new HashSet<ConceptSetDerived>();
-		
-		//add parents as sets of parents below
-		ConceptSetDerived csd;
-		for (Integer a = 0; a < parents.size() - 1; a++) {
-			Concept set = parents.get(a);
-			for (Integer b = a + 1; b < parents.size(); b++) {
-				Concept conc = parents.get(b);
-				csd = new ConceptSetDerived(set, conc, Double.valueOf(b.doubleValue()));
-				updates.add(csd);
-			}
-		}
-		
-		//recursively add parents to children
-		updates.addAll(deriveChildren(parents, concept));
-		
-		for (ConceptSetDerived c : updates) {
-			sessionFactory.getCurrentSession().saveOrUpdate(c);
-		}
-		
-	}
-	
-	/**
 	 * returns a list of n-generations of parents of a concept in a concept set
 	 * 
 	 * @param Concept current
@@ -1188,11 +1069,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public ConceptSet getConceptSetByUuid(String uuid) {
 		return (ConceptSet) sessionFactory.getCurrentSession().createQuery("from ConceptSet cc where cc.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
-	}
-	
-	public ConceptSetDerived getConceptSetDerivedByUuid(String uuid) {
-		return (ConceptSetDerived) sessionFactory.getCurrentSession().createQuery(
-		    "from ConceptSetDerived cc where cc.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
 	
 	public ConceptSource getConceptSourceByUuid(String uuid) {

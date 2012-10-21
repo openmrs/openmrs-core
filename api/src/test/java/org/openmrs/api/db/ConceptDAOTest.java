@@ -13,7 +13,6 @@
  */
 package org.openmrs.api.db;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -416,17 +415,6 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return false if a term has no maps using it", method = "isConceptReferenceTermInUse(ConceptReferenceTerm)")
 	public void isConceptReferenceTermInUse_shouldReturnFalseIfATermHasNoMapsUsingIt() throws Exception {
 		Assert.assertFalse(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(11)));
-	}
-	
-	@Test
-	public void updateConceptSetDerived_shouldRecreateConceptSetDerived() throws Exception {
-		Concept concept = dao.getConcept(5497);
-		List<ConceptSet> conceptSetsByConcept = dao.getConceptSetsByConcept(concept);
-		assertNotNull(conceptSetsByConcept);
-		dao.updateConceptSetDerived();
-		List<ConceptSet> conceptSetsByConceptAfterUpdate = dao.getConceptSetsByConcept(concept);
-		assertNotNull(conceptSetsByConceptAfterUpdate);
-		assertEquals(conceptSetsByConcept.size(), conceptSetsByConceptAfterUpdate.size());
 	}
 	
 	@Test

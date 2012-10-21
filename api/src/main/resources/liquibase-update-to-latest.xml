@@ -7411,6 +7411,14 @@
 			<column name="locale" type="varchar(50)"/>
 		</ext:modifyColumn>
 	</changeSet>
+    
+    <changeSet id="20121021-TRUNK-333" author="lluismf">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="concept_set_derived" />
+		</preConditions>
+		<comment>Removing concept set derived table</comment>
+		<dropTable tableName="concept_set_derived"/>
+	</changeSet>
 	
 </databaseChangeLog>
 

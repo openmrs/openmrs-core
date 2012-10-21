@@ -526,22 +526,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @deprecated moved to ConceptService
 	 */
 	@Deprecated
-	public void updateConceptSetDerived(Concept concept) throws APIException {
-		Context.getConceptService().updateConceptSetDerived(concept);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void updateConceptSetDerived() throws APIException {
-		Context.getConceptService().updateConceptSetDerived();
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
 	public void createConceptProposal(ConceptProposal cp) throws APIException {
 		Context.getConceptService().saveConceptProposal(cp);
 	}

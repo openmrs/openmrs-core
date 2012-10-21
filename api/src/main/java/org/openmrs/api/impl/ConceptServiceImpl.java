@@ -928,22 +928,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#updateConceptSetDerived(org.openmrs.Concept)
-	 */
-	public void updateConceptSetDerived(Concept concept) throws APIException {
-		checkIfLocked();
-		dao.updateConceptSetDerived(concept);
-	}
-	
-	/**
-	 * @see org.openmrs.api.ConceptService#updateConceptSetDerived()
-	 */
-	public void updateConceptSetDerived() throws APIException {
-		checkIfLocked();
-		dao.updateConceptSetDerived();
-	}
-	
-	/**
 	 * @see org.openmrs.api.ConceptService#getConceptSets(org.openmrs.Concept)
 	 * @deprecated use {@link #getConceptSetsByConcept(Concept)}
 	 */

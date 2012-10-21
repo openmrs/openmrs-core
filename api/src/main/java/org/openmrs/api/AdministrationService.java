@@ -348,23 +348,6 @@ public interface AdministrationService extends OpenmrsService {
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 	
 	/**
-	 * Updates the concept set derived business table for this concept (bursting the concept sets)
-	 * 
-	 * @param concept
-	 * @throws APIException
-	 * @deprecated moved to {@link org.openmrs.api.ConceptService#updateConceptSetDerived(Concept)};
-	 */
-	public void updateConceptSetDerived(Concept concept) throws APIException;
-	
-	/**
-	 * Iterates over all concepts calling updateConceptSetDerived(concept)
-	 * 
-	 * @throws APIException
-	 * @deprecated moved to {@link org.openmrs.api.ConceptService#updateConceptSetDerived()}
-	 */
-	public void updateConceptSetDerived() throws APIException;
-	
-	/**
 	 * Create a concept proposal
 	 * 
 	 * @param cp
