@@ -24,7 +24,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -102,7 +101,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	public Collection<Provider> getProvidersByPerson(Person person, boolean includeRetired) {
 		Criteria criteria = getSession().createCriteria(Provider.class);
 		if (!includeRetired) {
-			criteria.add(Expression.eq("retired", true));
+			criteria.add(Restrictions.eq("retired", true));
 		} else {
 			//push retired Provider to the end of the returned list
 			criteria.addOrder(Order.asc("retired"));
@@ -137,7 +136,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public List<Provider> getProviders(String name, Map<ProviderAttributeType, String> serializedAttributeValues,
-	                                   Integer start, Integer length, boolean includeRetired) {
+	        Integer start, Integer length, boolean includeRetired) {
 		Criteria criteria = prepareProviderCriteria(name, includeRetired);
 		if (start != null)
 			criteria.setFirstResult(start);
@@ -169,8 +168,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 			name = "%";
 		}
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class)
-		        .createAlias("person", "p", Criteria.LEFT_JOIN);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class).createAlias("person", "p",
+		    Criteria.LEFT_JOIN);
 		if (!includeRetired)
 			criteria.add(Restrictions.eq("retired", false));
 		
@@ -239,7 +238,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	private <T> List<T> getAll(boolean includeRetired, Class<T> clazz) {
 		Criteria criteria = getSession().createCriteria(clazz);
 		if (!includeRetired) {
-			criteria.add(Expression.eq("retired", false));
+			criteria.add(Restrictions.eq("retired", false));
 		} else {
 			//push retired Provider to the end of the returned list
 			criteria.addOrder(Order.asc("retired"));
