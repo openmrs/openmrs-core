@@ -29,11 +29,6 @@
 				<openmrs:message code="ConceptWord.manage"/>
 			</a>
 		</li>
-		<li <c:if test='<%= request.getRequestURI().contains("SetDerived") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/concepts/conceptSetDerived.form" style="display:none">
-				<openmrs:message code="ConceptSetDerived.manage"/>
-			</a>
-		</li>	
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Concept Classes">
 		<li <c:if test='<%= request.getRequestURI().contains("Class") %>'>class="active"</c:if>>

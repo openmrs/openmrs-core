@@ -801,23 +801,6 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptDatatype getConceptDatatypeByName(String name) throws APIException;
 	
 	/**
-	 * Updates the concept set derived business table for this concept (bursting the concept sets)
-	 * 
-	 * @param concept
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
-	public void updateConceptSetDerived(Concept concept) throws APIException;
-	
-	/**
-	 * Iterates over all concepts calling updateConceptSetDerived(concept)
-	 * 
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
-	public void updateConceptSetDerived() throws APIException;
-	
-	/**
 	 * @deprecated use {@link #getConceptSetsByConcept(Concept)}
 	 */
 	@Deprecated

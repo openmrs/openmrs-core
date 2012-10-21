@@ -65,11 +65,11 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
+import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.util.HttpClient;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
@@ -518,22 +518,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Deprecated
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
 		Context.getConceptService().updateConceptWords(conceptIdStart, conceptIdEnd);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void updateConceptSetDerived(Concept concept) throws APIException {
-		Context.getConceptService().updateConceptSetDerived(concept);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void updateConceptSetDerived() throws APIException {
-		Context.getConceptService().updateConceptSetDerived();
 	}
 	
 	/**
