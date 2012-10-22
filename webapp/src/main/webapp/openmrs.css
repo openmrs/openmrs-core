@@ -1396,3 +1396,11 @@ td.dataTables_empty{
 td.dataTables_empty:hover{
 	background-color: #BBCCF7;
 }
+.localeSpecific td {
+	background-color: whitesmoke;
+}
+a.selectedTab {
+	background-color: whitesmoke;
+	font-weight:bold;
+	text-decoration: none;
+}
