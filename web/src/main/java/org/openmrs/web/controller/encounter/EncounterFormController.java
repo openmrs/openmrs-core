@@ -14,6 +14,7 @@
 package org.openmrs.web.controller.encounter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
-import org.openmrs.validator.EncounterValidator;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Location;
@@ -50,9 +50,11 @@ import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.propertyeditor.FormEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.VisitEditor;
+import org.openmrs.util.MetadataComparator;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.EncounterValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -285,11 +287,14 @@ public class EncounterFormController extends SimpleFormController {
 			// used to restrict the form field lookup
 			Form form = encounter.getForm();
 			
-			map.put("encounterTypes", es.getAllEncounterTypes());
+			List<EncounterType> encTypes = es.getAllEncounterTypes();
+			// Non-retired types first
+			Collections.sort(encTypes, new MetadataComparator(Context.getLocale()));
+			map.put("encounterTypes", encTypes);
+			
 			map.put("encounterRoles", es.getAllEncounterRoles(false));
 			map.put("forms", Context.getFormService().getAllForms());
 			// loop over the encounter's observations to find the edited obs
-			String reason = "";
 			for (Obs o : encounter.getObsAtTopLevel(true)) {
 				
 				// only edited obs has previous version

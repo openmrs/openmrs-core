@@ -286,10 +286,18 @@
 				<spring:bind path="encounter.encounterType">
 					<c:choose>
 						<c:when test="${encounter.encounterId == null}">
+							<c:set var="groupOpen" value="false" />
 							<select name="encounterType">
 								<c:forEach items="${encounterTypes}" var="type">
-									<option value="${type.encounterTypeId}" <c:if test="${type.encounterTypeId == status.value}">selected</c:if>>${type.name}</option>
+									<c:if test="${type.retired && !groupOpen}">
+										<optgroup label="<openmrs:message code="Encounter.type.retired"/>">
+										<c:set var="groupOpen" value="true" />
+									</c:if>
+									<option value="${type.encounterTypeId}" <c:if test="${type.encounterTypeId == status.value}">selected</c:if>>${type.name}</option>								
 								</c:forEach>
+								<c:if test="${groupOpen}">
+									</optgroup>
+								</c:if>
 							</select>
 						</c:when>
 						<c:otherwise>
