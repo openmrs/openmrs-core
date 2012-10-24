@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This class unit tests methods in the PatientService class.
+ * This class unit tests methods in the ProgramWorkflowService class.
  * Unlike ProgramWorkflowServiceTest, this class does not extend
  * BaseContextSensitiveTest so as not to auto-wire the dependencies
  * of PatientService, hence implementing true unit (and not integration) tests
@@ -65,23 +65,12 @@ public class ProgramWorkflowServiceUnitTest {
 	public void getProgramByName_shouldFailWhenTwoProgramsFoundWithSameName() {
 		ProgramWorkflowDAO mockDao = Mockito.mock(ProgramWorkflowDAO.class);
 		List<Program> programsWithGivenName = new ArrayList<Program>();
-		Program program1 = createProgram("A name");
-		Program program2 = createProgram("A name");
+		Program program1 = new Program("A name");
+		Program program2 = new Program("A name");
 		programsWithGivenName.add(program1);
 		programsWithGivenName.add(program2);
 		Mockito.stub(mockDao.getProgramsByName("A name")).toReturn(programsWithGivenName);
 		pws.setProgramWorkflowDAO(mockDao);
 		pws.getProgramByName("A name");
-	}
-	
-	/**
-	 *  Utility method to instantiate a new program with the given name.
-	 **/
-	private static Program createProgram(String name) {
-		Program program = new Program();
-		program.setName(name);
-		program.setDescription("An test program");
-		program.setDateCreated(new Date());
-		return program;
 	}
 }
