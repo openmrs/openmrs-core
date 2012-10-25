@@ -7412,5 +7412,15 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
+	<changeSet id="20121025-TRUNK-213" author="lluismf">
+        <comment>Normalize varchar length of locale columns</comment>
+        <ext:modifyColumn tableName="concept_stop_word">
+			<column name="locale" type="varchar(50)"/>
+		</ext:modifyColumn>
+         <ext:modifyColumn tableName="concept_word">
+			<column name="locale" type="varchar(50)"/>
+		</ext:modifyColumn>
+    </changeSet>
+	
 </databaseChangeLog>
 
