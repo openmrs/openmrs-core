@@ -26,6 +26,7 @@ import org.openmrs.OpenmrsObject;
 import org.openmrs.Retireable;
 import org.openmrs.User;
 import org.openmrs.Voidable;
+import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -79,20 +80,6 @@ import org.springframework.util.StringUtils;
  * @since 1.5
  */
 public class RequiredDataAdvice implements MethodBeforeAdvice {
-	
-	// TODO put this somewhere and do it right and add class name, etc
-	// TODO do this with an annotation on the field? or on the method?
-	protected static List<String> fieldAccess = new ArrayList<String>();
-	
-	//private static Log log = LogFactory.getLog(RequiredDataAdvice.class);
-	
-	static {
-		fieldAccess.add("Concept.answers");
-		fieldAccess.add("Concept.names");
-		fieldAccess.add("Encounter.obs");
-		fieldAccess.add("Program.allWorkflows");
-		fieldAccess.add("Obs.groupMembers");
-	}
 	
 	/**
 	 * @see org.springframework.aop.MethodBeforeAdvice#before(java.lang.reflect.Method,
@@ -202,7 +189,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @return true if method's name ends with the mainArgumentClasses simple
 	 *         name
 	 */
-	private boolean methodNameEndsWithClassName(Method method, Class mainArgumentClass) {
+	private boolean methodNameEndsWithClassName(Method method, Class<?> mainArgumentClass) {
 		if (method.getName().endsWith(mainArgumentClass.getSimpleName()))
 			return true;
 		else {
@@ -295,24 +282,25 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	/**
 	 * This method gets a child attribute off of an OpenmrsObject. It usually uses the getter for
 	 * the attribute, but can use the direct field (even if its private) if told to by the
-	 * {@link #fieldAccess} list.
+	 * {@link #AllowDirectAccess} annotation.
 	 * 
 	 * @param openmrsObject the object to get the collection off of
 	 * @param field the name of the field that is the collection
 	 * @return the actual collection of objects that is on the given <code>openmrsObject</code>
 	 * @should get value of given child collection on given field
-	 * @should be able to get private fields in fieldAccess list
+	 * @should be able to get private fields annotated with AllowDirectAccess
 	 * @should throw APIException if getter method not found
 	 */
 	@SuppressWarnings("unchecked")
 	protected static Collection<OpenmrsObject> getChildCollection(OpenmrsObject openmrsObject, Field field) {
 		String fieldName = field.getName();
-		String classdotfieldname = field.getDeclaringClass().getSimpleName() + "." + fieldName;
 		String getterName = "get" + StringUtils.capitalize(fieldName);
 		
 		try {
-			// checks the fieldAccess list for something like "Concept.answers"
-			if (fieldAccess.contains(classdotfieldname)) {
+			
+			// checks if direct access is allowed
+			if (field.isAnnotationPresent(AllowDirectAccess.class)) {
+				
 				boolean previousFieldAccessibility = field.isAccessible();
 				field.setAccessible(true);
 				Collection<OpenmrsObject> childCollection = (Collection<OpenmrsObject>) field.get(openmrsObject);
@@ -329,7 +317,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			}
 		}
 		catch (IllegalAccessException e) {
-			if (fieldAccess.contains(classdotfieldname))
+			if (field.isAnnotationPresent(AllowDirectAccess.class))
 				throw new APIException("Unable to get field: " + fieldName + " on " + openmrsObject.getClass());
 			else
 				throw new APIException("Unable to use getter method: " + getterName + " for field: " + fieldName + " on "
@@ -355,23 +343,11 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @should return true if class is openmrsObject set
 	 * @should return false if collection is empty regardless of type held
 	 */
-	@SuppressWarnings("unchecked")
 	protected static boolean isOpenmrsObjectCollection(Object arg) {
 		
-		// kind of a hacky way to test for a list of openmrs objects, but java strips out
-		// the generic info for 1.4 compat, so we don't have access to that info here
-		try {
-			Collection<Object> objects = (Collection<Object>) arg;
-			if (!objects.isEmpty()) {
-				@SuppressWarnings("unused")
-				OpenmrsObject openmrsObject = (OpenmrsObject) objects.iterator().next();
-			} else {
-				return false;
-			}
-			return true;
-		}
-		catch (ClassCastException ex) {
-			// do nothing
+		if (arg instanceof Collection) {
+			Collection<?> col = (Collection<?>)arg;
+			return !col.isEmpty() && col.iterator().next() instanceof OpenmrsObject ;
 		}
 		return false;
 	}

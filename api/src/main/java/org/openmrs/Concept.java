@@ -30,6 +30,7 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -99,8 +100,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	private Date dateChanged;
 	
+	@AllowDirectAccess
 	private Collection<ConceptName> names;
 	
+	@AllowDirectAccess
 	private Collection<ConceptAnswer> answers;
 	
 	private Collection<ConceptSet> conceptSets;
