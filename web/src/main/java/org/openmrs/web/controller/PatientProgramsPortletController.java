@@ -24,7 +24,7 @@ import org.openmrs.api.context.Context;
 
 public class PatientProgramsPortletController extends PortletController {
 	
-	protected void populateModel(HttpServletRequest request, Map<String,Object>  model) {
+	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		if (!model.containsKey("programs")) {
 			List<Program> programs = Context.getProgramWorkflowService().getAllPrograms();
 			model.put("programs", programs);
