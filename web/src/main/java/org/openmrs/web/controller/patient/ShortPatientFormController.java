@@ -550,7 +550,7 @@ public class ShortPatientFormController {
 			if (!getPersonNameString(personName).equalsIgnoreCase(getPersonNameString(personNameCache))) {
 				if (log.isDebugEnabled())
 					log.debug("Voiding person name with id: " + personName.getId() + " and replacing it with a new one: "
-					        + personName.toString());
+					        + personName.getFullName());
 				foundChanges = true;
 				// create a new one and copy the changes to it
 				PersonName newName = PersonName.newInstance(personName);
@@ -569,7 +569,7 @@ public class ShortPatientFormController {
 				personName.setPreferred(false);
 				personName.setVoided(true);
 				personName.setVoidReason(Context.getMessageSourceService().getMessage("general.voidReasonWithArgument",
-				    new Object[] { newName.toString() }, "Voided because it was edited to: " + newName.toString(),
+				    new Object[] { newName.getFullName() }, "Voided because it was edited to: " + newName.getFullName(),
 				    Context.getLocale()));
 				
 				// add the created name

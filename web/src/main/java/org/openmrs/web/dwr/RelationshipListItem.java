@@ -57,7 +57,7 @@ public class RelationshipListItem {
 		bIsToA = r.getRelationshipType().getbIsToA();
 		
 		Person p = r.getPersonA();
-		personA = p.getPersonName().toString();
+		personA = p.getPersonName().getFullName();
 		personAId = p.getPersonId();
 		try {
 			personAType = p.isPatient() ? "Patient" : "User";
@@ -67,7 +67,7 @@ public class RelationshipListItem {
 		}
 		
 		p = r.getPersonB();
-		personB = p.getPersonName().toString();
+		personB = p.getPersonName().getFullName();
 		personBId = p.getPersonId();
 		try {
 			personBType = p.isPatient() ? "Patient" : "User";

@@ -37,7 +37,7 @@ public class ProviderListItem {
 	public ProviderListItem(Provider provider) {
 		Person person = provider.getPerson();
 		if (person != null) {
-			displayName = person.getPersonName().toString();
+			displayName = person.getPersonName().getFullName();
 		} else {
 			displayName = provider.getName();
 		}

@@ -482,7 +482,7 @@ public class FormatTag extends TagSupport {
 		sb.append("</span>");
 		if (u.getPerson() != null) {
 			sb.append("<span class=\"personName\">");
-			sb.append(" (").append(u.getPersonName()).append(")");
+			sb.append(" (").append(u.getPersonName().getFullName()).append(")");
 			sb.append("</span>");
 		}
 		sb.append("</span>");
@@ -496,7 +496,7 @@ public class FormatTag extends TagSupport {
 	 */
 	private void printPerson(StringBuilder sb, Person p) {
 		if (p != null)
-			sb.append(p.getPersonName());
+			sb.append(p.getPersonName().getFullName());
 	}
 	
 	/**

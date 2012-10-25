@@ -64,7 +64,7 @@ public class ObsListItem {
 				encounterDate = encounterDatetime == null ? "" : Format.format(encounterDatetime, locale, FORMAT_TYPE.DATE);
 				encounterName = obs.getEncounter().getForm() == null ? "" : obs.getEncounter().getForm().getName();
 			}
-			personName = obs.getPerson().getPersonName().toString();
+			personName = obs.getPerson().getPersonName().getFullName();
 			conceptName = obs.getConcept().getName(locale).getName();
 			if (obs.getOrder() != null)
 				order = obs.getOrder().getOrderId().toString();
