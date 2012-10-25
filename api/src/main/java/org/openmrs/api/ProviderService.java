@@ -193,11 +193,26 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * @param query
 	 * @return Count-Integer
-	 * @should fetch number of provider matching given query.
+	 * @should exclude retired providers
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public Integer getCountOfProviders(String query);
+	
+	/**
+	 * Gets the count of providers with a person name or identifier or name that matches the
+	 * specified query
+	 * 
+	 * @param query the text to match
+	 * @param includeRetired specifies whether retired providers should be include or not
+	 * @return Count-Integer
+	 * @should fetch number of provider matching given query
+	 * @should include retired providers if includeRetired is set to true
+	 * @since 1.9.2
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
+	public Integer getCountOfProviders(String query, boolean includeRetired);
 	
 	/**
 	 * Gets all provider attribute types including retired provider attribute types. This method
