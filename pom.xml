@@ -832,7 +832,7 @@
 
    <properties>
       <javaCompilerVersion>1.6</javaCompilerVersion>
-      <maven.build.timestamp.format>MMM dd yyyy hh:mm aa</maven.build.timestamp.format>
+      <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
       <TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
       
       <openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion} ${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
