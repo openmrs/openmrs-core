@@ -17,8 +17,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptStopWordException;
@@ -40,9 +38,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping(value = "admin/concepts/conceptStopWord.list")
 public class ConceptStopWordListController {
-	
-	/** Logger for this class and subclasses */
-	private static final Log log = LogFactory.getLog(ConceptStopWordListController.class);
 	
 	/**
 	 * Handle the delete action
@@ -67,7 +62,6 @@ public class ConceptStopWordListController {
 					session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "general.deleted");
 				}
 				catch (ConceptStopWordException e) {
-					log.error("Error on deleting concept stop word", e);
 					session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
 				}
 			}
