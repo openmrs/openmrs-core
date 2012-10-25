@@ -22,6 +22,9 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -113,8 +116,17 @@ public class UserValidator implements Validator {
 		// complete meaning = 2-50 characters, the first must be a letter, digit, or _, and the rest may also be - or .
 		String expression = "^[\\w][\\Q_\\E\\w-\\.]{1,49}$";
 		
-		// empty usernames are allowed
-		if (!StringUtils.hasLength((username)))
+		// force emails as usernames if GP is true
+		AdministrationService as = Context.getAdministrationService();
+		boolean requireEmailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
+		   OpenmrsConstants.GLOBAL_PROPERTY_USER_EMAIL_AS_USERNAME, "false"));
+		if (requireEmailAsUsername){
+				expression = "\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b";
+				//force to have an email as username with an @ and .
+				if (!username.contains("@") || !username.contains("."))
+					return false;
+		// empty usernames are allowed if not using email
+		} else if (!StringUtils.hasLength((username)))
 			return true;
 		
 		try {
