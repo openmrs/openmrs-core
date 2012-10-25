@@ -6,7 +6,7 @@
 <project name="OpenMRS-1.7.x" default="dist">
 
 	<tstamp>
-		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" />
+		<format property="timestamp" pattern="yyyy-MM-dd HH:mm" />
 	</tstamp>
 
 	<!-- Environment properties -->
