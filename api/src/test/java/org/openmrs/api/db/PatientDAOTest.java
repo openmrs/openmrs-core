@@ -231,7 +231,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getAllPatientIdentifierTypes_shouldNotReturnNullExcludingRetired() throws Exception {
 		Assert.assertNotNull(dao.getAllPatientIdentifierTypes(false));
 	}
-
+	
 	/**
 	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
 	 * @verifies not return retired
@@ -241,7 +241,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getAllPatientIdentifierTypes(false);
 		Assert.assertEquals("patientIdentifierTypes list should have 2 elements", 2, patientIdentifierTypes.size());
 	}
-
+	
 	/**
 	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
 	 * @verifies not return null including retired
@@ -250,7 +250,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getAllPatientIdentifierTypes_shouldNotReturnNullIncludingRetired() throws Exception {
 		Assert.assertNotNull(dao.getAllPatientIdentifierTypes(true));
 	}
-
+	
 	/**
 	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
 	 * @verifies return all

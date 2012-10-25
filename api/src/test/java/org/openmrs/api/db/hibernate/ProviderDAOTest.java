@@ -60,7 +60,7 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProvidersByPerson_shouldListRetiredProvidersAtTheEnd() throws Exception {
-		List<Provider> providers = (List<Provider>) providerDao.getProvidersByPerson(personDao.getPerson(2), true);	
+		List<Provider> providers = (List<Provider>) providerDao.getProvidersByPerson(personDao.getPerson(2), true);
 		Assert.assertEquals(true, providers.get(1).getRetired());
 	}
 	
