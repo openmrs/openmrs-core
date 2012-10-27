@@ -42,7 +42,6 @@ import org.openmrs.order.DrugOrderSupport;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.validator.ValidateUtil;
 
 /**
  * Default implementation of the Order-related services class. This class should not be invoked by
@@ -537,4 +536,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		return getOrders(Order.class, null, null, orderers, null, null, null, null);
 	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderHistoryByOrderNumber(java.lang.String)
+	 */
+	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
+		return dao.getOrderHistoryByOrderNumber(orderNumber);
+	}
+	
 }
