@@ -246,7 +246,9 @@ public class ObsFormController extends SimpleFormController {
 			map.put("forms", Context.getFormService().getAllForms());
 			
 			if (obs.getConcept() != null) {
-				map.put("conceptName", obs.getConcept().getName(request.getLocale()));
+				// Reload concept because it can be dettached
+				Concept concept = Context.getConceptService().getConcept(obs.getConcept().getConceptId());
+				map.put("conceptName", concept.getName(request.getLocale()));
 				
 				ObsService os = Context.getObsService();
 				Integer obsId = obs.getObsId();
