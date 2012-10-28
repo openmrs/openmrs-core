@@ -798,6 +798,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_IMPLEMENTATION_ID = "implementation_id";
 	
+	public static final String GLOBAL_PROPERTY_NEWPATIENTFORM_SHOW_RELATIONSHIPS = "new_patient_form.showRelationships";
+	
 	public static final String GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS = "newPatientForm.relationships";
 	
 	public static final String GLOBAL_PROPERTY_COMPLEX_OBS_DIR = "obs.complex_obs_dir";
@@ -924,8 +926,8 @@ public final class OpenmrsConstants {
 		        "Indicates whether or not the 'health center' attribute is shown when viewing/searching for patients"));
 		props.add(new GlobalProperty("use_patient_attribute.mothersName", "false",
 		        "Indicates whether or not mother's name is able to be added/viewed for a patient"));
-		
-		props.add(new GlobalProperty("new_patient_form.showRelationships", "false",
+
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_NEWPATIENTFORM_SHOW_RELATIONSHIPS, "false",
 		        "true/false whether or not to show the relationship editor on the addPatient.htm screen"));
 		
 		props.add(new GlobalProperty("dashboard.overview.showConcepts", "",
