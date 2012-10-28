@@ -354,6 +354,15 @@ public class ShortPatientFormController {
 	@ModelAttribute("relationshipsMap")
 	private Map<String, Relationship> getRelationshipsMap(@ModelAttribute("patientModel") ShortPatientModel patientModel,
 	        WebRequest request) {
+		
+		// Check if relationships must be shown
+		String showRelationships = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_NEWPATIENTFORM_SHOW_RELATIONSHIPS, "false");
+		
+		if ("false".equals(showRelationships)) {
+			return new LinkedHashMap<String, Relationship>();
+		}
+		
 		Person person = patientModel.getPatient();
 		Map<String, Relationship> relationshipMap = new LinkedHashMap<String, Relationship>();
 		
