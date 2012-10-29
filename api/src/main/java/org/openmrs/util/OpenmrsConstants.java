@@ -805,6 +805,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_IMPLEMENTATION_ID = "implementation_id";
 	
+	public static final String GLOBAL_PROPERTY_NEWPATIENTFORM_SHOW_RELATIONSHIPS = "new_patient_form.showRelationships";
+
 	public static final String GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS = "newPatientForm.relationships";
 	
 	public static final String GLOBAL_PROPERTY_COMPLEX_OBS_DIR = "obs.complex_obs_dir";
