@@ -750,6 +750,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES = "user.headerAttributeTypes";
 	
+	public static final String GLOBAL_PROPERTY_USER_EMAIL_AS_USERNAME = "user.emailAsUsername";
+	
 	public static final String GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY = "hl7_archive.dir";
 	
 	public static final String GLOBAL_PROPERTY_DEFAULT_THEME = "default_theme";
@@ -764,7 +766,7 @@ public final class OpenmrsConstants {
 	public static final String[] GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES = { GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES,
 	        GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES,
 	        GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES,
-	        GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES };
+	        GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, GLOBAL_PROPERTY_USER_EMAIL_AS_USERNAME };
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX = "patient.identifierRegex";
 	
@@ -1460,6 +1462,11 @@ public final class OpenmrsConstants {
 		                GP_DASHBOARD_METADATA_CASE_CONVERSION,
 		                "",
 		                "Indicates which type automatic case conversion is applied to program/workflow/state in the patient dashboard. Valid values: lowercase, uppercase, capitalize. If empty no conversion is applied."));
+		
+		props.add(new GlobalProperty(
+						GLOBAL_PROPERTY_USER_EMAIL_AS_USERNAME, 
+						"false",
+						"Whether an email address is allowed as a username"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

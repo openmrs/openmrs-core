@@ -19,9 +19,13 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -78,8 +82,16 @@ public class UserValidator implements Validator {
 					errors.rejectValue("person", "Person.names.length");
 			}
 		}
-		
-		if (!isUserNameValid(user.getUsername()))
+		AdministrationService as = Context.getAdministrationService(); 
+		boolean emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
+						    OpenmrsConstants.GLOBAL_PROPERTY_USER_EMAIL_AS_USERNAME, "false"));
+		boolean isValidUserName = false;
+		if (emailAsUsername){
+			isValidUserName = isUserNameAsEmailValid(user.getUsername());
+		} else {
+			isValidUserName = isUserNameValid(user.getUsername());
+		}
+		if (!isValidUserName)
 			errors.rejectValue("username", "error.username.pattern");
 	}
 	
@@ -104,7 +116,7 @@ public class UserValidator implements Validator {
 	 * @should validate when username is the empty string
 	 * @should not validate when username is whitespace only
 	 */
-	public boolean isUserNameValid(String username) {
+	public boolean isUserNameValid(String username) {		
 		//Initialize reg ex for userName pattern
 		// ^ = start of line
 		// \w = [a-zA-Z_0-9]
@@ -112,7 +124,6 @@ public class UserValidator implements Validator {
 		// $ = end of line
 		// complete meaning = 2-50 characters, the first must be a letter, digit, or _, and the rest may also be - or .
 		String expression = "^[\\w][\\Q_\\E\\w-\\.]{1,49}$";
-		
 		// empty usernames are allowed
 		if (!StringUtils.hasLength((username)))
 			return true;
@@ -129,4 +140,12 @@ public class UserValidator implements Validator {
 		}
 	}
 	
+	public boolean isUserNameAsEmailValid(String username){
+		if (!StringUtils.hasLength((username))){
+			return false;
+		}
+		EmailValidator  validator = EmailValidator.getInstance();
+		return validator.isValid(username);	
+		
+	}	
 }

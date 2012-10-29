@@ -15,17 +15,22 @@ package org.openmrs.validator;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
 /**
  * Tests methods on the {@link UserValidator} class.
  */
-public class UserValidatorTest {
+public class UserValidatorTest  extends BaseContextSensitiveTest  {
 	
 	/**
 	 * @see {@link UserValidator#isUserNameValid(String)}
@@ -176,5 +181,71 @@ public class UserValidatorTest {
 	public void isUserNameValid_shouldNotValidateWhenUsernameIsWhitespaceOnly() throws Exception {
 		UserValidator userValidator = new UserValidator();
 		Assert.assertFalse(userValidator.isUserNameValid("  "));
+	}
+	/**
+	 * @see {@link UserValidator#isUserNameAsEmailValid(String)}
+	 */
+	@Test
+	@Verifies(value = "should not valid", method = "isUserNameAsEmailValid(String)")
+	public void isUserNameAsEmail_valid() {		
+		UserValidator userValidator = new UserValidator();
+		String[] invalids = new String[] {
+				   "mkyong","mkyong@.com.my","mkyong123@gmail.a",
+				   "mkyong123@.com","mkyong123@.com.com",
+	                           ".mkyong@mkyong.com","mkyong()*@gmail.com",
+				    "mkyong@%*.com", "mkyong..2002@gmail.com",
+				   "mkyong.@gmail.com","mkyong@mkyong@gmail.com", 
+	                           "mkyong@gmail.com.1a" 
+				   };
+		for (String email: invalids){
+			Assert.assertFalse(userValidator.isUserNameAsEmailValid(email));
+		}
+
+	}	
+	/**
+	 * @see {@link UserValidator#isUserNameAsEmailValid(String)}
+	 */
+	@Test
+	@Verifies(value = "should validate", method = "isUserNameAsEmailValid(String)")
+	public void isUserNameAsEmail_invalid() {
+		UserValidator userValidator = new UserValidator();
+		String[] valids = new String[] {
+				   "mkyong@yahoo.com", "mkyong-100@yahoo.com",
+                   "mkyong.100@yahoo.com" ,"mkyong111@mkyong.com", 
+	   "mkyong-100@mkyong.net","mkyong.100@mkyong.com.au",
+	   "mkyong@1.com", "mkyong@gmail.com.com"
+	    };
+		for (String email: valids){
+			Assert.assertTrue(userValidator.isUserNameAsEmailValid(email));
+		}
+	}
+	@Test
+	@Verifies(value = "should invalid", method = "validate(Object, Errors)")
+	public void invalidUsernameAsEmail_turnOff() {
+		User user = new User();
+		user.setUsername("test@example.com");
+		
+		AdministrationService as = Context.getAdministrationService(); 
+		as.saveGlobalProperty(  new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_EMAIL_AS_USERNAME, "false"));
+				
+		Errors errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("username"));
+	}
+	
+	@Test
+	@Verifies(value = "should valid", method = "validate(Object, Errors)")
+	public void invalidUsernameAsEmail_turnOn() {
+		User user = new User();
+		user.setUsername("test@example.com");
+		
+		AdministrationService as = Context.getAdministrationService(); 
+		as.saveGlobalProperty(  new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_EMAIL_AS_USERNAME, "true"));
+				
+		Errors errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		
+		Assert.assertFalse(errors.hasFieldErrors("username"));
 	}
 }
