@@ -1135,7 +1135,8 @@ public class Context {
 	 */
 	public static Object getVolatileUserData(String key) {
 		User u = getAuthenticatedUser();
-		if (u == null) throw new APIAuthenticationException();
+		if (u == null)
+			throw new APIAuthenticationException();
 		Map<String, Object> myData = volatileUserData.get(u);
 		if (myData == null)
 			return null;
@@ -1153,7 +1154,8 @@ public class Context {
 	 */
 	public static void setVolatileUserData(String key, Object value) {
 		User u = getAuthenticatedUser();
-		if (u == null) throw new APIAuthenticationException();
+		if (u == null)
+			throw new APIAuthenticationException();
 		Map<String, Object> myData = volatileUserData.get(u);
 		if (myData == null) {
 			myData = new HashMap<String, Object>();
