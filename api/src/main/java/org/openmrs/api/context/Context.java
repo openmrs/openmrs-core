@@ -35,6 +35,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
@@ -1134,8 +1135,7 @@ public class Context {
 	 */
 	public static Object getVolatileUserData(String key) {
 		User u = getAuthenticatedUser();
-		if (u == null)
-			return null;
+		if (u == null) throw new APIAuthenticationException();
 		Map<String, Object> myData = volatileUserData.get(u);
 		if (myData == null)
 			return null;
@@ -1153,8 +1153,7 @@ public class Context {
 	 */
 	public static void setVolatileUserData(String key, Object value) {
 		User u = getAuthenticatedUser();
-		if (u == null) // TODO: throw something here
-			return;
+		if (u == null) throw new APIAuthenticationException();
 		Map<String, Object> myData = volatileUserData.get(u);
 		if (myData == null) {
 			myData = new HashMap<String, Object>();
