@@ -283,9 +283,9 @@ public class ConceptValidator implements Validator {
 				        + "' cannot be an empty string or white space or null");
 				hasAtLeastOneValidDescription = false;
 			}
-			if (!hasAtLeastOneValidDescription)
-				errors.reject("Concept.error.notAtLeastOneNonBlank/NullDescription");
 		}
+		if (!hasAtLeastOneValidDescription)
+			errors.reject("Concept.error.notAtLeastOneNonBlank/NullDescription");
 		
 	}
 }
