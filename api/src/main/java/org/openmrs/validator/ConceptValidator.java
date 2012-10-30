@@ -100,23 +100,6 @@ public class ConceptValidator implements Validator {
 			return;
 		}
 		
-		// TRUNK-3616
-		// ConceptValidator should require at least one description for a concept
-		boolean hasAtLeastOneValidDescription = true;
-		
-		Collection<ConceptDescription> conceptDescriptions = conceptToValidate.getDescriptions();
-		
-		for (ConceptDescription conceptDescription : conceptDescriptions) {
-			//if (StringUtils.isBlank(conceptDescription.getDescription()) || conceptDescription == null) {
-			if (StringUtils.isBlank(conceptDescription.getDescription()) || conceptDescription.getDescription() == null) {
-				log.debug("Description'" + conceptDescription.getDescription()
-				        + "' cannot be an empty string or white space or null");
-				hasAtLeastOneValidDescription = false;
-			}
-			if (!hasAtLeastOneValidDescription)
-				errors.reject("Concept.error.notAtLeastOneNonBlank/NullDescription");
-		}
-		
 		boolean hasFullySpecifiedName = false;
 		for (Locale conceptNameLocale : conceptToValidate.getAllConceptNameLocales()) {
 			boolean fullySpecifiedNameForLocaleFound = false;
@@ -289,5 +272,20 @@ public class ConceptValidator implements Validator {
 				index++;
 			}
 		}
+		// TRUNK-3616
+		// ConceptValidator should require at least one non null/blank description for a concept
+		boolean hasAtLeastOneValidDescription = true;
+		Collection<ConceptDescription> conceptDescriptions = conceptToValidate.getDescriptions();
+		
+		for (ConceptDescription conceptDescription : conceptDescriptions) {
+			if (StringUtils.isBlank(conceptDescription.getDescription()) || conceptDescription.getDescription() == null) {
+				log.debug("Description'" + conceptDescription.getDescription()
+				        + "' cannot be an empty string or white space or null");
+				hasAtLeastOneValidDescription = false;
+			}
+			if (!hasAtLeastOneValidDescription)
+				errors.reject("Concept.error.notAtLeastOneNonBlank/NullDescription");
+		}
+		
 	}
 }

@@ -442,4 +442,5 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(true, errors.hasErrors());
 	}
+	
 }
