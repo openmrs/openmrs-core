@@ -50,7 +50,7 @@
 								aoData.push( { "name": "openmrs_version", "value": "${openmrsVersion}" } );
 
 								<c:forEach var="module" items="${loadedModules}">
-								  aoData.push( { "name": "excludeModule", "value": "${module.moduleId}" } );
+								  aoData.push( { "name": "excludeModule", "value": "${module.packageName}" } );
 								</c:forEach>
 
 								$j.ajax( {
@@ -150,8 +150,8 @@
 	</c:if>
 			
 				<form method="post">
-					<input type="hidden" name="moduleId" value="${module.moduleId}" />
-					<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" }' id="${module.moduleId}">
+					<input type="hidden" name="modulePackageName" value="${module.packageName}" />
+					<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" }' id="${module.packageName}">
 						<c:choose>
 							<c:when test="${allowAdmin=='true' && module.mandatory == false && module.coreModule == false}">
 								<td valign="top">

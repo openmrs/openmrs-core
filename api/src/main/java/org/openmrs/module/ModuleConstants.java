@@ -22,14 +22,14 @@ import java.util.Map;
 public class ModuleConstants {
 	
 	/**
-	 * A map from "moduleid" to "required version" for all core modules that are required by
+	 * A map from "packageName" to "required version" for all core modules that are required by
 	 * openmrs. A module with at least the given version is required to start before openmrs will
 	 * fully start.
 	 */
 	public static final Map<String, String> CORE_MODULES = new HashMap<String, String>();
 	
 	static {
-		CORE_MODULES.put("logic", "0.5.2");
+		CORE_MODULES.put("org.openmrs.module.logic", "0.5.2");
 	}
 	
 	/**

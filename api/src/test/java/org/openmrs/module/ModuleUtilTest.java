@@ -302,6 +302,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	public void getPathForResource_shouldHandleUiSpringmvcCssUiDotCssExample() throws Exception {
 		Module module = new Module("Unit test");
 		module.setModuleId("ui.springmvc");
+		module.setPackageName("org.openmrs.module." + module.getModuleId());
 		String path = "/ui/springmvc/css/ui.css";
 		Assert.assertEquals("/css/ui.css", ModuleUtil.getPathForResource(module, path));
 	}
@@ -315,6 +316,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		ModuleFactory.getStartedModulesMap().clear();
 		Module module = new Module("For Unit Test");
 		module.setModuleId("ui.springmvc");
+		module.setPackageName("org.openmrs.module." + module.getModuleId());
 		ModuleFactory.getStartedModulesMap().put(module.getModuleId(), module);
 		
 		String path = "/ui/springmvc/css/ui.css";
@@ -330,6 +332,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		ModuleFactory.getStartedModulesMap().clear();
 		Module module = new Module("For Unit Test");
 		module.setModuleId("ui");
+		module.setPackageName("org.openmrs.module." + module.getModuleId());
 		ModuleFactory.getStartedModulesMap().put(module.getModuleId(), module);
 		
 		String path = "/ui/springmvc/css/ui.css";

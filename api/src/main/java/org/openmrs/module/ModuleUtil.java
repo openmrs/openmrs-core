@@ -149,7 +149,7 @@ public class ModuleUtil {
 		
 		for (Module mod : modules) {
 			if (log.isDebugEnabled())
-				log.debug("stopping module: " + mod.getModuleId());
+				log.debug("stopping module: " + mod.getPackageName());
 			
 			if (mod.isStarted())
 				ModuleFactory.stopModule(mod, true, true);
@@ -573,11 +573,12 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Convenience method to follow http to https redirects.  Will follow a total of 5 redirects, 
+	 * Convenience method to follow http to https redirects. Will follow a total of 5 redirects,
 	 * then fail out due to foolishness on the url's part.
 	 * 
 	 * @param c the {@link URLConnection} to open
-	 * @return an {@link InputStream} that is not necessarily at the same url, possibly at a 403 redirect.
+	 * @return an {@link InputStream} that is not necessarily at the same url, possibly at a 403
+	 *         redirect.
 	 * @throws IOException
 	 * @see {@link #getURLStream(URL)}
 	 */
@@ -688,7 +689,7 @@ public class ModuleUtil {
 					UpdateFileParser parser = new UpdateFileParser(content);
 					parser.parse();
 					
-					log.debug("Update for mod: " + mod.getModuleId() + " compareVersion result: "
+					log.debug("Update for mod: " + mod.getPackageName() + " compareVersion result: "
 					        + compareVersion(mod.getVersion(), parser.getCurrentVersion()));
 					
 					// check the udpate.rdf version against the installed version
@@ -815,7 +816,7 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Looks at the <moduleid>.mandatory properties and at the currently started modules to make
+	 * Looks at the <packageName>.mandatory properties and at the currently started modules to make
 	 * sure that all mandatory modules have been started successfully.
 	 * 
 	 * @throws ModuleException if a mandatory module isn't started
@@ -823,14 +824,14 @@ public class ModuleUtil {
 	 */
 	protected static void checkMandatoryModulesStarted() throws ModuleException {
 		
-		List<String> mandatoryModuleIds = getMandatoryModules();
-		Set<String> startedModuleIds = ModuleFactory.getStartedModulesMap().keySet();
+		List<String> mandatoryModulePackageNames = getMandatoryModules();
+		Set<String> startedModulePackageNames = ModuleFactory.getStartedModulesMap().keySet();
 		
-		mandatoryModuleIds.removeAll(startedModuleIds);
+		mandatoryModulePackageNames.removeAll(startedModulePackageNames);
 		
-		// any module ids left in the list are not started
-		if (mandatoryModuleIds.size() > 0) {
-			throw new MandatoryModuleException(mandatoryModuleIds);
+		// any module package names left in the list are not started
+		if (mandatoryModulePackageNames.size() > 0) {
+			throw new MandatoryModuleException(mandatoryModulePackageNames);
 		}
 	}
 	
@@ -855,13 +856,13 @@ public class ModuleUtil {
 		
 		// loop through the current modules and test them
 		for (Module mod : startedModules) {
-			String moduleId = mod.getModuleId();
-			if (coreModules.containsKey(moduleId)) {
-				String coreReqVersion = coreModules.get(moduleId);
+			String packageName = mod.getPackageName();
+			if (coreModules.containsKey(packageName)) {
+				String coreReqVersion = coreModules.get(packageName);
 				if (compareVersion(mod.getVersion(), coreReqVersion) >= 0)
-					coreModules.remove(moduleId);
+					coreModules.remove(packageName);
 				else
-					log.debug("Module: " + moduleId + " is a core module and is started, but its version: "
+					log.debug("Module: " + packageName + " is a core module and is started, but its version: "
 					        + mod.getVersion() + " is not within the required version: " + coreReqVersion);
 			}
 		}
@@ -885,21 +886,21 @@ public class ModuleUtil {
 	
 	/**
 	 * Returns all modules that are marked as mandatory. Currently this means there is a
-	 * <moduleid>.mandatory=true global property.
+	 * <packageName>.mandatory=true global property.
 	 * 
 	 * @return list of modules ids for mandatory modules
 	 * @should return mandatory module ids
 	 */
 	public static List<String> getMandatoryModules() {
 		
-		List<String> mandatoryModuleIds = new ArrayList<String>();
+		List<String> mandatoryModulePackageNames = new ArrayList<String>();
 		
 		try {
 			List<GlobalProperty> props = Context.getAdministrationService().getGlobalPropertiesBySuffix(".mandatory");
 			
 			for (GlobalProperty prop : props) {
 				if ("true".equalsIgnoreCase(prop.getPropertyValue())) {
-					mandatoryModuleIds.add(prop.getProperty().replace(".mandatory", ""));
+					mandatoryModulePackageNames.add(prop.getProperty().replace(".mandatory", ""));
 				}
 			}
 		}
@@ -907,7 +908,7 @@ public class ModuleUtil {
 			log.warn("Unable to get the mandatory module list", t);
 		}
 		
-		return mandatoryModuleIds;
+		return mandatoryModulePackageNames;
 	}
 	
 	/**

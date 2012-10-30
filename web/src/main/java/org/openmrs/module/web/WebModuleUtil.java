@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -73,6 +74,11 @@ import org.xml.sax.SAXException;
 public class WebModuleUtil {
 	
 	private static Log log = LogFactory.getLog(WebModuleUtil.class);
+	
+	/**
+	 * Prefix for module view names
+	 */
+	public static final String MODULE_VIEW_NAME_PREFIX = "module/";
 	
 	private static DispatcherServlet dispatcherServlet = null;
 	
@@ -197,19 +203,19 @@ public class WebModuleUtil {
 						
 						StringBuffer absPath = new StringBuffer(realPath + "/WEB-INF");
 						
-						// If this is within the tag file directory, copy it into /WEB-INF/tags/module/moduleId/...
+						// If this is within the tag file directory, copy it into /WEB-INF/tags/module/packageName/...
 						if (filepath.startsWith("tags/")) {
 							filepath = filepath.substring(5);
 							absPath.append("/tags/module/");
 						}
-						// Otherwise, copy it into /WEB-INF/view/module/moduleId/...
+						// Otherwise, copy it into /WEB-INF/view/module/packageName/...
 						else {
 							absPath.append("/view/module/");
 						}
 						
 						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
 						// ui.springmvc should go in folder names like .../ui/springmvc/...
-						absPath.append(mod.getModuleIdAsPath() + "/" + filepath);
+						absPath.append(mod.getModulePackageAsPath() + "/" + filepath);
 						if (log.isDebugEnabled())
 							log.debug("Moving file from: " + name + " to " + absPath);
 						
@@ -241,12 +247,12 @@ public class WebModuleUtil {
 					} else if (name.equals(mod.getModuleId() + "Context.xml")) {
 						String msg = "DEPRECATED: '" + name
 						        + "' should be named 'moduleApplicationContext.xml' now. Please update/upgrade. ";
-						throw new ModuleException(msg, mod.getModuleId());
+						throw new ModuleException(msg, mod.getPackageName());
 					}
 				}
 			}
 			catch (IOException io) {
-				log.warn("Unable to copy files from module " + mod.getModuleId() + " to the web layer", io);
+				log.warn("Unable to copy files from module " + mod.getPackageName() + " to the web layer", io);
 			}
 			finally {
 				if (jarFile != null) {
@@ -278,7 +284,7 @@ public class WebModuleUtil {
 					while (current != null) {
 						if ("allow".equals(current.getNodeName()) || "signatures".equals(current.getNodeName())
 						        || "init".equals(current.getNodeName())) {
-							((Element) current).setAttribute("moduleId", mod.getModuleId());
+							((Element) current).setAttribute("packageName", mod.getPackageName());
 							outputRoot.appendChild(dwrmodulexml.importNode(current, true));
 						}
 						
@@ -307,7 +313,7 @@ public class WebModuleUtil {
 			
 			// mark to delete the entire module web directory on exit
 			// this will usually only be used when an improper shutdown has occurred.
-			String folderPath = realPath + "/WEB-INF/view/module/" + mod.getModuleIdAsPath();
+			String folderPath = realPath + "/WEB-INF/view/module/" + mod.getModulePackageAsPath();
 			File outFile = new File(folderPath.replace("/", File.separator));
 			outFile.deleteOnExit();
 			
@@ -338,7 +344,7 @@ public class WebModuleUtil {
 					mod.setStartupErrorMessage(msg, e);
 					
 					if (log.isWarnEnabled())
-						log.warn(msg + " for module: " + mod.getModuleId(), e);
+						log.warn(msg + " for module: " + mod.getPackageName(), e);
 					
 					try {
 						stopModule(mod, servletContext, true);
@@ -459,7 +465,7 @@ public class WebModuleUtil {
 			}
 			catch (Throwable t) {
 				log.warn("Unable to initialize servlet: ", t);
-				throw new ModuleException("Unable to initialize servlet: " + httpServlet, mod.getModuleId(), t);
+				throw new ModuleException("Unable to initialize servlet: " + httpServlet, mod.getPackageName(), t);
 			}
 			
 			// don't allow modules to overwrite servlets of other modules.
@@ -470,7 +476,7 @@ public class WebModuleUtil {
 				        + otherServletUsingSameName.getClass().getName();
 				throw new ModuleException("A servlet mapping with name " + name + " is already in use and pointing at: "
 				        + otherServletName + " from another installed module and this module is trying"
-				        + " to use that same name.  Either the module attempting to be installed (" + mod.getModuleId()
+				        + " to use that same name.  Either the module attempting to be installed (" + mod.getPackageName()
 				        + ") will not work or the other one will not.  Please consult the developers of these two"
 				        + " modules to sort this out.");
 			}
@@ -535,16 +541,16 @@ public class WebModuleUtil {
 			throw e;
 		}
 		catch (Exception e) {
-			throw new ModuleException("An error occurred initializing Filters for module: " + module.getModuleId(), e);
+			throw new ModuleException("An error occurred initializing Filters for module: " + module.getPackageName(), e);
 		}
 		moduleFilters.put(module, filters.values());
 		moduleFiltersByName.putAll(filters);
-		log.debug("Module: " + module.getModuleId() + " successfully loaded " + filters.size() + " filters.");
+		log.debug("Module: " + module.getPackageName() + " successfully loaded " + filters.size() + " filters.");
 		
 		// Load Filter Mappings
 		List<ModuleFilterMapping> modMappings = ModuleFilterMapping.retrieveFilterMappings(module);
 		moduleFilterMappings.addAll(modMappings);
-		log.debug("Module: " + module.getModuleId() + " successfully loaded " + modMappings.size() + " filter mappings.");
+		log.debug("Module: " + module.getPackageName() + " successfully loaded " + modMappings.size() + " filter mappings.");
 	}
 	
 	/**
@@ -575,7 +581,7 @@ public class WebModuleUtil {
 			catch (Exception e) {
 				log.warn("An error occurred while trying to destroy and remove module Filter.", e);
 			}
-			log.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
+			log.debug("Module: " + module.getPackageName() + " successfully unloaded " + filters.size() + " filters.");
 			moduleFilters.remove(module);
 			
 			for (Iterator<String> i = moduleFiltersByName.keySet().iterator(); i.hasNext();) {
@@ -715,7 +721,6 @@ public class WebModuleUtil {
 	 */
 	private static void stopModule(Module mod, ServletContext servletContext, boolean skipRefresh) {
 		
-		String moduleId = mod.getModuleId();
 		String modulePackage = mod.getPackageName();
 		
 		// stop all dependent modules
@@ -727,7 +732,8 @@ public class WebModuleUtil {
 		String realPath = servletContext.getRealPath("");
 		
 		// delete the web files from the webapp
-		String absPath = realPath + "/WEB-INF/view/module/" + moduleId;
+		String absPath = realPath + "/WEB-INF/view/module/" + mod.getModulePackageAsPath();
+		
 		File moduleWebFolder = new File(absPath.replace("/", File.separator));
 		if (moduleWebFolder.exists()) {
 			try {
@@ -762,15 +768,15 @@ public class WebModuleUtil {
 				
 				// loop over all of the children of the "dwr" tag
 				// and remove all "allow" and "signature" tags that have the
-				// same moduleId attr as the module being stopped
+				// same packageName attr as the module being stopped
 				NodeList nodeList = outputRoot.getChildNodes();
 				int i = 0;
 				while (i < nodeList.getLength()) {
 					Node current = nodeList.item(i);
 					if ("allow".equals(current.getNodeName()) || "signatures".equals(current.getNodeName())) {
 						NamedNodeMap attrs = current.getAttributes();
-						Node attr = attrs.getNamedItem("moduleId");
-						if (attr != null && moduleId.equals(attr.getNodeValue())) {
+						Node attr = attrs.getNamedItem("packageName");
+						if (attr != null && modulePackage.equals(attr.getNodeValue())) {
 							outputRoot.removeChild(current);
 						} else
 							i++;
@@ -883,4 +889,43 @@ public class WebModuleUtil {
 		return moduleServlets.get(servletName);
 	}
 	
+	/**
+	 * Transforms a module view name so that the jsp can be located on the file system
+	 * 
+	 * @param viewName
+	 * @return
+	 * @should return the correct view name for a module url using a module id
+	 * @should return the correct view name for a module url using a package name
+	 * @should ignore if there are multiple modules with same moduleId and the url has moduleId
+	 */
+	public static String transformModuleViewName(String viewName) {
+		int startIndex = viewName.indexOf(MODULE_VIEW_NAME_PREFIX) + MODULE_VIEW_NAME_PREFIX.length();
+		String moduleIdOrPackage = viewName.substring(startIndex, viewName.indexOf("/", startIndex));
+		
+		if (log.isDebugEnabled())
+			log.debug("Transforming view name '" + viewName + "' for module with package or module id:" + moduleIdOrPackage);
+		
+		Module module = ModuleFactory.getStartedModuleByPackage(moduleIdOrPackage);
+		
+		if (module == null) {
+			try {
+				//modules with controllers written before the module engine was 
+				//switched to using module package should still be supported
+				module = ModuleFactory.getStartedModuleById(moduleIdOrPackage);
+			}
+			catch (ModuleException e) {
+				log.error("Error while transforming view name: " + e.getMessage());
+			}
+		}
+		
+		if (module != null) {
+			viewName = StringUtils.replaceOnce(viewName, moduleIdOrPackage, module.getModulePackageAsPath());
+		} else {
+			log.warn("No started module found with package or id:" + moduleIdOrPackage);
+			// Do nothing, could be a controller in core processing requests to do with modules or a 
+			//module dev wrote a controller with a mapping that doesn't follow openmrs module conventions
+		}
+		
+		return viewName;
+	}
 }

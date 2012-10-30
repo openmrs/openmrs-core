@@ -83,7 +83,7 @@ public class ModuleListController extends SimpleFormController {
 			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.MANAGE_MODULES);
 		
 		HttpSession httpSession = request.getSession();
-		String moduleId = ServletRequestUtils.getStringParameter(request, "moduleId", "");
+		String modulePackageName = ServletRequestUtils.getStringParameter(request, "modulePackageName", "");
 		String view = getFormView();
 		String success = "";
 		String error = "";
@@ -131,7 +131,7 @@ public class ModuleListController extends SimpleFormController {
 								// parse the module so that we can get the id
 								
 								Module tmpModule = new ModuleFileParser(multipartModuleFile.getInputStream()).parse();
-								Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
+								Module existingModule = ModuleFactory.getModuleByPackage(tmpModule.getPackageName());
 								if (existingModule != null) {
 									dependentModulesStopped = ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
 									
@@ -191,7 +191,7 @@ public class ModuleListController extends SimpleFormController {
 			}
 		}
 
-		else if (moduleId.equals("")) {
+		else if (modulePackageName.equals("")) {
 			ModuleUtil.checkForModuleUpdates();
 		} else if (action.equals(msa.getMessage("Module.installUpdate"))) {
 			// download and install update
@@ -199,23 +199,23 @@ public class ModuleListController extends SimpleFormController {
 				error = msa.getMessage("Module.disallowAdministration",
 				    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN });
 			}
-			Module mod = ModuleFactory.getModuleById(moduleId);
+			Module mod = ModuleFactory.getModuleByPackage(modulePackageName);
 			if (mod.getDownloadURL() != null) {
 				ModuleFactory.stopModule(mod, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
 				WebModuleUtil.stopModule(mod, getServletContext());
 				Module newModule = ModuleFactory.updateModule(mod);
 				WebModuleUtil.startModule(newModule, getServletContext(), false);
 			}
-		} else { // moduleId is not empty
+		} else { // modulePackageName is not empty
 			if (!ModuleUtil.allowAdmin()) {
 				error = msa.getMessage("Module.disallowAdministration",
 				    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN });
 			} else {
-				log.debug("Module id: " + moduleId);
-				Module mod = ModuleFactory.getModuleById(moduleId);
+				log.debug("Module package name: " + modulePackageName);
+				Module mod = ModuleFactory.getModuleByPackage(modulePackageName);
 				
 				// Argument to pass to the success/error message
-				Object[] args = new Object[] { moduleId };
+				Object[] args = new Object[] { modulePackageName };
 				
 				if (mod == null)
 					error = msa.getMessage("Module.invalid", args);

@@ -92,13 +92,13 @@ public class ModuleResourcesServlet extends HttpServlet {
 		}
 		
 		String relativePath = ModuleUtil.getPathForResource(module, path);
-		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources"
+		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModulePackageAsPath() + "/resources"
 		        + relativePath;
 		realPath = realPath.replace("/", File.separator);
 		
 		File f = new File(realPath);
 		if (!f.exists()) {
-			log.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
+			log.warn("No file with path '" + realPath + "' exists for module '" + module.getPackageName() + "'");
 			return null;
 		}
 		
