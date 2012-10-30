@@ -4,10 +4,12 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -372,4 +374,73 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		//the second mapping should be rejected
 		Assert.assertEquals(false, errors.hasFieldErrors("conceptMappings[1]"));
 	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies not allow multiple preferred names in a given locale
+	 */
+	@Ignore
+	@Test
+	public void validate_shouldNotAllowMultiplePreferredNamesInAGivenLocale() throws Exception {
+		//TODO auto-generated
+		Assert.fail("Not yet implemented");
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies not allow multiple fully specified conceptNames in a given locale
+	 */
+	@Ignore
+	@Test
+	public void validate_shouldNotAllowMultipleFullySpecifiedConceptNamesInAGivenLocale() throws Exception {
+		//TODO auto-generated
+		Assert.fail("Not yet implemented");
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies not allow multiple short names in a given locale
+	 */
+	@Ignore
+	@Test
+	public void validate_shouldNotAllowMultipleShortNamesInAGivenLocale() throws Exception {
+		//TODO auto-generated
+		Assert.fail("Not yet implemented");
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies not allow an index term to be a locale preferred name
+	 */
+	@Ignore
+	@Test
+	public void validate_shouldNotAllowAnIndexTermToBeALocalePreferredName() throws Exception {
+		//TODO auto-generated
+		Assert.fail("Not yet implemented");
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies fail if there is a duplicate unretired concept name in the same locale different than
+	 */
+	@Ignore
+	@Test
+	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheSameLocaleDifferentThan() throws Exception {
+		//TODO auto-generated
+		Assert.fail("Not yet implemented");
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies fail for a concept if there is not at least one non blank/null description.
+	 */
+	@Test
+	public void validate_shouldFailForAConceptIfThereIsNotAtLeastOneNonBlanknullDescription() throws Exception {
+		Concept concept = new Concept();
+		concept.addDescription(new ConceptDescription(null));
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(true, errors.hasErrors());
+	}
+	
 }
