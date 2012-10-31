@@ -160,8 +160,8 @@ public class OptionsFormController extends SimpleFormController {
 						}
 						if (password.equals(opts.getOldPassword()) && !errors.hasErrors())
 							errors.reject("error.password.different");
-											
-						if(!password.equals(opts.getConfirmPassword()))
+						
+						if (!password.equals(opts.getConfirmPassword()))
 							errors.reject("error.password.match");
 					}
 					
