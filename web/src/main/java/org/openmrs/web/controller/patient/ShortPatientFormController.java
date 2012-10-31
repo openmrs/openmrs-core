@@ -221,8 +221,8 @@ public class ShortPatientFormController {
 			
 			try {
 				patient = Context.getPatientService().savePatient(patient);
-				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
-				    Context.getMessageSourceService().getMessage("Patient.saved"), WebRequest.SCOPE_SESSION);
+				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
+				    "Patient.saved"), WebRequest.SCOPE_SESSION);
 				
 				// TODO do we really still need this, besides ensuring that the
 				// cause of death is provided?
@@ -242,8 +242,8 @@ public class ShortPatientFormController {
 			}
 			catch (APIException e) {
 				log.error("Error occurred while attempting to save patient", e);
-				request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-				    Context.getMessageSourceService().getMessage("Patient.save.error"), WebRequest.SCOPE_SESSION);
+				request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+				    "Patient.save.error"), WebRequest.SCOPE_SESSION);
 				// TODO revert the changes and send them back to the form
 				
 				// don't send the user back to the form because the created
@@ -312,8 +312,8 @@ public class ShortPatientFormController {
 				
 				//if the value has been changed for an existing attribute, void it and create a new one
 				if (formAttribute.getPersonAttributeId() != null
-				        && !OpenmrsUtil.nullSafeEquals(formAttribute.getValue(),
-				            patient.getAttribute(formAttribute.getAttributeType()).getValue())) {
+				        && !OpenmrsUtil.nullSafeEquals(formAttribute.getValue(), patient.getAttribute(
+				            formAttribute.getAttributeType()).getValue())) {
 					//As per the logic in Person.addAttribute, the old edited attribute will get voided 
 					//as this new one is getting added 
 					formAttribute = new PersonAttribute(formAttribute.getAttributeType(), formAttribute.getValue());
