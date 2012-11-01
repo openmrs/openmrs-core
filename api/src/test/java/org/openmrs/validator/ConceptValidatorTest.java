@@ -432,15 +432,28 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptValidator#validate(Object,Errors)
-	 * @verifies fail for a concept if there is not at least one non blank/null description.
+	 * @verifies fail for a concept if there is not at least one non blank description.
 	 */
 	@Test
-	public void validate_shouldFailForAConceptIfThereIsNotAtLeastOneNonBlanknullDescription() throws Exception {
+	public void validate_shouldFailForAConceptIfThereIsNotAtLeastOneNonBlankDescription() throws Exception {
 		Concept concept = new Concept();
 		concept.addDescription(new ConceptDescription(null));
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(true, errors.hasErrors());
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies pass if there is at least one valid description
+	 */
+	@Test
+	public void validate_shouldPassIfThereIsAtLeastOneValidDescription() throws Exception {
+		Concept concept = new Concept();
+		concept.addDescription(new ConceptDescription("one description", Context.getLocale()));
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(false, errors.hasErrors());
 	}
 	
 }
