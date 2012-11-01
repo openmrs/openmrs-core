@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptDescription;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateConceptNameException;
@@ -85,6 +86,8 @@ public class ConceptValidator implements Validator {
 	 *         the system locale
 	 * @should pass for a new concept with a map created with deprecated concept map methods
 	 * @should pass for an edited concept with a map created with deprecated concept map methods
+	 * @should fail for a concept if there is not at least one non blank description.
+	 * @should pass if there is at least one valid description
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -270,5 +273,22 @@ public class ConceptValidator implements Validator {
 				index++;
 			}
 		}
+		
+		boolean atLeastOneValidDescriptionFound = false;
+		Collection<ConceptDescription> conceptDescriptions = conceptToValidate.getDescriptions();
+		
+		for (ConceptDescription conceptDescription : conceptDescriptions) {
+			if (StringUtils.isBlank(conceptDescription.getDescription())) {
+				if (log.isDebugEnabled()) {
+					log.debug("Description'" + conceptDescription.getDescription()
+					        + "' cannot be an empty string or white space or null");
+				}
+			} else {
+				atLeastOneValidDescriptionFound = true;
+			}
+		}
+		
+		if (!atLeastOneValidDescriptionFound)
+			errors.reject("Concept.error.notAtLeastOneNonBlankDescription");
 	}
 }
