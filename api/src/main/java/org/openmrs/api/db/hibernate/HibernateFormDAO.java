@@ -428,7 +428,7 @@ public class HibernateFormDAO implements FormDAO {
 			
 			// Convert form field persistents to integers
 			Set<Integer> allFormFieldIds = new HashSet<Integer>();
-			for(FormField ff: containingAllFormFields) {
+			for (FormField ff : containingAllFormFields) {
 				allFormFieldIds.add(ff.getFormFieldId());
 			}
 			DetachedCriteria subquery = DetachedCriteria.forClass(FormField.class, "ff");

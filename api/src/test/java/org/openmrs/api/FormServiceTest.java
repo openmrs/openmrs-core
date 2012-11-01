@@ -265,22 +265,22 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
-
+		
 		FormService formService = Context.getFormService();
-
+		
 		Set<FormField> formFields = new HashSet<FormField>();
 		formFields.add(new FormField(3));
 		formFields.add(new FormField(5));
 		formFields.add(new FormField(7));
-
+		
 		List<Form> forms = formService.getForms(null, null, null, null, null, formFields, null);
 		assertEquals(1, forms.size());
-
+		
 		formFields = new HashSet<FormField>();
 		formFields.add(new FormField(2));
 		formFields.add(new FormField(4));
 		formFields.add(new FormField(6));
-
+		
 		forms = formService.getForms(null, null, null, null, null, formFields, null);
 		assertEquals(0, forms.size());
 	}
