@@ -29,12 +29,7 @@ import org.openmrs.api.FormService;
 /**
  * Database access functions for the Form, FormField, and Field objects
  */
-public interface FormDAO {
-	
-	/**
-	 * @see FormService#saveForm(Form)
-	 */
-	public Form saveForm(Form form) throws DAOException;
+public interface FormDAO extends OpenmrsDAO {
 	
 	/**
 	 * Creates new form from the given <code>Form</code>
@@ -44,15 +39,6 @@ public interface FormDAO {
 	 * @throws DAOException
 	 */
 	public Form duplicateForm(Form form) throws DAOException;
-	
-	/**
-	 * Get form by internal form identifier
-	 * 
-	 * @param formId <code>Integer</code> internal identifier for requested Form
-	 * @return requested <code>Form</code>
-	 * @throws DAOException
-	 */
-	public Form getForm(Integer formId) throws DAOException;
 	
 	/**
 	 * Get form by exact name and version
@@ -74,38 +60,6 @@ public interface FormDAO {
 	public List<Form> getFormsByName(String name) throws DAOException;
 	
 	/**
-	 * Delete form from database. This is included for troubleshooting and low-level system
-	 * administration. Ideally, this method should <b>never</b> be called &mdash; <code>Forms</code>
-	 * should be <em>retired</em> and not <em>deleted</em> altogether (since many foreign key
-	 * constraints depend on forms, deleting a form would require deleting all traces, and any
-	 * historical trail would be lost). This method only clears form roles and attempts to delete
-	 * the form record. If the form has been included in any other parts of the database (through a
-	 * foreign key), the attempt to delete the form will violate foreign key constraints and fail.
-	 * 
-	 * @param form Form to delete
-	 * @throws DAOException
-	 */
-	public void deleteForm(Form form) throws DAOException;
-	
-	/**
-	 * Get all field types
-	 * 
-	 * @param includeRetired boolean - include retired field types as well?
-	 * @return List<FieldTypes> object with all FieldTypes, possibly including retired ones
-	 * @throws DAOException
-	 */
-	public List<FieldType> getAllFieldTypes(boolean includeRetired) throws DAOException;
-	
-	/**
-	 * Get fieldType by internal identifier
-	 * 
-	 * @param fieldTypeId Internal Integer identifier of FieldType
-	 * @return The FieldType with specified internal identifier
-	 * @throws DAOException
-	 */
-	public FieldType getFieldType(Integer fieldTypeId) throws DAOException;
-	
-	/**
 	 * Returns all forms in the database, possibly including retired ones
 	 * 
 	 * @param includeRetired boolean - include retired forms?
@@ -113,14 +67,6 @@ public interface FormDAO {
 	 * @throws DAOException
 	 */
 	public List<Form> getAllForms(boolean includeRetired) throws DAOException;
-	
-	/**
-	 * Returns all FormFields in the database
-	 * 
-	 * @return List<FormField> object of all FormFields in the database
-	 * @throws DAOException
-	 */
-	public List<FormField> getAllFormFields() throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept,
@@ -135,54 +81,6 @@ public interface FormDAO {
 	 * @throws DAOException
 	 */
 	public List<Field> getFields(String search) throws DAOException;
-	
-	/**
-	 * Returns all fields in the database, possibly including retired ones
-	 * 
-	 * @param includeRetired whether or not to return retired fields
-	 * @return all fields in the database, possibly including retired ones
-	 * @throws DAOException
-	 */
-	public List<Field> getAllFields(boolean includeRetired) throws DAOException;
-	
-	/**
-	 * @see FormService#getField(Integer)
-	 */
-	public Field getField(Integer fieldId) throws DAOException;
-	
-	/**
-	 * @see FormService#saveField(Field)
-	 */
-	public Field saveField(Field field) throws DAOException;
-	
-	/**
-	 * Deletes a field from the database.
-	 * <p>
-	 * This will fail if any other entities reference this field via a foreign key
-	 * 
-	 * @param field the Field to delete
-	 * @throws DAOException
-	 */
-	public void deleteField(Field field) throws DAOException;
-	
-	/**
-	 * @see FormService#getFormField(Integer)
-	 */
-	public FormField getFormField(Integer formFieldId) throws DAOException;
-	
-	/**
-	 * @see FormService#saveFormField(FormField)
-	 */
-	public FormField saveFormField(FormField formField) throws DAOException;
-	
-	/**
-	 * Deletes a FormField from the database. This will fail if any other entities reference this
-	 * FormField via a foreign key
-	 * 
-	 * @param formField the FormField to delete
-	 * @throws DAOException
-	 */
-	public void deleteFormField(FormField formField) throws DAOException;
 	
 	/**
 	 * Returns all fields that match a broad range of (nullable) criteria
@@ -246,55 +144,8 @@ public interface FormDAO {
 	public Integer getFormCount(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
 	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
 	        Collection<Field> fields) throws DAOException;
-	
-	/**
-	 * Delete the given field type from the database
-	 * 
-	 * @param fieldType FieldType to delete
-	 */
-	public void deleteFieldType(FieldType fieldType) throws DAOException;
-	
-	/**
-	 * Auto generated method comment
-	 * 
-	 * @param uuid
-	 * @return
-	 */
-	public Field getFieldByUuid(String uuid);
-	
+		
 	public FieldAnswer getFieldAnswerByUuid(String uuid);
-	
-	/**
-	 * Auto generated method comment
-	 * 
-	 * @param uuid
-	 * @return
-	 */
-	public FieldType getFieldTypeByUuid(String uuid);
-	
-	/**
-	 * Auto generated method comment
-	 * 
-	 * @param uuid
-	 * @return
-	 */
-	public Form getFormByUuid(String uuid);
-	
-	/**
-	 * Auto generated method comment
-	 * 
-	 * @param uuid
-	 * @return
-	 */
-	public FormField getFormFieldByUuid(String uuid);
-	
-	/**
-	 * Save the given field type to the database
-	 * 
-	 * @param fieldType FieldType to save to the database
-	 * @return the newly saved field type
-	 */
-	public FieldType saveFieldType(FieldType fieldType) throws DAOException;
 	
 	/**
 	 * Return a list of FormFields given a Field

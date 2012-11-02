@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
@@ -48,24 +47,10 @@ import org.openmrs.util.OpenmrsUtil;
  * @see org.openmrs.api.db.FormDAO
  * @see org.openmrs.api.FormService
  */
-public class HibernateFormDAO implements FormDAO {
+public class HibernateFormDAO extends HibernateOpenmrsDAO implements FormDAO {
 	
 	protected final Log log = LogFactory.getLog(getClass());
-	
-	/**
-	 * Hibernate session factory
-	 */
-	private SessionFactory sessionFactory;
-	
-	/**
-	 * Set session factory
-	 * 
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-	
+		
 	/**
 	 * Returns the form object originally passed in, which will have been persisted.
 	 * 
@@ -126,58 +111,6 @@ public class HibernateFormDAO implements FormDAO {
 		criteria.add(Expression.eq("concept", concept));
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getField(java.lang.Integer)
-	 * @see org.openmrs.api.db.FormDAO#getField(java.lang.Integer)
-	 */
-	public Field getField(Integer fieldId) throws DAOException {
-		return (Field) sessionFactory.getCurrentSession().get(Field.class, fieldId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getAllFields(boolean)
-	 * @see org.openmrs.api.db.FormDAO#getAllFields(boolean)
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Field> getAllFields(boolean includeRetired) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Field.class);
-		
-		if (includeRetired == false)
-			crit.add(Expression.eq("retired", false));
-		
-		return crit.list();
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getFieldType(java.lang.Integer)
-	 * @see org.openmrs.api.db.FormDAO#getFieldType(java.lang.Integer)
-	 */
-	public FieldType getFieldType(Integer fieldTypeId) throws DAOException {
-		return (FieldType) sessionFactory.getCurrentSession().get(FieldType.class, fieldTypeId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getFieldTypes()
-	 * @see org.openmrs.api.db.FormDAO#getAllFieldTypes(boolean)
-	 */
-	@SuppressWarnings("unchecked")
-	public List<FieldType> getAllFieldTypes(boolean includeRetired) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FieldType.class);
-		
-		if (includeRetired == false)
-			crit.add(Expression.eq("retired", false));
-		
-		return crit.list();
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getFormField(java.lang.Integer)
-	 * @see org.openmrs.api.db.FormDAO#getFormField(java.lang.Integer)
-	 */
-	public FormField getFormField(Integer formFieldId) throws DAOException {
-		return (FormField) sessionFactory.getCurrentSession().get(FormField.class, formFieldId);
 	}
 	
 	/**
@@ -253,48 +186,6 @@ public class HibernateFormDAO implements FormDAO {
 		query.setEntity("concept", c);
 		
 		return query.list();
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#saveField(org.openmrs.Field)
-	 * @see org.openmrs.api.db.FormDAO#saveField(org.openmrs.Field)
-	 */
-	public Field saveField(Field field) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(field);
-		return field;
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#deleteField(org.openmrs.Field)
-	 * @see org.openmrs.api.db.FormDAO#deleteField(org.openmrs.Field)
-	 */
-	public void deleteField(Field field) throws DAOException {
-		sessionFactory.getCurrentSession().delete(field);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#createFormField(org.openmrs.FormField)
-	 */
-	public FormField saveFormField(FormField formField) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(formField);
-		return formField;
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#deleteFormField(org.openmrs.FormField)
-	 * @see org.openmrs.api.db.FormDAO#deleteFormField(org.openmrs.FormField)
-	 */
-	public void deleteFormField(FormField formField) throws DAOException {
-		sessionFactory.getCurrentSession().delete(formField);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#getAllFormFields()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<FormField> getAllFormFields() throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormField.class);
-		return crit.list();
 	}
 	
 	/**
@@ -442,43 +333,11 @@ public class HibernateFormDAO implements FormDAO {
 		return crit;
 	}
 	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#getFieldByUuid(java.lang.String)
-	 */
-	public Field getFieldByUuid(String uuid) {
-		return (Field) sessionFactory.getCurrentSession().createQuery("from Field f where f.uuid = :uuid").setString("uuid",
-		    uuid).uniqueResult();
-	}
-	
 	public FieldAnswer getFieldAnswerByUuid(String uuid) {
 		return (FieldAnswer) sessionFactory.getCurrentSession().createQuery("from FieldAnswer f where f.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
 	}
-	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#getFieldTypeByUuid(java.lang.String)
-	 */
-	public FieldType getFieldTypeByUuid(String uuid) {
-		return (FieldType) sessionFactory.getCurrentSession().createQuery("from FieldType ft where ft.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#getFormByUuid(java.lang.String)
-	 */
-	public Form getFormByUuid(String uuid) {
-		return (Form) sessionFactory.getCurrentSession().createQuery("from Form f where f.uuid = :uuid").setString("uuid",
-		    uuid).uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#getFormFieldByUuid(java.lang.String)
-	 */
-	public FormField getFormFieldByUuid(String uuid) {
-		return (FormField) sessionFactory.getCurrentSession().createQuery("from FormField ff where ff.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
-	}
-	
+		
 	/**
 	 * @see org.openmrs.api.db.FormDAO#getFormsByName(java.lang.String)
 	 */
@@ -491,21 +350,6 @@ public class HibernateFormDAO implements FormDAO {
 		crit.addOrder(Order.desc("version"));
 		
 		return crit.list();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#deleteFieldType(org.openmrs.FieldType)
-	 */
-	public void deleteFieldType(FieldType fieldType) throws DAOException {
-		sessionFactory.getCurrentSession().delete(fieldType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.FormDAO#saveFieldType(org.openmrs.FieldType)
-	 */
-	public FieldType saveFieldType(FieldType fieldType) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(fieldType);
-		return fieldType;
 	}
 	
 	/**
