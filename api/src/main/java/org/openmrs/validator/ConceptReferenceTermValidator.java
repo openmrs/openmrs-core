@@ -74,7 +74,7 @@ public class ConceptReferenceTermValidator implements Validator {
 			        + ConceptReferenceTerm.class);
 		
 		ConceptReferenceTerm conceptReferenceTerm = (ConceptReferenceTerm) obj;
-
+		
 		String code = conceptReferenceTerm.getCode();
 		if (!StringUtils.hasText(code)) {
 			errors.rejectValue("code", "ConceptReferenceTerm.error.codeRequired",
