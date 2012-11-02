@@ -74,7 +74,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		
 		try {
 			
-			if(encounterVisitMapping == null) {
+			if (encounterVisitMapping == null) {
 				// Create cache of mappings encounter type - visit type
 				encounterVisitMapping = CacheBuilder.newBuilder().build(new CacheLoader<EncounterType, VisitType>() {
 					
@@ -87,7 +87,8 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 			
 			VisitType visitType = encounterVisitMapping.get(encounter.getEncounterType());
 			visit.setVisitType(visitType);
-		} catch (ExecutionException e) {
+		}
+		catch (ExecutionException e) {
 			throw new APIException("Error getting mapping encounter type - visit type from cache", e);
 		}
 		
