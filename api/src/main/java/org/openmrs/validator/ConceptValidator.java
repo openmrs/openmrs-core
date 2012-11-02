@@ -280,11 +280,12 @@ public class ConceptValidator implements Validator {
 		for (ConceptDescription conceptDescription : conceptDescriptions) {
 			if (StringUtils.isBlank(conceptDescription.getDescription())) {
 				if (log.isDebugEnabled()) {
-					log.debug("Description'" + conceptDescription.getDescription()
+					log.debug("Description Id'" + conceptDescription.getId()
 					        + "' cannot be an empty string or white space or null");
 				}
 			} else {
 				atLeastOneValidDescriptionFound = true;
+				break;
 			}
 		}
 		

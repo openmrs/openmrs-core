@@ -152,6 +152,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
+	
 	@Test
 	@Verifies(value = "should fail if there is no name explicitly marked as fully specified", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfThereIsNoNameExplicitlyMarkedAsFullySpecified() throws Exception {
@@ -237,7 +238,6 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
-	@Ignore
 	@Test
 	@Verifies(value = "should pass if the concept has a synonym that is also a short name", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() throws Exception {
@@ -379,85 +379,34 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptValidator#validate(Object,Errors)
-	 * @verifies not allow multiple preferred names in a given locale
-	 */
-	@Ignore
-	@Test
-	public void validate_shouldNotAllowMultiplePreferredNamesInAGivenLocale() throws Exception {
-		//TODO auto-generated
-		Assert.fail("Not yet implemented");
-	}
-	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 * @verifies not allow multiple fully specified conceptNames in a given locale
-	 */
-	@Ignore
-	@Test
-	public void validate_shouldNotAllowMultipleFullySpecifiedConceptNamesInAGivenLocale() throws Exception {
-		//TODO auto-generated
-		Assert.fail("Not yet implemented");
-	}
-	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 * @verifies not allow multiple short names in a given locale
-	 */
-	@Ignore
-	@Test
-	public void validate_shouldNotAllowMultipleShortNamesInAGivenLocale() throws Exception {
-		//TODO auto-generated
-		Assert.fail("Not yet implemented");
-	}
-	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 * @verifies not allow an index term to be a locale preferred name
-	 */
-	@Ignore
-	@Test
-	public void validate_shouldNotAllowAnIndexTermToBeALocalePreferredName() throws Exception {
-		//TODO auto-generated
-		Assert.fail("Not yet implemented");
-	}
-	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 * @verifies fail if there is a duplicate unretired concept name in the same locale different than
-	 */
-	@Ignore
-	@Test
-	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheSameLocaleDifferentThan() throws Exception {
-		//TODO auto-generated
-		Assert.fail("Not yet implemented");
-	}
-	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
 	 * @verifies fail for a concept if there is not at least one non blank description.
 	 */
+	
 	@Test
 	public void validate_shouldFailForAConceptIfThereIsNotAtLeastOneNonBlankDescription() throws Exception {
+		Character ch = new Character(' ');
+		
 		Concept concept = new Concept();
 		concept.addDescription(new ConceptDescription(null));
+		concept.addDescription(new ConceptDescription(Integer.parseInt(ch.toString())));
+		
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(true, errors.hasErrors());
+		
+		boolean found = false;
+		for (ObjectError error : errors.getAllErrors()) {
+			if (error.getCode().equals("Concept.error.notAtLeastOneNonBlankDescription")) {
+				found = true;
+				break;
+			}
+		}
+		Assert.assertTrue(found);
 	}
 	
 	/**
 	 * @see ConceptValidator#validate(Object,Errors)
 	 * @verifies pass if there is at least one valid description
 	 */
-	/*
-	@Test
-	public void validate_shouldPassIfThereIsAtLeastOneValidDescription() throws Exception {
-		Concept concept = new Concept();
-		concept.addDescription(new ConceptDescription("one description", Context.getLocale()));
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(false, errors.hasErrors());
-	*/
 	@Test
 	public void validate_shouldPassIfThereIsAtLeastOneValidDescription() throws Exception {
 		Concept concept = new Concept();
@@ -465,11 +414,12 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		
-		boolean notFound = false;
-		//for (ObjectError error: errors.getGlobalErrors()) {
+		boolean notFound = true;
 		for (ObjectError error : errors.getAllErrors()) {
-			if (!error.getCode().equals("Concept.error.notAtLeastOneNonBlankDescription")) {
-				notFound = true;
+			//if (!error.getCode().equals("Concept.error.notAtLeastOneNonBlankDescription")) {
+			if (error.getCode().equals("Concept.error.notAtLeastOneNonBlankDescription")) {
+				notFound = false;
+				break;
 			}
 		}
 		Assert.assertTrue(notFound);
