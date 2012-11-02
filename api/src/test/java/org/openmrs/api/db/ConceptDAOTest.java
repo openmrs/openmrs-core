@@ -502,26 +502,32 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link 
-	 *      ConceptDAO#getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass
-	 *      ;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)}
+	 * @see {@link
+	 *      ConceptDAO#getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,
+	 *      List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)}
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
-	@Verifies(value = "should return correct results for if a concept name contains same word more than once", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
-	public void getConcepts_shouldReturnCorrectResultsForIfAConceptNameContainsSameWordMoreThanOnce() throws Exception {
+	@Verifies(value = "should return correct results if a concept name contains same word more than once", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnCorrectResultsIfAConceptNameContainsSameWordMoreThanOnce() throws Exception {
 		ConceptService cs = Context.getConceptService();
 		ConceptClass cc = cs.getConceptClass(1);
 		Locale locale = Locale.ENGLISH;
 		ConceptDatatype dt = cs.getConceptDatatype(4);
 		Concept c1 = new Concept();
-		ConceptName cn1a = new ConceptName("ONE TO ONE", locale);
-		ConceptName cn1b = new ConceptName("ONE TERM", locale);
+		ConceptName cn1a = new ConceptName("ONE TERM", locale);
 		c1.addName(cn1a);
-		c1.addName(cn1b);
 		c1.setConceptClass(cc);
 		c1.setDatatype(dt);
 		cs.saveConcept(c1);
+		
+		ConceptName cn1b = new ConceptName("ONE TO ONE", locale);
+		cn1b.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
+		cn1b.setLocalePreferred(true);
+		c1.addName(cn1b);
+		cs.saveConcept(c1);
+		Assert.assertTrue(cn1a.isSynonym());
+		Assert.assertTrue(cn1b.getConceptNameId() > cn1a.getConceptNameId());
 		
 		Concept c2 = new Concept();
 		ConceptName cn2a = new ConceptName("ONE TO MANY", locale);
@@ -536,7 +542,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(2, searchResults1.size());
 		Assert.assertEquals(c1, searchResults1.get(0).getConcept());
-		Assert.assertEquals(cn1a, searchResults1.get(0).getConceptName());
+		Assert.assertEquals(cn1b, searchResults1.get(0).getConceptName());
 	}
 	
 }
