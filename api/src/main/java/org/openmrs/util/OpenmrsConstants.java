@@ -997,13 +997,13 @@ public final class OpenmrsConstants {
 	 * management form.
 	 */
 	public static final String GP_CONCEPT_DRUG_ROUTE_CONCEPT_CLASSES = "conceptDrug.route.conceptClasses";
-
+	
 	/**
 	 * Global property name of the allowed concept classes for the allergen field of the allergy
 	 * management form.
 	 */
 	public static final String GP_ALLERGY_ALLERGEN_CONCEPT_CLASSES = "allergy.allergen.ConceptClasses";
-
+	
 	/**
 	 * Global property name of the allowed concept classes for the reaction field of the allergy
 	 * management form.
@@ -1474,10 +1474,10 @@ public final class OpenmrsConstants {
 		                GP_DASHBOARD_METADATA_CASE_CONVERSION,
 		                "",
 		                "Indicates which type automatic case conversion is applied to program/workflow/state in the patient dashboard. Valid values: lowercase, uppercase, capitalize. If empty no conversion is applied."));
-
+		
 		props.add(new GlobalProperty(GP_ALLERGY_ALLERGEN_CONCEPT_CLASSES, "Drug,MedSet",
 		        "A comma-separated list of the allowed concept classes for the allergen field of the allergy dialog"));
-
+		
 		props.add(new GlobalProperty(GP_ALLERGY_REACTION_CONCEPT_CLASSES, "Symptom",
 		        "A comma-separated list of the allowed concept classes for the reaction field of the allergy dialog"));
 		
