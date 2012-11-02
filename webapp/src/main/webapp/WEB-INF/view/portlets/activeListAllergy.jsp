@@ -41,17 +41,23 @@
 
 		allergyStartDatePicker = new DatePicker("<openmrs:datePattern/>", "allergy_startDate", { defaultDate: parseDateFromStringToJs("<openmrs:datePattern/>", "${model.today}") });
 
-		var allergyCallback = new CreateCallback({onerror: showAllergyAddError, onsuccess: hideAllergyError});
+		var allergenClasses = "<openmrs:globalProperty key='allergy.allergen.ConceptClasses'/>".split(",");
+		var allergyCallback = new CreateCallback(
+									{onerror: showAllergyAddError, 
+									 onsuccess: hideAllergyError,
+									 includeClasses: allergenClasses
+									 });
 		var autoAllergyConcept = new AutoComplete("allergy_concept", allergyCallback.conceptCallback(), {
 			select: function(event, ui) {
 				$j('#allergy_concept_id').val(ui.item.object.conceptId);
 			}
 		});
 
+		var reactionClasses = "<openmrs:globalProperty key='allergy.reaction.ConceptClasses'/>".split(",");
 		var reactionCallback = new CreateCallback(
 									{onerror:showAllergyAddError, 
 									 onsuccess: hideAllergyError,
-									 includedClasses: 'Symptom'
+									 includeClasses: reactionClasses
 									});
 		var autoReactionConcept = new AutoComplete("allergy_reaction", reactionCallback.conceptCallback(), {
 			select: function(event, ui) {
