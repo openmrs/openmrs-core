@@ -183,6 +183,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				if (conceptName.getConceptNameId() != null) {
 					ConceptName clone = cloneConceptName(conceptName);
 					clone.setConceptNameId(null);
+					clone.setDateCreated(new Date());
+					clone.setCreator(Context.getAuthenticatedUser());
 					uuidClonedConceptNameMap.put(conceptName.getUuid(), clone);
 					
 					if (hasNameChanged(conceptName)) {
