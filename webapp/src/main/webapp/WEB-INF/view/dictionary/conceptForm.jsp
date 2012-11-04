@@ -367,7 +367,7 @@
 		<th valign="top"><openmrs:message code="Concept.conceptSets"/></th>
 		<td valign="top">
 			<spring:bind path="command.concept.conceptSets">
-				<input type="hidden" name="${status.expression}" id="conceptSets" size="40" value='<c:forEach items="${command.concept.conceptSets}" var="set">${set.concept.conceptId} </c:forEach>' />
+				<input type="hidden" name="${status.expression}" id="conceptSets" size="40" value='${command.setElements}'/>
 			</spring:bind>
 			<table cellpadding="0" cellspacing="0">
 				<tr>
