@@ -16,6 +16,7 @@ package org.openmrs.api.db.hibernate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,15 +37,20 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 
-public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
+public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 	
 	private static Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
 	
 	protected Set<String> tmpMappingResources = new HashSet<String>();
 	
-	// @since 1.9
+	/**
+	 * @since 1.9.2, 1.10
+	 */
+	protected Set<String> packagesToScan = new HashSet<String>();
+	
+	// @since 1.6.3, 1.7.2, 1.8.0, 1.9
 	protected ChainingInterceptor chainingInterceptor = new ChainingInterceptor();
 	
 	// @since 1.9
@@ -126,6 +132,20 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		super.setMappingResources(tmpMappingResources.toArray(new String[] {}));
 	}
 	
+	/**
+	 * Collect packages to scan that are set in core and for tests in modules.
+	 * <p>
+	 * It adds to the set instead of overwriting it with each call.
+	 * 
+	 * @see org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean#setPackagesToScan(java.lang.String[])
+	 */
+	@Override
+	public void setPackagesToScan(String[] packagesToScan) {
+		this.packagesToScan.addAll(Arrays.asList(packagesToScan));
+		
+		super.setPackagesToScan(this.packagesToScan.toArray(new String[0]));
+	}
+	
 	public Set<String> getModuleMappingResources() {
 		for (Module mod : ModuleFactory.getStartedModules()) {
 			for (String s : mod.getMappingFiles()) {
@@ -135,7 +155,25 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		return tmpMappingResources;
 	}
 	
-	/* (non-Javadoc)
+	/**
+	 * Gets packages with mapped classes from all modules.
+	 * 
+	 * @return the set of packages with mapped classes
+	 * @since 1.9.2, 1.10
+	 */
+	public Set<String> getModulePackagesWithMappedClasses() {
+		Set<String> packages = new HashSet<String>();
+		for (Module module : ModuleFactory.getStartedModules()) {
+			for (String pack : module.getPackagesWithMappedClasses()) {
+				packages.add(pack);
+			}
+		}
+		return packages;
+	}
+	
+	/**
+	 * Overridden to populate mappings from modules.
+	 * 
 	 * @see org.springframework.orm.hibernate3.AbstractSessionFactoryBean#afterPropertiesSet()
 	 */
 	@Override
@@ -143,7 +181,8 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		// adding each module's mapping file to the list of mapping resources
 		super.setMappingResources(getModuleMappingResources().toArray(new String[] {}));
 		
-		// just check for testing module's hbm files here?
+		packagesToScan.addAll(getModulePackagesWithMappedClasses());
+		super.setPackagesToScan(packagesToScan.toArray(new String[0]));
 		
 		super.afterPropertiesSet();
 	}

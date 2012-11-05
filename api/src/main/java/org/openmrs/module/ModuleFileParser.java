@@ -23,10 +23,12 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -276,6 +278,7 @@ public class ModuleFileParser {
 			module.setMessages(getMessages(rootNode, configVersion, jarfile));
 			
 			module.setMappingFiles(getMappingFiles(rootNode, configVersion, jarfile));
+			module.setPackagesWithMappedClasses(getPackagesWithMappedClasses(rootNode, configVersion));
 			
 			module.setConfig(configDoc);
 			
@@ -656,6 +659,17 @@ public class ModuleFileParser {
 				mappings.add(s2);
 		}
 		return mappings;
+	}
+	
+	private Set<String> getPackagesWithMappedClasses(Element rootNode, String configVersion) {
+		String element = getElement(rootNode, configVersion, "packagesWithMappedClasses");
+		Set<String> packages = new HashSet<String>();
+		for (String s : element.split("\\s")) {
+			String s2 = s.trim();
+			if (s2.length() > 0)
+				packages.add(s2);
+		}
+		return packages;
 	}
 	
 	/**
