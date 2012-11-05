@@ -1199,13 +1199,22 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void saveConcept_shouldCreateANewConceptNameWhenTheOldNameIsChanged() throws Exception {
 		Concept concept = conceptService.getConceptByName("cd4 count");
 		Assert.assertEquals(3, concept.getNames(true).size());
+		ConceptName oldName = null;
 		for (ConceptName cn : concept.getNames()) {
-			if (cn.getConceptNameId().equals(1847))
+			if (cn.getConceptNameId().equals(1847)) {
+				oldName = cn;
 				cn.setName("new name");
+			}
 		}
 		
 		conceptService.saveConcept(concept);
 		Assert.assertEquals(4, concept.getNames(true).size());
+		
+		for (ConceptName cn : concept.getNames()) {
+			if (cn.getName().equals("new name")) {
+				Assert.assertTrue(oldName.getDateCreated().before(cn.getDateCreated()));
+			}
+		}
 	}
 	
 	/**
