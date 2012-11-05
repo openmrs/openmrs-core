@@ -750,6 +750,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES = "user.headerAttributeTypes";
 	
+	public static final String GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME = "user.requireEmailAsUsername";
+	
 	public static final String GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY = "hl7_archive.dir";
 	
 	public static final String GLOBAL_PROPERTY_DEFAULT_THEME = "default_theme";
@@ -764,7 +766,7 @@ public final class OpenmrsConstants {
 	public static final String[] GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES = { GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES,
 	        GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES,
 	        GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES,
-	        GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES };
+	        GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME };
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX = "patient.identifierRegex";
 	
@@ -804,6 +806,8 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST = "locale.allowed.list";
 	
 	public static final String GLOBAL_PROPERTY_IMPLEMENTATION_ID = "implementation_id";
+	
+	public static final String GLOBAL_PROPERTY_NEWPATIENTFORM_SHOW_RELATIONSHIPS = "new_patient_form.showRelationships";
 	
 	public static final String GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS = "newPatientForm.relationships";
 	
@@ -972,6 +976,11 @@ public final class OpenmrsConstants {
 	public static final String GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW = "dashboard.encounters.maximumNumberToShow";
 	
 	/**
+	 * Global property name to display program, workflow and states in a specific case
+	 */
+	public static final String GP_DASHBOARD_METADATA_CASE_CONVERSION = "dashboard.metadata.caseConversion";
+	
+	/**
 	 * Global property name for the default ConceptMapType which is set automatically when no other
 	 * is set manually.
 	 */
@@ -988,6 +997,18 @@ public final class OpenmrsConstants {
 	 * management form.
 	 */
 	public static final String GP_CONCEPT_DRUG_ROUTE_CONCEPT_CLASSES = "conceptDrug.route.conceptClasses";
+	
+	/**
+	 * Global property name of the allowed concept classes for the allergen field of the allergy
+	 * management form.
+	 */
+	public static final String GP_ALLERGY_ALLERGEN_CONCEPT_CLASSES = "allergy.allergen.ConceptClasses";
+	
+	/**
+	 * Global property name of the allowed concept classes for the reaction field of the allergy
+	 * management form.
+	 */
+	public static final String GP_ALLERGY_REACTION_CONCEPT_CLASSES = "allergy.reaction.ConceptClasses";
 	
 	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
@@ -1007,7 +1028,7 @@ public final class OpenmrsConstants {
 	/**
 	 * Global property name for the visit type(s) to automatically close
 	 */
-	public static final String GP_VISIT_TYPES_TO_AUTO_CLOSE = "autoCloseVisits.visitType";
+	public static final String GP_VISIT_TYPES_TO_AUTO_CLOSE = "visits.autoCloseVisitType";
 	
 	/**
 	 * The name of the scheduled task that automatically stops the active visits
@@ -1036,7 +1057,7 @@ public final class OpenmrsConstants {
 		        "Indicates whether or not mother's name is able to be added/viewed for a patient", BooleanDatatype.class,
 		        null));
 		
-		props.add(new GlobalProperty("new_patient_form.showRelationships", "false",
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_NEWPATIENTFORM_SHOW_RELATIONSHIPS, "false",
 		        "true/false whether or not to show the relationship editor on the addPatient.htm screen",
 		        BooleanDatatype.class, null));
 		
@@ -1448,6 +1469,20 @@ public final class OpenmrsConstants {
 		                GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE,
 		                "true",
 		                "Indicates whether names in the concept_name table are case sensitive or not. Setting this to false for MySQL with a case insensitive collation improves search performance."));
+		props
+		        .add(new GlobalProperty(
+		                GP_DASHBOARD_METADATA_CASE_CONVERSION,
+		                "",
+		                "Indicates which type automatic case conversion is applied to program/workflow/state in the patient dashboard. Valid values: lowercase, uppercase, capitalize. If empty no conversion is applied."));
+		
+		props.add(new GlobalProperty(GP_ALLERGY_ALLERGEN_CONCEPT_CLASSES, "Drug,MedSet",
+		        "A comma-separated list of the allowed concept classes for the allergen field of the allergy dialog"));
+		
+		props.add(new GlobalProperty(GP_ALLERGY_REACTION_CONCEPT_CLASSES, "Symptom",
+		        "A comma-separated list of the allowed concept classes for the reaction field of the allergy dialog"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
+		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

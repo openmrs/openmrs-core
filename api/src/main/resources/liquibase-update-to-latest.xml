@@ -7350,6 +7350,67 @@
 			referencedTableName="orders" referencedColumnNames="order_id" />
 
 	</changeSet>
+
+    <changeSet id="20121007-orders_urgency" author="djazayeri">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="urgency" /></not>
+        </preConditions>
+        <comment>Adding urgency column to orders table</comment>
+        <addColumn tableName="orders">
+            <column name="urgency" type="varchar(50)" defaultValue="ROUTINE">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20121007-test_order_laterality" author="djazayeri">
+        <comment>Changing test_order.laterality to be a varchar</comment>
+        <modifyDataType tableName="test_order" columnName="laterality" newDataType="varchar(20)"/>
+    </changeSet>
+
+    <changeSet id="20121008-order_specimen_source_fk" author="djazayeri">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="test_order_specimen_source_fk"/></not>
+        </preConditions>
+        <comment>Adding FK constraint for test_order.specimen_source if necessary</comment>
+        <addForeignKeyConstraint constraintName="test_order_specimen_source_fk"
+                                 baseTableName="test_order" baseColumnNames="specimen_source"
+                                 referencedTableName="concept" referencedColumnNames="concept_id" />
+    </changeSet>
+    
+    <changeSet id="20121016-1504" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="test_order" columnName="order_id"/>
+		</preConditions>
+		<comment>Removing auto increment from test_order.order_id column</comment>
+		<ext:modifyColumn tableName="test_order">
+		    <column name="order_id" type="int" />
+		</ext:modifyColumn>
+	</changeSet>
+
+    <changeSet id="20121020-TRUNK-3610" author="lluismf">
+		<comment>
+			Rename global property autoCloseVisits.visitType to visits.autoCloseVisitType
+		</comment>
+		<update tableName="global_property">
+			<column name="property" value="visits.autoCloseVisitType"/>
+			<where>property='autoCloseVisits.visitType'</where>
+		</update>
+		<update tableName="scheduler_task_config">
+			<column name="description" value="Stops all active visits that match the visit type(s) specified by the value of the global property 'visits.autoCloseVisitType'"/>
+			<where>name='Auto Close Visits Task'</where>
+		</update>
+	</changeSet>
+	
+	<changeSet id="20121025-TRUNK-213" author="lluismf">
+		<comment>Normalize varchar length of locale columns</comment>
+		<ext:modifyColumn tableName="concept_stop_word">
+			<column name="locale" type="varchar(50)"/>
+		</ext:modifyColumn>
+		<ext:modifyColumn tableName="concept_word">
+			<column name="locale" type="varchar(50)"/>
+		</ext:modifyColumn>
+	</changeSet>
 	
 </databaseChangeLog>
 

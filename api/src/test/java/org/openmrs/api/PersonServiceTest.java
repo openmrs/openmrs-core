@@ -29,7 +29,6 @@ import java.util.Vector;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -1599,7 +1598,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 *      record? This test assumes yes.
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "should unvoid the given person", method = "unvoidPerson(Person)")
 	public void unvoidPerson_shouldUnvoidTheGivenPerson() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createPersonPurgeVoidTest.xml");
@@ -1643,8 +1641,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link PersonService#voidPerson(Person,String)}
 	 */
 	@Test
-	@Ignore
-	// TODO Fix NullPointerException that occurs in RequiredDataAdvice
 	@Verifies(value = "should return voided person with given reason", method = "voidPerson(Person,String)")
 	public void voidPerson_shouldReturnVoidedPersonWithGivenReason() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createPersonPurgeVoidTest.xml");
@@ -1655,7 +1651,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(voidedPerson.getVoidedBy());
 		Assert.assertNotNull(voidedPerson.getPersonVoidReason());
 		Assert.assertNotNull(voidedPerson.getPersonDateVoided());
-		Assert.assertEquals(voidedPerson.getPersonVoidReason(), "Test Voiding Reason");
+		Assert.assertEquals(voidedPerson.getPersonVoidReason(), "Test Voiding Person");
 	}
 	
 	/**

@@ -236,12 +236,12 @@
 								</systemProperty>
                                 <systemProperty>
                                     <name>jetty.port</name>
-                                    <value>8000</value>
+                                    <value>${jetty.port}</value>
                                 </systemProperty>
 							</systemProperties>
                             <connectors>
                                 <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                                    <port>8000</port>
+                                    <port>${jetty.port}</port>
                                     <soLingerTime>0</soLingerTime>
                                 </connector>
                            </connectors>
@@ -265,7 +265,7 @@
 									<goal>stop</goal>
 								</goals>
 								<configuration>
-									<stopPort>8080</stopPort>
+									<stopPort>${jetty.port}}</stopPort>
 									<stopKey>stop</stopKey>
 								</configuration>
 							</execution>
@@ -380,7 +380,7 @@
 									<goal>stop</goal>
 								</goals>
 								<configuration>
-									<stopPort>8080</stopPort>
+									<stopPort>${jetty.port}</stopPort>
 									<stopKey>stop</stopKey>
 								</configuration>
 							</execution>
@@ -512,6 +512,7 @@
 	<properties>
 		<webapp.name>openmrs</webapp.name>
         <openMRSVersion>${project.parent.version}</openMRSVersion>
+        <jetty.port>31337</jetty.port>
         <test>*</test>
         <story.timeout.in.secs>1200</story.timeout.in.secs>
 	</properties>

@@ -1,4 +1,4 @@
-/**
+/*
  * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -21,11 +21,15 @@ package org.openmrs;
  */
 public class TestOrder extends Order {
 	
+	public enum Laterality {
+		LEFT, RIGHT, BILATERAL
+	}
+	
 	public static final long serialVersionUID = 1L;
 	
-	private Integer specimenSource;
+	private Concept specimenSource;
 	
-	private Integer laterality;
+	private Laterality laterality;
 	
 	private String clinicalHistory;
 	
@@ -37,10 +41,10 @@ public class TestOrder extends Order {
 	
 	/**
 	 * Gets the specimen source.
-	 * 
+	 *
 	 * @return the specimen source.
 	 */
-	public Integer getSpecimenSource() {
+	public Concept getSpecimenSource() {
 		return specimenSource;
 	}
 	
@@ -49,7 +53,7 @@ public class TestOrder extends Order {
 	 * 
 	 * @param specimenSource the specimen source to set.
 	 */
-	public void setSpecimenSource(Integer specimenSource) {
+	public void setSpecimenSource(Concept specimenSource) {
 		this.specimenSource = specimenSource;
 	}
 	
@@ -57,8 +61,9 @@ public class TestOrder extends Order {
 	 * Gets the laterality.
 	 * 
 	 * @return the laterality.
+	 * @since 1.10
 	 */
-	public Integer getLaterality() {
+	public Laterality getLaterality() {
 		return laterality;
 	}
 	
@@ -66,8 +71,9 @@ public class TestOrder extends Order {
 	 * Sets the laterality.
 	 * 
 	 * @param laterality the laterality to set.
+	 * @since 1.10
 	 */
-	public void setLaterality(Integer laterality) {
+	public void setLaterality(Laterality laterality) {
 		this.laterality = laterality;
 	}
 	
@@ -89,17 +95,4 @@ public class TestOrder extends Order {
 		this.clinicalHistory = clinicalHistory;
 	}
 	
-	/**
-	 * @see org.openmrs.Order#getId()
-	 */
-	public Integer getId() {
-		return getOrderId();
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 */
-	public void setId(Integer id) {
-		setOrderId(id);
-	}
 }

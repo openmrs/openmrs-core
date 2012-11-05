@@ -20,7 +20,6 @@ import org.openmrs.Person;
 import org.openmrs.activelist.ActiveListItem;
 import org.openmrs.activelist.ActiveListType;
 import org.openmrs.api.db.ActiveListDAO;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains generic methods pertaining to Active Lists in the system
@@ -28,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.Patient
  */
-@Transactional
 public interface ActiveListService extends OpenmrsService {
 	
 	/**
@@ -47,7 +45,6 @@ public interface ActiveListService extends OpenmrsService {
 	 * @return sorted set based on the start date
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public List<ActiveListItem> getActiveListItems(Person p, ActiveListType type) throws APIException;
 	
 	/**
@@ -59,7 +56,6 @@ public interface ActiveListService extends OpenmrsService {
 	 * @return sorted set based on the start date
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public <T extends ActiveListItem> List<T> getActiveListItems(Class<T> clazz, Person p, ActiveListType type)
 	        throws APIException;
 	
@@ -71,7 +67,6 @@ public interface ActiveListService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws APIException;
 	
 	/**
@@ -81,7 +76,6 @@ public interface ActiveListService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	public ActiveListItem getActiveListItemByUuid(String uuid) throws APIException;
 	
 	/**
@@ -110,4 +104,13 @@ public interface ActiveListService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	public ActiveListItem voidActiveListItem(ActiveListItem item, String reason) throws APIException;
+	
+	/**
+	 * Completely removes an ActiveListItem from the database (not reversible)
+	 * 
+	 * @param item the ActiveListItem to completely remove from the database
+	 * @throws APIException
+	 * @should purge active list item from database
+	 */
+	public void purgeActiveListItem(ActiveListItem item) throws APIException;
 }

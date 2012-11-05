@@ -138,7 +138,21 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 		assertEquals(0, items.size());
 	}
 	
+	/**
+	 * @see ActiveListService#purgeActiveListItem(ActiveListItem)
+	 * @verifies purge active list item from database
+	 */
+	@Test
+	public void purgeActiveListItem_shouldPurgeActiveListItemFromDatabase() throws Exception {
+		ActiveListItem item = activeListService.getActiveListItem(Allergy.class, 1);
+		activeListService.purgeActiveListItem(item);
+		
+		item = activeListService.getActiveListItem(ActiveListItem.class, 1);
+		Assert.assertNull(item);
+	}
+	
 	private void assertEquals(int i1, int i2) {
 		Assert.assertEquals(new Integer(i1), new Integer(i2));
 	}
+	
 }

@@ -14,9 +14,7 @@
 package org.openmrs.arden;
 
 import org.openmrs.api.APIException;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 public interface ArdenService {
 	
 	/**

@@ -14,22 +14,33 @@
 package org.openmrs.api.handler;
 
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.GlobalPropertyListener;
+import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * This handler assigns an encounter to an existing visit, where appropriate, or creates a new one.
  * 
  * @see EncounterVisitHandler
  */
-public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignmentHandler {
+public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignmentHandler implements GlobalPropertyListener {
+	
+	private static volatile LoadingCache<EncounterType, VisitType> encounterVisitMapping = null;
 	
 	/**
 	 * @see org.openmrs.api.handler.ExistingVisitAssignmentHandler#getDisplayName(java.util.Locale)
@@ -61,7 +72,25 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		visit.setLocation(encounter.getLocation());
 		visit.setPatient(encounter.getPatient());
 		
-		visit.setVisitType(getVisitType(encounter));
+		try {
+			
+			if (encounterVisitMapping == null) {
+				// Create cache of mappings encounter type - visit type
+				encounterVisitMapping = CacheBuilder.newBuilder().build(new CacheLoader<EncounterType, VisitType>() {
+					
+					public VisitType load(EncounterType key) throws APIException {
+						return loadVisitType(key);
+					}
+				});
+				Context.getAdministrationService().addGlobalPropertyListener(this);
+			}
+			
+			VisitType visitType = encounterVisitMapping.get(encounter.getEncounterType());
+			visit.setVisitType(visitType);
+		}
+		catch (ExecutionException e) {
+			throw new APIException("Error getting mapping encounter type - visit type from cache", e);
+		}
 		
 		//set stop date time to last millisecond of the encounter day.
 		visit.setStopDatetime(OpenmrsUtil.getLastMomentOfDay(encounter.getEncounterDatetime()));
@@ -70,22 +99,23 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 	}
 	
 	/**
-	 * Gets the visit type for an encounter.
-	 * 
-	 * @param encounterType the encounter.
-	 * @return the visit type for the encounter.
+	 * Get the visit type corresponding to an encounter type by reading valid mappings 
+	 * from a global property
+	 * @param encounterType
+	 * @return
+	 * @throws APIException
 	 */
-	protected VisitType getVisitType(Encounter encounter) throws APIException {
+	private static VisitType loadVisitType(EncounterType encounterType) throws APIException {
 		
-		//TODO this GP should be parsed and cached (as a map) instead of fetching it and parsing it every time. 
-		//(And we should have a global property change listener to recalculate it when that GP is changed.)
 		String value = Context.getAdministrationService().getGlobalPropertyValue(
 		    OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING, "");
 		
-		//Value should be in this format "3:4, 5:2, 1:2, 2:2" for encounterTypeId:visitTypeId
+		// Value should be in this format "3:4, 5:2, 1:2, 2:2" for encounterTypeId:visitTypeId
 		// or encounterTypeUuid:visitTypeUuid o a mixture of uuids and id
 		if (!StringUtils.isBlank(value)) {
-			String targetEncounterTypeId = encounter.getEncounterType().getId().toString();
+			
+			VisitService visitService = Context.getVisitService();
+			String targetEncounterTypeId = encounterType.getId().toString();
 			
 			String[] mappings = value.split(",");
 			for (String mapping : mappings) {
@@ -93,17 +123,14 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 				if (index > 0) {
 					String encounterTypeIdOrUuid = mapping.substring(0, index).trim();
 					if (targetEncounterTypeId.equals(encounterTypeIdOrUuid)
-					        || encounter.getEncounterType().getUuid().equals(encounterTypeIdOrUuid)) {
+					        || encounterType.getUuid().equals(encounterTypeIdOrUuid)) {
 						String visitTypeIdOrUuid = mapping.substring(index + 1).trim();
 						VisitType visitType = null;
-						try {
-							visitType = Context.getVisitService().getVisitType(Integer.parseInt(visitTypeIdOrUuid));
+						if (StringUtils.isNumeric(visitTypeIdOrUuid)) {
+							visitType = visitService.getVisitType(Integer.parseInt(visitTypeIdOrUuid));
+						} else {
+							visitType = visitService.getVisitTypeByUuid(visitTypeIdOrUuid);
 						}
-						catch (NumberFormatException e) {
-							//ignore, could be a uuid
-						}
-						if (visitType == null)
-							visitType = Context.getVisitService().getVisitTypeByUuid(visitTypeIdOrUuid);
 						if (visitType != null) {
 							return visitType;
 						}
@@ -111,12 +138,28 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 				}
 			}
 			
-			//Reaching here means this encounter type is not in the user's mapping.
+			// Reaching here means this encounter type is not in the user's mapping.
 			throw new APIException(
 			        "Global Property: visit.encounterTypeToVisitTypeMapping does not have a mapping for encounter type: "
-			                + encounter.getEncounterType().getName());
+			                + encounterType.getName());
 		}
 		
 		return Context.getVisitService().getAllVisitTypes().get(0);
 	}
+	
+	@Override
+	public boolean supportsPropertyName(String propertyName) {
+		return OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING.equals(propertyName);
+	}
+	
+	@Override
+	public void globalPropertyChanged(GlobalProperty newValue) {
+		encounterVisitMapping.invalidateAll();
+	}
+	
+	@Override
+	public void globalPropertyDeleted(String propertyName) {
+		encounterVisitMapping.invalidateAll();
+	}
+	
 }

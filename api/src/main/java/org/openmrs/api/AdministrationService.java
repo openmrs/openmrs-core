@@ -39,10 +39,10 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
+import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
 /**
@@ -51,12 +51,12 @@ import org.springframework.validation.Errors;
  * Use:<br/>
  * 
  * <pre>
+ * 
  * List&lt;GlobalProperty&gt; globalProperties = Context.getAdministrationService().getGlobalProperties();
  * </pre>
  * 
  * @see org.openmrs.api.context.Context
  */
-@Transactional
 public interface AdministrationService extends OpenmrsService {
 	
 	/**
@@ -413,7 +413,7 @@ public interface AdministrationService extends OpenmrsService {
 	/**
 	 * @deprecated use the mrngen module instead
 	 */
-	@Transactional(readOnly = true)
+	
 	public Collection<?> getMRNGeneratorLog();
 	
 	/**
@@ -424,7 +424,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Transactional(readOnly = true)
 	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws APIException;
 	
 	/**
@@ -433,7 +432,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return a map from variable name to variable value
 	 * @should return all registered system variables
 	 */
-	@Transactional(readOnly = true)
+	
 	@Authorized(PrivilegeConstants.VIEW_ADMIN_FUNCTIONS)
 	public SortedMap<String, String> getSystemVariables() throws APIException;
 	
@@ -443,7 +442,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return a map from variable name to a map of the information
 	 * @should return all system information
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ADMIN_FUNCTIONS)
 	public Map<String, Map<String, String>> getSystemInformation() throws APIException;
 	
@@ -460,7 +458,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should get property value given valid property name
 	 * @should get property in case insensitive way
 	 */
-	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName) throws APIException;
 	
 	/**
@@ -477,7 +474,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should return default value if property name does not exist
 	 * @should not fail with null default value
 	 */
-	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException;
 	
 	/**
@@ -487,7 +483,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return the global property that matches the given <code>propertyName</code>
 	 * @should return null when no global property match given property name
 	 */
-	@Transactional(readOnly = true)
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
 	
 	/**
@@ -498,7 +493,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 1.5
 	 * @should return all relevant global properties in the database
 	 */
-	@Transactional(readOnly = true)
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix);
 	
 	/**
@@ -509,7 +503,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 1.6
 	 * @should return all relevant global properties in the database
 	 */
-	@Transactional(readOnly = true)
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix);
 	
 	/**
@@ -518,14 +511,12 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return list of global properties
 	 * @should return all global properties in the database
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> getAllGlobalProperties() throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllGlobalProperties()}
 	 */
-	@Transactional(readOnly = true)
 	public List<GlobalProperty> getGlobalProperties();
 	
 	/**
@@ -653,7 +644,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return ImplementationId object that is this implementation's unique id
 	 * @should return null if no implementation id is defined yet
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID)
 	public ImplementationId getImplementationId() throws APIException;
 	
@@ -684,7 +674,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should not fail if not global property for locales allowed defined yet
 	 * @should not return duplicates even if the global property has them
 	 */
-	@Transactional(readOnly = true)
 	public List<Locale> getAllowedLocales();
 	
 	/**
@@ -697,7 +686,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should return at least one locale if no locales defined in database yet
 	 * @should not return more locales than message source service locales
 	 */
-	@Transactional(readOnly = true)
 	public Set<Locale> getPresentationLocales();
 	
 	/**
@@ -717,7 +705,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param fieldName name of the field to get the length for
 	 * @return the max field length of a property
 	 */
-	@Transactional(readOnly = true)
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
 	
 	/**
@@ -730,8 +717,8 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param errors
 	 * @should pass for a valid object
 	 * @should fail for an invalid object
+	 * @should throw throw APIException if the input is null
 	 */
-	@Transactional(readOnly = true)
 	public void validate(Object object, Errors errors) throws APIException;
 	
 	/**
@@ -747,4 +734,11 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should exclude not allowed locales
 	 */
 	public List<Locale> getSearchLocales() throws APIException;
+	
+	/**
+	 * Used by Spring to set the http client for accessing the openmrs implementation service
+	 *
+	 * @param implementationHttpClient The implementation http client
+	 */
+	public void setImplementationIdHttpClient(HttpClient implementationHttpClient);
 }

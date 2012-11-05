@@ -162,6 +162,7 @@
 							{fieldName:"age", header:omsgs.age},
 							{fieldName:"gender", header:omsgs.gender},
 							{fieldName:"birthdateString", header:omsgs.birthdate},
+							{fieldName:"deathDateString", header:omsgs.deathdate}
 						],
 						{
                             searchLabel: '<openmrs:message code="Patient.searchBox" javaScriptEscape="true"/>',

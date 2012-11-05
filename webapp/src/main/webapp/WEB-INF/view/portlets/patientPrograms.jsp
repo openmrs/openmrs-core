@@ -434,7 +434,7 @@
 								<small><i>[<openmrs:message code="Program.completed"/>]</i></small>
 							</c:if>
 							<a href="javascript:showEditPatientProgramPopup(${program.patientProgramId})">
-							<openmrs:format program="${program.program}"/>
+							<openmrs:format program="${program.program}" caseConversion="global"/>
 							</a>
 						</td>
 						<td align="left" valign="top">
@@ -459,8 +459,8 @@
 								<c:forEach var="workflow" items="${program.program.workflows}">
 									<tr>
 										<td style="" valign="top">
-										
-											<small><openmrs:format concept="${workflow.concept}"/>:</small>
+											
+											<small><openmrs:format concept="${workflow.concept}" caseConversion="global"/>:</small>
 											<br/>
 											
 											<c:set var="stateId" value="" />
@@ -473,7 +473,7 @@
 											</c:forEach>
 											<c:choose>
 												<c:when test="${not empty stateId}">
-													<b><openmrs:format conceptId="${stateId}"/></b>
+													<b><openmrs:format conceptId="${stateId}" caseConversion="global"/></b>
 													<i>(<openmrs:message code="general.since" /> 
 													<openmrs:formatDate date="${stateStart}" type="medium" />)</i>
 												</c:when>
@@ -597,7 +597,7 @@
 				<td>
 					<c:forEach items="${model.programs}" var="p">
 						<table id="workflowSection${p.programId}" style="display:none;" class="workflowSection">
-							<c:forEach items="${p.allWorkflows}" var="wf">
+							<c:forEach items="${p.workflows}" var="wf">
 								<tr>
 									<th align="left"><openmrs:format concept="${wf.concept}"/></th>
 									<td>

@@ -20,12 +20,10 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.util.OpenmrsMemento;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Defines methods required to schedule a task.
  */
-@Transactional
 public interface SchedulerService extends OpenmrsService {
 	
 	/**
@@ -88,7 +86,6 @@ public interface SchedulerService extends OpenmrsService {
 	 * @return all scheduled tasks
 	 */
 	@Authorized( { "Manage Scheduler" })
-	@Transactional(readOnly = true)
 	public Collection<TaskDefinition> getScheduledTasks();
 	
 	/**
@@ -98,7 +95,6 @@ public interface SchedulerService extends OpenmrsService {
 	 * @return all available tasks
 	 */
 	@Authorized( { "Manage Scheduler" })
-	@Transactional(readOnly = true)
 	public Collection<TaskDefinition> getRegisteredTasks();
 	
 	/**
@@ -107,7 +103,6 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param id the identifier of the task
 	 */
 	@Authorized( { "Manage Scheduler" })
-	@Transactional(readOnly = true)
 	public TaskDefinition getTask(Integer id);
 	
 	/**
@@ -116,7 +111,6 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param name name of the task
 	 */
 	@Authorized( { "Manage Scheduler" })
-	@Transactional(readOnly = true)
 	public TaskDefinition getTaskByName(String name);
 	
 	/**
@@ -152,7 +146,6 @@ public interface SchedulerService extends OpenmrsService {
 	 * 
 	 * @return SortedMap<String, String>
 	 */
-	@Transactional(readOnly = true)
 	public SortedMap<String, String> getSystemVariables();
 	
 	/**

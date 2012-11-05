@@ -885,9 +885,11 @@ public class ConceptFormController extends SimpleFormController {
 			// Forms
 			List<Link> forms = new ArrayList<Link>();
 			for (Form form : Context.getFormService().getFormsContainingConcept(concept)) {
-				forms.add(new Link(form.getName(), "/admin/forms/formSchemaDesign.form?formId=" + form.getFormId()));
+				Link link = new Link(form.getName(), "/admin/forms/formEdit.form?formId=" + form.getFormId());
+				link.setStrike(form.getRetired());
+				forms.add(link);
 			}
-			togo.add(new ConceptUsageExtension("dictionary.forms", forms, PrivilegeConstants.VIEW_FORMS));
+			togo.add(new ConceptUsageExtension("dictionary.forms", forms, PrivilegeConstants.GET_FORMS));
 			
 			// Drugs
 			List<Link> drugs = new ArrayList<Link>();

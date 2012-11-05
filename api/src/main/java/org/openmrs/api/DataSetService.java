@@ -20,12 +20,10 @@ import org.openmrs.report.DataSet;
 import org.openmrs.report.DataSetDefinition;
 import org.openmrs.report.DataSetProvider;
 import org.openmrs.report.EvaluationContext;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @deprecated see reportingcompatibility module
  */
-@Transactional(readOnly = true)
 @Deprecated
 public interface DataSetService {
 	

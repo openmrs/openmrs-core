@@ -46,6 +46,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Serializer;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Methods specific to objects in the report package. These methods render reports or save them to
@@ -56,6 +57,7 @@ import org.simpleframework.xml.Serializer;
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
+@Transactional
 public class ReportServiceImpl implements ReportService {
 	
 	public Log log = LogFactory.getLog(this.getClass());
@@ -105,6 +107,7 @@ public class ReportServiceImpl implements ReportService {
 	 *      org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
 	 */
 	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
 	public ReportData evaluate(ReportSchema reportSchema, Cohort inputCohort, EvaluationContext evalContext) {
 		ReportData ret = new ReportData();
 		Map<String, DataSet> data = new HashMap<String, DataSet>();
@@ -124,6 +127,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportRenderer(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public ReportRenderer getReportRenderer(Class<? extends ReportRenderer> clazz) {
 		try {
 			return renderers.get(clazz);
@@ -137,6 +141,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportRenderer(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public ReportRenderer getReportRenderer(String className) {
 		try {
 			return renderers.get(OpenmrsClassLoader.getInstance().loadClass(className));
@@ -150,6 +155,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportRenderers()
 	 */
+	@Transactional(readOnly = true)
 	public Collection<ReportRenderer> getReportRenderers() {
 		return getRenderers().values();
 	}
@@ -157,6 +163,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getRenderingModes(org.openmrs.report.ReportSchema)
 	 */
+	@Transactional(readOnly = true)
 	public List<RenderingMode> getRenderingModes(ReportSchema schema) {
 		List<RenderingMode> ret = new Vector<RenderingMode>();
 		for (ReportRenderer r : getReportRenderers()) {
@@ -171,6 +178,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchema(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public ReportSchema getReportSchema(Integer reportSchemaId) throws APIException {
 		ReportSchemaXml xml = getReportSchemaXml(reportSchemaId);
 		return getReportSchema(xml);
@@ -179,6 +187,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchema(org.openmrs.report.ReportSchemaXml)
 	 */
+	@Transactional(readOnly = true)
 	public ReportSchema getReportSchema(ReportSchemaXml reportSchemaXml) throws APIException {
 		ReportSchema reportSchema = null;
 		if (reportSchemaXml == null || reportSchemaXml.getXml() == null || reportSchemaXml.getXml().length() == 0) {
@@ -198,6 +207,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchemas()
 	 */
+	@Transactional(readOnly = true)
 	public List<ReportSchema> getReportSchemas() throws APIException {
 		List<ReportSchema> ret = new ArrayList<ReportSchema>();
 		for (ReportSchemaXml xml : getReportSchemaXmls()) {
@@ -220,6 +230,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getRenderers()
 	 */
+	@Transactional(readOnly = true)
 	public Map<Class<? extends ReportRenderer>, ReportRenderer> getRenderers() throws APIException {
 		if (renderers == null)
 			renderers = new LinkedHashMap<Class<? extends ReportRenderer>, ReportRenderer>();
@@ -267,6 +278,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchemaXml(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public ReportSchemaXml getReportSchemaXml(Integer reportSchemaXmlId) {
 		return dao.getReportSchemaXml(reportSchemaXmlId);
 	}
@@ -304,6 +316,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchemaXmls()
 	 */
+	@Transactional(readOnly = true)
 	public List<ReportSchemaXml> getReportSchemaXmls() {
 		return dao.getReportSchemaXmls();
 	}
@@ -311,6 +324,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportXmlMacros()
 	 */
+	@Transactional(readOnly = true)
 	public Properties getReportXmlMacros() {
 		try {
 			String macrosAsString = Context.getAdministrationService().getGlobalProperty(
@@ -344,6 +358,7 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#applyReportXmlMacros(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public String applyReportXmlMacros(String input) {
 		Properties macros = getReportXmlMacros();
 		if (macros != null && macros.size() > 0) {

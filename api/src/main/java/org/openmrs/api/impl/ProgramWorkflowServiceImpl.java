@@ -37,6 +37,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProgramWorkflowDAO;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default implementation of the ProgramWorkflow-related services class. This method should not be
@@ -46,7 +47,7 @@ import org.openmrs.api.db.ProgramWorkflowDAO;
  * 
  * @see org.openmrs.api.ProgramWorkflowService
  */
-
+@Transactional
 public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements ProgramWorkflowService {
 	
 	protected final Log log = LogFactory.getLog(this.getClass());
@@ -111,6 +112,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getProgram(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public Program getProgram(Integer id) {
 		return dao.getProgram(id);
 	}
@@ -118,6 +120,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getProgram(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public Program getProgram(String name) {
 		return getProgramByName(name);
 	}
@@ -125,6 +128,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getProgram(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public Program getProgramByName(String name) {
 		for (Program p : getAllPrograms()) {
 			if (p.getConcept().isNamed(name)) {
@@ -137,6 +141,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getAllPrograms()
 	 */
+	@Transactional(readOnly = true)
 	public List<Program> getAllPrograms() throws APIException {
 		return getAllPrograms(true);
 	}
@@ -144,6 +149,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getAllPrograms(boolean)
 	 */
+	@Transactional(readOnly = true)
 	public List<Program> getAllPrograms(boolean includeRetired) throws APIException {
 		return dao.getAllPrograms(includeRetired);
 	}
@@ -151,6 +157,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getPrograms(String)
 	 */
+	@Transactional(readOnly = true)
 	public List<Program> getPrograms(String nameFragment) throws APIException {
 		return dao.findPrograms(nameFragment);
 	}
@@ -245,6 +252,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getPatientProgram(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public PatientProgram getPatientProgram(Integer patientProgramId) {
 		return dao.getPatientProgram(patientProgramId);
 	}
@@ -253,6 +261,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getPatientPrograms(Patient, Program, Date, Date,
 	 *      Date, Date, boolean)
 	 */
+	@Transactional(readOnly = true)
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
 	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
 	        throws APIException {
@@ -263,6 +272,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getPatientPrograms(Cohort, Collection)
 	 */
+	@Transactional(readOnly = true)
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
 		if (cohort.getMemberIds().size() < 1)
 			return dao.getPatientPrograms(null, programs);
@@ -321,6 +331,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getPossibleOutcomes(Integer)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<Concept> getPossibleOutcomes(Integer programId) {
 		List<Concept> possibleOutcomes = new ArrayList<Concept>();
 		Program program = getProgram(programId);
@@ -360,6 +371,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getConceptStateConversion(java.lang.Integer)
 	 */
+	@Transactional(readOnly = true)
 	public ConceptStateConversion getConceptStateConversion(Integer id) {
 		return dao.getConceptStateConversion(id);
 	}
@@ -367,6 +379,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getAllConceptStateConversions()
 	 */
+	@Transactional(readOnly = true)
 	public List<ConceptStateConversion> getAllConceptStateConversions() throws APIException {
 		return dao.getAllConceptStateConversions();
 	}
@@ -440,6 +453,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getConceptStateConversion(org.openmrs.ProgramWorkflow,
 	 *      org.openmrs.Concept)
 	 */
+	@Transactional(readOnly = true)
 	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger) {
 		return dao.getConceptStateConversion(workflow, trigger);
 	}
@@ -459,6 +473,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getPrograms()
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public List<Program> getPrograms() {
 		return getAllPrograms();
 	}
@@ -490,6 +505,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getWorkflow(java.lang.Integer)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflow(Integer id) {
 		for (Program p : getAllPrograms()) {
 			for (ProgramWorkflow w : p.getAllWorkflows()) {
@@ -506,6 +522,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 *      java.lang.String)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflow(Program program, String name) {
 		return program.getWorkflowByName(name);
 	}
@@ -528,6 +545,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getStates()
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getStates() {
 		return getStates(true);
 	}
@@ -536,6 +554,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getStates(boolean)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getStates(boolean includeRetired) {
 		List<ProgramWorkflowState> ret = new ArrayList<ProgramWorkflowState>();
 		for (Program p : getAllPrograms()) {
@@ -554,6 +573,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getState(java.lang.Integer)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public ProgramWorkflowState getState(Integer id) {
 		for (ProgramWorkflowState s : getStates()) {
 			if (s.getProgramWorkflowStateId().equals(id)) {
@@ -568,6 +588,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 *      java.lang.String)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public ProgramWorkflowState getState(ProgramWorkflow programWorkflow, String name) {
 		return programWorkflow.getStateByName(name);
 	}
@@ -577,6 +598,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 *      org.openmrs.ProgramWorkflow)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram, ProgramWorkflow workflow) {
 		return workflow.getPossibleNextStates(patientProgram);
 	}
@@ -586,6 +608,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 *      org.openmrs.ProgramWorkflowState)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public boolean isLegalTransition(ProgramWorkflowState fromState, ProgramWorkflowState toState) {
 		return fromState.getProgramWorkflow().isLegalTransition(fromState, toState);
 	}
@@ -630,6 +653,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getPatientPrograms(org.openmrs.Patient)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public Collection<PatientProgram> getPatientPrograms(Patient patient) {
 		return getPatientPrograms(patient, null, null, null, null, null, false);
 	}
@@ -639,6 +663,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 *      java.util.Date, java.util.Date)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate) {
 		List<Integer> ret = new ArrayList<Integer>();
 		Collection<PatientProgram> programs = getPatientPrograms(null, program, null, toDate, fromDate, null, false);
@@ -653,6 +678,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 *      java.util.Date)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public Collection<PatientProgram> getCurrentPrograms(Patient patient, Date onDate) {
 		List<PatientProgram> ret = new ArrayList<PatientProgram>();
 		for (PatientProgram pp : getPatientPrograms(patient)) {
@@ -668,6 +694,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 *      org.openmrs.Program, java.util.Date, java.util.Date)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public boolean isInProgram(Patient patient, Program program, Date fromDate, Date toDate) {
 		return !getPatientPrograms(patient, program, null, toDate, fromDate, null, false).isEmpty();
 	}
@@ -680,6 +707,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getPatientState(java.lang.Integer)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public PatientState getPatientState(Integer patientStateId) {
 		for (PatientProgram p : getPatientPrograms(null, null, null, null, null, null, false)) {
 			PatientState state = p.getPatientState(patientStateId);
@@ -695,6 +723,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 *      org.openmrs.ProgramWorkflow)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public PatientState getLatestState(PatientProgram patientProgram, ProgramWorkflow workflow) {
 		return patientProgram.getCurrentState(workflow);
 	}
@@ -703,6 +732,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getCurrentWorkflowsByPatient(org.openmrs.Patient)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public Set<ProgramWorkflow> getCurrentWorkflowsByPatient(Patient patient) {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
 		for (PatientProgram patientProgram : getPatientPrograms(patient)) {
@@ -715,6 +745,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getCurrentWorkflowsByPatientProgram(org.openmrs.PatientProgram)
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public Set<ProgramWorkflow> getCurrentWorkflowsByPatientProgram(PatientProgram patientProgram) {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
 		if (patientProgram != null) {
@@ -758,6 +789,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getProgramsByConcept(org.openmrs.Concept)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<Program> getProgramsByConcept(Concept concept) {
 		return dao.getProgramsByConcept(concept);
 	}
@@ -766,6 +798,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getProgramWorkflowsByConcept(org.openmrs.Concept)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept) {
 		return dao.getProgramWorkflowsByConcept(concept);
 	}
@@ -774,6 +807,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getProgramWorkflowStatesByConcept(org.openmrs.Concept)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept) {
 		return dao.getProgramWorkflowStatesByConcept(concept);
 	}
@@ -802,6 +836,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#getAllConversions()
 	 * @deprecated
 	 */
+	@Transactional(readOnly = true)
 	public List<ConceptStateConversion> getAllConversions() {
 		return getAllConceptStateConversions();
 	}
@@ -817,6 +852,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getConceptStateConversionByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public ConceptStateConversion getConceptStateConversionByUuid(String uuid) {
 		return dao.getConceptStateConversionByUuid(uuid);
 	}
@@ -824,6 +860,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getPatientProgramByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public PatientProgram getPatientProgramByUuid(String uuid) {
 		return dao.getPatientProgramByUuid(uuid);
 	}
@@ -831,6 +868,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getProgramByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public Program getProgramByUuid(String uuid) {
 		return dao.getProgramByUuid(uuid);
 	}
@@ -838,10 +876,12 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getStateByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public ProgramWorkflowState getStateByUuid(String uuid) {
 		return dao.getStateByUuid(uuid);
 	}
 	
+	@Transactional(readOnly = true)
 	public PatientState getPatientStateByUuid(String uuid) {
 		return dao.getPatientStateByUuid(uuid);
 	}
@@ -849,6 +889,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getWorkflowByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflowByUuid(String uuid) {
 		return dao.getWorkflowByUuid(uuid);
 	}

@@ -39,9 +39,16 @@
 		<openmrs:hasPrivilege privilege="${conceptUsageExt.requiredPrivilege}">
 		<c:if test="${fn:length(conceptUsageExt.conceptUsage) > 0}">
 			<h4><openmrs:message code="${conceptUsageExt.header}" /></h4>
-			<ul><c:forEach items="${conceptUsageExt.conceptUsage}" var="usage">
-			<li><a href="${pageContext.request.contextPath}${usage.url}">${usage.label}</a></li>
-			</c:forEach></ul>
+			<ul>
+				<c:forEach items="${conceptUsageExt.conceptUsage}" var="usage">
+					<li><a href="${pageContext.request.contextPath}${usage.url}">
+							<c:if test="${usage.strike}"><strike></c:if>
+								${usage.label}
+							<c:if test="${usage.strike}"></strike></c:if>
+						</a>
+					</li>
+				</c:forEach>
+			</ul>
 		</c:if>
 		</openmrs:hasPrivilege>
 	</c:forEach>

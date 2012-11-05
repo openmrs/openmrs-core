@@ -12,6 +12,7 @@ omsgs.addNewPerson="<openmrs:message code='Person.addNew'/>";
 omsgs.age="<openmrs:message code="Person.age" javaScriptEscape="true"/>";
 omsgs.birthdate="<openmrs:message code="Person.birthdate" javaScriptEscape="true"/>";
 omsgs.birthdateRequired="<openmrs:message code='Person.birthdate.required'/>";
+omsgs.deathdate="<openmrs:message code="Person.deathDate" javaScriptEscape="true"/>";
 omsgs.cancel="<openmrs:message code='general.cancel'/>";
 omsgs.change="<openmrs:message code="general.change" />";
 omsgs.familyName="<openmrs:message code="PersonName.familyName" javaScriptEscape="true"/>";

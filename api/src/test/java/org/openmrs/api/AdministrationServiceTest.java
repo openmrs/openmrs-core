@@ -16,6 +16,7 @@ package org.openmrs.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,7 +34,11 @@ import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
+
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 
 /**
  * TODO clean up and finish this test class. Should test all methods in the
@@ -45,6 +50,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String ADMIN_INITIAL_DATA_XML = "org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml";
 	
+	private HttpClient implementationHttpClient;
+	
 	/**
 	 * Run this before each unit test in this class. It simply assigns the services used in this
 	 * class to private variables The "@Before" method in {@link BaseContextSensitiveTest} is run
@@ -54,8 +61,12 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		if (adminService == null)
+		if (adminService == null) {
 			adminService = Context.getAdministrationService();
+			implementationHttpClient = mock(HttpClient.class);
+			adminService.setImplementationIdHttpClient(implementationHttpClient);
+		}
+		
 	}
 	
 	/**
@@ -681,5 +692,16 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue("en_GB", searchLocales.contains(new Locale("en", "GB")));
 		Assert.assertTrue("en_US", searchLocales.contains(new Locale("en", "US")));
 		Assert.assertFalse("pl", searchLocales.contains(new Locale("pl")));
+	}
+	
+	/**
+	 * @see AdministrationService#validate(Object,Errors)
+	 * @verifies throws APIException if the input is null
+	 */
+	
+	@Test(expected = APIException.class)
+	public void validate_shouldThrowThrowAPIExceptionIfTheInputIsNull() throws Exception {
+		BindException errors = new BindException(new Object(), "");
+		Context.getAdministrationService().validate(null, errors);
 	}
 }

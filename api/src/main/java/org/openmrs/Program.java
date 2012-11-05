@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.openmrs.annotation.AllowDirectAccess;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
@@ -41,6 +42,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	 */
 	private Concept outcomesConcept;
 	
+	@AllowDirectAccess
 	private Set<ProgramWorkflow> allWorkflows = new HashSet<ProgramWorkflow>();
 	
 	// ******************

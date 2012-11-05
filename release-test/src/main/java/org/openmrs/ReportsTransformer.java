@@ -1,7 +1,5 @@
 package org.openmrs;
 
-import org.w3c.dom.Document;
-
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
@@ -64,14 +62,16 @@ public class ReportsTransformer {
         List<File> xmlFiles = new ArrayList<File>();
 
         File[] files = folder.listFiles();
-        System.out.println("FOUND "+files.length+" FILES AT "+folder.getPath());
-        for (File file : files) {
-            String fileName = file.getName();
-            if (file.isFile() && (fileName.endsWith(".xml") || fileName.endsWith(".XML"))) {
-                xmlFiles.add(file);
+        if(files != null){
+            System.out.println("FOUND "+files.length+" FILES AT "+folder.getPath());
+            for (File file : files) {
+                String fileName = file.getName();
+                if (file.isFile() && (fileName.endsWith(".xml") || fileName.endsWith(".XML"))) {
+                    xmlFiles.add(file);
+                }
             }
+            System.out.println("FOUND "+xmlFiles.size()+" XMLs at"+folder.getPath());
         }
-        System.out.println("FOUND "+xmlFiles.size()+" XMLs at"+folder.getPath());
         return xmlFiles;
     }
 

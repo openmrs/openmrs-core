@@ -24,6 +24,8 @@ import java.util.Set;
 
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -43,6 +45,7 @@ import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
@@ -54,7 +57,6 @@ import org.openmrs.customdatatype.DownloadableDatatypeHandler;
 import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler;
-import org.springframework.util.StringUtils;
 import org.springframework.web.util.JavaScriptUtils;
 
 /**
@@ -131,6 +133,12 @@ public class FormatTag extends TagSupport {
 	private Form form;
 	
 	private SingleCustomValue<?> singleCustomValue;
+	
+	/**
+	 * Applies case conversion to metadata
+	 * @since 1.10
+	 */
+	private String caseConversion;
 	
 	@Override
 	public int doStartTag() {
@@ -218,7 +226,7 @@ public class FormatTag extends TagSupport {
 			printSingleCustomValue(sb, singleCustomValue);
 		}
 		
-		if (StringUtils.hasText(var)) {
+		if (StringUtils.isNotEmpty(var)) {
 			if (javaScriptEscape)
 				pageContext.setAttribute(var, JavaScriptUtils.javaScriptEscape(sb.toString()));
 			else
@@ -313,7 +321,7 @@ public class FormatTag extends TagSupport {
 	 * @param program the program object to print
 	 */
 	private void printProgram(StringBuilder sb, Program program) {
-		if (StringUtils.hasText(program.getName())) {
+		if (StringUtils.isNotEmpty(program.getName())) {
 			printMetadata(sb, program);
 		} else if (program.getConcept() != null) {
 			printConcept(sb, program.getConcept());
@@ -400,18 +408,17 @@ public class FormatTag extends TagSupport {
 			
 			ConceptName name = concept.getName(loc, lookForNameType, lookForNameTag);
 			if (name != null) {
-				sb.append(name.getName());
+				sb.append(applyConversion(name.getName()));
 				return;
 			}
 		}
 		
 		ConceptName name = concept.getPreferredName(loc);
 		if (name != null) {
-			sb.append(name.getName());
+			sb.append(applyConversion(name.getName()));
 			return;
 		}
-		
-		sb.append(concept.getDisplayString());
+		sb.append(applyConversion(concept.getDisplayString()));
 	}
 	
 	/**
@@ -425,14 +432,41 @@ public class FormatTag extends TagSupport {
 	}
 	
 	/**
+	 * Apply a case conversion to an input string
+	 * @param source
+	 * @return
+	 */
+	private String applyConversion(String source) {
+		
+		String result = source;
+		
+		// Find global property 
+		if ("global".equalsIgnoreCase(caseConversion)) {
+			AdministrationService adminService = Context.getAdministrationService();
+			caseConversion = adminService.getGlobalProperty(OpenmrsConstants.GP_DASHBOARD_METADATA_CASE_CONVERSION);
+		}
+		
+		// Apply conversion
+		if ("lowercase".equalsIgnoreCase(caseConversion)) {
+			result = StringUtils.lowerCase(result);
+		} else if ("uppercase".equalsIgnoreCase(caseConversion)) {
+			result = StringUtils.upperCase(result);
+		} else if ("capitalize".equalsIgnoreCase(caseConversion)) {
+			result = WordUtils.capitalize(StringUtils.lowerCase(result));
+		}
+		return result;
+	}
+	
+	/**
 	 * formats any OpenmrsMetadata and prints it to sb
 	 * 
 	 * @param sb
 	 * @param metadata
 	 */
 	private void printMetadata(StringBuilder sb, OpenmrsMetadata metadata) {
-		if (metadata != null)
-			sb.append(metadata.getName());
+		if (metadata != null) {
+			sb.append(applyConversion(metadata.getName()));
+		}
 	}
 	
 	/**
@@ -528,7 +562,7 @@ public class FormatTag extends TagSupport {
 		String encounterRoles = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES, null);
 		
-		if (!StringUtils.hasText(encounterRoles)) {
+		if (StringUtils.isEmpty(encounterRoles)) {
 			
 			//we do not filter if user has not yet set the global property.
 			LinkedHashSet<Provider> allProviders = new LinkedHashSet<Provider>();
@@ -942,6 +976,14 @@ public class FormatTag extends TagSupport {
 	 */
 	public void setSingleCustomValue(SingleCustomValue<?> singleCustomValue) {
 		this.singleCustomValue = singleCustomValue;
+	}
+	
+	public String getCaseConversion() {
+		return caseConversion;
+	}
+	
+	public void setCaseConversion(String caseConversion) {
+		this.caseConversion = caseConversion;
 	}
 	
 }

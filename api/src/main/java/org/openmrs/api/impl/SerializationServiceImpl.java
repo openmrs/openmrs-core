@@ -57,6 +57,7 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	/**
 	 * @see org.openmrs.api.SerializationService#getDefaultSerializer()
 	 */
+	@Transactional(readOnly = true)
 	public OpenmrsSerializer getDefaultSerializer() {
 		String prop = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_SERIALIZER);
@@ -68,8 +69,10 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 				}
 			}
 			catch (Exception e) {
-				log.warn("No default serializer specified - using builtin SimpleXStreamSerializer.");
+				log.info("Cannot create an instance of " + prop + " - using builtin SimpleXStreamSerializer.");
 			}
+		} else {
+			log.info("No default serializer specified - using builtin SimpleXStreamSerializer.");
 		}
 		return serializerMap.get(SimpleXStreamSerializer.class);
 	}
