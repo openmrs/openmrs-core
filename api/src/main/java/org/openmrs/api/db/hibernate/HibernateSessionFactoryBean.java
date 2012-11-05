@@ -36,9 +36,9 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 
-public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
+public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 	
 	private static Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
 	
@@ -135,6 +135,16 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		return tmpMappingResources;
 	}
 	
+	public Set<String> getModulePackagesWithMappedClasses() {
+		Set<String> packages = new HashSet<String>();
+		for (Module mod : ModuleFactory.getStartedModules()) {
+			for (String s : mod.getPackagesWithMappedClasses()) {
+				packages.add(s);
+			}
+		}
+		return packages;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.springframework.orm.hibernate3.AbstractSessionFactoryBean#afterPropertiesSet()
 	 */
@@ -142,8 +152,9 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	public void afterPropertiesSet() throws Exception {
 		// adding each module's mapping file to the list of mapping resources
 		super.setMappingResources(getModuleMappingResources().toArray(new String[] {}));
-		
 		// just check for testing module's hbm files here?
+		
+		super.setPackagesToScan(getModulePackagesWithMappedClasses().toArray(new String[] {}));
 		
 		super.afterPropertiesSet();
 	}
