@@ -207,6 +207,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			}
 		}
 		
+		Date dateChanged = new Date();
+		
 		if (CollectionUtils.isNotEmpty(changedConceptNames)) {
 			for (ConceptName changedName : changedConceptNames) {
 				// void old concept name
@@ -228,14 +230,14 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				// conceptName
 				ConceptName clone = uuidClonedConceptNameMap.get(nameInDB.getUuid());
 				clone.setUuid(UUID.randomUUID().toString());
-				clone.setDateCreated(null);
-				clone.setCreator(null);
+				clone.setDateCreated(dateChanged);
+				clone.setCreator(Context.getAuthenticatedUser());
 				concept.addName(clone);
 			}
 		}
 		
 		//See TRUNK-3337 for why we set changed by and date changed every time we save a concept.
-		concept.setDateChanged(new Date());
+		concept.setDateChanged(dateChanged);
 		concept.setChangedBy(Context.getAuthenticatedUser());
 		
 		Errors errors = new BindException(concept, "concept");
