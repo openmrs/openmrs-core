@@ -1287,7 +1287,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param description the description to add
 	 */
 	public void addDescription(ConceptDescription description) {
-		if (description != null) {
+		if (StringUtils.isNotBlank(description.toString())) {
 			if (getDescriptions() == null) {
 				descriptions = new HashSet<ConceptDescription>();
 				description.setConcept(this);

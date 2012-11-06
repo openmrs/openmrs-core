@@ -62,7 +62,7 @@ public class ConceptValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should pass if the concept has atleast one fully specified name added to it
+	 * @should pass if the concept has at least one fully specified name added to it
 	 * @should fail if there is a duplicate unretired concept name in the locale
 	 * @should fail if there is a duplicate unretired preferred name in the same locale
 	 * @should fail if there is a duplicate unretired fully specified name in the same locale
