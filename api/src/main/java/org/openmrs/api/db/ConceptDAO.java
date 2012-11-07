@@ -124,6 +124,8 @@ public interface ConceptDAO {
 	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,
 	 *      Integer, Integer)
 	 * @throws DAOException
+	 * @should return correct results for concept with names that contains words with more weight
+	 * @should return correct results if a concept name contains same word more than once
 	 */
 	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
