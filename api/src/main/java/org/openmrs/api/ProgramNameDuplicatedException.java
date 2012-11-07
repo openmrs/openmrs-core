@@ -14,9 +14,11 @@
 package org.openmrs.api;
 
 /**
- * This exception is thrown when one attempts to retrieve a program by name
- * while there accidentally are more than one programs with the same name in the dB.
+ * This exception is thrown when one attempts to retrieve a program by name while there accidentally
+ * are more than one programs with the same name in the dB.
+ * 
  * @see org.openmrs.api.ProgramWorkflowService#getProgramByName(java.lang.String)
+ * @since 1.10, 1.9.2
  */
 public class ProgramNameDuplicatedException extends APIException {
 	
@@ -24,6 +26,7 @@ public class ProgramNameDuplicatedException extends APIException {
 	
 	/**
 	 * Constructor that takes the duplicated program name.
+	 * 
 	 * @param programName the name of the program
 	 */
 	public ProgramNameDuplicatedException(String programName) {
