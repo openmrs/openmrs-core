@@ -18,7 +18,7 @@ package org.openmrs.api;
  * are more than one programs with the same name in the dB.
  * 
  * @see org.openmrs.api.ProgramWorkflowService#getProgramByName(java.lang.String)
- * @since 1.10, 1.9.2
+ * @since 1.10
  */
 public class ProgramNameDuplicatedException extends APIException {
 	

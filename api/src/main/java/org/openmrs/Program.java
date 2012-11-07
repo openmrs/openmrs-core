@@ -62,7 +62,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	/**
 	 * Constructor with name
 	 * 
-	 * @since 1.10, 1.9.2
+	 * @since 1.10
 	 */
 	public Program(String name) {
 		setName(name);
