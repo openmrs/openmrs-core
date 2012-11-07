@@ -23,7 +23,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 import java.util.Date;
-import java.util.List;
 
 public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 	
@@ -69,36 +68,4 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 		Program savedProgram = dao.getProgram(id);
 		Assert.assertEquals(3, savedProgram.getOutcomesConcept().getId().intValue());
 	}
-	
-	@Test
-	@Verifies(value = "should return an empty list when there is no program in the dB with given name", method = "getProgramsByName")
-	public void getProgramsByName_whenThereAreNoProgramsWithTheGivenName_shouldReturnAnEmptyList() {
-		Program program = createProgram();
-		program.setName("wrongProgramName");
-		dao.saveProgram(program);
-		clearHibernateCache();
-		List<Program> programs = dao.getProgramsByName("testProgramName", true);
-		Assert.assertNotNull(programs);
-		Assert.assertEquals(0, programs.size());
-	}
-	
-	@Test
-	@Verifies(value = "should return only and exactly the programs with the given name", method = "getProgramsByName")
-	public void getProgramsByName_whenThereAreProgramsWithTheGivenName_shouldReturnAllProgramsWithTheGivenName() {
-		Program program1 = createProgram();
-		program1.setName("testProgramName");
-		dao.saveProgram(program1);
-		Program program2 = createProgram();
-		program2.setName("testProgramName");
-		dao.saveProgram(program2);
-		Program program3 = createProgram();
-		program3.setName("wrongProgramName");
-		dao.saveProgram(program3);
-		clearHibernateCache();
-		List<Program> programs = dao.getProgramsByName("testProgramName", true);
-		Assert.assertEquals(2, programs.size());
-		Assert.assertEquals(program1, programs.get(0));
-		Assert.assertEquals(program2, programs.get(1));
-	}
-	
 }

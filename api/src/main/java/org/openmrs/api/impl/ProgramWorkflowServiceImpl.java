@@ -34,7 +34,6 @@ import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.api.ProgramNameDuplicatedException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProgramWorkflowDAO;
@@ -126,18 +125,13 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getProgram(java.lang.String)
 	 */
-	public Program getProgramByName(String name) throws APIException {
-		List<Program> programs = dao.getProgramsByName(name, false);
-		
-		if (programs.isEmpty()) {
-			programs = dao.getProgramsByName(name, true);
+	public Program getProgramByName(String name) {
+		for (Program p : getAllPrograms()) {
+			if (p.getConcept().isNamed(name)) {
+				return p;
+			}
 		}
-		
-		//Must be unique not retired or unique retired
-		if (programs.size() > 1) {
-			throw new ProgramNameDuplicatedException(name);
-		}
-		return programs.isEmpty() ? null : programs.get(0);
+		return null;
 	}
 	
 	/**
