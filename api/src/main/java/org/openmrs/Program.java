@@ -37,7 +37,8 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	private Concept concept;
 	
 	/**
-	 * Represents the possible outcomes for this program.  The concept should have answers or a memberSet.
+	 * Represents the possible outcomes for this program. The concept should have answers or a
+	 * memberSet.
 	 */
 	private Concept outcomesConcept;
 	
@@ -56,7 +57,11 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 		setProgramId(programId);
 	}
 	
-	/** Constructor with name */
+	/**
+	 * Constructor with name
+	 * 
+	 * @since 1.10, 1.9.2
+	 */
 	public Program(String name) {
 		setName(name);
 	}
