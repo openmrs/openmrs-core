@@ -63,7 +63,6 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -2017,29 +2016,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	        throws Exception {
 		Assert.assertEquals(2, Context.getConceptService().getReferenceTermMappingsTo(
 		    Context.getConceptService().getConceptReferenceTerm(4)).size());
-	}
-	
-	/**
-	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
-	 */
-	@Test
-	@Verifies(value = "should return a search result whose concept name contains a word with more weight", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
-	public void getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAWordWithMoreWeight() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
-		Concept conceptWithMultipleMatchingNames = conceptService.getConcept(3000);
-		//recalculate the weights just in case the logic for calculating the weights is changed
-		conceptService.updateConceptIndex(conceptWithMultipleMatchingNames);
-		conceptService.updateConceptIndex(conceptService.getConcept(4000));
-		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust", Collections
-		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
-		
-		Assert.assertEquals(2, searchResults.size());
-		//the first concept is the one with a word with the highest weight
-		Assert.assertEquals(conceptWithMultipleMatchingNames, searchResults.get(0).getConcept());
-		//This test is only passing because the name select in the query happens to have a lower concept name id.
-		//For conceptId=3000, its search result should ALWAYS match on 'TRUST ME' because it is shorter THAN 'TRUST ALWAYS'
-		//so it has a higher weight hence giving this concept a higher weight when being compared to other concept hits.
-		Assert.assertEquals(9997, searchResults.get(0).getConceptName().getConceptNameId().intValue());
 	}
 	
 	/**
