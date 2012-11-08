@@ -930,6 +930,46 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>integration</id>
+			<activation>
+				<property>
+					<name>integration</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+        				<groupId>org.apache.maven.plugins</groupId>
+        				<artifactId>maven-failsafe-plugin</artifactId>
+        				<version>2.12.4</version>
+        				<configuration>
+							<includes>
+            					<include>**/*IT.java</include>
+            					<include>**/*ITCase.java</include>
+          					</includes>
+          					<excludes>
+          						<exclude>**/Test*.java</exclude>
+            					<exclude>**/*Test.java</exclude>
+            					<exclude>**/*TestCase.java</exclude>
+          					</excludes>
+          					<argLine>-Duser.language=en -Duser.region=US ${customArgLineForTesting}</argLine>
+						</configuration>
+						<executions>
+          					<execution>
+            					<goals>
+              						<goal>integration-test</goal>
+              						<goal>verify</goal>
+            					</goals>
+          					</execution>
+        				</executions>
+      				</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<reporting>
 		<plugins>
