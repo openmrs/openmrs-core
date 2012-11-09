@@ -13,10 +13,17 @@
  */
 package org.openmrs.api.context;
 
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.Module;
+import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.scheduler.Task;
@@ -36,6 +43,10 @@ public class Daemon {
 	protected static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
 	
 	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
+	
+	private static volatile Map<String, Token> daemonTokens = new WeakHashMap<String, Token>();
+	
+	private static final Object daemonTokensLock = new Object();
 	
 	/**
 	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
@@ -58,7 +69,7 @@ public class Daemon {
 	 * @returns the module returned from {@link ModuleFactory#startModuleInternal(Module)}
 	 */
 	public static Module startModule(final Module module, final boolean isOpenmrsStartup,
-	        final AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
+	                                 final AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
 		// create a new thread and execute that task in it
 		DaemonThread startModuleThread = new DaemonThread() {
 			
@@ -95,7 +106,9 @@ public class Daemon {
 				throw new ModuleException("Unable to start module as Daemon", startModuleThread.exceptionThrown);
 		}
 		
-		return (Module) startModuleThread.returnedObject;
+		Module startedModule = (Module) startModuleThread.returnedObject;
+		
+		return startedModule;
 	}
 	
 	/**
@@ -250,10 +263,14 @@ public class Daemon {
 	 * Executes the given runnable in a new thread that is authenticated as the daemon user.
 	 * 
 	 * @param runnable an object implementing the {@link Runnable} interface.
+	 * @param daemonToken the token required to run code as the daemon user
 	 * @return the newly spawned {@link Thread}
-	 * @since 1.9
+	 * @since 1.9.2, 1.10
 	 */
-	public static Thread runInDaemonThread(final Runnable runnable) {
+	public static Thread runInDaemonThread(final Runnable runnable, Token daemonToken) {
+		if (!isTokenValid(daemonToken)) {
+			throw new ContextAuthenticationException("Invalid token " + daemonToken);
+		}
 		
 		DaemonThread thread = new DaemonThread() {
 			
@@ -272,6 +289,115 @@ public class Daemon {
 		
 		thread.start();
 		return thread;
+	}
+	
+	/**
+	 * Executes the given runnable in a new thread that is authenticated as the daemon user and wait
+	 * for the thread to finish.
+	 * 
+	 * @param runnable an object implementing the {@link Runnable} interface.
+	 * @param token the token required to run code as the daemon user
+	 * @return the newly spawned {@link Thread}
+	 * @since 1.9.2, 1.10
+	 */
+	public static void runInDaemonThreadAndWait(final Runnable runnable, Token token) {
+		Thread daemonThread = runInDaemonThread(runnable, token);
+		
+		try {
+			daemonThread.join();
+		}
+		catch (InterruptedException e) {
+			//Ignore
+		}
+	}
+	
+	/**
+	 * Validates the given token.
+	 * <p>
+	 * It is thread safe.
+	 * 
+	 * @param token
+	 * @since 1.10, 1.9.2
+	 */
+	public static boolean isTokenValid(Token token) {
+		if (token == null) {
+			return false;
+		} else {
+			//We need to synchronize to guarantee that the last passed token is valid.
+			synchronized (daemonTokensLock) {
+				Token validToken = daemonTokens.get(token.getId());
+				//Compare by reference to defend from overridden equals.
+				return validToken == token;
+			}
+		}
+	}
+	
+	/**
+	 * Allows to request a daemon token for the given module.
+	 * <p>
+	 * The token is passed to that module's {@link ModuleActivator} if it implements
+	 * {@link DaemonTokenAware}.
+	 * <p>
+	 * This method is called automatically before {@link ModuleActivator#contextRefreshed()} or
+	 * {@link ModuleActivator#started()}. Note that it may be called multiple times and there is no
+	 * guarantee that it will always pass the same token. The last passed token is valid, whereas
+	 * previously passed tokens may be invalidated.
+	 * <p>
+	 * It is thread safe.
+	 * 
+	 * @param module
+	 * @since 1.10, 1.9.2
+	 */
+	public static void requestDaemonToken(Module module) {
+		ModuleActivator moduleActivator = module.getModuleActivator();
+		if (moduleActivator instanceof DaemonTokenAware) {
+			((DaemonTokenAware) module.getModuleActivator()).setDaemonToken(getDaemonToken(module));
+		}
+	}
+	
+	/**
+	 * Required to run code with elevated privileges in
+	 * {@link Daemon#runInDaemonThreadAndWait(Runnable, Token)}.
+	 */
+	public static class Token implements Serializable {
+		
+		private static final long serialVersionUID = 1L;
+		
+		private final String id;
+		
+		private Token(String id) {
+			this.id = id;
+		}
+		
+		/**
+		 * @return the id
+		 */
+		private String getId() {
+			return id;
+		}
+	}
+	
+	/**
+	 * Gets a new or existing token. Uses weak references for tokens so that they are garbage
+	 * collected when not needed.
+	 * <p>
+	 * It is thread safe.
+	 * 
+	 * @param module
+	 * @return the token
+	 */
+	private static Token getDaemonToken(Module module) {
+		synchronized (daemonTokensLock) {
+			Token token = daemonTokens.get(module.getModuleId());
+			if (token != null) {
+				return token;
+			}
+			
+			token = new Token(module.getModuleId());
+			daemonTokens.put(module.getModuleId(), token);
+			
+			return token;
+		}
 	}
 	
 	/**

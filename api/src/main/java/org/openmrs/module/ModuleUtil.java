@@ -45,6 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
@@ -795,6 +796,8 @@ public class ModuleUtil {
 		for (Module module : ModuleFactory.getStartedModules()) {
 			ModuleFactory.loadAdvice(module);
 			try {
+				Daemon.requestDaemonToken(module);
+				
 				if (module.getModuleActivator() != null) {
 					module.getModuleActivator().contextRefreshed();
 					//if it is system start up, call the started method for all started modules
