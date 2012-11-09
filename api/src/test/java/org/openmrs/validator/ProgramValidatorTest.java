@@ -58,15 +58,15 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ProgramValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
 		Program prog = new Program();
 		prog.setName("Hypochondriasis program");
 		prog.setConcept(Context.getConceptService().getConcept(3));
 		
 		Errors errors = new BindException(prog, "prog");
 		new ProgramValidator().validate(prog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**

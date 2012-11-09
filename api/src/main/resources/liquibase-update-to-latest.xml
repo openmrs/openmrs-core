@@ -7420,5 +7420,61 @@
 		<dropTable tableName="concept_set_derived"/>
 	</changeSet>
 	
+	<changeSet id="20121109-TRUNK-3474" author="patandre">
+		<comment>
+			Dropping not null constraint from concept_class.description column
+		</comment>
+		<dropNotNullConstraint tableName="concept_class" columnName="description" columnDataType="varchar(255)" />
+	</changeSet>
+	
+	<changeSet id="20121112-TRUNK-3474" author="patandre">
+		<comment>
+			Dropping not null constraint from concept_datatype.description column
+		</comment>
+		<dropNotNullConstraint tableName="concept_datatype" columnName="description" columnDataType="varchar(255)" />
+	</changeSet>
+
+	<changeSet id="20121113-TRUNK-3474" author="patandre">
+		<comment>
+			Dropping not null constraint from patient_identifier_type.description column
+		</comment>
+		<dropNotNullConstraint tableName="patient_identifier_type" columnName="description" columnDataType="text" />
+	</changeSet>
+
+	<changeSet id="20121113-TRUNK-3474-person-attribute-type" author="patandre">
+		<comment>
+			Dropping not null constraint from person_attribute_type.description column
+		</comment>
+		<dropNotNullConstraint tableName="person_attribute_type" columnName="description" columnDataType="text" />
+	</changeSet>
+
+	<changeSet id="20121113-TRUNK-3474-privilege" author="patandre">
+		<comment>
+			Dropping not null constraint from privilege.description column
+		</comment>
+		<dropNotNullConstraint tableName="privilege" columnName="description" columnDataType="text" />
+	</changeSet>
+
+	<changeSet id="20121114-TRUNK-3474-role" author="patandre">
+		<comment>
+			Dropping not null constraint from role.description column
+		</comment>
+		<dropNotNullConstraint tableName="role" columnName="description" columnDataType="varchar(255)" />
+	</changeSet>
+
+	<changeSet id="20121114-TRUNK-3474-relationship_type" author="patandre">
+		<comment>
+			Dropping not null constraint from relationship_type.description column
+		</comment>
+		<dropNotNullConstraint tableName="relationship_type" columnName="description" columnDataType="varchar(255)" />
+	</changeSet>
+
+	<changeSet id="20121114-TRUNK-3474-encounter_type" author="patandre">
+		<comment>
+			Dropping not null constraint from encounter_type.description column
+		</comment>
+		<dropNotNullConstraint tableName="encounter_type" columnName="description" columnDataType="text" />
+	</changeSet>
+
 </databaseChangeLog>
 

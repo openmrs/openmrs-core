@@ -41,25 +41,25 @@ public class PrivilegeValidatorTest {
 	 * @see {@link PrivilegeValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
 		Privilege priv = new Privilege();
 		priv.setPrivilege("Wallhacking");
 		priv.setDescription(null);
 		
 		Errors errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertFalse(errors.hasFieldErrors("description"));
 		
 		priv.setDescription("");
 		errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertFalse(errors.hasFieldErrors("description"));
 		
 		priv.setDescription(" ");
 		errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**
