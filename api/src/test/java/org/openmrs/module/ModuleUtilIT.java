@@ -13,42 +13,19 @@
  */
 package org.openmrs.module;
 
-import static org.mockito.Mockito.mock;
-
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
 
 import junit.framework.Assert;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-import org.openmrs.GlobalProperty;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.test.TestUtil;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests methods on the {@link ModuleUtil} class
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest( { ModuleUtil.class, Context.class })
-public class ModuleUtilTest {
-	
-	@Before
-	public void before() {
-		MessageSourceService as = mock(MessageSourceService.class);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getMessageSourceService")).toReturn(as);
-	}
+public class ModuleUtilIT extends BaseContextSensitiveTest {
 	
 	/**
 	 * This test requires a connection to the internet to pass
@@ -109,10 +86,7 @@ public class ModuleUtilTest {
 	@Test(expected = MandatoryModuleException.class)
 	@Verifies(value = "should throw ModuleException if a mandatory module is not started", method = "checkMandatoryModulesStarted()")
 	public void checkMandatoryModulesStarted_shouldThrowModuleExceptionIfAMandatoryModuleIsNotStarted() throws Exception {
-		Assert.assertTrue(ModuleFactory.getStartedModulesMap().isEmpty());
-		PowerMockito.stub(PowerMockito.method(ModuleUtil.class, "getMandatoryModules")).toReturn(
-		    Collections.singletonList("module1"));
-		
+		executeDataSet("org/openmrs/module/include/mandatoryModulesGlobalProperties.xml");
 		ModuleUtil.checkMandatoryModulesStarted();
 	}
 	
@@ -121,10 +95,15 @@ public class ModuleUtilTest {
 	 */
 	@Test(expected = OpenmrsCoreModuleException.class)
 	@Verifies(value = "should throw ModuleException if a core module is not started", method = "checkOpenmrsCoreModulesStarted()")
-	public void checkOpenmrsCoreModulesStarted_shouldThrowModuleExceptionIfACoreModuleIsNotStarted() throws Exception {
-		Assert.assertTrue(ModuleFactory.getStartedModulesMap().isEmpty());
-		Assert.assertFalse(ModuleConstants.CORE_MODULES.isEmpty());
-		ModuleUtil.checkOpenmrsCoreModulesStarted();
+	public void checkMandatoryModulesStarted_shouldThrowModuleExceptionIfACoreModuleIsNotStarted() throws Exception {
+		
+		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "false");
+		try {
+			ModuleUtil.checkOpenmrsCoreModulesStarted();
+		}
+		finally {
+			runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "true");
+		}
 	}
 	
 	/**
@@ -133,12 +112,7 @@ public class ModuleUtilTest {
 	@Test
 	@Verifies(value = "should return mandatory module ids", method = "getMandatoryModules()")
 	public void getMandatoryModules_shouldReturnMandatoryModuleIds() throws Exception {
-		AdministrationService as = mock(AdministrationService.class);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getAdministrationService")).toReturn(as);
-		GlobalProperty gp1 = new GlobalProperty("firstmodule.mandatory", "true");
-		GlobalProperty gp2 = new GlobalProperty("secondmodule.mandatory", "false");
-		Mockito.when(as.getGlobalPropertiesBySuffix(Matchers.argThat(TestUtil.equalsMatcher(".mandatory")))).thenReturn(
-		    Arrays.asList(gp1, gp2));
+		executeDataSet("org/openmrs/module/include/mandatoryModulesGlobalProperties.xml");
 		Assert.assertEquals(1, ModuleUtil.getMandatoryModules().size());
 		Assert.assertEquals("firstmodule", ModuleUtil.getMandatoryModules().get(0));
 	}

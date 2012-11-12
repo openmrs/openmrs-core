@@ -25,6 +25,10 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
+import org.hamcrest.Matcher;
+import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
+import org.mockito.internal.matchers.Equals;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
@@ -180,6 +184,7 @@ public class TestUtil {
 	
 	/**
 	 * Utility method that allows tests to easily configure and save a global property
+	 * 
 	 * @param string the name of the property to save
 	 * @param value the value of the property to save
 	 */
@@ -194,6 +199,7 @@ public class TestUtil {
 	
 	/**
 	 * Utility method to check if a list contains a BaseOpenmrsObject using the id
+	 * 
 	 * @param list
 	 * @param id
 	 * @return true if list contains object with the id else false
@@ -220,5 +226,27 @@ public class TestUtil {
 			}
 			catch (InterruptedException ex) {}
 		}
+	}
+	
+	/**
+	 * Creates an argument matcher that tests equality based on the equals method, the developer
+	 * doesn't have to type cast the returned argument when pass it to
+	 * {@link Mockito#argThat(Matcher)} as it would be the case if we used {@link Equals} matcher
+	 * 
+	 * @param object
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Matcher<T> equalsMatcher(final T object) {
+		return new ArgumentMatcher<T>() {
+			
+			/**
+			 * @see org.mockito.ArgumentMatcher#matches(java.lang.Object)
+			 */
+			@Override
+			public boolean matches(Object arg) {
+				return OpenmrsUtil.nullSafeEquals(object, (T) arg);
+			}
+		};
 	}
 }
