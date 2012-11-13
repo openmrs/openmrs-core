@@ -427,6 +427,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 			gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES);
 		gp.setPropertyValue(pat.getName());
 		as.saveGlobalProperty(gp);
+		Context.flushSession();
 		
 		Patient p = Context.getPatientService().getPatient(2);
 		int originalActiveAttributeCount = p.getActiveAttributes().size();
@@ -485,6 +486,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 			gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES);
 		gp.setPropertyValue(pat.getName());
 		as.saveGlobalProperty(gp);
+		Context.flushSession();
 		
 		Patient p = Context.getPatientService().getPatient(2);
 		int originalAttributeCount = p.getAttributes().size();

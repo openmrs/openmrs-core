@@ -53,6 +53,9 @@ public class ReportObjectValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
 		
 		if (obj instanceof AbstractReportObject) {
 			AbstractReportObject reportObject = (AbstractReportObject) obj;

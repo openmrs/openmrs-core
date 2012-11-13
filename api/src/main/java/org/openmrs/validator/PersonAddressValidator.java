@@ -52,6 +52,10 @@ public class PersonAddressValidator implements Validator {
 	 * @should pass if endDate is null
 	 */
 	public void validate(Object object, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		//TODO Validate other aspects of the personAddress object
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");

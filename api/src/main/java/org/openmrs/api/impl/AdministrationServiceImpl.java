@@ -35,6 +35,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.FlushMode;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -70,6 +71,7 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
@@ -658,10 +660,18 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException {
-		String s = getGlobalProperty(propertyName);
-		if (s == null)
-			return defaultValue;
-		return s;
+		//Disable automatic flushing which happens in some cases when this method is called.
+		FlushMode previousFlushMode = dao.getFlushMode();
+		dao.setFlushMode(FlushMode.MANUAL);
+		try {
+			String s = getGlobalProperty(propertyName);
+			if (s == null)
+				return defaultValue;
+			return s;
+		}
+		finally {
+			dao.setFlushMode(previousFlushMode);
+		}
 	}
 	
 	/**
@@ -1237,6 +1247,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#validate(java.lang.Object, Errors)
+	 * @should not validate when turned off
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1244,7 +1255,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (object == null)
 			throw new APIException(Context.getMessageSourceService().getMessage("error.null"));
 		
-		dao.validate(object, errors);
+		if (ValidateUtil.isValidationOn()) {
+			dao.validate(object, errors);
+		}
 	}
 	
 	/**
