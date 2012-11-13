@@ -7439,6 +7439,13 @@
 		</comment>
 		<dropNotNullConstraint tableName="person_attribute_type" columnName="description" columnDataType="text" />
 	</changeSet>
+
+	<changeSet id="20121113-TRUNK-3474-privilege" author="patandre">
+		<comment>
+			Dropping not null constraint from privilege.description column
+		</comment>
+		<dropNotNullConstraint tableName="privilege" columnName="description" columnDataType="text" />
+	</changeSet>
 	
 </databaseChangeLog>
 
