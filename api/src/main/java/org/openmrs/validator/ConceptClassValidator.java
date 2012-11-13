@@ -51,7 +51,7 @@ public class ConceptClassValidator implements Validator {
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 */
-
+	
 	public void validate(Object obj, Errors errors) {
 		ConceptClass cc = (ConceptClass) obj;
 		if (cc == null) {

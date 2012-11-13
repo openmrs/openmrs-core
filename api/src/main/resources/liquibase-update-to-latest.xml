@@ -7419,6 +7419,12 @@
 		<dropNotNullConstraint tableName="concept_class" columnName="description" columnDataType="varchar(255)" />
 	</changeSet>
 	
+	<changeSet id="20121112-TRUNK-3474" author="patandre">
+		<comment>
+			Dropping not null constraint from concept_datatype.description column
+		</comment>
+		<dropNotNullConstraint tableName="concept_datatype" columnName="description" columnDataType="varchar(255)" />
+	</changeSet>
 	
 </databaseChangeLog>
 
