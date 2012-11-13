@@ -7413,9 +7413,6 @@
 	</changeSet>
 	
 	<changeSet id="20121109-TRUNK-3474" author="patandre">
-		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="concept_class" columnName="description" />
-		</preConditions>
 		<comment>
 			Dropping not null constraint from concept_class.description column
 		</comment>
