@@ -27,7 +27,7 @@
     <property
         name="description"
         type="java.lang.String"
-        not-null="true"
+        not-null="false"
         length="65535"
     />
     <property
