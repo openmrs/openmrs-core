@@ -58,6 +58,10 @@ public class PersonValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");
 		

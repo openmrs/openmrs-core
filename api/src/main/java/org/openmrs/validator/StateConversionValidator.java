@@ -52,6 +52,10 @@ public class StateConversionValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		ConceptStateConversion c = (ConceptStateConversion) obj;
 		if (c == null) {
 			log.debug("Rejecting because c is null");

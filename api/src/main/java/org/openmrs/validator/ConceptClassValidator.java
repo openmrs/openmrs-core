@@ -52,6 +52,10 @@ public class ConceptClassValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		ConceptClass cc = (ConceptClass) obj;
 		if (cc == null) {
 			errors.rejectValue("conceptClass", "error.general");

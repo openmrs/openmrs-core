@@ -56,6 +56,10 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		Visit visit = (Visit) target;
 		ValidationUtils.rejectIfEmpty(errors, "patient", "Visit.error.patient.required");
 		ValidationUtils.rejectIfEmpty(errors, "visitType", "Visit.error.visitType.required");

@@ -1042,6 +1042,11 @@ public final class OpenmrsConstants {
 	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
 	
 	/**
+	 * Global property name for turning off validation during saving of objects.
+	 */
+	public static final String GP_TURN_OFF_SAVE_HANDLER_VALIDATION = "validation.turnOffSaveHandlerValidation";
+	
+	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
 	 * 
@@ -1483,6 +1488,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
 		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
+		
+		props.add(new GlobalProperty(GP_TURN_OFF_SAVE_HANDLER_VALIDATION, "false",
+		        "Set to true to turn off validation when saving objects, else set to false."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

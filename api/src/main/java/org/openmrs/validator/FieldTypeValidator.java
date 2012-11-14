@@ -51,6 +51,10 @@ public class FieldTypeValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		FieldType fieldType = (FieldType) obj;
 		if (fieldType == null) {
 			errors.rejectValue("fieldType", "error.general");

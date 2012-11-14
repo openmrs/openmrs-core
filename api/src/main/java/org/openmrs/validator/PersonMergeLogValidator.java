@@ -53,6 +53,9 @@ public class PersonMergeLogValidator implements Validator {
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
 		
 		PersonMergeLog personMergeLog = (PersonMergeLog) obj;
 		

@@ -66,6 +66,9 @@ public class ConceptReferenceTermValidator implements Validator {
 	 * @should fail if a term is mapped multiple times to the same term
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
 		
 		if (obj == null || !(obj instanceof ConceptReferenceTerm))
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"
