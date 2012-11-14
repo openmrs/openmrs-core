@@ -64,6 +64,10 @@ public class UserValidator implements Validator {
 	 * @should fail validation if email as username disabled and email provided
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		User user = (User) obj;
 		if (user == null) {
 			errors.rejectValue("user", "error.general");

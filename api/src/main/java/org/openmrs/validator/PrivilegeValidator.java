@@ -52,6 +52,10 @@ public class PrivilegeValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		Privilege privilege = (Privilege) obj;
 		if (privilege == null) {
 			errors.rejectValue("privilege", "error.general");

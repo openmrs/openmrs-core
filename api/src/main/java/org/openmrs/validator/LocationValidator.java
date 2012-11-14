@@ -56,6 +56,10 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	 * @should pass validation if retired location is given retired reason
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		Location location = (Location) obj;
 		if (location == null) {
 			errors.rejectValue("location", "error.general");

@@ -45,6 +45,10 @@ public class PersonAttributeTypeValidator implements Validator {
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		PersonAttributeType patObj = (PersonAttributeType) obj;
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "PersonAttributeType.error.nameEmpty");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");

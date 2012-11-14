@@ -52,6 +52,10 @@ public class VisitTypeValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		VisitType visitType = (VisitType) obj;
 		if (visitType == null) {
 			errors.rejectValue("visitType", "error.general");

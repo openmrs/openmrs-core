@@ -45,6 +45,10 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		@SuppressWarnings("unchecked")
 		T attributeType = (T) target;
 		

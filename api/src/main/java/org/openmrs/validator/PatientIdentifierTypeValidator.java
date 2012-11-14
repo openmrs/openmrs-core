@@ -55,6 +55,10 @@ public class PatientIdentifierTypeValidator implements Validator {
 	 * @should fail validation if name field length is too long
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		PatientIdentifierType identifierType = (PatientIdentifierType) obj;
 		if (identifierType == null) {
 			errors.rejectValue("identifierType", "error.general");
