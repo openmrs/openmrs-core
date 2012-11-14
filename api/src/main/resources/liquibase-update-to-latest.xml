@@ -7446,6 +7446,20 @@
 		</comment>
 		<dropNotNullConstraint tableName="privilege" columnName="description" columnDataType="text" />
 	</changeSet>
-	
+
+	<changeSet id="20121114-TRUNK-3474-role" author="patandre">
+		<comment>
+			Dropping not null constraint from role.description column
+		</comment>
+		<dropNotNullConstraint tableName="role" columnName="description" columnDataType="varchar(255)" />
+	</changeSet>
+
+	<changeSet id="20121114-TRUNK-3474-relationship_type" author="patandre">
+		<comment>
+			Dropping not null constraint from relationship_type.description column
+		</comment>
+		<dropNotNullConstraint tableName="relationship_type" columnName="description" columnDataType="varchar(255)" />
+	</changeSet>
+
 </databaseChangeLog>
 
