@@ -52,6 +52,10 @@ public class EncounterTypeValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		EncounterType encounterType = (EncounterType) obj;
 		if (encounterType == null) {
 			errors.rejectValue("encounterType", "error.general");

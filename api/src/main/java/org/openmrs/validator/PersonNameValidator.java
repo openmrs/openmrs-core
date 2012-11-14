@@ -48,6 +48,10 @@ public class PersonNameValidator implements Validator {
 	 * @should fail validation if PersonName object is null
 	 */
 	public void validate(Object object, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");
 		PersonName personName = (PersonName) object;

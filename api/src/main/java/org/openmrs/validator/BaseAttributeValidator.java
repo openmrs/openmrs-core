@@ -40,6 +40,10 @@ public class BaseAttributeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		Attribute<?, ?> attribute = (Attribute<?, ?>) target;
 		ValidationUtils.rejectIfEmpty(errors, "attributeType", "error.null");
 		ValidationUtils.rejectIfEmpty(errors, "owner", "error.null");

@@ -62,6 +62,10 @@ public class FieldValidator implements Validator {
 	 * should not fail if fieldType is null
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
+		if (!ValidateUtil.isValidationOn()) {
+			return;
+		}
+		
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");
 		
