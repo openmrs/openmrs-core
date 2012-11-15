@@ -224,6 +224,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		
 		AdministrationService as = Context.getAdministrationService();
 		as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "true"));
+		Context.flushSession();
 		
 		Errors errors = new BindException(user, "user");
 		new UserValidator().validate(user, errors);
