@@ -17,68 +17,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.openmrs.Cohort;
-import org.openmrs.Concept;
-import org.openmrs.api.CohortService;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.TestUtil;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests the {@link DataExportReportObject} class TODO clean up, finish, add methods to this test
  * class
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Context.class })
-@SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
-public class DataExportTest {
+public class DataExportIT extends BaseContextSensitiveTest {
 	
 	private Log log = LogFactory.getLog(getClass());
-	
-	private PatientService ps;
-	
-	private PatientSetService pss;
-	
-	private ConceptService cs;
-	
-	private EncounterService es;
-	
-	@Before
-	public void beforeClass() {
-		ps = PowerMockito.mock(PatientService.class);
-		pss = PowerMockito.mock(PatientSetService.class);
-		cs = PowerMockito.mock(ConceptService.class);
-		es = PowerMockito.mock(EncounterService.class);
-		
-		PowerMockito.stub(PowerMockito.method(Context.class, "getPatientSetService")).toReturn(pss);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getPatientService")).toReturn(ps);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getConceptService")).toReturn(cs);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getEncounterService")).toReturn(es);
-		
-		//TODO Fix this not to just return null since it returns void
-		PowerMockito.stub(PowerMockito.method(Context.class, "clearSession")).toReturn(null);
-	}
 	
 	/**
 	 * TODO finish and comment method
@@ -87,6 +43,8 @@ public class DataExportTest {
 	 */
 	@Test
 	public void shouldCalculateAge() throws Exception {
+		
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("TEST_EXPORT");
@@ -114,33 +72,14 @@ public class DataExportTest {
 		Cohort patients = new Cohort();
 		patients.addMember(2);
 		
-		Map<Integer, Object> genders = new HashMap<Integer, Object>();
-		genders.put(2, "M");
-		PowerMockito.when(
-		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")),
-		        Mockito.argThat(TestUtil.equalsMatcher("gender")), Mockito.anyBoolean())).thenReturn(genders);
-		
-		final int birthYear = 2000;
-		final String birthDateString = "01/01/" + birthYear;// adjust expected output for every year
-		Calendar cal = new GregorianCalendar();
-		int currentYear = cal.get(Calendar.YEAR);
-		Map<Integer, Object> birthdates = new HashMap<Integer, Object>();
-		birthdates.put(2, new SimpleDateFormat("mm/dd/yyyy").parse(birthDateString));
-		PowerMockito.when(
-		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")),
-		        Mockito.argThat(TestUtil.equalsMatcher("birthdate")), Mockito.anyBoolean())).thenReturn(birthdates);
-		
-		Map<Integer, Object> ages = new HashMap<Integer, Object>();
-		ages.put(2, currentYear - birthYear);//since birthdate is 01/01 we can ignore month and date to get years
-		PowerMockito.when(
-		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")),
-		        Mockito.argThat(TestUtil.equalsMatcher("age")), Mockito.anyBoolean())).thenReturn(ages);
-		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
-		String expectedOutput = "PATIENT_ID	GENDER	BIRTHDATE	AGE\n2	M	" + birthDateString + "	XXX\n";
-		expectedOutput = expectedOutput.replace("XXX", String.valueOf(currentYear - birthYear));
+		String expectedOutput = "PATIENT_ID	GENDER	BIRTHDATE	AGE\n2	M	01/01/2000	XXX\n";
+		// adjust expected output for every year
+		Calendar cal = new GregorianCalendar();
+		int expectedAge = cal.get(Calendar.YEAR);
+		expectedOutput = expectedOutput.replace("XXX", String.valueOf(expectedAge - 2000));
 		
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
@@ -155,8 +94,11 @@ public class DataExportTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldExportFirstNObs() throws Exception {
+	public void shouldFirstNObs() throws Exception {
 		log.debug("Testing execution time - start");
+		
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("FIRST 2 WEIGHTS");
@@ -166,31 +108,20 @@ public class DataExportTest {
 		patientId.setReturnValue("$!{fn.patientId}");
 		export.getColumns().add(patientId);
 		
-		final int conceptId = 5089;
 		ConceptColumn firstNObs = new ConceptColumn();
 		firstNObs.setColumnName("WEIGHT");
 		firstNObs.setColumnType("concept");
-		firstNObs.setConceptId(conceptId);
+		firstNObs.setConceptId(5089);
 		firstNObs.setConceptName("Weight (KG)");
 		firstNObs.setExtras(new String[] { "location" });
 		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
 		firstNObs.setModifierNum(2);
 		export.getColumns().add(firstNObs);
 		
-		final Integer pId = 2;
 		Cohort patients = new Cohort();
-		patients.addMember(pId);
+		patients.addMember(2);
 		
 		log.debug("Testing execution time - middle");
-		Concept weightConcept = new Concept(conceptId);
-		PowerMockito.when(cs.getConcept(Mockito.anyInt())).thenReturn(weightConcept);
-		
-		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
-		patientIdObservationsMap.put(pId, addNTestObs(2, true));
-		
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher(weightConcept)),
-		        Mockito.anyListOf(String.class))).thenReturn(patientIdObservationsMap);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -202,7 +133,7 @@ public class DataExportTest {
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
-		//System.out.println("exportFile: \n" + output);
+		System.out.println("exportFile: \n" + output);
 		assertEquals("The output is not right.", expectedOutput, output);
 		
 		// test 1 as the number of obs to fetch
@@ -214,15 +145,12 @@ public class DataExportTest {
 		firstNObs = new ConceptColumn();
 		firstNObs.setColumnName("WEIGHT");
 		firstNObs.setColumnType("concept");
-		firstNObs.setConceptId(conceptId);
+		firstNObs.setConceptId(5089);
 		firstNObs.setConceptName("Weight (KG)");
 		firstNObs.setExtras(new String[] { "location" });
 		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
 		firstNObs.setModifierNum(1);
 		export.getColumns().add(firstNObs);
-		
-		//update the map to have only one obs
-		patientIdObservationsMap.put(pId, addNTestObs(1, true));
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		
@@ -252,8 +180,6 @@ public class DataExportTest {
 		firstNObs.setModifierNum(-1);
 		export.getColumns().add(firstNObs);
 		
-		patientIdObservationsMap.put(pId, addNTestObs(10, true));
-		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
@@ -275,7 +201,9 @@ public class DataExportTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldExportFirstNObsWithZeroObsReturned() throws Exception {
+	public void shouldFirstNObsWithZeroObsReturned() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("NO CONCEPT, THEN GET WEIGHTS");
@@ -286,8 +214,7 @@ public class DataExportTest {
 		ConceptColumn firstNObs = new ConceptColumn();
 		firstNObs.setColumnName("Other");
 		firstNObs.setColumnType("concept");
-		final int otherConceptId = 5090;
-		firstNObs.setConceptId(otherConceptId);
+		firstNObs.setConceptId(5090);
 		firstNObs.setConceptName("OTHER CONCEPT");
 		firstNObs.setExtras(new String[] { "obsDatetime" });
 		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
@@ -297,8 +224,7 @@ public class DataExportTest {
 		ConceptColumn lastNObs = new ConceptColumn();
 		lastNObs.setColumnName("W-last");
 		lastNObs.setColumnType("concept");
-		final int weightConceptId = 5089;
-		lastNObs.setConceptId(weightConceptId);
+		lastNObs.setConceptId(5089);
 		lastNObs.setConceptName("Weight (KG)");
 		lastNObs.setExtras(new String[] { "obsDatetime" });
 		lastNObs.setModifier(DataExportReportObject.MODIFIER_LAST_NUM);
@@ -306,31 +232,7 @@ public class DataExportTest {
 		export.getColumns().add(lastNObs);
 		
 		Cohort patients = new Cohort();
-		int pId = 2;
-		patients.addMember(pId);
-		
-		Concept otherConcept = new Concept(otherConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(otherConceptId)))).thenReturn(otherConcept);
-		
-		Concept weightConcept = new Concept(weightConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(weightConceptId)))).thenReturn(weightConcept);
-		
-		List observations = new ArrayList<List<Object>>(2);
-		List obs1Values = new ArrayList<Object>(2);
-		obs1Values.add(10.0);
-		obs1Values.add("18/02/2006");
-		observations.add(obs1Values);
-		List obs2Values = new ArrayList<Object>(2);
-		obs2Values.add(9.0);
-		obs2Values.add("17/02/2006");
-		observations.add(obs2Values);
-		
-		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
-		patientIdObservationsMap.put(pId, observations);
-		
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher(weightConcept)),
-		        Mockito.anyListOf(String.class))).thenReturn(patientIdObservationsMap);
+		patients.addMember(2);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -351,7 +253,9 @@ public class DataExportTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldExportFirstObs() throws Exception {
+	public void shouldFirstObs() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("FIRST WEIGHT");
@@ -364,25 +268,14 @@ public class DataExportTest {
 		ConceptColumn firstObs = new ConceptColumn();
 		firstObs.setColumnName("WEIGHT");
 		firstObs.setColumnType("concept");
-		final int conceptId = 5089;
-		firstObs.setConceptId(conceptId);
+		firstObs.setConceptId(5089);
 		firstObs.setConceptName("Weight (KG)");
 		firstObs.setModifier(DataExportReportObject.MODIFIER_FIRST);
 		export.getColumns().add(firstObs);
 		
 		Cohort patients = new Cohort();
-		final int pId = 2;
-		patients.addMember(pId);
+		patients.addMember(2);
 		
-		Concept weightConcept = new Concept(conceptId);
-		PowerMockito.when(cs.getConcept(Mockito.anyInt())).thenReturn(weightConcept);
-		
-		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
-		patientIdObservationsMap.put(pId, addNTestObs(1, false));
-		
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher(weightConcept)),
-		        Mockito.anyListOf(String.class))).thenReturn(patientIdObservationsMap);
 		//System.out.println("Template String: \n" + export.generateTemplate());
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
@@ -410,7 +303,6 @@ public class DataExportTest {
 		export.getColumns().add(firstObs);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
-		patientIdObservationsMap.put(pId, addNTestObs(1, true));
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);
@@ -429,7 +321,9 @@ public class DataExportTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldExportLastNObs() throws Exception {
+	public void shouldLastNObs() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Last 2 Weights");
@@ -442,8 +336,7 @@ public class DataExportTest {
 		ConceptColumn lastNObs = new ConceptColumn();
 		lastNObs.setColumnName("WEIGHT");
 		lastNObs.setColumnType("concept");
-		final int weightConceptId = 5089;
-		lastNObs.setConceptId(weightConceptId);
+		lastNObs.setConceptId(5089);
 		lastNObs.setConceptName("Weight (KG)");
 		lastNObs.setExtras(new String[] { "location" });
 		lastNObs.setModifier(DataExportReportObject.MODIFIER_LAST_NUM);
@@ -451,28 +344,7 @@ public class DataExportTest {
 		export.getColumns().add(lastNObs);
 		
 		Cohort patients = new Cohort();
-		final int pId = 2;
 		patients.addMember(2);
-		
-		Concept weightConcept = new Concept(weightConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(weightConceptId)))).thenReturn(weightConcept);
-		
-		List observations = new ArrayList<List<Object>>(2);
-		List obs1Values = new ArrayList<Object>(2);
-		obs1Values.add(10.0);
-		obs1Values.add("Test Location");
-		observations.add(obs1Values);
-		List obs2Values = new ArrayList<Object>(2);
-		obs2Values.add(9.0);
-		obs2Values.add("Test Location");
-		observations.add(obs2Values);
-		
-		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
-		patientIdObservationsMap.put(pId, observations);
-		
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher(weightConcept)),
-		        Mockito.anyListOf(String.class))).thenReturn(patientIdObservationsMap);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -502,10 +374,6 @@ public class DataExportTest {
 		lastNObs.setModifierNum(1);
 		export.getColumns().add(lastNObs);
 		
-		List observations2 = new ArrayList<List<Object>>(1);
-		observations2.add(obs1Values);
-		patientIdObservationsMap.put(pId, observations2);
-		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
@@ -525,6 +393,7 @@ public class DataExportTest {
 	 */
 	@Test
 	public void shouldDataExportKeyAddition() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Data Export Keys");
@@ -564,6 +433,7 @@ public class DataExportTest {
 	 */
 	@Test
 	public void shouldDataExportKeyRemoval() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Data Export Keys");
@@ -626,6 +496,7 @@ public class DataExportTest {
 	 */
 	@Test
 	public void shouldGetNames() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Given names export");
@@ -635,14 +506,7 @@ public class DataExportTest {
 		export.addSimpleColumn("Name", "$!{fn.getPatientAttr('PersonName', 'givenName')}");
 		
 		Cohort patients = new Cohort();
-		int pId = 2;
-		patients.addMember(pId);
-		
-		Map<Integer, Object> names = new HashMap<Integer, Object>();
-		names.put(pId, "John");
-		PowerMockito.when(
-		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("PersonName")),
-		        Mockito.argThat(TestUtil.equalsMatcher("givenName")), Mockito.anyBoolean())).thenReturn(names);
+		patients.addMember(2);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -672,17 +536,12 @@ public class DataExportTest {
 		SimpleColumn patientId = new SimpleColumn("PATIENT_ID", "$!{fn.patientId}");
 		export.getColumns().add(patientId);
 		
-		final Integer weightConceptId = 5089;
-		ConceptColumn firstObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1,
-		        weightConceptId.toString(), null);
+		ConceptColumn firstObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1, "5089", null);
 		export.getColumns().add(firstObs);
 		
 		// set the cohort to a patient hat doesn't have a weight obs
 		Cohort patients = new Cohort();
 		patients.addMember(6);
-		
-		Concept weightConcept = new Concept(weightConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(weightConceptId)))).thenReturn(weightConcept);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
 		
@@ -705,15 +564,12 @@ public class DataExportTest {
 	 */
 	@Test
 	public void shouldExportCohortColumns() throws Exception {
-		CohortService cohortservice = PowerMockito.mock(CohortService.class);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getCohortService")).toReturn(cohortservice);
-		
 		// First create a cohort. TODO maybe move this to xml
-		final Integer cohortId = 100;
-		Cohort cohort = new Cohort(cohortId);
+		Cohort cohort = new Cohort();
 		cohort.setName("A Cohort");
 		cohort.setDescription("Just for testing");
 		cohort.addMember(2);
+		cohort = Context.getCohortService().saveCohort(cohort);
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Cohort column");
@@ -730,7 +586,6 @@ public class DataExportTest {
 		patients.addMember(6);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
-		PowerMockito.when(cohortservice.getCohort(Mockito.argThat(TestUtil.equalsMatcher(cohortId)))).thenReturn(cohort);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -758,27 +613,16 @@ public class DataExportTest {
 		SimpleColumn patientId = new SimpleColumn("PATIENT_ID", "$!{fn.patientId}");
 		export.getColumns().add(patientId);
 		
-		final Integer constructConceptId = 23;
-		ConceptColumn firstObs = new ConceptColumn("CONSTRUCT", DataExportReportObject.MODIFIER_FIRST, 1,
-		        constructConceptId.toString(), null);
+		ConceptColumn firstObs = new ConceptColumn("CONSTRUCT", DataExportReportObject.MODIFIER_FIRST, 1, "23", null);
 		export.getColumns().add(firstObs);
 		
-		final Integer weightConceptId = 5089;
-		ConceptColumn secondObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1,
-		        weightConceptId.toString(), null);
+		ConceptColumn secondObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1, "5089", null);
 		export.getColumns().add(secondObs);
 		
 		// set the cohort to a patient that doesn't have a weight obs
 		Cohort patients = new Cohort();
 		patients.addMember(7);
 		patients.addMember(8);
-		
-		Concept constructConcept = new Concept(constructConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(constructConceptId)))).thenReturn(
-		    constructConcept);
-		
-		Concept weightConcept = new Concept(weightConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(weightConceptId)))).thenReturn(weightConcept);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -789,18 +633,5 @@ public class DataExportTest {
 		
 		assertEquals("The output is not right.", expectedOutput, output);
 		
-	}
-	
-	private static List<List<Object>> addNTestObs(int n, boolean includeLocation) {
-		List observations = new ArrayList<List<Object>>(n);
-		for (int i = n; i > 0; i--) {
-			List obsValues = new ArrayList<Object>((includeLocation) ? 2 : 1);
-			obsValues.add((double) i);
-			if (includeLocation)
-				obsValues.add("Test Location");
-			observations.add(obsValues);
-		}
-		
-		return observations;
 	}
 }
