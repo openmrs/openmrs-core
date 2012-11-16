@@ -13,15 +13,19 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -32,15 +36,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import junit.framework.Assert;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.openmrs.Concept;
+import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -56,18 +61,21 @@ import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
+import org.openmrs.Visit;
 import org.openmrs.activelist.Allergy;
 import org.openmrs.activelist.Problem;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
+import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -94,6 +102,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	private static final String ACTIVE_LIST_INITIAL_XML = "org/openmrs/api/include/ActiveListTest.xml";
 	
 	private static final String PATIENT_RELATIONSHIPS_XML = "org/openmrs/api/include/PersonServiceTest-createRelationship.xml";
+	
+	private static final String ENCOUNTERS_FOR_VISITS_XML = "org/openmrs/api/include/PersonServiceTest-encountersForVisits.xml";
 	
 	// Services
 	protected static PatientService patientService = null;
@@ -584,6 +594,81 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Context.getPatientService().mergePatients(patientService.getPatient(6), patientService.getPatient(2));
 		User user = Context.getUserService().getUser(2);
 		Assert.assertEquals(6, user.getPerson().getId().intValue());
+	}
+	
+	/**
+	 * @see {@link PatientService#mergePatients(Patient,Patient)}
+	 * @verifies merge visits from non preferred to preferred patient
+	 * @verifies audit moved visits
+	 */
+	@Test
+	public void mergePatients_shouldMergeVisitsFromNonPreferredToPreferredPatient() throws Exception {
+		executeDataSet(ENCOUNTERS_FOR_VISITS_XML);
+		VisitService visitService = Context.getVisitService();
+		
+		Patient notPreferred = patientService.getPatient(2);
+		Patient preferred = patientService.getPatient(6);
+		
+		// patient 2 (not preferred) has 3 unvoided visits (id = 1, 2, 3) and 1 voided visit (id = 6)
+		Visit visit1 = visitService.getVisit(1);
+		Visit visit2 = visitService.getVisit(2);
+		Visit visit3 = visitService.getVisit(3);
+		Visit visit6 = visitService.getVisit(6);
+		// patient 6 (preferred) has 2 unvoided visits (id = 4, 5) and no voided visits
+		Visit visit4 = visitService.getVisit(4);
+		Visit visit5 = visitService.getVisit(5);
+		
+		List<String> encounterUuidsThatShouldBeMoved = new ArrayList<String>();
+		for (Visit v : Arrays.asList(visit1, visit2, visit3)) {
+			for (Encounter e : v.getEncounters()) {
+				encounterUuidsThatShouldBeMoved.add(e.getUuid());
+			}
+		}
+		
+		PersonMergeLog mergeLog = mergeAndRetrieveAudit(preferred, notPreferred);
+		
+		Patient merged = patientService.getPatient(preferred.getId());
+		List<Visit> mergedVisits = visitService.getVisitsByPatient(merged, true, true);
+		
+		assertThat(mergedVisits.size(), is(6));
+		// in order to keep this test passing when (someday?) we copy visits instead of moving them, use matchers here:
+		assertThat(mergedVisits, containsInAnyOrder(matchingVisit(visit1), matchingVisit(visit2), matchingVisit(visit3),
+		    matchingVisit(visit4), matchingVisit(visit5), matchingVisit(visit6)));
+		
+		// be sure nothing slipped through without being assigned to the right patient (probably not necessary)
+		for (Visit v : mergedVisits) {
+			for (Encounter e : v.getEncounters()) {
+				assertThat(e.getPatient(), is(v.getPatient()));
+				for (Obs o : e.getAllObs(true)) {
+					assertThat(o.getPerson().getId(), is(v.getPatient().getId()));
+				}
+			}
+		}
+		
+		// now check that moving visits and their contained encounters was audited correctly
+		PersonMergeLogData mergeLogData = mergeLog.getPersonMergeLogData();
+		assertThat(mergeLogData.getMovedVisits().size(), is(4));
+		assertThat(mergeLogData.getMovedVisits(), containsInAnyOrder(visit1.getUuid(), visit2.getUuid(), visit3.getUuid(),
+		    visit6.getUuid()));
+		
+		assertThat(mergeLogData.getMovedEncounters().size(), is(encounterUuidsThatShouldBeMoved.size()));
+		assertThat(mergeLogData.getMovedEncounters(), containsInAnyOrder(encounterUuidsThatShouldBeMoved.toArray()));
+	}
+	
+	private ArgumentMatcher<Visit> matchingVisit(final Visit expected) {
+		return new ArgumentMatcher<Visit>() {
+			
+			@Override
+			public boolean matches(Object argument) {
+				Visit visit = (Visit) argument;
+				return OpenmrsUtil.nullSafeEquals(visit.getLocation(), expected.getLocation())
+				        && OpenmrsUtil.nullSafeEquals(visit.getVisitType(), expected.getVisitType())
+				        && OpenmrsUtil.nullSafeEquals(visit.getIndication(), expected.getIndication())
+				        && OpenmrsUtil.nullSafeEquals(visit.getStartDatetime(), expected.getStartDatetime())
+				        && OpenmrsUtil.nullSafeEquals(visit.getStopDatetime(), expected.getStopDatetime())
+				        && (visit.getEncounters().size() == expected.getEncounters().size());
+			}
+		};
 	}
 	
 	/**
@@ -2243,7 +2328,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEqualsInt(88, problem.getProblem().getConceptId());
 		Assert.assertNotNull(problem.getPerson());
 		Assert.assertNotNull(problem.getStartDate());
-		Assert.assertEquals(2d, problem.getSortWeight());
+		assertThat(problem.getSortWeight(), is(2d));
 	}
 	
 	/**
