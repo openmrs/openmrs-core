@@ -15,14 +15,17 @@ package org.openmrs.reporting.export;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.powermock.api.mockito.PowerMockito.mock;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -33,6 +36,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -50,8 +55,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * class
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ Context.class })
-@SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
+@PrepareForTest( { Context.class })
+@SuppressWarnings( { "rawtypes", "unchecked", "deprecation" })
 public class DataExportTest {
 	
 	private Log log = LogFactory.getLog(getClass());
@@ -117,8 +122,8 @@ public class DataExportTest {
 		Map<Integer, Object> genders = new HashMap<Integer, Object>();
 		genders.put(2, "M");
 		PowerMockito.when(
-		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")),
-		        Mockito.argThat(TestUtil.equalsMatcher("gender")), Mockito.anyBoolean())).thenReturn(genders);
+		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")), Mockito
+		            .argThat(TestUtil.equalsMatcher("gender")), Mockito.anyBoolean())).thenReturn(genders);
 		
 		final int birthYear = 2000;
 		final String birthDateString = "01/01/" + birthYear;// adjust expected output for every year
@@ -127,14 +132,14 @@ public class DataExportTest {
 		Map<Integer, Object> birthdates = new HashMap<Integer, Object>();
 		birthdates.put(2, new SimpleDateFormat("mm/dd/yyyy").parse(birthDateString));
 		PowerMockito.when(
-		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")),
-		        Mockito.argThat(TestUtil.equalsMatcher("birthdate")), Mockito.anyBoolean())).thenReturn(birthdates);
+		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")), Mockito
+		            .argThat(TestUtil.equalsMatcher("birthdate")), Mockito.anyBoolean())).thenReturn(birthdates);
 		
 		Map<Integer, Object> ages = new HashMap<Integer, Object>();
 		ages.put(2, currentYear - birthYear);//since birthdate is 01/01 we can ignore month and date to get years
 		PowerMockito.when(
-		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")),
-		        Mockito.argThat(TestUtil.equalsMatcher("age")), Mockito.anyBoolean())).thenReturn(ages);
+		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")), Mockito
+		            .argThat(TestUtil.equalsMatcher("age")), Mockito.anyBoolean())).thenReturn(ages);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -673,8 +678,8 @@ public class DataExportTest {
 		export.getColumns().add(patientId);
 		
 		final Integer weightConceptId = 5089;
-		ConceptColumn firstObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1,
-		        weightConceptId.toString(), null);
+		ConceptColumn firstObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1, weightConceptId
+		        .toString(), null);
 		export.getColumns().add(firstObs);
 		
 		// set the cohort to a patient hat doesn't have a weight obs
@@ -759,26 +764,79 @@ public class DataExportTest {
 		export.getColumns().add(patientId);
 		
 		final Integer constructConceptId = 23;
-		ConceptColumn firstObs = new ConceptColumn("CONSTRUCT", DataExportReportObject.MODIFIER_FIRST, 1,
-		        constructConceptId.toString(), null);
+		ConceptColumn firstObs = new ConceptColumn("CONSTRUCT", DataExportReportObject.MODIFIER_FIRST, 1, constructConceptId
+		        .toString(), null);
 		export.getColumns().add(firstObs);
 		
 		final Integer weightConceptId = 5089;
-		ConceptColumn secondObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1,
-		        weightConceptId.toString(), null);
+		ConceptColumn secondObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1, weightConceptId
+		        .toString(), null);
 		export.getColumns().add(secondObs);
 		
 		// set the cohort to a patient that doesn't have a weight obs
 		Cohort patients = new Cohort();
-		patients.addMember(7);
+		final int pId7 = 7;
+		patients.addMember(pId7);
 		patients.addMember(8);
 		
-		Concept constructConcept = new Concept(constructConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(constructConceptId)))).thenReturn(
-		    constructConcept);
+		AdministrationService as = mock(AdministrationService.class);
+		PowerMockito.stub(PowerMockito.method(Context.class, "getAdministrationService")).toReturn(as);
 		
 		Concept weightConcept = new Concept(weightConceptId);
 		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(weightConceptId)))).thenReturn(weightConcept);
+		
+		Concept constructConcept = new Concept(constructConceptId);
+		constructConcept.setSet(true);
+		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(constructConceptId)))).thenReturn(
+		    constructConcept);
+		
+		final int foodAssistanceConceptId = 18;
+		Concept foodAssistanceConcept = new Concept(foodAssistanceConceptId);
+		foodAssistanceConcept.addName(new ConceptName("FOOD ASSISTANCE", Locale.ENGLISH));
+		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(foodAssistanceConceptId)))).thenReturn(
+		    foodAssistanceConcept);
+		
+		final int dateOfFoodAssistanceConceptId = 19;
+		Concept dateOfFoodAssistanceConcept = new Concept(dateOfFoodAssistanceConceptId);
+		dateOfFoodAssistanceConcept.addName(new ConceptName("DATE OF FOOD ASSISTANCE", Locale.ENGLISH));
+		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(dateOfFoodAssistanceConceptId)))).thenReturn(
+		    dateOfFoodAssistanceConcept);
+		
+		final int favoriteFoodConceptId = 20;
+		Concept favoriteFoodConcept = new Concept(favoriteFoodConceptId);
+		favoriteFoodConcept.addName(new ConceptName("FAVORITE FOOD, NON-CODED", Locale.ENGLISH));
+		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(favoriteFoodConceptId)))).thenReturn(
+		    favoriteFoodConcept);
+		
+		PowerMockito.when(cs.getConceptsByConceptSet(Mockito.argThat(TestUtil.equalsMatcher(constructConcept)))).thenReturn(
+		    Arrays.asList(foodAssistanceConcept, dateOfFoodAssistanceConcept, favoriteFoodConcept));
+		
+		Map<Integer, List<List<Object>>> patientIdFoodAssistanceMap = new HashMap<Integer, List<List<Object>>>(1);
+		patientIdFoodAssistanceMap.put(pId7, createTestObsData("YES"));
+		PowerMockito.when(
+		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil
+		            .equalsMatcher(foodAssistanceConcept)), Mockito.anyListOf(String.class))).thenReturn(
+		    patientIdFoodAssistanceMap);
+		
+		Map<Integer, List<List<Object>>> patientIdDateOfFoodAssistanceMap = new HashMap<Integer, List<List<Object>>>(1);
+		patientIdDateOfFoodAssistanceMap.put(pId7, createTestObsData("14/08/2008"));
+		PowerMockito.when(
+		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil
+		            .equalsMatcher(dateOfFoodAssistanceConcept)), Mockito.anyListOf(String.class))).thenReturn(
+		    patientIdDateOfFoodAssistanceMap);
+		
+		Map<Integer, List<List<Object>>> patientIdFavoriteFoodMap = new HashMap<Integer, List<List<Object>>>(1);
+		patientIdFavoriteFoodMap.put(pId7, createTestObsData("PB and J"));
+		PowerMockito.when(
+		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito
+		            .argThat(TestUtil.equalsMatcher(favoriteFoodConcept)), Mockito.anyListOf(String.class))).thenReturn(
+		    patientIdFavoriteFoodMap);
+		
+		Map<Integer, List<List<Object>>> patientIdWeightsMap = new HashMap<Integer, List<List<Object>>>(1);
+		patientIdWeightsMap.put(pId7, createTestObsData("50.0"));
+		PowerMockito.when(
+		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher(weightConcept)),
+		        Mockito.anyListOf(String.class))).thenReturn(patientIdWeightsMap);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -800,6 +858,15 @@ public class DataExportTest {
 				obsValues.add("Test Location");
 			observations.add(obsValues);
 		}
+		
+		return observations;
+	}
+	
+	private static List<List<Object>> createTestObsData(Object value) {
+		List observations = new ArrayList<List<Object>>(1);
+		List obsValues = new ArrayList<Object>(1);
+		obsValues.add(value);
+		observations.add(obsValues);
 		
 		return observations;
 	}

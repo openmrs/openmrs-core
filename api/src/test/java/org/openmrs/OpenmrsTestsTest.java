@@ -115,7 +115,7 @@ public class OpenmrsTestsTest {
 	@Test
 	public void shouldHaveClassNameEndWithTestIfContainsMethodTestAnnotations() throws Exception {
 		// loop over all methods that _don't_ end in Test.class
-		for (Class<?> currentClass : getClasses("^.*(?<!Test)\\.class$")) {
+		for (Class<?> currentClass : getClasses("^.*(?<!Test|IT)\\.class$")) {
 			
 			// skip over classes that are @Ignore'd
 			if (currentClass.getAnnotation(Ignore.class) == null) {
