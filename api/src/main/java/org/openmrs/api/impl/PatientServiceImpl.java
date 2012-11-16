@@ -726,18 +726,18 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		
 		PersonMergeLogData mergedData = new PersonMergeLogData();
-
-        // move all visits, including voided ones (encounters will be handled below)
+		
+		// move all visits, including voided ones (encounters will be handled below)
 		// TODO: this should be a copy, not a move
-        VisitService vs = Context.getVisitService();
-        for (Visit v : vs.getVisitsByPatient(notPreferred, true, true)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Merging visit " + v.getVisitId() + " to " + preferred.getPatientId());
-            }
-            v.setPatient(preferred);
-            Visit persisted = vs.saveVisit(v);
-            mergedData.addMovedVisit(persisted.getUuid());
-        }
+		VisitService vs = Context.getVisitService();
+		for (Visit v : vs.getVisitsByPatient(notPreferred, true, true)) {
+			if (log.isDebugEnabled()) {
+				log.debug("Merging visit " + v.getVisitId() + " to " + preferred.getPatientId());
+			}
+			v.setPatient(preferred);
+			Visit persisted = vs.saveVisit(v);
+			mergedData.addMovedVisit(persisted.getUuid());
+		}
 		
 		// change all encounters, including voided ones. This will cascade to obs and orders contained in those encounters
 		// TODO: this should be a copy, not a move
