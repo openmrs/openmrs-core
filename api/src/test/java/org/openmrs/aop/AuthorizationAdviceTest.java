@@ -6,19 +6,15 @@ package org.openmrs.aop;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Resource;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.PrivilegeListener;
 import org.openmrs.User;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.stereotype.Component;
 
 /**
@@ -61,14 +57,6 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 		        "Manage Concepts", "Get Concepts", "Get Observations", "Get Concepts" }, listener2.hasPrivileges.toArray());
 		Assert.assertEquals(0, listener1.lacksPrivileges.size());
 		Assert.assertEquals(0, listener2.lacksPrivileges.size());
-	}
-	
-	@Test(expected = APIAuthenticationException.class)
-	@Verifies(value = "enforce password change when needed", method = "before(Method, Object[], Object)")
-	public void before_shouldEnforcePasswordChangeWhenNeeded() {
-		User user = Context.getAuthenticatedUser();
-		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "true");
-		Context.getConceptService().getConcept(3);
 	}
 	
 	@Component("listener1")

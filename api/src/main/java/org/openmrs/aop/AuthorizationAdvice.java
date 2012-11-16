@@ -23,7 +23,6 @@ import org.openmrs.User;
 import org.openmrs.annotation.AuthorizedAnnotationAttributes;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.aop.MethodBeforeAdvice;
 
 /**
@@ -58,18 +57,6 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 			log.debug("User " + user);
 			if (user != null)
 				log.debug("has roles " + user.getAllRoles());
-		}
-		
-		if (user != null) {
-			if (Boolean.valueOf(user.getUserProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD))) {
-				if (log.isDebugEnabled())
-					log.debug("User " + user + " needs to change password to access " + method.getName());
-				
-				//I have intentionally not used 
-				//Context.getMessageSourceService().getMessage("error.changePasswordRequired")
-				//because it would result into stack overflow
-				throw new APIAuthenticationException("Change Password required");
-			}
 		}
 		
 		AuthorizedAnnotationAttributes attributes = new AuthorizedAnnotationAttributes();
