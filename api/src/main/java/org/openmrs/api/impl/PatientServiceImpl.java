@@ -43,6 +43,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.User;
+import org.openmrs.Visit;
 import org.openmrs.activelist.Allergy;
 import org.openmrs.activelist.Problem;
 import org.openmrs.api.APIException;
@@ -58,6 +59,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.order.OrderUtil;
@@ -724,11 +726,23 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		
 		PersonMergeLogData mergedData = new PersonMergeLogData();
+
+        // move all visits, including voided ones (encounters will be handled below)
+		// TODO: this should be a copy, not a move
+        VisitService vs = Context.getVisitService();
+        for (Visit v : vs.getVisitsByPatient(notPreferred, true, true)) {
+            if (log.isDebugEnabled()) {
+                log.debug("Merging visit " + v.getVisitId() + " to " + preferred.getPatientId());
+            }
+            v.setPatient(preferred);
+            Visit persisted = vs.saveVisit(v);
+            mergedData.addMovedVisit(persisted.getUuid());
+        }
 		
-		// change all encounters. This will cascade to obs and orders contained in those encounters
+		// change all encounters, including voided ones. This will cascade to obs and orders contained in those encounters
 		// TODO: this should be a copy, not a move
 		EncounterService es = Context.getEncounterService();
-		for (Encounter e : es.getEncountersByPatient(notPreferred)) {
+		for (Encounter e : es.getEncounters(notPreferred, null, null, null, null, null, null, null, null, true)) {
 			e.setPatient(preferred);
 			log.debug("Merging encounter " + e.getEncounterId() + " to " + preferred.getPatientId());
 			Encounter persisted = es.saveEncounter(e);
