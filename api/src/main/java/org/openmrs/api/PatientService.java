@@ -36,10 +36,15 @@ import org.openmrs.validator.PatientIdentifierValidator;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Contains methods pertaining to Patients in the system
- *
+ * Contains methods pertaining to Patients in the system Use:<br/>
+ * 
  * <pre>
- * Usage:
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * List&lt;Patient&gt; patients = Context.getPatientService().getAllPatients();
  * </pre>
  * 
@@ -663,8 +668,7 @@ public interface PatientService extends OpenmrsService {
 	 *         patient
 	 * @should not merge patient with itself
 	 * @should not create duplicate relationships
-	 * @should merge encounters from non preferred to preferred patient
-	 * @should merge visits from non preferred to preferred patient
+	 * @should merge non voided encounters from non preferred to preferred patient
 	 * @should merge non duplicate patient identifiers from non preferred to preferred patient
 	 * @should merge non duplicate patient names from non preferred to preferred patient
 	 * @should merge non duplicate addresses from non preferred to preferred patient
@@ -682,7 +686,6 @@ public interface PatientService extends OpenmrsService {
 	 * @should void all relationships for non preferred patient
 	 * @should not void relationships for same type and side with different relatives
 	 * @should audit moved encounters
-	 * @should audit moved visits
 	 * @should audit created patient programs
 	 * @should audit voided relationships
 	 * @should audit created relationships
