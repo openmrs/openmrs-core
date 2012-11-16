@@ -943,28 +943,15 @@
 				<plugins>
 					<plugin>
         				<groupId>org.apache.maven.plugins</groupId>
-        				<artifactId>maven-failsafe-plugin</artifactId>
+        				<artifactId>maven-surefire-plugin</artifactId>
         				<version>2.12.4</version>
         				<configuration>
 							<includes>
             					<include>**/*IT.java</include>
             					<include>**/*ITCase.java</include>
           					</includes>
-          					<excludes>
-          						<exclude>**/Test*.java</exclude>
-            					<exclude>**/*Test.java</exclude>
-            					<exclude>**/*TestCase.java</exclude>
-          					</excludes>
           					<argLine>-Duser.language=en -Duser.region=US ${customArgLineForTesting}</argLine>
 						</configuration>
-						<executions>
-          					<execution>
-            					<goals>
-              						<goal>integration-test</goal>
-              						<goal>verify</goal>
-            					</goals>
-          					</execution>
-        				</executions>
       				</plugin>
 				</plugins>
 			</build>
