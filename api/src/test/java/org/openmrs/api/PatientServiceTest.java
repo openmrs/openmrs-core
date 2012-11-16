@@ -616,6 +616,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Visit visit1 = visitService.getVisit(1);
 		Visit visit2 = visitService.getVisit(2);
 		Visit visit3 = visitService.getVisit(3);
+		Visit visit6 = visitService.getVisit(6);
 		// patient 6 (preferred) has 2 unvoided visits (id = 4, 5) and no voided visits
 		Visit visit4 = visitService.getVisit(4);
 		Visit visit5 = visitService.getVisit(5);
@@ -632,10 +633,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient merged = patientService.getPatient(preferred.getId());
 		List<Visit> mergedVisits = visitService.getVisitsByPatient(merged, true, true);
 		
-		assertThat(mergedVisits.size(), is(5));
+		assertThat(mergedVisits.size(), is(6));
 		// in order to keep this test passing when (someday?) we copy visits instead of moving them, use matchers here:
 		assertThat(mergedVisits, containsInAnyOrder(matchingVisit(visit1), matchingVisit(visit2), matchingVisit(visit3),
-		    matchingVisit(visit4), matchingVisit(visit5)));
+		    matchingVisit(visit4), matchingVisit(visit5), matchingVisit(visit6)));
 		
 		// be sure nothing slipped through without being assigned to the right patient (probably not necessary)
 		for (Visit v : mergedVisits) {
@@ -649,8 +650,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		// now check that moving visits and their contained encounters was audited correctly
 		PersonMergeLogData mergeLogData = mergeLog.getPersonMergeLogData();
-		assertThat(mergeLogData.getMovedVisits().size(), is(3));
-		assertThat(mergeLogData.getMovedVisits(), containsInAnyOrder(visit1.getUuid(), visit2.getUuid(), visit3.getUuid()));
+		assertThat(mergeLogData.getMovedVisits().size(), is(4));
+		assertThat(mergeLogData.getMovedVisits(), containsInAnyOrder(visit1.getUuid(), visit2.getUuid(), visit3.getUuid(),
+		    visit6.getUuid()));
 		
 		assertThat(mergeLogData.getMovedEncounters().size(), is(encounterUuidsThatShouldBeMoved.size()));
 		assertThat(mergeLogData.getMovedEncounters(), containsInAnyOrder(encounterUuidsThatShouldBeMoved.toArray()));
