@@ -64,10 +64,6 @@ public class EncounterValidator implements Validator {
 	 * @should fail if encounter dateTime is after visit stopDateTime
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");
 		

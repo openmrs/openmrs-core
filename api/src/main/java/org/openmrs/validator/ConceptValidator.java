@@ -87,9 +87,6 @@ public class ConceptValidator implements Validator {
 	 * @should pass for an edited concept with a map created with deprecated concept map methods
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
 		
 		if (obj == null || !(obj instanceof Concept))
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + Concept.class);

@@ -27,8 +27,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openmrs.Concept;
-import org.openmrs.ConceptName;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.User;
@@ -38,6 +36,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
+
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -704,25 +703,5 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void validate_shouldThrowThrowAPIExceptionIfTheInputIsNull() throws Exception {
 		BindException errors = new BindException(new Object(), "");
 		Context.getAdministrationService().validate(null, errors);
-	}
-	
-	/**
-	 * @see AdministrativeService#validate(Object, Errors)
-	 */
-	@Test
-	@Verifies(value = "should not validate when turned off", method = "validate(Object, Errors)")
-	public void validate_shouldNotValidateWhenTurnedOff() {
-		//turn off validation in order to save a concept with a duplicate name and avoid:
-		//org.openmrs.api.DuplicateConceptNameException: 'name' is a duplicate name in locale 'en_GB'
-		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GP_TURN_OFF_SAVE_HANDLER_VALIDATION, "true"));
-		
-		Concept concept = new Concept();
-		concept.addName(new ConceptName("name", Context.getLocale()));
-		Context.getConceptService().saveConcept(concept);
-		
-		concept = new Concept();
-		concept.addName(new ConceptName("name", Context.getLocale()));
-		Context.getConceptService().saveConcept(concept);
 	}
 }

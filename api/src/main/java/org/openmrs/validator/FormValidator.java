@@ -54,10 +54,6 @@ public class FormValidator implements Validator {
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		Form form = (Form) obj;
 		if (form == null) {
 			errors.rejectValue("form", "error.general");

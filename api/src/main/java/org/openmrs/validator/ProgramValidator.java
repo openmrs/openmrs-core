@@ -55,10 +55,6 @@ public class ProgramValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		Program p = (Program) obj;
 		if (p == null) {
 			errors.rejectValue("program", "error.general");

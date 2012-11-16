@@ -52,10 +52,6 @@ public class ConceptDatatypeValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		ConceptDatatype cd = (ConceptDatatype) obj;
 		if (cd == null) {
 			errors.rejectValue("conceptDatatype", "error.general");

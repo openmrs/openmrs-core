@@ -54,10 +54,6 @@ public class RoleValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		Role role = (Role) obj;
 		if (role == null) {
 			errors.rejectValue("role", "error.general");

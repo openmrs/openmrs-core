@@ -68,10 +68,6 @@ public class OrderValidator implements Validator {
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		Order order = (Order) obj;
 		if (order == null) {
 			errors.reject("error.general");

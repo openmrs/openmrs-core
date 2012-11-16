@@ -269,14 +269,6 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		return gp;
 	}
 	
-	public FlushMode getFlushMode() {
-		return sessionFactory.getCurrentSession().getFlushMode();
-	}
-	
-	public void setFlushMode(FlushMode flushMode) {
-		sessionFactory.getCurrentSession().setFlushMode(flushMode);
-	}
-	
 	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException {
 		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().createQuery(
 		    "from GlobalProperty t where t.uuid = :uuid").setString("uuid", uuid).uniqueResult();

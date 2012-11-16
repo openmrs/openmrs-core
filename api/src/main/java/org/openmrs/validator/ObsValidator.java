@@ -64,10 +64,6 @@ public class ObsValidator implements Validator {
 	 * @should fail validation if the parent obs has values
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		Obs obs = (Obs) obj;
 		List<Obs> ancestors = new ArrayList<Obs>();
 		//ancestors.add(obs);

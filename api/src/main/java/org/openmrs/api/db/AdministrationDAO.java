@@ -16,7 +16,6 @@ package org.openmrs.api.db;
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.FlushMode;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.reporting.AbstractReportObject;
@@ -153,8 +152,4 @@ public interface AdministrationDAO {
 	 * @see org.openmrs.api.AdministrationService#validate(Object, Errors)
 	 */
 	public void validate(Object object, Errors errors) throws DAOException;
-	
-	public FlushMode getFlushMode();
-	
-	public void setFlushMode(FlushMode flushMode);
 }

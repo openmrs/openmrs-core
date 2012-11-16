@@ -190,7 +190,6 @@ public class TestUtil {
 		}
 		gp.setPropertyValue(value);
 		Context.getAdministrationService().saveGlobalProperty(gp);
-		Context.flushSession();
 	}
 	
 	/**

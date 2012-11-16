@@ -52,10 +52,6 @@ public class HL7SourceValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		HL7Source hl7Source = (HL7Source) obj;
 		if (hl7Source == null) {
 			errors.rejectValue("hl7Source", "error.general");

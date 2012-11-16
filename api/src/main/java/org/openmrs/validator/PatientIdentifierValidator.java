@@ -54,10 +54,6 @@ public class PatientIdentifierValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		PatientIdentifier pi = (PatientIdentifier) obj;
 		try {
 			validateIdentifier(pi);

@@ -20,7 +20,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -64,26 +63,24 @@ public class ValidateUtil {
 	 * @should throw APIException if errors occur during validation
 	 */
 	public static void validate(Object obj) throws APIException {
-		if (ValidateUtil.isValidationOn()) {
-			BindException errors = new BindException(obj, "");
-			
-			Context.getAdministrationService().validate(obj, errors);
-			
-			if (errors.hasErrors()) {
-				Set<String> uniqueErrorMessages = new LinkedHashSet<String>();
-				for (Object objerr : errors.getAllErrors()) {
-					ObjectError error = (ObjectError) objerr;
-					String message = Context.getMessageSourceService().getMessage(error.getCode());
-					if (error instanceof FieldError) {
-						message = ((FieldError) error).getField() + ": " + message;
-					}
-					uniqueErrorMessages.add(message);
+		BindException errors = new BindException(obj, "");
+		
+		Context.getAdministrationService().validate(obj, errors);
+		
+		if (errors.hasErrors()) {
+			Set<String> uniqueErrorMessages = new LinkedHashSet<String>();
+			for (Object objerr : errors.getAllErrors()) {
+				ObjectError error = (ObjectError) objerr;
+				String message = Context.getMessageSourceService().getMessage(error.getCode());
+				if (error instanceof FieldError) {
+					message = ((FieldError) error).getField() + ": " + message;
 				}
-				
-				String exceptionMessage = "'" + obj + "' failed to validate with reason: ";
-				exceptionMessage += StringUtils.join(uniqueErrorMessages, ", ");
-				throw new APIException(exceptionMessage, errors.getCause());
+				uniqueErrorMessages.add(message);
 			}
+			
+			String exceptionMessage = "'" + obj + "' failed to validate with reason: ";
+			exceptionMessage += StringUtils.join(uniqueErrorMessages, ", ");
+			throw new APIException(exceptionMessage, errors.getCause());
 		}
 	}
 	
@@ -97,9 +94,7 @@ public class ValidateUtil {
 	 * @should populate errors if object invalid
 	 */
 	public static void validate(Object obj, Errors errors) {
-		if (ValidateUtil.isValidationOn()) {
-			Context.getAdministrationService().validate(obj, errors);
-		}
+		Context.getAdministrationService().validate(obj, errors);
 	}
 	
 	/**
@@ -114,27 +109,15 @@ public class ValidateUtil {
 	 */
 	
 	public static void validateFieldLengths(Errors errors, Class aClass, String... fields) {
-		if (ValidateUtil.isValidationOn()) {
-			Assert.notNull(errors, "Errors object must not be null");
-			for (String field : fields) {
-				Object value = errors.getFieldValue(field);
-				if (value == null || !(value instanceof String))
-					return;
-				int length = Context.getAdministrationService().getMaximumPropertyLength(aClass, field);
-				if (((String) value).length() > length) {
-					errors.rejectValue(field, "error.exceededMaxLengthOfField", new Object[] { length }, null);
-				}
+		Assert.notNull(errors, "Errors object must not be null");
+		for (String field : fields) {
+			Object value = errors.getFieldValue(field);
+			if (value == null || !(value instanceof String))
+				return;
+			int length = Context.getAdministrationService().getMaximumPropertyLength(aClass, field);
+			if (((String) value).length() > length) {
+				errors.rejectValue(field, "error.exceededMaxLengthOfField", new Object[] { length }, null);
 			}
 		}
-	}
-	
-	/**
-	 * Checks if validation is turned on.
-	 * 
-	 * @return true if turned on, else false.
-	 */
-	public static boolean isValidationOn() {
-		return !"true".equals(Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GP_TURN_OFF_SAVE_HANDLER_VALIDATION, "false"));
 	}
 }

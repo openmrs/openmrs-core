@@ -54,10 +54,6 @@ public class SchedulerFormValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		TaskDefinition taskDefinition = (TaskDefinition) obj;
 		
 		if (taskDefinition == null) {

@@ -65,10 +65,6 @@ public class PatientValidator extends PersonValidator {
 	 * @should not fail when patient has only one identifier and its not preferred
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");
 		

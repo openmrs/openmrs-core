@@ -74,10 +74,6 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @should fail if the provider we are validating has a duplicate identifier and is retired
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
-		
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");
 		

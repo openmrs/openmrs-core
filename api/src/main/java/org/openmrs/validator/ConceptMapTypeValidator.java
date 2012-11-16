@@ -57,9 +57,6 @@ public class ConceptMapTypeValidator implements Validator {
 	 * @should pass if the name is unique amongst all concept map type names
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
-			return;
-		}
 		
 		if (obj == null || !(obj instanceof ConceptMapType))
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"
