@@ -192,6 +192,10 @@
 		var relId = $j("#editRelationship #edit_relationship_id").val();
 		var startDate = $j("#editRelationship #edit_rel_start_date").val();
 		var endDate = $j("#editRelationship #edit_rel_end_date").val();
+		if (Date.parse(startDate) > Date.parse(endDate)) {
+		    window.alert('<openmrs:message code="Relationship.error.date" javaScriptEscape="true"/>');
+		    return;
+		} 
 		$j("#editRelationship").dialog("close");
 		DWRRelationshipService.changeRelationshipDates(relId, startDate, endDate, refreshRelationships);
 	}
