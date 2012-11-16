@@ -634,10 +634,21 @@ public final class Module {
 		this.mappingFiles = mappingFiles;
 	}
 	
+	/**
+	 * Packages to scan for classes with JPA annotated classes.
+	 * 
+	 * @return the set of packages to scan
+	 * @since 1.9.2, 1.10
+	 */
 	public Set<String> getPackagesWithMappedClasses() {
 		return packagesWithMappedClasses;
 	}
 	
+	/**
+	 * @param packagesToScan
+	 * @see #getPackagesWithMappedClasses()
+	 * @since 1.9.2, 1.10
+	 */
 	public void setPackagesWithMappedClasses(Set<String> packagesToScan) {
 		this.packagesWithMappedClasses = packagesToScan;
 	}
