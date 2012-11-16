@@ -71,9 +71,12 @@ public class PatientProgramValidator implements Validator {
 	 * @should pass for patient states that have the same start dates in the same work flow
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (!ValidateUtil.isValidationOn()) {
+		//if (!ValidateUtil.isValidationOn()) {
+		//	return;
+		//}
+		if ("true".equals(Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_TURN_OFF_SAVE_HANDLER_VALIDATION, "false")))
 			return;
-		}
 		
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");
