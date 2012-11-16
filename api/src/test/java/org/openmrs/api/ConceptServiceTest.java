@@ -2462,6 +2462,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		    null, null, null, null, null));
 	}
 	
+
 	/**
 	 * @see {@link ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)}
 	 */
@@ -2515,4 +2516,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(finalText, obs.getValueCodedName().getName());
 	}
 	
+
+	@Test
+	@Verifies(value = "should not throw a QueryException caused by attempt to dereference a collection", method = "getAllConcepts(String orderBy, boolean asc, boolean includeRetired)")
+	public void getConcepts_shouldNotThrowQueryException() throws Exception {
+		conceptService.getAllConcepts("name", true, false);
+	}
 }
