@@ -5,15 +5,18 @@ import static org.junit.Assert.assertNull;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.web.OptionsForm;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.validation.BindException;
 
 public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 	
@@ -84,4 +87,19 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		loginCredential = userDao.getLoginCredential(user);
 		assertEquals(originalQuestion, loginCredential.getSecretQuestion());
 	}
+
+	@Test
+	public void shouldRejectInvalidUserName() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");		
+		HttpServletResponse response = new MockHttpServletResponse();
+		
+		OptionsForm opts = new OptionsForm();
+		opts.setUsername("a");
+		BindException errors = new BindException(opts, "opts");
+		controller.processFormSubmission(request, response, opts, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("username"));
+		
+	}
+
 }
