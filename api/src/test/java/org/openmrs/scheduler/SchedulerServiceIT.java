@@ -24,50 +24,18 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.openmrs.api.context.Context;
-import org.openmrs.scheduler.db.SchedulerDAO;
 import org.openmrs.scheduler.tasks.AbstractTask;
-import org.openmrs.scheduler.timer.TimerSchedulerServiceImpl;
-import org.openmrs.test.TestUtil;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.util.StringUtils;
 
 /**
  * TODO test all methods in ScheduleService
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest( { Context.class })
-public class SchedulerServiceTest {
-	
-	private SchedulerService schedulerService;
-	
-	@Before
-	public void setUp() throws Exception {
-		schedulerService = new TimerSchedulerServiceImpl();
-		PowerMockito.stub(PowerMockito.method(Context.class, "getSchedulerService")).toReturn(schedulerService);
-		SchedulerDAO schedulerDAO = PowerMockito.mock(SchedulerDAO.class);
-		((TimerSchedulerServiceImpl) schedulerService).setSchedulerDAO(schedulerDAO);
-		//Don't invoke schedulerDAO.updateTask and schedulerDAO.createTask
-		PowerMockito.spy(schedulerDAO).updateTask(Mockito.any(TaskDefinition.class));
-		PowerMockito.spy(schedulerDAO).createTask(Mockito.any(TaskDefinition.class));
-		
-		//Don't invoke Context.openSession()
-		PowerMockito.spy(Context.class);
-		PowerMockito.doNothing().when(Context.class);
-		Context.openSession();
-		
-		//Don't invoke Context.closeSession()
-		PowerMockito.doNothing().when(Context.class);
-		Context.closeSession();
-	}
+public class SchedulerServiceIT extends BaseContextSensitiveTest {
 	
 	private static Log log = LogFactory.getLog(SchedulerServiceTest.class);
 	
@@ -107,7 +75,7 @@ public class SchedulerServiceTest {
 		public void execute() {
 			String outputKey = getTaskDefinition().getProperty("outputKey");
 			appendOutput(outputKey, getTaskDefinition().getProperty("id"));
-			
+			System.out.println("Executing with key:" + outputKey);
 			try {
 				Thread.sleep(Integer.valueOf(getTaskDefinition().getProperty("delay")));
 			}
@@ -121,7 +89,8 @@ public class SchedulerServiceTest {
 	}
 	
 	/**
-	 * Helper method to append the given text to the "output" static variable map <br/>
+	 * Helper method to append the given text to the "output" static variable map
+	 * <br/>
 	 * Map will contain string like "text, text1, text2"
 	 * 
 	 * @param outputKey the key for the "output" map
@@ -148,6 +117,8 @@ public class SchedulerServiceTest {
 	 */
 	@Test
 	public void shouldAllowTwoTasksToRunConcurrently() throws Exception {
+		SchedulerService schedulerService = Context.getSchedulerService();
+		
 		TaskDefinition t1 = new TaskDefinition();
 		t1.setId(1);
 		t1.setStartOnStartup(false);
@@ -187,7 +158,7 @@ public class SchedulerServiceTest {
 		public void initialize(TaskDefinition config) {
 			String outputKey = config.getProperty("outputKey");
 			appendOutput(outputKey, config.getProperty("id"));
-			
+			System.out.println("Executing with key:" + outputKey);
 			super.initialize(config);
 			try {
 				// must be less than delay before printing
@@ -314,11 +285,7 @@ public class SchedulerServiceTest {
 		}
 	}
 	
-	/**
-	 * TODO This should be an integration test, get rid of it
-	 */
 	@Test
-	@Ignore
 	public void saveTask_shouldSaveTaskToTheDatabase() throws Exception {
 		SchedulerService service = Context.getSchedulerService();
 		
@@ -418,6 +385,7 @@ public class SchedulerServiceTest {
 	@Test
 	public void shouldSaveLastExecutionTime() throws Exception {
 		final String NAME = "Session Task";
+		SchedulerService service = Context.getSchedulerService();
 		
 		TaskDefinition td = new TaskDefinition();
 		td.setName(NAME);
@@ -426,14 +394,13 @@ public class SchedulerServiceTest {
 		td.setStartTime(null);
 		td.setRepeatInterval(new Long(0));//0 indicates single execution
 		synchronized (SAVE_TASK_LOCK) {
-			schedulerService.saveTask(td);
-			schedulerService.scheduleTask(td);
+			service.saveTask(td);
+			service.scheduleTask(td);
 		}
 		
-		PowerMockito.when(schedulerService.getTaskByName(Mockito.argThat(TestUtil.equalsMatcher(NAME)))).thenReturn(td);
-		
 		// refetch the task
-		td = schedulerService.getTaskByName(NAME);
+		td = service.getTaskByName(NAME);
+		
 		// sleep a while until the task has executed, up to 30 times
 		for (int x = 0; x < 30 && (actualExecutionTime == null || td.getLastExecutionTime() == null); x++)
 			Thread.sleep(200);

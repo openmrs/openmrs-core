@@ -81,8 +81,10 @@ public class DataExportTest {
 		PowerMockito.stub(PowerMockito.method(Context.class, "getConceptService")).toReturn(cs);
 		PowerMockito.stub(PowerMockito.method(Context.class, "getEncounterService")).toReturn(es);
 		
-		//TODO Fix this not to just return null since it returns void
-		PowerMockito.stub(PowerMockito.method(Context.class, "clearSession")).toReturn(null);
+		//Don't invoke Context.clearSession()
+		PowerMockito.spy(Context.class);
+		PowerMockito.doNothing().when(Context.class);
+		Context.clearSession();
 	}
 	
 	/**
