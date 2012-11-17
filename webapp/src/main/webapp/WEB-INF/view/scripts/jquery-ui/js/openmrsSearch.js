@@ -417,7 +417,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		"sLengthMenu": omsgs.showNumberofEntries
 		    	},
 		    	
-		    	/* Called to toggle the verobse output */
+		    	/* Called to toggle the verbose output */
 		    	fnDrawCallback : function(oSettings){
 		    		//we have nothing to hide
 		    		if(!self.options.showIncludeVerbose || !self._table || self._table.fnGetNodes().length == 0)
@@ -515,7 +515,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		if(self.options.selectionHandler) {
 		    			$j(nRow).unbind('click').bind('click', function() {
 		    				//Register onclick handlers to each row
-		    				self._doSelected(iDisplayIndexFull, self._results[iDisplayIndexFull]);
+		    				self._doSelected(iDisplayIndexFull, currItem);
 		    			});
 		    		}
 		    		
