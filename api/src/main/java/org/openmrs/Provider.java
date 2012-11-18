@@ -17,9 +17,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.google.common.base.Objects;
+
 /**
  * Represents a person who may provide care to a patient during an encounter
- *
+ * 
  * @since 1.9
  */
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
@@ -105,10 +107,8 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(providerId);
-		sb.append((person != null) ? person.getNames() : "");
-		return "[Provider: providerId: " + sb.toString() + " ]";
+		return Objects.toStringHelper(getClass()).add("providerId", providerId).add("identifier", identifier).add("person",
+		    person).toString();
 	}
 	
 	/**
