@@ -81,6 +81,7 @@ import org.springframework.validation.Errors;
  * @see org.openmrs.api.AdministrationService
  * @see org.openmrs.api.context.Context
  */
+@Transactional
 public class AdministrationServiceImpl extends BaseOpenmrsService implements AdministrationService, GlobalPropertyListener {
 	
 	protected Log log = LogFactory.getLog(getClass());
