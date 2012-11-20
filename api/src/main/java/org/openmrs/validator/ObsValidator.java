@@ -209,12 +209,11 @@ public class ObsValidator implements Validator {
 			ancestors.remove(ancestors.size() - 1);
 		}
 		
-		Concept trueConcept = Context.getConceptService().getTrueConcept();
-		Concept falseConcept = Context.getConceptService().getFalseConcept();
-		//Ignore is this is not a value coded answer and is not true or false response
-		if (obs.getValueCoded() != null && !obs.getValueCoded().equals(trueConcept)
-		        && !obs.getValueCoded().equals(falseConcept)) {
-			if (obs.getValueDrug() != null && obs.getValueDrug().getConcept() != null
+		if (obs.getValueCoded() != null && obs.getValueDrug() != null && obs.getValueDrug().getConcept() != null) {
+			Concept trueConcept = Context.getConceptService().getTrueConcept();
+			Concept falseConcept = Context.getConceptService().getFalseConcept();
+			//Ignore if this is not a true or false response since they are stored as coded too
+			if (!obs.getValueCoded().equals(trueConcept) && !obs.getValueCoded().equals(falseConcept)
 			        && !obs.getValueDrug().getConcept().equals(obs.getValueCoded())) {
 				errors.rejectValue("valueDrug", "Obs.error.invalidDrug");
 			}
