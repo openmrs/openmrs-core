@@ -9,6 +9,23 @@
 <openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
 
 <script type="text/javascript">
+	$j(document).ready( function() {
+	// set up the autocomplete for the drug field
+		new AutoComplete("valueDrugDisplay", new CreateCallback().drugCallback(), {
+			select: function(event, ui) {
+				jquerySelectEscaped("valueDrug").val(ui.item.object.drugId);
+			},
+			placeholder:'<openmrs:message code="Obs.drug.search.placeholder" javaScriptEscape="true"/>'
+		});
+		
+		//Clear hidden value on losing focus with no valid entry
+		$j("#valueDrugDisplay").autocomplete().blur(function(event, ui) {
+			if (!event.target.value) {
+				jquerySelectEscaped('valueDrug').val('');
+			}
+		});
+	
+	});
 
 	// on concept select:
 	function onQuestionSelect(concept) {
@@ -35,13 +52,17 @@
 	}
 	
 	function updateObsValues(tmpConcept) {
-		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueDateRow', 'valueTimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow', 'valueComplex'];
+		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueDateRow', 'valueTimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow', 'valueComplex', 'valueDrugRow'];
 		$j.each(values, function(x, val) { $j("#" + val).hide() });
 		
 		if (tmpConcept != null) {
 			var datatype = tmpConcept.hl7Abbreviation;
 			if (typeof datatype != 'string')
 				datatype = tmpConcept.datatype.hl7Abbreviation;
+			
+			//always clear value drug on selection of a question
+			$j('#valueDrug').val("");
+			$j('#valueDrugDisplay').val("");
 			
 			if (datatype == 'BIT') {
 				$j('#valueBooleanRow').show();
@@ -52,6 +73,7 @@
 			}
 			else if (datatype == 'CWE') {
 				$j('#valueCodedRow').show();
+				$j('#valueDrugRow').show();
 				
 				// clear any old values:
 				$j("#valueCoded").val("");
@@ -335,7 +357,6 @@
 		</spring:bind>
 	</tr>
 	<tr id="valueCodedRow" class="obsValue">
-		<%-- TODO: add switch on drug search here. <drugId="${obs.valueDrug.drugId}" showVerboseListing="true" includeDrugConcepts="true"></div> --%>
 		<th valign="top"><openmrs:message code="Obs.codedAnswer"/></th>
 		<td>
 			<spring:bind path="valueCoded">
@@ -343,8 +364,15 @@
 				<div class="description" id="codedDescription"></div>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
+		</td>
+	</tr>
+	<tr id="valueDrugRow" class="obsValue">
+		<th valign="top"><openmrs:message code="Obs.answer.drug"/></th>
+		<td>
 			<spring:bind path="valueDrug">
-				<input type="hidden" id="valueDrugId" value="${status.editor.value.drugId}" name="valueDrug" />
+				<input type="text" id="valueDrugDisplay" size="45" 
+					<c:if test="${not empty status.editor.value}">value="${status.editor.value.displayName}"</c:if> />
+				<input type="hidden" id="valueDrug" name="valueDrug" value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

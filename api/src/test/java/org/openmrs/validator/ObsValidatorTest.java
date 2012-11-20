@@ -20,11 +20,14 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.openmrs.Concept;
+import org.openmrs.ConceptDatatype;
+import org.openmrs.Drug;
 import org.openmrs.Obs;
+import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-import org.openmrs.validator.ObsValidator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -311,5 +314,56 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasFieldErrors("concept"));
 		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
 		Assert.assertTrue(errors.hasFieldErrors("valueText"));
+	}
+	
+	/**
+	 * @see {@link ObsValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should reject an invalid concept and drug combination", method = "validate(Object,Errors)")
+	public void validate_shouldRejectAnInvalidConceptAndDrugCombination() throws Exception {
+		Obs obs = new Obs();
+		obs.setPerson(new Person(7));
+		obs.setObsDatetime(new Date());
+		Concept questionConcept = new Concept(100);
+		ConceptDatatype dt = new ConceptDatatype(1);
+		dt.setUuid(ConceptDatatype.CODED_UUID);
+		questionConcept.setDatatype(dt);
+		obs.setConcept(questionConcept);
+		obs.setValueCoded(new Concept(101));
+		
+		Drug drug = new Drug();
+		drug.setConcept(new Concept(102));
+		obs.setValueDrug(drug);
+		
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+		Assert.assertTrue(errors.hasFieldErrors("valueDrug"));
+	}
+	
+	/**
+	 * @see {@link ObsValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass if answer concept and concept of value drug match", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfAnswerConceptAndConceptOfValueDrugMatch() throws Exception {
+		Obs obs = new Obs();
+		obs.setPerson(new Person(7));
+		obs.setObsDatetime(new Date());
+		Concept questionConcept = new Concept(100);
+		ConceptDatatype dt = new ConceptDatatype(1);
+		dt.setUuid(ConceptDatatype.CODED_UUID);
+		questionConcept.setDatatype(dt);
+		obs.setConcept(questionConcept);
+		Concept answerConcept = new Concept(101);
+		obs.setValueCoded(answerConcept);
+		
+		Drug drug = new Drug();
+		drug.setConcept(answerConcept);
+		obs.setValueDrug(drug);
+		
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+		Assert.assertFalse(errors.hasFieldErrors());
 	}
 }
