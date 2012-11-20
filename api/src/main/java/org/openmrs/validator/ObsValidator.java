@@ -62,6 +62,8 @@ public class ObsValidator implements Validator {
 	 * @should fail validation if obs ancestors contains obs
 	 * @should pass validation if all values present
 	 * @should fail validation if the parent obs has values
+	 * @should reject an invalid concept and drug combination
+	 * @should pass if answer concept and concept of value drug match
 	 */
 	public void validate(Object obj, Errors errors) {
 		Obs obs = (Obs) obj;
@@ -205,6 +207,17 @@ public class ObsValidator implements Validator {
 				validateHelper(child, errors, ancestors, false);
 			}
 			ancestors.remove(ancestors.size() - 1);
+		}
+		
+		Concept trueConcept = Context.getConceptService().getTrueConcept();
+		Concept falseConcept = Context.getConceptService().getFalseConcept();
+		//Ignore is this is not a value coded answer and is not true or false response
+		if (obs.getValueCoded() != null && !obs.getValueCoded().equals(trueConcept)
+		        && !obs.getValueCoded().equals(falseConcept)) {
+			if (obs.getValueDrug() != null && obs.getValueDrug().getConcept() != null
+			        && !obs.getValueDrug().getConcept().equals(obs.getValueCoded())) {
+				errors.rejectValue("valueDrug", "Obs.error.invalidDrug");
+			}
 		}
 	}
 	
