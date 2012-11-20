@@ -15,7 +15,17 @@ package org.openmrs.reporting.export;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.doNothing;
+import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.powermock.api.support.membermodification.MemberMatcher.method;
+import static org.powermock.api.support.membermodification.MemberModifier.stub;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -33,7 +43,6 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -44,9 +53,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.TestUtil;
 import org.openmrs.util.OpenmrsUtil;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -71,19 +78,19 @@ public class DataExportTest {
 	
 	@Before
 	public void beforeClass() {
-		ps = PowerMockito.mock(PatientService.class);
-		pss = PowerMockito.mock(PatientSetService.class);
-		cs = PowerMockito.mock(ConceptService.class);
-		es = PowerMockito.mock(EncounterService.class);
+		ps = mock(PatientService.class);
+		pss = mock(PatientSetService.class);
+		cs = mock(ConceptService.class);
+		es = mock(EncounterService.class);
 		
-		PowerMockito.stub(PowerMockito.method(Context.class, "getPatientSetService")).toReturn(pss);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getPatientService")).toReturn(ps);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getConceptService")).toReturn(cs);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getEncounterService")).toReturn(es);
+		stub(method(Context.class, "getPatientSetService")).toReturn(pss);
+		stub(method(Context.class, "getPatientService")).toReturn(ps);
+		stub(method(Context.class, "getConceptService")).toReturn(cs);
+		stub(method(Context.class, "getEncounterService")).toReturn(es);
 		
 		//Don't invoke Context.clearSession()
-		PowerMockito.spy(Context.class);
-		PowerMockito.doNothing().when(Context.class);
+		spy(Context.class);
+		doNothing().when(Context.class);
 		Context.clearSession();
 	}
 	
@@ -123,9 +130,7 @@ public class DataExportTest {
 		
 		Map<Integer, Object> genders = new HashMap<Integer, Object>();
 		genders.put(2, "M");
-		PowerMockito.when(
-		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")), Mockito
-		            .argThat(TestUtil.equalsMatcher("gender")), Mockito.anyBoolean())).thenReturn(genders);
+		when(pss.getPatientAttributes(any(Cohort.class), eq("Person"), eq("gender"), anyBoolean())).thenReturn(genders);
 		
 		final int birthYear = 2000;
 		final String birthDateString = "01/01/" + birthYear;// adjust expected output for every year
@@ -133,15 +138,12 @@ public class DataExportTest {
 		int currentYear = cal.get(Calendar.YEAR);
 		Map<Integer, Object> birthdates = new HashMap<Integer, Object>();
 		birthdates.put(2, new SimpleDateFormat("mm/dd/yyyy").parse(birthDateString));
-		PowerMockito.when(
-		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")), Mockito
-		            .argThat(TestUtil.equalsMatcher("birthdate")), Mockito.anyBoolean())).thenReturn(birthdates);
+		when(pss.getPatientAttributes(any(Cohort.class), eq("Person"), eq("birthdate"), anyBoolean()))
+		        .thenReturn(birthdates);
 		
 		Map<Integer, Object> ages = new HashMap<Integer, Object>();
 		ages.put(2, currentYear - birthYear);//since birthdate is 01/01 we can ignore month and date to get years
-		PowerMockito.when(
-		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("Person")), Mockito
-		            .argThat(TestUtil.equalsMatcher("age")), Mockito.anyBoolean())).thenReturn(ages);
+		when(pss.getPatientAttributes(any(Cohort.class), eq("Person"), eq("age"), anyBoolean())).thenReturn(ages);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -190,14 +192,13 @@ public class DataExportTest {
 		
 		log.debug("Testing execution time - middle");
 		Concept weightConcept = new Concept(conceptId);
-		PowerMockito.when(cs.getConcept(Mockito.anyInt())).thenReturn(weightConcept);
+		when(cs.getConcept(anyInt())).thenReturn(weightConcept);
 		
 		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
 		patientIdObservationsMap.put(pId, addNTestObs(2, true));
 		
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher(weightConcept)),
-		        Mockito.anyListOf(String.class))).thenReturn(patientIdObservationsMap);
+		when(pss.getObservationsValues(any(Cohort.class), eq(weightConcept), anyListOf(String.class))).thenReturn(
+		    patientIdObservationsMap);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -317,10 +318,10 @@ public class DataExportTest {
 		patients.addMember(pId);
 		
 		Concept otherConcept = new Concept(otherConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(otherConceptId)))).thenReturn(otherConcept);
+		when(cs.getConcept(eq(otherConceptId))).thenReturn(otherConcept);
 		
 		Concept weightConcept = new Concept(weightConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(weightConceptId)))).thenReturn(weightConcept);
+		when(cs.getConcept(eq(weightConceptId))).thenReturn(weightConcept);
 		
 		List observations = new ArrayList<List<Object>>(2);
 		List obs1Values = new ArrayList<Object>(2);
@@ -335,9 +336,8 @@ public class DataExportTest {
 		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
 		patientIdObservationsMap.put(pId, observations);
 		
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher(weightConcept)),
-		        Mockito.anyListOf(String.class))).thenReturn(patientIdObservationsMap);
+		when(pss.getObservationsValues(any(Cohort.class), eq(weightConcept), anyListOf(String.class))).thenReturn(
+		    patientIdObservationsMap);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -382,14 +382,13 @@ public class DataExportTest {
 		patients.addMember(pId);
 		
 		Concept weightConcept = new Concept(conceptId);
-		PowerMockito.when(cs.getConcept(Mockito.anyInt())).thenReturn(weightConcept);
+		when(cs.getConcept(anyInt())).thenReturn(weightConcept);
 		
 		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
 		patientIdObservationsMap.put(pId, addNTestObs(1, false));
 		
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher(weightConcept)),
-		        Mockito.anyListOf(String.class))).thenReturn(patientIdObservationsMap);
+		when(pss.getObservationsValues(any(Cohort.class), eq(weightConcept), anyListOf(String.class))).thenReturn(
+		    patientIdObservationsMap);
 		//System.out.println("Template String: \n" + export.generateTemplate());
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
@@ -462,7 +461,7 @@ public class DataExportTest {
 		patients.addMember(2);
 		
 		Concept weightConcept = new Concept(weightConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(weightConceptId)))).thenReturn(weightConcept);
+		when(cs.getConcept(eq(weightConceptId))).thenReturn(weightConcept);
 		
 		List observations = new ArrayList<List<Object>>(2);
 		List obs1Values = new ArrayList<Object>(2);
@@ -477,9 +476,8 @@ public class DataExportTest {
 		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
 		patientIdObservationsMap.put(pId, observations);
 		
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher(weightConcept)),
-		        Mockito.anyListOf(String.class))).thenReturn(patientIdObservationsMap);
+		when(pss.getObservationsValues(any(Cohort.class), eq(weightConcept), anyListOf(String.class))).thenReturn(
+		    patientIdObservationsMap);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -647,9 +645,7 @@ public class DataExportTest {
 		
 		Map<Integer, Object> names = new HashMap<Integer, Object>();
 		names.put(pId, "John");
-		PowerMockito.when(
-		    pss.getPatientAttributes(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher("PersonName")),
-		        Mockito.argThat(TestUtil.equalsMatcher("givenName")), Mockito.anyBoolean())).thenReturn(names);
+		when(pss.getPatientAttributes(any(Cohort.class), eq("PersonName"), eq("givenName"), anyBoolean())).thenReturn(names);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -689,7 +685,7 @@ public class DataExportTest {
 		patients.addMember(6);
 		
 		Concept weightConcept = new Concept(weightConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(weightConceptId)))).thenReturn(weightConcept);
+		when(cs.getConcept(eq(weightConceptId))).thenReturn(weightConcept);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
 		
@@ -712,8 +708,8 @@ public class DataExportTest {
 	 */
 	@Test
 	public void shouldExportCohortColumns() throws Exception {
-		CohortService cohortservice = PowerMockito.mock(CohortService.class);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getCohortService")).toReturn(cohortservice);
+		CohortService cohortservice = mock(CohortService.class);
+		stub(method(Context.class, "getCohortService")).toReturn(cohortservice);
 		
 		// First create a cohort. TODO maybe move this to xml
 		final Integer cohortId = 100;
@@ -737,7 +733,7 @@ public class DataExportTest {
 		patients.addMember(6);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
-		PowerMockito.when(cohortservice.getCohort(Mockito.argThat(TestUtil.equalsMatcher(cohortId)))).thenReturn(cohort);
+		when(cohortservice.getCohort(eq(cohortId))).thenReturn(cohort);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -782,63 +778,52 @@ public class DataExportTest {
 		patients.addMember(8);
 		
 		AdministrationService as = mock(AdministrationService.class);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getAdministrationService")).toReturn(as);
+		stub(method(Context.class, "getAdministrationService")).toReturn(as);
 		
 		Concept weightConcept = new Concept(weightConceptId);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(weightConceptId)))).thenReturn(weightConcept);
+		when(cs.getConcept(eq(weightConceptId))).thenReturn(weightConcept);
 		
 		Concept constructConcept = new Concept(constructConceptId);
 		constructConcept.setSet(true);
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(constructConceptId)))).thenReturn(
-		    constructConcept);
+		when(cs.getConcept(eq(constructConceptId))).thenReturn(constructConcept);
 		
 		final int foodAssistanceConceptId = 18;
 		Concept foodAssistanceConcept = new Concept(foodAssistanceConceptId);
 		foodAssistanceConcept.addName(new ConceptName("FOOD ASSISTANCE", Locale.ENGLISH));
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(foodAssistanceConceptId)))).thenReturn(
-		    foodAssistanceConcept);
+		when(cs.getConcept(eq(foodAssistanceConceptId))).thenReturn(foodAssistanceConcept);
 		
 		final int dateOfFoodAssistanceConceptId = 19;
 		Concept dateOfFoodAssistanceConcept = new Concept(dateOfFoodAssistanceConceptId);
 		dateOfFoodAssistanceConcept.addName(new ConceptName("DATE OF FOOD ASSISTANCE", Locale.ENGLISH));
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(dateOfFoodAssistanceConceptId)))).thenReturn(
-		    dateOfFoodAssistanceConcept);
+		when(cs.getConcept(eq(dateOfFoodAssistanceConceptId))).thenReturn(dateOfFoodAssistanceConcept);
 		
 		final int favoriteFoodConceptId = 20;
 		Concept favoriteFoodConcept = new Concept(favoriteFoodConceptId);
 		favoriteFoodConcept.addName(new ConceptName("FAVORITE FOOD, NON-CODED", Locale.ENGLISH));
-		PowerMockito.when(cs.getConcept(Mockito.argThat(TestUtil.equalsMatcher(favoriteFoodConceptId)))).thenReturn(
-		    favoriteFoodConcept);
+		when(cs.getConcept(eq(favoriteFoodConceptId))).thenReturn(favoriteFoodConcept);
 		
-		PowerMockito.when(cs.getConceptsByConceptSet(Mockito.argThat(TestUtil.equalsMatcher(constructConcept)))).thenReturn(
+		when(cs.getConceptsByConceptSet(eq(constructConcept))).thenReturn(
 		    Arrays.asList(foodAssistanceConcept, dateOfFoodAssistanceConcept, favoriteFoodConcept));
 		
 		Map<Integer, List<List<Object>>> patientIdFoodAssistanceMap = new HashMap<Integer, List<List<Object>>>(1);
 		patientIdFoodAssistanceMap.put(pId7, createTestObsData("YES"));
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil
-		            .equalsMatcher(foodAssistanceConcept)), Mockito.anyListOf(String.class))).thenReturn(
+		when(pss.getObservationsValues(any(Cohort.class), eq(foodAssistanceConcept), anyListOf(String.class))).thenReturn(
 		    patientIdFoodAssistanceMap);
 		
 		Map<Integer, List<List<Object>>> patientIdDateOfFoodAssistanceMap = new HashMap<Integer, List<List<Object>>>(1);
 		patientIdDateOfFoodAssistanceMap.put(pId7, createTestObsData("14/08/2008"));
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil
-		            .equalsMatcher(dateOfFoodAssistanceConcept)), Mockito.anyListOf(String.class))).thenReturn(
-		    patientIdDateOfFoodAssistanceMap);
+		when(pss.getObservationsValues(any(Cohort.class), eq(dateOfFoodAssistanceConcept), anyListOf(String.class)))
+		        .thenReturn(patientIdDateOfFoodAssistanceMap);
 		
 		Map<Integer, List<List<Object>>> patientIdFavoriteFoodMap = new HashMap<Integer, List<List<Object>>>(1);
 		patientIdFavoriteFoodMap.put(pId7, createTestObsData("PB and J"));
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito
-		            .argThat(TestUtil.equalsMatcher(favoriteFoodConcept)), Mockito.anyListOf(String.class))).thenReturn(
+		when(pss.getObservationsValues(any(Cohort.class), eq(favoriteFoodConcept), anyListOf(String.class))).thenReturn(
 		    patientIdFavoriteFoodMap);
 		
 		Map<Integer, List<List<Object>>> patientIdWeightsMap = new HashMap<Integer, List<List<Object>>>(1);
 		patientIdWeightsMap.put(pId7, createTestObsData("50.0"));
-		PowerMockito.when(
-		    pss.getObservationsValues(Mockito.any(Cohort.class), Mockito.argThat(TestUtil.equalsMatcher(weightConcept)),
-		        Mockito.anyListOf(String.class))).thenReturn(patientIdWeightsMap);
+		when(pss.getObservationsValues(any(Cohort.class), eq(weightConcept), anyListOf(String.class))).thenReturn(
+		    patientIdWeightsMap);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);

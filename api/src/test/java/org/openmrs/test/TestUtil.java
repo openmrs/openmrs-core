@@ -227,26 +227,4 @@ public class TestUtil {
 			catch (InterruptedException ex) {}
 		}
 	}
-	
-	/**
-	 * Creates an argument matcher that tests equality based on the equals method, the developer
-	 * doesn't have to type cast the returned argument when pass it to
-	 * {@link Mockito#argThat(Matcher)} as it would be the case if we used {@link Equals} matcher
-	 * 
-	 * @param object
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> Matcher<T> equalsMatcher(final T object) {
-		return new ArgumentMatcher<T>() {
-			
-			/**
-			 * @see org.mockito.ArgumentMatcher#matches(java.lang.Object)
-			 */
-			@Override
-			public boolean matches(Object arg) {
-				return OpenmrsUtil.nullSafeEquals(object, (T) arg);
-			}
-		};
-	}
 }

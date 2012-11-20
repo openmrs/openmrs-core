@@ -13,17 +13,19 @@
  */
 package org.openmrs.validator;
 
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.openmrs.ConceptMapType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.validation.BindException;
@@ -33,15 +35,16 @@ import org.springframework.validation.Errors;
  * Contains tests methods for the {@link ConceptMapTypeValidator}
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ Context.class })
+@PrepareForTest( { Context.class })
 public class ConceptMapTypeValidatorTest {
 	
 	private ConceptService conceptService;
 	
 	@Before
 	public void setUp() throws Exception {
-		conceptService = PowerMockito.mock(ConceptService.class);
-		PowerMockito.stub(PowerMockito.method(Context.class, "getConceptService")).toReturn(conceptService);
+		conceptService = mock(ConceptService.class);
+		mockStatic(Context.class);
+		when(Context.getConceptService()).thenReturn(conceptService);
 	}
 	
 	/**
@@ -57,8 +60,7 @@ public class ConceptMapTypeValidatorTest {
 		mapType.setName(duplicateName);
 		Errors errors = new BindException(mapType, "mapType");
 		//Mock that we have a map type with this name
-		PowerMockito.when(conceptService.getConceptMapTypeByName(Mockito.argThat(TestUtil.equalsMatcher(duplicateName))))
-		        .thenReturn(new ConceptMapType(1));
+		when(conceptService.getConceptMapTypeByName(eq(duplicateName))).thenReturn(new ConceptMapType(1));
 		new ConceptMapTypeValidator().validate(mapType, errors);
 		Assert.assertEquals(true, errors.hasFieldErrors("name"));
 	}
@@ -121,8 +123,7 @@ public class ConceptMapTypeValidatorTest {
 		mapType.setName("unique-name");
 		Errors errors = new BindException(mapType, "mapType");
 		//Mock that we have no duplicate
-		PowerMockito.when(conceptService.getConceptMapTypeByName(Mockito.argThat(TestUtil.equalsMatcher("unique-name"))))
-		        .thenReturn(null);
+		when(conceptService.getConceptMapTypeByName(eq("unique-name"))).thenReturn(null);
 		new ConceptMapTypeValidator().validate(mapType, errors);
 		Assert.assertEquals(false, errors.hasErrors());
 	}

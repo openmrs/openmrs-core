@@ -16,6 +16,14 @@ package org.openmrs.scheduler;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.doNothing;
+import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.powermock.api.support.membermodification.MemberMatcher.method;
+import static org.powermock.api.support.membermodification.MemberModifier.stub;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,14 +36,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.db.SchedulerDAO;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.scheduler.timer.TimerSchedulerServiceImpl;
-import org.openmrs.test.TestUtil;
 import org.openmrs.util.OpenmrsClassLoader;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.util.StringUtils;
@@ -52,20 +57,20 @@ public class SchedulerServiceTest {
 	@Before
 	public void setUp() throws Exception {
 		schedulerService = new TimerSchedulerServiceImpl();
-		PowerMockito.stub(PowerMockito.method(Context.class, "getSchedulerService")).toReturn(schedulerService);
-		SchedulerDAO schedulerDAO = PowerMockito.mock(SchedulerDAO.class);
+		stub(method(Context.class, "getSchedulerService")).toReturn(schedulerService);
+		SchedulerDAO schedulerDAO = mock(SchedulerDAO.class);
 		((TimerSchedulerServiceImpl) schedulerService).setSchedulerDAO(schedulerDAO);
 		//Don't invoke schedulerDAO.updateTask and schedulerDAO.createTask
-		PowerMockito.spy(schedulerDAO).updateTask(Mockito.any(TaskDefinition.class));
-		PowerMockito.spy(schedulerDAO).createTask(Mockito.any(TaskDefinition.class));
+		spy(schedulerDAO).updateTask(any(TaskDefinition.class));
+		spy(schedulerDAO).createTask(any(TaskDefinition.class));
 		
 		//Don't invoke Context.openSession()
-		PowerMockito.spy(Context.class);
-		PowerMockito.doNothing().when(Context.class);
+		spy(Context.class);
+		doNothing().when(Context.class);
 		Context.openSession();
 		
 		//Don't invoke Context.closeSession()
-		PowerMockito.doNothing().when(Context.class);
+		doNothing().when(Context.class);
 		Context.closeSession();
 	}
 	
@@ -315,31 +320,6 @@ public class SchedulerServiceTest {
 	}
 	
 	/**
-	 * TODO This should be an integration test, get rid of it
-	 */
-	@Test
-	@Ignore
-	public void saveTask_shouldSaveTaskToTheDatabase() throws Exception {
-		SchedulerService service = Context.getSchedulerService();
-		
-		TaskDefinition def = new TaskDefinition();
-		final String TASK_NAME = "This is my test! 123459876";
-		def.setName(TASK_NAME);
-		def.setStartOnStartup(false);
-		def.setRepeatInterval(10L);
-		def.setTaskClass(ExecutePrintingTask.class.getName());
-		
-		synchronized (SAVE_TASK_LOCK) {
-			int size = service.getRegisteredTasks().size();
-			service.saveTask(def);
-			Assert.assertEquals(size + 1, service.getRegisteredTasks().size());
-		}
-		
-		def = service.getTaskByName(TASK_NAME);
-		Assert.assertEquals(Context.getAuthenticatedUser().getUserId(), def.getCreator().getUserId());
-	}
-	
-	/**
 	 * Sample task that does not extend AbstractTask
 	 */
 	public static class BareTask implements Task {
@@ -430,7 +410,7 @@ public class SchedulerServiceTest {
 			schedulerService.scheduleTask(td);
 		}
 		
-		PowerMockito.when(schedulerService.getTaskByName(Mockito.argThat(TestUtil.equalsMatcher(NAME)))).thenReturn(td);
+		when(schedulerService.getTaskByName(eq(NAME))).thenReturn(td);
 		
 		// refetch the task
 		td = schedulerService.getTaskByName(NAME);
