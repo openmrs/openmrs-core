@@ -87,10 +87,10 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		loginCredential = userDao.getLoginCredential(user);
 		assertEquals(originalQuestion, loginCredential.getSecretQuestion());
 	}
-
+	
 	@Test
 	public void shouldRejectInvalidUserName() throws Exception {
-		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");		
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
 		HttpServletResponse response = new MockHttpServletResponse();
 		
 		OptionsForm opts = new OptionsForm();
@@ -101,5 +101,5 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("username"));
 		
 	}
-
+	
 }
