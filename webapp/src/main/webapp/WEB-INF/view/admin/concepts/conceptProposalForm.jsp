@@ -198,7 +198,7 @@
 		<th><openmrs:message code="ConceptProposal.actionToTake"/></th>
 		<td>
 			<input type="radio" name="actionToTake" value="saveAsSynonym" checked="checked"> <openmrs:message code="ConceptProposal.saveAsSynonym"/>
-			<input type="radio" name="actionToTake" value="createObsAndIgnoreProposal"> <openmrs:message code="ConceptProposal.createObsAndIgnoreProposal"/>
+			<input type="radio" name="actionToTake" value="saveAsMapped"> <openmrs:message code="ConceptProposal.saveAsMapped"/>
 		</td>
 	</tr>
 </table>
