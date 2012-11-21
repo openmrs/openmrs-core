@@ -135,7 +135,8 @@ public class ConceptProposalFormController extends SimpleFormController {
 			// all of the proposals to map
 			List<ConceptProposal> allProposals = cs.getConceptProposals(cp.getOriginalText());
 			//this concept proposal isn't in the list since we changed its state in processFormSubmission
-			allProposals.add(cp);
+			if (!allProposals.contains(cp))
+				allProposals.add(cp);
 			
 			// The users to be alerted of this change
 			Set<User> uniqueProposers = new HashSet<User>();
