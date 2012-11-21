@@ -45,7 +45,9 @@ public class DrugOrderValidator extends OrderValidator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if drug is null
+	 * @should not fail validation if drug is null
+	 * @should fail validation if order concept is null
+	 * @should fail validation if drug concept is different from order concept
 	 * @should fail validation if drug concept is not set
 	 * @should fail validation if drug dose is set and units is not set
 	 * @should fail if quantity set and units not set
@@ -58,6 +60,7 @@ public class DrugOrderValidator extends OrderValidator {
 		if (order == null) {
 			errors.rejectValue("order", "error.general");
 		} else {
+			ValidationUtils.rejectIfEmpty(errors, "concept", "error.null");
 			if (order.getDuration() != null)
 				ValidationUtils.rejectIfEmpty(errors, "durationUnits", "DrugOrder.add.error.missingDurationUnits");
 			
@@ -74,6 +77,14 @@ public class DrugOrderValidator extends OrderValidator {
 			ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
 			if (order.getDrug() != null)
 				ValidationUtils.rejectIfEmpty(errors, "drug.concept", "error.null");
+			
+			if (!(order.getConcept() == null)) {
+				if (!(order.getDrug() == null) && !(order.getDrug().getConcept().equals(order.getConcept()))) {
+					errors.rejectValue("drug", "error.general");
+					errors.rejectValue("concept", "error.concept");
+					
+				}
+			}
 		}
 	}
 }
