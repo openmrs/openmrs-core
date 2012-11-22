@@ -629,9 +629,9 @@ public class ConceptFormController extends SimpleFormController {
 		 * Builds a white-space separated list of concept ids belonging to a concept set
 		 * @return
 		 */
-		public String getSetElements() {			
+		public String getSetElements() {
 			String result = "";
-			for(ConceptSet set: concept.getConceptSets()) {
+			for (ConceptSet set : concept.getConceptSets()) {
 				result += set.getConcept().getConceptId() + " ";
 			}
 			return result;
