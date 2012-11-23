@@ -27,7 +27,6 @@ import org.openmrs.FormField;
 import org.openmrs.FormResource;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This service contains methods relating to Form, FormField, and Field. Methods relating to
@@ -169,7 +168,6 @@ public interface FormService extends OpenmrsService {
 	 * @should return all forms including retired and unretired when retired is null
 	 * @should return forms containing all form fields in containingAllFormFields
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Form> getForms(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
 	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
