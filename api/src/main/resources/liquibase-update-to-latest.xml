@@ -7461,5 +7461,12 @@
 		<dropNotNullConstraint tableName="relationship_type" columnName="description" columnDataType="varchar(255)" />
 	</changeSet>
 
+	<changeSet id="20121114-TRUNK-3474-encounter_type" author="patandre">
+		<comment>
+			Dropping not null constraint from encounter_type.description column
+		</comment>
+		<dropNotNullConstraint tableName="encounter_type" columnName="description" columnDataType="text" />
+	</changeSet>
+
 </databaseChangeLog>
 
