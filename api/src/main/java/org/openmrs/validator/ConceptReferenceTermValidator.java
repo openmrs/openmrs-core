@@ -17,8 +17,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.annotation.Handler;
@@ -37,9 +35,6 @@ import org.springframework.validation.Validator;
 @Handler(supports = { ConceptReferenceTerm.class }, order = 50)
 public class ConceptReferenceTermValidator implements Validator {
 	
-	// Log for this class
-	private static final Log log = LogFactory.getLog(ConceptReferenceTermValidator.class);
-	
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 * 
@@ -57,7 +52,6 @@ public class ConceptReferenceTermValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail if the concept reference term object is null
 	 * @should fail if the name is a white space character
-	 * @should fail if the concept reference term name is a duplicate in its concept source
 	 * @should fail if the code is null
 	 * @should fail if the code is an empty string
 	 * @should fail if the code is a white space character
@@ -80,14 +74,7 @@ public class ConceptReferenceTermValidator implements Validator {
 			        + ConceptReferenceTerm.class);
 		
 		ConceptReferenceTerm conceptReferenceTerm = (ConceptReferenceTerm) obj;
-		String name = conceptReferenceTerm.getName();
-		//For now accept empty name fields concept reference terms
-		/*if (!StringUtils.hasText(name)) {
-			errors.rejectValue("name", "ConceptReferenceTerm.error.nameRequired",
-			    "The name property is required for a concept reference term");
-			log.warn("The name property is required for a concept reference term");
-			return;
-		}*/
+		
 		String code = conceptReferenceTerm.getCode();
 		if (!StringUtils.hasText(code)) {
 			errors.rejectValue("code", "ConceptReferenceTerm.error.codeRequired",
@@ -102,19 +89,6 @@ public class ConceptReferenceTermValidator implements Validator {
 			errors.rejectValue("conceptSource", "ConceptReferenceTerm.source.notInDatabase",
 			    "Only existing concept reference sources can be used");
 			return;
-		}
-		
-		if (StringUtils.hasText(name)) {
-			name = name.trim();
-			//Ensure that there are no terms with the same name in the same source
-			ConceptReferenceTerm termWithDuplicateName = Context.getConceptService().getConceptReferenceTermByName(name,
-			    conceptReferenceTerm.getConceptSource());
-			if (termWithDuplicateName != null) {
-				if (!OpenmrsUtil.nullSafeEquals(termWithDuplicateName.getId(), conceptReferenceTerm.getId())) {
-					errors.rejectValue("name", "ConceptReferenceTerm.duplicate.name",
-					    "Duplicate concept reference term name: " + name);
-				}
-			}
 		}
 		
 		code = code.trim();

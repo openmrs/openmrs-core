@@ -16,10 +16,12 @@ package org.openmrs.module;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -82,6 +84,8 @@ public final class Module {
 	private List<GlobalProperty> globalProperties = new Vector<GlobalProperty>();
 	
 	private List<String> mappingFiles = new Vector<String>();
+	
+	private Set<String> packagesWithMappedClasses = new HashSet<String>();
 	
 	private Document config = null;
 	
@@ -628,6 +632,25 @@ public final class Module {
 	
 	public void setMappingFiles(List<String> mappingFiles) {
 		this.mappingFiles = mappingFiles;
+	}
+	
+	/**
+	 * Packages to scan for classes with JPA annotated classes.
+	 * 
+	 * @return the set of packages to scan
+	 * @since 1.9.2, 1.10
+	 */
+	public Set<String> getPackagesWithMappedClasses() {
+		return packagesWithMappedClasses;
+	}
+	
+	/**
+	 * @param packagesToScan
+	 * @see #getPackagesWithMappedClasses()
+	 * @since 1.9.2, 1.10
+	 */
+	public void setPackagesWithMappedClasses(Set<String> packagesToScan) {
+		this.packagesWithMappedClasses = packagesToScan;
 	}
 	
 	/**

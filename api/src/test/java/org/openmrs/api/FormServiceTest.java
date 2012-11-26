@@ -13,12 +13,6 @@
  */
 package org.openmrs.api;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,8 +20,16 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.junit.Assert;
@@ -251,6 +253,36 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		List<Form> forms = formService.getForms(null, null, null, null, null, null, fields);
 		
 		assertEquals(3, forms.size());
+	}
+	
+	/**
+	 * @throws Exception 
+	 * @see FormService#getForms(String,Boolean,Collection,Boolean,Collection,Collection,Collection)
+	 * @verifies return forms containing all form fields in containingAllFormFields
+	 */
+	@Test
+	public void getForms_shouldReturnFormsContainingAllFormFieldsInContainingAllFormFields() throws Exception {
+		
+		executeDataSet(INITIAL_FIELDS_XML);
+		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
+		
+		FormService formService = Context.getFormService();
+		
+		Set<FormField> formFields = new HashSet<FormField>();
+		formFields.add(new FormField(3));
+		formFields.add(new FormField(5));
+		formFields.add(new FormField(7));
+		
+		List<Form> forms = formService.getForms(null, null, null, null, null, formFields, null);
+		assertEquals(1, forms.size());
+		
+		formFields = new HashSet<FormField>();
+		formFields.add(new FormField(2));
+		formFields.add(new FormField(4));
+		formFields.add(new FormField(6));
+		
+		forms = formService.getForms(null, null, null, null, null, formFields, null);
+		assertEquals(0, forms.size());
 	}
 	
 	/**

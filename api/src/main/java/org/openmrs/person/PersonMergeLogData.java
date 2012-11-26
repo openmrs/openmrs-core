@@ -32,6 +32,11 @@ import org.openmrs.api.PatientService;
 public class PersonMergeLogData {
 	
 	/**
+	 * List of UUIDs of visits moved from non-preferred to preferred
+	 */
+	private List<String> movedVisits;
+	
+	/**
 	 * List of UUIDs of encounters moved from non-preferred to preferred
 	 */
 	private List<String> movedEncounters;
@@ -114,8 +119,19 @@ public class PersonMergeLogData {
 	 */
 	private String priorCauseOfDeath;
 	
+	public List<String> getMovedVisits() {
+		return movedVisits;
+	}
+	
 	public List<String> getMovedEncounters() {
 		return movedEncounters;
+	}
+	
+	public void addMovedVisit(String uuid) {
+		if (movedVisits == null) {
+			movedVisits = new ArrayList<String>();
+		}
+		movedVisits.add(uuid);
 	}
 	
 	public void addMovedEncounter(String uuid) {
@@ -287,6 +303,8 @@ public class PersonMergeLogData {
 			str += getCreatedRelationships().toString();
 		if (getVoidedRelationships() != null)
 			str += getVoidedRelationships().toString();
+		if (getMovedVisits() != null)
+			str += getMovedVisits().toString();
 		if (getMovedEncounters() != null)
 			str += getMovedEncounters().toString();
 		if (getMovedIndependentObservations() != null)

@@ -84,9 +84,9 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	private ApplicationContext applicationContext;
 	
-	private boolean contextRefreshedCheck = true;
+	private static boolean refreshingContext = false;
 	
-	private final Object contextRefreshedLock = new Object();
+	private static final Object refreshingContextLock = new Object();
 	
 	/**
 	 * Static variable holding whether or not to use the system classloader. By default this is
@@ -702,12 +702,18 @@ public class ServiceContext implements ApplicationContextAware {
 		
 		// if the context is refreshing, wait until it is
 		// done -- otherwise a null service might be returned
-		synchronized (contextRefreshedLock) {
+		synchronized (refreshingContextLock) {
 			try {
-				while (!contextRefreshedCheck) {
-					log.warn("Waiting to get service: " + cls + " while the context is being refreshed");
-					contextRefreshedLock.wait();
-					log.warn("Finished waiting to get service " + cls + " while the context was being refreshed");
+				while (refreshingContext) {
+					if (log.isDebugEnabled()) {
+						log.debug("Waiting to get service: " + cls + " while the context is being refreshed");
+					}
+					
+					refreshingContextLock.wait();
+					
+					if (log.isDebugEnabled()) {
+						log.debug("Finished waiting to get service " + cls + " while the context was being refreshed");
+					}
 				}
 				
 			}
@@ -845,8 +851,9 @@ public class ServiceContext implements ApplicationContextAware {
 	 * getService to wait until <code>doneRefreshingContext</code> is called
 	 */
 	public void startRefreshingContext() {
-		synchronized (contextRefreshedLock) {
-			contextRefreshedCheck = false;
+		synchronized (refreshingContextLock) {
+			log.info("Refreshing Context");
+			refreshingContext = true;
 		}
 	}
 	
@@ -855,9 +862,10 @@ public class ServiceContext implements ApplicationContextAware {
 	 * getService that were waiting because <code>startRefreshingContext</code> was called
 	 */
 	public void doneRefreshingContext() {
-		synchronized (contextRefreshedLock) {
-			contextRefreshedCheck = true;
-			contextRefreshedLock.notifyAll();
+		synchronized (refreshingContextLock) {
+			log.info("Done refreshing Context");
+			refreshingContext = false;
+			refreshingContextLock.notifyAll();
 		}
 	}
 	
@@ -870,8 +878,8 @@ public class ServiceContext implements ApplicationContextAware {
 	 *         doneRefreshingContext()
 	 */
 	public boolean isRefreshingContext() {
-		synchronized (contextRefreshedLock) {
-			return !contextRefreshedCheck;
+		synchronized (refreshingContextLock) {
+			return refreshingContext;
 		}
 	}
 	
@@ -942,13 +950,20 @@ public class ServiceContext implements ApplicationContextAware {
 			@Override
 			public void run() {
 				try {
-					synchronized (contextRefreshedLock) {
+					synchronized (refreshingContextLock) {
 						//Need to wait for application context to finish refreshing otherwise we get into trouble.
-						while (!contextRefreshedCheck) {
-							log.warn("Waiting to get service: " + classString + " while the context is being refreshed");
-							contextRefreshedLock.wait();
-							log.warn("Finished waiting to get service " + classString
-							        + " while the context was being refreshed");
+						while (refreshingContext) {
+							if (log.isDebugEnabled()) {
+								log.debug("Waiting to get service: " + classString + " while the context"
+								        + " is being refreshed");
+							}
+							
+							refreshingContextLock.wait();
+							
+							if (log.isDebugEnabled()) {
+								log.debug("Finished waiting to get service " + classString
+								        + " while the context was being refreshed");
+							}
 						}
 					}
 					
@@ -1038,7 +1053,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 * 
 	 * @param datatypeService the datatypeService to set
 	 * @since 1.9
-	 * 
 	 */
 	public void setDatatypeService(DatatypeService datatypeService) {
 		setService(DatatypeService.class, datatypeService);
