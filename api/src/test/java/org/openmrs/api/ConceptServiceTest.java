@@ -63,7 +63,6 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -2527,6 +2526,24 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Obs obs = observations.get(0);
 		Assert.assertNotNull(obs.getValueCodedName());
 		Assert.assertEquals(finalText, obs.getValueCodedName().getName());
+	}
+	
+	/**
+	 * @see {@link ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)}
+	 */
+	@Test(expected = DuplicateConceptNameException.class)
+	@Verifies(value = "should fail when adding a duplicate syonymn", method = "mapConceptProposalToConcept(ConceptProposal,Concept,Locale)")
+	public void mapConceptProposalToConcept_shouldFailWhenAddingADuplicateSyonymn() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-proposals.xml");
+		ConceptService cs = Context.getConceptService();
+		ConceptProposal cp = cs.getConceptProposal(10);
+		cp.setFinalText(cp.getOriginalText());
+		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM);
+		Concept mappedConcept = cs.getConcept(5);
+		Locale locale = Locale.ENGLISH;
+		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
+		
+		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
 	}
 	
 }
