@@ -1681,7 +1681,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a concept reference term that matches the given name from the given source", method = "getConceptReferenceTermByName(String,ConceptSource)")
 	public void getConceptReferenceTermByName_shouldReturnAConceptReferenceTermThatMatchesTheGivenNameFromTheGivenSource()
-	        throws Exception {
+	    throws Exception {
 		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTermByName("weight term",
 		    new ConceptSource(1));
 		Assert.assertNotNull(term);
@@ -1694,7 +1694,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a concept reference term that matches the given code from the given source", method = "getConceptReferenceTermByCode(String,ConceptSource)")
 	public void getConceptReferenceTermByCode_shouldReturnAConceptReferenceTermThatMatchesTheGivenCodeFromTheGivenSource()
-	        throws Exception {
+	    throws Exception {
 		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTermByCode("2332523",
 		    new ConceptSource(2));
 		Assert.assertNotNull(term);
@@ -1752,8 +1752,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a conceptMapType matching the specified uuid", method = "getConceptMapTypeByUuid(String)")
 	public void getConceptMapTypeByUuid_shouldReturnAConceptMapTypeMatchingTheSpecifiedUuid() throws Exception {
-		Assert.assertEquals("is-parent-to", Context.getConceptService().getConceptMapTypeByUuid(
-		    "0e7a8536-49d6-11e0-8fed-18a905e044dc").getName());
+		Assert.assertEquals("is-parent-to",
+		    Context.getConceptService().getConceptMapTypeByUuid("0e7a8536-49d6-11e0-8fed-18a905e044dc").getName());
 	}
 	
 	/**
@@ -1840,7 +1840,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return all the concept reference terms if includeRetired is set to true", method = "getConceptReferenceTerms(null)")
 	public void getConceptReferenceTerms_shouldReturnAllTheConceptReferenceTermsIfIncludeRetiredIsSetToTrue()
-	        throws Exception {
+	    throws Exception {
 		Assert.assertEquals(11, Context.getConceptService().getConceptReferenceTerms(true).size());
 	}
 	
@@ -1850,7 +1850,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return only un retired concept reference terms if includeRetired is set to false", method = "getConceptReferenceTerms(null)")
 	public void getConceptReferenceTerms_shouldReturnOnlyUnRetiredConceptReferenceTermsIfIncludeRetiredIsSetToFalse()
-	        throws Exception {
+	    throws Exception {
 		Assert.assertEquals(10, Context.getConceptService().getConceptReferenceTerms(false).size());
 	}
 	
@@ -1870,9 +1870,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return only the concept reference terms from the given concept source", method = "getConceptReferenceTermsBySource(ConceptSource)")
 	public void getConceptReferenceTerms_shouldReturnOnlyTheConceptReferenceTermsFromTheGivenConceptSource()
-	        throws Exception {
-		Assert.assertEquals(9, conceptService.getConceptReferenceTerms(null, conceptService.getConceptSource(1), 0, null,
-		    true).size());
+	    throws Exception {
+		Assert.assertEquals(9,
+		    conceptService.getConceptReferenceTerms(null, conceptService.getConceptSource(1), 0, null, true).size());
 	}
 	
 	/**
@@ -1881,7 +1881,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should retire the specified concept reference term with the given retire reason", method = "retireConceptReferenceTerm(ConceptReferenceTerm,String)")
 	public void retireConceptReferenceTerm_shouldRetireTheSpecifiedConceptReferenceTermWithTheGivenRetireReason()
-	        throws Exception {
+	    throws Exception {
 		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTerm(1);
 		Assert.assertFalse(term.isRetired());
 		Assert.assertNull(term.getRetireReason());
@@ -1956,7 +1956,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should unretire the specified concept map type and drop all retire related fields", method = "unretireConceptMapType(ConceptMapType)")
 	public void unretireConceptMapType_shouldUnretireTheSpecifiedConceptMapTypeAndDropAllRetireRelatedFields()
-	        throws Exception {
+	    throws Exception {
 		ConceptMapType mapType = Context.getConceptService().getConceptMapType(6);
 		Assert.assertTrue(mapType.isRetired());
 		Assert.assertNotNull(mapType.getRetiredBy());
@@ -1975,7 +1975,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should unretire the specified concept reference term and drop all retire related fields", method = "unretireConceptReferenceTerm(ConceptReferenceTerm)")
 	public void unretireConceptReferenceTerm_shouldUnretireTheSpecifiedConceptReferenceTermAndDropAllRetireRelatedFields()
-	        throws Exception {
+	    throws Exception {
 		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTerm(11);
 		Assert.assertTrue(term.isRetired());
 		Assert.assertNotNull(term.getRetireReason());
@@ -2003,8 +2003,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a List of ConceptMaps from the given source", method = "getConceptMappingsToSource(ConceptSource)")
 	public void getConceptMappingsToSource_shouldReturnAListOfConceptMapsFromTheGivenSource() throws Exception {
-		Assert.assertEquals(8, Context.getConceptService().getConceptMappingsToSource(
-		    Context.getConceptService().getConceptSource(1)).size());
+		Assert.assertEquals(8,
+		    Context.getConceptService().getConceptMappingsToSource(Context.getConceptService().getConceptSource(1)).size());
 	}
 	
 	/**
@@ -2013,9 +2013,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return all concept reference term maps where the specified term is the termB", method = "getReferenceTermMappingsTo(ConceptReferenceTerm)")
 	public void getReferenceTermMappingsTo_shouldReturnAllConceptReferenceTermMapsWhereTheSpecifiedTermIsTheTermB()
-	        throws Exception {
-		Assert.assertEquals(2, Context.getConceptService().getReferenceTermMappingsTo(
-		    Context.getConceptService().getConceptReferenceTerm(4)).size());
+	    throws Exception {
+		Assert.assertEquals(2,
+		    Context.getConceptService().getReferenceTermMappingsTo(Context.getConceptService().getConceptReferenceTerm(4))
+		            .size());
 	}
 	
 	/**
@@ -2025,8 +2026,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return a count of unique concepts", method = "getCountOfConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept)")
 	public void getCountOfConcepts_shouldReturnACountOfUniqueConcepts() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
-		Assert.assertEquals(2, conceptService.getCountOfConcepts("trust", Collections.singletonList(Locale.ENGLISH), false,
-		    null, null, null, null, null).intValue());
+		Assert.assertEquals(
+		    2,
+		    conceptService.getCountOfConcepts("trust", Collections.singletonList(Locale.ENGLISH), false, null, null, null,
+		        null, null).intValue());
 	}
 	
 	/**
@@ -2100,7 +2103,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConceptsByName_shouldReturnConceptsForAllCountriesAndGlobalLanguageGivenLanguageOnlyLocale()
-	        throws Exception {
+	    throws Exception {
 		//given
 		String name = "Concept";
 		Concept concept1 = new Concept();
@@ -2130,7 +2133,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConceptsByName_shouldReturnConceptsForSpecificCountryAndGlobalLanguageGivenLanguageAndCountryLocale()
-	        throws Exception {
+	    throws Exception {
 		//given
 		String name = "Concept";
 		Concept concept1 = new Concept();
@@ -2412,8 +2415,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptService.updateConceptIndex(conceptService.getConcept(328));
 		conceptService.updateConceptIndex(conceptService.getConcept(1240));
 		
-		List<ConceptSearchResult> searchResults = conceptService.getConcepts("SALBUTAMOL INHALER", Collections
-		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("SALBUTAMOL INHALER",
+		    Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
 		
 		Assert.assertEquals(1, searchResults.size());
 		Assert.assertEquals(conceptWithMultipleMatchingNames, searchResults.get(0).getConcept());
@@ -2429,8 +2432,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() throws Exception {
 		Concept concept = conceptService.getConcept(7);
 		conceptService.updateConceptIndex(concept);
-		Assert.assertEquals(0, conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false, null,
-		    null, null, null, null, null, null).size());
+		Assert.assertEquals(
+		    0,
+		    conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false, null, null, null, null,
+		        null, null, null).size());
 	}
 	
 	/**
@@ -2476,8 +2481,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED, cp.getState());
 		final Concept civilStatusConcept = conceptService.getConcept(4);
 		final int mappedConceptId = 6;
-		Assert.assertTrue(Context.getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
-		    civilStatusConcept).isEmpty());
+		Assert.assertTrue(Context.getObsService()
+		        .getObservationsByPersonAndConcept(cp.getEncounter().getPatient(), civilStatusConcept).isEmpty());
 		Concept mappedConcept = conceptService.getConcept(mappedConceptId);
 		
 		cp.setObsConcept(civilStatusConcept);
@@ -2502,8 +2507,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		final Concept civilStatusConcept = conceptService.getConcept(4);
 		final int mappedConceptId = 6;
 		final String finalText = "Weight synonym";
-		Assert.assertTrue(Context.getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
-		    civilStatusConcept).isEmpty());
+		Assert.assertTrue(Context.getObsService()
+		        .getObservationsByPersonAndConcept(cp.getEncounter().getPatient(), civilStatusConcept).isEmpty());
 		Concept mappedConcept = conceptService.getConcept(mappedConceptId);
 		
 		cp.setFinalText(finalText);
@@ -2594,4 +2599,23 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(25, allConcepts.size());
 		assertEquals(5497, allConcepts.get(0).getConceptId().intValue());
 	}
+	
+	/**
+	 * @see {@link ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)}
+	 */
+	@Test(expected = DuplicateConceptNameException.class)
+	@Verifies(value = "should fail when adding a duplicate syonymn", method = "mapConceptProposalToConcept(ConceptProposal,Concept,Locale)")
+	public void mapConceptProposalToConcept_shouldFailWhenAddingADuplicateSyonymn() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-proposals.xml");
+		ConceptService cs = Context.getConceptService();
+		ConceptProposal cp = cs.getConceptProposal(10);
+		cp.setFinalText(cp.getOriginalText());
+		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM);
+		Concept mappedConcept = cs.getConcept(5);
+		Locale locale = Locale.ENGLISH;
+		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
+		
+		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
+	}
+	
 }
