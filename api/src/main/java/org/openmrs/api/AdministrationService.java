@@ -320,34 +320,6 @@ public interface AdministrationService extends OpenmrsService {
 	public void deleteReportObject(Integer reportObjectId) throws APIException;
 	
 	/**
-	 * Iterates over the words in names and synonyms (for each locale) and updates the concept word
-	 * business table
-	 * 
-	 * @param concept
-	 * @throws APIException
-	 * @deprecated moved to {@link org.openmrs.api.ConceptService#updateConceptWord(Concept)}
-	 */
-	public void updateConceptWord(Concept concept) throws APIException;
-	
-	/**
-	 * Iterates over all concepts calling updateConceptWord(concept)
-	 * 
-	 * @throws APIException
-	 * @deprecated moved to {@link org.openmrs.api.ConceptService#updateConceptWords()}
-	 */
-	public void updateConceptWords() throws APIException;
-	
-	/**
-	 * Iterates over all concepts with conceptIds between <code>conceptIdStart</code> and
-	 * <code>conceptIdEnd</code> (inclusive) calling updateConceptWord(concept)
-	 * 
-	 * @throws APIException
-	 * @deprecated moved to
-	 *             {@link org.openmrs.api.ConceptService#updateConceptWords(Integer, Integer)}
-	 */
-	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
-	
-	/**
 	 * Create a concept proposal
 	 * 
 	 * @param cp

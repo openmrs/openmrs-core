@@ -62,12 +62,10 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.openmrs.Concept;
-import org.openmrs.ConceptComplex;
-import org.openmrs.ConceptNumeric;
+import org.openmrs.Drug;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -738,7 +736,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	public Class<?>[] getIndexedTypes() {
-		return new Class<?>[] { Concept.class, ConceptNumeric.class, ConceptComplex.class };
+		return new Class<?>[] { Concept.class, Drug.class };
 	}
 	
 	public void updateSearchIndex() {

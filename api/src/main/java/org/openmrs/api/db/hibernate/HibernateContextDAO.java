@@ -14,6 +14,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
@@ -33,6 +34,7 @@ import org.hibernate.search.Search;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.util.ConfigHelper;
+import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -42,7 +44,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
@@ -450,9 +451,34 @@ public class HibernateContextDAO implements ContextDAO {
 		session.flushToIndexes();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#setupSearchIndex()
+	 */
 	@Override
-	public void updateSearchIndexInBackground() {
-		Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().start();
+	public void setupSearchIndex() {
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
+		    OpenmrsConstants.GP_LAST_FULL_INDEX_DATE);
+		
+		if (gp.getValue() == null) {
+			updateSearchIndex();
+		}
+	}
+	
+	@Override
+	public void updateSearchIndex() {
+		try {
+			log.info("Updating the search index... It may take a few minutes.");
+			Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().startAndWait();
+			
+			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
+			    OpenmrsConstants.GP_LAST_FULL_INDEX_DATE);
+			gp.setValue(new Date());
+			Context.getAdministrationService().saveGlobalProperty(gp);
+			log.info("Finished updating the search index");
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Failed to update the search index", e);
+		}
 	}
 	
 }

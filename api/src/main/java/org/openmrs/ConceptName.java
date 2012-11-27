@@ -23,7 +23,6 @@ import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Store;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.bridge.ConceptNameClassBridge;
@@ -39,7 +38,7 @@ import org.simpleframework.xml.Root;
  */
 @Root
 @Indexed
-@ClassBridge(name = "name", impl = ConceptNameClassBridge.class, store = Store.YES)
+@ClassBridge(name = "name", impl = ConceptNameClassBridge.class)
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;

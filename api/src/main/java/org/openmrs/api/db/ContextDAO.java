@@ -123,9 +123,14 @@ public interface ContextDAO {
 	public void mergeDefaultRuntimeProperties(Properties runtimeProperties);
 	
 	/**
-	 * Updates all search indexes in a background thread.
+	 * Creates search index.
 	 */
-	public void updateSearchIndexInBackground();
+	public void setupSearchIndex();
+	
+	/**
+	 * Updates search index.
+	 */
+	public void updateSearchIndex();
 	
 	/**
 	 * Updates a search index for the given object.

@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate.search.bridge;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.hibernate.search.bridge.FieldBridge;
@@ -37,7 +38,7 @@ public class ConceptNameClassBridge implements FieldBridge {
 		}
 		
 		String fieldValue = conceptName.getName();
-		if (conceptName.getLocale().getCountry() != null) {
+		if (!StringUtils.isBlank(conceptName.getLocale().getCountry())) {
 			String fieldName = name + "_" + conceptName.getLocale();
 			addField(fieldName, fieldValue, document, luceneOptions);
 		}
@@ -49,6 +50,7 @@ public class ConceptNameClassBridge implements FieldBridge {
 	protected void addField(String fieldName, String fieldValue, Document document, LuceneOptions luceneOptions) {
 		Field field = new Field(fieldName, fieldValue, luceneOptions.getStore(), luceneOptions.getIndex(), luceneOptions
 		        .getTermVector());
+		
 		field.setBoost(luceneOptions.getBoost());
 		document.add(field);
 	}

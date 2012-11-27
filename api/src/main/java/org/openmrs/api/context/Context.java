@@ -827,7 +827,7 @@ public class Context {
 		// TODO: Should this be one of the first things executed at startup?
 		checkCoreDataset();
 		
-		updateSearchIndexInBackground();
+		getContextDAO().setupSearchIndex();
 	}
 	
 	/**
@@ -1283,8 +1283,8 @@ public class Context {
 		return props;
 	}
 	
-	public static void updateSearchIndexInBackground() {
-		getContextDAO().updateSearchIndexInBackground();
+	public static void updateSearchIndex() {
+		getContextDAO().updateSearchIndex();
 	}
 	
 	public static void updateSearchIndexForType(Class<?> type) {

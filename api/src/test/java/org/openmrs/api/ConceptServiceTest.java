@@ -1681,7 +1681,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return concept search results that match unique concepts", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
 	public void getConcepts_shouldReturnConceptSearchResultsThatMatchUniqueConcepts() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust", Collections
 		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
 		//trust is included in 2 names for conceptid=3000 and in one name for conceptid=4000. 
@@ -1695,7 +1695,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return concept search results that contain all search words", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
 	public void getConcepts_shouldReturnConceptSearchResultsThatContainAllSearchWords() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust now", Collections
 		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
 		//"trust now" is name for conceptid=4000. 
@@ -2052,7 +2052,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a count of unique concepts", method = "getCountOfConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept)")
 	public void getCountOfConcepts_shouldReturnACountOfUniqueConcepts() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		Assert.assertEquals(2, conceptService.getCountOfConcepts("trust", Collections.singletonList(Locale.ENGLISH), false,
 		    null, null, null, null, null).intValue());
 	}
@@ -2434,7 +2434,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a search result whose concept name contains all word tokens", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
 	public void getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAllWordTokens() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("SALBUTAMOL INHALER", Collections
 		        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);

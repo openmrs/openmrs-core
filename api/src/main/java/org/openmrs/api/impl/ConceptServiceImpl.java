@@ -52,7 +52,6 @@ import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
-import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
@@ -64,8 +63,6 @@ import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.scheduler.Task;
-import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ConceptValidator;
@@ -91,17 +88,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	private static Concept trueConcept;
 	
 	private static Concept falseConcept;
-	
-	/*
-	 * Name of the concept word update task. A constant, because we only manage
-	 * a single task with this name.
-	 */
-	public static final String CONCEPT_WORD_UPDATE_TASK_NAME = "Update Concept Index";
-	
-	/**
-	 * Task managed by the scheduler to update concept words. May be null.
-	 */
-	private Task conceptWordUpdateTask;
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#setConceptDAO(org.openmrs.api.db.ConceptDAO)
@@ -519,103 +505,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			c = getConceptByName(conceptIdOrName);
 		}
 		return c;
-	}
-	
-	/**
-	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,
-	 *      Integer, Integer)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answerToConcept, Integer start, Integer size) {
-		
-		if (requireClasses == null)
-			requireClasses = new Vector<ConceptClass>();
-		if (excludeClasses == null)
-			excludeClasses = new Vector<ConceptClass>();
-		if (requireDatatypes == null)
-			requireDatatypes = new Vector<ConceptDatatype>();
-		if (excludeDatatypes == null)
-			excludeDatatypes = new Vector<ConceptDatatype>();
-		
-		List<ConceptWord> conceptWords = dao.getConceptWords(phrase, locales, includeRetired, requireClasses,
-		    excludeClasses, requireDatatypes, excludeDatatypes, answerToConcept, start, size);
-		
-		return weightWords(phrase, locales, conceptWords);
-	}
-	
-	/**
-	 * @see ConceptService#getConceptWords(String, Locale)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<ConceptWord> getConceptWords(String phrase, Locale locale) throws APIException {
-		List<Locale> locales = new Vector<Locale>();
-		locales.add(locale);
-		
-		return getConceptWords(phrase, locales, false, null, null, null, null, null, null, null);
-	}
-	
-	/**
-	 * @see ConceptService#findConcepts(String, Locale, boolean, int, int)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, int start, int size) {
-		List<Locale> locales = new Vector<Locale>();
-		locales.add(locale);
-		
-		// delegate to the non-deprecated method
-		List<ConceptWord> conceptWords = getConceptWords(phrase, locales, includeRetired, null, null, null, null, null,
-		    start, size);
-		
-		List<ConceptWord> subList = conceptWords.subList(start, start + size);
-		
-		return subList;
-	}
-	
-	/**
-	 * @see ConceptService#findConcepts(String, Locale, boolean)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired) {
-		
-		List<Locale> locales = new Vector<Locale>();
-		locales.add(locale);
-		
-		return getConceptWords(phrase, locales, includeRetired, null, null, null, null, null, null, null);
-	}
-	
-	/**
-	 * @see ConceptService#findConcepts(String, Locale, boolean, List, List, List, List)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes) {
-		
-		List<Locale> locales = new Vector<Locale>();
-		locales.add(locale);
-		
-		return getConceptWords(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
-		    excludeDatatypes, null, null, null);
-	}
-	
-	/**
-	 * @see ConceptService#findConcepts(String, List, boolean, List, List, List, List)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<ConceptWord> findConcepts(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes) {
-		
-		return getConceptWords(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
-		    excludeDatatypes, null, null, null);
 	}
 	
 	/**
@@ -1143,31 +1032,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see ConceptService#findConceptAnswers(String, Locale, Concept, boolean)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired) {
-		
-		return getConceptAnswers(phrase, locale, concept);
-	}
-	
-	/**
-	 * @see ConceptService#findConceptAnswers(String, Locale, Concept)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<ConceptWord> getConceptAnswers(String phrase, Locale locale, Concept concept) throws APIException {
-		
-		List<Locale> locales = new Vector<Locale>();
-		locales.add(locale);
-		
-		List<ConceptWord> conceptWords = getConceptWords(phrase, locales, false, null, null, null, null, concept, null, null);
-		
-		return weightWords(phrase, locales, conceptWords);
-	}
-	
-	/**
 	 * @deprecated use {@link #getConceptsByAnswer(Concept)}
 	 * @see org.openmrs.api.ConceptService#getQuestionsForAnswer(org.openmrs.Concept)
 	 */
@@ -1228,33 +1092,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * Convenience method
-	 * 
-	 * @param searchedWords
-	 * @param matchedString
-	 * @return
-	 */
-	private double getPercentMatched(Collection<String> searchedWords, String matchedString) {
-		
-		List<String> subList = ConceptWord.getUniqueWords(matchedString);
-		double size = ConceptWord.splitPhrase(matchedString).length; // total
-		// # of
-		// words
-		
-		double matches = 0.0;
-		for (String s : subList) {
-			s = s.toUpperCase();
-			for (String p : searchedWords) {
-				p = p.toUpperCase();
-				if (p.startsWith(s))
-					matches += 1.0;
-			}
-		}
-		
-		return matches == 0 ? 0 : (matches / size);
-	}
-	
-	/**
 	 * @see org.openmrs.api.ConceptService#checkIfLocked()
 	 */
 	@Transactional(readOnly = true)
@@ -1303,89 +1140,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public Integer getMaxConceptId() {
 		return dao.getMaxConceptId();
-	}
-	
-	/**
-	 * This will weight and sort the concepts according to how many of the words in the name match
-	 * the words in the search phrase.
-	 * 
-	 * @param phrase that was used to get this search
-	 * @param locales List<Locale> that were used to get this search
-	 * @param conceptWords the words that were found via a db search and now must be weighted before
-	 *            being shown to the user
-	 * @return List<ConceptWord> object containing sorted <code>ConceptWord</code>s
-	 * @should not fail with null phrase
-	 * @should weigh preferred names higher than other names in the locale
-	 * @should weigh a fully specified name higher than an indexTerm in the locale
-	 * @should weigh a fully specified name higher than a synonym in the locale
-	 * @should weight names that contain all words in search phrase higher than names that dont
-	 * @should weight better matches higher than lower matches
-	 */
-	@Transactional(readOnly = true)
-	protected List<ConceptWord> weightWords(String phrase, List<Locale> locales, List<ConceptWord> conceptWords) {
-		
-		// Map<ConceptId, ConceptWord>
-		Map<Integer, ConceptWord> uniqueConcepts = new HashMap<Integer, ConceptWord>();
-		
-		// phrase words
-		if (phrase == null)
-			phrase = "";
-		List<String> searchedWords = ConceptWord.getUniqueWords(phrase);
-		
-		Integer conceptId = null;
-		Concept concept = null;
-		ConceptName conceptName = null;
-		
-		for (ConceptWord currentWord : conceptWords) {
-			concept = currentWord.getConcept();
-			conceptId = concept.getConceptId();
-			conceptName = currentWord.getConceptName();
-			currentWord.setWeight(0.0);
-			// check each locale the user is searching in for name preference
-			for (Locale locale : locales) {
-				// We weight matches on preferred names higher
-				if (conceptName.isPreferredInCountry(locale.getCountry()))
-					currentWord.increaseWeight(5.0);
-				else if (conceptName.isPreferredInLanguage(locale.getLanguage()))
-					currentWord.increaseWeight(3.0);
-				else if (conceptName.isPreferred())
-					currentWord.increaseWeight(1.0);
-			}
-			
-			// increase the weight by a factor of the % of words matched
-			Double percentMatched = getPercentMatched(searchedWords, conceptName.getName());
-			currentWord.increaseWeight(5.0 * percentMatched);
-			
-			List<String> nameWords = ConceptWord.getUniqueWords(conceptName.getName());
-			
-			// if the conceptName doesn't contain all of the search words, lower
-			// the weighting
-			if (!containsAll(nameWords, searchedWords)) {
-				currentWord.increaseWeight(-2.0);
-			}
-			
-			log.debug("Weight for: " + conceptName.getName() + " is: " + currentWord.getWeight());
-			
-			if (uniqueConcepts.containsKey(conceptId)) {
-				// if we've seen another name for this concept already, check
-				// the name weightings
-				ConceptWord previousWord = uniqueConcepts.get(conceptId);
-				
-				if (currentWord.getWeight() > previousWord.getWeight()) {
-					uniqueConcepts.put(conceptId, currentWord);
-				}
-			} else {
-				// its not in the list, add it
-				uniqueConcepts.put(conceptId, currentWord);
-			}
-			
-		}
-		
-		conceptWords = new Vector<ConceptWord>();
-		conceptWords.addAll(uniqueConcepts.values());
-		Collections.sort(conceptWords);
-		
-		return conceptWords;
 	}
 	
 	/**
@@ -1491,20 +1245,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public Iterator<Concept> conceptIterator() {
 		return dao.conceptIterator();
-	}
-	
-	private TaskDefinition createConceptIndexUpdateTask() {
-		TaskDefinition conceptIndexUpdateTaskDef = new TaskDefinition();
-		conceptIndexUpdateTaskDef.setTaskClass("org.openmrs.scheduler.tasks.ConceptIndexUpdateTask");
-		conceptIndexUpdateTaskDef.setRepeatInterval(0L); // zero interval means
-		// do not repeat
-		conceptIndexUpdateTaskDef.setStartOnStartup(false);
-		conceptIndexUpdateTaskDef.setStartTime(null); // to induce immediate
-		// execution
-		conceptIndexUpdateTaskDef.setName(CONCEPT_WORD_UPDATE_TASK_NAME);
-		conceptIndexUpdateTaskDef
-		        .setDescription("Iterates through the concept dictionary, re-creating concept index (which are used for searcing). This task is started when using the \"Update Concept Index Storage\" page and no range is given.  This task stops itself when one iteration has completed.");
-		return conceptIndexUpdateTaskDef;
 	}
 	
 	/**
@@ -1943,33 +1683,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * Convenience method that creates a list of ConceptSearchResults from the specified list of
-	 * ConceptWords
-	 * 
-	 * @param conceptWords
-	 * @return
-	 */
-	private List<ConceptSearchResult> createSearchResultsList(List<ConceptWord> conceptWords) {
-		
-		if (CollectionUtils.isNotEmpty(conceptWords)) {
-			ArrayList<ConceptSearchResult> conceptSearchResults = new ArrayList<ConceptSearchResult>();
-			for (ConceptWord conceptWord : conceptWords) {
-				if (conceptWord != null) {
-					// constructor ConceptSearchResult(ConceptWord) is not
-					// visible here
-					conceptSearchResults.add(new ConceptSearchResult(conceptWord.getWord(), conceptWord.getConcept(),
-					        conceptWord.getConceptName(), conceptWord.getWeight()));
-				}
-			}
-			
-			return conceptSearchResults;
-		}
-		
-		return Collections.emptyList();
-		
-	}
-	
-	/**
 	 * @see ConceptService#getCountOfConcepts(String, List, boolean, List, List, List, List,
 	 *      Concept)
 	 */
@@ -1986,8 +1699,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			requireDatatypes = new Vector<ConceptDatatype>();
 		if (excludeDatatypes == null)
 			excludeDatatypes = new Vector<ConceptDatatype>();
-		return OpenmrsUtil.convertToInteger(dao.getCountOfConceptWords(phrase, locales, includeRetired, requireClasses,
-		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept, true));
+		
+		List<ConceptSearchResult> concepts = dao.getConcepts(phrase, locales, includeRetired, requireClasses,
+		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept, null, null);
+		
+		return concepts.size();
 	}
 	
 	/**
