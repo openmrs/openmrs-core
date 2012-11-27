@@ -96,7 +96,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public Form getForm(Integer formId) throws APIException {
-		return dao.getForm(formId);
+		return dao.getMetadata(Form.class, formId);
 	}
 	
 	/**
@@ -234,7 +234,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public List<FieldType> getAllFieldTypes(boolean includeRetired) throws APIException {
-		return dao.getAllFieldTypes(includeRetired);
+		return dao.getAllMetadata(FieldType.class, includeRetired);
 	}
 	
 	/**
@@ -242,7 +242,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public FieldType getFieldType(Integer fieldTypeId) throws APIException {
-		return dao.getFieldType(fieldTypeId);
+		return dao.getMetadata(FieldType.class, fieldTypeId);
 	}
 	
 	/**
@@ -315,7 +315,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public Field getField(Integer fieldId) throws APIException {
-		return dao.getField(fieldId);
+		return dao.getMetadata(Field.class, fieldId);
 	}
 	
 	/**
@@ -350,7 +350,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public FormField getFormField(Integer formFieldId) throws APIException {
-		return dao.getFormField(formFieldId);
+		return dao.getMetadata(FormField.class, formFieldId);
 	}
 	
 	/**
@@ -410,7 +410,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public Field getFieldByUuid(String uuid) throws APIException {
-		return dao.getFieldByUuid(uuid);
+		return dao.getMetadataByUuid(Field.class, uuid);
 	}
 	
 	@Transactional(readOnly = true)
@@ -423,7 +423,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public FieldType getFieldTypeByUuid(String uuid) throws APIException {
-		return dao.getFieldTypeByUuid(uuid);
+		return dao.getMetadataByUuid(FieldType.class, uuid);
 	}
 	
 	/**
@@ -431,7 +431,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public Form getFormByUuid(String uuid) throws APIException {
-		return dao.getFormByUuid(uuid);
+		return dao.getMetadataByUuid(Form.class, uuid);
 	}
 	
 	/**
@@ -439,7 +439,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public FormField getFormFieldByUuid(String uuid) throws APIException {
-		return dao.getFormFieldByUuid(uuid);
+		return dao.getMetadataByUuid(FormField.class, uuid);
 	}
 	
 	/**
@@ -468,7 +468,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Field> getAllFields(boolean includeRetired) throws APIException {
-		return dao.getAllFields(includeRetired);
+		return dao.getAllMetadata(Field.class, includeRetired);
 	}
 	
 	/**
@@ -476,7 +476,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public List<FormField> getAllFormFields() throws APIException {
-		return dao.getAllFormFields();
+		return dao.getAllMetadata(FormField.class, true);
 	}
 	
 	/**
@@ -659,7 +659,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		if (cascade == true)
 			throw new APIException("Not Yet Implemented");
 		else
-			dao.deleteField(field);
+			dao.deleteMetadata(field);
 	}
 	
 	/**
@@ -680,14 +680,14 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		for (FormResource resource : Context.getFormService().getFormResourcesForForm(form))
 			Context.getFormService().purgeFormResource(resource);
 		
-		dao.deleteForm(form);
+		dao.deleteMetadata(form);
 	}
 	
 	/**
 	 * @see org.openmrs.api.FormService#purgeFormField(org.openmrs.FormField)
 	 */
 	public void purgeFormField(FormField formField) throws APIException {
-		dao.deleteFormField(formField);
+		dao.deleteMetadata(formField);
 	}
 	
 	/**
@@ -706,7 +706,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#saveField(org.openmrs.Field)
 	 */
 	public Field saveField(Field field) throws APIException {
-		return dao.saveField(field);
+		return dao.saveMetadata(field);
 	}
 	
 	/**
@@ -728,7 +728,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			}
 		}
 		
-		return dao.saveForm(form);
+		return dao.saveMetadata(form);
 	}
 	
 	/**
@@ -748,7 +748,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		if (field.getUuid() == null)
 			field.setUuid(UUID.randomUUID().toString());
 		
-		return dao.saveFormField(formField);
+		return dao.saveMetadata(formField);
 	}
 	
 	/**
@@ -793,14 +793,14 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#purgeFieldType(org.openmrs.FieldType)
 	 */
 	public void purgeFieldType(FieldType fieldType) throws APIException {
-		dao.deleteFieldType(fieldType);
+		dao.deleteMetadata(fieldType);
 	}
 	
 	/**
 	 * @see org.openmrs.api.FormService#saveFieldType(org.openmrs.FieldType)
 	 */
 	public FieldType saveFieldType(FieldType fieldType) throws APIException {
-		return dao.saveFieldType(fieldType);
+		return dao.saveMetadata(fieldType);
 	}
 	
 	/**
@@ -809,14 +809,14 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Override
 	public int mergeDuplicateFields() throws APIException {
 		
-		List<Field> fields = dao.getAllFields(true);
+		List<Field> fields = dao.getAllMetadata(Field.class, true);
 		Set<Field> fieldsToDelete = new HashSet<Field>();
 		
 		Map<String, Integer> fieldNameAsKeyAndFieldIdAsValueMap = new HashMap<String, Integer>();
 		
 		for (Field field : fields) {
 			if (fieldNameAsKeyAndFieldIdAsValueMap.containsKey(field.getName())) {
-				Field fieldToCompareTo = dao.getField(fieldNameAsKeyAndFieldIdAsValueMap.get(field.getName()));
+				Field fieldToCompareTo = dao.getMetadata(Field.class, fieldNameAsKeyAndFieldIdAsValueMap.get(field.getName()));
 				if (fieldsAreSimilar(field, fieldToCompareTo)) {
 					
 					//get the formFields that use this duplicate field
@@ -826,7 +826,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 					//replace with field from outer loop
 					for (FormField formField : formFields) {
 						formField.setField(fieldToCompareTo);
-						dao.saveFormField(formField);
+						dao.saveMetadata(formField);
 						
 						fieldsToDelete.add(field);
 					}
@@ -841,7 +841,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		}
 		
 		for (Field field : fieldsToDelete) {
-			dao.deleteField(field);
+			dao.deleteMetadata(field);
 		}
 		
 		return fieldsToDelete.size();

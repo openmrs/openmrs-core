@@ -560,7 +560,6 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		resource.setValue(expected);
 		
 		resource = Context.getFormService().saveFormResource(resource);
-		Integer resourceId = resource.getFormResourceId();
 		
 		// duplicate the form
 		Form newForm = Context.getFormService().duplicateForm(form);
