@@ -80,7 +80,7 @@ public class WebUtilTest {
 	@Test
 	public void normalizeLocale_shouldNotAcceptInvalidLocales() throws Exception {
 		Assert.assertNull(WebUtil.normalizeLocale("ptrg"));
-		Assert.assertNull(WebUtil.normalizeLocale("usa"));
+		Assert.assertNull(WebUtil.normalizeLocale("usaa"));
 	}
 	
 	/**
@@ -107,7 +107,7 @@ public class WebUtilTest {
 	 */
 	@Test
 	public void sanitizeLocales_shouldSkipOverInvalidLocales() throws Exception {
-		Assert.assertEquals("fr_RW, it, en", WebUtil.sanitizeLocales("és, qqq, fr_RW, it, enñ"));
+		Assert.assertEquals("fr_RW, it, en", WebUtil.sanitizeLocales("és, qqqq, fr_RW, it, enñ"));
 	}
 	
 	/**
