@@ -14,6 +14,7 @@
 package org.openmrs.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Person;
 import org.openmrs.Privilege;
@@ -615,4 +616,21 @@ public interface UserService extends OpenmrsService {
 	 * @since 1.8.4, 1.9.1, 1.10
 	 */
 	public void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege);
+	
+	/**
+	 * Saves the current key/value as a user property on the current user.
+	 * @param key   the authenticated user's property
+	 * @param value value of the property
+	 * @since1.10
+	 */
+	@Authorized()
+	public User saveUserProperty(String key, String value);
+	
+	/**
+	 * Replaces all user properties with the given map of properties for the current user
+	 * @param properties the authenticated user's properties
+	 * @since1.10
+	 */
+	@Authorized()
+	public User saveUserProperties(Map<String, String> properties);
 }
