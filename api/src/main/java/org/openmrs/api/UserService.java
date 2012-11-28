@@ -624,7 +624,7 @@ public interface UserService extends OpenmrsService {
 	 * 
 	 * @param key the authenticated user's property
 	 * @param value value of the property
-	 * @since1.10
+	 * @since 1.10
 	 */
 	@Authorized
 	public User saveUserProperty(String key, String value);
@@ -633,7 +633,7 @@ public interface UserService extends OpenmrsService {
 	 * Replaces all user properties with the given map of properties for the current user
 	 * 
 	 * @param properties the authenticated user's properties
-	 * @since1.10
+	 * @since 1.10
 	 */
 	@Authorized
 	public User saveUserProperties(Map<String, String> properties);
