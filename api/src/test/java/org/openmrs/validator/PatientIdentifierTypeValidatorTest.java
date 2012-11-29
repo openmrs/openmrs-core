@@ -44,25 +44,25 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	 * 
 	 */
 	@Test
-	@Verifies(value = "should fail validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName("name");
 		type.setDescription(null);
 		
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertFalse(errors.hasFieldErrors("description"));
 		
 		type.setDescription("");
 		errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertFalse(errors.hasFieldErrors("description"));
 		
 		type.setDescription(" ");
 		errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**

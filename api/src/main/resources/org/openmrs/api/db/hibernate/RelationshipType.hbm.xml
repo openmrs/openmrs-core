@@ -20,7 +20,7 @@
     
     <property name="bIsToA" type="java.lang.String" not-null="true" length="50" access="field" column="b_is_to_a"/> <!-- Accessing field so we don't have to use getbIsToA() -->
     
-    <property name="description" type="java.lang.String" not-null="true" length="255"/>
+    <property name="description" type="java.lang.String" length="255"/>
     
     <property name="preferred" type="boolean" not-null="true"/>
     

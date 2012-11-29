@@ -14,6 +14,7 @@
 package org.openmrs.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Person;
 import org.openmrs.Privilege;
@@ -30,6 +31,7 @@ import org.openmrs.util.PrivilegeConstants;
  * Contains methods pertaining to Users in the system Use:<br/>
  * 
  * <pre>
+ * 
  * 
  * List&lt;User&gt; users = Context.getUserService().getAllUsers();
  * </pre>
@@ -611,8 +613,28 @@ public interface UserService extends OpenmrsService {
 	 * @see PrivilegeListener
 	 * @param user the authenticated user or <code>null</code> if not authenticated
 	 * @param privilege the checked privilege
-	 * @param hasPrivilege <code>true</code> if the authenticated user has the required privilege or if it is a proxy privilege
+	 * @param hasPrivilege <code>true</code> if the authenticated user has the required privilege or
+	 *            if it is a proxy privilege
 	 * @since 1.8.4, 1.9.1, 1.10
 	 */
 	public void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege);
+	
+	/**
+	 * Saves the current key/value as a user property for the current user.
+	 * 
+	 * @param key the authenticated user's property
+	 * @param value value of the property
+	 * @since 1.10
+	 */
+	@Authorized
+	public User saveUserProperty(String key, String value);
+	
+	/**
+	 * Replaces all user properties with the given map of properties for the current user
+	 * 
+	 * @param properties the authenticated user's properties
+	 * @since 1.10
+	 */
+	@Authorized
+	public User saveUserProperties(Map<String, String> properties);
 }

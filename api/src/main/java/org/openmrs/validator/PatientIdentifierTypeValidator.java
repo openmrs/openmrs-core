@@ -48,7 +48,7 @@ public class PatientIdentifierTypeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null or empty or whitespace
-	 * @should fail validation if description is null or empty or whitespace
+	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 * @should pass validation if regEx field length is not too long
 	 * @should fail validation if regEx field length is too long
@@ -60,7 +60,6 @@ public class PatientIdentifierTypeValidator implements Validator {
 			errors.rejectValue("identifierType", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 			ValidateUtil.validateFieldLengths(errors, identifierType.getClass(), "name", "description", "format");
 		}
 	}
