@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 
 /**
@@ -33,8 +31,6 @@ import org.openmrs.api.APIException;
 public class Patient extends Person implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 93123L;
-	
-	private static final Log log = LogFactory.getLog(Patient.class);
 	
 	// Fields
 	
