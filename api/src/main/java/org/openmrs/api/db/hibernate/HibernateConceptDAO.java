@@ -307,9 +307,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Concept> getAllConcepts(String sortBy, boolean asc, boolean includeRetired) throws DAOException {
-
+		
 		boolean isNameField = false;
-
+		
 		try {
 			Concept.class.getDeclaredField(sortBy);
 		}
@@ -322,43 +322,37 @@ public class HibernateConceptDAO implements ConceptDAO {
 				sortBy = "conceptId";
 			}
 		}
-
-		String hql = "";
 		
+		String hql = "";
 		if (isNameField) {
 			hql += "select concept";
 		}
 		
-		hql += " from Concept concept";
-
+		hql += " from Concept as concept";
+		boolean hasWhereClause = false;
 		if (isNameField) {
-			hql += " left join concept.names as names";
+			hasWhereClause = true;
+			//This assumes every concept has a unique(avoid duplicates) fully specified name
+			//which should be true for a clean concept dictionary
+			hql += " left join concept.names as names where names.conceptNameType = 'FULLY_SPECIFIED'";
 		}
-
-		if (isNameField || !includeRetired) {
-			hql += " where";
-		}
-
-		if (isNameField) {
-			hql += " names.conceptNameType = 'FULLY_SPECIFIED'";
-		}
-
-		if (isNameField && !includeRetired) {
-			hql += " and";
-		}
-
+		
 		if (!includeRetired) {
-			hql += " retired = false";
+			if (hasWhereClause)
+				hql += " and";
+			else
+				hql += " where";
+			hql += " concept.retired = false";
+			
 		}
-
+		
 		if (isNameField) {
 			hql += " order by names." + sortBy;
 		} else {
 			hql += " order by concept." + sortBy;
 		}
-
+		
 		hql += asc ? " asc" : " desc";
-
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		return (List<Concept>) query.list();
 	}
