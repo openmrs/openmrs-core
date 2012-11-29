@@ -29,7 +29,6 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
-import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.module.ModuleConstants;
@@ -1488,8 +1487,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
 		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
 		
-		props.add(new GlobalProperty(GP_LAST_FULL_INDEX_DATE, "", "Indicates the last time the full index was built",
-		        DateDatatype.class, null));
+		props.add(new GlobalProperty(GP_LAST_FULL_INDEX_DATE, "", "Indicates the last time the full index was built"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

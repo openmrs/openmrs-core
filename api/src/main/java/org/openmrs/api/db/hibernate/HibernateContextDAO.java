@@ -14,6 +14,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
@@ -456,10 +457,9 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void setupSearchIndex() {
-		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
-		    OpenmrsConstants.GP_LAST_FULL_INDEX_DATE);
+		String gp = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_LAST_FULL_INDEX_DATE, "");
 		
-		if (gp.getValue() == null) {
+		if (StringUtils.isBlank(gp)) {
 			updateSearchIndex();
 		}
 	}
@@ -472,7 +472,7 @@ public class HibernateContextDAO implements ContextDAO {
 			
 			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
 			    OpenmrsConstants.GP_LAST_FULL_INDEX_DATE);
-			gp.setValue(new Date());
+			gp.setPropertyValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 			Context.getAdministrationService().saveGlobalProperty(gp);
 			log.info("Finished updating the search index");
 		}

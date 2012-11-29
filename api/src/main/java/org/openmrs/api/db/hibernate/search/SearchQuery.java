@@ -13,35 +13,36 @@
  */
 package org.openmrs.api.db.hibernate.search;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.openmrs.collection.ListPart;
 
-import com.google.common.reflect.TypeToken;
-
 /**
  * Wraps around a query to provide common result methods.
  */
-public abstract class HibernateQuery<T> {
+public abstract class SearchQuery<T> {
 	
-	@SuppressWarnings("serial")
-	private final TypeToken<T> type = new TypeToken<T>(
-	                                                   getClass()) {};
+	private final Class<T> type;
 	
 	private final Session session;
 	
-	public HibernateQuery(Session session) {
+	public SearchQuery(Session session, Class<T> type) {
+		checkNotNull(session);
+		checkNotNull(type);
+		
 		this.session = session;
+		this.type = type;
 	}
 	
 	/**
 	 * @return the type
 	 */
-	@SuppressWarnings("unchecked")
 	protected Class<T> getType() {
-		return (Class<T>) type.getRawType();
+		return type;
 	}
 	
 	protected Session getSession() {
@@ -72,11 +73,11 @@ public abstract class HibernateQuery<T> {
 	 */
 	public abstract ListPart<T> listPart(Long firstResult, Long maxResults);
 	
+	public abstract long resultSize();
+	
 	public ListPart<T> listPart(Integer firstResult, Integer maxResults) {
 		Long first = (firstResult != null) ? Long.valueOf(firstResult) : null;
 		Long max = (maxResults != null) ? Long.valueOf(maxResults) : null;
 		return listPart(first, max);
 	}
-	
-	public abstract long resultSize();
 }

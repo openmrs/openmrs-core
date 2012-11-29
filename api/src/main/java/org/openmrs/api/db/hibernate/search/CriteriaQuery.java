@@ -24,15 +24,15 @@ import org.openmrs.collection.ListPart;
 /**
  * Performs criteria queries.
  */
-public abstract class CriteriaQueryBuilder<T> extends HibernateQuery<T> {
+public abstract class CriteriaQuery<T> extends SearchQuery<T> {
 	
 	private final Criteria criteria;
 	
 	/**
 	 * @param session
 	 */
-	public CriteriaQueryBuilder(Session session) {
-		super(session);
+	public CriteriaQuery(Session session, Class<T> type) {
+		super(session, type);
 		criteria = getSession().createCriteria(getType());
 		prepareCriteria(criteria);
 	}
@@ -71,13 +71,14 @@ public abstract class CriteriaQueryBuilder<T> extends HibernateQuery<T> {
 	
 	@Override
 	public T uniqueResult() throws HibernateException {
-		Object result = criteria.uniqueResult();
+		@SuppressWarnings("unchecked")
+		T result = (T) criteria.uniqueResult();
 		
-		return getType().cast(result);
+		return result;
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.hibernate.search.HibernateQuery#resultSize()
+	 * @see org.openmrs.api.db.hibernate.search.SearchQuery#resultSize()
 	 */
 	@Override
 	public long resultSize() {

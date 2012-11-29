@@ -30,8 +30,6 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
@@ -70,12 +68,11 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.api.db.hibernate.search.LuceneQueryBuilder;
+import org.openmrs.api.db.hibernate.search.LuceneQuery;
 import org.openmrs.collection.ListPart;
 import org.openmrs.util.OpenmrsConstants;
 
 import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -91,6 +88,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private SessionFactory sessionFactory;
+	
+	private final Function<ConceptName, Concept> transformNameToConcept = new Function<ConceptName, Concept>() {
+		
+		@Override
+		public Concept apply(ConceptName name) {
+			return name.getConcept();
+		}
+	};
 	
 	/**
 	 * Sets the session factory
@@ -377,18 +382,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public List<Drug> getDrugs(final String phrase) throws DAOException {
-		List<Drug> list = new LuceneQueryBuilder<Drug>(
-		                                               sessionFactory.getCurrentSession()) {
-			
-			@Override
-			protected org.apache.lucene.search.Query prepareQuery() throws ParseException {
-				String searchPhrase = newRequirePartialWordsSearchPhrase(phrase);
-				
-				String query = "+name:(" + searchPhrase + ")";
-				
-				return newQueryParser().parse(query);
-			}
-		}.list();
+		String searchPhrase = newRequirePartialWordsSearchPhrase(phrase);
+		
+		String query = "+name:(" + searchPhrase + ")";
+		
+		List<Drug> list = LuceneQuery.newQuery(query, sessionFactory.getCurrentSession(), Drug.class).list();
 		
 		return list;
 	}
@@ -527,56 +525,35 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<Concept> getConcepts(final String name, final Locale loc, final boolean searchOnPhrase,
 	        final List<ConceptClass> classes, final List<ConceptDatatype> datatypes) throws DAOException {
 		
-		final List<ConceptName> names = new LuceneQueryBuilder<ConceptName>(
-		                                                                    sessionFactory.getCurrentSession()) {
-			
-			@Override
-			protected org.apache.lucene.search.Query prepareQuery() throws ParseException {
-				StringBuilder query = new StringBuilder();
-				
-				final Locale locale;
-				if (loc == null) {
-					locale = Context.getLocale();
-				} else {
-					locale = loc;
-				}
-				
-				if (!StringUtils.isBlank(name)) {
-					if (searchOnPhrase) {
-						String search = newNamesQuery(Sets.newHashSet(locale), name, true);
-						
-						query.append(search);
-					} else {
-						String search = newNamesQuery(Sets.newHashSet(locale), name, false);
-						
-						query.append(search);
-					}
-				}
-				
-				query.append(" +concept.retired:false");
-				
-				if (classes != null && !classes.isEmpty()) {
-					String ids = transformToIds(classes);
-					query.append(" +concept.conceptClass.conceptClassId:(").append(ids).append(")");
-				}
-				
-				if (datatypes != null && !datatypes.isEmpty()) {
-					String ids = transformToIds(datatypes);
-					query.append(" +concept.datatype.conceptDatatypeId:(").append(ids).append(")");
-				}
-				
-				return newQueryParser().parse(query.toString());
-			}
-			
-		}.list();
+		StringBuilder query = new StringBuilder();
 		
-		final List<Concept> concepts = Lists.transform(names, new Function<ConceptName, Concept>() {
-			
-			@Override
-			public Concept apply(ConceptName name) {
-				return name.getConcept();
+		final Locale locale;
+		if (loc == null) {
+			locale = Context.getLocale();
+		} else {
+			locale = loc;
+		}
+		
+		if (!StringUtils.isBlank(name)) {
+			if (searchOnPhrase) {
+				String search = newNamesQuery(Sets.newHashSet(locale), name, true);
+				query.append(search);
+			} else {
+				String search = newNamesQuery(Sets.newHashSet(locale), name, false);
+				query.append(search);
 			}
-		});
+		}
+		
+		query.append(" +concept.retired:false");
+		
+		appendIdsQuery(query, "+concept.conceptClass.conceptClassId", classes);
+		
+		appendIdsQuery(query, "+concept.datatype.conceptDatatypeId", datatypes);
+		
+		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
+		    ConceptName.class).skipSame("concept.conceptId", "conceptNameId").list();
+		
+		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
 		
 		return concepts;
 	}
@@ -584,9 +561,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	private String newNamesQuery(final Set<Locale> locales, final String name, final boolean keywords) {
 		final String phrase;
 		if (keywords) {
-			phrase = "(" + newRequirePartialWordsSearchPhrase(name) + "\"" + name + "\"^10)";
+			phrase = "(" + newRequirePartialWordsSearchPhrase(name) + " \"" + name + "\"^10)";
 		} else {
-			phrase = "\"" + QueryParser.escape(name) + "\"";
+			phrase = "\"" + LuceneQuery.escapeQuery(name) + "\"";
 		}
 		
 		StringBuilder query = new StringBuilder();
@@ -1255,25 +1232,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 			query.append(" +concept.retired:false");
 		}
 		
-		if (requireClasses != null && !requireClasses.isEmpty()) {
-			String ids = transformToIds(requireClasses);
-			query.append(" +concept.conceptClass.conceptClassId:(").append(ids).append(")");
-		}
+		appendIdsQuery(query, "+concept.conceptClass.conceptClassId", requireClasses);
 		
-		if (excludeClasses != null && !excludeClasses.isEmpty()) {
-			String ids = transformToIds(excludeClasses);
-			query.append(" -concept.conceptClass.conceptClassId:(").append(ids).append(")");
-		}
+		appendIdsQuery(query, "-concept.conceptClass.conceptClassId", excludeClasses);
 		
-		if (requireDatatypes != null && !requireDatatypes.isEmpty()) {
-			String ids = transformToIds(requireDatatypes);
-			query.append(" +concept.datatype.conceptDatatypeId:(").append(ids).append(")");
-		}
+		appendIdsQuery(query, "+concept.datatype.conceptDatatypeId", requireDatatypes);
 		
-		if (excludeDatatypes != null && !excludeDatatypes.isEmpty()) {
-			String ids = transformToIds(excludeDatatypes);
-			query.append(" -concept.datatype.conceptDatatypeId:(").append(ids).append(")");
-		}
+		appendIdsQuery(query, "-concept.datatype.conceptDatatypeId", excludeDatatypes);
 		
 		if (answersToConcept != null) {
 			Collection<ConceptAnswer> answers = answersToConcept.getAnswers(false);
@@ -1287,44 +1252,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 			}
 		}
 		
-		List<Object> duplicatedNames = new LuceneQueryBuilder<ConceptName>(
-		                                                                   sessionFactory.getCurrentSession()) {
-			
-			@Override
-			protected org.apache.lucene.search.Query prepareQuery() throws ParseException {
-				
-				org.apache.lucene.search.Query parsedQuery = newQueryParser().parse(query.toString());
-				
-				return parsedQuery;
-			}
-			
-		}.listProjection("conceptNameId", "concept.conceptId");
-		
-		Set<Integer> uniqueConceptIds = Sets.newHashSet();
-		Set<Integer> duplicateConceptNameIds = Sets.newHashSet();
-		for (Object duplicatedName : duplicatedNames) {
-			Object[] name = (Object[]) duplicatedName;
-			if (!uniqueConceptIds.add((Integer) name[1])) {
-				duplicateConceptNameIds.add((Integer) name[0]);
-			}
-		}
-		
-		if (!duplicateConceptNameIds.isEmpty()) {
-			query.append(" -conceptNameId:(").append(Joiner.on(" ").join(duplicateConceptNameIds)).append(")");
-		}
-		
-		ListPart<ConceptName> names = new LuceneQueryBuilder<ConceptName>(
-		                                                                  sessionFactory.getCurrentSession()) {
-			
-			@Override
-			protected org.apache.lucene.search.Query prepareQuery() throws ParseException {
-				
-				org.apache.lucene.search.Query parsedQuery = newQueryParser().parse(query.toString());
-				
-				return parsedQuery;
-			}
-			
-		}.listPart(start, size);
+		ListPart<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
+		    ConceptName.class).skipSame("concept.conceptId", "conceptNameId").listPart(start, size);
 		
 		List<ConceptSearchResult> results = Lists.transform(names.getList(),
 		    new Function<ConceptName, ConceptSearchResult>() {
@@ -1338,13 +1267,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return results;
 	}
 	
+	private void appendIdsQuery(final StringBuilder query, final String field, final List<? extends OpenmrsObject> objects) {
+		String ids = transformToIds(objects);
+		if (ids != null) {
+			query.append(" ").append(field).append(":(").append(ids).append(")");
+		}
+	}
+	
 	private String newRequirePartialWordsSearchPhrase(final String phrase) {
-		String searchPhrase = QueryParser.escape(phrase).trim().replaceAll("\\s+", "* +");
+		String searchPhrase = LuceneQuery.escapeQuery(phrase).trim().replaceAll("\\s+", "* +");
 		searchPhrase = "+" + searchPhrase + "*";
 		return searchPhrase;
 	}
 	
 	private String transformToIds(final List<? extends OpenmrsObject> items) {
+		if (items == null || items.isEmpty()) {
+			return null;
+		}
+		
 		StringBuilder ids = new StringBuilder();
 		for (OpenmrsObject item : items) {
 			ids.append(item.getId()).append(" ");
@@ -1606,46 +1546,32 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public List<Concept> getConceptsByName(final String name, final Locale locale, final Boolean exactLocale) {
-		final List<ConceptName> names = new LuceneQueryBuilder<ConceptName>(
-		                                                                    sessionFactory.getCurrentSession()) {
-			
-			@Override
-			protected org.apache.lucene.search.Query prepareQuery() throws ParseException {
-				StringBuilder query = new StringBuilder();
-				
-				if (!StringUtils.isBlank(name)) {
-					final String searchPhrase = QueryParser.escape(name);
-					
-					final Locale searchLocale;
-					if (locale == null) {
-						searchLocale = Context.getLocale();
-					} else {
-						searchLocale = locale;
-					}
-					
-					if (exactLocale == null || exactLocale) {
-						query.append(" +name:").append("\"").append(searchPhrase).append("\"");
-						query.append(" +locale:").append(searchLocale);
-					} else {
-						query.append(newNamesQuery(Sets.newHashSet(searchLocale), searchPhrase, false));
-					}
-				}
-				
-				query.append(" +concept.retired:false");
-				
-				org.apache.lucene.search.Query parsedQuery = newQueryParser().parse(query.toString());
-				
-				return parsedQuery;
-			}
-		}.list();
+		StringBuilder query = new StringBuilder();
 		
-		final List<Concept> concepts = Lists.transform(names, new Function<ConceptName, Concept>() {
+		if (!StringUtils.isBlank(name)) {
+			final String searchPhrase = LuceneQuery.escapeQuery(name);
 			
-			@Override
-			public Concept apply(ConceptName name) {
-				return name.getConcept();
+			final Locale searchLocale;
+			if (locale == null) {
+				searchLocale = Context.getLocale();
+			} else {
+				searchLocale = locale;
 			}
-		});
+			
+			if (exactLocale == null || exactLocale) {
+				query.append(" +name:").append("\"").append(searchPhrase).append("\"");
+				query.append(" +locale:").append(searchLocale);
+			} else {
+				query.append(newNamesQuery(Sets.newHashSet(searchLocale), searchPhrase, false));
+			}
+		}
+		
+		query.append(" +concept.retired:false");
+		
+		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
+		    ConceptName.class).skipSame("concept.conceptId", "conceptNameId").list();
+		
+		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
 		
 		return concepts;
 	}

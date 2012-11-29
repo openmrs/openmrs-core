@@ -14,6 +14,7 @@
 package org.openmrs.api.db.hibernate.search;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
@@ -27,34 +28,64 @@ import org.hibernate.search.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.openmrs.collection.ListPart;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
+
 /**
  * Performs Lucene queries.
  */
-public abstract class LuceneQueryBuilder<T> extends HibernateQuery<T> {
+public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
-	private final FullTextQuery fullTextQuery;
+	private FullTextQuery fullTextQuery;
 	
-	/**
-	 * @param session
-	 */
-	public LuceneQueryBuilder(Session session) {
-		super(session);
+	private String skipIds;
+	
+	private String skipIdField;
+	
+	public static <T> LuceneQuery<T> newQuery(final String query, final Session session, final Class<T> type) {
+		return new LuceneQuery<T>(
+		                          session, type) {
+			
+			@Override
+			protected Query prepareQuery() throws ParseException {
+				return newQueryParser().parse(query);
+			}
+			
+		};
+	}
+	
+	public static String escapeQuery(final String query) {
+		return QueryParser.escape(query);
+	}
+	
+	public LuceneQuery(Session session, Class<T> type) {
+		super(session, type);
 		
+		buildQuery();
+	}
+	
+	private void buildQuery() {
 		Query query;
 		try {
 			query = prepareQuery();
+			
+			if (skipIds != null) {
+				QueryBuilder queryBuilder = newQueryBuilder();
+				query = queryBuilder.bool().must(query).must(
+				    queryBuilder.keyword().onField(skipIdField).matching(skipIds).createQuery()).not().createQuery();
+			}
 		}
 		catch (ParseException e) {
 			throw new IllegalStateException("Invalid query", e);
 		}
 		
 		fullTextQuery = getFullTextSession().createFullTextQuery(query, getType());
-		prepareFullTextQuery(fullTextQuery);
+		adjustFullTextQuery(fullTextQuery);
 	}
 	
 	protected abstract Query prepareQuery() throws ParseException;
 	
-	protected void prepareFullTextQuery(FullTextQuery fullTextQuery) {
+	protected void adjustFullTextQuery(FullTextQuery fullTextQuery) {
 	}
 	
 	protected QueryBuilder newQueryBuilder() {
@@ -70,11 +101,37 @@ public abstract class LuceneQueryBuilder<T> extends HibernateQuery<T> {
 		return Search.getFullTextSession(getSession());
 	}
 	
+	public LuceneQuery<T> skipSame(String field, String idField) {
+		List<Object> documents = listProjection(idField, field);
+		
+		Set<Object> uniqueDocuments = Sets.newHashSet();
+		Set<Object> skipDocuments = Sets.newHashSet();
+		for (Object document : documents) {
+			Object[] row = (Object[]) document;
+			if (!uniqueDocuments.add(row[1])) {
+				skipDocuments.add(row[0]);
+			}
+		}
+		
+		if (!skipDocuments.isEmpty()) {
+			skipIds = Joiner.on(" ").join(skipDocuments);
+		} else {
+			skipIds = null;
+		}
+		
+		skipIdField = idField;
+		
+		buildQuery();
+		
+		return this;
+	}
+	
 	@Override
 	public T uniqueResult() {
-		Object result = fullTextQuery.uniqueResult();
+		@SuppressWarnings("unchecked")
+		T result = (T) fullTextQuery.uniqueResult();
 		
-		return getType().cast(result);
+		return result;
 	}
 	
 	@Override
@@ -97,7 +154,7 @@ public abstract class LuceneQueryBuilder<T> extends HibernateQuery<T> {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.hibernate.search.HibernateQuery#resultSize()
+	 * @see org.openmrs.api.db.hibernate.search.SearchQuery#resultSize()
 	 */
 	@Override
 	public long resultSize() {
