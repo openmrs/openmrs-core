@@ -1280,4 +1280,20 @@ public class Context {
 		props.putAll(configProperties);
 		return props;
 	}
+	
+	/**
+	 * @see org.openmrs.api.context.ServiceContext#setUseSystemClassLoader(boolean)
+	 * @since 1.10
+	 */
+	public static void setUseSystemClassLoader(boolean useSystemClassLoader) {
+		getServiceContext().setUseSystemClassLoader(useSystemClassLoader);
+	}
+	
+	/**
+	 * @see org.openmrs.api.context.ServiceContext#isUseSystemClassLoader()
+	 * @since 1.10
+	 */
+	public static boolean isUseSystemClassLoader() {
+		return getServiceContext().isUseSystemClassLoader();
+	}
 }
