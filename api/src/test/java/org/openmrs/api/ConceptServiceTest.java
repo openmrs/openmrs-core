@@ -2515,4 +2515,44 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(finalText, obs.getValueCodedName().getName());
 	}
 	
+
+
+	@Test
+	@Verifies(value = "should order by concept id and include retired when given no parameters", method = "getAllConcepts()")
+	public void getAllConcepts_callWithDefaultParameters() {
+		final List<Concept> allConcepts = conceptService.getAllConcepts();
+
+		assertEquals(25, allConcepts.size());
+		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
+	}
+
+	@Test
+	@Verifies(value = "should order by concept id descending when set asc parameter to false", method = "getAllConcepts(String orderBy, boolean asc, boolean includeRetired)")
+	public void getAllConcepts_sortDesc() {
+		final List<Concept> allConcepts = conceptService.getAllConcepts(null, false, true);
+
+		assertEquals(25, allConcepts.size());
+		assertEquals(5497, allConcepts.get(0).getConceptId().intValue());
+	}
+
+	@Test
+	@Verifies(value = "should exclude retired concepts when set includeRetired to false", method = "getAllConcepts(String orderBy, boolean asc, boolean includeRetired)")
+	public void getAllConcepts_excludeRetired() {
+		final List<Concept> allConcepts = conceptService.getAllConcepts(null, true, false);
+
+		assertEquals(24, allConcepts.size());
+		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
+	}
+
+	/*
+	 * Testing issue from https://tickets.openmrs.org/browse/TRUNK-3812 where sorting by name was causing a QueryException which in turn was caused by an "attempt to dereference a collection"
+	 */
+	@Test
+	@Verifies(value = "should order by name", method = "getAllConcepts(String orderBy, boolean asc, boolean includeRetired)")
+	public void getAllConcepts_shouldOrderByName() throws Exception {
+		final List<Concept> allConcepts = conceptService.getAllConcepts("name", true, false);
+
+		assertEquals(24, allConcepts.size());
+		assertEquals("ANTIRETROVIRAL TREATMENT GROUP", allConcepts.get(0).getName().getName());
+	}
 }
