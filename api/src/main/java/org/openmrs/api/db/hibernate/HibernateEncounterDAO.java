@@ -244,15 +244,16 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(String, Integer, Integer, boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(String, Integer, Integer, Integer, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided) {
+	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
+	        boolean includeVoided) {
 		if (StringUtils.isBlank(query)) {
 			return Collections.emptyList();
 		}
 		
-		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, true);
+		Criteria criteria = createEncounterByQueryCriteria(query, patientId, includeVoided, true);
 		
 		if (start != null)
 			criteria.setFirstResult(start);
@@ -321,11 +322,11 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getCountOfEncounters(java.lang.String, boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getCountOfEncounters(java.lang.String, java.lang.Integer, boolean)
 	 */
 	@Override
-	public Long getCountOfEncounters(String query, boolean includeVoided) {
-		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, false);
+	public Long getCountOfEncounters(String query, Integer patientId, boolean includeVoided) {
+		Criteria criteria = createEncounterByQueryCriteria(query, patientId, includeVoided, false);
 		
 		criteria.setProjection(Projections.countDistinct("enc.encounterId"));
 		return (Long) criteria.uniqueResult();
@@ -336,26 +337,33 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * specified search phrase
 	 * 
 	 * @param query patient name or identifier
+	 * @param patientId the patient id
 	 * @param includeVoided Specifies whether voided encounters should be included
 	 * @param orderByNames specifies whether the encounters should be ordered by person names
 	 * @return Criteria
 	 */
-	private Criteria createEncounterByQueryCriteria(String query, boolean includeVoided, boolean orderByNames) {
+	private Criteria createEncounterByQueryCriteria(String query, Integer patientId, boolean includeVoided,
+	        boolean orderByNames) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class, "enc");
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("voided", false));
 		
-		criteria = criteria.createCriteria("patient", "pat");
-		String name = null;
-		String identifier = null;
-		if (query.matches(".*\\d+.*")) {
-			identifier = query;
+		if (patientId != null) {
+			criteria.add(Restrictions.eq("patientId", patientId));
 		} else {
-			// there is no number in the string, search on name
-			name = query;
+			criteria = criteria.createCriteria("patient", "pat");
+			String name = null;
+			String identifier = null;
+			if (query.matches(".*\\d+.*")) {
+				identifier = query;
+			} else {
+				// there is no number in the string, search on name
+				name = query;
+			}
+			criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
+			    new ArrayList<PatientIdentifierType>(), false, orderByNames);
 		}
-		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-		    new ArrayList<PatientIdentifierType>(), false, orderByNames);
+		
 		return criteria;
 	}
 	
