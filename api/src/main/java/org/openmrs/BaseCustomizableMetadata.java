@@ -90,7 +90,8 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 	 * TODO fail if minOccurs > 1
 	 * TODO decide whether this should require maxOccurs=1
 	 * @should void the attribute if an attribute with same attribute type already exists and the maxOccurs is set to 1
-	 * 
+	 * @should work for attributes with datatypes whose values are stored in other tables
+	 *
 	 * @param attribute
 	 */
 	public void setAttribute(A attribute) {
@@ -101,7 +102,7 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 		
 		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
 			A existing = getActiveAttributes(attribute.getAttributeType()).get(0);
-			if (existing.getValueReference().equals(attribute.getValueReference())) {
+			if (existing.getValue().equals(attribute.getValue())) {
 				// do nothing, since the value is already as-specified
 			} else {
 				if (existing.getId() != null)
