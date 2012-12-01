@@ -709,6 +709,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *      java.lang.Integer, java.lang.Integer, boolean)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
 	        boolean includeVoided) throws APIException {
 		return filterEncountersByViewPermissions(dao.getEncounters(query, patientId, start, length, includeVoided), null);
