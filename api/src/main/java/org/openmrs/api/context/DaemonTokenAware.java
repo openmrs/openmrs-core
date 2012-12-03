@@ -20,6 +20,8 @@ import org.openmrs.module.ModuleActivator;
  * <p>
  * Currently it can be implemented only by {@link ModuleActivator}. The daemon token is injected by
  * {@link Daemon} before {@link ModuleActivator#contextRefreshed()} or {@link ModuleActivator#started()}.
+ * 
+ * @since 1.9.2
  */
 public interface DaemonTokenAware {
 	
@@ -31,6 +33,6 @@ public interface DaemonTokenAware {
 	 * 
 	 * @param token
 	 */
-	void setDaemonToken(Daemon.Token token);
+	void setDaemonToken(DaemonToken token);
 	
 }

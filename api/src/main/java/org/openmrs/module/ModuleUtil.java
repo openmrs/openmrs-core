@@ -796,7 +796,7 @@ public class ModuleUtil {
 		for (Module module : ModuleFactory.getStartedModules()) {
 			ModuleFactory.loadAdvice(module);
 			try {
-				Daemon.requestDaemonToken(module);
+				ModuleFactory.passDaemonToken(module);
 				
 				if (module.getModuleActivator() != null) {
 					module.getModuleActivator().contextRefreshed();
