@@ -4,10 +4,12 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -17,6 +19,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 
 /**
  * Tests methods on the {@link ConceptValidator} class.
@@ -149,6 +152,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
+	
 	@Test
 	@Verifies(value = "should fail if there is no name explicitly marked as fully specified", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfThereIsNoNameExplicitlyMarkedAsFullySpecified() throws Exception {
@@ -164,6 +168,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
+	/*
 	@Test
 	@Verifies(value = "should pass if the concept has atleast one fully specified name added to it", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfTheConceptHasAtleastOneFullySpecifiedNameAddedToIt() throws Exception {
@@ -172,6 +177,25 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
+	}
+	*/
+	@Test
+	@Verifies(value = "should pass if the concept has atleast one fully specified name added to it", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfTheConceptHasAtleastOneFullySpecifiedNameAddedToIt() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("one name", Context.getLocale()));
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		
+		boolean notFound = true;
+		for (ObjectError error : errors.getAllErrors()) {
+			if (!error.getCode().equals("Concept.error.notAtLeastOneNonBlankDescription")) {
+				notFound = false;
+				break;
+			}
+		}
+		Assert.assertTrue(notFound);
+		
 	}
 	
 	/**
@@ -234,6 +258,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
+	/*
 	@Test
 	@Verifies(value = "should pass if the concept has a synonym that is also a short name", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() throws Exception {
@@ -247,6 +272,29 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertFalse(errors.hasErrors());
+	}
+	*/
+	@Test
+	@Verifies(value = "should pass if the concept has a synonym that is also a short name", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("CD4", Context.getLocale()));
+		// Add the short name. Because the short name is not counted as a Synonym. 
+		// ConceptValidator will not record any errors.
+		ConceptName name = new ConceptName("CD4", Context.getLocale());
+		name.setConceptNameType(ConceptNameType.SHORT);
+		concept.addName(name);
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		
+		boolean notFound = true;
+		for (ObjectError error : errors.getAllErrors()) {
+			if (error.getCode().equals("Concept.error.notAtLeastOneNonBlankDescription")) {
+				notFound = false;
+				break;
+			}
+		}
+		Assert.assertTrue(notFound);
 	}
 	
 	/**
@@ -372,4 +420,50 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		//the second mapping should be rejected
 		Assert.assertEquals(false, errors.hasFieldErrors("conceptMappings[1]"));
 	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies fail for a concept if there is not at least one non blank description.
+	 */
+	
+	@Test
+	public void validate_shouldFailForAConceptIfThereIsNotAtLeastOneNonBlankDescription() throws Exception {
+		Concept concept = new Concept();
+		concept.addDescription(new ConceptDescription(null));
+		concept.addDescription(new ConceptDescription("", Context.getLocale()));
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		
+		boolean found = false;
+		for (ObjectError error : errors.getAllErrors()) {
+			if (error.getCode().equals("Concept.error.notAtLeastOneNonBlankDescription")) {
+				found = true;
+				break;
+			}
+		}
+		Assert.assertTrue(found);
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies pass if there is at least one valid description
+	 */
+	@Test
+	public void validate_shouldPassIfThereIsAtLeastOneValidDescription() throws Exception {
+		Concept concept = new Concept();
+		concept.addDescription(new ConceptDescription("one description", Context.getLocale()));
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		
+		boolean notFound = true;
+		for (ObjectError error : errors.getAllErrors()) {
+			if (error.getCode().equals("Concept.error.notAtLeastOneNonBlankDescription")) {
+				notFound = false;
+				break;
+			}
+		}
+		Assert.assertTrue(notFound);
+	}
+	
 }

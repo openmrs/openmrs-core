@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptDescription;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateConceptNameException;
@@ -61,7 +62,7 @@ public class ConceptValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should pass if the concept has atleast one fully specified name added to it
+	 * @should pass if the concept has at least one fully specified name added to it
 	 * @should fail if there is a duplicate unretired concept name in the locale
 	 * @should fail if there is a duplicate unretired preferred name in the same locale
 	 * @should fail if there is a duplicate unretired fully specified name in the same locale
@@ -85,6 +86,8 @@ public class ConceptValidator implements Validator {
 	 *         the system locale
 	 * @should pass for a new concept with a map created with deprecated concept map methods
 	 * @should pass for an edited concept with a map created with deprecated concept map methods
+	 * @should fail for a concept if there is not at least one non blank description.
+	 * @should pass if there is at least one valid description
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -270,5 +273,23 @@ public class ConceptValidator implements Validator {
 				index++;
 			}
 		}
+		
+		boolean atLeastOneValidDescriptionFound = false;
+		Collection<ConceptDescription> conceptDescriptions = conceptToValidate.getDescriptions();
+		
+		for (ConceptDescription conceptDescription : conceptDescriptions) {
+			if (StringUtils.isBlank(conceptDescription.getDescription())) {
+				if (log.isDebugEnabled()) {
+					log.debug("Description Id'" + conceptDescription.getId()
+					        + "' cannot be an empty string or white space or null");
+				}
+			} else {
+				atLeastOneValidDescriptionFound = true;
+				break;
+			}
+		}
+		
+		if (!atLeastOneValidDescriptionFound)
+			errors.reject("Concept.error.notAtLeastOneNonBlankDescription");
 	}
 }
