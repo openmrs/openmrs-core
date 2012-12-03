@@ -1007,6 +1007,9 @@ public interface ConceptService extends OpenmrsService {
 	 * @should not require mapped concept on reject action
 	 * @should allow rejecting proposals
 	 * @should throw APIException when mapping to null concept
+	 * @should set value coded name when add synonym is selected
+	 * @should not set value coded name when add concept is selected
+	 * @should fail when adding a duplicate syonymn
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept, Locale locale) throws APIException;

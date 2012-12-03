@@ -2386,6 +2386,60 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)}
+	 */
+	@Test
+	@Verifies(value = "should not set value coded name when add concept is selected", method = "mapConceptProposalToConcept(ConceptProposal,Concept,Locale)")
+	public void mapConceptProposalToConcept_shouldNotSetValueCodedNameWhenAddConceptIsSelected() throws Exception {
+		ConceptProposal cp = conceptService.getConceptProposal(2);
+		Assert.assertEquals(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED, cp.getState());
+		final Concept civilStatusConcept = conceptService.getConcept(4);
+		final int mappedConceptId = 6;
+		Assert.assertTrue(Context.getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
+		    civilStatusConcept).isEmpty());
+		Concept mappedConcept = conceptService.getConcept(mappedConceptId);
+		
+		cp.setObsConcept(civilStatusConcept);
+		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
+		conceptService.mapConceptProposalToConcept(cp, mappedConcept, null);
+		mappedConcept = conceptService.getConcept(mappedConceptId);
+		List<Obs> observations = Context.getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
+		    civilStatusConcept);
+		Assert.assertEquals(1, observations.size());
+		Obs obs = observations.get(0);
+		Assert.assertNull(obs.getValueCodedName());
+	}
+	
+	/**
+	 * @see {@link ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)}
+	 */
+	@Test
+	@Verifies(value = "should set value coded name when add synonym is selected", method = "mapConceptProposalToConcept(ConceptProposal,Concept,Locale)")
+	public void mapConceptProposalToConcept_shouldSetValueCodedNameWhenAddSynonymIsSelected() throws Exception {
+		ConceptProposal cp = conceptService.getConceptProposal(2);
+		Assert.assertEquals(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED, cp.getState());
+		final Concept civilStatusConcept = conceptService.getConcept(4);
+		final int mappedConceptId = 6;
+		final String finalText = "Weight synonym";
+		Assert.assertTrue(Context.getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
+		    civilStatusConcept).isEmpty());
+		Concept mappedConcept = conceptService.getConcept(mappedConceptId);
+		
+		cp.setFinalText(finalText);
+		cp.setObsConcept(civilStatusConcept);
+		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM);
+		conceptService.mapConceptProposalToConcept(cp, mappedConcept, null);
+		mappedConcept = conceptService.getConcept(mappedConceptId);
+		List<Obs> observations = Context.getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
+		    civilStatusConcept);
+		Assert.assertEquals(1, observations.size());
+		Obs obs = observations.get(0);
+		Assert.assertNotNull(obs.getValueCodedName());
+		Assert.assertEquals(finalText, obs.getValueCodedName().getName());
+	}
+	
+	/**
+	 * 
 	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
 	 */
 	@Test
@@ -2461,4 +2515,21 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(5497, allConcepts.get(0).getConceptId().intValue());
 	}
 	
+	/**
+	 * @see {@link ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)}
+	 */
+	@Test(expected = DuplicateConceptNameException.class)
+	@Verifies(value = "should fail when adding a duplicate syonymn", method = "mapConceptProposalToConcept(ConceptProposal,Concept,Locale)")
+	public void mapConceptProposalToConcept_shouldFailWhenAddingADuplicateSyonymn() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-proposals.xml");
+		ConceptService cs = Context.getConceptService();
+		ConceptProposal cp = cs.getConceptProposal(10);
+		cp.setFinalText(cp.getOriginalText());
+		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM);
+		Concept mappedConcept = cs.getConcept(5);
+		Locale locale = Locale.ENGLISH;
+		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
+		
+		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
+	}
 }

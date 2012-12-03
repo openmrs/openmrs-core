@@ -194,6 +194,13 @@
 			</spring:bind>
 		</td>
 	</tr>
+	<tr>
+		<th><openmrs:message code="ConceptProposal.actionToTake"/></th>
+		<td>
+			<input type="radio" name="actionToTake" value="saveAsSynonym" checked="checked"> <openmrs:message code="ConceptProposal.saveAsSynonym"/>
+			<input type="radio" name="actionToTake" value="saveAsMapped"> <openmrs:message code="ConceptProposal.saveAsMapped"/>
+		</td>
+	</tr>
 </table>
 <br />
 <!-- TODO create some sort of mechanism to scroll through the encounters -->
@@ -205,9 +212,8 @@
 	<br/>
 </c:if>
 <br />
+<input type="submit" name="action" value="<openmrs:message code="general.submit"/>">
 <input type="submit" name="action" value="<openmrs:message code="ConceptProposal.ignore"/>">
-<input type="submit" name="action" value="<openmrs:message code="ConceptProposal.saveAsConcept"/>">
-<input type="submit" name="action" value="<openmrs:message code="ConceptProposal.saveAsSynonym"/>">
 <input type="submit" name="action" value="<openmrs:message code="general.cancel"/>">
 </form>
 
