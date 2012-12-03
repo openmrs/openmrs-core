@@ -305,7 +305,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		map.put("states", OpenmrsConstants.CONCEPT_PROPOSAL_STATES());
 		map.put("matchingProposals", matchingProposals);
-		map.put("locales", LocaleUtility.getLocalesInOrder());
+		map.put("locales", Context.getAdministrationService().getAllowedLocales());
 		
 		return map;
 	}
