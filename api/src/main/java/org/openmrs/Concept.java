@@ -622,7 +622,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			currentNames = getNames(locale);
 		
 		for (ConceptName currentName : currentNames) {
-			if (name.equals(currentName.getName()))
+			if (name.equalsIgnoreCase(currentName.getName()))
 				return true;
 		}
 		
