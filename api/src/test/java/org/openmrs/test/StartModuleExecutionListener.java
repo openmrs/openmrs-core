@@ -9,32 +9,32 @@
  * License for the specific language governing rights and limitations
  * under the License.
  *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS, LLC. All Rights Reserved.
  */
 package org.openmrs.test;
 
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.SerializedObjectDAOTest;
-import org.openmrs.module.Module;
-import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleInteroperabilityTest;
 import org.openmrs.module.ModuleUtil;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.openmrs.util.OpenmrsClassLoader;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.UrlResource;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 /**
- * To use this annotation:
- * <ol>
- * <li>Add the @StartModule( { "/path/to/your/module.omod" } ) annotation to the test class
- * <li>Add the @DirtiesContext method to the last test method in the class
- * </ol>
+ * To use this annotation, add the @StartModule( { "/path/to/your/module.omod" } ) annotation to the
+ * test class
  * 
  * @see SerializedObjectDAOTest
  * @see ModuleInteroperabilityTest
@@ -42,7 +42,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  */
 public class StartModuleExecutionListener extends AbstractTestExecutionListener {
 	
-	// stores the last class that restarted the module system because we only 
+	// stores the last class that restarted the module system because we only
 	// want it restarted once per class, not once per method
 	private static String lastClassRun = "";
 	
@@ -83,9 +83,29 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 				        + " modules started instead of " + startModuleAnnotation.value().length, startModuleAnnotation
 				        .value().length <= ModuleFactory.getStartedModules().size());
 				
-				// refresh spring so the Services are recreated (aka serializer gets put into the SerializationService)
-				new ClassPathXmlApplicationContext(new String[] { "applicationContext-service.xml",
-				        "classpath*:moduleApplicationContext.xml" });
+				/*
+				* Refresh spring so the Services are recreated (aka serializer gets put into the SerializationService)
+				* To do this, wrap the applicationContext from the testContext into a GenericApplicationContext, allowing
+				* loading beans from moduleApplicationContext into it and then calling ctx.refresh()
+				* This approach ensures that the application context remains consistent
+				*/
+				GenericApplicationContext ctx = new GenericApplicationContext(testContext.getApplicationContext());
+				XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
+				
+				Enumeration<URL> list = OpenmrsClassLoader.getInstance().getResources("moduleApplicationContext.xml");
+				while (list.hasMoreElements()) {
+					xmlReader.loadBeanDefinitions(new UrlResource(list.nextElement()));
+				}
+				
+				//ensure that when refreshing, we use the openmrs class loader for the started modules.
+				boolean useSystemClassLoader = Context.isUseSystemClassLoader();
+				Context.setUseSystemClassLoader(false);
+				try {
+					ctx.refresh();
+				}
+				finally {
+					Context.setUseSystemClassLoader(useSystemClassLoader);
+				}
 				
 				// session is closed by the test framework
 				//Context.closeSession();
@@ -93,4 +113,12 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 		}
 	}
 	
+	@Override
+	public void afterTestClass(TestContext testContext) throws Exception {
+		StartModule startModuleAnnotation = testContext.getTestClass().getAnnotation(StartModule.class);
+		
+		if (startModuleAnnotation != null) {
+			ModuleUtil.shutdown();
+		}
+	}
 }

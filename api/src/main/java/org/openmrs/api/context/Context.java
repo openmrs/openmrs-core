@@ -1213,4 +1213,20 @@ public class Context {
 	public static <T extends Object> List<T> getRegisteredComponents(Class<T> type) {
 		return getServiceContext().getRegisteredComponents(type);
 	}
+	
+	/**
+	 * @see org.openmrs.api.context.ServiceContext#setUseSystemClassLoader(boolean)
+	 * @since 1.10
+	 */
+	public static void setUseSystemClassLoader(boolean useSystemClassLoader) {
+		getServiceContext().setUseSystemClassLoader(useSystemClassLoader);
+	}
+	
+	/**
+	 * @see org.openmrs.api.context.ServiceContext#isUseSystemClassLoader()
+	 * @since 1.10
+	 */
+	public static boolean isUseSystemClassLoader() {
+		return getServiceContext().isUseSystemClassLoader();
+	}
 }

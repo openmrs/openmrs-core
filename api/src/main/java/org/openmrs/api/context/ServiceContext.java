@@ -821,6 +821,15 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
+	 * Checks if we are using the system class loader.
+	 *
+	 * @return true if using the system class loader, else false.
+	 */
+	public boolean isUseSystemClassLoader() {
+		return useSystemClassLoader;
+	}
+	
+	/**
 	 * Should be called <b>right before</b> any spring context refresh This forces all calls to
 	 * getService to wait until <code>doneRefreshingContext</code> is called
 	 */
