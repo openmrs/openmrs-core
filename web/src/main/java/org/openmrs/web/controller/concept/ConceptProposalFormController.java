@@ -43,7 +43,6 @@ import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.dwr.ConceptListItem;
@@ -177,22 +176,19 @@ public class ConceptProposalFormController extends SimpleFormController {
 				conceptProposal.setState(cp.getState());
 				conceptProposal.setMappedConcept(c);
 				if (conceptProposal.getObsConcept() != null) {
-					//since the encounters differ, create a separate obs
-					if (!OpenmrsUtil.nullSafeEquals(cp.getEncounter(), conceptProposal.getEncounter())) {
-						Obs ob = new Obs();
-						ob.setEncounter(conceptProposal.getEncounter());
-						ob.setConcept(conceptProposal.getObsConcept());
-						ob.setValueCoded(conceptProposal.getMappedConcept());
-						if (conceptProposal.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)
-						        && newConceptName != null)
-							ob.setValueCodedName(newConceptName);
-						ob.setCreator(Context.getAuthenticatedUser());
-						ob.setDateCreated(new Date());
-						ob.setObsDatetime(conceptProposal.getEncounter().getEncounterDatetime());
-						ob.setLocation(conceptProposal.getEncounter().getLocation());
-						ob.setPerson(conceptProposal.getEncounter().getPatient());
-						cp.setObs(ob);
-					}
+					Obs ob = new Obs();
+					ob.setEncounter(conceptProposal.getEncounter());
+					ob.setConcept(conceptProposal.getObsConcept());
+					ob.setValueCoded(conceptProposal.getMappedConcept());
+					if (conceptProposal.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)
+					        && newConceptName != null)
+						ob.setValueCodedName(newConceptName);
+					ob.setCreator(Context.getAuthenticatedUser());
+					ob.setDateCreated(new Date());
+					ob.setObsDatetime(conceptProposal.getEncounter().getEncounterDatetime());
+					ob.setLocation(conceptProposal.getEncounter().getLocation());
+					ob.setPerson(conceptProposal.getEncounter().getPatient());
+					cp.setObs(ob);
 				}
 				
 				cs.saveConceptProposal(conceptProposal);
