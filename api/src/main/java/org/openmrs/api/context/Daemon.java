@@ -16,6 +16,7 @@ package org.openmrs.api.context;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.module.DaemonToken;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;

@@ -11,9 +11,11 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.api.context;
+package org.openmrs.module;
 
 import java.io.Serializable;
+
+import org.openmrs.api.context.Daemon;
 
 /**
  * Required to run code with elevated privileges in

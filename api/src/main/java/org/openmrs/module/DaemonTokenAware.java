@@ -11,9 +11,9 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.api.context;
+package org.openmrs.module;
 
-import org.openmrs.module.ModuleActivator;
+import org.openmrs.api.context.Daemon;
 
 /**
  * Allows to receive the daemon token to execute code as the daemon user.

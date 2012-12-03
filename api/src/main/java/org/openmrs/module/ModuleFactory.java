@@ -41,8 +41,6 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
-import org.openmrs.api.context.DaemonToken;
-import org.openmrs.api.context.DaemonTokenAware;
 import org.openmrs.module.Extension.MEDIA_TYPE;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
