@@ -13,7 +13,6 @@
  */
 package org.openmrs.module;
 
-
 /**
  * Contains methods that get called at different stages as the application is executing, you should
  * extend {@link BaseModuleActivator} instead of directly implementing this interface for forward

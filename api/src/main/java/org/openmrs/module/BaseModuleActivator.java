@@ -13,7 +13,6 @@
  */
 package org.openmrs.module;
 
-
 /**
  * Must be extended by modules and referenced by the Module-Activator property in the module
  * manifest, contains methods that let modules get notifications as the application is executing to

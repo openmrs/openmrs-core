@@ -58,7 +58,7 @@ public class Daemon {
 	 * @returns the module returned from {@link ModuleFactory#startModuleInternal(Module)}
 	 */
 	public static Module startModule(final Module module, final boolean isOpenmrsStartup,
-	                                 final AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
+	        final AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
 		// create a new thread and execute that task in it
 		DaemonThread startModuleThread = new DaemonThread() {
 			

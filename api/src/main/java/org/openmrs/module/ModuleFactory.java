@@ -478,7 +478,7 @@ public class ModuleFactory {
 	 * @see Daemon#startModule(Module, boolean, AbstractRefreshableApplicationContext)
 	 */
 	public static Module startModule(Module module, boolean isOpenmrsStartup,
-	                                 AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
+	        AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
 		return Daemon.startModule(module, isOpenmrsStartup, applicationContext);
 	}
 	
@@ -516,8 +516,7 @@ public class ModuleFactory {
 	 * @param applicationContext the spring application context instance to refresh
 	 */
 	public static Module startModuleInternal(Module module, boolean isOpenmrsStartup,
-	                                         AbstractRefreshableApplicationContext applicationContext)
-	    throws ModuleException {
+	        AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
 		
 		if (module != null) {
 			
@@ -887,7 +886,7 @@ public class ModuleFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
-	    throws ModuleMustStartException {
+	        throws ModuleMustStartException {
 		
 		List<Module> dependentModulesStopped = new Vector<Module>();
 		
