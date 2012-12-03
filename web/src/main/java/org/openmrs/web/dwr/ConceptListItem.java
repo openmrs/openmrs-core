@@ -15,6 +15,7 @@ package org.openmrs.web.dwr;
 
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -132,8 +133,13 @@ public class ConceptListItem {
 					name = WebUtil.escapeHTML(conceptName.getName());
 				
 				// if the name hit is not the preferred or fully specified one, put the fully specified one here
-				if (!conceptName.isPreferred() && !conceptName.isFullySpecifiedName()) {
-					ConceptName preferredNameObj = concept.getName(locale, false);
+				if (!conceptName.isPreferred()) {
+					ConceptName preferredNameObj = concept.getPreferredName(locale);
+					if (preferredNameObj == null) {
+						if (!StringUtils.isBlank(locale.getCountry()) || !StringUtils.isBlank(locale.getVariant())) {
+							preferredNameObj = concept.getPreferredName(new Locale(locale.getLanguage()));
+						}
+					}
 					if (preferredNameObj != null)
 						preferredName = preferredNameObj.getName();
 				}
