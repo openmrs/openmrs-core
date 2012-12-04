@@ -2864,6 +2864,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertEquals("prior date of death was not audited", cDate.getTime(), audit.getPersonMergeLogData()
 		        .getPriorDateOfDeath());
+		
 	}
 	
 	/**
