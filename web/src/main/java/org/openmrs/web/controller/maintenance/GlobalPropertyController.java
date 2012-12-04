@@ -118,6 +118,8 @@ public class GlobalPropertyController extends SimpleFormController {
 					
 					// refresh log level from global property(ies)
 					OpenmrsUtil.applyLogLevels();
+					
+					OpenmrsUtil.setupLogAppenders();
 				}
 				catch (Exception e) {
 					log.error("Error saving properties", e);
