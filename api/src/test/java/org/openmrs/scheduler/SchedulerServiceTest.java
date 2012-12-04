@@ -18,12 +18,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
@@ -44,6 +46,19 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	// each task provides a key that will be used in this map.  The value is the output
 	private static Map<String, String> output = new HashMap<String, String>();
+	
+	@Before
+	public void setUp() throws Exception {
+		Context.flushSession();
+		
+		Collection<TaskDefinition> tasks = Context.getSchedulerService().getRegisteredTasks();
+		for (TaskDefinition task : tasks) {
+			Context.getSchedulerService().shutdownTask(task);
+			Context.getSchedulerService().deleteTask(task.getId());
+		}
+		
+		Context.flushSession();
+	}
 	
 	@Test
 	public void shouldResolveValidTaskClass() throws Exception {
