@@ -111,6 +111,8 @@ public interface ActiveListService extends OpenmrsService {
 	 * @param item the ActiveListItem to completely remove from the database
 	 * @throws APIException
 	 * @should purge active list item from database
+	 * 
+	 * @since 1.8.5, 1.9.2
 	 */
 	public void purgeActiveListItem(ActiveListItem item) throws APIException;
 }
