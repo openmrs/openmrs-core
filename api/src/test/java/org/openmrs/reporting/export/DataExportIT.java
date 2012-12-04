@@ -15,84 +15,26 @@ package org.openmrs.reporting.export;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.support.membermodification.MemberMatcher.method;
-import static org.powermock.api.support.membermodification.MemberModifier.stub;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.openmrs.Cohort;
-import org.openmrs.Concept;
-import org.openmrs.ConceptName;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.CohortService;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests the {@link DataExportReportObject} class TODO clean up, finish, add methods to this test
  * class
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest( { Context.class })
-@SuppressWarnings( { "rawtypes", "unchecked", "deprecation" })
-public class DataExportTest {
+public class DataExportIT extends BaseContextSensitiveTest {
 	
 	private Log log = LogFactory.getLog(getClass());
-	
-	private PatientService ps;
-	
-	private PatientSetService pss;
-	
-	private ConceptService cs;
-	
-	private EncounterService es;
-	
-	@Before
-	public void beforeClass() {
-		ps = mock(PatientService.class);
-		pss = mock(PatientSetService.class);
-		cs = mock(ConceptService.class);
-		es = mock(EncounterService.class);
-		
-		stub(method(Context.class, "getPatientSetService")).toReturn(pss);
-		stub(method(Context.class, "getPatientService")).toReturn(ps);
-		stub(method(Context.class, "getConceptService")).toReturn(cs);
-		stub(method(Context.class, "getEncounterService")).toReturn(es);
-		
-		//Don't invoke Context.clearSession()
-		spy(Context.class);
-		doNothing().when(Context.class);
-		Context.clearSession();
-	}
 	
 	/**
 	 * TODO finish and comment method
@@ -101,6 +43,8 @@ public class DataExportTest {
 	 */
 	@Test
 	public void shouldCalculateAge() throws Exception {
+		
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("TEST_EXPORT");
@@ -128,28 +72,14 @@ public class DataExportTest {
 		Cohort patients = new Cohort();
 		patients.addMember(2);
 		
-		Map<Integer, Object> genders = new HashMap<Integer, Object>();
-		genders.put(2, "M");
-		when(pss.getPatientAttributes(any(Cohort.class), eq("Person"), eq("gender"), anyBoolean())).thenReturn(genders);
-		
-		final int birthYear = 2000;
-		final String birthDateString = "01/01/" + birthYear;// adjust expected output for every year
-		Calendar cal = new GregorianCalendar();
-		int currentYear = cal.get(Calendar.YEAR);
-		Map<Integer, Object> birthdates = new HashMap<Integer, Object>();
-		birthdates.put(2, new SimpleDateFormat("mm/dd/yyyy").parse(birthDateString));
-		when(pss.getPatientAttributes(any(Cohort.class), eq("Person"), eq("birthdate"), anyBoolean()))
-		        .thenReturn(birthdates);
-		
-		Map<Integer, Object> ages = new HashMap<Integer, Object>();
-		ages.put(2, currentYear - birthYear);//since birthdate is 01/01 we can ignore month and date to get years
-		when(pss.getPatientAttributes(any(Cohort.class), eq("Person"), eq("age"), anyBoolean())).thenReturn(ages);
-		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
-		String expectedOutput = "PATIENT_ID	GENDER	BIRTHDATE	AGE\n2	M	" + birthDateString + "	XXX\n";
-		expectedOutput = expectedOutput.replace("XXX", String.valueOf(currentYear - birthYear));
+		String expectedOutput = "PATIENT_ID	GENDER	BIRTHDATE	AGE\n2	M	01/01/2000	XXX\n";
+		// adjust expected output for every year
+		Calendar cal = new GregorianCalendar();
+		int expectedAge = cal.get(Calendar.YEAR);
+		expectedOutput = expectedOutput.replace("XXX", String.valueOf(expectedAge - 2000));
 		
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
@@ -164,8 +94,11 @@ public class DataExportTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldExportFirstNObs() throws Exception {
+	public void shouldFirstNObs() throws Exception {
 		log.debug("Testing execution time - start");
+		
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("FIRST 2 WEIGHTS");
@@ -175,30 +108,20 @@ public class DataExportTest {
 		patientId.setReturnValue("$!{fn.patientId}");
 		export.getColumns().add(patientId);
 		
-		final int conceptId = 5089;
 		ConceptColumn firstNObs = new ConceptColumn();
 		firstNObs.setColumnName("WEIGHT");
 		firstNObs.setColumnType("concept");
-		firstNObs.setConceptId(conceptId);
+		firstNObs.setConceptId(5089);
 		firstNObs.setConceptName("Weight (KG)");
 		firstNObs.setExtras(new String[] { "location" });
 		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
 		firstNObs.setModifierNum(2);
 		export.getColumns().add(firstNObs);
 		
-		final Integer pId = 2;
 		Cohort patients = new Cohort();
-		patients.addMember(pId);
+		patients.addMember(2);
 		
 		log.debug("Testing execution time - middle");
-		Concept weightConcept = new Concept(conceptId);
-		when(cs.getConcept(anyInt())).thenReturn(weightConcept);
-		
-		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
-		patientIdObservationsMap.put(pId, addNTestObs(2, true));
-		
-		when(pss.getObservationsValues(any(Cohort.class), eq(weightConcept), anyListOf(String.class))).thenReturn(
-		    patientIdObservationsMap);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -210,7 +133,7 @@ public class DataExportTest {
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
-		//System.out.println("exportFile: \n" + output);
+		System.out.println("exportFile: \n" + output);
 		assertEquals("The output is not right.", expectedOutput, output);
 		
 		// test 1 as the number of obs to fetch
@@ -222,15 +145,12 @@ public class DataExportTest {
 		firstNObs = new ConceptColumn();
 		firstNObs.setColumnName("WEIGHT");
 		firstNObs.setColumnType("concept");
-		firstNObs.setConceptId(conceptId);
+		firstNObs.setConceptId(5089);
 		firstNObs.setConceptName("Weight (KG)");
 		firstNObs.setExtras(new String[] { "location" });
 		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
 		firstNObs.setModifierNum(1);
 		export.getColumns().add(firstNObs);
-		
-		//update the map to have only one obs
-		patientIdObservationsMap.put(pId, addNTestObs(1, true));
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		
@@ -260,8 +180,6 @@ public class DataExportTest {
 		firstNObs.setModifierNum(-1);
 		export.getColumns().add(firstNObs);
 		
-		patientIdObservationsMap.put(pId, addNTestObs(10, true));
-		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
@@ -283,7 +201,9 @@ public class DataExportTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldExportFirstNObsWithZeroObsReturned() throws Exception {
+	public void shouldFirstNObsWithZeroObsReturned() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("NO CONCEPT, THEN GET WEIGHTS");
@@ -294,8 +214,7 @@ public class DataExportTest {
 		ConceptColumn firstNObs = new ConceptColumn();
 		firstNObs.setColumnName("Other");
 		firstNObs.setColumnType("concept");
-		final int otherConceptId = 5090;
-		firstNObs.setConceptId(otherConceptId);
+		firstNObs.setConceptId(5090);
 		firstNObs.setConceptName("OTHER CONCEPT");
 		firstNObs.setExtras(new String[] { "obsDatetime" });
 		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
@@ -305,8 +224,7 @@ public class DataExportTest {
 		ConceptColumn lastNObs = new ConceptColumn();
 		lastNObs.setColumnName("W-last");
 		lastNObs.setColumnType("concept");
-		final int weightConceptId = 5089;
-		lastNObs.setConceptId(weightConceptId);
+		lastNObs.setConceptId(5089);
 		lastNObs.setConceptName("Weight (KG)");
 		lastNObs.setExtras(new String[] { "obsDatetime" });
 		lastNObs.setModifier(DataExportReportObject.MODIFIER_LAST_NUM);
@@ -314,30 +232,7 @@ public class DataExportTest {
 		export.getColumns().add(lastNObs);
 		
 		Cohort patients = new Cohort();
-		int pId = 2;
-		patients.addMember(pId);
-		
-		Concept otherConcept = new Concept(otherConceptId);
-		when(cs.getConcept(eq(otherConceptId))).thenReturn(otherConcept);
-		
-		Concept weightConcept = new Concept(weightConceptId);
-		when(cs.getConcept(eq(weightConceptId))).thenReturn(weightConcept);
-		
-		List observations = new ArrayList<List<Object>>(2);
-		List obs1Values = new ArrayList<Object>(2);
-		obs1Values.add(10.0);
-		obs1Values.add("18/02/2006");
-		observations.add(obs1Values);
-		List obs2Values = new ArrayList<Object>(2);
-		obs2Values.add(9.0);
-		obs2Values.add("17/02/2006");
-		observations.add(obs2Values);
-		
-		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
-		patientIdObservationsMap.put(pId, observations);
-		
-		when(pss.getObservationsValues(any(Cohort.class), eq(weightConcept), anyListOf(String.class))).thenReturn(
-		    patientIdObservationsMap);
+		patients.addMember(2);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -358,7 +253,9 @@ public class DataExportTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldExportFirstObs() throws Exception {
+	public void shouldFirstObs() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("FIRST WEIGHT");
@@ -371,24 +268,14 @@ public class DataExportTest {
 		ConceptColumn firstObs = new ConceptColumn();
 		firstObs.setColumnName("WEIGHT");
 		firstObs.setColumnType("concept");
-		final int conceptId = 5089;
-		firstObs.setConceptId(conceptId);
+		firstObs.setConceptId(5089);
 		firstObs.setConceptName("Weight (KG)");
 		firstObs.setModifier(DataExportReportObject.MODIFIER_FIRST);
 		export.getColumns().add(firstObs);
 		
 		Cohort patients = new Cohort();
-		final int pId = 2;
-		patients.addMember(pId);
+		patients.addMember(2);
 		
-		Concept weightConcept = new Concept(conceptId);
-		when(cs.getConcept(anyInt())).thenReturn(weightConcept);
-		
-		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
-		patientIdObservationsMap.put(pId, addNTestObs(1, false));
-		
-		when(pss.getObservationsValues(any(Cohort.class), eq(weightConcept), anyListOf(String.class))).thenReturn(
-		    patientIdObservationsMap);
 		//System.out.println("Template String: \n" + export.generateTemplate());
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
@@ -416,7 +303,6 @@ public class DataExportTest {
 		export.getColumns().add(firstObs);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
-		patientIdObservationsMap.put(pId, addNTestObs(1, true));
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);
@@ -435,7 +321,9 @@ public class DataExportTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldExportLastNObs() throws Exception {
+	public void shouldLastNObs() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Last 2 Weights");
@@ -448,8 +336,7 @@ public class DataExportTest {
 		ConceptColumn lastNObs = new ConceptColumn();
 		lastNObs.setColumnName("WEIGHT");
 		lastNObs.setColumnType("concept");
-		final int weightConceptId = 5089;
-		lastNObs.setConceptId(weightConceptId);
+		lastNObs.setConceptId(5089);
 		lastNObs.setConceptName("Weight (KG)");
 		lastNObs.setExtras(new String[] { "location" });
 		lastNObs.setModifier(DataExportReportObject.MODIFIER_LAST_NUM);
@@ -457,27 +344,7 @@ public class DataExportTest {
 		export.getColumns().add(lastNObs);
 		
 		Cohort patients = new Cohort();
-		final int pId = 2;
 		patients.addMember(2);
-		
-		Concept weightConcept = new Concept(weightConceptId);
-		when(cs.getConcept(eq(weightConceptId))).thenReturn(weightConcept);
-		
-		List observations = new ArrayList<List<Object>>(2);
-		List obs1Values = new ArrayList<Object>(2);
-		obs1Values.add(10.0);
-		obs1Values.add("Test Location");
-		observations.add(obs1Values);
-		List obs2Values = new ArrayList<Object>(2);
-		obs2Values.add(9.0);
-		obs2Values.add("Test Location");
-		observations.add(obs2Values);
-		
-		Map<Integer, List<List<Object>>> patientIdObservationsMap = new HashMap<Integer, List<List<Object>>>();
-		patientIdObservationsMap.put(pId, observations);
-		
-		when(pss.getObservationsValues(any(Cohort.class), eq(weightConcept), anyListOf(String.class))).thenReturn(
-		    patientIdObservationsMap);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -507,10 +374,6 @@ public class DataExportTest {
 		lastNObs.setModifierNum(1);
 		export.getColumns().add(lastNObs);
 		
-		List observations2 = new ArrayList<List<Object>>(1);
-		observations2.add(obs1Values);
-		patientIdObservationsMap.put(pId, observations2);
-		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
@@ -530,6 +393,7 @@ public class DataExportTest {
 	 */
 	@Test
 	public void shouldDataExportKeyAddition() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Data Export Keys");
@@ -569,6 +433,7 @@ public class DataExportTest {
 	 */
 	@Test
 	public void shouldDataExportKeyRemoval() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Data Export Keys");
@@ -631,6 +496,7 @@ public class DataExportTest {
 	 */
 	@Test
 	public void shouldGetNames() throws Exception {
+		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Given names export");
@@ -640,12 +506,7 @@ public class DataExportTest {
 		export.addSimpleColumn("Name", "$!{fn.getPatientAttr('PersonName', 'givenName')}");
 		
 		Cohort patients = new Cohort();
-		int pId = 2;
-		patients.addMember(pId);
-		
-		Map<Integer, Object> names = new HashMap<Integer, Object>();
-		names.put(pId, "John");
-		when(pss.getPatientAttributes(any(Cohort.class), eq("PersonName"), eq("givenName"), anyBoolean())).thenReturn(names);
+		patients.addMember(2);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -675,17 +536,12 @@ public class DataExportTest {
 		SimpleColumn patientId = new SimpleColumn("PATIENT_ID", "$!{fn.patientId}");
 		export.getColumns().add(patientId);
 		
-		final Integer weightConceptId = 5089;
-		ConceptColumn firstObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1, weightConceptId
-		        .toString(), null);
+		ConceptColumn firstObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1, "5089", null);
 		export.getColumns().add(firstObs);
 		
 		// set the cohort to a patient hat doesn't have a weight obs
 		Cohort patients = new Cohort();
 		patients.addMember(6);
-		
-		Concept weightConcept = new Concept(weightConceptId);
-		when(cs.getConcept(eq(weightConceptId))).thenReturn(weightConcept);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
 		
@@ -708,15 +564,12 @@ public class DataExportTest {
 	 */
 	@Test
 	public void shouldExportCohortColumns() throws Exception {
-		CohortService cohortservice = mock(CohortService.class);
-		stub(method(Context.class, "getCohortService")).toReturn(cohortservice);
-		
 		// First create a cohort. TODO maybe move this to xml
-		final Integer cohortId = 100;
-		Cohort cohort = new Cohort(cohortId);
+		Cohort cohort = new Cohort();
 		cohort.setName("A Cohort");
 		cohort.setDescription("Just for testing");
 		cohort.addMember(2);
+		cohort = Context.getCohortService().saveCohort(cohort);
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Cohort column");
@@ -733,7 +586,6 @@ public class DataExportTest {
 		patients.addMember(6);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
-		when(cohortservice.getCohort(eq(cohortId))).thenReturn(cohort);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -761,69 +613,16 @@ public class DataExportTest {
 		SimpleColumn patientId = new SimpleColumn("PATIENT_ID", "$!{fn.patientId}");
 		export.getColumns().add(patientId);
 		
-		final Integer constructConceptId = 23;
-		ConceptColumn firstObs = new ConceptColumn("CONSTRUCT", DataExportReportObject.MODIFIER_FIRST, 1, constructConceptId
-		        .toString(), null);
+		ConceptColumn firstObs = new ConceptColumn("CONSTRUCT", DataExportReportObject.MODIFIER_FIRST, 1, "23", null);
 		export.getColumns().add(firstObs);
 		
-		final Integer weightConceptId = 5089;
-		ConceptColumn secondObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1, weightConceptId
-		        .toString(), null);
+		ConceptColumn secondObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1, "5089", null);
 		export.getColumns().add(secondObs);
 		
 		// set the cohort to a patient that doesn't have a weight obs
 		Cohort patients = new Cohort();
-		final int pId7 = 7;
-		patients.addMember(pId7);
+		patients.addMember(7);
 		patients.addMember(8);
-		
-		AdministrationService as = mock(AdministrationService.class);
-		stub(method(Context.class, "getAdministrationService")).toReturn(as);
-		
-		Concept weightConcept = new Concept(weightConceptId);
-		when(cs.getConcept(eq(weightConceptId))).thenReturn(weightConcept);
-		
-		Concept constructConcept = new Concept(constructConceptId);
-		constructConcept.setSet(true);
-		when(cs.getConcept(eq(constructConceptId))).thenReturn(constructConcept);
-		
-		final int foodAssistanceConceptId = 18;
-		Concept foodAssistanceConcept = new Concept(foodAssistanceConceptId);
-		foodAssistanceConcept.addName(new ConceptName("FOOD ASSISTANCE", Locale.ENGLISH));
-		when(cs.getConcept(eq(foodAssistanceConceptId))).thenReturn(foodAssistanceConcept);
-		
-		final int dateOfFoodAssistanceConceptId = 19;
-		Concept dateOfFoodAssistanceConcept = new Concept(dateOfFoodAssistanceConceptId);
-		dateOfFoodAssistanceConcept.addName(new ConceptName("DATE OF FOOD ASSISTANCE", Locale.ENGLISH));
-		when(cs.getConcept(eq(dateOfFoodAssistanceConceptId))).thenReturn(dateOfFoodAssistanceConcept);
-		
-		final int favoriteFoodConceptId = 20;
-		Concept favoriteFoodConcept = new Concept(favoriteFoodConceptId);
-		favoriteFoodConcept.addName(new ConceptName("FAVORITE FOOD, NON-CODED", Locale.ENGLISH));
-		when(cs.getConcept(eq(favoriteFoodConceptId))).thenReturn(favoriteFoodConcept);
-		
-		when(cs.getConceptsByConceptSet(eq(constructConcept))).thenReturn(
-		    Arrays.asList(foodAssistanceConcept, dateOfFoodAssistanceConcept, favoriteFoodConcept));
-		
-		Map<Integer, List<List<Object>>> patientIdFoodAssistanceMap = new HashMap<Integer, List<List<Object>>>(1);
-		patientIdFoodAssistanceMap.put(pId7, createTestObsData("YES"));
-		when(pss.getObservationsValues(any(Cohort.class), eq(foodAssistanceConcept), anyListOf(String.class))).thenReturn(
-		    patientIdFoodAssistanceMap);
-		
-		Map<Integer, List<List<Object>>> patientIdDateOfFoodAssistanceMap = new HashMap<Integer, List<List<Object>>>(1);
-		patientIdDateOfFoodAssistanceMap.put(pId7, createTestObsData("14/08/2008"));
-		when(pss.getObservationsValues(any(Cohort.class), eq(dateOfFoodAssistanceConcept), anyListOf(String.class)))
-		        .thenReturn(patientIdDateOfFoodAssistanceMap);
-		
-		Map<Integer, List<List<Object>>> patientIdFavoriteFoodMap = new HashMap<Integer, List<List<Object>>>(1);
-		patientIdFavoriteFoodMap.put(pId7, createTestObsData("PB and J"));
-		when(pss.getObservationsValues(any(Cohort.class), eq(favoriteFoodConcept), anyListOf(String.class))).thenReturn(
-		    patientIdFavoriteFoodMap);
-		
-		Map<Integer, List<List<Object>>> patientIdWeightsMap = new HashMap<Integer, List<List<Object>>>(1);
-		patientIdWeightsMap.put(pId7, createTestObsData("50.0"));
-		when(pss.getObservationsValues(any(Cohort.class), eq(weightConcept), anyListOf(String.class))).thenReturn(
-		    patientIdWeightsMap);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
@@ -834,27 +633,5 @@ public class DataExportTest {
 		
 		assertEquals("The output is not right.", expectedOutput, output);
 		
-	}
-	
-	private static List<List<Object>> addNTestObs(int n, boolean includeLocation) {
-		List observations = new ArrayList<List<Object>>(n);
-		for (int i = n; i > 0; i--) {
-			List obsValues = new ArrayList<Object>((includeLocation) ? 2 : 1);
-			obsValues.add((double) i);
-			if (includeLocation)
-				obsValues.add("Test Location");
-			observations.add(obsValues);
-		}
-		
-		return observations;
-	}
-	
-	private static List<List<Object>> createTestObsData(Object value) {
-		List observations = new ArrayList<List<Object>>(1);
-		List obsValues = new ArrayList<Object>(1);
-		obsValues.add(value);
-		observations.add(obsValues);
-		
-		return observations;
 	}
 }
