@@ -197,8 +197,14 @@ public class ConceptProposalFormController extends SimpleFormController {
 			String msg = "";
 			if (c != null) {
 				String mappedName = c.getName(locale).getName();
-				String[] args = new String[] { cp.getOriginalText(), mappedName, cp.getComments() };
-				msg = msa.getMessage("ConceptProposal.alert.mappedTo", args, locale);
+				String[] args = null;
+				if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)) {
+					args = new String[] { cp.getFinalText(), mappedName, cp.getComments() };
+					msg = msa.getMessage("ConceptProposal.alert.synonymAdded", args, locale);
+				} else {
+					args = new String[] { cp.getOriginalText(), mappedName, cp.getComments() };
+					msg = msa.getMessage("ConceptProposal.alert.mappedTo", args, locale);
+				}
 			}
 			
 			try {
