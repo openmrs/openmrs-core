@@ -14,13 +14,13 @@
 package org.openmrs.web.filter.util;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -49,8 +49,6 @@ public class CustomResourceLoader {
 	
 	/** the set of languages, which is currently supported */
 	private Set<Locale> availablelocales = null;
-	
-	private URL resourceURL = null;
 	
 	private static CustomResourceLoader instance = null;
 	
@@ -99,18 +97,10 @@ public class CustomResourceLoader {
 	 *         through <code>errorMsg</code> property
 	 */
 	protected ResourceBundle getFileSystemResource(String path, String basename, Locale locale) {
-		
 		File resourceFile = new File(path);
-		
 		try {
-			resourceURL = resourceFile.getParentFile().toURI().toURL();
-		}
-		catch (MalformedURLException e) {
-			log.warn("Unable to get URL of object by specified path " + path + ", because of ", e);
-			return null;
-		}
-		try {
-			return ResourceBundle.getBundle(basename, locale, getURLClassLoader());
+			FileInputStream fileInputStream = new FileInputStream(resourceFile);
+			return new PropertyResourceBundle(new InputStreamReader(fileInputStream, "UTF-8"));
 		}
 		catch (Exception e) {
 			log.warn("Unable to load bundle by path " + path + ", because of ", e);
@@ -168,13 +158,6 @@ public class CustomResourceLoader {
 			result = LocaleUtility.fromSpecification(localespec);
 		}
 		return result;
-	}
-	
-	/**
-	 * @return new class loader instance for the specified by inner class property resource URLs
-	 */
-	private URLClassLoader getURLClassLoader() {
-		return new URLClassLoader(new URL[] { resourceURL });
 	}
 	
 	/**

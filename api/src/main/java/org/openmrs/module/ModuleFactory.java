@@ -71,6 +71,8 @@ public class ModuleFactory {
 	// the name of the file within a module file
 	private static final String MODULE_CHANGELOG_FILENAME = "liquibase.xml";
 	
+	private static final Map<String, DaemonToken> daemonTokens = new WeakHashMap<String, DaemonToken>();
+	
 	/**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an
 	 * error occurred and/or module was not successfully loaded
@@ -1256,6 +1258,74 @@ public class ModuleFactory {
 			return mod;
 		}
 		
+	}
+	
+	/**
+	 * Validates the given token.
+	 * <p>
+	 * It is thread safe.
+	 * 
+	 * @param token
+	 * @since 1.9.2
+	 */
+	public static boolean isTokenValid(DaemonToken token) {
+		if (token == null) {
+			return false;
+		} else {
+			//We need to synchronize to guarantee that the last passed token is valid.
+			synchronized (daemonTokens) {
+				DaemonToken validToken = daemonTokens.get(token.getId());
+				//Compare by reference to defend from overridden equals.
+				return validToken == token;
+			}
+		}
+	}
+	
+	/**
+	 * Passes a daemon token to the given module.
+	 * <p>
+	 * The token is passed to that module's {@link ModuleActivator} if it implements
+	 * {@link DaemonTokenAware}.
+	 * <p>
+	 * This method is called automatically before {@link ModuleActivator#contextRefreshed()} or
+	 * {@link ModuleActivator#started()}. Note that it may be called multiple times and there is no
+	 * guarantee that it will always pass the same token. The last passed token is valid, whereas
+	 * previously passed tokens may be invalidated.
+	 * <p>
+	 * It is thread safe.
+	 * 
+	 * @param module
+	 * @since 1.9.2
+	 */
+	static void passDaemonToken(Module module) {
+		ModuleActivator moduleActivator = module.getModuleActivator();
+		if (moduleActivator instanceof DaemonTokenAware) {
+			DaemonToken daemonToken = getDaemonToken(module);
+			((DaemonTokenAware) module.getModuleActivator()).setDaemonToken(daemonToken);
+		}
+	}
+	
+	/**
+	 * Gets a new or existing token. Uses weak references for tokens so that they are garbage
+	 * collected when not needed.
+	 * <p>
+	 * It is thread safe.
+	 * 
+	 * @param module
+	 * @return the token
+	 */
+	private static DaemonToken getDaemonToken(Module module) {
+		synchronized (daemonTokens) {
+			DaemonToken token = daemonTokens.get(module.getModuleId());
+			if (token != null) {
+				return token;
+			}
+			
+			token = new DaemonToken(module.getModuleId());
+			daemonTokens.put(module.getModuleId(), token);
+			
+			return token;
+		}
 	}
 	
 	/**

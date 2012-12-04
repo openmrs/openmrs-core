@@ -16,6 +16,7 @@ package org.openmrs.api.context;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.module.DaemonToken;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
@@ -82,8 +83,9 @@ public class Daemon {
 				throw new ModuleException("Unable to start module as Daemon", startModuleThread.exceptionThrown);
 		}
 		
-		return (Module) startModuleThread.returnedObject;
+		Module startedModule = (Module) startModuleThread.returnedObject;
 		
+		return startedModule;
 	}
 	
 	/**
@@ -235,6 +237,59 @@ public class Daemon {
 	}
 	
 	/**
+	 * Executes the given runnable in a new thread that is authenticated as the daemon user.
+	 * 
+	 * @param runnable an object implementing the {@link Runnable} interface.
+	 * @param token the token required to run code as the daemon user
+	 * @return the newly spawned {@link Thread}
+	 * @since 1.9.2
+	 */
+	public static Thread runInDaemonThread(final Runnable runnable, DaemonToken token) {
+		if (!ModuleFactory.isTokenValid(token)) {
+			throw new ContextAuthenticationException("Invalid token " + token);
+		}
+		
+		DaemonThread thread = new DaemonThread() {
+			
+			@Override
+			public void run() {
+				isDaemonThread.set(true);
+				try {
+					Context.openSession();
+					runnable.run();
+				}
+				finally {
+					Context.closeSession();
+				}
+			}
+		};
+		
+		thread.start();
+		return thread;
+	}
+	
+	/**
+	 * Executes the given runnable in a new thread that is authenticated as the daemon user and wait
+	 * for the thread to finish.
+	 * 
+	 * @param runnable an object implementing the {@link Runnable} interface.
+	 * @param token the token required to run code as the daemon user
+	 * @return the newly spawned {@link Thread}
+	 * @since 1.9.2
+	 */
+	public static void runInDaemonThreadAndWait(final Runnable runnable, DaemonToken token) {
+		Thread daemonThread = runInDaemonThread(runnable, token);
+		
+		try {
+			daemonThread.join();
+		}
+		catch (InterruptedException e) {
+			//Ignore
+		}
+	}
+	
+	/**
+	>>>>>>> b9b88eb... TRUNK-3781: Support a mechanism for modules to execute code with elevated privileges
 	 * Thread class used by the {@link Daemon#startModule(Module)} and
 	 * {@link Daemon#executeScheduledTask(Task)} methods so that the returned object and the
 	 * exception thrown can be returned to calling class
