@@ -213,6 +213,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * 
 	 * @deprecated
 	 */
+	@Deprecated
 	public String exportXml(Integer patientId) throws DAOException {
 		Locale locale = Context.getLocale();
 		
@@ -286,6 +287,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			if (p.getBirthplace() != null) {
 				patientNode.setAttribute("birthplace", p.getBirthplace());
 			}
+			*/
+			/*
 			if (p.getCitizenship() != null) {
 				patientNode.setAttribute("citizenship", p.getCitizenship());
 			}
@@ -301,6 +304,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			if (p.getDeathDate() != null) {
 				patientNode.setAttribute("death_date", df.format(p.getDeathDate()));
 			}
+			if (p.getDeathdateEstimated() != null) {
+				patientNode.setAttribute("deathdate_estimated", p.getDeathdateEstimated().toString());
+			}
+			
 			if (p.getCauseOfDeath() != null) {
 				patientNode.setAttribute("cause_of_death", p.getCauseOfDeath().getName(locale, false).getName());
 			}

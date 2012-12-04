@@ -60,6 +60,8 @@ public class PersonListItem {
 	
 	private String deathDateString;
 	
+	private Boolean deathdateEstimated = false;
+	
 	private Integer age;
 	
 	private String address1;
@@ -141,6 +143,7 @@ public class PersonListItem {
 			if (person.getDeathDate() != null) {
 				this.deathDateString = Format.format(person.getDeathDate());
 			}
+			deathdateEstimated = person.getDeathdateEstimated();
 			
 			// add in the person attributes
 			for (PersonAttribute attribute : person.getActiveAttributes()) {
@@ -264,6 +267,14 @@ public class PersonListItem {
 	
 	public void setDeathDateString(String deathDateString) {
 		this.deathDateString = deathDateString;
+	}
+	
+	public Boolean getDeathdateEstimated() {
+		return deathdateEstimated;
+	}
+	
+	public void setDeathdateEstimated(Boolean deathdateEstimated) {
+		this.deathdateEstimated = deathdateEstimated;
 	}
 	
 	public String getFamilyName() {

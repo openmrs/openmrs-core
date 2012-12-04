@@ -7477,5 +7477,19 @@
 		<dropNotNullConstraint tableName="encounter_type" columnName="description" columnDataType="text" />
 	</changeSet>
 
+	<changeSet id="20121212-TRUNK-2768" author="patandre">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="person" columnName="deathdate_estimated"/></not>
+		</preConditions>
+		<comment>
+			Adding deathdate_estimated column to person.  
+		</comment>
+		<addColumn tableName="person">
+                    <column defaultValueBoolean="false" name="deathdate_estimated" type="BOOLEAN">
+                        <constraints nullable="false"/>
+                    </column>
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
 

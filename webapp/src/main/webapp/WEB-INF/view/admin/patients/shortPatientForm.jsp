@@ -531,6 +531,7 @@
 				}
 			</script>
 			<br/>
+			
 			<div id="deathInformation">
 				<b><openmrs:message code="Person.deathDate"/>:</b>
 
@@ -541,7 +542,19 @@
 					<i style="font-weight: normal; font-size: 0.8em;">(<openmrs:message code="general.format"/>: <openmrs:datePattern />)</i>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
-				&nbsp; &nbsp; 
+				&nbsp; &nbsp;
+
+				<openmrs:message code="Person.deathdateEstimated"/>
+				<spring:bind path="patient.deathdateEstimated">
+					<input type="hidden" name="_${status.expression}"> 
+                    <input type="checkbox" name="${status.expression}" value="true"
+						<c:if test="${status.value == true}">checked</c:if> 
+						   id="deathdateEstimatedInput" 
+					 />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+				&nbsp; 
+				
 				<openmrs:message code="Person.causeOfDeath"/>
 				<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
 				<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
@@ -550,6 +563,7 @@
 					<%--<input type="text" name="causeOfDeath" value="${status.value}" id="causeOfDeath"/>--%>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
+				
 				<script type="text/javascript">				
 					//set up death info fields
 					personDeadClicked(document.getElementById("personDead"));

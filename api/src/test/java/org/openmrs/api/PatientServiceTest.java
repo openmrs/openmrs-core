@@ -186,6 +186,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
+		patient.setDeathdateEstimated(true);
 		
 		return patient;
 	}
@@ -219,6 +220,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// patient.removeAddress(pAddress);
 		
 		patient.setDeathDate(new Date());
+		patient.setBirthdateEstimated(true);
 		// patient.setCauseOfDeath("air");
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
@@ -2864,6 +2866,27 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertEquals("prior date of death was not audited", cDate.getTime(), audit.getPersonMergeLogData()
 		        .getPriorDateOfDeath());
+		
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies audit prior date of death estimated
+	 */
+	@Test
+	public void mergePatients_shouldAuditPriorDateOfDeathEstimated() throws Exception {
+		//retrieve preferred patient and set a date of death
+		GregorianCalendar cDate = new GregorianCalendar();
+		cDate.setTime(new Date());
+		Patient preferred = patientService.getPatient(999);
+		preferred.setDeathDate(cDate.getTime());
+		preferred.setDeathdateEstimated(true);
+		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
+		patientService.savePatient(preferred);
+		Patient notPreferred = patientService.getPatient(7);
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+		Assert.assertTrue("prior estimated date of death was not audited", audit.getPersonMergeLogData()
+		        .getPriorDateOfDeathEstimated());
 	}
 	
 	/**

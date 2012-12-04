@@ -943,6 +943,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			preferred.setBirthdate(notPreferred.getBirthdate());
 			preferred.setBirthdateEstimated(notPreferred.getBirthdateEstimated());
 		}
+		mergedData.setPriorDateOfDeathEstimated(preferred.getDeathdateEstimated());
+		if (preferred.getDeathdateEstimated() == null)
+			preferred.setDeathdateEstimated(notPreferred.getDeathdateEstimated());
 		
 		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
 		if (preferred.getDeathDate() == null)

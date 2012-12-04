@@ -62,6 +62,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Boolean birthdateEstimated = false;
 	
+	private Boolean deathdateEstimated = false;
+	
 	private Boolean dead = false;
 	
 	private Date deathDate;
@@ -121,6 +123,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		gender = person.getGender();
 		birthdate = person.getBirthdate();
 		birthdateEstimated = person.getBirthdateEstimated();
+		deathdateEstimated = person.getDeathdateEstimated();
 		dead = person.isDead();
 		deathDate = person.getDeathDate();
 		causeOfDeath = person.getCauseOfDeath();
@@ -220,6 +223,17 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	@Attribute(required = true)
 	public void setBirthdateEstimated(Boolean birthdateEstimated) {
 		this.birthdateEstimated = birthdateEstimated;
+	}
+	
+	public Boolean getDeathdateEstimated() {
+		return this.deathdateEstimated;
+	}
+	
+	/**
+	 * @param deathdateEstimated true if person's deathdate is estimated
+	 */
+	public void setDeathdateEstimated(Boolean deathdateEstimated) {
+		this.deathdateEstimated = deathdateEstimated;
 	}
 	
 	/**
@@ -812,6 +826,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		c.add(Calendar.YEAR, -1 * age);
 		setBirthdate(c.getTime());
 		setBirthdateEstimated(true);
+		
 	}
 	
 	public User getPersonChangedBy() {
