@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -203,12 +202,10 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 * </pre>
 	 */
 	@Test
-	@Ignore("TRUNK-3596: SchedulerServiceTest:shouldAllowTwoTasksInitMethodsToRunConcurrently fails randomly")
 	public void shouldAllowTwoTasksInitMethodsToRunConcurrently() throws Exception {
 		SchedulerService schedulerService = Context.getSchedulerService();
 		
 		TaskDefinition t3 = new TaskDefinition();
-		t3.setId(3);
 		t3.setStartOnStartup(false);
 		t3.setStartTime(null); // so it starts immediately
 		t3.setTaskClass(SimpleTask.class.getName());
@@ -219,7 +216,6 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t3.setRepeatInterval(5000l);
 		
 		TaskDefinition t4 = new TaskDefinition();
-		t4.setId(4);
 		t4.setStartOnStartup(false);
 		t4.setStartTime(null); // so it starts immediately
 		t4.setTaskClass(SimpleTask.class.getName());
