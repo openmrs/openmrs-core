@@ -1682,21 +1682,21 @@ public final class OpenmrsConstants {
 	/**
 	 * It points to a directory where 'openmrs.log' is stored.
 	 * 
-	 * @since 1.10, 1.9.2, 1.8.5, 1.7.5
+	 * @since 1.9.2
 	 */
 	public static final String GP_LOG_LOCATION = "log.location";
 	
 	/**
 	 * It specifies a log layout pattern used by the OpenMRS file appender.
 	 * 
-	 * @since 1.10, 1.9.2, 1.8.5, 1.7.5
+	 * @since 1.9.2
 	 */
 	public static final String GP_LOG_LAYOUT = "log.layout";
 	
 	/**
 	 * It specifies a default name of the OpenMRS file appender.
-	 * 
-	 * @since 1.10, 1.9.2, 1.8.5, 1.7.5
+	 * .
+	 * @since 1.9.2
 	 */
 	public static final String LOG_OPENMRS_FILE_APPENDER = "OPENMRS FILE APPENDER";
 	
