@@ -1275,9 +1275,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	private String newRequirePartialWordsSearchPhrase(final String phrase) {
-		String searchPhrase = LuceneQuery.escapeQuery(phrase).trim().replaceAll("\\s+", "* +");
-		searchPhrase = "+" + searchPhrase + "*";
-		return searchPhrase;
+		StringBuilder searchPhrase = new StringBuilder();
+		String[] words = LuceneQuery.escapeQuery(phrase).trim().split(" ");
+		for (String word : words) {
+			word = word.trim();
+			searchPhrase.append(" +(").append(word).append("~ ").append(word).append("*^10)");
+		}
+		return searchPhrase.toString();
 	}
 	
 	private String transformToIds(final List<? extends OpenmrsObject> items) {

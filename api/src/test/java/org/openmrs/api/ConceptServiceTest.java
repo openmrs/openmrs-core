@@ -13,16 +13,17 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.TestUtil.containsId;
-import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -72,6 +73,9 @@ import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.test.annotation.ExpectedException;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
@@ -2451,9 +2455,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not return concepts with matching names that are voided", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
 	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() throws Exception {
 		Concept concept = conceptService.getConcept(7);
-		conceptService.updateConceptIndex(concept);
-		Assert.assertEquals(0, conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false, null,
-		    null, null, null, null, null, null).size());
+		
+		List<ConceptSearchResult> results = conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH),
+		    false, null, null, null, null, null, null, null);
+		
+		for (ConceptSearchResult result : results) {
+			assertThat(result.getConcept(), not(concept));
+		}
 	}
 	
 	/**

@@ -1294,7 +1294,7 @@ public class Context {
 	public static void updateSearchIndexForObject(Object object) {
 		getContextDAO().updateSearchIndexForObject(object);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.context.ServiceContext#setUseSystemClassLoader(boolean)
 	 * @since 1.10
