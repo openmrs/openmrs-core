@@ -137,14 +137,15 @@ public class ConceptProposalFormController extends SimpleFormController {
 			Concept c = null;
 			if (StringUtils.hasText(request.getParameter("conceptId")))
 				c = cs.getConcept(Integer.valueOf(request.getParameter("conceptId")));
-			Collection<ConceptName> oldNames = c.getNames();
+			Collection<ConceptName> oldNames = null;
+			if (c != null)
+				oldNames = c.getNames();
 			// The users to be alerted of this change
 			Set<User> uniqueProposers = new HashSet<User>();
 			Locale conceptNameLocale = new Locale(request.getParameter("conceptNamelocale"));
 			// map the proposal to the concept (creating obs along the way)
 			uniqueProposers.add(cp.getCreator());
 			cp.setFinalText(finalText);
-			cp.setState(cp.getState());
 			try {
 				cs.mapConceptProposalToConcept(cp, c, conceptNameLocale);
 			}
@@ -152,11 +153,14 @@ public class ConceptProposalFormController extends SimpleFormController {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "ConceptProposal.save.fail");
 				return new ModelAndView(new RedirectView(getSuccessView()));
 			}
-			Collection<ConceptName> newNames = c.getNames();
-			newNames.removeAll(oldNames);
+			
 			ConceptName newConceptName = null;
-			if (newNames.size() == 1)
-				newConceptName = newNames.iterator().next();
+			if (c != null) {
+				Collection<ConceptName> newNames = c.getNames();
+				newNames.removeAll(oldNames);
+				if (newNames.size() == 1)
+					newConceptName = newNames.iterator().next();
+			}
 			
 			// all of the proposals to map with similar text
 			List<ConceptProposal> allProposals = cs.getConceptProposals(cp.getOriginalText());
@@ -166,29 +170,36 @@ public class ConceptProposalFormController extends SimpleFormController {
 			
 			//Just mark the rest of the proposals as mapped to avoid duplicate synonyms and obs
 			for (ConceptProposal conceptProposal : allProposals) {
-				//the question concept differs, this needs to me handled separately from the form
-				if (conceptProposal.getObsConcept() != null && !conceptProposal.getObsConcept().equals(cp.getObsConcept())) {
-					continue;
-				}
-				
-				uniqueProposers.add(conceptProposal.getCreator());
-				conceptProposal.setFinalText(cp.getFinalText());
-				conceptProposal.setState(cp.getState());
-				conceptProposal.setMappedConcept(c);
-				if (conceptProposal.getObsConcept() != null) {
-					Obs ob = new Obs();
-					ob.setEncounter(conceptProposal.getEncounter());
-					ob.setConcept(conceptProposal.getObsConcept());
-					ob.setValueCoded(conceptProposal.getMappedConcept());
-					if (conceptProposal.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)
-					        && newConceptName != null)
-						ob.setValueCodedName(newConceptName);
-					ob.setCreator(Context.getAuthenticatedUser());
-					ob.setDateCreated(new Date());
-					ob.setObsDatetime(conceptProposal.getEncounter().getEncounterDatetime());
-					ob.setLocation(conceptProposal.getEncounter().getLocation());
-					ob.setPerson(conceptProposal.getEncounter().getPatient());
-					cp.setObs(ob);
+				if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
+					conceptProposal.rejectConceptProposal();
+					conceptProposal.setComments(cp.getComments());
+				} else {
+					//the question concept differs, this needs to me handled separately from the form
+					if (conceptProposal.getObsConcept() != null
+					        && !conceptProposal.getObsConcept().equals(cp.getObsConcept())) {
+						continue;
+					}
+					
+					uniqueProposers.add(conceptProposal.getCreator());
+					conceptProposal.setFinalText(cp.getFinalText());
+					conceptProposal.setState(cp.getState());
+					conceptProposal.setMappedConcept(c);
+					conceptProposal.setComments(cp.getComments());
+					if (conceptProposal.getObsConcept() != null) {
+						Obs ob = new Obs();
+						ob.setEncounter(conceptProposal.getEncounter());
+						ob.setConcept(conceptProposal.getObsConcept());
+						ob.setValueCoded(conceptProposal.getMappedConcept());
+						if (conceptProposal.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)
+						        && newConceptName != null)
+							ob.setValueCodedName(newConceptName);
+						ob.setCreator(Context.getAuthenticatedUser());
+						ob.setDateCreated(new Date());
+						ob.setObsDatetime(conceptProposal.getEncounter().getEncounterDatetime());
+						ob.setLocation(conceptProposal.getEncounter().getLocation());
+						ob.setPerson(conceptProposal.getEncounter().getPatient());
+						cp.setObs(ob);
+					}
 				}
 				
 				cs.saveConceptProposal(conceptProposal);
@@ -205,6 +216,9 @@ public class ConceptProposalFormController extends SimpleFormController {
 					args = new String[] { cp.getOriginalText(), mappedName, cp.getComments() };
 					msg = msa.getMessage("ConceptProposal.alert.mappedTo", args, locale);
 				}
+			} else if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
+				msg = msa.getMessage("ConceptProposal.alert.ignored",
+				    new String[] { cp.getOriginalText(), cp.getComments() }, locale);
 			}
 			
 			try {
