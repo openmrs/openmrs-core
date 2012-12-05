@@ -1279,7 +1279,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		String[] words = LuceneQuery.escapeQuery(phrase).trim().split(" ");
 		for (String word : words) {
 			word = word.trim();
-			searchPhrase.append(" +(").append(word).append("~ ").append(word).append("*^10)");
+			searchPhrase.append(" +(").append(word).append("~ ").append(word).append("*^2)");
 		}
 		return searchPhrase.toString();
 	}
