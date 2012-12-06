@@ -13,6 +13,8 @@
  */
 package org.openmrs.web.controller.concept;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,10 +31,13 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSearchResult;
+import org.openmrs.Obs;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
@@ -84,7 +89,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 				errors.rejectValue("mappedConcept", "ConceptProposal.mappedConcept.error");
 			else {
 				String proposalAction = request.getParameter("actionToTake");
-				if (proposalAction.equals("createObsAndIgnoreProposal")) {
+				if (proposalAction.equals("saveAsMapped")) {
 					cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
 				} else if (proposalAction.equals("saveAsSynonym")) {
 					if (cp.getMappedConcept() == null)
@@ -106,6 +111,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 * @should create a single unique synonym and obs for all similar proposals
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {
@@ -131,29 +137,88 @@ public class ConceptProposalFormController extends SimpleFormController {
 			Concept c = null;
 			if (StringUtils.hasText(request.getParameter("conceptId")))
 				c = cs.getConcept(Integer.valueOf(request.getParameter("conceptId")));
-			
-			// all of the proposals to map
-			List<ConceptProposal> allProposals = cs.getConceptProposals(cp.getOriginalText());
-			
+			Collection<ConceptName> oldNames = null;
+			if (c != null)
+				oldNames = c.getNames();
 			// The users to be alerted of this change
 			Set<User> uniqueProposers = new HashSet<User>();
 			Locale conceptNameLocale = new Locale(request.getParameter("conceptNamelocale"));
-			// map the proposals to the concept (creating obs along the way)
+			// map the proposal to the concept (creating obs along the way)
+			uniqueProposers.add(cp.getCreator());
+			cp.setFinalText(finalText);
+			try {
+				cs.mapConceptProposalToConcept(cp, c, conceptNameLocale);
+			}
+			catch (DuplicateConceptNameException e) {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "ConceptProposal.save.fail");
+				return new ModelAndView(new RedirectView(getSuccessView()));
+			}
+			
+			ConceptName newConceptName = null;
+			if (c != null) {
+				Collection<ConceptName> newNames = c.getNames();
+				newNames.removeAll(oldNames);
+				if (newNames.size() == 1)
+					newConceptName = newNames.iterator().next();
+			}
+			
+			// all of the proposals to map with similar text
+			List<ConceptProposal> allProposals = cs.getConceptProposals(cp.getOriginalText());
+			//exclude the proposal submitted with the form since it is already handled above
+			if (allProposals.contains(cp))
+				allProposals.remove(cp);
+			
+			//Just mark the rest of the proposals as mapped to avoid duplicate synonyms and obs
 			for (ConceptProposal conceptProposal : allProposals) {
-				uniqueProposers.add(conceptProposal.getCreator());
-				conceptProposal.setFinalText(finalText);
-				conceptProposal.setState(cp.getState());
-				cs.mapConceptProposalToConcept(conceptProposal, c, conceptNameLocale);
+				if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
+					conceptProposal.rejectConceptProposal();
+					conceptProposal.setComments(cp.getComments());
+				} else {
+					//the question concept differs, this needs to me handled separately from the form
+					if (conceptProposal.getObsConcept() != null
+					        && !conceptProposal.getObsConcept().equals(cp.getObsConcept())) {
+						continue;
+					}
+					
+					uniqueProposers.add(conceptProposal.getCreator());
+					conceptProposal.setFinalText(cp.getFinalText());
+					conceptProposal.setState(cp.getState());
+					conceptProposal.setMappedConcept(c);
+					conceptProposal.setComments(cp.getComments());
+					if (conceptProposal.getObsConcept() != null) {
+						Obs ob = new Obs();
+						ob.setEncounter(conceptProposal.getEncounter());
+						ob.setConcept(conceptProposal.getObsConcept());
+						ob.setValueCoded(conceptProposal.getMappedConcept());
+						if (conceptProposal.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)
+						        && newConceptName != null)
+							ob.setValueCodedName(newConceptName);
+						ob.setCreator(Context.getAuthenticatedUser());
+						ob.setDateCreated(new Date());
+						ob.setObsDatetime(conceptProposal.getEncounter().getEncounterDatetime());
+						ob.setLocation(conceptProposal.getEncounter().getLocation());
+						ob.setPerson(conceptProposal.getEncounter().getPatient());
+						cp.setObs(ob);
+					}
+				}
+				
+				cs.saveConceptProposal(conceptProposal);
 			}
 			
 			String msg = "";
 			if (c != null) {
 				String mappedName = c.getName(locale).getName();
-				String[] args = new String[] { cp.getOriginalText(), mappedName, cp.getComments() };
-				msg = msa.getMessage("ConceptProposal.alert.mappedTo", args, locale);
-			} else {
-				String[] args = new String[] { cp.getOriginalText(), cp.getComments() };
-				msg = msa.getMessage("ConceptProposal.alert.ignored", args, locale);
+				String[] args = null;
+				if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)) {
+					args = new String[] { cp.getFinalText(), mappedName, cp.getComments() };
+					msg = msa.getMessage("ConceptProposal.alert.synonymAdded", args, locale);
+				} else {
+					args = new String[] { cp.getOriginalText(), mappedName, cp.getComments() };
+					msg = msa.getMessage("ConceptProposal.alert.mappedTo", args, locale);
+				}
+			} else if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
+				msg = msa.getMessage("ConceptProposal.alert.ignored",
+				    new String[] { cp.getOriginalText(), cp.getComments() }, locale);
 			}
 			
 			try {

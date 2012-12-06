@@ -46,7 +46,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
 	
-	private static final Log log = LogFactory.getLog(Person.class);
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected Integer personId;
 	

@@ -575,7 +575,7 @@ public class OpenmrsUtil {
 	/**
 	 * Setup root level log appenders.
 	 * 
-	 * @since 1.10, 1.9.2, 1.8.5, 1.7.5
+	 * @since 1.9.2
 	 */
 	public static void setupLogAppenders() {
 		Logger rootLogger = Logger.getRootLogger();
@@ -1181,7 +1181,7 @@ public class OpenmrsUtil {
 	 * Returns the location of the OpenMRS log file.
 	 * 
 	 * @return the path to the OpenMRS log file
-	 * @since 1.10, 1.9.2, 1.8.5, 1.7.5
+	 * @since 1.9.2
 	 */
 	public static String getOpenmrsLogLocation() {
 		String logPathGP = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION, "");

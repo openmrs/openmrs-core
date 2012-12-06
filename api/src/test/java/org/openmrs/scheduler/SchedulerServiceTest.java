@@ -18,13 +18,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -44,6 +45,19 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	// each task provides a key that will be used in this map.  The value is the output
 	private static Map<String, String> output = new HashMap<String, String>();
+	
+	@Before
+	public void setUp() throws Exception {
+		Context.flushSession();
+		
+		Collection<TaskDefinition> tasks = Context.getSchedulerService().getRegisteredTasks();
+		for (TaskDefinition task : tasks) {
+			Context.getSchedulerService().shutdownTask(task);
+			Context.getSchedulerService().deleteTask(task.getId());
+		}
+		
+		Context.flushSession();
+	}
 	
 	@Test
 	public void shouldResolveValidTaskClass() throws Exception {
@@ -188,12 +202,10 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 * </pre>
 	 */
 	@Test
-	@Ignore("TRUNK-3596: SchedulerServiceTest:shouldAllowTwoTasksInitMethodsToRunConcurrently fails randomly")
 	public void shouldAllowTwoTasksInitMethodsToRunConcurrently() throws Exception {
 		SchedulerService schedulerService = Context.getSchedulerService();
 		
 		TaskDefinition t3 = new TaskDefinition();
-		t3.setId(3);
 		t3.setStartOnStartup(false);
 		t3.setStartTime(null); // so it starts immediately
 		t3.setTaskClass(SimpleTask.class.getName());
@@ -204,7 +216,6 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t3.setRepeatInterval(5000l);
 		
 		TaskDefinition t4 = new TaskDefinition();
-		t4.setId(4);
 		t4.setStartOnStartup(false);
 		t4.setStartTime(null); // so it starts immediately
 		t4.setTaskClass(SimpleTask.class.getName());

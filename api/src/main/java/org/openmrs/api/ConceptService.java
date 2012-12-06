@@ -50,17 +50,21 @@ import org.openmrs.util.PrivilegeConstants;
  * 
  * <pre>
  * 
+ * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
+ * 
  * To get a single concept:
  * 
  * <pre>
+ * 
  * 
  * // if there is a concept row in the database with concept_id = 3845
  * Concept concept = Context.getConceptService().getConcept(3845);
  * 
  * String name = concept.getPreferredName(Context.getLocale()).getName();
  * </pre>
+ * 
  * To save a concept to the database
  * 
  * <pre>
@@ -335,6 +339,11 @@ public interface ConceptService extends OpenmrsService {
 	 * @param includeRetired If <code>true</code>, retired concepts will also be returned
 	 * @return a List<Concept> object containing all of the sorted concepts
 	 * @throws APIException
+	 * @should order by concept id and include retired when given no parameters
+	 * @should order by concept id descending when set asc parameter to false
+	 * @should exclude retired concepts when set includeRetired to false
+	 * @should order by a concept name field
+	 * @should order by a concept field
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getAllConcepts(String sortBy, boolean asc, boolean includeRetired) throws APIException;
@@ -482,7 +491,8 @@ public interface ConceptService extends OpenmrsService {
 	public List<Drug> findDrugs(String phrase, boolean includeVoided) throws APIException;
 	
 	/**
-	 * Find drugs in the system. The string search can match either drug.name or drug.concept.name, drug.drugId or drug.concept.conceptId
+	 * Find drugs in the system. The string search can match either drug.name or drug.concept.name,
+	 * drug.drugId or drug.concept.conceptId
 	 * 
 	 * @param phrase Search phrase
 	 * @throws APIException
@@ -872,6 +882,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should throw APIException when mapping to null concept
 	 * @should set value coded name when add synonym is selected
 	 * @should not set value coded name when add concept is selected
+	 * @should fail when adding a duplicate syonymn
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept, Locale locale) throws APIException;

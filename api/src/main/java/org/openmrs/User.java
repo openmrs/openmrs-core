@@ -47,7 +47,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	
 	public static final long serialVersionUID = 2L;
 	
-	private static final Log log = LogFactory.getLog(User.class);
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	// Fields
 	

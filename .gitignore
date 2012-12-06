@@ -65,3 +65,9 @@ nb-configuration.xml
 *~
 #############
 
+### OpenMRS Files ###
+/webapp/activemq-data
+/webapp/src/main/webapp/WEB-INF/tags/module
+/webapp/src/main/webapp/WEB-INF/dwr-modules.xml
+/webapp/src/main/webapp/WEB-INF/module_messages*
+#############

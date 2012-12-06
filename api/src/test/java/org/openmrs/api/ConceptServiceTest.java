@@ -2465,9 +2465,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConceptServiceImpl#getConcepts(String phrase, List<Locale> locales, boolean includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
-	 * 
-	 * 
+	 * @see ConceptServiceImpl#getConcepts(String phrase, List<Locale> locales, boolean
+	 *      includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	 *      List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept
+	 *      answersToConcept, Integer start, Integer size)
 	 */
 	@Test
 	@Verifies(value = "should not fail with null Classes and Datatypes", method = "getConcepts(String phrase, List<Locale> locales, boolean includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)")
@@ -2481,7 +2482,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConceptServiceImpl#	getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept answersToConcept)
+	 * @see ConceptServiceImpl# getCountOfConcepts(String phrase, List<Locale> locales, boolean
+	 *      includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	 *      List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept
+	 *      answersToConcept)
 	 */
 	@Test
 	@Verifies(value = "should not fail with null Classes and Datatypes", method = "getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept answersToConcept)")
@@ -2544,6 +2548,100 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Obs obs = observations.get(0);
 		Assert.assertNotNull(obs.getValueCodedName());
 		Assert.assertEquals(finalText, obs.getValueCodedName().getName());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
+	 */
+	@Test
+	@Verifies(value = "should exclude retired concepts when set includeRetired to false", method = "getAllConcepts(String,null,null)")
+	public void getAllConcepts_shouldExcludeRetiredConceptsWhenSetIncludeRetiredToFalse() throws Exception {
+		final List<Concept> allConcepts = conceptService.getAllConcepts(null, true, false);
+		
+		assertEquals(24, allConcepts.size());
+		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
+	 */
+	@Test
+	@Verifies(value = "should order by a concept field", method = "getAllConcepts(String,null,null)")
+	public void getAllConcepts_shouldOrderByAConceptField() throws Exception {
+		List<Concept> allConcepts = conceptService.getAllConcepts("dateCreated", true, true);
+		
+		assertEquals(25, allConcepts.size());
+		assertEquals(88, allConcepts.get(0).getConceptId().intValue());
+		assertEquals(23, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
+		
+		//check desc order
+		allConcepts = conceptService.getAllConcepts("dateCreated", false, true);
+		
+		assertEquals(25, allConcepts.size());
+		assertEquals(23, allConcepts.get(0).getConceptId().intValue());
+		assertEquals(88, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
+	 */
+	@Test
+	@Verifies(value = "should order by a concept name field", method = "getAllConcepts(String,null,null)")
+	public void getAllConcepts_shouldOrderByAConceptNameField() throws Exception {
+		List<Concept> allConcepts = conceptService.getAllConcepts("name", true, false);
+		
+		assertEquals(24, allConcepts.size());
+		assertEquals("ANTIRETROVIRAL TREATMENT GROUP", allConcepts.get(0).getName().getName());
+		assertEquals("YES", allConcepts.get(allConcepts.size() - 1).getName().getName());
+		
+		//test the desc order
+		allConcepts = conceptService.getAllConcepts("name", false, false);
+		
+		assertEquals(24, allConcepts.size());
+		assertEquals("YES", allConcepts.get(0).getName().getName());
+		assertEquals("ANTIRETROVIRAL TREATMENT GROUP", allConcepts.get(allConcepts.size() - 1).getName().getName());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
+	 */
+	@Test
+	@Verifies(value = "should order by concept id and include retired when given no parameters", method = "getAllConcepts(String,null,null)")
+	public void getAllConcepts_shouldOrderByConceptIdAndIncludeRetiredWhenGivenNoParameters() throws Exception {
+		final List<Concept> allConcepts = conceptService.getAllConcepts();
+		
+		assertEquals(25, allConcepts.size());
+		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
+	 */
+	@Test
+	@Verifies(value = "should order by concept id descending when set asc parameter to false", method = "getAllConcepts(String,null,null)")
+	public void getAllConcepts_shouldOrderByConceptIdDescendingWhenSetAscParameterToFalse() throws Exception {
+		final List<Concept> allConcepts = conceptService.getAllConcepts(null, false, true);
+		
+		assertEquals(25, allConcepts.size());
+		assertEquals(5497, allConcepts.get(0).getConceptId().intValue());
+	}
+	
+	/**
+	 * @see {@link ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)}
+	 */
+	@Test(expected = DuplicateConceptNameException.class)
+	@Verifies(value = "should fail when adding a duplicate syonymn", method = "mapConceptProposalToConcept(ConceptProposal,Concept,Locale)")
+	public void mapConceptProposalToConcept_shouldFailWhenAddingADuplicateSyonymn() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-proposals.xml");
+		ConceptService cs = Context.getConceptService();
+		ConceptProposal cp = cs.getConceptProposal(10);
+		cp.setFinalText(cp.getOriginalText());
+		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM);
+		Concept mappedConcept = cs.getConcept(5);
+		Locale locale = Locale.ENGLISH;
+		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
+		
+		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
 	}
 	
 }

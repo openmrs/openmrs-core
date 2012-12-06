@@ -97,6 +97,7 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	@Override
 	public void setValueReferenceInternal(String valueReference) throws InvalidCustomValueException {
 		this.valueReference = valueReference;
+		this.dirty = false;
 	}
 	
 	/**
