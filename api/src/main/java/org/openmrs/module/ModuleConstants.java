@@ -77,4 +77,10 @@ public class ModuleConstants {
 	 */
 	public static final String RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD = "module.list_to_load";
 	
+	/**
+	 * Name of the runtime property that will tell the system where to look for modules to load. Can
+	 * be either relative or absolute
+	 */
+	public static final String REPOSITORY_FOLDER_RUNTIME_PROPERTY = "module.repository_folder";
+	
 }
