@@ -561,7 +561,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	private String newNamesQuery(final Set<Locale> locales, final String name, final boolean keywords) {
 		final String phrase;
 		if (keywords) {
-			phrase = "(" + newRequirePartialWordsSearchPhrase(name) + " \"" + name + "\"^10)";
+			phrase = "(" + newRequirePartialWordsSearchPhrase(name) + " \"" + name + "\"^1000)";
 		} else {
 			phrase = "\"" + LuceneQuery.escapeQuery(name) + "\"";
 		}
