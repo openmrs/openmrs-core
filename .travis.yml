@@ -6,6 +6,9 @@ script: mvn clean install --batch-mode
 matrix:
   allow_failures:
     - jdk: oraclejdk7
+branches:
+  only:
+    - master
 notifications:
   email: false
   irc:
