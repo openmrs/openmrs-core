@@ -39,6 +39,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.ValidateUtil;
 import org.openmrs.web.OptionsForm;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
@@ -68,25 +69,14 @@ public class OptionsFormController extends SimpleFormController {
 	        BindException errors) throws Exception {
 		OptionsForm opts = (OptionsForm) object;
 		
-		if (opts.getUsername().length() > 0) {
-			if (opts.getUsername().length() < 3) {
-				errors.rejectValue("username", "error.username.weak");
+		if (!opts.getOldPassword().equals("")) {
+			if (opts.getNewPassword().equals(""))
+				errors.rejectValue("newPassword", "error.password.weak");
+			else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
+				errors.rejectValue("newPassword", "error.password.match");
+				errors.rejectValue("confirmPassword", "error.password.match");
 			}
-			if (opts.getUsername().charAt(0) < 'A' || opts.getUsername().charAt(0) > 'z') {
-				errors.rejectValue("username", "error.username.invalid");
-			}
-			
 		}
-		if (opts.getUsername().length() > 0)
-			
-			if (!opts.getOldPassword().equals("")) {
-				if (opts.getNewPassword().equals(""))
-					errors.rejectValue("newPassword", "error.password.weak");
-				else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
-					errors.rejectValue("newPassword", "error.password.match");
-					errors.rejectValue("confirmPassword", "error.password.match");
-				}
-			}
 		
 		if (!opts.getSecretQuestionPassword().equals("")) {
 			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
@@ -111,6 +101,10 @@ public class OptionsFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 * @should accept 2 characters as username
+	 * @should accept email address as username if enabled
+	 * @should reject 1 character as username
+	 * @should reject invalid email address as username if enabled
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {
@@ -216,7 +210,6 @@ public class OptionsFormController extends SimpleFormController {
 			}
 			
 			if (!errors.hasErrors()) {
-				
 				user.setUsername(opts.getUsername());
 				user.setUserProperties(properties);
 				
@@ -239,9 +232,16 @@ public class OptionsFormController extends SimpleFormController {
 					user.addName(newPersonName);
 				}
 				
+				ValidateUtil.validate(user, errors);
+				
+				if (errors.hasErrors()) {
+					return super.processFormSubmission(request, response, opts, errors);
+				}
+				
 				try {
 					Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+					
 					us.saveUser(user, null);
 					//trigger updating of the javascript file cache
 					PseudoStaticContentController.invalidateCachedResources(properties);
