@@ -39,6 +39,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.UserValidator;
 import org.openmrs.web.OptionsForm;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
@@ -69,14 +70,12 @@ public class OptionsFormController extends SimpleFormController {
 		OptionsForm opts = (OptionsForm) object;
 		
 		if (opts.getUsername().length() > 0) {
-			if (opts.getUsername().length() < 3) {
-				errors.rejectValue("username", "error.username.weak");
+			UserValidator validator = new UserValidator();
+			if (!validator.isUserNameValid(opts.getUsername())) {
+				errors.rejectValue("username", "error.username.pattern");
 			}
-			if (opts.getUsername().charAt(0) < 'A' || opts.getUsername().charAt(0) > 'z') {
-				errors.rejectValue("username", "error.username.invalid");
-			}
-			
 		}
+		
 		if (opts.getUsername().length() > 0)
 			
 			if (!opts.getOldPassword().equals("")) {
@@ -124,11 +123,11 @@ public class OptionsFormController extends SimpleFormController {
 			UserService us = Context.getUserService();
 			User user = null;
 			try {
-				Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+				Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
 				user = us.getUser(loginUser.getUserId());
 			}
 			finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
 			}
 			
 			OptionsForm opts = (OptionsForm) obj;
@@ -205,13 +204,13 @@ public class OptionsFormController extends SimpleFormController {
 			
 			if (opts.getUsername().length() > 0 && !errors.hasErrors()) {
 				try {
-					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+					Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
 					if (us.hasDuplicateUsername(user)) {
 						errors.rejectValue("username", "error.username.taken");
 					}
 				}
 				finally {
-					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+					Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
 				}
 			}
 			
@@ -241,7 +240,7 @@ public class OptionsFormController extends SimpleFormController {
 				
 				try {
 					Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+					Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
 					us.saveUser(user, null);
 					//trigger updating of the javascript file cache
 					PseudoStaticContentController.invalidateCachedResources(properties);
@@ -251,7 +250,7 @@ public class OptionsFormController extends SimpleFormController {
 				}
 				finally {
 					Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+					Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
 				}
 				
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "options.saved");
