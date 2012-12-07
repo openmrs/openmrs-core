@@ -231,7 +231,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.findPatientPortlet.linksAtBottom" type="html"
 		requiredClass="org.openmrs.module.web.extension.LinkExt">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-			<a href="${extension.url}"><openmrs:message code="${extension.label}"/></a>
+			<a href="<c:url value="${extension.url}" />"><openmrs:message code="${extension.label}"/></a>
 			<br/>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>
@@ -241,7 +241,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.findPatientPortlet.linksAtBottom" type="html"
 		requiredClass="org.openmrs.module.web.extension.LinkExt">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-			<a href="${extension.url}"><openmrs:message code="${extension.label}"/></a>
+			<a href="<c:url value="${extension.url}" />"><openmrs:message code="${extension.label}"/></a>
 			<br/>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>

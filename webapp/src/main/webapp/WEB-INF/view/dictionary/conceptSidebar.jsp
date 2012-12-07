@@ -58,7 +58,7 @@
 		<c:if test="${fn:length(extension.conceptUsage) > 0}">
 			<h4>${extension.header}</h4>
 			<ul><c:forEach items="${extension.conceptUsage}" var="usage">
-			<li><a href="${pageContext.request.contextPath}${usage.url}">${usage.label}</a></br></li>
+			<li><a href="<c:url value="${usage.url}" />">${usage.label}</a></br></li>
 			</c:forEach></ul>
 		</c:if>
 		</openmrs:hasPrivilege>
