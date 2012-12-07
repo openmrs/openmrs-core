@@ -793,25 +793,36 @@ public class ModuleUtil {
 		if (log.isDebugEnabled())
 			log.debug("Reloading advice for all started modules: " + ModuleFactory.getStartedModules().size());
 		
-		for (Module module : ModuleFactory.getStartedModules()) {
-			ModuleFactory.loadAdvice(module);
-			try {
-				ModuleFactory.passDaemonToken(module);
-				
-				if (module.getModuleActivator() != null) {
-					module.getModuleActivator().contextRefreshed();
-					//if it is system start up, call the started method for all started modules
-					if (isOpenmrsStartup)
-						module.getModuleActivator().started();
-					//if refreshing the context after a user started or uploaded a new module
-					else if (!isOpenmrsStartup && module.equals(startedModule))
-						module.getModuleActivator().started();
+		try {
+			//The call backs in this block may need lazy loading of objects
+			//which will fail because we use an OpenSessionInViewFilter whose opened session
+			//was closed when the application context was refreshed as above.
+			//So we need to open another session now. TRUNK-3739
+			Context.openSessionWithCurrentUser();
+			
+			for (Module module : ModuleFactory.getStartedModules()) {
+				ModuleFactory.loadAdvice(module);
+				try {
+					ModuleFactory.passDaemonToken(module);
+					
+					if (module.getModuleActivator() != null) {
+						module.getModuleActivator().contextRefreshed();
+						//if it is system start up, call the started method for all started modules
+						if (isOpenmrsStartup)
+							module.getModuleActivator().started();
+						//if refreshing the context after a user started or uploaded a new module
+						else if (!isOpenmrsStartup && module.equals(startedModule))
+							module.getModuleActivator().started();
+					}
+					
 				}
-				
+				catch (Throwable t) {
+					log.warn("Unable to invoke method on the module's activator ", t);
+				}
 			}
-			catch (Throwable t) {
-				log.warn("Unable to invoke method on the module's activator ", t);
-			}
+		}
+		finally {
+			Context.closeSessionWithCurrentUser();
 		}
 		
 		return ctx;
