@@ -302,6 +302,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @should not return retired
 	 * @should not return null including retired
 	 * @should return all
+	 * @should return ordered
 	 * @see org.openmrs.api.db.PatientDAO#getAllPatientIdentifierTypes(boolean)
 	 */
 	@SuppressWarnings("unchecked")

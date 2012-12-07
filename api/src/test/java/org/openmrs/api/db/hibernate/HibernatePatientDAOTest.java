@@ -13,6 +13,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.hamcrest.Matchers.contains;
+
 import java.util.List;
 
 import org.junit.Assert;
@@ -20,6 +22,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.test.BaseContextSensitiveTest;
+
+import com.google.common.collect.Lists;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -74,5 +78,28 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	public void getAllPatientIdentifierTypes_shouldReturnAll() throws Exception {
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getAllPatientIdentifierTypes(true);
 		Assert.assertEquals("patientIdentifierTypes list should have 3 elements", 3, patientIdentifierTypes.size());
+	}
+	
+	/**
+	 * @see HibernatePatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @verifies return ordered
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldReturnOrdered() throws Exception {
+		//given
+		PatientIdentifierType patientIdentifierType1 = dao.getPatientIdentifierType(1); //non retired, non required
+		
+		PatientIdentifierType patientIdentifierType2 = dao.getPatientIdentifierType(2); //non retired, required
+		patientIdentifierType2.setRequired(true);
+		dao.savePatientIdentifierType(patientIdentifierType2);
+		
+		PatientIdentifierType patientIdentifierType4 = dao.getPatientIdentifierType(4); //retired
+		
+		//when
+		List<PatientIdentifierType> all = dao.getAllPatientIdentifierTypes(true);
+		
+		//then
+		Assert.assertArrayEquals(new Object[] { patientIdentifierType2, patientIdentifierType1, patientIdentifierType4 },
+		    all.toArray());
 	}
 }
