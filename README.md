@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/openmrs/openmrs-core.png)](http://travis-ci.org/openmrs/openmrs-core)
+[![Build Status](https://secure.travis-ci.org/openmrs/openmrs-core.png?branch=master)](https://travis-ci.org/openmrs/openmrs-core)
 
 OpenMRS is an patient-based medical record system focusing on giving providers a free customizable EMR.
 
