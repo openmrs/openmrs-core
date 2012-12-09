@@ -56,7 +56,8 @@ public class PersonNameValidator implements Validator {
 			if (personName == null)
 				errors.reject("error.name");
 			if (!errors.hasErrors())
-				validatePersonName(personName, errors, true, false);
+				if (!personName.getVoided())
+					validatePersonName(personName, errors, true, false);
 		}
 		catch (Exception e) {
 			errors.reject(e.getMessage());
