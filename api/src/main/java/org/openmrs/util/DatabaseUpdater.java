@@ -13,8 +13,11 @@
  */
 package org.openmrs.util;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -28,7 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.Set;
 
 import liquibase.Liquibase;
@@ -51,6 +53,7 @@ import liquibase.resource.CompositeResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.annotation.Authorized;
@@ -671,48 +674,36 @@ public class DatabaseUpdater {
 	 */
 	public static void writeUpdateMessagesToFile(String text) {
 		PrintWriter writer = null;
-		Scanner scanner = null;
 		File destFile = new File(OpenmrsUtil.getApplicationDataDirectory(), DatabaseUpdater.DATABASE_UPDATES_LOG_FILE);
 		try {
 			String lineSeparator = System.getProperty("line.separator");
 			Date date = Calendar.getInstance().getTime();
-			StringBuilder sb = new StringBuilder();
-			if (destFile.isFile()) {
-				scanner = new Scanner(destFile);
-				while (scanner.hasNextLine())
-					sb.append(scanner.nextLine()).append(lineSeparator);
-				
-				sb.append(lineSeparator);
-				sb.append(lineSeparator);
-				if (scanner.ioException() != null)
-					log.warn("Some error(s) occured while reading messages from the database update log file", scanner
-					        .ioException());
-			}
 			
-			writer = new PrintWriter(destFile);
-			sb.append("********** START OF DATABASE UPDATE LOGS AS AT " + date + " **********");
-			sb.append(lineSeparator);
-			sb.append(lineSeparator);
-			sb.append(text);
-			sb.append(lineSeparator);
-			sb.append(lineSeparator);
-			sb.append("*********** END OF DATABASE UPDATE LOGS AS AT " + date + " ***********");
-			
-			writer.write(sb.toString());
+			writer = new PrintWriter(new BufferedWriter(new FileWriter(destFile, true)));
+			writer.write("********** START OF DATABASE UPDATE LOGS AS AT " + date + " **********");
+			writer.write(lineSeparator);
+			writer.write(lineSeparator);
+			writer.write(text);
+			writer.write(lineSeparator);
+			writer.write(lineSeparator);
+			writer.write("*********** END OF DATABASE UPDATE LOGS AS AT " + date + " ***********");
+			writer.write(lineSeparator);
+			writer.write(lineSeparator);
 			
 			//check if there was an error while writing to the file
 			if (writer.checkError())
 				log.warn("An Error occured while writing warnings to the database update log file'");
 			
+			writer.close();
 		}
 		catch (FileNotFoundException e) {
-			log.warn("Generated error", e);
+			log.warn("Failed to find the database update log file", e);
+		}
+		catch (IOException e) {
+			log.warn("Failed to write to the database update log file", e);
 		}
 		finally {
-			if (writer != null)
-				writer.close();
-			if (scanner != null)
-				scanner.close();
+			IOUtils.closeQuietly(writer);
 		}
 	}
 	
