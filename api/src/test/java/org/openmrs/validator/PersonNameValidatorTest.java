@@ -15,10 +15,14 @@ package org.openmrs.validator;
 
 import junit.framework.Assert;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -488,4 +492,19 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasFieldErrors("degree"));
 	}
 	
+	/**
+	 * @see PersonNameValidator#validate(Object,Errors)
+	 * @verifies pass validation if name is invalid but voided
+	 */
+	@Test
+	public void validate_shouldPassValidationIfNameIsInvalidButVoided() throws Exception {
+		PersonName personName = new PersonName();
+		personName.setVoided(true);
+		personName.setFamilyNameSuffix("1234567890123456789012345678901234567890123456789"); // exactly 50 characters long
+		
+		Errors errors = new BindException(personName, "familyNameSuffix");
+		new PersonNameValidator().validate(personName, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
 }
