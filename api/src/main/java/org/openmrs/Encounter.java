@@ -267,20 +267,48 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should set encounter attribute on obs
 	 * @should add obs to non null initial obs set
 	 * @should add encounter attrs to obs if attributes are null
+	 * @should add encounter attrs to obs groupMembers if attributes are null
 	 */
 	public void addObs(Obs observation) {
 		if (obs == null)
 			obs = new HashSet<Obs>();
+		
 		if (observation != null) {
-			observation.setEncounter(this);
-			
-			if (observation.getObsDatetime() == null)
-				observation.setObsDatetime(getEncounterDatetime());
-			if (observation.getPerson() == null)
-				observation.setPerson(getPatient());
-			if (observation.getLocation() == null)
-				observation.setLocation(getLocation());
 			obs.add(observation);
+			
+			//Propagate some attributes to the obs
+			
+			java.util.ArrayDeque<Obs> obsToUpdate = new java.util.ArrayDeque<Obs>();
+			obsToUpdate.add(observation);
+			
+			//prevent infinite recursion if an obs is its own group member
+			HashSet<Obs> seenIt = new HashSet<Obs>(1);
+			
+			while (obsToUpdate.isEmpty() == false) {
+				Obs o = obsToUpdate.removeFirst();
+				
+				//has this obs already been processed?
+				if (o == null || seenIt.contains(o))
+					continue;
+				seenIt.add(o);
+				
+				o.setEncounter(this);
+				
+				//if the attribute was already set, preserve it
+				//if not, inherit the values sfrom the encounter
+				if (o.getObsDatetime() == null)
+					o.setObsDatetime(getEncounterDatetime());
+				if (o.getPerson() == null)
+					o.setPerson(getPatient());
+				if (o.getLocation() == null)
+					o.setLocation(getLocation());
+				
+				//propagate attributes to  all group members as well
+				if (o.getGroupMembers(true) != null) {
+					obsToUpdate.addAll(o.getGroupMembers());
+		}
+	}
+	
 		}
 	}
 	
