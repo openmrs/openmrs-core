@@ -46,6 +46,7 @@ public class PersonNameValidator implements Validator {
 	 * @param personName
 	 * @param errors
 	 * @should fail validation if PersonName object is null
+	 * @should pass validation if name is invalid but voided
 	 */
 	public void validate(Object object, Errors errors) {
 		if (log.isDebugEnabled())
@@ -55,7 +56,7 @@ public class PersonNameValidator implements Validator {
 			// Validate that the person name object is not null
 			if (personName == null)
 				errors.reject("error.name");
-			if (!errors.hasErrors())
+			if (!errors.hasErrors() && !personName.isVoided())
 				validatePersonName(personName, errors, true, false);
 		}
 		catch (Exception e) {

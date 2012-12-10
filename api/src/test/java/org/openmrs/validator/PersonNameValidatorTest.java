@@ -656,4 +656,20 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasErrors());
 	}
+	
+	/**
+	 * @see PersonNameValidator#validate(Object,Errors)
+	 * @verifies pass validation if name is invalid but voided
+	 */
+	@Test
+	public void validate_shouldPassValidationIfNameIsInvalidButVoided() throws Exception {
+		PersonName personName = new PersonName();
+		personName.setVoided(true);
+		personName.setFamilyName2("34dfgd"); //invalid familyName2
+		
+		Errors errors = new BindException(personName, "familyName2");
+		new PersonNameValidator().validate(personName, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
 }
