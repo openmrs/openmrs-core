@@ -366,10 +366,13 @@ public interface PatientService extends OpenmrsService {
 	
 	/**
 	 * Get all patientIdentifier types
+	 * <p>
+	 * Ordered same as {@link org.openmrs.comparator.PatientIdentifierTypeDefaultComparator}.
 	 * 
 	 * @return patientIdentifier types list
 	 * @throws APIException
 	 * @should fetch all non retired patient identifier types
+	 * @should order as default comparator
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_IDENTIFIER_TYPES })
@@ -377,12 +380,15 @@ public interface PatientService extends OpenmrsService {
 	
 	/**
 	 * Get all patientIdentifier types
+	 * <p>
+	 * Ordered same as {@link org.openmrs.comparator.PatientIdentifierTypeDefaultComparator}.
 	 * 
 	 * @param includeRetired true/false whether retired types should be included
 	 * @return patientIdentifier types list
 	 * @throws APIException
 	 * @should fetch patient identifier types including retired when include retired is true
 	 * @should fetch patient identifier types excluding retired when include retired is false
+	 * @should order as default comparator
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_IDENTIFIER_TYPES })
@@ -390,7 +396,9 @@ public interface PatientService extends OpenmrsService {
 	
 	/**
 	 * Get all patientIdentifier types that match the given criteria
-	 * 
+	 * <p>
+	 * Ordered same as {@link org.openmrs.comparator.PatientIdentifierTypeDefaultComparator}.
+	 *
 	 * @param name name of the type to match on
 	 * @param format the string format to match on
 	 * @param required if true, limits to only identifiers marked as required if false, only non
@@ -407,6 +415,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should fetch patient identifier types without check digit when given has check digit is
 	 *         false
 	 * @should fetch any patient identifier types when given has check digit is null
+	 * @should order as default comparator
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_IDENTIFIER_TYPES })

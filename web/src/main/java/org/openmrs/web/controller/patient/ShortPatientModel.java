@@ -21,6 +21,7 @@ import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.ListUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
@@ -66,10 +67,12 @@ public class ShortPatientModel {
 			this.personName = patient.getPersonName();
 			this.personAddress = patient.getPersonAddress();
 			List<PatientIdentifier> activeIdentifiers = patient.getActiveIdentifiers();
-			if (activeIdentifiers.isEmpty())
-				activeIdentifiers.add(new PatientIdentifier(null, null,
-				        (LocationUtility.getUserDefaultLocation() != null) ? LocationUtility.getUserDefaultLocation()
-				                : LocationUtility.getDefaultLocation()));
+			if (activeIdentifiers.isEmpty()) {
+				final PatientIdentifierType defaultIdentifierType = getDefaultIdentifierType();
+				activeIdentifiers.add(new PatientIdentifier(null, defaultIdentifierType, (LocationUtility
+				        .getUserDefaultLocation() != null) ? LocationUtility.getUserDefaultLocation() : LocationUtility
+				        .getDefaultLocation()));
+			}
 			
 			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(activeIdentifiers), FactoryUtils
 			        .instantiateFactory(PatientIdentifier.class));
@@ -100,6 +103,18 @@ public class ShortPatientModel {
 	 */
 	public List<PatientIdentifier> getIdentifiers() {
 		return identifiers;
+	}
+	
+	/**
+	 * @return the default patient identifier type (lexically first required id type)
+	 */
+	private PatientIdentifierType getDefaultIdentifierType() {
+		List<PatientIdentifierType> types = Context.getPatientService().getAllPatientIdentifierTypes();
+		if (types.isEmpty()) {
+			return null;
+		} else {
+			return types.iterator().next();
+		}
 	}
 	
 	/**

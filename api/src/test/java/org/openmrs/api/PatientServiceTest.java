@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.*;
 
 import junit.framework.Assert;
 
@@ -59,6 +60,7 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -2232,5 +2234,29 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.mergePatients(preferred, notPreferred);
 		int expected = oldPreferred + notPreferred.getIdentifiers().size() - 1;
 		Assert.assertEquals(expected, preferred.getIdentifiers().size());
+	}
+	
+	/**
+	 * @see PatientService#getAllPatientIdentifierTypes(boolean)
+	 * @verifies order as default comparator
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldOrderAsDefaultComparator() throws Exception {
+		List<PatientIdentifierType> list = patientService.getAllPatientIdentifierTypes();
+		List<PatientIdentifierType> sortedList = new ArrayList<PatientIdentifierType>(list);
+		Collections.sort(sortedList, new PatientIdentifierTypeDefaultComparator());
+		Assert.assertEquals(sortedList, list);
+	}
+	
+	/**
+	 * @see PatientService#getPatientIdentifierTypes(String,String,Boolean,Boolean)
+	 * @verifies order as default comparator
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldOrderAsDefaultComparator() throws Exception {
+		List<PatientIdentifierType> list = patientService.getPatientIdentifierTypes(null, null, false, null);
+		List<PatientIdentifierType> sortedList = new ArrayList<PatientIdentifierType>(list);
+		Collections.sort(sortedList, new PatientIdentifierTypeDefaultComparator());
+		Assert.assertEquals(sortedList, list);
 	}
 }
