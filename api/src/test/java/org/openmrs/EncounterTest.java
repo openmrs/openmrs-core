@@ -722,6 +722,48 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link Encounter#addObs(Obs)}
+	 */
+	@Test
+	@Verifies(value = "should add encounter attrs to obs if attributes are null", method = "addObs(Obs)")
+	public void addObs_shouldAddEncounterAttrsToObsGroupMembersIfAttributesAreNull() throws Exception {
+		/// an encounter that will hav the date/location/patient on it
+		Encounter encounter = new Encounter();
+		
+		Date date = new Date();
+		encounter.setEncounterDatetime(date);
+		
+		Location location = new Location(1);
+		encounter.setLocation(location);
+		
+		Patient patient = new Patient(1);
+		encounter.setPatient(patient);
+		
+		// add an obs that doesn't have date/location/patient set on it.
+		Obs obs = new Obs(123);
+		Obs childObs = new Obs(456);
+		obs.addGroupMember(childObs);
+		
+		//check for infinite recursion
+		// childObs-->childObs2   and childObs2-->childObs
+		Obs childObs2 = new Obs(456);
+		childObs.addGroupMember(childObs2);
+		childObs2.addGroupMember(childObs);
+		
+		assertTrue(obs.getGroupMembers() != null && obs.getGroupMembers().size() == 1);
+		
+		encounter.addObs(obs);
+		
+		// check the values of the obs attrs to see if they were added
+		assertTrue(childObs.getObsDatetime().equals(date));
+		assertTrue(childObs.getLocation().equals(location));
+		assertTrue(childObs.getPerson().equals(patient));
+		assertTrue(childObs2.getObsDatetime().equals(date));
+		assertTrue(childObs2.getLocation().equals(location));
+		assertTrue(childObs2.getPerson().equals(patient));
+	}
+	
+	/**
 	 * @see {@link Encounter#addOrder(Order)}
 	 */
 	@Test
