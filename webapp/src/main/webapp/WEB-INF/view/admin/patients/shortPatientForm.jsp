@@ -568,6 +568,10 @@
 
 <script type="text/javascript">
 	updateAge();
+    var idT = document.getElementById('identifiers0.identifierType');
+    var idTi = idT.options[idT.selectedIndex].value;
+    toggleLocationBox(idTi,'initialLocationBox0');
+
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

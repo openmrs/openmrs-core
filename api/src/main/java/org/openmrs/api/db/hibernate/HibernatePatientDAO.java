@@ -33,6 +33,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -296,6 +297,11 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+	 * @should not return null excluding retired
+	 * @should not return retired
+	 * @should not return null including retired
+	 * @should return all
+	 * @should return ordered
 	 * @see org.openmrs.api.db.PatientDAO#getAllPatientIdentifierTypes(boolean)
 	 */
 	@SuppressWarnings("unchecked")
@@ -306,8 +312,15 @@ public class HibernatePatientDAO implements PatientDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
 		criteria.addOrder(Order.asc("name"));
 		
-		if (includeRetired == false)
-			criteria.add(Expression.eq("retired", false));
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired", false));
+		} else {
+			criteria.addOrder(Order.asc("retired")); //retired last
+		}
+		
+		criteria.addOrder(Order.desc("required")); //required first
+		criteria.addOrder(Order.asc("name"));
+		criteria.addOrder(Order.asc("patientIdentifierTypeId"));
 		
 		return criteria.list();
 	}
@@ -322,21 +335,24 @@ public class HibernatePatientDAO implements PatientDAO {
 		// TODO test this method
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
-		criteria.addOrder(Order.asc("name"));
 		
 		if (name != null)
-			criteria.add(Expression.eq("name", name));
+			criteria.add(Restrictions.eq("name", name));
 		
 		if (format != null)
-			criteria.add(Expression.eq("format", format));
+			criteria.add(Restrictions.eq("format", format));
 		
 		if (required != null)
-			criteria.add(Expression.eq("required", required));
+			criteria.add(Restrictions.eq("required", required));
 		
 		if (hasCheckDigit != null)
-			criteria.add(Expression.eq("checkDigit", hasCheckDigit));
+			criteria.add(Restrictions.eq("checkDigit", hasCheckDigit));
 		
-		criteria.add(Expression.eq("retired", false));
+		criteria.add(Restrictions.eq("retired", false));
+		
+		criteria.addOrder(Order.desc("required")); //required first
+		criteria.addOrder(Order.asc("name"));
+		criteria.addOrder(Order.asc("patientIdentifierTypeId"));
 		
 		return criteria.list();
 	}
