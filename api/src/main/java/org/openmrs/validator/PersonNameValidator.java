@@ -54,10 +54,11 @@ public class PersonNameValidator implements Validator {
 		PersonName personName = (PersonName) object;
 		try {
 			// Validate that the person name object is not null
-			if (personName == null)
+			if (personName == null) {
 				errors.reject("error.name");
-			if (!errors.hasErrors() && !personName.isVoided())
+			} else if (!personName.isVoided()) {
 				validatePersonName(personName, errors, true, false);
+			}
 		}
 		catch (Exception e) {
 			errors.reject(e.getMessage());
