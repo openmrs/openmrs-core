@@ -24,7 +24,18 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -56,6 +67,7 @@ import org.openmrs.activelist.Allergy;
 import org.openmrs.activelist.Problem;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
+import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.person.PersonMergeLogData;
@@ -66,7 +78,6 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
