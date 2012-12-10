@@ -295,7 +295,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		// TODO test this method
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
-		criteria.addOrder(Order.asc("name"));
 		
 		if (!includeRetired) {
 			criteria.add(Restrictions.eq("retired", false));
