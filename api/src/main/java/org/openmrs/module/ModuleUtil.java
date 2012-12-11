@@ -45,7 +45,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.Daemon;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
@@ -393,13 +392,17 @@ public class ModuleUtil {
 	 * Gets the folder where modules are stored. ModuleExceptions are thrown on errors
 	 * 
 	 * @return folder containing modules
+	 * @should use the runtime property as the first choice if specified
+	 * @should return the correct file if the runtime property is an absolute path
 	 */
 	public static File getModuleRepository() {
 		
-		AdministrationService as = Context.getAdministrationService();
-		String folderName = as.getGlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY,
-		    ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
-		
+		String folderName = Context.getRuntimeProperties().getProperty(ModuleConstants.REPOSITORY_FOLDER_RUNTIME_PROPERTY);
+		if (StringUtils.isBlank(folderName)) {
+			AdministrationService as = Context.getAdministrationService();
+			folderName = as.getGlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY,
+			    ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
+		}
 		// try to load the repository folder straight away.
 		File folder = new File(folderName);
 		
@@ -574,11 +577,12 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Convenience method to follow http to https redirects.  Will follow a total of 5 redirects, 
+	 * Convenience method to follow http to https redirects. Will follow a total of 5 redirects,
 	 * then fail out due to foolishness on the url's part.
 	 * 
 	 * @param c the {@link URLConnection} to open
-	 * @return an {@link InputStream} that is not necessarily at the same url, possibly at a 403 redirect.
+	 * @return an {@link InputStream} that is not necessarily at the same url, possibly at a 403
+	 *         redirect.
 	 * @throws IOException
 	 * @see {@link #getURLStream(URL)}
 	 */
