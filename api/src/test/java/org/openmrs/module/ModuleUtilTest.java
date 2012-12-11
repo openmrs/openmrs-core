@@ -466,7 +466,6 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		        .getAbsolutePath());
 		try {
 			File testFolder = ModuleUtil.getModuleRepository();
-			Thread.sleep(5000);
 			Assert.assertNotNull(testFolder);
 			Assert.assertEquals(expectedModuleRepo, testFolder);
 		}
