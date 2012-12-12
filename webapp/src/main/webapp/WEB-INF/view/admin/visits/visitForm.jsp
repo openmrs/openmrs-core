@@ -198,13 +198,21 @@ $j(document).ready( function() {
 			<th><openmrs:message code="Visit.visitType"/><span class="required"> *</span></th>
 			<td>
 			<spring:bind path="visitType">
+			<c:set var="groupOpen" value="false" />
 				<select name="${status.expression}">
 				   <option value=""></option>
 				<c:forEach items="${visitTypes}" var="visitType">
+				<c:if test="${visitType.retired && !groupOpen}">
+					<optgroup label="<openmrs:message code="Visit.type.retired"/>">
+					<c:set var="groupOpen" value="true" />
+				</c:if>
 					<option value="${visitType.visitTypeId}" <c:if test="${visitType.visitTypeId == status.value}">selected="selected"</c:if>>
 						${visitType.name}
 					</option>
 				</c:forEach>
+				<c:if test="${groupOpen}">
+					</optgroup>
+					</c:if>
 				</select>
 			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
