@@ -326,7 +326,7 @@ public class VisitFormController {
 	
 	@ModelAttribute("visitTypes")
 	public List<VisitType> getVisitTypes() throws Exception {
-		return Context.getVisitService().getAllVisitTypes();
+		return Context.getVisitService().getAllVisitTypes(true);
 	}
 	
 	@ModelAttribute("attributeTypes")
