@@ -276,7 +276,7 @@ window.onload = init;
 			<td valign="top"><openmrs:message code="Scheduler.scheduleForm.repeatInterval"/>:</td>
 			<td>
 				<spring:bind path="task.repeatInterval">
-					<input type="text" id="repeatInterval" name="repeatInterval" size="10" value="${status.value}" /> 
+					<input type="text" id="repeatInterval" name="repeatInterval" size="10" value="${repeatInterval}" /> 
 					<select name="repeatIntervalUnits">
 						<option value="seconds" <c:if test="${units=='seconds'}">selected</c:if>><openmrs:message code="Scheduler.scheduleForm.repeatInterval.units.seconds" /></option>
 						<option value="minutes" <c:if test="${units=='minutes'}">selected</c:if>><openmrs:message code="Scheduler.scheduleForm.repeatInterval.units.minutes" /></option>
