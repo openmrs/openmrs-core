@@ -85,7 +85,7 @@ public class VisitFormController {
 		if (visit.getVisitId() != null)
 			model.addAttribute("canPurgeVisit", Context.getEncounterService().getEncountersByVisit(visit, true).size() == 0);
 		
-		addEncounterAndObservationCounts(visit, model);
+		addEncounterAndObservationCounts(visit, null, model);
 		return VISIT_FORM;
 	}
 	
@@ -143,7 +143,7 @@ public class VisitFormController {
 					e.setVisit(null);
 					validateEncounter(e, result);
 					if (result.hasErrors()) {
-						addEncounterAndObservationCounts(visit, model);
+						addEncounterAndObservationCounts(visit, encounterIds, model);
 						return VISIT_FORM;
 					}
 					
@@ -161,7 +161,7 @@ public class VisitFormController {
 					e.setVisit(visit);
 					validateEncounter(e, result);
 					if (result.hasErrors()) {
-						addEncounterAndObservationCounts(visit, model);
+						addEncounterAndObservationCounts(visit, encounterIds, model);
 						return VISIT_FORM;
 					}
 					
@@ -193,7 +193,7 @@ public class VisitFormController {
 			}
 		}
 		
-		addEncounterAndObservationCounts(visit, model);
+		addEncounterAndObservationCounts(visit, encounterIds, model);
 		return VISIT_FORM;
 	}
 	
@@ -258,7 +258,7 @@ public class VisitFormController {
 			    "Visit.void.error"), WebRequest.SCOPE_SESSION);
 		}
 		
-		addEncounterAndObservationCounts(visit, model);
+		addEncounterAndObservationCounts(visit, null, model);
 		return VISIT_FORM;
 	}
 	
@@ -289,7 +289,7 @@ public class VisitFormController {
 			    "Visit.unvoid.error"), WebRequest.SCOPE_SESSION);
 		}
 		
-		addEncounterAndObservationCounts(visit, model);
+		addEncounterAndObservationCounts(visit, null, model);
 		return VISIT_FORM;
 	}
 	
@@ -353,11 +353,12 @@ public class VisitFormController {
 		}
 	}
 	
-	private void addEncounterAndObservationCounts(Visit visit, ModelMap model) {
+	private void addEncounterAndObservationCounts(Visit visit, List<Integer> encounterIds, ModelMap model) {
 		int encounterCount = 0;
 		int observationCount = 0;
+		EncounterService encounterService = Context.getEncounterService();
 		if (visit != null && visit.getId() != null) {
-			List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(visit, false);
+			List<Encounter> encounters = encounterService.getEncountersByVisit(visit, false);
 			encounterCount = encounters.size();
 			
 			if (!encounters.isEmpty()) {
@@ -365,6 +366,15 @@ public class VisitFormController {
 				    null, null, null, false);
 			}
 		}
+		
+		if (encounterIds != null) {
+			List<Encounter> visitEncounters = new ArrayList<Encounter>();
+			for (Integer encounterId : encounterIds) {
+				visitEncounters.add(encounterService.getEncounter(encounterId));
+			}
+			model.put("visitEncounters", visitEncounters);
+		}
+		
 		model.put("encounterCount", encounterCount);
 		model.put("observationCount", observationCount);
 	}
