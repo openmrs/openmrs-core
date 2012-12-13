@@ -49,6 +49,7 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	/**
 	 * @see org.openmrs.messagesource.MessageSourceService#getMessage(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public String getMessage(String s) {
 		return getMessage(s, null, Context.getLocale());
 	}
