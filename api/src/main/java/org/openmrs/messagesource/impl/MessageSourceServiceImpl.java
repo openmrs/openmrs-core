@@ -28,6 +28,7 @@ import org.openmrs.messagesource.PresentationMessage;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Extensible implementation of the MessageSourceService, which relies on injected implementations
