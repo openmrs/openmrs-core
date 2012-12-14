@@ -186,6 +186,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
+		// NEW
+		patient.setDeathdateEstimated(true);
 		
 		return patient;
 	}
