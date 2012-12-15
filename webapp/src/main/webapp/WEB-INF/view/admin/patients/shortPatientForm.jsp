@@ -102,6 +102,16 @@
 		else
 			input.parentNode.className = "listItemChecked";
 	}
+	function updateEstimatedDeathdate() {
+		var input = document.getElementById("deathdateEstimatedInput");
+		if (input) {
+			//input.checked = false;
+			input.checked = true;
+			input.parentNode.className = "";
+		}
+		else
+			input.parentNode.className = "listItemChecked";
+	}
 	
 	// age function borrowed from http://anotherdan.com/2006/02/simple-javascript-age-function/
 	function getAge(d, now) {
@@ -531,6 +541,7 @@
 				}
 			</script>
 			<br/>
+			
 			<div id="deathInformation">
 				<b><openmrs:message code="Person.deathDate"/>:</b>
 
@@ -541,7 +552,20 @@
 					<i style="font-weight: normal; font-size: 0.8em;">(<openmrs:message code="general.format"/>: <openmrs:datePattern />)</i>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
-				&nbsp; &nbsp; 
+				&nbsp; &nbsp;
+
+<!-- HERE -->
+				<openmrs:message code="Person.deathdateEstimated"/>
+				<spring:bind path="patient.deathdateEstimated">
+					<input type="hidden" name="_${status.expression}"> <!--  NEW -->
+                    <input type="checkbox" name="${status.expression}" value="false" 
+						<c:if test="${status.value == true}">checked</c:if> 
+						   id="deathdateEstimatedInput" 
+							  onclick="if (this.checked) updateEstimatedDeathdate()" />					
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+				&nbsp; 
+				
 				<openmrs:message code="Person.causeOfDeath"/>
 				<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
 				<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
@@ -550,6 +574,7 @@
 					<%--<input type="text" name="causeOfDeath" value="${status.value}" id="causeOfDeath"/>--%>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
+				
 				<script type="text/javascript">				
 					//set up death info fields
 					personDeadClicked(document.getElementById("personDead"));

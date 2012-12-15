@@ -303,6 +303,7 @@ public class PersonFormController extends SimpleFormController {
 								Date dateDeath = person.getDeathDate();
 								if (dateDeath == null)
 									dateDeath = new Date();
+								
 								obsDeath.setObsDatetime(dateDeath);
 								
 								// check if this is an "other" concept - if so, then we need to add value_text
