@@ -79,9 +79,7 @@ public class PatientFormController extends PersonFormController {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	@Autowired
-	public void setPatientValidator(PatientValidator patientValidator) {
-		super.setValidator(patientValidator);
-	}
+	PatientValidator patientValidator;
 	
 	/**
 	 * Allows for other Objects to be used as values in input tags. Normally, only strings and lists
@@ -112,10 +110,6 @@ public class PatientFormController extends PersonFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
 	        BindException errors) throws Exception {
 		
-		if (errors.hasErrors()) {
-			return showForm(request, response, errors);
-		}
-		
 		Patient patient = (Patient) object;
 		
 		if (Context.isAuthenticated()) {
@@ -128,6 +122,13 @@ public class PatientFormController extends PersonFormController {
 			String action = request.getParameter("action");
 			
 			if (action.equals(msa.getMessage("Patient.save"))) {
+				
+				patientValidator.validate(patient, errors);
+				
+				if (errors.hasErrors()) {
+					return showForm(request, response, errors);
+				}
+				
 				updatePersonNames(request, patient);
 				
 				updatePersonAddresses(request, patient);
@@ -183,27 +184,6 @@ public class PatientFormController extends PersonFormController {
 					currentId.setPreferred(true);
 				}
 				
-				/*
-				 * 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
-				isError = true;
-				} catch ( InvalidCheckDigitException icde ) {
-				log.error(icde);
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
-				isError = true;
-				} catch ( IdentifierNotUniqueException inue ) {
-				log.error(inue);
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
-				isError = true;
-				} catch ( DuplicateIdentifierException die ) {
-				log.error(die);
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
-				isError = true;
-				} catch ( PatientIdentifierException pie ) {
-				log.error(pie);
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
-
-				 */
-
 				// check patient identifier formats
 				for (PatientIdentifier pi : patient.getIdentifiers()) {
 					// skip voided identifiers
