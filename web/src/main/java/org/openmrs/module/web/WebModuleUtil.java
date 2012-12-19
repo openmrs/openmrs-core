@@ -170,7 +170,7 @@ public class WebModuleUtil {
 					OpenmrsUtil.storeProperties(allModulesProperties, new FileOutputStream(file), null);
 				}
 				catch (FileNotFoundException e) {
-					throw new ModuleException(file.getAbsolutePath(), e);
+					throw new ModuleException("Unable to load module messages from file: " + file.getAbsolutePath(), e);
 				}
 			}
 			log.debug("Done copying messages");
