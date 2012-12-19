@@ -225,19 +225,9 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		this.birthdateEstimated = birthdateEstimated;
 	}
 	
-	/**
-	 * @return true if person's deathdate is estimated
-	 */
-	public Boolean isDeathdateEstimated() {
-		// if (this.deathdateEstimated == null) {
-		// return new Boolean(false);
-		// }
-		return this.deathdateEstimated;
-	}
-	
 	@Attribute(required = true)
 	public Boolean getDeathdateEstimated() {
-		return isDeathdateEstimated();
+		return this.deathdateEstimated;
 	}
 	
 	/**

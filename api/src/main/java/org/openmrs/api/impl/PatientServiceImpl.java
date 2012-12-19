@@ -945,12 +945,26 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		
 		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
-		mergedData.setPriorDateOfDeathEstimated(preferred.isDeathdateEstimated());
+		mergedData.setPriorDateOfDeathEstimated(preferred.getDeathdateEstimated());
 		if (preferred.getDeathDate() == null || (preferred.getDeathdateEstimated() && !notPreferred.getDeathdateEstimated())) {
 			preferred.setDeathDate(notPreferred.getDeathDate());
 			preferred.setDeathdateEstimated(notPreferred.getDeathdateEstimated());
 		}
 		
+		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
+		mergedData.setPriorDateOfDeathEstimated(preferred.getDeathdateEstimated());
+		if (preferred.getDeathDate() == null || (preferred.getDeathdateEstimated() && !notPreferred.getDeathdateEstimated())) {
+			preferred.setDeathDate(notPreferred.getDeathDate());
+			preferred.setDeathdateEstimated(notPreferred.getDeathdateEstimated());
+		}
+		
+		// OLD	
+		/*
+		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
+		if (preferred.getDeathDate() == null)
+			preferred.setDeathDate(notPreferred.getDeathDate());
+		*/
+
 		if (preferred.getCauseOfDeath() != null)
 			mergedData.setPriorCauseOfDeath(preferred.getCauseOfDeath().getUuid());
 		if (preferred.getCauseOfDeath() == null)

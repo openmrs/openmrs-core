@@ -304,6 +304,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			if (p.getDeathDate() != null) {
 				patientNode.setAttribute("death_date", df.format(p.getDeathDate()));
 			}
+			if (p.getDeathdateEstimated() != null) {
+				patientNode.setAttribute("deathdate_estimated", p.getDeathdateEstimated().toString());
+			}
+			
 			if (p.getCauseOfDeath() != null) {
 				patientNode.setAttribute("cause_of_death", p.getCauseOfDeath().getName(locale, false).getName());
 			}
