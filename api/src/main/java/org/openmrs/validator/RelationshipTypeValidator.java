@@ -62,3 +62,5 @@ public class RelationshipTypeValidator implements Validator {
 		}
 	}
 }
+
+	 
