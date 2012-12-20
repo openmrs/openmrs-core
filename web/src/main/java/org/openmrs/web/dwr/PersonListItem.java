@@ -143,7 +143,7 @@ public class PersonListItem {
 			if (person.getDeathDate() != null) {
 				this.deathDateString = Format.format(person.getDeathDate());
 			}
-			deathdateEstimated = person.isDeathdateEstimated();
+			deathdateEstimated = person.getDeathdateEstimated();
 			
 			// add in the person attributes
 			for (PersonAttribute attribute : person.getActiveAttributes()) {
