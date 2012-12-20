@@ -565,16 +565,6 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public void deleteFormResource(FormResource formResource) {
-		// if there is clob_datatype_storage entry is added into that table, first delete it
-		if (formResource.getValueReference() != null) {
-			String valueRef = formResource.getValueReference();
-			ClobDatatypeStorage clobEntry = Context.getDatatypeService().getClobDatatypeStorageByUuid(valueRef);
-			if (clobEntry != null) {
-				//todo: add 'save necessary attributes' functionality if needed
-				sessionFactory.getCurrentSession().delete(clobEntry);
-			}
-		}
-		
 		sessionFactory.getCurrentSession().delete(formResource);
 	}
 	

@@ -13,6 +13,8 @@
  */
 package org.openmrs.customdatatype;
 
+import org.openmrs.FormResource;
+
 /**
  * Represents a custom datatype, which an administrator may use for global properties, attribute types, etc.
  * Handles conversion between a typed Java object and a reference string which can be persisted in a database
@@ -86,7 +88,19 @@ public interface CustomDatatype<T> {
 	 * @param typedValue
 	 */
 	void validate(T typedValue) throws InvalidCustomValueException;
-	
+
+
+    /**
+     * Notifies the data type that it's parent is going to be deleted and any external storage wil be deleted
+     * with that, if the data type wants to avoid the deletion an exception will be thrown
+     * todo: add the exception properly
+     * @param parent
+     * @param existingValueReference
+     * @throws Exception
+     */
+    void notifyOfDeletion(Object parent, String existingValueReference);
+
+
 	/**
 	 * A short reprepresentation of a custom value, along with an indication of whether this is the complete value,
 	 * or just a summary.

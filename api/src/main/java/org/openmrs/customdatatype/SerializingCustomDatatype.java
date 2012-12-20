@@ -97,5 +97,12 @@ public abstract class SerializingCustomDatatype<T> implements CustomDatatype<T> 
 		else
 			return doGetTextSummary(deserialize(referenceString));
 	}
-	
+
+    /**
+     * @see org.openmrs.customdatatype.CustomDatatype#notifyOfDeletion(java.lang.Object, java.lang.String)
+     */
+    @Override
+    public void notifyOfDeletion(Object parent, String existingValueReference) {
+         // not yet used
+    }
 }

@@ -42,6 +42,7 @@ import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.FormDAO;
 import org.openmrs.api.handler.SaveHandler;
+import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.FormValidator;
@@ -864,7 +865,10 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Override
 	public void purgeFormResource(FormResource formResource) throws APIException {
-		dao.deleteFormResource(formResource);
+        CustomDatatype<?> datatype =
+                CustomDatatypeUtil.getDatatype(formResource.getDatatypeClassname(), formResource.getDatatypeConfig());
+		datatype.notifyOfDeletion(formResource, formResource.getValueReference());
+        dao.deleteFormResource(formResource);
 	}
 	
 	/**

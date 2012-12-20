@@ -23,6 +23,7 @@ import org.openmrs.api.DatatypeService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ClobDatatypeStorage;
+import org.openmrs.api.impl.FormServiceImpl;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 public class HibernateFormDAOTest extends BaseContextSensitiveTest {
@@ -30,8 +31,6 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 	private static final String FORM_DATA_XML = "org/openmrs/api/include/HibernateFormDAOTest.xml";
 	
 	private FormService formService;
-	
-	private HibernateFormDAO formDao = null;
 	
 	private DatatypeService dataTypeService;
 	
@@ -47,16 +46,12 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 
 		formService = Context.getFormService();
 		dataTypeService = Context.getDatatypeService();
-		
-		if (formDao == null)
-			formDao = (HibernateFormDAO) applicationContext.getBean("formDAO");
-		
 
 	}
 	
 	/**
 	 * Verifies whether the corresponding row in clob_datatype_storage table is deleted when
-	 * deleting a FormResource of 'LongFreeText' datatype
+	 * deleting a FormResource with external storage
 	 * @throws Exception
 	 */
 	@Test
@@ -82,8 +77,8 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(clobDatatypeEntry);
 		
 		// delete the FormResource
-		formDao.deleteFormResource(formResource);
-		
+        formService.purgeFormResource(formResource);
+
 		// assert that the clob datatype table row is too deleted
 		Assert.assertNull(dataTypeService.getClobDatatypeStorage(clobEntryId));
 		
