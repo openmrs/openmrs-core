@@ -177,10 +177,16 @@ public class HibernatePatientDAO implements PatientDAO {
 					}
 				}
 			}
+			
+			// commenting this out to get the save patient as a user option to work correctly
+			sessionFactory.getCurrentSession().flush();
+			
+			//Without clearing session, you will get this error when promoting person to patient
+			//org.hibernate.NonUniqueObjectException: a different object with the same identifier
+			//value was already associated with the session: [org.openmrs.Patient#]
+			//see TRUNK-3728
+			sessionFactory.getCurrentSession().clear();
 		}
-		
-		// commenting this out to get the save patient as a user option to work correctly
-		//sessionFactory.getCurrentSession().flush();
 	}
 	
 	/**
