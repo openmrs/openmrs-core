@@ -3167,4 +3167,22 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * https://tickets.openmrs.org/browse/TRUNK-3728
+	 * 
+	 * @see {@link PatientService#savePatient(Patient)}
+	 */
+	@Test
+	@Verifies(value = "should not throw NonUniqueObjectException when called with person promoted to patient", method = "savePatient(Patient)")
+	public void savePatient_shouldNotThrowNonUniqueObjectExceptionWhenCalledWithPersonPromotedToPatient() throws Exception {
+		Person person = personService.getPerson(1);
+		Patient patient = patientService.getPatientOrPromotePerson(person.getPersonId());
+		PatientIdentifier patientIdentifier = new PatientIdentifier("some identifier", new PatientIdentifierType(2),
+		        new Location(1));
+		patientIdentifier.setPreferred(true);
+		patient.addIdentifier(patientIdentifier);
+		
+		patientService.savePatient(patient);
+	}
+	
 }

@@ -176,6 +176,13 @@ public class HibernatePatientDAO implements PatientDAO {
 					}
 				}
 			}
+			
+			//Without evicting person, you will get this error when promoting person to patient
+			//org.hibernate.NonUniqueObjectException: a different object with the same identifier
+			//value was already associated with the session: [org.openmrs.Patient#]
+			//see TRUNK-3728
+			Person person = (Person) sessionFactory.getCurrentSession().get(Person.class, patient.getPersonId());
+			sessionFactory.getCurrentSession().evict(person);
 		}
 		
 		// commenting this out to get the save patient as a user option to work correctly
