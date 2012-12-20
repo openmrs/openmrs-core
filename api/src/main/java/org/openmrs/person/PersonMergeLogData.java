@@ -118,8 +118,7 @@ public class PersonMergeLogData {
 	 * Whether the date of death of preferred person was an estimated value before the merge
 	 * occurred
 	 */
-	
-	private boolean priorDateOfDeathEstimated;
+	private Boolean priorDateOfDeathEstimated;
 	
 	/**
 	 * Value of cause of death of preferred person as it was before the merge occurred
@@ -279,11 +278,12 @@ public class PersonMergeLogData {
 		this.priorDateOfDeath = priorDateOfDeath;
 	}
 	
-	public boolean isPriorDateOfDeathEstimated() {
+	public Boolean getPriorDateOfDeathEstimated() {
 		return priorDateOfDeathEstimated;
 	}
 	
-	public void setPriorDateOfDeathEstimated(boolean priorDateOfDeathEstimated) {
+	//public void setPriorDateOfDeathEstimated(boolean priorDateOfDeathEstimated) {
+	public void setPriorDateOfDeathEstimated(Boolean priorDateOfDeathEstimated) {
 		this.priorDateOfDeathEstimated = priorDateOfDeathEstimated;
 	}
 	

@@ -225,7 +225,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		this.birthdateEstimated = birthdateEstimated;
 	}
 	
-	@Attribute(required = true)
 	public Boolean getDeathdateEstimated() {
 		return this.deathdateEstimated;
 	}
@@ -233,7 +232,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @param deathdateEstimated true if person's deathdate is estimated
 	 */
-	@Attribute(required = true)
 	public void setDeathdateEstimated(Boolean deathdateEstimated) {
 		this.deathdateEstimated = deathdateEstimated;
 	}
