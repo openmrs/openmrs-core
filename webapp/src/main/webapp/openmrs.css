@@ -587,7 +587,7 @@ table.patientTreatmentPrograms td {
 		font-size: 1.03em;
 	}
 
-.retired, .voided, .retired *, .voided * {
+.retired, .voided, .retired *, .voided *, a.retired {
 	text-decoration: line-through;
 }
 
