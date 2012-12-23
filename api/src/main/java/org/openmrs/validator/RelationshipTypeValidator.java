@@ -25,7 +25,7 @@ import org.springframework.validation.Validator;
 /**
  * Validates attributes on the {@link RelationshipType} object.
  * 
- * @since 1.5
+ * @since 1.10
  */
 @Handler(supports = { RelationshipType.class }, order = 50)
 
@@ -49,9 +49,6 @@ public class RelationshipTypeValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if name is null or empty or whitespace
-	 * @should fail validation if description is null or empty or whitespace
-	 * @should pass validation if all required fields have proper values
 	 */
 	 public void validate(Object obj, Errors errors) {
 		RelationshipType RelationshipType = (RelationshipType) obj;
