@@ -37,7 +37,7 @@ if (jspContext.getAttribute("initialValue") != null) {
 			</c:if>
 			<openmrs:forEachRecord name="locationHierarchy">
 				<option value="${record.location.locationId}" <c:if test="${record.location == initialValue}">selected</c:if>>
-                                    <c:forEach begin="1" end="${record.depth}" >&nbsp;</c:forEach>${record.location.name}
+                                    <c:forEach begin="1" end="${record.depth}" >&nbsp;&nbsp;</c:forEach>${record.location.name}
                                 </option>
 			</openmrs:forEachRecord>
 		</select>
