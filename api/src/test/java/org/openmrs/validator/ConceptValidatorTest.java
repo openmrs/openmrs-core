@@ -2,10 +2,13 @@ package org.openmrs.validator;
 
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
@@ -17,6 +20,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 
 /**
  * Tests methods on the {@link ConceptValidator} class.
@@ -169,6 +173,13 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassIfTheConceptHasAtleastOneFullySpecifiedNameAddedToIt() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("one name", Context.getLocale()));
+		
+		Locale locale = Context.getAdministrationService().getAllowedLocales().get(0);
+		ConceptDescription conceptDescription = new ConceptDescription("description", locale);
+		Set<ConceptDescription> conceptDescriptions = new HashSet<ConceptDescription>();
+		conceptDescriptions.add(conceptDescription);
+		concept.setDescriptions(conceptDescriptions);
+		
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
@@ -244,6 +255,13 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		ConceptName name = new ConceptName("CD4", Context.getLocale());
 		name.setConceptNameType(ConceptNameType.SHORT);
 		concept.addName(name);
+		
+		Locale locale = Context.getAdministrationService().getAllowedLocales().get(0);
+		ConceptDescription conceptDescription = new ConceptDescription("description", locale);
+		Set<ConceptDescription> conceptDescriptions = new HashSet<ConceptDescription>();
+		conceptDescriptions.add(conceptDescription);
+		concept.setDescriptions(conceptDescriptions);
+		
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertFalse(errors.hasErrors());
@@ -256,6 +274,13 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail if a term is mapped multiple times to the same concept", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfATermIsMappedMultipleTimesToTheSameConcept() throws Exception {
 		Concept concept = new Concept();
+		
+		Locale locale = Context.getAdministrationService().getAllowedLocales().get(0);
+		ConceptDescription conceptDescription = new ConceptDescription("description", locale);
+		Set<ConceptDescription> conceptDescriptions = new HashSet<ConceptDescription>();
+		conceptDescriptions.add(conceptDescription);
+		concept.setDescriptions(conceptDescriptions);
+		
 		ConceptService cs = Context.getConceptService();
 		concept.addName(new ConceptName("my name", Context.getLocale()));
 		ConceptMap map1 = new ConceptMap(cs.getConceptReferenceTerm(1), cs.getConceptMapType(1));
@@ -327,6 +352,13 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("test name", Context.getLocale()));
+		
+		Locale locale = Context.getAdministrationService().getAllowedLocales().get(0);
+		ConceptDescription conceptDescription = new ConceptDescription("description", locale);
+		Set<ConceptDescription> conceptDescriptions = new HashSet<ConceptDescription>();
+		conceptDescriptions.add(conceptDescription);
+		concept.setDescriptions(conceptDescriptions);
+		
 		ConceptMap map = new ConceptMap();
 		map.setSourceCode("unique code");
 		map.setSource(cs.getConceptSource(1));
@@ -371,5 +403,53 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		//the second mapping should be rejected
 		Assert.assertEquals(false, errors.hasFieldErrors("conceptMappings[1]"));
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies not fail if a at least one allowed locale has an associated description
+	 */
+	@Test
+	public void validate_shouldPassIfAtLeastOneAllowedLocaleHasAConceptDescription() throws Exception {
+		Concept concept = new Concept();
+		
+		ConceptDescription conceptDescription = new ConceptDescription("Test Description", Context
+		        .getAdministrationService().getAllowedLocales().get(0));
+		
+		Set<ConceptDescription> conceptDescriptions = new HashSet<ConceptDescription>();
+		conceptDescriptions.add(conceptDescription);
+		concept.setDescriptions(conceptDescriptions);
+		
+		concept.addName(new ConceptName("one name", Context.getLocale()));
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		
+		Assert.assertEquals(false, errors.hasErrors());
+		
+	}
+	
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 * @verifies not fail if no ConceptDescription objects are assigned
+	 */
+	@Test
+	public void validate_shouldFailIfNoConceptDescriptionsAreAssigned() throws Exception {
+		Concept concept = new Concept();
+		
+		Set<ConceptDescription> conceptDescriptions = new HashSet<ConceptDescription>();
+		concept.setDescriptions(conceptDescriptions);
+		
+		concept.addName(new ConceptName("one name", Context.getLocale()));
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		
+		Assert.assertEquals(true, errors.hasErrors());
+		Assert.assertEquals(1, errors.getAllErrors().size());
+		
+		ObjectError objectError = errors.getAllErrors().get(0);
+		Assert.assertEquals("Concept.error.no.ConceptDescription", objectError.getCode());
+		
 	}
 }

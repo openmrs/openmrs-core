@@ -15,13 +15,16 @@ package org.openmrs.api.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptWord;
 import org.openmrs.api.ConceptNameType;
@@ -197,6 +200,13 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		Concept c = new Concept();
 		ConceptName fullySpecifiedName = new ConceptName("requires one name min", new Locale("fr", "CA"));
 		c.addName(fullySpecifiedName);
+		
+		Locale locale = Context.getAdministrationService().getAllowedLocales().get(0);
+		ConceptDescription conceptDescription = new ConceptDescription("description", locale);
+		Set<ConceptDescription> conceptDescriptions = new HashSet<ConceptDescription>();
+		conceptDescriptions.add(conceptDescription);
+		c.setDescriptions(conceptDescriptions);
+		
 		Concept savedC = Context.getConceptService().saveConcept(c);
 		Assert.assertNotNull(savedC);
 		Assert.assertTrue(savedC.getConceptId() > 0);
@@ -212,6 +222,13 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		Concept c = new Concept();
 		ConceptName fullySpecifiedName = new ConceptName("requires one name min", new Locale("fr", "CA"));
 		c.addName(fullySpecifiedName);
+		
+		Locale locale = Context.getAdministrationService().getAllowedLocales().get(0);
+		ConceptDescription conceptDescription = new ConceptDescription("description", locale);
+		Set<ConceptDescription> conceptDescriptions = new HashSet<ConceptDescription>();
+		conceptDescriptions.add(conceptDescription);
+		c.setDescriptions(conceptDescriptions);
+		
 		Concept savedC = Context.getConceptService().saveConcept(c);
 		Assert.assertNotNull(savedC);
 		Concept updatedC = Context.getConceptService().saveConcept(c);
@@ -319,6 +336,12 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		Assert.assertFalse("check test assumption - the API didn't automatically set preferred vlag", c
 		        .getFullySpecifiedName(loc).isPreferred());
 		
+		Locale locale = Context.getAdministrationService().getAllowedLocales().get(0);
+		ConceptDescription conceptDescription = new ConceptDescription("description", locale);
+		Set<ConceptDescription> conceptDescriptions = new HashSet<ConceptDescription>();
+		conceptDescriptions.add(conceptDescription);
+		c.setDescriptions(conceptDescriptions);
+		
 		Assert.assertNotNull("Concept is legit, save succeeds", Context.getConceptService().saveConcept(c));
 		
 		Context.getConceptService().saveConcept(c);
@@ -358,6 +381,12 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNull("check test assumption - the API hasn't promoted a name to a fully specified name", c
 		        .getFullySpecifiedName(loc));
+		
+		Locale locale = Context.getAdministrationService().getAllowedLocales().get(0);
+		ConceptDescription conceptDescription = new ConceptDescription("description", locale);
+		Set<ConceptDescription> conceptDescriptions = new HashSet<ConceptDescription>();
+		conceptDescriptions.add(conceptDescription);
+		c.setDescriptions(conceptDescriptions);
 		
 		//The API will throw a validation error because there isn't a fully specified name.
 		try {

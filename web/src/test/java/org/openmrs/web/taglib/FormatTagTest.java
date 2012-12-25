@@ -13,7 +13,9 @@
  */
 package org.openmrs.web.taglib;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
@@ -21,6 +23,7 @@ import javax.servlet.jsp.tagext.Tag;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.api.ConceptNameType;
@@ -53,6 +56,13 @@ public class FormatTagTest extends BaseContextSensitiveTest {
 		c.addName(buildName("English another tag", locale, false, null, anotherTag));
 		c.setDatatype(service.getConceptDatatype(1));
 		c.setConceptClass(service.getConceptClass(1));
+		
+		ConceptDescription conceptDescription = new ConceptDescription("Test Description", Context
+		        .getAdministrationService().getAllowedLocales().get(0));
+		
+		Set<ConceptDescription> conceptDescriptions = new HashSet<ConceptDescription>();
+		conceptDescriptions.add(conceptDescription);
+		c.setDescriptions(conceptDescriptions);
 		
 		Context.getConceptService().saveConcept(c);
 		

@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptComplex;
@@ -116,8 +117,12 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	/**
 	 * This test concept form being submitted with only one name supplied
 	 * 
+	 * This test becomes invalid after the inclusionof TRUNK-3478, which makes it 
+	 * mandatory for a concept to have at least one concept description
+	 * 
 	 * @throws Exception
 	 */
+	@Ignore
 	@Test
 	public void shouldAddConceptWithOnlyNameSpecified() throws Exception {
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
@@ -175,6 +180,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
 		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
 		mockRequest.setParameter("concept.datatype", "1");
+		mockRequest.setParameter("descriptionsByLocale[en].description", "DESCRIPTION");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
 		assertNotNull(mav);
@@ -187,7 +193,6 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertEquals(EXPECTED_PREFERRED_NAME, actualConcept.getFullySpecifiedName(Locale.ENGLISH).getName());
 		assertNotNull(actualConcept.getShortNameInLocale(Locale.ENGLISH));
 		assertEquals(EXPECTED_SHORT_NAME, actualConcept.getShortNameInLocale(Locale.ENGLISH).getName());
-		assertNull(actualConcept.getDescription(Locale.ENGLISH));
 	}
 	
 	/**
@@ -639,6 +644,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		mockRequest.setParameter("concept.datatype", "2");
 		mockRequest.setParameter("concept.class", "7");
 		mockRequest.setParameter("concept.answers", "7 8");
+		mockRequest.setParameter("descriptionsByLocale[en].description", "DESCRIPTION");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
 		assertNotNull(mav);
@@ -700,6 +706,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		mockRequest.setParameter("concept.datatype", "13");
 		mockRequest.setParameter("concept.class", "5");
 		mockRequest.setParameter("handlerKey", "TextHandler"); // switching it from an ImageHandler to a TextHandler
+		mockRequest.setParameter("descriptionsByLocale[en].description", "DESCRIPTION");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
 		assertNotNull(mav);
@@ -839,6 +846,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		mockRequest.setParameter("concept.datatype", "1");
 		mockRequest.setParameter("conceptMappings[0].conceptReferenceTerm", "1");
 		mockRequest.setParameter("conceptMappings[0].conceptMapType", "3");
+		mockRequest.setParameter("descriptionsByLocale[en].description", "DESCRIPTION");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
 		assertNotNull(mav);
