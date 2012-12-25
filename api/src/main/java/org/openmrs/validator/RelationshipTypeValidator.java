@@ -19,13 +19,12 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.RelationshipType;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
  * Validates attributes on the {@link RelationshipType} object.
  * 
- * @since 1.5
+ * @since 1.10
  */
 @Handler(supports = { RelationshipType.class }, order = 50)
 
@@ -49,16 +48,19 @@ public class RelationshipTypeValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
+	 * @should 
+	 * @should fail validation if nothing is passed into getIsToB() and getIsToA() thus Relationship type cannot be null
+	 * @should pass validation if all required fields have proper values
 	 */
 	 public void validate(Object obj, Errors errors) {
 		RelationshipType RelationshipType = (RelationshipType) obj;
-		if (RelationshipType == null) {
-			errors.rejectValue("RelationshipType", "error.general");
-		} else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-		}
-
- 		
+		/**
+		 *       NOTE:
+		 *RelationshipType.aIsToB = A is to B
+		 *RelationshipType.bIsToA = B is to A
+		 *RelationshipType.aIsToB.required = A is to B name is required
+		 *RelationshipType.bIsToA.required = B is to A name is required
+		*/
  		if (RelationshipType.getaIsToB() == null || RelationshipType.getaIsToB().equals(""))
 			errors.rejectValue("aIsToB", "RelationshipType.aIsToB.required");
 			errors.rejectValue("localizedAIsToB.unlocalizedValue", "RelationshipType.aIsToB.required");
