@@ -19,7 +19,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.RelationshipType;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -49,19 +48,12 @@ public class RelationshipTypeValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if name is null or empty or whitespace
+	 * @should 
 	 * @should fail validation if nothing is passed into getIsToB() and getIsToA() thus Relationship type cannot be null
 	 * @should pass validation if all required fields have proper values
 	 */
 	 public void validate(Object obj, Errors errors) {
 		RelationshipType RelationshipType = (RelationshipType) obj;
-		
-		if (RelationshipType == null) {
-			errors.rejectValue("RelationhipType", "error.general");
-		} else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-		}
-		
 		/**
 		 *       NOTE:
 		 *RelationshipType.aIsToB = A is to B
