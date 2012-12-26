@@ -159,8 +159,34 @@ try {
 <br/>
 <openmrs:extensionPoint pointId="org.openmrs.uncaughtException" type="html" />
 
+
+<br/>
+ <b> Found a bug? Please fill out and submit the form below - help us make OpenMRS better software -- Thanks! </b>
+<br/> <br/>
+<table bgcolor="#fafad2" width="70%">
+    <tr>
+        <td width="10%" align="right"> Subject:  </td>
+        <td><input type="text" name="issue_subject" size="40" /> </td>
+    </tr>
+    <tr>
+        <td align="right">Your Name: </td>
+        <td><input type="text" name="submitter_name" size="40"/> </td>
+    </tr>
+    <tr>
+        <td align="right">Your Email: </td>
+        <td><input type="text" name="submitter_email" size="40"/></td>
+    </tr>
+    <tr>
+        <td align="right" valign="top"> Please describe what you were doing when this error occurred:  </td>
+        <td><textarea rows="10" cols="80" name="recent_steps"></textarea> </td>
+    </tr>
+
+</table>
+
+<br/> <br/>
+
 <div>
-The following data will be submitted with the report to enable the team to resolve the problem.
+The following data will also be submitted with the report to enable the team to resolve the problem.
 <ul>
 <li>The error message and stack trace</li>
 <li>OpenMRS version</li>
@@ -181,8 +207,10 @@ The following data will be submitted with the report to enable the team to resol
 	<input type="hidden" name="startedModules" value="${startedModules}" />
 	<input type="hidden" name="errorMessage" value="${errorMessage}" />
 	<input type="hidden" name="stackTrace" value="${stackTrace}" />
-	<br/>
-	<input type="submit" value="Report Problem">
+
+    <br/>
+
+    <input type="submit" value="Report Problem">
 </form>
 
 </div>
