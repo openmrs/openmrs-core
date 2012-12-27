@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.springframework.util.Assert;
@@ -120,4 +121,29 @@ public class ValidateUtil {
 			}
 		}
 	}
+	/**
+	 * 
+	 * Check name field against existing records for duplicates (non-retired records with same name) 
+	 * 
+	 * @param mdobj Object whose name field is being validated 
+	 * @param duplicates Array of potential duplicate objects from Context Service
+	 * @param errors Errors instance to register errors on
+	 * @param field the field name to check
+     * @param errorCode error code, interpretable as message key     
+	 */
+	public static void rejectIfDuplicateMetadataName(BaseOpenmrsMetadata mdobj, BaseOpenmrsMetadata[] duplicates, 
+			Errors errors, String field, String errorCode) {
+		if (mdobj != null && !mdobj.isRetired()){			 		
+			if (duplicates != null){
+				for(org.openmrs.BaseOpenmrsMetadata dupobj : duplicates){
+					if(dupobj.getName().toUpperCase().equals(mdobj.getName().toUpperCase()) && !dupobj.getId().equals(mdobj.getId()) && !dupobj.isRetired()) {
+						errors.rejectValue(field, errorCode);
+						break;
+					}
+				}		
+			}
+		
+		}
+	}
+	
 }
