@@ -50,6 +50,7 @@ public class DeprecationCheckTest {
 
     /**
      * Returns a list of classes which contain the @Deprecated annotation. Does this search ONLY for
+     * DWR*Service classes and ignores Test classes.
      *
      * Found the basic code here:
      * http://stackoverflow.com/questions/1456930/how-do-i-read-all-classes-from-a-java-package-in-the-classpath
