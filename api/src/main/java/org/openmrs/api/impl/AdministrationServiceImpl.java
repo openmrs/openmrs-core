@@ -688,11 +688,28 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#setGlobalProperty(java.lang.String,
 	 *      java.lang.String)
-	 * @deprecated
 	 */
-	@Deprecated
 	public void setGlobalProperty(String propertyName, String propertyValue) throws APIException {
-		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(propertyName, propertyValue));
+		GlobalProperty gp = getGlobalPropertyObject(propertyName);
+		if (gp == null) {
+			gp = new GlobalProperty();
+			gp.setProperty(propertyName);
+		}
+		gp.setPropertyValue(propertyValue);
+		dao.saveGlobalProperty(gp);
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#updateGlobalProperty(java.lang.String,
+	 *      java.lang.String)
+	 */
+	public void updateGlobalProperty(String propertyName, String propertyValue) throws IllegalStateException {
+		GlobalProperty gp = getGlobalPropertyObject(propertyName);
+		if (gp == null) {
+			throw new IllegalStateException("Global property with the given propertyName does not exist" + propertyName);
+		}
+		gp.setPropertyValue(propertyValue);
+		dao.saveGlobalProperty(gp);
 	}
 	
 	/**

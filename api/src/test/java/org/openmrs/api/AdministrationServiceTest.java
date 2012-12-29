@@ -258,6 +258,41 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link AdministrationService#updateGlobalProperty(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should update global property if it already exists", method = "updateGlobalProperty(String,String)")
+	public void updateGlobalProperty_shouldUpdateGlobalPropertyIfItAlreadyExists() throws Exception {
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		
+		String propertyValue = adminService.getGlobalProperty("a_valid_gp_key");
+		Assert.assertEquals("correct-value", propertyValue);
+		
+		adminService.updateGlobalProperty("a_valid_gp_key", "new-value");
+		
+		String newValue = adminService.getGlobalProperty("a_valid_gp_key");
+		Assert.assertEquals("new-value", newValue);
+	}
+	
+	/**
+	 * @see {@link AdministrationService#updateGlobalProperty(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should fail if global property being updated does not already exist", method = "updateGlobalProperty(String,String)")
+	public void updateGlobalProperty_shouldFailIfGlobalPropertyBeingUpdatedDoesNotAlreadyExist() throws Exception {
+		Exception exception = null;
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		try {
+			adminService.updateGlobalProperty("a_invalid_gp_key", "asdfsadfsafd");
+		}
+		catch (Exception e) {
+			exception = e;
+		}
+		Assert.assertNotNull(exception);
+		Assert.assertTrue(exception instanceof IllegalStateException);
+	}
+	
+	/**
 	 * @see {@link AdministrationService#getGlobalProperty(String,String)}
 	 */
 	@Test
