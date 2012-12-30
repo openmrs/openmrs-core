@@ -19,8 +19,15 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -32,23 +39,29 @@ import org.simpleframework.xml.Root;
  * locale.
  */
 @Root
+@Indexed
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
 	
-	// Fields
+	@DocumentId
 	private Integer conceptNameId;
 	
+	@IndexedEmbedded
 	private Concept concept;
 	
+	@Field
 	private String name;
 	
+	@Field(index = Index.UN_TOKENIZED)
+	@FieldBridge(impl = LocaleFieldBridge.class)
 	private Locale locale; // ABK: upgraded from a plain string to a full locale object
 	
 	private User creator;
 	
 	private Date dateCreated;
 	
+	@Field
 	private Boolean voided = false;
 	
 	private User voidedBy;

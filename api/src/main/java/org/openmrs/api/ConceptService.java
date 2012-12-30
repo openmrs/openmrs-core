@@ -37,7 +37,6 @@ import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
-import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
@@ -411,43 +410,6 @@ public interface ConceptService extends OpenmrsService {
 	public Concept getConcept(String conceptIdOrName) throws APIException;
 	
 	/**
-	 * @deprecated use
-	 *             {@link #getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
-	        throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getConcepts(String, Locale)} that returns a list of
-	 *             ConceptSearchResults
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	public List<ConceptWord> getConceptWords(String phrase, Locale locale) throws APIException;
-	
-	/**
-	 * @deprecated use
-	 *             {@link #getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired) throws APIException;
-	
-	/**
-	 * @deprecated use
-	 *             {@link #getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes) throws APIException;
-	
-	/**
 	 * Get Drug by its UUID
 	 * 
 	 * @param uuid
@@ -457,15 +419,6 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Drug getDrugByUuid(String uuid);
-	
-	/**
-	 * @deprecated Use
-	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, int start, int size)
-	        throws APIException;
 	
 	/**
 	 * Return the drug object corresponding to the given name or drugId
@@ -877,16 +830,6 @@ public interface ConceptService extends OpenmrsService {
 	public List<Concept> getProposedConcepts(String text) throws APIException;
 	
 	/**
-	 * @deprecated use
-	 *             {@link #getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized( { "View Concepts" })
-	public List<ConceptWord> findConcepts(String phrase, List<Locale> searchLocales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes);
-	
-	/**
 	 * @deprecated use {@link #saveConceptProposal(ConceptProposal)}
 	 */
 	@Deprecated
@@ -959,21 +902,6 @@ public interface ConceptService extends OpenmrsService {
 	public List<ConceptProposal> findMatchingConceptProposals(String text);
 	
 	/**
-	 * @deprecated use {@link #findConceptAnswers(String, Locale, Concept)}
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired)
-	        throws APIException;
-	
-	/**
-	 * @deprecated use {@link #findConceptAnswers(String, Locale, Concept)}
-	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	@Deprecated
-	public List<ConceptWord> getConceptAnswers(String phrase, Locale locale, Concept concept) throws APIException;
-	
-	/**
 	 * @deprecated use #getConceptsByAnswer(Concept)
 	 */
 	@Deprecated
@@ -1040,14 +968,14 @@ public interface ConceptService extends OpenmrsService {
 	public List<Concept> getConceptsWithDrugsInFormulary() throws APIException;
 	
 	/**
-	 * @deprecated use {@link #updateConceptIndex(org.openmrs.Concept)}
+	 * @deprecated since 1.8 use {@link #updateConceptIndex(org.openmrs.Concept)}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConceptWord(Concept concept) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #updateConceptIndexes()}
+	 * @deprecated since 1.8 use {@link #updateConceptIndexes()}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
@@ -1068,7 +996,7 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptNameTag getConceptNameTagByUuid(String uuid);
 	
 	/**
-	 * @deprecated use {@link #updateConceptIndexes(Integer, Integer)}
+	 * @deprecated since 1.8use {@link #updateConceptIndexes(Integer, Integer)}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
@@ -1933,4 +1861,22 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
 	public ConceptMapType getDefaultConceptMapType() throws APIException;
+	
+	/**
+	 * Determines if the given concept name is a duplicate.
+	 * 
+	 * @param name
+	 * @return true if it is a duplicate name
+	 * @since 1.10
+	 */
+	public boolean isConceptNameDuplicate(ConceptName name);
+	
+	/**
+	 * Reads a GP which specifies if the case is ignored by the db when searching for concept names.
+	 * <p>
+	 * It is an optimization parameter, which can speed up searching.
+	 * 
+	 * @return true if search is case sensitive
+	 */
+	public boolean isConceptNameSearchCaseSensitive();
 }

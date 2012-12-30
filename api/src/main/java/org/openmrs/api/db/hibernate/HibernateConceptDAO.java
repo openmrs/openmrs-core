@@ -16,7 +16,6 @@ package org.openmrs.api.db.hibernate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,22 +32,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
-import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
-import org.hibernate.transform.Transformers;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -67,16 +59,22 @@ import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
-import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.hibernate.search.LuceneQuery;
+import org.openmrs.collection.ListPart;
 import org.openmrs.util.OpenmrsConstants;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * The Hibernate class for Concepts, Drugs, and related classes. <br/>
@@ -90,6 +88,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private SessionFactory sessionFactory;
+	
+	private final Function<ConceptName, Concept> transformNameToConcept = new Function<ConceptName, Concept>() {
+		
+		@Override
+		public Concept apply(ConceptName name) {
+			return name.getConcept();
+		}
+	};
 	
 	/**
 	 * Sets the session factory
@@ -273,11 +279,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#purgeConcept(org.openmrs.Concept)
 	 */
 	public void purgeConcept(Concept concept) throws DAOException {
-		// must delete all the stored concept words first
-		sessionFactory.getCurrentSession().createQuery("delete ConceptWord where concept = :c").setInteger("c",
-		    concept.getConceptId()).executeUpdate();
-		
-		// now we can safely delete the concept
 		sessionFactory.getCurrentSession().delete(concept);
 	}
 	
@@ -404,27 +405,15 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getDrugs(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
-	public List<Drug> getDrugs(String phrase) throws DAOException {
-		List<String> words = ConceptWord.getUniqueWords(phrase);
-		List<Drug> conceptDrugs = new Vector<Drug>();
+	@Override
+	public List<Drug> getDrugs(final String phrase) throws DAOException {
+		String searchPhrase = newRequirePartialWordsSearchPhrase(phrase);
 		
-		if (words.size() > 0) {
-			
-			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
-			
-			Iterator<String> word = words.iterator();
-			searchCriteria.add(Restrictions.like("name", word.next(), MatchMode.ANYWHERE));
-			while (word.hasNext()) {
-				String w = word.next();
-				log.debug(w);
-				searchCriteria.add(Restrictions.like("name", w, MatchMode.ANYWHERE));
-			}
-			searchCriteria.addOrder(Order.asc("drug.concept"));
-			conceptDrugs = searchCriteria.list();
-		}
+		String query = "+name:(" + searchPhrase + ")";
 		
-		return conceptDrugs;
+		List<Drug> list = LuceneQuery.newQuery(query, sessionFactory.getCurrentSession(), Drug.class).list();
+		
+		return list;
 	}
 	
 	/**
@@ -558,88 +547,64 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getConcepts(java.lang.String, java.util.Locale, boolean,
 	 *      java.util.List, java.util.List)
 	 */
-	@SuppressWarnings("unchecked")
-	public List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
-	        List<ConceptDatatype> datatypes) throws DAOException {
+	public List<Concept> getConcepts(final String name, final Locale loc, final boolean searchOnPhrase,
+	        final List<ConceptClass> classes, final List<ConceptDatatype> datatypes) throws DAOException {
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Concept.class);
+		StringBuilder query = new StringBuilder();
 		
-		criteria.add(Restrictions.eq("retired", false));
+		final Locale locale;
+		if (loc == null) {
+			locale = Context.getLocale();
+		} else {
+			locale = loc;
+		}
 		
 		if (!StringUtils.isBlank(name)) {
-			if (loc == null)
-				// TRUNK-2730 replaces this behavior with use of the default locale
-				// throw new DAOException("Locale must be not null");
-				loc = Context.getLocale();
-			
-			String caseSensitiveNamesInConceptNameTable = Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE, "true");
-			
-			criteria.createAlias("names", "names");
-			MatchMode matchmode = MatchMode.EXACT;
-			if (searchOnPhrase)
-				matchmode = MatchMode.ANYWHERE;
-			
-			if (Boolean.valueOf(caseSensitiveNamesInConceptNameTable)) {
-				criteria.add(Restrictions.ilike("names.name", name, matchmode));
+			if (searchOnPhrase) {
+				String search = newNamesQuery(Sets.newHashSet(locale), name, true);
+				query.append(search);
 			} else {
-				if (searchOnPhrase) {
-					criteria.add(Restrictions.like("names.name", name, matchmode));
-				} else {
-					criteria.add(Restrictions.eq("names.name", name));
-				}
-			}
-			
-			criteria.add(Restrictions.eq("names.voided", false));
-			
-			String language = loc.getLanguage();
-			if (language.length() > 2) {
-				// if searching in specific locale like en_US
-				criteria.add(Restrictions.or(Restrictions.eq("names.locale", loc), Restrictions.eq("names.locale",
-				    new Locale(loc.getLanguage().substring(0, 2)))));
-			} else {
-				// if searching in general locale like just "en"
-				//	criteria.add(Restrictions.like("names.locale", loc.getLanguage(), MatchMode.START));
+				String search = newNamesQuery(Sets.newHashSet(locale), name, false);
+				query.append(search);
 			}
 		}
 		
-		if (classes.size() > 0)
-			criteria.add(Restrictions.in("conceptClass", classes));
+		query.append(" +concept.retired:false");
 		
-		if (datatypes.size() > 0)
-			criteria.add(Restrictions.in("datatype", datatypes));
+		appendIdsQuery(query, "+concept.conceptClass.conceptClassId", classes);
 		
-		return criteria.list();
+		appendIdsQuery(query, "+concept.datatype.conceptDatatypeId", datatypes);
+		
+		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
+		    ConceptName.class).skipSame("concept.conceptId", "conceptNameId").list();
+		
+		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
+		
+		return concepts;
 	}
 	
-	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptWords(java.lang.String, java.util.List, boolean,
-	 *      java.util.List, java.util.List, java.util.List, java.util.List, org.openmrs.Concept,
-	 *      java.lang.Integer, java.lang.Integer)
-	 */
-	@SuppressWarnings("unchecked")
-	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
-	        throws DAOException {
-		
-		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
-		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
-		List<ConceptWord> conceptWords = new Vector<ConceptWord>();
-		if (searchCriteria != null) {
-			searchCriteria.addOrder(Order.desc("cw1.weight"));
-			if (start != null)
-				searchCriteria.setFirstResult(start);
-			if (size != null && size > 0)
-				searchCriteria.setMaxResults(size);
-			
-			return searchCriteria.list();
+	private String newNamesQuery(final Set<Locale> locales, final String name, final boolean keywords) {
+		final String phrase;
+		if (keywords) {
+			phrase = "(" + newRequirePartialWordsSearchPhrase(name) + " \"" + name + "\"^1000)";
+		} else {
+			phrase = "\"" + LuceneQuery.escapeQuery(name) + "\"";
 		}
 		
-		if (log.isDebugEnabled())
-			log.debug("No matching ConceptWords found");
+		StringBuilder query = new StringBuilder();
 		
-		return conceptWords;
+		query.append(" +name:").append(phrase);
+		query.append(" +locale:(");
+		for (Locale locale : locales) {
+			query.append(locale.getLanguage()).append("* ");
+			if (!StringUtils.isBlank(locale.getCountry())) {
+				query.append(locale).append("^2");
+			}
+		}
+		query.append(")");
+		query.append(" +voided:false");
+		
+		return query.toString();
 	}
 	
 	/**
@@ -701,64 +666,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	public void purgeDrug(Drug drug) throws DAOException {
 		sessionFactory.getCurrentSession().delete(drug);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.ConceptDAO#updateConceptWord(org.openmrs.Concept)
-	 */
-	public void updateConceptWord(Concept concept) throws DAOException {
-		log.debug("updateConceptWord(" + concept + ")");
-		if (concept != null) {
-			// remove all old words
-			if (concept.getConceptId() != null && concept.getConceptId() > 0)
-				deleteConceptWord(concept);
-			
-			// add all new words
-			Collection<ConceptWord> words = ConceptWord.makeConceptWords(concept);
-			log.debug("words: " + words);
-			for (ConceptWord word : words) {
-				word.setWeight(weighConceptWord(word));
-				try {
-					if (word.getConceptName().getId() == null) {
-						//The concept name id must be assigned before saving the word, thus we force Hibernate to trigger the insert for concept name.
-						sessionFactory.getCurrentSession().saveOrUpdate(word.getConceptName());
-					}
-					sessionFactory.getCurrentSession().save(word);
-				}
-				catch (NonUniqueObjectException e) {
-					ConceptWord tmp = (ConceptWord) sessionFactory.getCurrentSession().merge(word);
-					sessionFactory.getCurrentSession().evict(tmp);
-					sessionFactory.getCurrentSession().save(word);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Deletes all concept words for a concept. Called by {@link #updateConceptWord(Concept)}
-	 * 
-	 * @param concept
-	 * @throws DAOException
-	 */
-	@SuppressWarnings("unchecked")
-	private void deleteConceptWord(Concept concept) throws DAOException {
-		log.debug("deletConceptWord(" + concept + ")");
-		if (concept != null) {
-			if (log.isTraceEnabled()) {
-				Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class);
-				crit.add(Restrictions.eq("concept", concept));
-				
-				List<ConceptWord> words = crit.list();
-				
-				Integer authUserId = null;
-				if (Context.isAuthenticated())
-					authUserId = Context.getAuthenticatedUser().getUserId();
-				
-				log.trace(authUserId + "|ConceptWord|" + words);
-			}
-			sessionFactory.getCurrentSession().createQuery("delete ConceptWord where concept = :c").setInteger("c",
-			    concept.getConceptId()).executeUpdate();
-		}
 	}
 	
 	/**
@@ -1101,11 +1008,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 		        .setString("uuid", uuid).uniqueResult();
 	}
 	
-	public ConceptWord getConceptWordByUuid(String uuid) {
-		return (ConceptWord) sessionFactory.getCurrentSession().createQuery("from ConceptWord cc where cc.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
-	}
-	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptDatatypeByUuid(java.lang.String)
 	 */
@@ -1268,131 +1170,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getCountOfConceptWords(String, List, boolean, List, List,
-	 *      List, List, Concept)
-	 */
-	@Override
-	public Long getCountOfConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, boolean forUniqueConcepts) {
-		if (StringUtils.isBlank(phrase)) {
-			phrase = "%"; // match all
-		}
-		
-		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
-		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
-		if (searchCriteria != null) {
-			if (forUniqueConcepts)
-				searchCriteria.setProjection(Projections.countDistinct("concept"));
-			else
-				searchCriteria.setProjection(Projections.rowCount());
-			
-			return (Long) searchCriteria.uniqueResult();
-		}
-		
-		return (long) 0;
-	}
-	
-	/**
-	 * Utility method that returns a criteria for searching for conceptWords that match the
-	 * specified search phrase and arguments
-	 * 
-	 * @param phrase matched to the start of any word in any of the names of a concept
-	 * @param locales List<Locale> to restrict to
-	 * @param includeRetired boolean if false, will exclude retired concepts
-	 * @param requireClasses List<ConceptClass> to restrict to
-	 * @param excludeClasses List<ConceptClass> to leave out of results
-	 * @param requireDatatypes List<ConceptDatatype> to restrict to
-	 * @param excludeDatatypes List<ConceptDatatype> to leave out of results
-	 * @param answersToConcept all results will be a possible answer to this concept
-	 * @param start all results less than this number will be removed
-	 * @param size if non zero, all results after <code>start</code> + <code>size</code> will be
-	 *            removed
-	 * @return the generated criteria object
-	 */
-	private Criteria createConceptWordSearchCriteria(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) throws DAOException {
-		
-		//add the language-only portion of locale if its not in the list of locales already
-		List<Locale> localesToAdd = new Vector<Locale>();
-		for (Locale locale : locales) {
-			Locale languageOnly = new Locale(locale.getLanguage());
-			if (locales.contains(languageOnly) == false)
-				localesToAdd.add(languageOnly);
-		}
-		
-		locales.addAll(localesToAdd);
-		
-		List<String> words = new ArrayList<String>();
-		if (phrase.equals("%")) {
-			words.add(phrase);
-		} else {
-			//assumes getUniqueWords() removes quote(') characters.  (otherwise we would have a security leak)
-			words = ConceptWord.getUniqueWords(phrase);
-		}
-		
-		// these are the answers to restrict on
-		List<Concept> answers = new Vector<Concept>();
-		
-		if (answersToConcept != null && answersToConcept.getAnswers(false) != null) {
-			for (ConceptAnswer conceptAnswer : answersToConcept.getAnswers(false)) {
-				answers.add(conceptAnswer.getAnswerConcept());
-			}
-		}
-		
-		if (words.size() > 0 || !answers.isEmpty()) {
-			
-			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class, "cw1");
-			searchCriteria.add(Restrictions.in("locale", locales));
-			
-			if (includeRetired == false) {
-				searchCriteria.createAlias("concept", "concept");
-				searchCriteria.add(Restrictions.eq("concept.retired", false));
-			}
-			
-			// Only restrict on answers if there are any
-			if (!answers.isEmpty())
-				searchCriteria.add(Restrictions.in("cw1.concept", answers));
-			
-			if (words.size() > 0) {
-				Iterator<String> word = words.iterator();
-				searchCriteria.add(Restrictions.like("word", word.next(), MatchMode.START));
-				Conjunction junction = Restrictions.conjunction();
-				while (word.hasNext()) {
-					String w = word.next();
-					
-					if (log.isDebugEnabled())
-						log.debug("Current word: " + w);
-					
-					DetachedCriteria crit = DetachedCriteria.forClass(ConceptWord.class, "cw2").setProjection(
-					    Property.forName("concept")).add(Restrictions.eqProperty("cw2.concept", "cw1.concept")).add(
-					    Restrictions.eqProperty("cw2.conceptName", "cw1.conceptName")).add(
-					    Restrictions.like("word", w, MatchMode.START)).add(Restrictions.in("locale", locales));
-					junction.add(Subqueries.exists(crit));
-				}
-				searchCriteria.add(junction);
-			}
-			
-			if (requireClasses.size() > 0)
-				searchCriteria.add(Restrictions.in("concept.conceptClass", requireClasses));
-			
-			if (excludeClasses.size() > 0)
-				searchCriteria.add(Restrictions.not(Restrictions.in("concept.conceptClass", excludeClasses)));
-			
-			if (requireDatatypes.size() > 0)
-				searchCriteria.add(Restrictions.in("concept.datatype", requireDatatypes));
-			
-			if (excludeDatatypes.size() > 0)
-				searchCriteria.add(Restrictions.not(Restrictions.in("concept.datatype", excludeDatatypes)));
-			
-			return searchCriteria;
-		}
-		
-		return null;
-	}
-	
-	/**
 	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean)
 	 */
 	public Long getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
@@ -1456,129 +1233,92 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see ConceptDAO#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer,
 	 *      Integer)
 	 */
-	@SuppressWarnings( { "rawtypes" })
 	@Override
-	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
-	        throws DAOException {
-		if (StringUtils.isBlank(phrase)) {
-			phrase = "%"; // match all
+	public List<ConceptSearchResult> getConcepts(final String phrase, final List<Locale> locales,
+	        final boolean includeRetired, final List<ConceptClass> requireClasses, final List<ConceptClass> excludeClasses,
+	        final List<ConceptDatatype> requireDatatypes, final List<ConceptDatatype> excludeDatatypes,
+	        final Concept answersToConcept, final Integer start, final Integer size) throws DAOException {
+		
+		final StringBuilder query = new StringBuilder();
+		
+		if (!StringUtils.isBlank(phrase)) {
+			final Set<Locale> searchLocales;
+			
+			if (locales == null) {
+				searchLocales = Sets.newHashSet(Context.getLocale());
+			} else {
+				searchLocales = Sets.newHashSet(locales);
+			}
+			
+			query.append(newNamesQuery(searchLocales, phrase, true));
 		}
 		
-		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
-		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
+		if (!includeRetired) {
+			query.append(" +concept.retired:false");
+		}
 		
-		List<ConceptSearchResult> results = new Vector<ConceptSearchResult>();
+		appendIdsQuery(query, "+concept.conceptClass.conceptClassId", requireClasses);
 		
-		if (searchCriteria != null) {
-			ProjectionList pl = Projections.projectionList();
-			pl.add(Projections.distinct(Projections.groupProperty("cw1.concept")));
-			pl.add(Projections.groupProperty("cw1.word"));
-			//if we have multiple words for the same concept, get the one with a highest weight
-			pl.add(Projections.max("cw1.weight"), "maxWeight");
-			//TODO In case a concept has multiple names that contains words that match the search phrase, 
-			//setting this to min or max will select the concept name that was added first or last,
-			//but it should actually be the one that contains the word with the highest weight.
-			//see ConceptServiceTest.getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAWordWithMoreWeight()
-			pl.add(Projections.min("cw1.conceptName"));
-			searchCriteria.setProjection(pl);
-			searchCriteria.addOrder(Order.desc("maxWeight"));
+		appendIdsQuery(query, "-concept.conceptClass.conceptClassId", excludeClasses);
+		
+		appendIdsQuery(query, "+concept.datatype.conceptDatatypeId", requireDatatypes);
+		
+		appendIdsQuery(query, "-concept.datatype.conceptDatatypeId", excludeDatatypes);
+		
+		if (answersToConcept != null) {
+			Collection<ConceptAnswer> answers = answersToConcept.getAnswers(false);
 			
-			if (start != null)
-				searchCriteria.setFirstResult(start);
-			if (size != null && size > 0)
-				searchCriteria.setMaxResults(size);
-			
-			searchCriteria.setResultTransformer(Transformers.TO_LIST);
-			List resultObjects = searchCriteria.list();
-			
-			for (Object obj : resultObjects) {
-				List list = (List) obj;
-				results.add(new ConceptSearchResult((String) list.get(1), (Concept) list.get(0), (ConceptName) list.get(3),
-				        (Double) list.get(2)));
+			if (answers != null && !answers.isEmpty()) {
+				StringBuilder ids = new StringBuilder();
+				for (ConceptAnswer conceptAnswer : answersToConcept.getAnswers(false)) {
+					ids.append(conceptAnswer.getAnswerConcept().getId()).append(" ");
+				}
+				query.append(" +concept.conceptId:(").append(ids).append(")");
 			}
 		}
+		
+		ListPart<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
+		    ConceptName.class).skipSame("concept.conceptId", "conceptNameId").listPart(start, size);
+		
+		List<ConceptSearchResult> results = Lists.transform(names.getList(),
+		    new Function<ConceptName, ConceptSearchResult>() {
+			    
+			    @Override
+			    public ConceptSearchResult apply(ConceptName conceptName) {
+				    return new ConceptSearchResult(phrase, conceptName.getConcept(), conceptName);
+			    }
+		    });
 		
 		return results;
 	}
 	
-	/**
-	 * @see ConceptDAO#weighConceptWord(ConceptWord)
-	 */
-	@Override
-	public Double weighConceptWord(ConceptWord word) {
-		Double weight = 0.0;
-		String conceptName = word.getConceptName().getName().toUpperCase();
-		String wordString = word.getWord();
-		//why is this the case, this seems like invalid data
-		if (conceptName.indexOf(wordString) < 0)
-			return weight;
-		
-		//by default every word must at least weigh 1+
-		weight = 1.0;
-		//Index terms rank highly since they were added for searching
-		
-		//This is the actual match
-		if (conceptName.equals(wordString)) {
-			double weightCoefficient = 5.0;
-			weight += weightCoefficient;
-			//the shorter the word, the higher the increment and the coefficient since it a closer
-			//match based on number of characters e.g 'OWN' should weigh more than 'HOME'
-			weightCoefficient += (weightCoefficient / wordString.length());
-			weight += (weightCoefficient / wordString.length());
-			//compute bonus based on the concept name type
-			weight += computeBonusWeight(weightCoefficient, word);
-		} else if (conceptName.startsWith(wordString)) {
-			double weightCoefficient = 3.0;
-			
-			//the shorter the word, the higher the increment since it a closer match to the name
-			// e.g MY in 'MY DEPOT' should weigh more than HOME in 'HOME DEPOT'
-			weight += (weightCoefficient / wordString.length());
-			weight += computeBonusWeight(weightCoefficient, word);
-		} else {
-			double weightCoefficient = 1.0;
-			
-			//still a shorter word should weigh more depending on its index in the full concept name
-			//e.g MY in 'IN MY HOME' should weigh more than 'MY' in 'FOR MY HOME', we add 1 so that
-			// if 'conceptName.indexOf(wordString)' returns 1, we still divide 5 by something greater than 1
-			//e.g 'MARRIAGE' in 'PRE MARRIAGE' should weigh more than 'MARRIAGE' in 'NOT PRE MARRIAGE'
-			//and still weigh more then 'MARRIAGE' in 'PRE MARRIAGE RELATIONSHIP'
-			weight += ((weightCoefficient / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString
-			        .length()) / new Double(conceptName.length())));
-			weight += computeBonusWeight(weightCoefficient, word);
+	private void appendIdsQuery(final StringBuilder query, final String field, final List<? extends OpenmrsObject> objects) {
+		String ids = transformToIds(objects);
+		if (ids != null) {
+			query.append(" ").append(field).append(":(").append(ids).append(")");
 		}
-		
-		return weight;
 	}
 	
-	/**
-	 * Utility method that computes the bonus weight for a concept word based on the
-	 * {@link ConceptNameType}, the length of the full concept name and the weightCoefficient
-	 * 
-	 * @param weightCoefficient
-	 * @param word
-	 * @return
-	 */
-	private double computeBonusWeight(Double weightCoefficient, ConceptWord word) {
-		double bonusWeight = 0.0;
-		ConceptName conceptName = word.getConceptName();
-		if (conceptName.isIndexTerm() || (conceptName.isPreferred() && conceptName.isFullySpecifiedName()))
-			bonusWeight += weightCoefficient * 0.25;
-		else if (conceptName.isPreferred())
-			bonusWeight += weightCoefficient * 0.24;
-		else if (conceptName.isFullySpecifiedName())
-			bonusWeight += weightCoefficient * 0.23;
-		else if (conceptName.isSynonym())
-			bonusWeight += weightCoefficient * 0.22;
-		else if (conceptName.isShort())
-			bonusWeight += weightCoefficient * 0.21;
+	private String newRequirePartialWordsSearchPhrase(final String phrase) {
+		StringBuilder searchPhrase = new StringBuilder();
+		String[] words = LuceneQuery.escapeQuery(phrase).trim().split(" ");
+		for (String word : words) {
+			word = word.trim();
+			searchPhrase.append(" +(").append(word).append("~ ").append(word).append("*^2)");
+		}
+		return searchPhrase.toString();
+	}
+	
+	private String transformToIds(final List<? extends OpenmrsObject> items) {
+		if (items == null || items.isEmpty()) {
+			return null;
+		}
 		
-		//the shorter the full concept name, the higher the weight, the word 'MEASELS' in 
-		//'MEASELS ON EARTH' should weigh more than another 'MEASELS' in 'MEASELS ON JUPITER'
-		bonusWeight += weightCoefficient / new Double(conceptName.getName().length());
-		
-		return bonusWeight;
+		StringBuilder ids = new StringBuilder();
+		for (OpenmrsObject item : items) {
+			ids.append(item.getId()).append(" ");
+		}
+		return ids.toString();
 	}
 	
 	/**
@@ -1834,63 +1574,33 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 *      java.lang.Boolean)
 	 */
 	@Override
-	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocale) {
-		if (exactLocale == null) {
-			exactLocale = true;
-		}
+	public List<Concept> getConceptsByName(final String name, final Locale locale, final Boolean exactLocale) {
+		StringBuilder query = new StringBuilder();
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptName.class);
-		criteria.add(Restrictions.ilike("name", name));
-		criteria.add(Restrictions.eq("voided", false));
-		
-		//This approach is very slow. It's better to remove retired concepts in Java.
-		//criteria.createAlias("concept", "concept");
-		//criteria.add(Restrictions.eq("concept.retired", false));
-		
-		if (locale != null) {
-			if (exactLocale) {
-				criteria.add(Restrictions.eq("locale", locale));
+		if (!StringUtils.isBlank(name)) {
+			final String searchPhrase = LuceneQuery.escapeQuery(name);
+			
+			final Locale searchLocale;
+			if (locale == null) {
+				searchLocale = Context.getLocale();
 			} else {
-				if (!StringUtils.isEmpty(locale.getCountry())) {
-					// if searching for specific locale like "en_US", but not exact so that "en" will be found as well
-					criteria.add(Restrictions.or(Restrictions.eq("locale", locale), Restrictions.eq("locale", new Locale(
-					        locale.getLanguage()))));
-				}
+				searchLocale = locale;
+			}
+			
+			if (exactLocale == null || exactLocale) {
+				query.append(" +name:").append("\"").append(searchPhrase).append("\"");
+				query.append(" +locale:").append(searchLocale);
+			} else {
+				query.append(newNamesQuery(Sets.newHashSet(searchLocale), searchPhrase, false));
 			}
 		}
 		
-		criteria.addOrder(Order.asc("concept"));
-		criteria.setProjection(Projections.distinct(Projections.property("concept")));
+		query.append(" +concept.retired:false");
 		
-		@SuppressWarnings("unchecked")
-		List<Concept> concepts = criteria.list();
+		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
+		    ConceptName.class).skipSame("concept.conceptId", "conceptNameId").list();
 		
-		//Remove retired concepts
-		for (Iterator<Concept> it = concepts.iterator(); it.hasNext();) {
-			Concept concept = it.next();
-			if (concept.isRetired()) {
-				it.remove();
-			}
-		}
-		
-		if (locale != null && !exactLocale && StringUtils.isEmpty(locale.getCountry())) {
-			// if searching for general locale like "en", but not exact so that "en_US", "en_GB", etc. will be found as well
-			for (Iterator<Concept> it = concepts.iterator(); it.hasNext();) {
-				Concept concept = it.next();
-				
-				boolean found = false;
-				for (ConceptName conceptName : concept.getNames()) {
-					if (conceptName.getLocale().getLanguage().equals(locale.getLanguage())) {
-						found = true;
-						break;
-					}
-				}
-				
-				if (!found) {
-					it.remove();
-				}
-			}
-		}
+		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
 		
 		return concepts;
 	}
@@ -1922,5 +1632,43 @@ public class HibernateConceptDAO implements ConceptDAO {
 		finally {
 			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
 		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#isConceptNameDuplicate(org.openmrs.ConceptName)
+	 */
+	@Override
+	public boolean isConceptNameDuplicate(ConceptName name) {
+		if (!name.isFullySpecifiedName() || !name.isLocalePreferred()) {
+			return false;
+		}
+		if (name.getConcept() != null && name.getConcept().isRetired()) {
+			return false;
+		}
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptName.class);
+		
+		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Restrictions.or(Restrictions.eq("locale", name.getLocale()), Restrictions.eq("locale", new Locale(name
+		        .getLocale().getLanguage()))));
+		if (Context.getConceptService().isConceptNameSearchCaseSensitive()) {
+			criteria.add(Restrictions.ilike("name", name.getName()));
+		} else {
+			criteria.add(Restrictions.eq("name", name.getName()));
+		}
+		
+		criteria.add(Restrictions.or(Restrictions.eq("conceptNameType", ConceptNameType.FULLY_SPECIFIED), Restrictions.eq(
+		    "localePreferred", true)));
+		
+		criteria.createAlias("concept", "concept");
+		criteria.add(Restrictions.eq("concept.retired", false));
+		if (name.getConcept() != null && name.getConcept().getConceptId() != null) {
+			criteria.add(Restrictions.ne("concept.conceptId", name.getConcept().getConceptId()));
+		}
+		
+		criteria.setProjection(Projections.rowCount());
+		long rowCount = ((Number) criteria.uniqueResult()).longValue();
+		
+		return rowCount != 0L;
 	}
 }
