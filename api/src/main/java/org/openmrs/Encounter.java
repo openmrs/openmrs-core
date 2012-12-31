@@ -389,6 +389,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setPatient(Patient patient) {
 		this.patient = patient;
+		this.patientId = patient.getPersonId();
 	}
 	
 	/**
