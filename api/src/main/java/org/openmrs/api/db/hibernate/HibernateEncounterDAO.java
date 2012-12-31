@@ -284,7 +284,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		
 		// set up the return map
 		for (Encounter encounter : allEncounters) {
-			Integer patientId = encounter.getPatientId();
+			Integer patientId = encounter.getPatient().getPersonId();
 			List<Encounter> encounters = encountersBypatient.get(patientId);
 			
 			if (encounters == null) {
