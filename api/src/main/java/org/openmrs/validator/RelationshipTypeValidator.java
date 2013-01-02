@@ -12,14 +12,12 @@
  */
 package org.openmrs.validator;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.RelationshipType;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -45,31 +43,23 @@ public class RelationshipTypeValidator implements Validator {
 	
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @should fail validation if aIsToB(or A is To B) is null or empty or whitespace
+	 * @should fail validation if bIsToA(or B is To A) is null or empty or whitespace
+	 * @should fail validation if Description is null or empty or whitespace
+	 * @should pass validation if all required fields are set
 	 */
 	public void validate(Object obj, Errors errors) {
 		RelationshipType relationshipType = (RelationshipType) obj;
 		if (relationshipType == null) {
 			errors.rejectValue("relationshipType", "error.general");
-		} else {
-		
-		/**
-		*check duplicate name 		
-		*/		
-			List<RelationshipType> rts = Context.getPersonService().getRelationshipTypes(relationshipType.toString());
 			
-			/**
-			*set name fields for comparison
-			*/
-			relationshipType.setName(relationshipType.toString());
-			for(org.openmrs.BaseOpenmrsMetadata dupobj : rts) {
-				dupobj.setName(dupobj.toString());
-			}	
+		}
+		else {
+	
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "aIsToB", "RelationshipType.aIsToB.required");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "bIsToA", "RelationshipType.bIsToA.required");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "Description", "error.description");
 		
-			/**
-			*unset name field
-			*/
-			
-			relationshipType.setName(null);
 		}
 	}
 }
