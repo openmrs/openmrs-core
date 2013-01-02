@@ -17,8 +17,6 @@
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-		<property name="patientId" type="java.lang.Integer" length="11" 
-			column="patient_id" not-null="true" insert="false" update="false" />
 		<property name="encounterDatetime" type="java.util.Date"
 			column="encounter_datetime" not-null="true" length="19" />
 		<property name="dateCreated" type="java.util.Date"
