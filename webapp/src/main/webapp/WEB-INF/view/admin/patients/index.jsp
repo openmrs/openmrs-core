@@ -21,7 +21,7 @@
 					{fieldName:"familyName", header:omsgs.familyName},
 					{fieldName:"age", header:omsgs.age},
 					{fieldName:"gender", header:omsgs.gender},
-					{fieldName:"birthdateString", header:omsgs.birthdate},
+					{fieldName:"birthdateString", header:omsgs.birthdate}
 				],
 				{
                     searchLabel: '<openmrs:message code="Patient.searchBox" javaScriptEscape="true"/>',
