@@ -39,6 +39,7 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.FormResource;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ClobDatatypeStorage;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -574,7 +575,42 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		resource = Context.getFormService().getFormResource(resourceId);
 		Assert.assertNull(resource);
 	}
-	
+
+    /**
+     * @see {@link FormService#purgeFormResource(FormResource)}
+     * @throws Exception
+	 */
+	@Test
+    @Verifies(value = "should deleting clob storage when delete resources with external storage", method = "purgeFormResource(FormResource)")
+	public void purgeFormResource_shouldDeleteClobStorageWhenDeletingResourcesWithExternalStorage() throws Exception {
+
+		Form form = Context.getFormService().getForm(1);
+		FormResource formResource = new FormResource();
+		formResource.setForm(form);
+		formResource.setFormResourceId(1);
+		formResource.setName("Test Resource");
+		formResource.setDatatypeClassname("org.openmrs.customdatatype.datatype.LongFreeTextDatatype");
+		formResource.setValue("Test String");
+		Context.getFormService().saveFormResource(formResource);
+
+		// to make sure formResource is created, verify whether a 'value reference'
+		// is created for formResource after saving it
+		Assert.assertNotNull(formResource.getValueReference());
+
+		// make sure a row is added in the clob_datatype_storage table with value ref. of formResource as uuid
+		ClobDatatypeStorage clobDatatypeEntry = Context.getDatatypeService().getClobDatatypeStorageByUuid(formResource
+                .getValueReference());
+		int clobEntryId = clobDatatypeEntry.getId();
+		Assert.assertNotNull(clobDatatypeEntry);
+
+		// delete the FormResource
+        Context.getFormService().purgeFormResource(formResource);
+
+		// assert that the clob datatype table row is too deleted
+		Assert.assertNull(Context.getDatatypeService().getClobDatatypeStorage(clobEntryId));
+
+	}
+
 	/**
 	 * @see {@link FormService#saveFormResource(FormResource)}
 	 */

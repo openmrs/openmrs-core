@@ -63,5 +63,5 @@ public class RegexValidatedTextDatatype extends SerializingCustomDatatype<String
 		if (!pattern.matcher(typedValue).matches())
 			throw new InvalidCustomValueException("Doesn't match regex");
 	}
-	
+
 }

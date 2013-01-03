@@ -102,7 +102,7 @@ public abstract class SerializingCustomDatatype<T> implements CustomDatatype<T> 
      * @see org.openmrs.customdatatype.CustomDatatype#notifyOfDeletion(java.lang.Object, java.lang.String)
      */
     @Override
-    public void notifyOfDeletion(Object parent, String existingValueReference) {
-         // not yet used
+    public void notifyOfDeletion(Object objectBeingDeleted, String existingValueReference) {
+         // do nothing
     }
 }

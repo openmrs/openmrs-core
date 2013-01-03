@@ -108,13 +108,11 @@ public class LongFreeTextDatatype implements CustomDatatype<String> {
      * @see org.openmrs.customdatatype.CustomDatatype#notifyOfDeletion(java.lang.Object, String)
      */
     @Override
-    public void notifyOfDeletion(Object parent, String existingValueReference) {
+    public void notifyOfDeletion(Object objectBeingDeleted, String existingValueReference) {
         ClobDatatypeStorage storage = Context.getDatatypeService().getClobDatatypeStorageByUuid(existingValueReference);
          if (storage != null){
             Context.getDatatypeService().deleteClobDatatypeStorage(storage);
          }
-
-
     }
 
 }

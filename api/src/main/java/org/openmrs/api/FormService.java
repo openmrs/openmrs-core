@@ -849,6 +849,7 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @param formResource the resource to be purged
 	 * @should delete a form resource
+     * @should delete clob storage when deleting resources with external storage
 	 * @since 1.9
 	 */
 	public void purgeFormResource(FormResource formResource) throws APIException;
