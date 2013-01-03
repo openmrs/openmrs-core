@@ -13,7 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -29,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Person;
@@ -177,7 +175,7 @@ public class HibernateUserDAO implements UserDAO {
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByRole(Role role) throws DAOException {
 		List<User> users = sessionFactory.getCurrentSession().createCriteria(User.class, "u").createCriteria("roles", "r")
-		        .add(Expression.like("r.role", role.getRole())).addOrder(Order.asc("u.username")).list();
+		        .add(Restrictions.like("r.role", role.getRole())).addOrder(Order.asc("u.username")).list();
 		
 		return users;
 		
@@ -387,22 +385,18 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	public Integer generateSystemId() {
 		
-		// TODO this algorithm will fail if someone deletes a user that is not the last one.
+		String hql = "select max(userId) from User";
 		
-		String sql = "select count(user_id) as user_id from users";
-		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		
 		Object object = query.uniqueResult();
 		
 		Integer id = null;
-		if (object instanceof BigInteger)
-			id = ((BigInteger) query.uniqueResult()).intValue() + 1;
-		else if (object instanceof Integer)
-			id = ((Integer) query.uniqueResult()).intValue() + 1;
+		if (object instanceof Number)
+			id = ((Number) query.uniqueResult()).intValue() + 1;
 		else {
-			log.warn("What is being returned here? Definitely nothing expected object value: '" + object + "' of class: "
-			        + object.getClass());
+			log.warn("What is being returned here? Definitely nothing expected object value: '"
+					+ object + "' of class: " + object.getClass());
 			id = 1;
 		}
 		
@@ -412,17 +406,16 @@ public class HibernateUserDAO implements UserDAO {
 	/**
 	 * @see org.openmrs.api.UserService#getUsersByName(java.lang.String, java.lang.String, boolean)
 	 */
-	@SuppressWarnings("unchecked")
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) {
 		List<User> users = new Vector<User>();
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
 		crit.createAlias("person", "person");
 		crit.createAlias("person.names", "names");
-		crit.add(Expression.eq("names.givenName", givenName));
-		crit.add(Expression.eq("names.familyName", familyName));
+		crit.add(Restrictions.eq("names.givenName", givenName));
+		crit.add(Restrictions.eq("names.familyName", familyName));
 		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		if (!includeRetired)
-			crit.add(Expression.eq("retired", false));
+			crit.add(Restrictions.eq("retired", false));
 		for (User u : (List<User>) crit.list()) {
 			users.add(u);
 		}

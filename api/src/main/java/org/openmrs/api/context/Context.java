@@ -154,7 +154,7 @@ public class Context {
 	
 	// A place to store data that will persist longer than a session, but won't
 	// persist beyond application restart
-	// TODO: put an optional expire date on these items
+	@Deprecated
 	private static Map<User, Map<String, Object>> volatileUserData = new WeakHashMap<User, Map<String, Object>>();
 	
 	/**
@@ -1154,6 +1154,7 @@ public class Context {
 	 * @param key identifying string for the information
 	 * @return the information stored
 	 */
+	@Deprecated
 	public static Object getVolatileUserData(String key) {
 		User u = getAuthenticatedUser();
 		if (u == null)
@@ -1168,11 +1169,12 @@ public class Context {
 	/**
 	 * Set a piece of information for the currently authenticated user. This information is stored
 	 * only temporarily. When a new module is loaded or the server is restarted, this information
-	 * will disappear TODO: This needs to be refactored/removed
+	 * will disappear 
 	 * 
 	 * @param key identifying string for this information
 	 * @param value information to be stored
 	 */
+	@Deprecated
 	public static void setVolatileUserData(String key, Object value) {
 		User u = getAuthenticatedUser();
 		if (u == null)
