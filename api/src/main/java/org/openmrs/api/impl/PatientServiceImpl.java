@@ -951,13 +951,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (preferred.getDeathDate() == null)
 			preferred.setDeathDate(notPreferred.getDeathDate());
 		
-		// OLD	
-		/*
-		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
-		if (preferred.getDeathDate() == null)
-			preferred.setDeathDate(notPreferred.getDeathDate());
-		*/
-
 		if (preferred.getCauseOfDeath() != null)
 			mergedData.setPriorCauseOfDeath(preferred.getCauseOfDeath().getUuid());
 		if (preferred.getCauseOfDeath() == null)
