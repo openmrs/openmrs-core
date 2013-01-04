@@ -103,20 +103,6 @@
 			input.parentNode.className = "listItemChecked";
 	}
 	
-	// Called when User has checked estimated (deathDate)
-	function updateEstimatedDeathdate() {
-		var input = document.getElementById("deathdateEstimatedInput");
-		if (input) {
-			//input.checked = false;
-			input.checked = true;
-			//input.parentNode.className = "";
-			input.parentNode.className = "listItemChecked";
-		}
-		else
-			//input.parentNode.className = "listItemChecked";
-			input.parentNode.className = "";
-	}
-	
 	// age function borrowed from http://anotherdan.com/2006/02/simple-javascript-age-function/
 	function getAge(d, now) {
 		var age = -1;

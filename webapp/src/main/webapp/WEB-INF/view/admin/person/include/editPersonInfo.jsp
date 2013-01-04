@@ -28,17 +28,6 @@
 					txtbox.parentNode.className = "listItemChecked";
 			}
 			
-			function updateEstimatedDeathdate() {
-				var input = document.getElementById("deathdateEstimatedInput");
-				if (input) {
-					//input.checked = false;
-					input.checked = true;
-					input.parentNode.className = "";
-				}
-				else
-					input.parentNode.className = "listItemChecked";
-			}
-			
 			function updateAge() {
 				var birthdateBox = document.getElementById('birthdate');
 				var ageBox = document.getElementById('age');
@@ -167,19 +156,17 @@
 			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 		</spring:bind>
 		&nbsp; &nbsp;
-		
-<!-- HERE -->
+
     	<openmrs:message code="Person.deathdateEstimated"/>
 			<spring:bind path="deathdateEstimated">
 				<input type="hidden" name="_${status.expression}"> 
-                   <input type="checkbox" name="${status.expression}" value="false" 
+                   <input type="checkbox" name="${status.expression}" value="true" 
 					<c:if test="${status.value == true}">checked</c:if> 
 					   id="deathdateEstimatedInput" 
-						  onclick="if (this.checked) updateEstimatedDeathdate()" />					
+				 />					
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 			&nbsp; 
-		
 		 
 		<openmrs:message code="Person.causeOfDeath"/>
 		<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
