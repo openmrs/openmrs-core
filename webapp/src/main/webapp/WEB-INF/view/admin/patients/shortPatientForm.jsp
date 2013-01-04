@@ -102,15 +102,19 @@
 		else
 			input.parentNode.className = "listItemChecked";
 	}
+	
+	// Called when User has checked estimated (daeathDate)
 	function updateEstimatedDeathdate() {
 		var input = document.getElementById("deathdateEstimatedInput");
 		if (input) {
 			//input.checked = false;
 			input.checked = true;
-			input.parentNode.className = "";
+			//input.parentNode.className = "";
+			input.parentNode.className = "listItemChecked";
 		}
 		else
-			input.parentNode.className = "listItemChecked";
+			//input.parentNode.className = "listItemChecked";
+			input.parentNode.className = "";
 	}
 	
 	// age function borrowed from http://anotherdan.com/2006/02/simple-javascript-age-function/
@@ -557,7 +561,7 @@
 <!-- HERE -->
 				<openmrs:message code="Person.deathdateEstimated"/>
 				<spring:bind path="patient.deathdateEstimated">
-					<input type="hidden" name="_${status.expression}"> <!--  NEW -->
+					<input type="hidden" name="_${status.expression}"> 
                     <input type="checkbox" name="${status.expression}" value="false" 
 						<c:if test="${status.value == true}">checked</c:if> 
 						   id="deathdateEstimatedInput" 
