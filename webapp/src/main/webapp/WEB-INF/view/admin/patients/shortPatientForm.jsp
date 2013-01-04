@@ -558,14 +558,13 @@
 				</spring:bind>
 				&nbsp; &nbsp;
 
-<!-- HERE -->
 				<openmrs:message code="Person.deathdateEstimated"/>
 				<spring:bind path="patient.deathdateEstimated">
 					<input type="hidden" name="_${status.expression}"> 
-                    <input type="checkbox" name="${status.expression}" value="false" 
+                    <input type="checkbox" name="${status.expression}" value="true"
 						<c:if test="${status.value == true}">checked</c:if> 
 						   id="deathdateEstimatedInput" 
-							  onclick="if (this.checked) updateEstimatedDeathdate()" />					
+					 />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 				&nbsp; 
