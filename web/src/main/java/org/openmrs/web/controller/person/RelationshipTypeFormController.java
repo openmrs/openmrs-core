@@ -24,6 +24,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.validator.RelationshipTypeValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -62,16 +63,7 @@ public class RelationshipTypeFormController extends SimpleFormController {
 	        BindException errors) throws Exception {
 		
 		RelationshipType type = (RelationshipType) command;
-		
-		if (type.getaIsToB() == null || type.getaIsToB().equals(""))
-			errors.rejectValue("aIsToB", "RelationshipType.aIsToB.required");
-		
-		if (type.getbIsToA() == null || type.getbIsToA().equals(""))
-			errors.rejectValue("bIsToA", "RelationshipType.bIsToA.required");
-		
-		if (!StringUtils.hasText(type.getDescription()))
-			errors.rejectValue("description", "error.required", new Object[] { Context.getMessageSourceService().getMessage(
-			    "general.description") }, null);
+		new RelationshipTypeValidator().validate(type, errors);
 		
 		return super.processFormSubmission(request, response, type, errors);
 	}
