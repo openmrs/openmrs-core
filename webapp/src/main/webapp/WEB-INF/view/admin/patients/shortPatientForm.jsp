@@ -103,7 +103,7 @@
 			input.parentNode.className = "listItemChecked";
 	}
 	
-	// Called when User has checked estimated (daeathDate)
+	// Called when User has checked estimated (deathDate)
 	function updateEstimatedDeathdate() {
 		var input = document.getElementById("deathdateEstimatedInput");
 		if (input) {
