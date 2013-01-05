@@ -1688,4 +1688,5 @@ public final class OpenmrsConstants {
 	
 	/** The data type to return on failing to load a custom data type. */
 	public static final String DEFAULT_CUSTOM_DATATYPE = FreeTextDatatype.class.getName();
+	
 }
