@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
@@ -49,18 +50,18 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	private String address2;
 	
-	private String cityVillage;
-	
 	private String address3;
-	
-	private String countyDistrict;
 	
 	private String address4;
 	
-	private String address6;
-	
 	private String address5;
 	
+	private String address6;
+	
+    private String cityVillage;
+
+    private String countyDistrict;
+
 	private String stateProvince;
 	
 	private String country;
@@ -74,8 +75,8 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	private Date startDate;
 	
 	private Date endDate;
-	
-	// Constructors
+
+    // Constructors
 	
 	/** default constructor */
 	public PersonAddress() {
@@ -90,9 +91,18 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:" + getCityVillage() + ", sp:" + getStateProvince()
-		        + ", c:" + getCountry() + ", cd:" + getCountyDistrict() + ", nc:" + getAddress3() + ", pc:"
-		        + getPostalCode() + ", lat:" + getLatitude() + ", long:" + getLongitude();
+        return new StringBuilder()
+                .append("a1:").append(getAddress1())
+                .append(", a2:").append(getAddress2())
+                .append(", cv:").append(getCityVillage())
+                .append(", sp:").append(getStateProvince())
+                .append(", c:").append(getCountry())
+                .append(", cd:").append(getCountyDistrict())
+                .append(", nc:").append(getAddress3())
+                .append(", pc:").append(getPostalCode())
+                .append(", lat:").append(getLatitude())
+                .append(", long:").append(getLongitude())
+                .toString();
 	}
 	
 	/**
@@ -106,40 +116,23 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean equalsContent(PersonAddress otherAddress) {
-		boolean returnValue = true;
-		
-		// these are the methods to compare. All are expected to be Strings
-		String[] methods = { "getAddress1", "getAddress2", "getAddress3", "getAddress4", "getAddress5", "getAddress6",
-		        "getCityVillage", "getCountyDistrict", "getStateProvince", "getCountry", "getPostalCode", "getLatitude",
-		        "getLongitude" };
-		
-		Class addressClass = this.getClass();
-		
-		// loop over all of the selected methods and compare this and other
-		for (String methodName : methods) {
-			try {
-				Method method = addressClass.getMethod(methodName, new Class[] {});
-				
-				String thisValue = (String) method.invoke(this);
-				String otherValue = (String) method.invoke(otherAddress);
-				
-				if (otherValue != null && otherValue.length() > 0)
-					returnValue &= otherValue.equals(thisValue);
-				
-			}
-			catch (NoSuchMethodException e) {
-				log.warn("No such method for comparison " + methodName, e);
-			}
-			catch (IllegalAccessException e) {
-				log.error("Error while comparing addresses", e);
-			}
-			catch (InvocationTargetException e) {
-				log.error("Error while comparing addresses", e);
-			}
-			
-		}
-		
-		return returnValue;
+        return new EqualsBuilder()
+                .append(otherAddress.getAddress1(), address1)
+                .append(otherAddress.getAddress2(), address2)
+                .append(otherAddress.getAddress3(), address3)
+                .append(otherAddress.getAddress4(), address4)
+                .append(otherAddress.getAddress5(), address5)
+                .append(otherAddress.getAddress6(), address6)
+                .append(otherAddress.getCityVillage(), cityVillage)
+                .append(otherAddress.getCountyDistrict(), countyDistrict)
+                .append(otherAddress.getStateProvince(), stateProvince)
+                .append(otherAddress.getCountry(), country)
+                .append(otherAddress.getPostalCode(), postalCode)
+                .append(otherAddress.getLatitude(), latitude)
+                .append(otherAddress.getLongitude(), longitude)
+                .append(otherAddress.getStartDate(), startDate)
+                .append(otherAddress.getEndDate(), endDate)
+                .build();
 	}
 	
 	/**
