@@ -1,11 +1,9 @@
 package org.openmrs.api.db;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -14,6 +12,10 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class PatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -259,6 +261,15 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getAllPatientIdentifierTypes_shouldReturnAll() throws Exception {
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getAllPatientIdentifierTypes(true);
 		Assert.assertEquals("patientIdentifierTypes list should have 3 elements", 3, patientIdentifierTypes.size());
+	}
+	
+	@Test
+	public void getPatientIdentifiers_shouldLimitByResultsByLocation() throws Exception {
+		Location location = Context.getLocationService().getLocation(3); // there is only one identifier in the test database for location 3
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
+		    Collections.singletonList(location), new ArrayList<Patient>(), null);
+		Assert.assertEquals(1, patientIdentifiers.size());
+		Assert.assertEquals("12345K", patientIdentifiers.get(0).getIdentifier());
 	}
 	
 }
