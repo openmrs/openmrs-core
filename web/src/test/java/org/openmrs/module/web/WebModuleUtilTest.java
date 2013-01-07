@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openmrs.module.Module;
+import org.openmrs.util.OpenmrsConstants;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -50,7 +51,8 @@ public class WebModuleUtilTest {
 	public void copyModuleMessagesIntoWebapp_shouldNotPrefixMessagesWithModuleIdIfOverrideSettingIsSpecified()
 	        throws Exception {
 		Module mod = buildModuleForMessageTest();
-		mod.getMessages().get("en").setProperty("ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE", "true");
+		mod.getMessages().get("en").setProperty(OpenmrsConstants.MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE,
+		    "true");
 		
 		partialMockWebModuleUtilForMessagesTests();
 		WebModuleUtil.copyModuleMessagesIntoWebapp(mod, "unused/real/path");

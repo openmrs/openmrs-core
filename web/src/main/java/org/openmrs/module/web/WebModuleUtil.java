@@ -46,7 +46,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
@@ -55,6 +54,7 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.filter.ModuleFilterConfig;
 import org.openmrs.module.web.filter.ModuleFilterDefinition;
 import org.openmrs.module.web.filter.ModuleFilterMapping;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.DispatcherServlet;
@@ -341,7 +341,8 @@ public class WebModuleUtil {
 			
 			Properties props = localeEntry.getValue();
 			
-			if (!"true".equalsIgnoreCase(props.getProperty("ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE"))) {
+			if (!"true".equalsIgnoreCase(props
+			        .getProperty(OpenmrsConstants.MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE))) {
 				// set all properties to start with 'moduleName.' if not already
 				List<Object> keys = new Vector<Object>();
 				keys.addAll(props.keySet());
