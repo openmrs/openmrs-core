@@ -21,7 +21,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Validates attributes on the {@link RelationshipType} object.
+ * Validates a {@link RelationshipType} object.
  * 
  * @since 1.10
  */
@@ -38,14 +38,13 @@ public class RelationshipTypeValidator implements Validator {
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
-		return c.equals(RelationshipType.class);
+		return RelationshipType.class.isAssignableFrom(c);
 	}
 	
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 * @should fail validation if aIsToB(or A is To B) is null or empty or whitespace
 	 * @should fail validation if bIsToA(or B is To A) is null or empty or whitespace
-	 * @should fail validation if Description is null or empty or whitespace
 	 * @should pass validation if all required fields are set
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -56,7 +55,6 @@ public class RelationshipTypeValidator implements Validator {
 		else {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "aIsToB", "RelationshipType.aIsToB.required");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "bIsToA", "RelationshipType.bIsToA.required");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "Description", "error.description");
 		}
 	}
 }

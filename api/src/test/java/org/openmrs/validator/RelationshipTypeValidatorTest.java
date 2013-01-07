@@ -33,7 +33,6 @@ public class RelationshipTypeValidatorTest {
 	public void validate_shouldFailValidationIfaIsToBIsNullOrEmptyOrWhitespace()
 			throws Exception {
 		RelationshipType type = new RelationshipType();
-		type.setaIsToB(null);
 		
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
@@ -58,7 +57,6 @@ public class RelationshipTypeValidatorTest {
 	public void validate_shouldFailValidationIfbIsToAIsNullOrEmptyOrWhitespace()
 			throws Exception {
 		RelationshipType type = new RelationshipType();
-		type.setbIsToA(null);
 		
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
@@ -76,31 +74,6 @@ public class RelationshipTypeValidatorTest {
 	}
 
 	/**
-	 * @see RelationshipTypeValidator#validate(Object,Errors)
-	 * @verifies fail validation if description is null or empty or whitespace
-	 */
-	@Test
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace()
-			throws Exception {
-		RelationshipType type = new RelationshipType();
-		type.setDescription(null);
-		
-		Errors errors = new BindException(type, "type");
-		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
-		
-		type.setDescription("");
-		errors = new BindException(type, "type");
-		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
-		
-		type.setDescription(" ");
-		errors = new BindException(type, "type");
-		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));	
-	}
-
-	/**
 	 * Test for all the field being set to some values
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 * @verifies pass validation if all required fields are set
@@ -111,7 +84,6 @@ public class RelationshipTypeValidatorTest {
 		RelationshipType type = new RelationshipType();
 		type.setaIsToB("A is To B");
 		type.setbIsToA("B is To A");
-		type.setDescription("description");
 
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
