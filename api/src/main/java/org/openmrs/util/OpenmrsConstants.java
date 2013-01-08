@@ -1740,10 +1740,4 @@ public final class OpenmrsConstants {
 	/** The data type to return on failing to load a custom data type. */
 	public static final String DEFAULT_CUSTOM_DATATYPE = FreeTextDatatype.class.getName();
 	
-	/**
-	 * A module message.properties file containing this key mapped to "true" will be allowed to define messages outside of the module's namespace.
-	 *
-	 * @since 1.9.3
-	 */
-	public static final String MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE = "openmrs.property.MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE";
 }
