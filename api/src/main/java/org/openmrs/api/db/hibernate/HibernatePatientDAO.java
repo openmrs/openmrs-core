@@ -247,6 +247,9 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (patientIdentifierTypes.size() > 0)
 			criteria.add(Expression.in("identifierType", patientIdentifierTypes));
 		
+		if (locations.size() > 0)
+			criteria.add(Expression.in("location", locations));
+		
 		// TODO add junit test for getting by patients
 		if (patients.size() > 0)
 			criteria.add(Expression.in("patient", patients));
