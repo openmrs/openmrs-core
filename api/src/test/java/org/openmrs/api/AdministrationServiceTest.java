@@ -31,6 +31,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -261,8 +262,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link AdministrationService#updateGlobalProperty(String,String)}
 	 */
 	@Test
-	@Verifies(value = "should update global property if it already exists", method = "updateGlobalProperty(String,String)")
-	public void updateGlobalProperty_shouldUpdateGlobalPropertyIfItAlreadyExists() throws Exception {
+	@Verifies(value = "should update global property in database", method = "updateGlobalProperty(String,String)")
+	public void updateGlobalProperty_shouldUpdateGlobalPropertyInDatabase() throws Exception {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
 		String propertyValue = adminService.getGlobalProperty("a_valid_gp_key");
@@ -277,19 +278,79 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link AdministrationService#updateGlobalProperty(String,String)}
 	 */
-	@Test
+	@Test(expected = IllegalStateException.class)
 	@Verifies(value = "should fail if global property being updated does not already exist", method = "updateGlobalProperty(String,String)")
 	public void updateGlobalProperty_shouldFailIfGlobalPropertyBeingUpdatedDoesNotAlreadyExist() throws Exception {
-		Exception exception = null;
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
-		try {
-			adminService.updateGlobalProperty("a_invalid_gp_key", "asdfsadfsafd");
-		}
-		catch (Exception e) {
-			exception = e;
-		}
-		Assert.assertNotNull(exception);
-		Assert.assertTrue(exception instanceof IllegalStateException);
+		adminService.updateGlobalProperty("a_invalid_gp_key", "asdfsadfsafd");
+	}
+	
+	/**
+	 * @see {@link AdministrationService#updateGlobalProperty(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should update a global property whose typed value is handled by a custom datatype", method = "updateGlobalProperty(String,String)")
+	public void updateGlobalProperty_shouldUpdateAGlobalPropertyWhoseTypedvalueIsHandledByACustomDatatype() throws Exception {
+		GlobalProperty gp = new GlobalProperty();
+		gp.setProperty("Flag");
+		gp.setDatatypeClassname(BooleanDatatype.class.getName());
+		gp.setValue(Boolean.FALSE);
+		adminService.saveGlobalProperty(gp);
+		Assert.assertEquals(adminService.getGlobalProperty("Flag"), "false");
+		
+		adminService.updateGlobalProperty("Flag", Boolean.TRUE.toString());
+		Assert.assertEquals(adminService.getGlobalProperty("Flag"), "true");
+	}
+	
+	/**
+	 * @see {@link AdministrationService#setGlobalProperty(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should create global property in database", method = "setGlobalProperty(String,String)")
+	public void setGlobalProperty_shouldCreateGlobalPropertyInDatabase() throws Exception {
+		String newKey = "new_gp_key";
+		
+		String initialValue = adminService.getGlobalProperty(newKey);
+		Assert.assertNull(initialValue); // ensure gp doesnt exist before test
+		adminService.setGlobalProperty(newKey, "new_key");
+		
+		String newValue = adminService.getGlobalProperty(newKey);
+		Assert.assertNotNull(newValue);
+	}
+	
+	/**
+	 * @see {@link AdministrationService#setGlobalProperty(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should overwrite global property if exists", method = "setGlobalProperty(String,String)")
+	public void setGlobalProperty_shouldOverwriteGlobalPropertyIfExists() throws Exception {
+		
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		
+		String propertyValue = adminService.getGlobalProperty("a_valid_gp_key");
+		Assert.assertEquals("correct-value", propertyValue);
+		
+		adminService.setGlobalProperty("a_valid_gp_key", "new-value");
+		
+		String newValue = adminService.getGlobalProperty("a_valid_gp_key");
+		Assert.assertEquals("new-value", newValue);
+		
+	}
+	
+	/**
+	 * @see {@link AdministrationService#setGlobalProperty(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should save a global property whose typed value is handled by a custom datatype", method = "setGlobalProperty(String,String)")
+	public void setGlobalProperty_shouldSaveAGlobalPropertyWhoseTypedValueIsHandledByACustomDatatype() throws Exception {
+		
+		String newKey = "Flag";
+		String initialValue = adminService.getGlobalProperty(newKey);
+		Assert.assertNull(initialValue);
+		
+		adminService.setGlobalProperty(newKey, Boolean.FALSE.toString());
+		Assert.assertEquals(adminService.getGlobalProperty("Flag"), "false");
+		
 	}
 	
 	/**
