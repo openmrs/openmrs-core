@@ -1,11 +1,9 @@
 package org.openmrs.api.db;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -14,6 +12,10 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class PatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -221,6 +223,53 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		//if actually the search returned the matching patient
 		Patient actualPatient = dao.getPatients("*ca", null, identifierTypes, false, 0, null).get(0);
 		Assert.assertEquals(patient2, actualPatient);
+	}
+	
+	/**
+	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @verifies not return null excluding retired
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldNotReturnNullExcludingRetired() throws Exception {
+		Assert.assertNotNull(dao.getAllPatientIdentifierTypes(false));
+	}
+	
+	/**
+	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @verifies not return retired
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldNotReturnRetired() throws Exception {
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getAllPatientIdentifierTypes(false);
+		Assert.assertEquals("patientIdentifierTypes list should have 2 elements", 2, patientIdentifierTypes.size());
+	}
+	
+	/**
+	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @verifies not return null including retired
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldNotReturnNullIncludingRetired() throws Exception {
+		Assert.assertNotNull(dao.getAllPatientIdentifierTypes(true));
+	}
+	
+	/**
+	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @verifies return all
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldReturnAll() throws Exception {
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getAllPatientIdentifierTypes(true);
+		Assert.assertEquals("patientIdentifierTypes list should have 3 elements", 3, patientIdentifierTypes.size());
+	}
+	
+	@Test
+	public void getPatientIdentifiers_shouldLimitByResultsByLocation() throws Exception {
+		Location location = Context.getLocationService().getLocation(3); // there is only one identifier in the test database for location 3
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
+		    Collections.singletonList(location), new ArrayList<Patient>(), null);
+		Assert.assertEquals(1, patientIdentifiers.size());
+		Assert.assertEquals("12345K", patientIdentifiers.get(0).getIdentifier());
 	}
 	
 }

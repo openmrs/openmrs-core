@@ -13,17 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,6 +32,17 @@ import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
+
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Hibernate specific database methods for the PatientService
@@ -261,6 +261,9 @@ public class HibernatePatientDAO implements PatientDAO {
 		// TODO add junit test for getting by identifier type
 		if (patientIdentifierTypes.size() > 0)
 			criteria.add(Expression.in("identifierType", patientIdentifierTypes));
+		
+		if (locations.size() > 0)
+			criteria.add(Expression.in("location", locations));
 		
 		// TODO add junit test for getting by patients
 		if (patients.size() > 0)
