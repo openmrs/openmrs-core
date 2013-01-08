@@ -559,7 +559,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param propertyValue the value of the global property to save
 	 * @should create global property in database
 	 * @should overwrite global property if exists
-	 * @should not allow different properties to have the same string with different case
 	 * @should save a global property whose typed value is handled by a custom datatype
 	 */
 	public void setGlobalProperty(String propertyName, String propertyValue);
@@ -567,14 +566,13 @@ public interface AdministrationService extends OpenmrsService {
 	/**
 	 * Overwrites the value of the global property if it already exists. If the global property does
 	 * not exist, an exception will be thrown
-	 * 
+	 * @since 1.10
 	 * @param propertyName  the name of the global property to overwrite
 	 * @param propertyValue  the value of the global property to overwrite
 	 * @throws IllegalStateException
 	 * @should update global property in database
-	 * @should overwrite global property if exists
-	 * @should not allow different properties to have the same string with different case
-	 * @should save a global property whose typed value is handled by a custom datatype
+	 * @should fail if global property being updated does not already exist
+	 * @should update a global property whose typed value is handled by a custom datatype
 	 */
 	public void updateGlobalProperty(String propertyName, String propertyValue) throws IllegalStateException;
 	
