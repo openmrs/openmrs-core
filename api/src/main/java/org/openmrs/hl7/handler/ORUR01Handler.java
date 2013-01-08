@@ -254,7 +254,9 @@ public class ORUR01Handler implements Application {
 			OBR obr = orderObs.getOBR();
 			
 			if (!StringUtils.hasText(obr.getUniversalServiceIdentifier().getIdentifier().getValue())) {
-				throw new HL7Exception("Check to ensure that the form's OBS section is a concept field. Invalid OBR in hl7 message with uid: " + messageControlId);
+				throw new HL7Exception(
+				        "Check to ensure that the form's OBS section is a concept field. Invalid OBR in hl7 message with uid: "
+				                + messageControlId);
 			}
 			
 			// if we're not ignoring this obs group, create an

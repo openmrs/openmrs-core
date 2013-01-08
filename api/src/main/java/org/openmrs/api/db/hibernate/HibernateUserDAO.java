@@ -395,8 +395,8 @@ public class HibernateUserDAO implements UserDAO {
 		if (object instanceof Number)
 			id = ((Number) query.uniqueResult()).intValue() + 1;
 		else {
-			log.warn("What is being returned here? Definitely nothing expected object value: '"
-					+ object + "' of class: " + object.getClass());
+			log.warn("What is being returned here? Definitely nothing expected object value: '" + object + "' of class: "
+			        + object.getClass());
 			id = 1;
 		}
 		
