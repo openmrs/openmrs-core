@@ -35,7 +35,7 @@ public class WebModuleUtilTest {
 	@Test
 	public void copyModuleMessagesIntoWebapp_shouldPrefixMessagesWithModuleId() throws Exception {
 		Module mod = buildModuleForMessageTest();
-		/* WebModuleUtil webModuleUtilSpy = */partialMockWebModuleUtilForMessagesTests();
+		partialMockWebModuleUtilForMessagesTests();
 		WebModuleUtil.copyModuleMessagesIntoWebapp(mod, "unused/real/path");
 		
 		assertThat(propertiesWritten.getProperty("mymodule.title"), is("My Module"));
