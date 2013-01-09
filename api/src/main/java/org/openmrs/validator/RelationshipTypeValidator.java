@@ -3,7 +3,7 @@
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  *
-* Software distributed under the License is distributed on an "AS IS"
+ * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
  * License for the specific language governing rights and limitations
  * under the License.
@@ -51,10 +51,9 @@ public class RelationshipTypeValidator implements Validator {
 		RelationshipType relationshipType = (RelationshipType) obj;
 		if (relationshipType == null) {
 			errors.rejectValue("relationshipType", "error.general");
-		}
-		else {
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "aIsToB", "RelationshipType.aIsToB.required");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "bIsToA", "RelationshipType.bIsToA.required");
+		} else {
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "aIsToB", "RelationshipType.aIsToB.required");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "bIsToA", "RelationshipType.bIsToA.required");
 		}
 	}
 }
