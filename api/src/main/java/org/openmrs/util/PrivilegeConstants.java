@@ -122,6 +122,11 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to get allergies")
 	public static final String GET_ALLERGIES = "Get Allergies";
 	
+	@AddOnStartup(description = "Able to add/edit/delete HL7 messages")
+	public static final String MANAGE_HL7_MESSAGES = "Manage HL7 Messages";
+	
+	public static final String PURGE_HL7_MESSAGES = "Purge HL7 Messages";
+	
 	@AddOnStartup(description = "Able to get an HL7 Source")
 	public static final String GET_HL7_SOURCE = "Get HL7 Source";
 	
