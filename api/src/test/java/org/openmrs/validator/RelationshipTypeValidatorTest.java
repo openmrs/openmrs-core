@@ -30,8 +30,7 @@ public class RelationshipTypeValidatorTest {
 	 * @verifies fail validation if aIsToB(or A is To B) is null or empty or whitespace
 	 */
 	@Test
-	public void validate_shouldFailValidationIfaIsToBIsNullOrEmptyOrWhitespace()
-			throws Exception {
+	public void validate_shouldFailValidationIfaIsToBIsNullOrEmptyOrWhitespace() throws Exception {
 		RelationshipType type = new RelationshipType();
 		
 		Errors errors = new BindException(type, "type");
@@ -46,16 +45,15 @@ public class RelationshipTypeValidatorTest {
 		type.setaIsToB(" ");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("aIsToB"));	
+		Assert.assertTrue(errors.hasFieldErrors("aIsToB"));
 	}
-
+	
 	/**
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 * @verifies fail validation if bIsToA(or B is To A) is null or empty or whitespace
 	 */
 	@Test
-	public void validate_shouldFailValidationIfbIsToAIsNullOrEmptyOrWhitespace()
-			throws Exception {
+	public void validate_shouldFailValidationIfbIsToAIsNullOrEmptyOrWhitespace() throws Exception {
 		RelationshipType type = new RelationshipType();
 		
 		Errors errors = new BindException(type, "type");
@@ -72,19 +70,18 @@ public class RelationshipTypeValidatorTest {
 		new RelationshipTypeValidator().validate(type, errors);
 		Assert.assertTrue(errors.hasFieldErrors("bIsToA"));
 	}
-
+	
 	/**
 	 * Test for all the field being set to some values
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 * @verifies pass validation if all required fields are set
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsAreSet()
-			throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsAreSet() throws Exception {
 		RelationshipType type = new RelationshipType();
 		type.setaIsToB("A is To B");
 		type.setbIsToA("B is To A");
-
+		
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		Assert.assertFalse(errors.hasErrors());
