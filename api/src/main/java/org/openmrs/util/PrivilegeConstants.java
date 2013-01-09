@@ -23,6 +23,11 @@ import org.openmrs.annotation.AddOnStartup;
  * @since 1.8
  */
 public class PrivilegeConstants {
+
+	@AddOnStartup(description = "Able to add/edit/delete HL7 messages")
+	public static final String MANAGE_HL7_MESSAGES = "Manage HL7 Messages";
+	
+	public static final String PURGE_HL7_MESSAGES = "Purge HL7 Messages";
 	
 	@AddOnStartup(description = "Able to view concept entries")
 	public static final String VIEW_CONCEPTS = "View Concepts";
