@@ -34,6 +34,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.AlertValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -77,6 +78,7 @@ public class AlertFormController extends SimpleFormController {
 	        BindException errors) throws Exception {
 		
 		Alert alert = (Alert) obj;
+		new AlertValidator().validate(obj, errors);
 		
 		try {
 			// check that the user has the right privileges here because
@@ -138,7 +140,7 @@ public class AlertFormController extends SimpleFormController {
 			}
 			
 			if ((alert.getRecipients() == null || alert.getRecipients().size() == 0)) {
-				errors.rejectValue("users", "Alert.recipientRequired");
+				errors.rejectValue("recipients", "Alert.recipientRequired");
 			}
 			
 		}
