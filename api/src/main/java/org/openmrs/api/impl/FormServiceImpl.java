@@ -850,13 +850,19 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		if (formResource == null)
 			return null;
 		
-		// purge the original if it is being overridden (same name)
+		// If a form resource with same name exists, replace it with current value
+		FormResource toPersist = formResource;
 		FormResource original = Context.getFormService().getFormResource(formResource.getForm(), formResource.getName());
-		if (original != null)
-			Context.getFormService().purgeFormResource(original);
-		
-		CustomDatatypeUtil.saveIfDirty(formResource);
-		return dao.saveFormResource(formResource);
+		if (original != null) {
+			original.setName(formResource.getName());
+			original.setValue(formResource.getValue());
+			original.setDatatypeClassname(formResource.getDatatypeClassname());
+			original.setDatatypeConfig(formResource.getDatatypeConfig());
+			original.setPreferredHandlerClassname(formResource.getPreferredHandlerClassname());
+			toPersist = original;
+		}
+		CustomDatatypeUtil.saveIfDirty(toPersist);
+		return dao.saveFormResource(toPersist);
 	}
 	
 	/**
