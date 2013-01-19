@@ -37,6 +37,8 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.layout.web.address.AddressSupport;
+import org.openmrs.layout.web.address.AddressTemplate;
 import org.openmrs.util.LocationUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -103,6 +105,15 @@ public class ShortPatientFormController {
 				String age = request.getParameter("addAge");
 				PersonFormController.getMiniPerson(patient, name, gender, date, age);
 			}
+			// Create address with default attributes
+			PersonAddress address = new PersonAddress();
+			List<AddressTemplate> templates = AddressSupport.getInstance().getAddressTemplate();
+			if (!templates.isEmpty()) {
+				AddressTemplate template = templates.get(0);
+				address.setCountry(template.getElementDefault("country"));
+				address.setStateProvince(template.getElementDefault("stateProvince"));
+			}
+			patient.getAddresses().add(address);
 		}
 		
 		// if we have an existing personName, cache the original name so that we
@@ -116,10 +127,11 @@ public class ShortPatientFormController {
 		
 		// cache a copy of the person address for comparison in case the name is
 		// edited
-		if (patient.getPersonAddress() != null && patient.getPersonAddress().getId() != null)
+		if (patient.getPersonAddress() != null && patient.getPersonAddress().getId() != null) {
 			model.addAttribute("personAddressCache", patient.getPersonAddress().clone());
-		else
+		} else {
 			model.addAttribute("personAddressCache", new PersonAddress());
+		}
 		
 		String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 		Concept conceptCause = Context.getConceptService().getConcept(propCause);
