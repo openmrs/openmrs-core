@@ -40,8 +40,8 @@
 	<logger name="org.hibernate.SQL">
 		<level value="WARN" />
 	</logger>
-	
-	<root>
+
+    <root>
 		<level value="ERROR" />
 		<appender-ref ref="CONSOLE" />
 	</root>
