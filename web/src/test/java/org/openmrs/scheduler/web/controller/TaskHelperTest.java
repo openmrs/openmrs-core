@@ -39,10 +39,6 @@ public class TaskHelperTest extends BaseWebContextSensitiveTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		
-		/*
-		 * TODO - Understand constraint violation occuring when preparing test data.
-		 */
 		executeDataSet(INITIAL_SCHEDULER_TASK_CONFIG_XML);
 		
 		service = Context.getSchedulerService();
@@ -80,12 +76,6 @@ public class TaskHelperTest extends BaseWebContextSensitiveTest {
 		Assert.assertTrue(task.getStarted());
 	}
 	
-	/*
-	 * TODO - Test case fails on the command line.
-	 *
-	 * Understand concurrency model of tasks, can multiple instances of the HelloWorldTask be scheduled at the
-	 * same time without interfering with each other?
-	 */
 	/**
 	 * @verifies return a task that has not been started
 	 * @see TaskHelper#getUnscheduledTaskDefinition(java.util.Date)
