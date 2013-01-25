@@ -118,6 +118,7 @@ public class SchedulerFormController extends SimpleFormController {
 	 * @should reschedule a currently scheduled task
 	 * @should not reschedule a task that is not currently scheduled
 	 * @should not reschedule a task if the start time has passed
+	 * @should not reschedule an executing task
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	        BindException errors) throws Exception {

@@ -41,16 +41,6 @@
 		<level value="WARN" />
 	</logger>
 
-    <!-- TODO remove -->
-    <!-- start of DEBUG settings -->
-    <logger name="org.openmrs.scheduler.web.controller.SchedulerFormControllerTest">
-        <level value="DEBUG" />
-    </logger>
-    <logger name="org.openmrs.scheduler.tasks.HelloWorldTask">
-        <level value="DEBUG" />
-    </logger>
-    <!-- end of DEBUG settings -->
-
     <root>
 		<level value="ERROR" />
 		<appender-ref ref="CONSOLE" />
