@@ -37,7 +37,7 @@ public class AlertValidator implements Validator {
          */
         @SuppressWarnings("unchecked")
         public boolean supports(Class c) {
-                return c.equals(Alert.class);
+                return Alert.class.isAssignableFrom(c);
         }
         /**
          * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)

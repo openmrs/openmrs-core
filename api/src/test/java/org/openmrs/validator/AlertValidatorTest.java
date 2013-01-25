@@ -21,7 +21,6 @@ import org.springframework.validation.Errors;
 /**
  * Tests methods on the {@link AlertValidator} class.
  *
- * @since 1.10
  */
 public class AlertValidatorTest {
 	/**
@@ -32,7 +31,7 @@ public class AlertValidatorTest {
 	public void validate_shouldFailValidationIfAlertTextIsNullOrEmptyOrWhitespace()
 			throws Exception {
 		Alert alert = new Alert();
-		alert.setText(null);
+		Assert.assertNull(alert.getText());
 		
 		Errors errors = new BindException(alert, "alert");
 		new AlertValidator().validate(alert, errors);
