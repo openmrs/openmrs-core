@@ -366,6 +366,20 @@ public class UserContext implements Serializable {
 	}
 	
 	/**
+	 * @return locationId
+	 */
+	public Integer getLocationId() {
+		return locationId;
+	}
+
+	/**
+	 * @param locationId locationId to set
+	 */
+	public void setLocationId(Integer locationId) {
+		this.locationId = locationId;
+	}
+
+	/**
 	 * @return current location for this user context if any is set
 	 * @since 1.9
 	 */
@@ -378,6 +392,7 @@ public class UserContext implements Serializable {
 	 * @since 1.9
 	 */
 	public void setLocation(Location location) {
+		if (location != null)
 		this.locationId = location.getLocationId();
 	}
 	
