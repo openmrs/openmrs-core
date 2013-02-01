@@ -64,9 +64,7 @@ import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
-import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -98,11 +96,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * a single task with this name.
 	 */
 	public static final String CONCEPT_WORD_UPDATE_TASK_NAME = "Update Concept Index";
-	
-	/**
-	 * Task managed by the scheduler to update concept words. May be null.
-	 */
-	private Task conceptWordUpdateTask;
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#setConceptDAO(org.openmrs.api.db.ConceptDAO)
@@ -1496,11 +1489,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	private TaskDefinition createConceptIndexUpdateTask() {
 		TaskDefinition conceptIndexUpdateTaskDef = new TaskDefinition();
 		conceptIndexUpdateTaskDef.setTaskClass("org.openmrs.scheduler.tasks.ConceptIndexUpdateTask");
-		conceptIndexUpdateTaskDef.setRepeatInterval(0L); // zero interval means
-		// do not repeat
+		conceptIndexUpdateTaskDef.setRepeatInterval(0L); // zero interval means do not repeat
 		conceptIndexUpdateTaskDef.setStartOnStartup(false);
-		conceptIndexUpdateTaskDef.setStartTime(null); // to induce immediate
-		// execution
+		conceptIndexUpdateTaskDef.setStartTime(null); // to induce immediate execution
 		conceptIndexUpdateTaskDef.setName(CONCEPT_WORD_UPDATE_TASK_NAME);
 		conceptIndexUpdateTaskDef
 		        .setDescription("Iterates through the concept dictionary, re-creating concept index (which are used for searcing). This task is started when using the \"Update Concept Index Storage\" page and no range is given.  This task stops itself when one iteration has completed.");
@@ -1939,39 +1930,16 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	public void updateConceptIndexes() throws APIException {
 		checkIfLocked();
-		SchedulerService ss = Context.getSchedulerService();
+		SchedulerService schedService = Context.getSchedulerService();
 		
-		// ABKTODO: this whole pattern should be moved into the scheduler,
-		// providing a call like scheduleThisIfNotRunning()
-		TaskDefinition conceptIndexUpdateTaskDef = ss.getTaskByName(CONCEPT_WORD_UPDATE_TASK_NAME);
+		// Create task if not exist
+		TaskDefinition conceptIndexUpdateTaskDef = schedService.getTaskByName(CONCEPT_WORD_UPDATE_TASK_NAME);
 		if (conceptIndexUpdateTaskDef == null) {
 			conceptIndexUpdateTaskDef = createConceptIndexUpdateTask();
-			try {
-				ss.saveTask(conceptIndexUpdateTaskDef);
-				conceptWordUpdateTask = ss.scheduleTask(conceptIndexUpdateTaskDef);
-			}
-			catch (SchedulerException e) {
-				log.error("Failed to schedule concept-word update task, because:", e);
-			}
-		} else {
-			// task definition exists. get the task itself
-			conceptWordUpdateTask = conceptIndexUpdateTaskDef.getTaskInstance();
-			if (conceptWordUpdateTask == null) {
-				try {
-					ss.rescheduleTask(conceptIndexUpdateTaskDef);
-				}
-				catch (SchedulerException e) {
-					log.error("Failed to schedule concept-word update task, because:", e);
-				}
-			} else if (!conceptWordUpdateTask.isExecuting()) {
-				try {
-					ss.rescheduleTask(conceptIndexUpdateTaskDef);
-				}
-				catch (SchedulerException e) {
-					log.error("Failed to re-schedule concept-word update task, because:", e);
-				}
-			}
+			schedService.saveTask(conceptIndexUpdateTaskDef);
 		}
+		// Schedule task
+		schedService.scheduleIfNotRunning(conceptIndexUpdateTaskDef);
 		
 	}
 	

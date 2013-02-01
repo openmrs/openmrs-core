@@ -510,5 +510,23 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 		}
 		return "Not Running";
 	}
+
+	@Override
+	public void scheduleIfNotRunning(TaskDefinition taskDef) {
+		Task task = taskDef.getTaskInstance();
+		if (task == null) {
+			try {
+				rescheduleTask(taskDef);
+			} catch (SchedulerException e) {
+				log.error("Failed to schedule task, because:", e);
+			}
+		} else if (!task.isExecuting()) {
+			try {
+				rescheduleTask(taskDef);
+			} catch (SchedulerException e) {
+				log.error("Failed to re-schedule task, because:", e);
+			}
+		}
+	}
 	
 }
