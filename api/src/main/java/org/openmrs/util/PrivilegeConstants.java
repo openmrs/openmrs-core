@@ -23,7 +23,7 @@ import org.openmrs.annotation.AddOnStartup;
  * @since 1.8
  */
 public class PrivilegeConstants {
-
+	
 	@AddOnStartup(description = "Able to add/edit/delete HL7 messages")
 	public static final String MANAGE_HL7_MESSAGES = "Manage HL7 Messages";
 	
