@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.context;
 
+import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
@@ -34,7 +35,7 @@ public class Daemon {
 	/**
 	 * The uuid defined for the daemon user object
 	 */
-	protected static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
+	public static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
 	
 	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
 	
@@ -326,5 +327,20 @@ public class Daemon {
 		public Throwable getExceptionThrown() {
 			return exceptionThrown;
 		}
+	}
+	
+	/**
+	 * Checks whether user is Daemon.
+	 * However this is not the preferred method for checking to see if the current thread is a daemon thread,
+	 * 				rather use Daemon.isDeamonThread().
+	 * isDaemonThread is preferred for checking to see if you are in that thread or if the current thread is daemon.
+	 * 
+	 * @param user, user whom we are checking if daemon
+	 * @return true if user is Daemon
+	 * @should return true for a daemon user
+	 * @should return false if the user is not a daemon
+	 */
+	public static boolean isDaemonUser(User user) {
+		return DAEMON_USER_UUID.equals(user.getUuid());
 	}
 }

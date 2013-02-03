@@ -15,6 +15,7 @@ package org.openmrs.api.context;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.scheduler.Task;
@@ -22,6 +23,7 @@ import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.scheduler.tasks.HelloWorldTask;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * Tests the methods on the {@link Daemon} class
@@ -177,5 +179,29 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		public void execute() {
 			Context.getAuthenticatedUser().getPersonName().getFullName();
 		}
+	}
+	
+	/**
+	 * @see {@link Daemon#isDaemonUser(User user)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return true for a daemon user", method = "isDaemonUser(User user)")
+	public void isDaemonUser_shouldReturnTrueForADaemonUser() throws Exception {
+		User user = new User();
+		user.setUuid(Daemon.DAEMON_USER_UUID);
+		Assert.assertTrue(Daemon.isDaemonUser(user));
+	}
+	
+	/**
+	 * @see {@link Daemon#isDaemonUser(User user)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return false if the user is not a daemon", method = "isDaemonUser(User user)")
+	public void isDaemonUser_shouldReturnFalseIFTheUserIsNotADaemon() throws Exception {
+		User user = new User();
+		user.setUuid("any other value");
+		Assert.assertFalse(Daemon.isDaemonUser(user));
 	}
 }
