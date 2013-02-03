@@ -15,6 +15,7 @@ package org.openmrs.api.context;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.scheduler.Task;
@@ -177,5 +178,27 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		public void execute() {
 			Context.getAuthenticatedUser().getPersonName().getFullName();
 		}
+	}
+	
+	/**
+	 * @see Daemon#isDaemonUser(User)
+	 * @verifies user is a daemon one if user Uuid is equal to daemon Uuid
+	 */
+	@Test
+	public void isDaemonUser_userIsdaemonIfUserUuidIsEqualTodaemonUuid() {
+		User user = new User();
+		user.setUuid(Daemon.DAEMON_USER_UUID);
+		Assert.assertTrue(Daemon.isDaemonUser(user));
+	}
+	
+	/**
+	 * @see Daemon#isDaemonUser(User)
+	 * @verifies user is not a daemon one if user Uuid is not equal to daemon Uuid
+	 */
+	@Test
+	public void isDaemonUser_userIsNotdaemonIfUserUuidIsNotEqualTodaemonUuid() {
+		User user = new User();
+		user.setUuid("any other value");
+		Assert.assertFalse(Daemon.isDaemonUser(user));
 	}
 }
