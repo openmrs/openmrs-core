@@ -13,22 +13,28 @@
  */
 package org.openmrs.obs;
 
+import java.util.Set;
+
+import org.openmrs.ConceptComplex;
+import org.openmrs.FormField;
+
 /**
- * Interface for handling complex obs. Implementing classes are responsible for generating a segment
- * to embed inside a form schema and serialization of the complex data to a meaningful format.
+ * Interface for handling complex obs. Implementing classes are responsible for generating
+ * {@link FormField}s to embed inside a parent {@link FormField}. When a form is submitted and it
+ * has a {@link ConceptComplex} associated to an implementing handler class, then the handler's
+ * serializeFormData method is invoked to perform the serialization of the complex data.
  * 
  * @since 1.10
  */
 public interface SerializableComplexObsHandler extends ComplexObsHandler {
 	
 	/**
-	 * Generates the segment to be included in a form schema. Note that this should exclude the xml
-	 * declaration, schema opening and closing tags
+	 * Gets the form fields that should be added to the forms using complex concepts that are
+	 * associated to this handler
 	 * 
-	 * @param format the format of the generated text e.g xml, json etc
-	 * @return the generated segment
+	 * @return Set of form fields
 	 */
-	public String getSchema(String format);
+	public Set<FormField> getFormFields();
 	
 	/**
 	 * Transforms the incoming data from one format to another. For example, this can be useful if
