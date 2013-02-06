@@ -55,16 +55,21 @@ public interface PatientDAO {
 	public List<Patient> getAllPatients(boolean includeVoided) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getPatients(String, String, List, boolean, int, Integer)
+	 * @param searchOnNamesOrIdentifiers specifies if the logic should find patients that match the
+	 *            name or identifier otherwise find patients that match both the name and identifier
+	 * @see org.openmrs.api.PatientService#getPatients(String, String, List, boolean, Integer,
+	 *      Integer)
 	 * @should escape percentage character in name phrase
 	 * @should escape underscore character in name phrase
 	 * @should escape an asterix character in name phrase
 	 * @should escape percentage character in identifier phrase
 	 * @should escape underscore character in identifier phrase
 	 * @should escape an asterix character in identifier phrase
+	 * @should get patients with a matching identifier and type
 	 */
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException;
+	
+	boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesOrIdentifiers) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,
@@ -146,8 +151,10 @@ public interface PatientDAO {
 	public void deletePatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException;
 	
 	/**
+	 * @param searchOnNamesOrIdentifiers specifies if the logic should find patients that match the
+	 *            name or identifier otherwise find patients that match both the name and identifier
 	 * @see PatientService#getCountOfPatients(String)
 	 */
 	public Integer getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                  boolean matchIdentifierExactly);
+	                                  boolean matchIdentifierExactly, boolean searchOnNamesOrIdentifiers);
 }

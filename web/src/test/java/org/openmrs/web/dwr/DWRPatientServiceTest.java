@@ -14,11 +14,16 @@
 package org.openmrs.web.dwr;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.api.PatientService;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 
@@ -93,6 +98,30 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 		Assert.assertEquals(0, resultObjects.get("count"));
 		Assert.assertEquals("Joh", resultObjects.get("searchAgain"));
 		Assert.assertNotNull(resultObjects.get("notification"));
+	}
+	
+	/**
+	 * @see {@link DWRPatientService#findCountAndPatients(String,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should match patient with identifiers that contain no digit", method = "findCountAndPatients(String,Integer,Integer,null)")
+	public void findCountAndPatients_shouldMatchPatientWithIdentifiersThatContainNoDigit() throws Exception {
+		PatientService ps = Context.getPatientService();
+		final String identifier = "XYZ";
+		//should have no patient with this identifiers
+		Assert.assertEquals(0, ps.getCountOfPatients(identifier).intValue());
+		
+		Patient patient = ps.getPatient(2);
+		PatientIdentifier pId = new PatientIdentifier(identifier, ps.getPatientIdentifierType(2), Context
+		        .getLocationService().getLocation(1));
+		patient.addIdentifier(pId);
+		ps.savePatient(patient);
+		
+		//Let's do this in a case insensitive way
+		Map<String, Object> resultObjects = new DWRPatientService().findCountAndPatients(identifier.toLowerCase(), 0, null,
+		    true);
+		Assert.assertEquals(1, resultObjects.get("count"));
+		Assert.assertEquals(1, ((List<?>) resultObjects.get("objectList")).size());
 	}
 	
 }

@@ -17,11 +17,13 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -180,14 +182,21 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, int, Integer)
+	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer,
+	 *      Integer, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException {
+	                                 boolean matchIdentifierExactly, Integer start, Integer length,
+	                                 boolean searchOnNamesOrIdentifiers) throws DAOException {
+		if (StringUtils.isBlank(name) && StringUtils.isBlank(identifier)
+		        && (identifierTypes == null || identifierTypes.isEmpty())) {
+			return Collections.emptyList();
+		}
+		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly, true);
+		    matchIdentifierExactly, true, searchOnNamesOrIdentifiers);
 		// restricting the search to the max search results value
 		if (start != null)
 			criteria.setFirstResult(start);
@@ -472,7 +481,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		 * 
 		 * patients = query.list(); }
 		 */
-
+		
 		return patients;
 	}
 	
@@ -482,23 +491,23 @@ public class HibernatePatientDAO implements PatientDAO {
 	public Patient getPatientByUuid(String uuid) {
 		Patient p = null;
 		
-		p = (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.uuid = :uuid").setString(
-		    "uuid", uuid).uniqueResult();
+		p = (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
 		
 		return p;
 	}
 	
 	public PatientIdentifier getPatientIdentifierByUuid(String uuid) {
-		return (PatientIdentifier) sessionFactory.getCurrentSession().createQuery(
-		    "from PatientIdentifier p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		return (PatientIdentifier) sessionFactory.getCurrentSession()
+		        .createQuery("from PatientIdentifier p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierTypeByUuid(java.lang.String)
 	 */
 	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) {
-		return (PatientIdentifierType) sessionFactory.getCurrentSession().createQuery(
-		    "from PatientIdentifierType pit where pit.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		return (PatientIdentifierType) sessionFactory.getCurrentSession()
+		        .createQuery("from PatientIdentifierType pit where pit.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
 	
 	/**
@@ -558,16 +567,16 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean)
+	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean, boolean)
 	 */
 	public Integer getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                  boolean matchIdentifierExactly) {
+	                                  boolean matchIdentifierExactly, boolean searchOnNamesOrIdentifiers) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		//Skip the ordering of names because H2(and i think PostgreSQL) will require one of the ordered
 		//columns to be in the resultset which then contradicts with the combination of 
 		//(Projections.rowCount() and Criteria.uniqueResult()) that expect back only one row with one column
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly, false);
+		    matchIdentifierExactly, false, searchOnNamesOrIdentifiers);
 		criteria.setProjection(Projections.countDistinct("patientId"));
 		return (Integer) criteria.uniqueResult();
 	}
