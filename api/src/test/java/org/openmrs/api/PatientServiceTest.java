@@ -427,7 +427,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(new PatientIdentifierType(1));
-		
 		// make sure we get back only one patient
 		List<Patient> patients = patientService.getPatients(null, "1234", types, false);
 		assertEquals(1, patients.size());
@@ -570,6 +569,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldAllowExactSearchOfForTwoCharacterName() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "2"));
 		assertEquals(1, Context.getPatientService().getPatients("Ho").size());
 	}
 	
@@ -3395,6 +3396,40 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addIdentifier(patientIdentifier);
 		
 		patientService.savePatient(patient);
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatients(String,Integer,Integer)}
+	 */
+	@Test
+	@Verifies(value = "should find a patients with a matching identifier with no digits", method = "getPatients(String,Integer,Integer)")
+	public void getPatients_shouldFindAPatientsWithAMatchingIdentifierWithNoDigits() throws Exception {
+		final String identifier = "XYZ";
+		Patient patient = patientService.getPatient(2);
+		Assert.assertEquals(0, patientService.getPatients(identifier, (Integer) null, (Integer) null).size());
+		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		patient.addIdentifier(pId);
+		patientService.savePatient(patient);
+		
+		Assert.assertEquals(1, patientService.getPatients(identifier).size());
+	}
+	
+	/**
+	 * @see {@link PatientService#getCountOfPatients(String)}
+	 */
+	@Test
+	@Verifies(value = "should return the right count of patients with a matching identifier with no digits", method = "getCountOfPatients(String)")
+	public void getCountOfPatients_shouldReturnTheRightCountOfPatientsWithAMatchingIdentifierWithNoDigits() throws Exception {
+		final String identifier = "XYZ";
+		Patient patient = patientService.getPatient(2);
+		Assert.assertEquals(0, patientService.getCountOfPatients(identifier).intValue());
+		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		patient.addIdentifier(pId);
+		patientService.savePatient(patient);
+		
+		Assert.assertEquals(1, patientService.getCountOfPatients(identifier).intValue());
 	}
 	
 }
