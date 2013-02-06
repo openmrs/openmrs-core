@@ -1541,14 +1541,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query))
 			return patients;
 		
-		// if there is a number in the query string
-		if (query.matches(".*\\d+.*")) {
-			log.debug("[Identifier search] Query: " + query);
-			return getPatients(null, query, null, false, start, length);
-		} else {
-			// there is no number in the string, search on name
-			return getPatients(query, null, null, false, start, length);
-		}
+		return getPatients(query, query, null, false, start, length);
 	}
 	
 	/**
