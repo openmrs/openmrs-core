@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.annotation.Handler;
@@ -223,6 +224,20 @@ public class ConceptValidator implements Validator {
 		if (!hasFullySpecifiedName) {
 			log.debug("Concept has no fully specified name");
 			errors.reject("Concept.error.no.FullySpecifiedName");
+		}
+		
+		//Ensure that the concept has atleast one description in any locale
+		boolean check = false;
+		for (Locale locale : Context.getAdministrationService().getAllowedLocales()) {
+			ConceptDescription conceptDescription = conceptToValidate.getDescription(locale);
+			if (conceptDescription != null && conceptDescription.getDescription() != null) {
+				check = true;
+			}
+		}
+		
+		if (!check) {
+			log.debug("Concept does not have atleast one description in any locale");
+			errors.reject("Concept.error.no.ConceptDescription");
 		}
 		
 		if (CollectionUtils.isNotEmpty(conceptToValidate.getConceptMappings())) {

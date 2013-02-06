@@ -7476,6 +7476,13 @@
 		</comment>
 		<dropNotNullConstraint tableName="encounter_type" columnName="description" columnDataType="text" />
 	</changeSet>
+	
+	<changeSet id="20121225-TRUNK-3478-concept_description" author="surangak">
+		<comment>
+			Concepts are be required to have at least one description
+		</comment>
+		<customChange class="org.openmrs.util.databasechange.ConceptDescriptionValidatorChangeSet"/>				
+	</changeSet>
 
 	<changeSet id="20121212-TRUNK-2768" author="patandre">
 		<preConditions onFail="MARK_RAN">
