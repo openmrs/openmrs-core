@@ -424,7 +424,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(new PatientIdentifierType(1));
-		
 		// make sure we get back only one patient
 		List<Patient> patients = patientService.getPatients(null, "1234", types, false);
 		assertEquals(1, patients.size());
@@ -3235,9 +3234,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		final String identifier = "XYZ";
 		Patient patient = patientService.getPatient(2);
 		Assert.assertEquals(0, patientService.getPatients(identifier, (Integer) null, (Integer) null).size());
-		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(2), locationService.getLocation(1));
+		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
 		patient.addIdentifier(pId);
 		patientService.savePatient(patient);
+		
 		Assert.assertEquals(1, patientService.getPatients(identifier, (Integer) null, (Integer) null).size());
 	}
 }
