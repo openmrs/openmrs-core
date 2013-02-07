@@ -189,7 +189,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesAndIdentifiers)
+	        boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesOrIdentifiers)
 	        throws DAOException {
 		if (StringUtils.isBlank(name) && StringUtils.isBlank(identifier)
 		        && (identifierTypes == null || identifierTypes.isEmpty())) {
@@ -198,7 +198,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly, true, searchOnNamesAndIdentifiers);
+		    matchIdentifierExactly, true, searchOnNamesOrIdentifiers);
 		// restricting the search to the max search results value
 		if (start != null)
 			criteria.setFirstResult(start);

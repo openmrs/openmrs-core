@@ -105,7 +105,8 @@ public class PatientSearchCriteria {
 		} else {
 			if (nameCriterion != null) {
 				criteria.add(nameCriterion);
-			} else {
+			}
+			if (identifierCriterion != null) {
 				criteria.add(identifierCriterion);
 			}
 		}
@@ -134,7 +135,7 @@ public class PatientSearchCriteria {
 		
 		// add the join on the identifiers table
 		if (searchOnNamesOrIdentifiers) {
-			//We need to fetch patients even if only their names
+			//We need to fetch patients even if only their names match
 			criteria.createAlias("identifiers", "ids", Criteria.LEFT_JOIN);
 		} else {
 			criteria.createAlias("identifiers", "ids");

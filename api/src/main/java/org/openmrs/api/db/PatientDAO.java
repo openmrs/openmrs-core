@@ -55,7 +55,8 @@ public interface PatientDAO {
 	public List<Patient> getAllPatients(boolean includeVoided) throws DAOException;
 	
 	/**
-	 * @param searchOnNamesAndIdentifiers TODO
+	 * @param searchOnNamesOrIdentifiers specifies if the logic should find patients that match the
+	 *            name or identifier otherwise find patients that match both the name and identifier
 	 * @see org.openmrs.api.PatientService#getPatients(String, String, List, boolean, Integer,
 	 *      Integer)
 	 * @should escape percentage character in name phrase
@@ -67,7 +68,7 @@ public interface PatientDAO {
 	 * @should get patients with a matching identifier and type
 	 */
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesAndIdentifiers)
+	        boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesOrIdentifiers)
 	        throws DAOException;
 	
 	/**
