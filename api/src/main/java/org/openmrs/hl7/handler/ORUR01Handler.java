@@ -1062,9 +1062,8 @@ public class ORUR01Handler implements Application {
 		Integer locationId = Context.getHL7Service().resolveLocationId(hl7Location);
 		if (locationId == null)
 			throw new HL7Exception("Could not resolve location");
-		Location location = new Location();
-		location.setLocationId(locationId);
-		return location;
+		
+		return Context.getLocationService().getLocation(locationId);
 	}
 	
 	/**
