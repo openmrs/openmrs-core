@@ -563,6 +563,7 @@ public interface PatientService extends OpenmrsService {
 	 * @return a list of matching Patients
 	 * @throws APIException
 	 * @since 1.8
+	 * @should find a patients with a matching identifier with no digits
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException;

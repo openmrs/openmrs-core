@@ -185,11 +185,12 @@ public class HibernatePatientDAO implements PatientDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer,
-	 *      Integer)
+	 *      Integer, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException {
+	        boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesOrIdentifiers)
+	        throws DAOException {
 		if (StringUtils.isBlank(name) && StringUtils.isBlank(identifier)
 		        && (identifierTypes == null || identifierTypes.isEmpty())) {
 			return Collections.emptyList();
@@ -197,7 +198,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly, true);
+		    matchIdentifierExactly, true, searchOnNamesOrIdentifiers);
 		// restricting the search to the max search results value
 		if (start != null)
 			criteria.setFirstResult(start);
@@ -580,7 +581,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		//columns to be in the resultset which then contradicts with the combination of 
 		//(Projections.rowCount() and Criteria.uniqueResult()) that expect back only one row with one column
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly, false);
+		    matchIdentifierExactly, false, false);
 		criteria.setProjection(Projections.countDistinct("patientId"));
 		return (Long) criteria.uniqueResult();
 	}
