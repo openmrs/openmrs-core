@@ -162,7 +162,7 @@
 									<c:choose>
 										<c:when test="${fn:startsWith(link.key, 'module/')}">
 											<%-- Added for backwards compatibility for most links --%>
-											<li><a href="${pageContext.request.contextPath}/${link.key}"><openmrs:message code="${link.value}"/></a></li>
+											<li><a href="<c:url value="${link.key}" />"><openmrs:message code="${link.value}"/></a></li>
 										</c:when>
 										<c:otherwise>
 											<%-- Allows for external absolute links  --%>

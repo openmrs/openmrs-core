@@ -28,7 +28,7 @@
 <c:if test="${not isBasicForm}">
 	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formHeader" type="html" parameters="formId=${form.formId}">
 		<c:forEach items="${extension.links}" var="link">
-			| <a href="${pageContext.request.contextPath}/${link.key}"><openmrs:message code="${link.value}"/></a>
+			| <a href="<c:url value="${link.key}" />"><openmrs:message code="${link.value}"/></a>
 		</c:forEach>
 	</openmrs:extensionPoint>
 </c:if>
