@@ -969,6 +969,7 @@ public interface PatientService extends OpenmrsService {
 	 * @return the number of patients matching the given search phrase
 	 * @since 1.8
 	 * @should return the right count when a patient has multiple matching person names
+	 * @should return the right count of patients with a matching identifier with no digits
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public Integer getCountOfPatients(String query);

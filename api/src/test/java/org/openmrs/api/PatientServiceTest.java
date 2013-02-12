@@ -3239,6 +3239,23 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addIdentifier(pId);
 		patientService.savePatient(patient);
 		
-		Assert.assertEquals(1, patientService.getPatients(identifier, (Integer) null, (Integer) null).size());
+		Assert.assertEquals(1, patientService.getPatients(identifier, null, (Integer) null).size());
+	}
+	
+	/**
+	 * @see {@link PatientService#getCountOfPatients(String)}
+	 */
+	@Test
+	@Verifies(value = "should return the right count of patients with a matching identifier with no digits", method = "getCountOfPatients(String)")
+	public void getCountOfPatients_shouldReturnTheRightCountOfPatientsWithAMatchingIdentifierWithNoDigits() throws Exception {
+		final String identifier = "XYZ";
+		Patient patient = patientService.getPatient(2);
+		Assert.assertEquals(0, patientService.getCountOfPatients(identifier).intValue());
+		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		patient.addIdentifier(pId);
+		patientService.savePatient(patient);
+		
+		Assert.assertEquals(1, patientService.getCountOfPatients(identifier).intValue());
 	}
 }

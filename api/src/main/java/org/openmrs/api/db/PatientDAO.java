@@ -150,8 +150,10 @@ public interface PatientDAO {
 	public void deletePatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException;
 	
 	/**
+	 * @param searchOnNamesOrIdentifiers specifies if the logic should find patients that match the
+	 *            name or identifier otherwise find patients that match both the name and identifier
 	 * @see PatientService#getCountOfPatients(String)
 	 */
 	public Long getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly);
+	        boolean matchIdentifierExactly, boolean searchOnNamesOrIdentifiers);
 }

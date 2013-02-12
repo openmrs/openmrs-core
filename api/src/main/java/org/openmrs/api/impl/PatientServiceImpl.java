@@ -1501,14 +1501,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query))
 			return count;
 		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
-		// if there is a number in the query string
-		if (query.matches(".*\\d+.*")) {
-			log.debug("[Identifier search] Query: " + query);
-			return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false));
-		} else {
-			// there is no number in the string, search on name
-			return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query, null, emptyList, false));
-		}
+		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false, true));
 	}
 	
 	/**
