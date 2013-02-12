@@ -351,8 +351,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("enc.voided", false));
 		
+		criteria = criteria.createCriteria("patient", "pat");
 		if (patientId != null) {
-			criteria.add(Restrictions.eq("enc.patientId", patientId));
+			criteria.add(Restrictions.eq("pat.patientId", patientId));
 			if (StringUtils.isNotBlank(query)) {
 				criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 				//match on location.name, encounterType.name, form.name
@@ -399,7 +400,6 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				criteria.add(or);
 			}
 		} else {
-			criteria = criteria.createCriteria("patient", "pat");
 			String name = null;
 			String identifier = null;
 			if (query.matches(".*\\d+.*")) {
