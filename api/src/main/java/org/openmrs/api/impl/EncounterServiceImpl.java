@@ -86,7 +86,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (query == null)
 			throw new IllegalArgumentException("The 'query' parameter is required and cannot be null");
 		
-		return filterEncountersByViewPermissions(dao.getEncounters(query, null, null, includeVoided), null);
+		return filterEncountersByViewPermissions(dao.getEncounters(query, null, null, null, includeVoided), null);
 	}
 	
 	/**
@@ -701,7 +701,18 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
 	        throws APIException {
-		return filterEncountersByViewPermissions(dao.getEncounters(query, start, length, includeVoided), null);
+		return filterEncountersByViewPermissions(dao.getEncounters(query, null, start, length, includeVoided), null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounters(java.lang.String, java.lang.Integer,
+	 *      java.lang.Integer, java.lang.Integer, boolean)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
+	        boolean includeVoided) throws APIException {
+		return filterEncountersByViewPermissions(dao.getEncounters(query, patientId, start, length, includeVoided), null);
 	}
 	
 	/**
@@ -710,7 +721,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public Integer getCountOfEncounters(String query, boolean includeVoided) {
-		return OpenmrsUtil.convertToInteger(dao.getCountOfEncounters(query, includeVoided));
+		return OpenmrsUtil.convertToInteger(dao.getCountOfEncounters(query, null, includeVoided));
 	}
 	
 	/**

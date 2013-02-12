@@ -629,6 +629,32 @@ public interface EncounterService extends OpenmrsService {
 	        throws APIException;
 	
 	/**
+	 * Searches for encounters by patient id, provider identifier, location, encounter type,
+	 * provider, form or provider name. It returns a specific number of them from the specified
+	 * starting position. If start and length are not specified, then all matches are returned
+	 * 
+	 * @param query provider identifier, location, encounter type, provider, form or provider name
+	 * @param patientId the patient id
+	 * @param start beginning index for the batch
+	 * @param length number of encounters to return in the batch
+	 * @param includeVoided Specifies whether voided encounters should be included
+	 * @return list of encounters for the given patient based on batch settings
+	 * @throws APIException
+	 * @since 1.10
+	 * @should fetch encounters by patient id
+	 * @should include voided encounters if includeVoided is set to true
+	 * @should should match on provider identifier
+	 * @should match on the provider name
+	 * @should match on the location name
+	 * @should match on the provider person name
+	 * @should match on the encounter type name
+	 * @should match on the form name
+	 */
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
+	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
+	        boolean includeVoided) throws APIException;
+	
+	/**
 	 * Get all encounters for a cohort of patients
 	 * 
 	 * @param patients Cohort of patients to search
@@ -823,7 +849,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @param user the user instance to filter "visible" encounters for
 	 * @return list, that does not include encounters, which can not be shown to given user due to
 	 *         permissions check
-	 *         
 	 * @should filter encounters if user is not allowed to see some encounters
 	 * @should not filter all encounters when the encounter type's view privilege column is null
 	 */
@@ -832,9 +857,9 @@ public interface EncounterService extends OpenmrsService {
 	
 	/**
 	 * Determines whether given user is granted to view all encounter types or not
+	 * 
 	 * @param subject the user whose permission to view all encounter types will be checked
 	 * @return true if user has access to view all types of encounters
-	 * 
 	 * @should return true if user is granted to view all encounters
 	 * @should return true when the encounter type's view privilege column is null
 	 */
@@ -842,9 +867,9 @@ public interface EncounterService extends OpenmrsService {
 	
 	/**
 	 * Determines whether given user is granted to edit all encounter types or not
+	 * 
 	 * @param subject the user whose permission to edit all encounter types will be checked
 	 * @return true if user has access to edit all types of encounters
-	 * 
 	 * @should return true if user is granted to edit all encounters
 	 * @should return true when the encounter type's edit privilege column is null
 	 */
@@ -857,7 +882,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounter the encounter instance to be checked
 	 * @param subject the user, who requests edit access
 	 * @return true if user has privilege denoted by <em>editPrivilege</em> given on encounter type
-	 * 
 	 * @should return true if user can edit encounter
 	 * @should return false if user can not edit encounter
 	 * @should fail if encounter is null
@@ -871,7 +895,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounter the encounter instance to be checked
 	 * @param subject the user, who requests view access
 	 * @return true if user has privilege denoted by <em>viewPrivilege</em> given on encounter type
-	 * 
 	 * @should return true if user can view encounter
 	 * @should return false if user can not view encounter
 	 * @should fail if encounter is null
