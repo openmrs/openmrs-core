@@ -2430,4 +2430,84 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		return encounter;
 	}
 	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should fetch encounters by patient id", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldFetchEncountersByPatientId() throws Exception {
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters(null, 3, null, null, false).size());
+		Assert.assertEquals(4, Context.getEncounterService().getEncounters(null, 3, null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should match on the location name", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldMatchOnTheLocationName() throws Exception {
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("Test Location", 3, null, null, false).size());
+		Assert.assertEquals(4, Context.getEncounterService().getEncounters("Test Location", 3, null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should match on the provider name", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldMatchOnTheProviderName() throws Exception {
+		Assert.assertEquals(1, Context.getEncounterService().getEncounters("phys", 3, null, null, false).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should should match on provider identifier", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldShouldMatchOnProviderIdentifier() throws Exception {
+		Assert.assertEquals(1, Context.getEncounterService().getEncounters("2", 3, null, null, false).size());
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("2", 3, null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should match on the provider person name", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldMatchOnTheProviderPersonName() throws Exception {
+		//Should match on Super User and John3 Doe
+		Assert.assertEquals(1, Context.getEncounterService().getEncounters("er jo", 3, null, null, false).size());
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("er jo", 3, null, null, true).size());
+		Assert.assertEquals(0, Context.getEncounterService().getEncounters("none", 3, null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should include voided encounters if includeVoided is set to true", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldIncludeVoidedEncountersIfIncludeVoidedIsSetToTrue() throws Exception {
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("2", 3, null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should match on the encounter type name", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldMatchOnTheEncounterTypeName() throws Exception {
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("Type B", 3, null, null, false).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should match on the form name", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldMatchOnTheFormName() throws Exception {
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("Basic", 3, null, null, false).size());
+	}
 }

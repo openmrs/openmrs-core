@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
@@ -244,15 +245,17 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(String, Integer, Integer, boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(String, Integer, Integer, Integer,
+	 *      boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided) {
-		if (StringUtils.isBlank(query)) {
+	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
+	        boolean includeVoided) {
+		if (StringUtils.isBlank(query) && patientId == null) {
 			return Collections.emptyList();
 		}
 		
-		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, true);
+		Criteria criteria = createEncounterByQueryCriteria(query, patientId, includeVoided, true);
 		
 		if (start != null)
 			criteria.setFirstResult(start);
@@ -321,11 +324,12 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getCountOfEncounters(java.lang.String, boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getCountOfEncounters(java.lang.String,
+	 *      java.lang.Integer, boolean)
 	 */
 	@Override
-	public Long getCountOfEncounters(String query, boolean includeVoided) {
-		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, false);
+	public Long getCountOfEncounters(String query, Integer patientId, boolean includeVoided) {
+		Criteria criteria = createEncounterByQueryCriteria(query, patientId, includeVoided, false);
 		
 		criteria.setProjection(Projections.countDistinct("enc.encounterId"));
 		return (Long) criteria.uniqueResult();
@@ -336,26 +340,78 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * specified search phrase
 	 * 
 	 * @param query patient name or identifier
+	 * @param patientId the patient id
 	 * @param includeVoided Specifies whether voided encounters should be included
 	 * @param orderByNames specifies whether the encounters should be ordered by person names
 	 * @return Criteria
 	 */
-	private Criteria createEncounterByQueryCriteria(String query, boolean includeVoided, boolean orderByNames) {
+	private Criteria createEncounterByQueryCriteria(String query, Integer patientId, boolean includeVoided,
+	        boolean orderByNames) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class, "enc");
 		if (!includeVoided)
-			criteria.add(Restrictions.eq("voided", false));
+			criteria.add(Restrictions.eq("enc.voided", false));
 		
-		criteria = criteria.createCriteria("patient", "pat");
-		String name = null;
-		String identifier = null;
-		if (query.matches(".*\\d+.*")) {
-			identifier = query;
+		if (patientId != null) {
+			criteria.add(Restrictions.eq("enc.patientId", patientId));
+			if (StringUtils.isNotBlank(query)) {
+				criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+				//match on location.name, encounterType.name, form.name
+				//provider.name, provider.identifier, provider.person.names
+				MatchMode mode = MatchMode.ANYWHERE;
+				criteria.createAlias("enc.location", "loc");
+				criteria.createAlias("enc.encounterType", "encType");
+				criteria.createAlias("enc.form", "form");
+				criteria.createAlias("enc.encounterProviders", "enc_prov");
+				criteria.createAlias("enc_prov.provider", "prov");
+				criteria.createAlias("prov.person", "person", Criteria.LEFT_JOIN);
+				criteria.createAlias("person.names", "personName", Criteria.LEFT_JOIN);
+				
+				Disjunction or = Restrictions.disjunction();
+				or.add(Restrictions.ilike("loc.name", query, mode));
+				or.add(Restrictions.ilike("encType.name", query, mode));
+				or.add(Restrictions.ilike("form.name", query, mode));
+				or.add(Restrictions.ilike("prov.name", query, mode));
+				or.add(Restrictions.ilike("prov.identifier", query, mode));
+				
+				String[] splitNames = query.split(" ");
+				Disjunction nameOr = Restrictions.disjunction();
+				for (String splitName : splitNames) {
+					nameOr.add(Restrictions.ilike("personName.givenName", splitName, mode));
+					nameOr.add(Restrictions.ilike("personName.middleName", splitName, mode));
+					nameOr.add(Restrictions.ilike("personName.familyName", splitName, mode));
+					nameOr.add(Restrictions.ilike("personName.familyName2", splitName, mode));
+				}
+				//OUTPUT for provider criteria: 
+				//prov.name like '%query%' OR prov.identifier like '%query%'
+				//OR ( personName.voided = false 
+				//		 AND (  personName.givenName like '%query%' 
+				//			OR personName.middleName like '%query%' 
+				//			OR personName.familyName like '%query%'
+				//			OR personName.familyName2 like '%query%'
+				//			)
+				//	 )
+				Conjunction personNameConjuction = Restrictions.conjunction();
+				personNameConjuction.add(Restrictions.eq("personName.voided", false));
+				personNameConjuction.add(nameOr);
+				
+				or.add(personNameConjuction);
+				
+				criteria.add(or);
+			}
 		} else {
-			// there is no number in the string, search on name
-			name = query;
+			criteria = criteria.createCriteria("patient", "pat");
+			String name = null;
+			String identifier = null;
+			if (query.matches(".*\\d+.*")) {
+				identifier = query;
+			} else {
+				// there is no number in the string, search on name
+				name = query;
+			}
+			criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
+			    new ArrayList<PatientIdentifierType>(), false, orderByNames);
 		}
-		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-		    new ArrayList<PatientIdentifierType>(), false, orderByNames);
+		
 		return criteria;
 	}
 	
