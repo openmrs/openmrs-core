@@ -472,9 +472,7 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				
 				ConceptName shortNameInLocale = shortNamesByLocale.get(locale);
-				if (StringUtils.hasText(shortNameInLocale.getName())) {
-					concept.setShortName(shortNameInLocale);
-				}
+				concept.setShortName(shortNameInLocale);
 				
 				for (ConceptName synonym : synonymsByLocale.get(locale)) {
 					if (synonym != null && StringUtils.hasText(synonym.getName())) {

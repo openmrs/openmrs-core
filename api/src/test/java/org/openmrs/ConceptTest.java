@@ -13,8 +13,11 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -815,6 +818,17 @@ public class ConceptTest {
 		concept.addName(FullySpecName);
 		concept.setShortName(cn);
 		Assert.assertEquals(ConceptNameType.SHORT, cn.getConceptNameType());
+	}
+	
+	@Test
+	public void setBlankShortName_shouldVoidTheOldOne() {
+		Concept concept = new Concept();
+		ConceptName cn = new ConceptName("some name", Context.getLocale());
+		ConceptName FullySpecName = new ConceptName("fully spec name", Context.getLocale());
+		concept.addName(FullySpecName);
+		concept.setShortName(cn);
+		concept.setShortName(new ConceptName(" ", Context.getLocale()));
+		assertThat(concept.getShortNameInLocale(Context.getLocale()), is(nullValue()));
 	}
 	
 	/**
