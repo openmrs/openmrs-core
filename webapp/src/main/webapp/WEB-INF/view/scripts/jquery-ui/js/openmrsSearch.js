@@ -103,6 +103,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   doSearchWhenEmpty: If it is set to true, it lists all items initially and filters them with the given search phrase. (default:false)
  *   verboseHandler: function to be called to return the text to display as verbose output
  *   attributes: Array of names for attributes types to display in the list of results
+ *   showSearchButton: Boolean, indicating whether to use search button for immediate search
  *   
  * The styling on this table works like this:
  * <pre>  
@@ -192,6 +193,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	minCharErrorObj.html(omsgs.minCharRequired.replace("_REQUIRED_NUMBER_", o.minLength));
 		    	notification = div.find("#searchWidgetNotification");
 		    	loadingMsgObj = div.find("#loadingMsg");
+		    	showSearchButton = o.showSearchButton ? true : false;
 		    
 		    this._div = div;
 		    
@@ -200,6 +202,21 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    //3 should be the minimum number of results to display per page
 		    if(o.displayLength < 3)
 		    	o.displayLength = 3;
+		    
+	    	// If need search button
+	    	if (showSearchButton) {
+	    		input.after("<input type='button' id='searchButton' name='searchButton' value='" + omsgs.searchLabel + "' />");
+	    		$j('#searchButton').click(function() {
+	    			if ($j.trim(input.val()) != '' || self.options.doSearchWhenEmpty) {
+	    				//if there is any delay in progress, cancel it
+		    			if(self._searchDelayTimer != null) {
+		    				window.clearTimeout(self._searchDelayTimer);
+		    			}
+	    				self._doSearch($j.trim(input.val()));
+	    				input.focus();
+	    			}
+	    		});
+	    	}
 		    
 		    if(o.showIncludeVoided) {
 		    	var tmp = div.find("#includeVoided");
@@ -250,11 +267,17 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	//LEFT(37), UP(38), RIGHT(39), DOWN(40), ENTER(13), HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
 		    	var kc = event.keyCode;
 		    	if(((kc >= 33) && (kc <= 40)) || (kc == 13)) {
-		    		if(!(self._div.find(".openmrsSearchDiv").css("display") != 'none')) {
+		    		if(!(self._div.find(".openmrsSearchDiv").css("display") != 'none') && ($j.trim(input.val()) == '')) {
 						return true;
 					}
-		    		if(kc == 13)
+		    		if(kc == 13) {
+		    			//if there is any delay in progress, cancel it
+		    			if(self._searchDelayTimer != null) {
+		    				window.clearTimeout(self._searchDelayTimer);
+		    			}
 		    			self._doKeyEnter();
+		    		}
+		    		
 			    	//kill the event
 			    	event.stopPropagation();
 			    				    	
@@ -885,6 +908,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		},
 		
 		_doKeyEnter: function() {
+			
 			var selectedRowIndex = null;
 			if(this.hoverRowSelection != null) {
 				selectedRowIndex = this.hoverRowSelection;
@@ -892,8 +916,14 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				selectedRowIndex = this.curRowSelection;
 			}
 			
-			if(selectedRowIndex != null)
+			if(selectedRowIndex != null) {
 				this._doSelected(selectedRowIndex, this._results[selectedRowIndex]);
+			} else if (showSearchButton) {
+				if (($j.trim($j('#inputNode').val()) != '') || self.options.doSearchWhenEmpty) {
+					this._doSearch($j.trim($j('#inputNode').val()));
+				}
+			}
+			
 		},
 		
 		_doSelected: function(position, rowData) {
