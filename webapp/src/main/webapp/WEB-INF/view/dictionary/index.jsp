@@ -24,7 +24,8 @@
 					columnVisibility: [true, false],
 					searchPhrase:'<request:parameter name="phrase"/>',
 					showIncludeVerbose: true,
-					verboseHandler: doGetVerbose
+					verboseHandler: doGetVerbose,
+					hasSearchButton: true
 				});
 	});
 	
