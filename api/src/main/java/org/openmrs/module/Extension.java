@@ -142,7 +142,7 @@ public abstract class Extension {
 	 * 
 	 * @return the <code>String</code> Module Id
 	 */
-	public final String getModuleId() {
+	public String getModuleId() {
 		return moduleId;
 	}
 	
@@ -151,7 +151,7 @@ public abstract class Extension {
 	 * 
 	 * @param moduleId
 	 */
-	public final void setModuleId(String moduleId) {
+	public void setModuleId(String moduleId) {
 		this.moduleId = moduleId;
 	}
 	
@@ -171,7 +171,7 @@ public abstract class Extension {
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
-	public final String toString() {
+	public String toString() {
 		return "Extension: " + this.getExtensionId();
 	}
 	
@@ -183,7 +183,7 @@ public abstract class Extension {
 	 * @param mediaType
 	 * @return string extension id
 	 */
-	public static final String toExtensionId(String pointId, MEDIA_TYPE mediaType) {
+	public static String toExtensionId(String pointId, MEDIA_TYPE mediaType) {
 		if (mediaType != null)
 			return new StringBuffer(pointId).append(Extension.extensionIdSeparator).append(mediaType).toString();
 		else

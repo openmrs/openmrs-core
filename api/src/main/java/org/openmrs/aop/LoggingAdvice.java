@@ -15,6 +15,7 @@ package org.openmrs.aop;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -88,7 +89,7 @@ public class LoggingAdvice implements MethodInterceptor {
 				Object[] values = invocation.getArguments();
 				
 				// change the annotation array of indexes to a list of indexes to ignore
-				List<Integer> argsToIgnore = new ArrayList<Integer>();
+				Collection<Integer> argsToIgnore = new ArrayList<Integer>();
 				if (loggingAnnotation != null && loggingAnnotation.ignoredArgumentIndexes().length > 0) {
 					for (int argIndexToIgnore : loggingAnnotation.ignoredArgumentIndexes())
 						argsToIgnore.add(argIndexToIgnore);

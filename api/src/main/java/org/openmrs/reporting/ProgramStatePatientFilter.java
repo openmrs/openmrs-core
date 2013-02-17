@@ -74,7 +74,8 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		return sb.toString();
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		StringBuilder ret = new StringBuilder();
 		
 		//boolean currentlyCase = withinLastDays != null && withinLastDays == 0
@@ -141,7 +142,8 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		return service.getPatientsByProgramAndState(program, stateList, fromDateHelper(), toDateHelper());
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		return true;
 	}
 	
@@ -193,7 +195,7 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		this.sinceDate = sinceDate;
 	}
 	
-	public List<ProgramWorkflowState> getStateList() {
+	public Iterable<ProgramWorkflowState> getStateList() {
 		return stateList;
 	}
 	

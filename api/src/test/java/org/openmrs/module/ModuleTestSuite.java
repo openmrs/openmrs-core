@@ -21,6 +21,6 @@ import org.junit.Ignore;
 //@RunWith(Suite.class)
 //@SuiteClasses( { ContextWithModuleTest.class, ModuleInteroperabilityTest.class })
 @Ignore
-public class ModuleTestSuite {
+public interface ModuleTestSuite {
 
 }

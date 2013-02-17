@@ -47,9 +47,9 @@ public class SchedulerFormController extends SimpleFormController {
 	protected static final Log log = LogFactory.getLog(SchedulerFormController.class);
 	
 	// Move this to message.properties or OpenmrsConstants
-	public static String DEFAULT_DATE_PATTERN = "MM/dd/yyyy HH:mm:ss";
+	public static final String DEFAULT_DATE_PATTERN = "MM/dd/yyyy HH:mm:ss";
 	
-	public static DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
+	public static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
 	
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
@@ -96,11 +96,11 @@ public class SchedulerFormController extends SimpleFormController {
 		Long interval = task.getRepeatInterval();
 		
 		if ("minutes".equals(units)) {
-			interval = interval * 60;
+            interval *= 60;
 		} else if ("hours".equals(units)) {
-			interval = interval * 60 * 60;
+            interval *= 60 * 60;
 		} else if ("days".equals(units)) {
-			interval = interval * 60 * 60 * 24;
+            interval *= 60 * 60 * 24;
 		}
 		
 		task.setRepeatInterval(interval);

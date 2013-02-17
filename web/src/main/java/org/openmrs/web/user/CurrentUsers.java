@@ -31,11 +31,14 @@ import org.openmrs.web.WebConstants;
 /**
  * Utility methods which maintain the list of current users.
  */
-public class CurrentUsers {
+public final class CurrentUsers {
 	
 	private static final Log log = LogFactory.getLog(CurrentUsers.class);
-	
-	/**
+
+    private CurrentUsers() {
+    }
+
+    /**
 	 * Initialize the current users list.
 	 * 
 	 * @param servletContext

@@ -13,12 +13,7 @@
  */
 package org.openmrs.reporting;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,11 +49,13 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		super.setSubType("Drug Order Patient Filter");
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		return true;
 	}
 	
-	public int compareTo(DrugOrderPatientFilter other) {
+	@Override
+    public int compareTo(DrugOrderPatientFilter other) {
 		return compareHelper().compareTo(other.compareHelper());
 	}
 	
@@ -102,8 +99,9 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		this.drugConcept = drugConcept;
 	}
 	
-	public Cohort filter(Cohort input, EvaluationContext context) {
-		Set<Integer> drugIds = new HashSet<Integer>();
+	@Override
+    public Cohort filter(Cohort input, EvaluationContext context) {
+		@org.jetbrains.annotations.Nullable Collection<Integer> drugIds = new HashSet<Integer>();
 		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
 			drugIds = null;
 		} else {
@@ -120,14 +118,15 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		return service.getPatientsHavingDrugOrder(input == null ? null : input.getMemberIds(), drugIds, onDate);
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		// TODO: internationalize this
 		StringBuilder sb = new StringBuilder();
 		if (groupMethod != null && groupMethod == GroupMethod.NONE)
 			sb.append("No drug orders");
 		else if (drugId != null || drugConcept != null) {
 			sb.append("Taking ");
-			SortedSet<String> names = new TreeSet<String>();
+			Collection<String> names = new TreeSet<String>();
 			if (drugId != null) {
 				Drug drug = Context.getConceptService().getDrug(drugId);
 				if (drug == null) {

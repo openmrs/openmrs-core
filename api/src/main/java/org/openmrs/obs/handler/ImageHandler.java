@@ -42,10 +42,8 @@ import org.openmrs.util.OpenmrsConstants;
 public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	public static final Log log = LogFactory.getLog(ImageHandler.class);
-	
-	private Set<String> extensions;
-	
-	/**
+
+    /**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally
 	 * overwriting existing files.
 	 */
@@ -53,7 +51,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		super();
 		
 		// Create a HashSet to quickly check for supported extensions.
-		extensions = new HashSet<String>();
+        Set<String> extensions = new HashSet<String>();
 		for (String mt : ImageIO.getWriterFormatNames()) {
 			extensions.add(mt);
 		}
@@ -64,7 +62,8 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
-	public Obs getObs(Obs obs, String view) {
+	@Override
+    public Obs getObs(Obs obs, String view) {
 		File file = getComplexDataFile(obs);
 		BufferedImage img = null;
 		try {
@@ -84,7 +83,8 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
-	public Obs saveObs(Obs obs) throws APIException {
+	@Override
+    public Obs saveObs(Obs obs) throws APIException {
 		// Get the buffered image from the ComplexData.
 		BufferedImage img = null;
 		

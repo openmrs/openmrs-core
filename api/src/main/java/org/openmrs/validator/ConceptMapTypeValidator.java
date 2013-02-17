@@ -16,6 +16,7 @@ package org.openmrs.validator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptMapType;
+import org.openmrs.OpenmrsMetadata;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -62,7 +63,7 @@ public class ConceptMapTypeValidator implements Validator {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"
 			        + ConceptMapType.class);
 		
-		ConceptMapType conceptMapType = (ConceptMapType) obj;
+		OpenmrsMetadata conceptMapType = (ConceptMapType) obj;
 		String name = conceptMapType.getName();
 		if (!StringUtils.hasText(name)) {
 			errors.rejectValue("name", "ConceptMapType.error.nameRequired",

@@ -16,11 +16,11 @@ package org.openmrs.web.taglib.fieldgen;
 import org.openmrs.Concept;
 
 public class ConceptHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "concept.field";
-	
-	public void run() {
-		setUrl(defaultUrl);
+
+    @Override
+    public void run() {
+        String defaultUrl = "concept.field";
+        setUrl(defaultUrl);
 		checkEmptyVal((Concept) null);
 		if (fieldGenTag != null) {
 			Object initialValue = this.fieldGenTag.getVal();

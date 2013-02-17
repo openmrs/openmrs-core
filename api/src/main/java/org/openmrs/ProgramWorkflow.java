@@ -13,13 +13,7 @@
  */
 package org.openmrs;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.openmrs.util.NaturalStrings;
 
@@ -86,7 +80,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	 * 
 	 * @param state - the {@link ProgramWorkflowState} to retire
 	 */
-	public void retireState(ProgramWorkflowState state) {
+	public void retireState(Retireable state) {
 		state.setRetired(true);
 	}
 	
@@ -165,7 +159,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	 *            objects in this ProgramWorkflow
 	 * @return Set<ProgramWorkflowState> - all ProgramWorkflowStates matching input parameters
 	 */
-	public Set<ProgramWorkflowState> getStates(boolean includeRetired) {
+	public Collection<ProgramWorkflowState> getStates(boolean includeRetired) {
 		Set<ProgramWorkflowState> ret = new HashSet<ProgramWorkflowState>();
 		for (ProgramWorkflowState s : getStates()) {
 			if (includeRetired || !s.isRetired()) {
@@ -182,18 +176,19 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	 * @return Set<ProgramWorkflowState> - all ProgramWorkflowStates, sorted by {@link ConceptName}
 	 * @should sort names containing numbers intelligently
 	 */
-	public Set<ProgramWorkflowState> getSortedStates() {
+	public Iterable<ProgramWorkflowState> getSortedStates() {
 		final Comparator<String> naturalComparator = NaturalStrings.getNaturalComparator();
 		
 		Comparator<ProgramWorkflowState> stateComparator = new Comparator<ProgramWorkflowState>() {
 			
-			public int compare(ProgramWorkflowState o1, ProgramWorkflowState o2) {
+			@Override
+            public int compare(ProgramWorkflowState o1, ProgramWorkflowState o2) {
 				return naturalComparator.compare(o1.getConcept().getName().getName(), o2.getConcept().getName().getName());
 			}
 			
 		};
 		
-		TreeSet<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(stateComparator);
+		Set<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(stateComparator);
 		if (getStates() != null) {
 			sorted.addAll(getStates());
 		}
@@ -253,7 +248,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	// Property Access
 	// ******************
 	
-	public Set<ProgramWorkflowState> getStates() {
+	public Collection<ProgramWorkflowState> getStates() {
 		return states;
 	}
 	
@@ -289,7 +284,8 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getProgramWorkflowId();
 	}
@@ -298,7 +294,8 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setProgramWorkflowId(id);
 		
 	}

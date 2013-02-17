@@ -20,15 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -62,13 +54,16 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	private final static Log log = LogFactory.getLog(ConceptValidatorChangeSet.class);
 	
 	//List to store warnings
-	private List<String> updateWarnings = new LinkedList<String>();
+	@org.jetbrains.annotations.Nullable
+    private List<String> updateWarnings = new LinkedList<String>();
 	
 	//List to store info messages
-	private List<String> logMessages = new LinkedList<String>();
+	@org.jetbrains.annotations.Nullable
+    private Collection<String> logMessages = new LinkedList<String>();
 	
 	//A set to store unique concept names that have been updated and changes have to be persisted to the database
-	private Set<ConceptName> updatedConceptNames = new HashSet<ConceptName>();
+	@org.jetbrains.annotations.Nullable
+    private Set<ConceptName> updatedConceptNames = new HashSet<ConceptName>();
 	
 	private Locale defaultLocale = new Locale("en");
 	
@@ -440,7 +435,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 */
 	private List<Integer> getAllUnretiredConceptIds(JdbcConnection connection) {
 		
-		LinkedList<Integer> conceptIds = null;
+		List<Integer> conceptIds = null;
 		Statement stmt = null;
 		
 		try {
@@ -652,7 +647,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			pStmt = connection
 			        .prepareStatement("UPDATE concept_name SET locale = ?, concept_name_type = ?, locale_preferred = ?, voided = ?, date_voided = ?, void_reason = ?, voided_by = ? WHERE concept_name_id = ?");
 			
-			Integer userId = DatabaseUpdater.getAuthenticatedUserId();
+			@org.jetbrains.annotations.Nullable Integer userId = DatabaseUpdater.getAuthenticatedUserId();
 			//is we have no authenticated user(for API users), set as Daemon
 			if (userId == null || userId < 1) {
 				userId = getInt(connection, "SELECT min(user_id) FROM users");

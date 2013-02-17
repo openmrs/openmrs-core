@@ -178,7 +178,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements Serial
 	 * @deprecated No need to know if it has a check digit now that any validator algorithm can be
 	 *             chosen.
 	 */
-	public Boolean getCheckDigit() {
+	@Deprecated
+    public Boolean getCheckDigit() {
 		return hasCheckDigit();
 	}
 	
@@ -187,7 +188,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements Serial
 	 * @deprecated No need to know if it has a check digit now that any validator algorithm can be
 	 *             chosen.
 	 */
-	public Boolean hasCheckDigit() {
+	@Deprecated
+    public Boolean hasCheckDigit() {
 		return checkDigit;
 	}
 	
@@ -195,7 +197,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements Serial
 	 * @param checkDigit The checkdigit to set.
 	 * @deprecated No need for this field now that any validator algorithm can be chosen.
 	 */
-	public void setCheckDigit(Boolean checkDigit) {
+	@Deprecated
+    public void setCheckDigit(Boolean checkDigit) {
 		this.checkDigit = checkDigit;
 	}
 	
@@ -228,7 +231,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements Serial
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getPatientIdentifierTypeId();
 	}
 	
@@ -236,7 +240,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements Serial
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setPatientIdentifierTypeId(id);
 		
 	}

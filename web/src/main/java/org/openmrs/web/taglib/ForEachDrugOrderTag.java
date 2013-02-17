@@ -34,10 +34,8 @@ import org.openmrs.DrugOrder;
 public class ForEachDrugOrderTag extends BodyTagSupport {
 	
 	public static final long serialVersionUID = 1L;
-	
-	private final String defaultSortBy = "dateCreated";
-	
-	private final Log log = LogFactory.getLog(getClass());
+
+    private final Log log = LogFactory.getLog(getClass());
 	
 	int count = 0;
 	
@@ -73,7 +71,8 @@ public class ForEachDrugOrderTag extends BodyTagSupport {
 		
 		// Next, sort the encounters
 		if (sortBy == null || sortBy.equals("")) {
-			sortBy = defaultSortBy;
+            String defaultSortBy = "dateCreated";
+            sortBy = defaultSortBy;
 		}
 		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator())
 		        : new ComparableComparator()));
@@ -89,8 +88,9 @@ public class ForEachDrugOrderTag extends BodyTagSupport {
 		if (matchingDrugOrders.isEmpty()) {
 			return SKIP_BODY;
 		} else {
-			pageContext.setAttribute(var, matchingDrugOrders.get(count++));
-			return EVAL_BODY_BUFFERED;
+			pageContext.setAttribute(var, matchingDrugOrders.get(count));
+            count++;
+            return EVAL_BODY_BUFFERED;
 		}
 	}
 	
@@ -99,8 +99,9 @@ public class ForEachDrugOrderTag extends BodyTagSupport {
 	 */
 	public int doAfterBody() throws JspException {
 		if (matchingDrugOrders.size() > count && (num == null || count < num.intValue())) {
-			pageContext.setAttribute(var, matchingDrugOrders.get(count++));
-			return EVAL_BODY_BUFFERED;
+			pageContext.setAttribute(var, matchingDrugOrders.get(count));
+            count++;
+            return EVAL_BODY_BUFFERED;
 		} else {
 			return SKIP_BODY;
 		}

@@ -37,7 +37,8 @@ public class SimpleColumn implements ExportColumn, Serializable {
 		returnValue = columnValue;
 	}
 	
-	public String toTemplateString() {
+	@Override
+    public String toTemplateString() {
 		return returnValue;
 	}
 	
@@ -49,15 +50,18 @@ public class SimpleColumn implements ExportColumn, Serializable {
 		this.columnType = columnType;
 	}
 	
-	public String getTemplateColumnName() {
+	@Override
+    public String getTemplateColumnName() {
 		return columnName;
 	}
 	
-	public String getColumnName() {
+	@Override
+    public String getColumnName() {
 		return columnName;
 	}
 	
-	public void setColumnName(String columnName) {
+	@Override
+    public void setColumnName(String columnName) {
 		this.columnName = columnName;
 	}
 	

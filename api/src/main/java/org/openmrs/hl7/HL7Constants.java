@@ -20,7 +20,7 @@ import org.openmrs.util.PrivilegeConstants;
 /**
  * Constants used by the hl7 package
  */
-public class HL7Constants {
+public final class HL7Constants {
 	
 	@Deprecated
 	public static final String PRIV_ADD_HL7_SOURCE = PrivilegeConstants.PRIV_ADD_HL7_SOURCE;
@@ -208,4 +208,7 @@ public class HL7Constants {
 	 * provider uuid
 	 */
 	public static final String PROVIDER_ASSIGNING_AUTH_PROV_UUID = "PROVIDER.UUID";
+
+    private HL7Constants() {
+    }
 }

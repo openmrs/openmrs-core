@@ -32,11 +32,14 @@ import org.openmrs.module.web.extension.FormEntryHandler;
  * 
  * @since 1.9
  */
-public class PortletControllerUtil {
+public final class PortletControllerUtil {
 	
 	private static final Log log = LogFactory.getLog(PortletControllerUtil.class);
-	
-	/**
+
+    private PortletControllerUtil() {
+    }
+
+    /**
 	 * Adds encounter formToEdit and formToView Url maps to the specified model
 	 * 
 	 * @param model the model to which to add the maps

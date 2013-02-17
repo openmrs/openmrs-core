@@ -13,6 +13,7 @@
  */
 package org.openmrs.validator;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -91,7 +92,7 @@ public class PatientProgramValidator implements Validator {
 			Set<PatientState> patientStates = patientProgram.getStates();
 			if (patientStates != null) {
 				//Set to store to keep track of unique valid state and start date combinations
-				Set<String> statesAndStartDates = new HashSet<String>();
+				Collection<String> statesAndStartDates = new HashSet<String>();
 				PatientState latestState = null;
 				boolean foundCurrentPatientState = false;
 				boolean foundStateWithNullStartDate = false;

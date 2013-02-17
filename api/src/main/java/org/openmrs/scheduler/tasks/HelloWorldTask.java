@@ -25,7 +25,7 @@ import org.openmrs.scheduler.Task;
  */
 public class HelloWorldTask extends AbstractTask {
 	
-	private static Log log = LogFactory.getLog(HelloWorldTask.class);
+	private static final Log log = LogFactory.getLog(HelloWorldTask.class);
 	
 	/**
 	 * Public constructor.
@@ -34,12 +34,14 @@ public class HelloWorldTask extends AbstractTask {
 		log.debug("hello world task created at " + new Date());
 	}
 	
-	public void execute() {
+	@Override
+    public void execute() {
 		log.debug("executing hello world task");
 		super.startExecuting();
 	}
 	
-	public void shutdown() {
+	@Override
+    public void shutdown() {
 		log.debug("shutting down hello world task");
 		this.stopExecuting();
 	}

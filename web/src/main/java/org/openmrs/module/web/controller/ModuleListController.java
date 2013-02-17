@@ -260,7 +260,7 @@ public class ModuleListController extends SimpleFormController {
 	 * @return a new list, with the same elements as modulesToStart, sorted so that no module is before a module it depends on
 	 * @should sort modules correctly
 	 */
-	List<Module> sortStartupOrder(List<Module> modulesToStart) {
+	Iterable<Module> sortStartupOrder(List<Module> modulesToStart) {
 		// can't use Collections.sort--we need a slower algorithm that guarantees to compare every pair of elements
 		List<Module> candidates = new LinkedList<Module>(modulesToStart);
 		List<Module> ret = new ArrayList<Module>();

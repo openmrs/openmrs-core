@@ -14,11 +14,7 @@
 package org.openmrs.api.context;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -53,12 +49,13 @@ public class UserContext implements Serializable {
 	/**
 	 * User object containing details about the authenticated user
 	 */
-	private User user = null;
+	@org.jetbrains.annotations.Nullable
+    private User user = null;
 	
 	/**
 	 * User's permission proxies
 	 */
-	private List<String> proxies = new Vector<String>();
+	private Collection<String> proxies = new Vector<String>();
 	
 	/**
 	 * User's locale
@@ -78,7 +75,8 @@ public class UserContext implements Serializable {
 	/**
 	 * User's defined location
 	 */
-	private Integer locationId;
+	@org.jetbrains.annotations.Nullable
+    private Integer locationId;
 	
 	/**
 	 * Default public constructor

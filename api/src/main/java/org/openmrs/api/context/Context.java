@@ -14,14 +14,7 @@
 package org.openmrs.api.context;
 
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
@@ -150,12 +143,12 @@ public class Context {
 	
 	private static Properties runtimeProperties = new Properties();
 	
-	private static Properties configProperties = new Properties();
+	private static final Properties configProperties = new Properties();
 	
 	// A place to store data that will persist longer than a session, but won't
 	// persist beyond application restart
 	@Deprecated
-	private static Map<User, Map<String, Object>> volatileUserData = new WeakHashMap<User, Map<String, Object>>();
+	private static final Map<User, Map<String, Object>> volatileUserData = new WeakHashMap<User, Map<String, Object>>();
 	
 	/**
 	 * Default public constructor
@@ -1001,7 +994,7 @@ public class Context {
 		// setting core roles
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
-			Set<String> currentRoleNames = new HashSet<String>();
+			Collection<String> currentRoleNames = new HashSet<String>();
 			for (Role role : Context.getUserService().getAllRoles()) {
 				currentRoleNames.add(role.getRole().toUpperCase());
 			}
@@ -1025,7 +1018,7 @@ public class Context {
 		// setting core privileges
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_PRIVILEGES);
-			Set<String> currentPrivilegeNames = new HashSet<String>();
+			Collection<String> currentPrivilegeNames = new HashSet<String>();
 			for (Privilege privilege : Context.getUserService().getAllPrivileges()) {
 				currentPrivilegeNames.add(privilege.getPrivilege().toUpperCase());
 			}
@@ -1050,7 +1043,7 @@ public class Context {
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			Context.addProxyPrivilege(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES);
-			Set<String> currentPropNames = new HashSet<String>();
+			Collection<String> currentPropNames = new HashSet<String>();
 			Map<String, GlobalProperty> propsMissingDescription = new HashMap<String, GlobalProperty>();
 			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<String, GlobalProperty>();
 			for (GlobalProperty prop : Context.getAdministrationService().getAllGlobalProperties()) {

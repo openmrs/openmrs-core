@@ -40,27 +40,16 @@ public class AddPersonController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-	
-	private final String PATIENT_SHORT_EDIT_URL = "/admin/patients/shortPatientForm.form";
-	
-	private final String PATIENT_EDIT_URL = "/admin/patients/patient.form";
-	
-	private final String PATIENT_VIEW_URL = "/patientDashboard.form";
-	
-	private final String USER_EDIT_URL = "/admin/users/user.form";
-	
-	private final String PERSON_EDIT_URL = "/admin/person/person.form";
-	
-	private final String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
-	
-	/** Parameters passed in view request object **/
+
+    /** Parameters passed in view request object **/
 	private String name = "";
 	
 	private String birthdate = "";
 	
 	private String age = "";
 	
-	private String gender = "";
+	@org.jetbrains.annotations.Nullable
+    private String gender = "";
 	
 	private String personType = "patient";
 	
@@ -156,7 +145,7 @@ public class AddPersonController extends SimpleFormController {
 					c.setTime(new Date());
 					d = c.get(Calendar.YEAR);
 					try {
-						d = d - Integer.parseInt(age);
+                        d -= Integer.parseInt(age);
 					}
 					catch (NumberFormatException e) {
 						// In theory, this should never happen -- Javascript in the UI should prevent this... 
@@ -192,7 +181,8 @@ public class AddPersonController extends SimpleFormController {
 		
 		// If a invalid age is submitted, give the user a useful error message.
 		if (invalidAgeFormat) {
-			mav = new ModelAndView(FORM_ENTRY_ERROR_URL);
+            String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
+            mav = new ModelAndView(FORM_ENTRY_ERROR_URL);
 			mav.addObject("errorTitle", "Person.age.error");
 			mav.addObject("errorMessage", "Person.birthdate.required");
 			return mav;
@@ -234,17 +224,22 @@ public class AddPersonController extends SimpleFormController {
 	private String getPersonURL(String personId, String personType, String viewType, HttpServletRequest request)
 	        throws ServletException, UnsupportedEncodingException {
 		if ("patient".equals(personType)) {
-			if ("edit".equals(viewType))
+            String PATIENT_EDIT_URL = "/admin/patients/patient.form";
+            if ("edit".equals(viewType))
 				return request.getContextPath() + PATIENT_EDIT_URL + getParametersForURL(personId, personType);
-			if ("shortEdit".equals(viewType))
+            String PATIENT_VIEW_URL = "/patientDashboard.form";
+            String PATIENT_SHORT_EDIT_URL = "/admin/patients/shortPatientForm.form";
+            if ("shortEdit".equals(viewType))
 				return request.getContextPath() + PATIENT_SHORT_EDIT_URL + getParametersForURL(personId, personType);
 			else if ("view".equals(viewType))
 				return request.getContextPath() + PATIENT_VIEW_URL + getParametersForURL(personId, personType);
 		} else if ("user".equals(personType)) {
-			return request.getContextPath() + USER_EDIT_URL + getParametersForURL(personId, personType);
+            String USER_EDIT_URL = "/admin/users/user.form";
+            return request.getContextPath() + USER_EDIT_URL + getParametersForURL(personId, personType);
 		} else {
 			if ("edit".equals(viewType)) {
-				return request.getContextPath() + PERSON_EDIT_URL + getParametersForURL(personId, personType);
+                String PERSON_EDIT_URL = "/admin/person/person.form";
+                return request.getContextPath() + PERSON_EDIT_URL + getParametersForURL(personId, personType);
 			}
 		}
 		throw new ServletException("Undefined personType/viewType combo: " + personType + "/" + viewType);

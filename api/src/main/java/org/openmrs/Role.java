@@ -65,7 +65,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	 * @return Returns the privileges.
 	 */
-	public Set<Privilege> getPrivileges() {
+	public Collection<Privilege> getPrivileges() {
 		return privileges;
 	}
 	
@@ -76,7 +76,8 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 		this.privileges = privileges;
 	}
 	
-	public String getName() {
+	@Override
+    public String getName() {
 		return this.getRole();
 	}
 	
@@ -92,7 +93,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 			privileges.add(privilege);
 	}
 	
-	private boolean containsPrivilege(Collection<Privilege> privileges, String privilegeName) {
+	private boolean containsPrivilege(Iterable<Privilege> privileges, String privilegeName) {
 		for (Privilege privilege : privileges) {
 			if (privilege.getPrivilege().equals(privilegeName)) {
 				return true;
@@ -161,7 +162,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	 * @return Returns the inheritedRoles.
 	 */
-	public Set<Role> getInheritedRoles() {
+	public Collection<Role> getInheritedRoles() {
 		if (inheritedRoles == null)
 			inheritedRoles = new HashSet<Role>();
 		return inheritedRoles;
@@ -189,7 +190,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @should only return parent roles
 	 * @return Return this role's parents
 	 */
-	public Set<Role> getAllParentRoles() {
+	public Collection<Role> getAllParentRoles() {
 		Set<Role> parents = new HashSet<Role>();
 		if (inheritsRoles()) {
 			parents.addAll(this.recurseOverParents(parents));
@@ -203,12 +204,12 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @param total Roles already looped over
 	 * @return Set<Role> Current and inherited roles
 	 */
-	public Set<Role> recurseOverParents(final Set<Role> total) {
+	public Collection<Role> recurseOverParents(final Set<Role> total) {
 		if (!this.inheritsRoles())
 			return total;
 		
 		Set<Role> allRoles = new HashSet<Role>(); // total roles (parents + children)
-		Set<Role> myRoles = new HashSet<Role>(); // new roles
+		Collection<Role> myRoles = new HashSet<Role>(); // new roles
 		allRoles.addAll(total);
 		
 		myRoles.addAll(this.getInheritedRoles());
@@ -231,7 +232,8 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -239,7 +241,8 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -247,7 +250,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @since 1.9
 	 * @return immediate children
 	 */
-	public Set<Role> getChildRoles() {
+	public Collection<Role> getChildRoles() {
 		if (childRoles == null) {
 			childRoles = new HashSet<Role>();
 		}
@@ -279,7 +282,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @return this role's children
 	 * @since 1.9
 	 */
-	public Set<Role> getAllChildRoles() {
+	public Collection<Role> getAllChildRoles() {
 		Set<Role> children = new HashSet<Role>();
 		if (hasChildRoles()) {
 			children.addAll(this.recurseOverChildren(children));
@@ -294,13 +297,13 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @return Set<Role> Current and child roles
 	 * @since 1.9
 	 */
-	public Set<Role> recurseOverChildren(final Set<Role> total) {
+	public Collection<Role> recurseOverChildren(final Set<Role> total) {
 		if (!this.hasChildRoles()) {
 			return total;
 		}
 		
 		Set<Role> allRoles = new HashSet<Role>(); // total roles (parents + children)
-		Set<Role> myRoles = new HashSet<Role>(); // new roles
+		Collection<Role> myRoles = new HashSet<Role>(); // new roles
 		allRoles.addAll(total);
 		
 		myRoles.addAll(this.getChildRoles());

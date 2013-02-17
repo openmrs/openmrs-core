@@ -2060,7 +2060,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(3,
 
 		matches.size());
-		Set<ConceptReferenceTerm> uniqueTerms = new HashSet<ConceptReferenceTerm>();
+		Collection<ConceptReferenceTerm> uniqueTerms = new HashSet<ConceptReferenceTerm>();
 		//check that we have only unique terms
 		for (ConceptReferenceTerm conceptReferenceTerm : matches)
 			Assert.assertTrue(uniqueTerms.add(conceptReferenceTerm));

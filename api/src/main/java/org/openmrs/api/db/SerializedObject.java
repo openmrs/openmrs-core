@@ -52,14 +52,16 @@ public class SerializedObject extends BaseOpenmrsMetadata {
 	/**
 	 * @return the id
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return id;
 	}
 	
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		this.id = id;
 	}
 	

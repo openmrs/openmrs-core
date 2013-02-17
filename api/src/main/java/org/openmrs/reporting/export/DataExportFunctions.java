@@ -30,22 +30,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Cohort;
-import org.openmrs.Concept;
-import org.openmrs.Drug;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
-import org.openmrs.Location;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientProgram;
-import org.openmrs.Program;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
-import org.openmrs.User;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -91,13 +76,16 @@ public class DataExportFunctions {
 	protected Calendar calendar = null;
 	
 	// Map<EncounterType, Map<patientId, Encounter>>
-	protected Map<String, Map<Integer, ?>> patientEncounterMap = new HashMap<String, Map<Integer, ?>>();
+	@org.jetbrains.annotations.Nullable
+    protected Map<String, Map<Integer, ?>> patientEncounterMap = new HashMap<String, Map<Integer, ?>>();
 	
 	// Map<PatientIdentifierType, Map<patientId, PatientIdentifier>>
-	protected Map<String, Map<Integer, PatientIdentifier>> patientIdentifierMap = new HashMap<String, Map<Integer, PatientIdentifier>>();
+	@org.jetbrains.annotations.Nullable
+    protected Map<String, Map<Integer, PatientIdentifier>> patientIdentifierMap = new HashMap<String, Map<Integer, PatientIdentifier>>();
 	
 	// Map<EncounterType, Map<patientId, Encounter>>
-	protected Map<String, Map<Integer, ?>> patientFirstEncounterMap = new HashMap<String, Map<Integer, ?>>();
+	@org.jetbrains.annotations.Nullable
+    protected Map<String, Map<Integer, ?>> patientFirstEncounterMap = new HashMap<String, Map<Integer, ?>>();
 	
 	protected Map<String, Concept> conceptNameMap = new HashMap<String, Concept>();
 	
@@ -117,10 +105,12 @@ public class DataExportFunctions {
 	protected Map<String, Map<Integer, List<DrugOrder>>> drugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
 	
 	// Map<name of drug set, Map<patientId, List<DrugOrder>>>
-	protected Map<String, Map<Integer, List<DrugOrder>>> currentDrugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
+	@org.jetbrains.annotations.Nullable
+    protected Map<String, Map<Integer, List<DrugOrder>>> currentDrugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
 	
 	// Map<tablename+columnname, Map<patientId, columnvalue>>
-	protected Map<String, Map<Integer, Object>> patientAttributeMap = new HashMap<String, Map<Integer, Object>>();
+	@org.jetbrains.annotations.Nullable
+    protected Map<String, Map<Integer, Object>> patientAttributeMap = new HashMap<String, Map<Integer, Object>>();
 	
 	// Map<tablename+columnname, Map<personId, columnvalue>>
 	protected Map<String, Map<Integer, Object>> personAttributeMap = new HashMap<String, Map<Integer, Object>>();
@@ -128,13 +118,17 @@ public class DataExportFunctions {
 	// Map<key, Collection<personId>>, where key is like "Cohort.1" or "Filter.3"
 	protected Map<String, Collection<Integer>> cohortMap = new HashMap<String, Collection<Integer>>();
 	
-	protected PatientSetService patientSetService;
+	@org.jetbrains.annotations.Nullable
+    protected PatientSetService patientSetService;
 	
-	protected PatientService patientService;
+	@org.jetbrains.annotations.Nullable
+    protected PatientService patientService;
 	
-	protected ConceptService conceptService;
+	@org.jetbrains.annotations.Nullable
+    protected ConceptService conceptService;
 	
-	protected EncounterService encounterService;
+	@org.jetbrains.annotations.Nullable
+    protected EncounterService encounterService;
 	
 	protected Locale locale = null;
 	
@@ -259,11 +253,12 @@ public class DataExportFunctions {
 	 * Call the system garbage collecter. This method only calls every 500 patients
 	 */
 	protected void garbageCollect() {
-		if (patientCounter++ % 500 == 0) {
+		if (patientCounter % 500 == 0) {
 			System.gc();
 			System.gc();
 		}
-	}
+        patientCounter++;
+    }
 	
 	/**
 	 * @return Returns the patientSet.
@@ -342,7 +337,7 @@ public class DataExportFunctions {
 		} else {
 			log.error("key = " + key);
 		}
-		Set<Integer> set = new HashSet<Integer>(ps.getMemberIds());
+		Collection<Integer> set = new HashSet<Integer>(ps.getMemberIds());
 		cohortMap.put(key, set);
 		
 		return set.contains(getPatientId());
@@ -380,7 +375,7 @@ public class DataExportFunctions {
 	@SuppressWarnings("unchecked")
 	public Object getLastEncounterAttr(Object typeArray, String attr) {
 		
-		List<String> types = (List<String>) typeArray;
+		Collection<String> types = (List<String>) typeArray;
 		String key = OpenmrsUtil.join(types, ",") + "|" + attr;
 		
 		if (patientEncounterMap.containsKey(key))
@@ -447,7 +442,7 @@ public class DataExportFunctions {
 	@SuppressWarnings("unchecked")
 	public Object getFirstEncounterAttr(Object typeArray, String attr) {
 		
-		List<String> types = (List<String>) typeArray;
+		Collection<String> types = (List<String>) typeArray;
 		String key = OpenmrsUtil.join(types, ",") + "|" + attr;
 		
 		if (patientFirstEncounterMap.containsKey(key))
@@ -1178,13 +1173,13 @@ public class DataExportFunctions {
 		else if (o instanceof Concept)
 			return ((Concept) o).getName().toString();
 		else if (o instanceof Drug)
-			return ((Drug) o).getName();
+			return ((OpenmrsMetadata) o).getName();
 		else if (o instanceof Location)
-			return ((Location) o).getName();
+			return ((OpenmrsMetadata) o).getName();
 		else if (o instanceof User)
 			return ((User) o).toString();
 		else if (o instanceof EncounterType)
-			return ((EncounterType) o).getName();
+			return ((OpenmrsMetadata) o).getName();
 		else if (o instanceof Date)
 			return formatDate(null, (Date) o);
 		else if (o instanceof Obs)

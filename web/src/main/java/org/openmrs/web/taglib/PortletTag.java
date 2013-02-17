@@ -38,15 +38,20 @@ public class PortletTag extends ImportSupport {
 	
 	private String parameters = "";
 	
-	private Map<String, Object> parameterMap = null;
+	@org.jetbrains.annotations.Nullable
+    private Map<String, Object> parameterMap = null;
 	
-	private Integer patientId = null;
+	@org.jetbrains.annotations.Nullable
+    private Integer patientId = null;
 	
-	private Integer personId = null;
+	@org.jetbrains.annotations.Nullable
+    private Integer personId = null;
 	
-	private Integer encounterId = null;
+	@org.jetbrains.annotations.Nullable
+    private Integer encounterId = null;
 	
-	private Integer userId = null;
+	@org.jetbrains.annotations.Nullable
+    private Integer userId = null;
 	
 	private String patientIds = "";
 	

@@ -49,56 +49,64 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	/**
 	 * @return the creator
 	 */
-	public User getCreator() {
+	@Override
+    public User getCreator() {
 		return creator;
 	}
 	
 	/**
 	 * @param creator the creator to set
 	 */
-	public void setCreator(User creator) {
+	@Override
+    public void setCreator(User creator) {
 		this.creator = creator;
 	}
 	
 	/**
 	 * @return the changedBy
 	 */
-	public User getChangedBy() {
+	@Override
+    public User getChangedBy() {
 		return changedBy;
 	}
 	
 	/**
 	 * @param changedBy the changedBy to set
 	 */
-	public void setChangedBy(User changedBy) {
+	@Override
+    public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
 	
 	/**
 	 * @return the dateCreated
 	 */
-	public Date getDateCreated() {
+	@Override
+    public Date getDateCreated() {
 		return dateCreated;
 	}
 	
 	/**
 	 * @param dateCreated the dateCreated to set
 	 */
-	public void setDateCreated(Date dateCreated) {
+	@Override
+    public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 	
 	/**
 	 * @return the dateChanged
 	 */
-	public Date getDateChanged() {
+	@Override
+    public Date getDateChanged() {
 		return dateChanged;
 	}
 	
 	/**
 	 * @param dateChanged the dateChanged to set
 	 */
-	public void setDateChanged(Date dateChanged) {
+	@Override
+    public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
 	

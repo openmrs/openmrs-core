@@ -271,7 +271,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 		ConceptProposal cp = (ConceptProposal) object;
 		Locale locale = Context.getLocale();
 		List<ConceptProposal> matchingProposals = new Vector<ConceptProposal>();
-		List<ConceptListItem> possibleConceptsListItems = new Vector<ConceptListItem>();
+		Collection<ConceptListItem> possibleConceptsListItems = new Vector<ConceptListItem>();
 		ConceptListItem listItem = null;
 		
 		Concept obsConcept = cp.getObsConcept();

@@ -74,7 +74,8 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	 * @param columnName
 	 * @param columnValue
 	 */
-	public void addSimpleColumn(String columnName, String columnValue) {
+	@Override
+    public void addSimpleColumn(String columnName, String columnValue) {
 		columns.add(new SimpleColumn(columnName, columnValue));
 	}
 	
@@ -95,7 +96,8 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	 * @param columnName
 	 * @param columnValue
 	 */
-	public void addCalculatedColumn(String columnName, String columnValue) {
+	@Override
+    public void addCalculatedColumn(String columnName, String columnValue) {
 		columns.add(new CalculatedColumn(columnName, columnValue));
 	}
 	
@@ -106,7 +108,8 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	 * @param cohortId only one of this or filterId should be non-null
 	 * @param filterId only one of this or cohortId should be non-null
 	 */
-	public void addCohortColumn(String columnName, Integer cohortId, Integer filterId, Integer patientSearchId,
+	@Override
+    public void addCohortColumn(String columnName, Integer cohortId, Integer filterId, Integer patientSearchId,
 	        String valueIfTrue, String valueIfFalse) {
 		columns.add(new CohortColumn(columnName, cohortId, filterId, patientSearchId, valueIfTrue, valueIfFalse));
 	}
@@ -116,7 +119,8 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	 * 
 	 * @param p
 	 */
-	public void addPatientId(Integer p) {
+	@Override
+    public void addPatientId(Integer p) {
 		patientIds.add(p);
 	}
 	
@@ -126,7 +130,8 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	 * 
 	 * @return template string to be evaluated
 	 */
-	public String generateTemplate() {
+	@Override
+    public String generateTemplate() {
 		StringBuilder sb = new StringBuilder();
 		
 		// print out the column headers
@@ -198,7 +203,8 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	 * 
 	 * @return patientSet to be used with report template
 	 */
-	public Cohort generatePatientSet(EvaluationContext context) {
+	@Override
+    public Cohort generatePatientSet(EvaluationContext context) {
 		PatientSetService pss = Context.getPatientSetService();
 		
 		Set<Integer> patientIdSet = new HashSet<Integer>();
@@ -249,59 +255,73 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 		return "Data Export #" + getReportObjectId();
 	}
 	
-	public List<ExportColumn> getColumns() {
+	@Override
+    public List<ExportColumn> getColumns() {
 		return columns;
 	}
 	
-	public void setColumns(List<ExportColumn> columns) {
+	@Override
+    public void setColumns(List<ExportColumn> columns) {
 		this.columns = columns;
 	}
 	
-	public Location getLocation() {
+	@Override
+    public Location getLocation() {
 		return location;
 	}
 	
-	public void setLocation(Location location) {
+	@Override
+    public void setLocation(Location location) {
 		this.location = location;
 	}
 	
-	public List<Integer> getPatientIds() {
+	@Override
+    public List<Integer> getPatientIds() {
 		return patientIds;
 	}
 	
-	public void setPatientIds(List<Integer> patientIds) {
+	@Override
+    public void setPatientIds(List<Integer> patientIds) {
 		this.patientIds = patientIds;
 	}
 	
-	public Integer getCohortDefinitionId() {
+	@Override
+    public Integer getCohortDefinitionId() {
 		return cohortDefinitionId;
 	}
 	
-	public void setCohortDefinitionId(Integer cohortDefinitionId) {
+	@Override
+    public void setCohortDefinitionId(Integer cohortDefinitionId) {
 		this.cohortDefinitionId = cohortDefinitionId;
 	}
 	
-	public Integer getCohortId() {
+	@Override
+    public Integer getCohortId() {
 		return cohortId;
 	}
 	
-	public void setCohortId(Integer cohortId) {
+	@Override
+    public void setCohortId(Integer cohortId) {
 		this.cohortId = cohortId;
 	}
 	
-	public Integer getPatientSearchId() {
+	@Override
+    public Integer getPatientSearchId() {
 		return patientSearchId;
 	}
 	
-	public void setPatientSearchId(Integer patientSearchId) {
+	@Override
+    public void setPatientSearchId(Integer patientSearchId) {
 		this.patientSearchId = patientSearchId;
 	}
 	
-	public boolean isAllPatients() {
+	@Override
+    public boolean isAllPatients() {
 		return isAllPatients;
 	}
 	
-	public void setAllPatients(boolean isAllPatients) {
+	@Override
+    public void setAllPatients(boolean isAllPatients) {
 		this.isAllPatients = isAllPatients;
 	}
 	

@@ -20,17 +20,20 @@ import org.openmrs.layout.web.name.NameSupport;
 
 public class NameLayoutPortletController extends LayoutPortletController {
 	
-	private static Log log = LogFactory.getLog(NameLayoutPortletController.class);
+	private static final Log log = LogFactory.getLog(NameLayoutPortletController.class);
 	
-	protected String getDefaultsPropertyName() {
+	@Override
+    protected String getDefaultsPropertyName() {
 		return "layout.name.defaults";
 	}
 	
-	protected String getDefaultDivId() {
+	@Override
+    protected String getDefaultDivId() {
 		return "nameLayoutPortlet";
 	}
 	
-	protected LayoutSupport getLayoutSupportInstance() {
+	@Override
+    protected LayoutSupport getLayoutSupportInstance() {
 		log.debug("Getting name layout instance");
 		return NameSupport.getInstance();
 	}

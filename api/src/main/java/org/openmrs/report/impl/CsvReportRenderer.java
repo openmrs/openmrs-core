@@ -24,31 +24,38 @@ public class CsvReportRenderer extends DelimitedTextReportRenderer {
 	public CsvReportRenderer() {
 	}
 	
-	public String getLabel() {
+	@Override
+    public String getLabel() {
 		return "CSV";
 	}
 	
-	public String getFilenameExtension() {
+	@Override
+    public String getFilenameExtension() {
 		return "csv";
 	}
 	
-	public String getBeforeColumnDelimiter() {
+	@Override
+    public String getBeforeColumnDelimiter() {
 		return "\"";
 	}
 	
-	public String getAfterColumnDelimiter() {
+	@Override
+    public String getAfterColumnDelimiter() {
 		return "\",";
 	}
 	
-	public String getBeforeRowDelimiter() {
+	@Override
+    public String getBeforeRowDelimiter() {
 		return "";
 	}
 	
-	public String getAfterRowDelimiter() {
+	@Override
+    public String getAfterRowDelimiter() {
 		return "\n";
 	}
 	
-	public String escape(String text) {
+	@Override
+    public String escape(String text) {
 		if (text == null)
 			return null;
 		else
@@ -58,7 +65,8 @@ public class CsvReportRenderer extends DelimitedTextReportRenderer {
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getRenderedContentType(ReportSchema, String)
 	 */
-	public String getRenderedContentType(ReportSchema model, String argument) {
+	@Override
+    public String getRenderedContentType(ReportSchema model, String argument) {
 		return "text/csv";
 	}
 	

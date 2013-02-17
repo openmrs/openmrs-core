@@ -41,14 +41,16 @@ public class HibernateLocationDAO implements LocationDAO {
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#setSessionFactory(org.hibernate.SessionFactory)
 	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Override
+    public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#saveLocation(org.openmrs.Location)
 	 */
-	public Location saveLocation(Location location) {
+	@Override
+    public Location saveLocation(Location location) {
 		if (location.getChildLocations() != null && location.getLocationId() != null) {
 			// hibernate has a problem updating child collections
 			// if the parent object was already saved so we do it 
@@ -65,14 +67,16 @@ public class HibernateLocationDAO implements LocationDAO {
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocation(java.lang.Integer)
 	 */
-	public Location getLocation(Integer locationId) {
+	@Override
+    public Location getLocation(Integer locationId) {
 		return (Location) sessionFactory.getCurrentSession().get(Location.class, locationId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocation(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Location getLocation(String name) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class).add(
 		    Expression.eq("name", name));
@@ -87,7 +91,8 @@ public class HibernateLocationDAO implements LocationDAO {
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getAllLocations(boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Location> getAllLocations(boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
 		if (!includeRetired) {
@@ -103,14 +108,16 @@ public class HibernateLocationDAO implements LocationDAO {
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#deleteLocation(org.openmrs.Location)
 	 */
-	public void deleteLocation(Location location) {
+	@Override
+    public void deleteLocation(Location location) {
 		sessionFactory.getCurrentSession().delete(location);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#saveLocation(org.openmrs.Location)
 	 */
-	public LocationTag saveLocationTag(LocationTag tag) {
+	@Override
+    public LocationTag saveLocationTag(LocationTag tag) {
 		sessionFactory.getCurrentSession().saveOrUpdate(tag);
 		return tag;
 	}
@@ -118,14 +125,16 @@ public class HibernateLocationDAO implements LocationDAO {
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocationTag(java.lang.Integer)
 	 */
-	public LocationTag getLocationTag(Integer locationTagId) {
+	@Override
+    public LocationTag getLocationTag(Integer locationTagId) {
 		return (LocationTag) sessionFactory.getCurrentSession().get(LocationTag.class, locationTagId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocationTagByName(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public LocationTag getLocationTagByName(String tag) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class).add(
 		    Expression.eq("name", tag));
@@ -140,7 +149,8 @@ public class HibernateLocationDAO implements LocationDAO {
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getAllLocationTags(boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<LocationTag> getAllLocationTags(boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class);
 		if (!includeRetired) {
@@ -153,7 +163,8 @@ public class HibernateLocationDAO implements LocationDAO {
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocations(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<LocationTag> getLocationTags(String search) {
 		return sessionFactory.getCurrentSession().createCriteria(LocationTag.class)
 		// 'ilike' case insensitive search
@@ -163,14 +174,16 @@ public class HibernateLocationDAO implements LocationDAO {
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#deleteLocationTag(org.openmrs.LocationTag)
 	 */
-	public void deleteLocationTag(LocationTag tag) {
+	@Override
+    public void deleteLocationTag(LocationTag tag) {
 		sessionFactory.getCurrentSession().delete(tag);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocationByUuid(java.lang.String)
 	 */
-	public Location getLocationByUuid(String uuid) {
+	@Override
+    public Location getLocationByUuid(String uuid) {
 		return (Location) sessionFactory.getCurrentSession().createQuery("from Location l where l.uuid = :uuid").setString(
 		    "uuid", uuid).uniqueResult();
 	}

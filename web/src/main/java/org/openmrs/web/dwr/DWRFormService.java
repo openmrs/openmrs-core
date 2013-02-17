@@ -258,7 +258,7 @@ public class DWRFormService {
 		String s = "";
 		
 		if (formFields.containsKey(current)) {
-			TreeSet<FormField> set = formFields.get(current);
+			Iterable<FormField> set = formFields.get(current);
 			for (FormField ff : set) {
 				s += generateFormFieldJavascript(ff, locale);
 				if (formFields.containsKey(ff.getFormFieldId())) {
@@ -326,7 +326,8 @@ public class DWRFormService {
 			this.locale = locale;
 		}
 		
-		public int compare(Object o1, Object o2) {
+		@Override
+        public int compare(Object o1, Object o2) {
 			if (o1 instanceof FieldListItem && o2 instanceof FieldListItem) {
 				FieldListItem f1 = (FieldListItem) o1;
 				FieldListItem f2 = (FieldListItem) o2;

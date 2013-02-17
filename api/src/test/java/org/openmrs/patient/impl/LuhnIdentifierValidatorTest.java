@@ -33,12 +33,8 @@ public class LuhnIdentifierValidatorTest {
 	        "MooSE", "adD3Eddf429daD999" };
 	
 	private char[] allowedIdentifiersCheckDigits = { 'D', 'G', 'J', 'H', 'I', 'H', 'H', 'H', 'B' };
-	
-	private char unusedCheckDigit = 'E';
-	
-	private int unusedCheckDigitInt = 0;
-	
-	private int[] allowedIdentifiersCheckDigitsInts = { 3, 6, 9, 7, 8, 7, 7, 7, 1 };
+
+    private int[] allowedIdentifiersCheckDigitsInts = { 3, 6, 9, 7, 8, 7, 7, 7, 1 };
 	
 	private String[] invalidIdentifiers = { "", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def " };
 	
@@ -112,8 +108,10 @@ public class LuhnIdentifierValidatorTest {
 		
 		//Now test allowed identifiers that just have the wrong check digit.
 		for (int i = 0; i < allowedIdentifiers.length; i++) {
-			assertFalse(validator.isValid(allowedIdentifiers[i] + "-" + unusedCheckDigit));
-			assertFalse(validator.isValid(allowedIdentifiers[i] + "-" + unusedCheckDigitInt));
+            char unusedCheckDigit = 'E';
+            assertFalse(validator.isValid(allowedIdentifiers[i] + "-" + unusedCheckDigit));
+            int unusedCheckDigitInt = 0;
+            assertFalse(validator.isValid(allowedIdentifiers[i] + "-" + unusedCheckDigitInt));
 		}
 		
 		//Now test allowed identifiers that have the right check digit.  Test with both

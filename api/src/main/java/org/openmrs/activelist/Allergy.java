@@ -26,11 +26,13 @@ public class Allergy extends ActiveListItem {
 	
 	public static final ActiveListType ACTIVE_LIST_TYPE = new ActiveListType(1);
 	
-	private AllergyType allergyType;
+	@org.jetbrains.annotations.Nullable
+    private AllergyType allergyType;
 	
 	private Concept reaction; // must be of class=Symptom
 	
-	private AllergySeverity severity;
+	@org.jetbrains.annotations.Nullable
+    private AllergySeverity severity;
 	
 	public Allergy() {
 		this.activeListType = new ActiveListType(1);

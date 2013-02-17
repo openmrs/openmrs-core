@@ -28,7 +28,8 @@ public class SimpleColumnClassifier implements TableRowClassifier {
 		this.valueIfNull = valueIfNull;
 	}
 	
-	public String classify(TableRow row) {
+	@Override
+    public String classify(TableRow row) {
 		Object temp = row.get(columnName);
 		return temp == null ? valueIfNull : temp.toString();
 	}

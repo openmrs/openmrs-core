@@ -70,7 +70,8 @@ public class NumericRangeColumnClassifier implements TableRowClassifier {
 		labels = temp;
 	}
 	
-	public String classify(TableRow row) {
+	@Override
+    public String classify(TableRow row) {
 		Object o = row.get(columnName);
 		if (o == null)
 			return missingLabel;

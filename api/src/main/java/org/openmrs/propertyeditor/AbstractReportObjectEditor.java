@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
+import org.openmrs.reporting.ReportObject;
 import org.springframework.util.StringUtils;
 
 /**
@@ -38,7 +39,8 @@ public class AbstractReportObjectEditor extends PropertyEditorSupport {
 	/**
 	 * 
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		log.debug("Setting report object text " + text);
 		if (StringUtils.hasText(text)) {
 			try {
@@ -57,10 +59,11 @@ public class AbstractReportObjectEditor extends PropertyEditorSupport {
 	/**
 	 * 
 	 */
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		log.debug("Getting cohort text " + getValue());
 		String text = "";
-		AbstractReportObject obj = (AbstractReportObject) getValue();
+		ReportObject obj = (AbstractReportObject) getValue();
 		if (obj != null && obj.getReportObjectId() != null) {
 			text = String.valueOf(obj.getReportObjectId());
 		}

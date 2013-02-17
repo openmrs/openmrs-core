@@ -60,14 +60,16 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getFilename(ReportSchema, String)
 	 */
-	public String getFilename(ReportSchema schema, String argument) {
+	@Override
+    public String getFilename(ReportSchema schema, String argument) {
 		return schema.getName() + "." + getFilenameExtension();
 	}
 	
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getRenderingModes(org.openmrs.report.ReportSchema)
 	 */
-	public Collection<RenderingMode> getRenderingModes(ReportSchema schema) {
+	@Override
+    public Collection<RenderingMode> getRenderingModes(ReportSchema schema) {
 		if (schema.getDataSetDefinitions() == null || schema.getDataSetDefinitions().size() != 1)
 			return null;
 		else
@@ -77,7 +79,8 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 	/**
 	 * @see org.openmrs.report.ReportRenderer#render(ReportData, String, OutputStream)
 	 */
-	public void render(ReportData results, String argument, OutputStream out) throws IOException, RenderingException {
+	@Override
+    public void render(ReportData results, String argument, OutputStream out) throws IOException, RenderingException {
 		PrintWriter pw = new PrintWriter(out);
 		render(results, argument, pw);
 	}
@@ -85,7 +88,8 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 	/**
 	 * @see org.openmrs.report.ReportRenderer#render(ReportData, String, Writer)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public void render(ReportData results, String argument, Writer writer) throws IOException, RenderingException {
 		DataSet dataset = results.getDataSets().values().iterator().next();
 		List<String> colKeys = dataset.getDefinition().getColumnKeys();

@@ -45,8 +45,9 @@ public class UserListItem extends PersonListItem {
 			int i = 0;
 			roles = new String[user.getRoles().size()];
 			for (Role r : user.getRoles()) {
-				roles[i++] = r.getRole();
-			}
+				roles[i] = r.getRole();
+                i++;
+            }
 			this.retired = user.isRetired();
 			setVoided(retired); // so the parent PersonListItem class works is someone tries to use .voided
 		}

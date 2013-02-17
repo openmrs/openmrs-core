@@ -28,7 +28,8 @@ import org.openmrs.api.context.Context;
 
 public class RegimenPortletController extends PortletController {
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		String drugSetIds = (String) model.get("displayDrugSetIds");
 		String cachedDrugSetIds = (String) model.get("cachedDrugSetIds");
@@ -53,7 +54,7 @@ public class RegimenPortletController extends PortletController {
 						drugConceptsBySetId.put(setId, members);
 					}
 				}
-				List<DrugOrder> patientDrugOrders = (List<DrugOrder>) model.get("patientDrugOrders");
+				Iterable<DrugOrder> patientDrugOrders = (List<DrugOrder>) model.get("patientDrugOrders");
 				if (patientDrugOrders != null) {
 					for (DrugOrder order : patientDrugOrders) {
 						String setIdToUse = null;

@@ -75,7 +75,8 @@ public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serial
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getEncounterTypeId();
 	}
 	
@@ -83,7 +84,8 @@ public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serial
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setEncounterTypeId(id);
 		
 	}

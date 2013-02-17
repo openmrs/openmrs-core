@@ -29,7 +29,8 @@ public class PersonByNameComparator implements Comparator<Person> {
 	/**
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
-	public int compare(Person person1, Person person2) {
+	@Override
+    public int compare(Person person1, Person person2) {
 		
 		return comparePersonsByName(person1, person2);
 	}

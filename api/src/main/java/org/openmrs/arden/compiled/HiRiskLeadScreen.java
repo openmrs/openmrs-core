@@ -41,14 +41,12 @@ import org.openmrs.arden.ArdenValue;
 public class HiRiskLeadScreen implements ArdenRule {
 	
 	private Patient patient;
-	
-	private String firstname;
-	
-	private ArdenDataSource dataSource;
+
+    private ArdenDataSource dataSource;
 	
 	private HashMap<String, String> userVarMap;
 	
-	private HashMap<String, ArdenValue> valueMap;
+	private Map<String, ArdenValue> valueMap;
 	
 	private ArdenClause ardenClause;
 	
@@ -60,17 +58,19 @@ public class HiRiskLeadScreen implements ArdenRule {
 		ardenClause = new ArdenClause();
 		userVarMap = new HashMap<String, String>();
 		valueMap = new HashMap<String, ArdenValue>();
-		firstname = patient.getPersonName().getGivenName();
+        String firstname = patient.getPersonName().getGivenName();
 		userVarMap.put("firstname", firstname);
 		initAction();
 	}
 	
-	public ArdenRule getChildren() {
+	@Override
+    public ArdenRule getChildren() {
 		ArdenRule rule = null;
 		return rule;
 	}
 	
-	public ArdenRule getInstance() {
+	@Override
+    public ArdenRule getInstance() {
 		ArdenRule rule = null;
 		if (this != null) {
 			rule = this;
@@ -99,7 +99,8 @@ public class HiRiskLeadScreen implements ArdenRule {
 		return dataSource.eval(patient, ardenClause.concept(c).last(1).within().past().Days(365));
 	}
 	
-	public boolean evaluate() {
+	@Override
+    public boolean evaluate() {
 		return evaluate_logic();
 	}
 	
@@ -181,7 +182,8 @@ public class HiRiskLeadScreen implements ArdenRule {
 		    "||firstname|| reportedly ||LeadRisk||.  Drawing a blood lead level is recommended annually:");
 	}
 	
-	public String doAction() {
+	@Override
+    public String doAction() {
 		int index = 0, nindex = 0, endindex = 0, startindex = 0;
 		String tempstr, variable, outStr = "";
 		String inStr = userVarMap.get("ActionStr");
@@ -222,7 +224,8 @@ public class HiRiskLeadScreen implements ArdenRule {
 		return outStr;
 	}
 	
-	public void printDebug() {
+	@Override
+    public void printDebug() {
 		for (Map.Entry<String, ArdenValue> entry : valueMap.entrySet()) {
 			System.out.println("__________________________________");
 			System.out.println(entry.getKey() + ": ");

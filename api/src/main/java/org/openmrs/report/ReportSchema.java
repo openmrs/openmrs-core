@@ -13,6 +13,7 @@
  */
 package org.openmrs.report;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -62,14 +63,16 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getReportSchemaId();
 	}
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setReportSchemaId(id);
 	}
 	
@@ -98,7 +101,8 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	 * 
 	 * @param name <code>String</code> name to set
 	 */
-	@Element(data = true, required = true)
+	@Override
+    @Element(data = true, required = true)
 	public void setName(String name) {
 		super.setName(name);
 	}
@@ -108,7 +112,8 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	 * 
 	 * @return the name of the ReportSchema
 	 */
-	@Element(data = true, required = true)
+	@Override
+    @Element(data = true, required = true)
 	public String getName() {
 		return super.getName();
 	}
@@ -118,7 +123,8 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	 * 
 	 * @param description
 	 */
-	@Element(data = true, required = true)
+	@Override
+    @Element(data = true, required = true)
 	public void setDescription(String description) {
 		super.setDescription(description);
 	}
@@ -128,7 +134,8 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	 * 
 	 * @return the <code>String</code> description of the ReportSchema
 	 */
-	@Element(data = true, required = true)
+	@Override
+    @Element(data = true, required = true)
 	public String getDescription() {
 		return super.getDescription();
 	}
@@ -149,7 +156,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	 * @return the filter as a <code>CohortDefinition</code>
 	 */
 	@Element(required = false)
-	public CohortDefinition getFilter() {
+	public Parameterizable getFilter() {
 		return filter;
 	}
 	
@@ -190,7 +197,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	 * @return List<DataSetDefinition> a list with the DataSet Definitions
 	 */
 	@ElementList(required = true, name = "dataSets")
-	public List<DataSetDefinition> getDataSetDefinitions() {
+	public Collection<DataSetDefinition> getDataSetDefinitions() {
 		return this.dataSetDefinitions;
 	}
 	
@@ -199,7 +206,8 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	 * 
 	 * @see org.openmrs.report.Parameterizable#getParameters()
 	 */
-	public List<Parameter> getParameters() {
+	@Override
+    public List<Parameter> getParameters() {
 		
 		List<Parameter> parameters = new Vector<Parameter>();
 		

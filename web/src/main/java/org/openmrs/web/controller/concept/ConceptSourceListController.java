@@ -84,7 +84,7 @@ public class ConceptSourceListController extends SimpleFormController {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
-		List<ConceptSource> conceptSources = (List<ConceptSource>) command;
+		Iterable<ConceptSource> conceptSources = (List<ConceptSource>) command;
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		ImplementationId implId = Context.getAdministrationService().getImplementationId();

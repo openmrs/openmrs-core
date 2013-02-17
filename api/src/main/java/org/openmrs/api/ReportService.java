@@ -192,7 +192,8 @@ public interface ReportService {
 	 * @param reportSchemaXml xml to save
 	 * @deprecated use saveReportSchemaXml(reportSchemaXml)
 	 */
-	public void createReportSchemaXml(ReportSchemaXml reportSchemaXml);
+	@Deprecated
+    public void createReportSchemaXml(ReportSchemaXml reportSchemaXml);
 	
 	/**
 	 * Update the given ReportSchemaXml object in the database.
@@ -200,7 +201,8 @@ public interface ReportService {
 	 * @param reportSchemaXml xml to save
 	 * @deprecated use saveReportSchemaXml(reportSchemaXml)
 	 */
-	public void updateReportSchemaXml(ReportSchemaXml reportSchemaXml);
+	@Deprecated
+    public void updateReportSchemaXml(ReportSchemaXml reportSchemaXml);
 	
 	/**
 	 * Delete the given ReportSchemaXml class from the db

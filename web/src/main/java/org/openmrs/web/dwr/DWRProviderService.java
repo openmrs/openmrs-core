@@ -14,10 +14,7 @@
 
 package org.openmrs.web.dwr;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,7 +47,7 @@ public class DWRProviderService {
 	 * @should return the list of providers matching the search name
 	 * @should return the list of providers including retired providers for the matching search name
 	 */
-	public Vector<Object> findProvider(String name, boolean includeRetired, Integer start, Integer length) {
+	public Collection<Object> findProvider(String name, boolean includeRetired, Integer start, Integer length) {
 		Vector<Object> providerListItem = new Vector<Object>();
 		List<Provider> providerList = Context.getProviderService().getProviders(name, start, length, null, includeRetired);
 		
@@ -80,7 +77,7 @@ public class DWRProviderService {
 	public Map<String, Object> findProviderCountAndProvider(String name, boolean includeRetired, Integer start,
 	        Integer length) throws APIException {
 		Map<String, Object> providerMap = new HashMap<String, Object>();
-		Vector<Object> objectList = findProvider(name, includeRetired, start, length);
+		Collection<Object> objectList = findProvider(name, includeRetired, start, length);
 		try {
 			providerMap.put("count", Context.getProviderService().getCountOfProviders(name));
 			providerMap.put("objectList", objectList);

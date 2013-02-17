@@ -41,7 +41,8 @@ public class StaticCohortDefinitionProvider implements CohortDefinitionProvider 
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#getClassHandled()
 	 */
-	public Class<? extends CohortDefinition> getClassHandled() {
+	@Override
+    public Class<? extends CohortDefinition> getClassHandled() {
 		return StaticCohortDefinition.class;
 	}
 	
@@ -53,7 +54,8 @@ public class StaticCohortDefinitionProvider implements CohortDefinitionProvider 
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#evaluate(org.openmrs.cohort.CohortDefinition,
 	 *      org.openmrs.report.EvaluationContext)
 	 */
-	public Cohort evaluate(CohortDefinition cohortDefinition, EvaluationContext evaluationContext) {
+	@Override
+    public Cohort evaluate(CohortDefinition cohortDefinition, EvaluationContext evaluationContext) {
 		StaticCohortDefinition def = (StaticCohortDefinition) cohortDefinition;
 		return def.getCohort();
 	}
@@ -61,7 +63,8 @@ public class StaticCohortDefinitionProvider implements CohortDefinitionProvider 
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#getAllCohortDefinitions()
 	 */
-	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
+	@Override
+    public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
 		List<CohortDefinitionItemHolder> ret = new Vector<CohortDefinitionItemHolder>();
 		for (Cohort cohort : Context.getCohortService().getAllCohorts()) {
 			CohortDefinitionItemHolder item = new CohortDefinitionItemHolder();
@@ -77,21 +80,24 @@ public class StaticCohortDefinitionProvider implements CohortDefinitionProvider 
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#getCohortDefinition(java.lang.Integer)
 	 */
-	public CohortDefinition getCohortDefinition(Integer id) {
+	@Override
+    public CohortDefinition getCohortDefinition(Integer id) {
 		return new StaticCohortDefinition(Context.getCohortService().getCohort(id));
 	}
 	
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#purgeCohortDefinition(org.openmrs.cohort.CohortDefinition)
 	 */
-	public void purgeCohortDefinition(CohortDefinition cohortDefinition) {
+	@Override
+    public void purgeCohortDefinition(CohortDefinition cohortDefinition) {
 		throw new APIException("Not Yet Implemented");
 	}
 	
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#saveCohortDefinition(org.openmrs.cohort.CohortDefinition)
 	 */
-	public CohortDefinition saveCohortDefinition(CohortDefinition cohortDefinition) {
+	@Override
+    public CohortDefinition saveCohortDefinition(CohortDefinition cohortDefinition) {
 		StaticCohortDefinition def = (StaticCohortDefinition) cohortDefinition;
 		Cohort c = def.getCohort();
 		Context.getCohortService().saveCohort(c);

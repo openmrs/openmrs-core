@@ -55,11 +55,13 @@ public class Template extends BaseOpenmrsObject implements Serializable {
 		this.template = template;
 	}
 	
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		this.id = id;
 	}
 	
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return id;
 	}
 	

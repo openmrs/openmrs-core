@@ -14,6 +14,7 @@
 package org.openmrs.web.taglib.fieldgen;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -29,14 +30,15 @@ public abstract class AbstractFieldGenHandler implements FieldGenHandler {
 	
 	protected FieldGenTag fieldGenTag;
 	
-	public void setFieldGenTag(FieldGenTag fieldGenTag) {
+	@Override
+    public void setFieldGenTag(FieldGenTag fieldGenTag) {
 		this.fieldGenTag = fieldGenTag;
 	}
 	
 	protected void setParameter(String s, Object o) {
 		if (this.fieldGenTag != null) {
 			//HashMap<String,Object> hmParams = (HashMap<String,Object>)getRequest().getAttribute("org.openmrs.fieldGen.parameterMap");
-			HashMap<String, Object> hmParams = (HashMap<String, Object>) this.fieldGenTag.getParameterMap();
+			Map<String, Object> hmParams = (HashMap<String, Object>) this.fieldGenTag.getParameterMap();
 			if (hmParams == null)
 				hmParams = new HashMap<String, Object>();
 			hmParams.put(s, o);

@@ -31,7 +31,7 @@ import static org.openqa.selenium.lift.Matchers.attribute;
 import static org.openqa.selenium.lift.Matchers.text;
 
 public class CreateProviderSteps extends Steps {
-    public static String providerIdentifier = String.valueOf(System.currentTimeMillis());
+    public static final String providerIdentifier = String.valueOf(System.currentTimeMillis());
 	public CreateProviderSteps(WebDriver driver) {
 		super(driver);
 	}

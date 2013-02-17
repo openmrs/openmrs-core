@@ -71,7 +71,8 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 	/**
 	 * @see org.openmrs.reporting.export.ExportColumn#toTemplateString()
 	 */
-	public String toTemplateString() {
+	@Override
+    public String toTemplateString() {
 		String s = "#foreach($val in $vals)";
 		s += "#if($velocityCount > 1)";
 		s += "$!{fn.getSeparator()}";
@@ -90,11 +91,13 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 		this.columnType = columnType;
 	}
 	
-	public String getColumnName() {
+	@Override
+    public String getColumnName() {
 		return columnName;
 	}
 	
-	public String getTemplateColumnName() {
+	@Override
+    public String getTemplateColumnName() {
 		String s = columnName;
 		s += getExtrasTemplateColumnNames(false);
 		
@@ -115,7 +118,8 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 	}
 	
 	//// left for backwards compatibility to pre 1.0.43
-	public void setColumnName(String columnName) {
+	@Override
+    public void setColumnName(String columnName) {
 		this.columnName = columnName;
 	}
 	

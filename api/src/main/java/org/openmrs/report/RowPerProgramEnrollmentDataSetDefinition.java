@@ -55,7 +55,8 @@ public class RowPerProgramEnrollmentDataSetDefinition implements DataSetDefiniti
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getColumnDatatypes()
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Class> getColumnDatatypes() {
 		Class[] ret = new Class[6];
 		ret[0] = Integer.class; // patientId
@@ -70,7 +71,8 @@ public class RowPerProgramEnrollmentDataSetDefinition implements DataSetDefiniti
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getColumnKeys()
 	 */
-	public List<String> getColumnKeys() {
+	@Override
+    public List<String> getColumnKeys() {
 		String[] ret = new String[6];
 		ret[0] = "patientId";
 		ret[1] = "programName";
@@ -84,21 +86,24 @@ public class RowPerProgramEnrollmentDataSetDefinition implements DataSetDefiniti
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getName()
 	 */
-	public String getName() {
+	@Override
+    public String getName() {
 		return name;
 	}
 	
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#setName(java.lang.String)
 	 */
-	public void setName(String name) {
+	@Override
+    public void setName(String name) {
 		this.name = name;
 	}
 	
 	/**
 	 * @see org.openmrs.report.Parameterizable#getParameters()
 	 */
-	public List<Parameter> getParameters() {
+	@Override
+    public List<Parameter> getParameters() {
 		return new ArrayList<Parameter>();
 	}
 	

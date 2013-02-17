@@ -20,17 +20,20 @@ import org.openmrs.layout.web.address.AddressSupport;
 
 public class AddressLayoutPortletController extends LayoutPortletController {
 	
-	private static Log log = LogFactory.getLog(AddressLayoutPortletController.class);
+	private static final Log log = LogFactory.getLog(AddressLayoutPortletController.class);
 	
-	protected String getDefaultsPropertyName() {
+	@Override
+    protected String getDefaultsPropertyName() {
 		return "layout.address.defaults";
 	}
 	
-	protected String getDefaultDivId() {
+	@Override
+    protected String getDefaultDivId() {
 		return "addressLayoutPortlet";
 	}
 	
-	protected LayoutSupport getLayoutSupportInstance() {
+	@Override
+    protected LayoutSupport getLayoutSupportInstance() {
 		log.debug("Getting address layout instance");
 		return AddressSupport.getInstance();
 	}

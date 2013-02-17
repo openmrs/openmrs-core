@@ -42,7 +42,7 @@ import org.openmrs.scheduler.SchedulerConstants;
  * contain all privilege names and global property names. Those strings added to the static CORE_*
  * methods will be written to the database at startup if they don't exist yet.
  */
-public final class OpenmrsConstants {
+public class OpenmrsConstants {
 	
 	private static Log log = LogFactory.getLog(OpenmrsConstants.class);
 	
@@ -81,8 +81,11 @@ public final class OpenmrsConstants {
 	 */
 	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion() != null ? THIS_PACKAGE
 	        .getSpecificationVersion() : getBuildVersionShort();
-	
-	/**
+
+    private OpenmrsConstants() {
+    }
+
+    /**
 	 * @return build version with alpha characters (eg:1.10.0 SNAPSHOT Build 24858) defined in
 	 *         MANIFEST.MF(specification-Vendor)
 	 * @see #OPENMRS_VERSION_SHORT
@@ -217,8 +220,8 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return Collection<String> of words that are ignored
 	 */
-	public static final Collection<String> STOP_WORDS() {
-		List<String> stopWords = new Vector<String>();
+	public static Collection<String> STOP_WORDS() {
+		Collection<String> stopWords = new Vector<String>();
 		stopWords.add("A");
 		stopWords.add("AND");
 		stopWords.add("AT");
@@ -239,7 +242,7 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return Map<String, String> of gender character to gender name
 	 */
-	public static final Map<String, String> GENDER() {
+	public static Map<String, String> GENDER() {
 		Map<String, String> genders = new LinkedHashMap<String, String>();
 		genders.put("M", "Male");
 		genders.put("F", "Female");
@@ -692,7 +695,7 @@ public final class OpenmrsConstants {
 	 * @return privileges core to the system
 	 */
 	@Deprecated
-	public static final Map<String, String> CORE_PRIVILEGES() {
+	public static Map<String, String> CORE_PRIVILEGES() {
 		return OpenmrsUtil.getCorePrivileges();
 	}
 	
@@ -716,7 +719,7 @@ public final class OpenmrsConstants {
 	 * @return roles that are core to the system
 	 */
 	@Deprecated
-	public static final Map<String, String> CORE_ROLES() {
+	public static Map<String, String> CORE_ROLES() {
 		return OpenmrsUtil.getCoreRoles();
 	}
 	
@@ -725,8 +728,8 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return <code>Collection<String></code> of the auto-assigned roles
 	 */
-	public static final Collection<String> AUTO_ROLES() {
-		List<String> roles = new Vector<String>();
+	public static Collection<String> AUTO_ROLES() {
+		Collection<String> roles = new Vector<String>();
 		
 		roles.add(ANONYMOUS_ROLE);
 		roles.add(AUTHENTICATED_ROLE);
@@ -1047,7 +1050,7 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return List<GlobalProperty> of the core global properties
 	 */
-	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
+	public static Iterable<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
 		List<GlobalProperty> props = new Vector<GlobalProperty>();
 		
 		props.add(new GlobalProperty("use_patient_attribute.healthCenter", "false",
@@ -1503,7 +1506,7 @@ public final class OpenmrsConstants {
 	
 	public static final String CONCEPT_PROPOSAL_REJECT = "REJECT";
 	
-	public static final Collection<String> CONCEPT_PROPOSAL_STATES() {
+	public static Collection<String> CONCEPT_PROPOSAL_STATES() {
 		Collection<String> states = new Vector<String>();
 		
 		states.add(CONCEPT_PROPOSAL_UNMAPPED);
@@ -1524,8 +1527,9 @@ public final class OpenmrsConstants {
 	 * @return Collection of locales available to openmrs
 	 * @deprecated
 	 */
-	public static final Collection<Locale> OPENMRS_LOCALES() {
-		List<Locale> languages = new Vector<Locale>();
+	@Deprecated
+    public static Collection<Locale> OPENMRS_LOCALES() {
+		Collection<Locale> languages = new Vector<Locale>();
 		
 		languages.add(Locale.US);
 		languages.add(Locale.UK);
@@ -1540,15 +1544,17 @@ public final class OpenmrsConstants {
 	/**
 	 * @deprecated use {@link LocaleUtility#getDefaultLocale()}
 	 */
-	public static final Locale GLOBAL_DEFAULT_LOCALE = LocaleUtility.DEFAULT_LOCALE;
+	@Deprecated
+    public static final Locale GLOBAL_DEFAULT_LOCALE = LocaleUtility.DEFAULT_LOCALE;
 	
 	/**
 	 * @return Collection of locales that the concept dictionary should be aware of
 	 * @see ConceptService#getLocalesOfConceptNames()
 	 * @deprecated
 	 */
-	public static final Collection<Locale> OPENMRS_CONCEPT_LOCALES() {
-		List<Locale> languages = new Vector<Locale>();
+	@Deprecated
+    public static Collection<Locale> OPENMRS_CONCEPT_LOCALES() {
+		Collection<Locale> languages = new Vector<Locale>();
 		
 		languages.add(Locale.ENGLISH);
 		languages.add(Locale.FRENCH);
@@ -1566,7 +1572,8 @@ public final class OpenmrsConstants {
 	 * @return Mapping of Locales to locale specific date pattern
 	 * @deprecated use the {@link org.openmrs.api.context.Context#getDateFormat()}
 	 */
-	public static final Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS() {
+	@Deprecated
+    public static Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS() {
 		if (OPENMRS_LOCALE_DATE_PATTERNS == null) {
 			Map<String, String> patterns = new HashMap<String, String>();
 			

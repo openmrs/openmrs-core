@@ -40,7 +40,8 @@ public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveL
 	/**
 	 * @see org.openmrs.api.ActiveListService#setActiveListDAO(org.openmrs.api.db.ActiveListDAO)
 	 */
-	public void setActiveListDAO(ActiveListDAO dao) {
+	@Override
+    public void setActiveListDAO(ActiveListDAO dao) {
 		this.dao = dao;
 	}
 	
@@ -77,7 +78,8 @@ public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveL
 	/**
 	 * @see org.openmrs.api.ActiveListService#getActiveListItemByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public ActiveListItem getActiveListItemByUuid(String uuid) throws APIException {
 		return dao.getActiveListItemByUuid(uuid);
 	}

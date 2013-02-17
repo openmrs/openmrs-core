@@ -99,7 +99,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	 * 
 	 * @param workflow - the {@link ProgramWorkflow} to retire
 	 */
-	public void retireWorkflow(ProgramWorkflow workflow) {
+	public void retireWorkflow(Retireable workflow) {
 		workflow.setRetired(true);
 	}
 	
@@ -204,7 +204,8 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getProgramId();
 	}
@@ -213,7 +214,8 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setProgramId(id);
 		
 	}

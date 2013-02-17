@@ -85,7 +85,7 @@ public class ConceptReferenceTermMap extends BaseConceptMap implements Serializa
 	/**
 	 * @return the termB
 	 */
-	public ConceptReferenceTerm getTermB() {
+	public OpenmrsObject getTermB() {
 		return termB;
 	}
 	
@@ -99,14 +99,16 @@ public class ConceptReferenceTermMap extends BaseConceptMap implements Serializa
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getConceptReferenceTermMapId();
 	}
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setConceptReferenceTermMapId(id);
 	}
 	
@@ -131,7 +133,7 @@ public class ConceptReferenceTermMap extends BaseConceptMap implements Serializa
 		if (this.conceptReferenceTermMapId == null)
 			return super.hashCode();
 		int hash = 3;
-		hash = hash + 31 * this.conceptReferenceTermMapId;
+        hash += 31 * this.conceptReferenceTermMapId;
 		return hash;
 	}
 	

@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -23,14 +24,15 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EventListeners {
 	
-	private static Log log = LogFactory.getLog(EventListeners.class);
+	private static final Log log = LogFactory.getLog(EventListeners.class);
 	
-	private static List<GlobalPropertyListener> globalPropertyListeners = null;
+	@org.jetbrains.annotations.Nullable
+    private static List<GlobalPropertyListener> globalPropertyListeners = null;
 	
 	public EventListeners() {
 	}
 	
-	public List<GlobalPropertyListener> getGlobalPropertyListeners() {
+	public Collection<GlobalPropertyListener> getGlobalPropertyListeners() {
 		return globalPropertyListeners;
 	}
 	

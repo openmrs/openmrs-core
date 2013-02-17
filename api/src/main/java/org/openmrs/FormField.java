@@ -67,7 +67,8 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @param f FormField to compare this object to
 	 * @return -1, 0, or +1 depending on the difference between the FormFields
 	 */
-	public int compareTo(FormField f) {
+	@Override
+    public int compareTo(FormField f) {
 		if (getSortWeight() != null || f.getSortWeight() != null) {
 			if (getSortWeight() == null)
 				return -1;
@@ -297,7 +298,8 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getFormFieldId();
 	}
 	
@@ -305,7 +307,8 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setFormFieldId(id);
 		
 	}

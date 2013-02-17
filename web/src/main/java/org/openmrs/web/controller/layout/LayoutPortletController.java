@@ -27,9 +27,10 @@ import org.openmrs.web.controller.PortletController;
 
 public abstract class LayoutPortletController extends PortletController {
 	
-	private static Log log = LogFactory.getLog(LayoutPortletController.class);
+	private static final Log log = LogFactory.getLog(LayoutPortletController.class);
 	
-	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
+	@Override
+    protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		// TODO: this only cached the first name or address template that comes through. I need to cache one of each. 
 		String templateName = (String) model.get("layoutTemplateName");
 		String thisLayoutName = getDefaultDivId() + "." + templateName;

@@ -33,7 +33,7 @@ public abstract class BaseCustomizableValidator implements Validator {
 	 */
 	@SuppressWarnings("rawtypes")
 	public <T extends AttributeType, A extends Attribute> void validateAttributes(Customizable<A> customizable,
-	        Errors errors, Collection<T> attributeTypes) {
+	        Errors errors, Iterable<T> attributeTypes) {
 		
 		// check to make sure that the target has the right number of each type of attribute
 		for (T at : attributeTypes) {

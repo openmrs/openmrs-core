@@ -19,11 +19,11 @@ import org.openmrs.Provider;
  * fieldgen handler for Provider
  */
 public class ProviderHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "provider.field";
-	
-	public void run() {
-		setUrl(defaultUrl);
+
+    @Override
+    public void run() {
+        String defaultUrl = "provider.field";
+        setUrl(defaultUrl);
 		checkEmptyVal((Provider) null);
 		if (fieldGenTag != null) {
 			Object initialValue = this.fieldGenTag.getVal();

@@ -360,7 +360,7 @@ public class DatatableRequest {
 		Map<String, String[]> parameterMap = request.getParameterMap();
 		
 		Map<Integer, String> parameters = new HashMap<Integer, String>();
-		type = type + "_";
+        type += "_";
 		
 		for (Entry<String, String[]> parameter : parameterMap.entrySet()) {
 			if (parameter.getKey().startsWith(type)) {

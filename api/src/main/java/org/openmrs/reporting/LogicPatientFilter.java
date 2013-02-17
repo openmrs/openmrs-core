@@ -55,7 +55,8 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 	 * @see org.openmrs.reporting.PatientFilter#filter(org.openmrs.Cohort,
 	 *      org.openmrs.report.EvaluationContext)
 	 */
-	public Cohort filter(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filter(Cohort input, EvaluationContext context) {
 		try {
 			Map<Integer, Result> results = Context.getLogicService().eval(input, criteria);
 			// Assume these results are booleans
@@ -75,7 +76,8 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 	 * @see org.openmrs.reporting.PatientFilter#filterInverse(org.openmrs.Cohort,
 	 *      org.openmrs.report.EvaluationContext)
 	 */
-	public Cohort filterInverse(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		try {
 			Map<Integer, Result> results = Context.getLogicService().eval(input, criteria);
 			// Assume these results are booleans
@@ -94,21 +96,24 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 	/**
 	 * @see org.openmrs.reporting.PatientFilter#isReadyToRun()
 	 */
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		return criteria != null;
 	}
 	
 	/**
 	 * @see org.openmrs.report.Parameterizable#getParameters()
 	 */
-	public List<Parameter> getParameters() {
+	@Override
+    public List<Parameter> getParameters() {
 		return new Vector<Parameter>();
 	}
 	
 	/**
 	 * @see org.openmrs.reporting.AbstractReportObject#getDescription()
 	 */
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		if (getCriteria() == null)
 			return "criteria==NULL";
 		return getCriteria().toString();

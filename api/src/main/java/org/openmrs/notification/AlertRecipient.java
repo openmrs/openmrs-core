@@ -155,7 +155,8 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -163,7 +164,8 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		throw new UnsupportedOperationException();
 	}
 	

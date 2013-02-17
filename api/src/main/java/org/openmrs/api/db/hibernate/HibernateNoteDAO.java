@@ -47,7 +47,8 @@ public class HibernateNoteDAO implements NoteDAO {
 	/**
 	 * @return List<Note> object of all Notes from the database
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Note> getNotes() {
 		log.info("Getting all notes from the database");
 		List<Note> notes = new ArrayList<Note>();
@@ -60,22 +61,26 @@ public class HibernateNoteDAO implements NoteDAO {
 	/**
 	 * @see org.openmrs.api.db.NoteDAO#getNote(Integer)
 	 */
-	public Note getNote(Integer id) {
+	@Override
+    public Note getNote(Integer id) {
 		log.info("Get note " + id);
 		return (Note) sessionFactory.getCurrentSession().get(Note.class, id);
 	}
 	
-	public void createNote(Note note) {
+	@Override
+    public void createNote(Note note) {
 		log.debug("Creating new note");
 		sessionFactory.getCurrentSession().save(note);
 	}
 	
-	public void updateNote(Note note) {
+	@Override
+    public void updateNote(Note note) {
 		log.debug("Updating existing note");
 		sessionFactory.getCurrentSession().save(note);
 	}
 	
-	public void deleteNote(Note note) throws DAOException {
+	@Override
+    public void deleteNote(Note note) throws DAOException {
 		log.debug("Deleting existing note");
 		sessionFactory.getCurrentSession().delete(note);
 	}

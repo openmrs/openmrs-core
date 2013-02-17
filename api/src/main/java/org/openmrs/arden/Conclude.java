@@ -26,7 +26,7 @@ public class Conclude {
 		this.concludeVal = concludeVal;
 	}
 	
-	public String getConcludeVal() {
+	public CharSequence getConcludeVal() {
 		String retVal;
 		if (concludeVal == true)
 			retVal = "true";

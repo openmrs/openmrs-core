@@ -14,6 +14,7 @@
 package org.openmrs.report;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -37,7 +38,8 @@ public class RowPerProgramEnrollmentDataSetProvider implements DataSetProvider {
 	/**
 	 * @see org.openmrs.report.DataSetProvider#canEvaluate(org.openmrs.report.DataSetDefinition)
 	 */
-	public boolean canEvaluate(DataSetDefinition dataSetDefinition) {
+	@Override
+    public boolean canEvaluate(DataSetDefinition dataSetDefinition) {
 		return dataSetDefinition instanceof RowPerProgramEnrollmentDataSetDefinition;
 	}
 	
@@ -45,7 +47,8 @@ public class RowPerProgramEnrollmentDataSetProvider implements DataSetProvider {
 	 * @see org.openmrs.report.DataSetProvider#evaluate(org.openmrs.report.DataSetDefinition,
 	 *      org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
 	 */
-	public DataSet<?> evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {
+	@Override
+    public DataSet<?> evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {
 		
 		RowPerProgramEnrollmentDataSetDefinition definition = (RowPerProgramEnrollmentDataSetDefinition) dataSetDefinition;
 		Cohort patients = inputCohort;
@@ -60,7 +63,7 @@ public class RowPerProgramEnrollmentDataSetProvider implements DataSetProvider {
 		RowPerProgramEnrollmentDataSet ret = new RowPerProgramEnrollmentDataSet();
 		ret.setDefinition(definition);
 		ret.setEvaluationContext(evalContext);
-		List<Program> programs = new ArrayList<Program>(definition.getPrograms());
+		Collection<Program> programs = new ArrayList<Program>(definition.getPrograms());
 		List<PatientProgram> list = Context.getProgramWorkflowService().getPatientPrograms(patients, programs);
 		ret.setData(list);
 		return ret;

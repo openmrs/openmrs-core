@@ -106,7 +106,8 @@ public class ProgramWorkflowState extends BaseOpenmrsMetadata implements Seriali
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getProgramWorkflowStateId();
 	}
 	
@@ -114,7 +115,8 @@ public class ProgramWorkflowState extends BaseOpenmrsMetadata implements Seriali
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setProgramWorkflowStateId(id);
 		
 	}

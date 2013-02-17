@@ -67,14 +67,16 @@ public class ConceptMapType extends BaseOpenmrsMetadata implements java.io.Seria
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getConceptMapTypeId();
 	}
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setConceptMapTypeId(id);
 	}
 	

@@ -32,7 +32,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		tokenNames = _tokenNames;
 	}
 	
-	public final String data(AST _t, MLMObject obj) throws RecognitionException {
+	public String data(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST data_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -118,7 +118,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String readAST(AST _t, MLMObject obj, String instr) throws RecognitionException {
+	public String readAST(AST _t, MLMObject obj, String instr) throws RecognitionException {
 		String s = "";
 		
 		AST readAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -126,7 +126,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		AST x = null;
 		AST y = null;
 		AST intlit = null;
-		AST dop = null;
+		@org.jetbrains.annotations.Nullable AST dop = null;
 		AST z = null;
 		AST j = null;
 		AST i = null;
@@ -605,7 +605,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String eventAST(AST _t) throws RecognitionException {
+	public String eventAST(AST _t) throws RecognitionException {
 		String s = "";
 		
 		AST eventAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -651,7 +651,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String dataIfAST(AST _t, MLMObject obj) throws RecognitionException {
+	public String dataIfAST(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST dataIfAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -715,7 +715,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String data_elseifAST(AST _t, MLMObject obj) throws RecognitionException {
+	public String data_elseifAST(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST data_elseifAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -836,7 +836,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String callSectionAST(AST _t, MLMObject obj, String key, String section) throws RecognitionException {
+	public String callSectionAST(AST _t, MLMObject obj, String key, String section) throws RecognitionException {
 		String s = "";
 		
 		AST callSectionAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -934,7 +934,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String exprAST(AST _t, String section, MLMObject obj) throws RecognitionException {
+	public String exprAST(AST _t, String section, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST exprAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -956,12 +956,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String where_it_occurredAST(AST _t, MLMObject obj, String key) throws RecognitionException {
+	public String where_it_occurredAST(AST _t, MLMObject obj, String key) throws RecognitionException {
 		String s = "";
 		
 		AST where_it_occurredAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
 		AST m = null;
-		AST n = null;
+		@org.jetbrains.annotations.Nullable AST n = null;
 		AST i = null;
 		String a, b, ret_val = "";
 		
@@ -1093,7 +1093,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final void duration_op(AST _t) throws RecognitionException {
+	public void duration_op(AST _t) throws RecognitionException {
 		
 		AST duration_op_AST_in = (_t == ASTNULL) ? null : (AST) _t;
 		
@@ -1199,7 +1199,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		_retTree = _t;
 	}
 	
-	public final String from_of_func_opAST(AST _t, MLMObject obj) throws RecognitionException {
+	public String from_of_func_opAST(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST from_of_func_opAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -1433,7 +1433,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String of_read_func_opAST(AST _t, MLMObject obj) throws RecognitionException {
+	public String of_read_func_opAST(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST of_read_func_opAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -1559,7 +1559,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String of_noread_func_opAST(AST _t, MLMObject obj) throws RecognitionException {
+	public String of_noread_func_opAST(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST of_noread_func_opAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -1608,7 +1608,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 	}
 	
 	/********************LOGIC***********************************/
-	public final String logic(AST _t, MLMObject obj) throws RecognitionException {
+	public String logic(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST logic_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -1853,7 +1853,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String ifAST(AST _t, MLMObject obj, String section) throws RecognitionException {
+	public String ifAST(AST _t, MLMObject obj, String section) throws RecognitionException {
 		String s = "";
 		
 		AST ifAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -1887,7 +1887,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String logicAssignmentAST(AST _t, MLMObject obj, String key) throws RecognitionException {
+	public String logicAssignmentAST(AST _t, MLMObject obj, String key) throws RecognitionException {
 		String s = "";
 		
 		AST logicAssignmentAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -1907,7 +1907,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String concludeAST(AST _t, MLMObject obj, String key) throws RecognitionException {
+	public String concludeAST(AST _t, MLMObject obj, String key) throws RecognitionException {
 		String s = "";
 		
 		AST concludeAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -1969,7 +1969,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String logic_elseifAST(AST _t, MLMObject obj, Integer i) throws RecognitionException {
+	public String logic_elseifAST(AST _t, MLMObject obj, Integer i) throws RecognitionException {
 		String s = "";
 		
 		AST logic_elseifAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -2031,11 +2031,11 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String callStringAST(AST _t, String section, MLMObject obj, String instr) throws RecognitionException {
+	public String callStringAST(AST _t, String section, MLMObject obj, String instr) throws RecognitionException {
 		String s = "";
 		
 		AST callStringAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
-		AST ift = null;
+		@org.jetbrains.annotations.Nullable AST ift = null;
 		AST val = null;
 		AST val2 = null;
 		AST strlit = null;
@@ -2215,11 +2215,11 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String exprStringAST(AST _t, String section, MLMObject obj, String instr) throws RecognitionException {
+	public String exprStringAST(AST _t, String section, MLMObject obj, String instr) throws RecognitionException {
 		String s = "";
 		
 		AST exprStringAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
-		AST ift = null;
+		@org.jetbrains.annotations.Nullable AST ift = null;
 		AST val = null;
 		AST val2 = null;
 		AST strlit = null;
@@ -2482,7 +2482,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String expr_comparisonAST(AST _t, String section, MLMObject obj) throws RecognitionException {
+	public String expr_comparisonAST(AST _t, String section, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST expr_comparisonAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -2677,7 +2677,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String simple_comp_opAST(AST _t, String section, MLMObject obj, String key) throws RecognitionException {
+	public String simple_comp_opAST(AST _t, String section, MLMObject obj, String key) throws RecognitionException {
 		String s = "";
 		
 		AST simple_comp_opAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -2780,7 +2780,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String binary_comp_opAST(AST _t, String section, MLMObject obj, String key) throws RecognitionException {
+	public String binary_comp_opAST(AST _t, String section, MLMObject obj, String key) throws RecognitionException {
 		String s = "";
 		
 		AST binary_comp_opAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -2909,7 +2909,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String expr_functionAST(AST _t, MLMObject obj) throws RecognitionException {
+	public String expr_functionAST(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST expr_functionAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -3018,7 +3018,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String expr_notAST(AST _t, String section, MLMObject obj) throws RecognitionException {
+	public String expr_notAST(AST _t, String section, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST expr_notAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -3082,7 +3082,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String expr_andAST(AST _t, String section, MLMObject obj) throws RecognitionException {
+	public String expr_andAST(AST _t, String section, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST expr_andAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -3118,7 +3118,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String expr_orAST(AST _t, String section, MLMObject obj) throws RecognitionException {
+	public String expr_orAST(AST _t, String section, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST expr_orAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -3155,7 +3155,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 	}
 	
 	/***********************ACTION*******************************************/
-	public final String action(AST _t, MLMObject obj) throws RecognitionException {
+	public String action(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST action_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -3234,7 +3234,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String writeAST(AST _t, MLMObject obj) throws RecognitionException {
+	public String writeAST(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST writeAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -3325,7 +3325,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 	}
 	
 	/***********************KNOWLEDGE*******************************************/
-	public final String knowledge(AST _t, MLMObject obj) throws RecognitionException {
+	public String knowledge(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST knowledge_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -3471,7 +3471,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String doubleAST(AST _t, MLMObject obj) throws RecognitionException {
+	public String doubleAST(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST doubleAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -3512,7 +3512,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String textAST(AST _t, MLMObject obj) throws RecognitionException {
+	public String textAST(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST textAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -3554,7 +3554,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 	}
 	
 	/***********************KNOWLEDGE TEXT- To return data, logic and action text to populate the DB *******************************************/
-	public final String knowledge_text(AST _t, MLMObject obj) throws RecognitionException {
+	public String knowledge_text(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST knowledge_text_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -3698,7 +3698,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 	}
 	
 	/***********************MAINTENANCE*******************************************/
-	public final String maintenance(AST _t, MLMObject obj) throws RecognitionException {
+	public String maintenance(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST maintenance_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -3880,7 +3880,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 	}
 	
 	/***********************LIBRARY*******************************************/
-	public final String library(AST _t, MLMObject obj) throws RecognitionException {
+	public String library(AST _t, MLMObject obj) throws RecognitionException {
 		String s = "";
 		
 		AST library_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -4028,7 +4028,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		return s;
 	}
 	
-	public final String dateAST(AST _t, GregorianCalendar calendar) throws RecognitionException {
+	public String dateAST(AST _t, GregorianCalendar calendar) throws RecognitionException {
 		String s = "";
 		
 		AST dateAST_AST_in = (_t == ASTNULL) ? null : (AST) _t;
@@ -4111,77 +4111,77 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 	        "\"urgency\"", "\"MERGE\"", "\"SORT\"", "\"DATA\"", "\"SEQTO\"", "\"+\"", "\"-\"", "\"*\"", "\"/\"",
 	        "TERM_LITERAL" };
 	
-	private static final long[] mk_tokenSet_0() {
+	private static long[] mk_tokenSet_0() {
 		long[] data = { 7052694182476907520L, 4521191813414912L, 4096L, 0L, 0L, 0L };
 		return data;
 	}
 	
 	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
 	
-	private static final long[] mk_tokenSet_1() {
+	private static long[] mk_tokenSet_1() {
 		long[] data = { 6917529027641081856L, -9218850810681622528L, 18031990695526400L, 0L, 0L, 0L };
 		return data;
 	}
 	
 	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
 	
-	private static final long[] mk_tokenSet_2() {
+	private static long[] mk_tokenSet_2() {
 		long[] data = { 6917529027641081856L, -9218850810677428224L, 18031990695526400L, 0L, 0L, 0L };
 		return data;
 	}
 	
 	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
 	
-	private static final long[] mk_tokenSet_3() {
+	private static long[] mk_tokenSet_3() {
 		long[] data = { 2161727821272055808L, 274911461376L, 0L, 0L };
 		return data;
 	}
 	
 	public static final BitSet _tokenSet_3 = new BitSet(mk_tokenSet_3());
 	
-	private static final long[] mk_tokenSet_4() {
+	private static long[] mk_tokenSet_4() {
 		long[] data = { 0L, 1080863910568919040L, 4466765987840L, 0L, 0L, 0L };
 		return data;
 	}
 	
 	public static final BitSet _tokenSet_4 = new BitSet(mk_tokenSet_4());
 	
-	private static final long[] mk_tokenSet_5() {
+	private static long[] mk_tokenSet_5() {
 		long[] data = { 14336L, 0L, 68719476736L, 0L, 0L, 0L };
 		return data;
 	}
 	
 	public static final BitSet _tokenSet_5 = new BitSet(mk_tokenSet_5());
 	
-	private static final long[] mk_tokenSet_6() {
+	private static long[] mk_tokenSet_6() {
 		long[] data = { 7052694173886972928L, -9218850810408992768L, 18031990695526400L, 0L, 0L, 0L };
 		return data;
 	}
 	
 	public static final BitSet _tokenSet_6 = new BitSet(mk_tokenSet_6());
 	
-	private static final long[] mk_tokenSet_7() {
+	private static long[] mk_tokenSet_7() {
 		long[] data = { 6917533408507723776L, -9218850810677428224L, 18031990695526400L, 0L, 0L, 0L };
 		return data;
 	}
 	
 	public static final BitSet _tokenSet_7 = new BitSet(mk_tokenSet_7());
 	
-	private static final long[] mk_tokenSet_8() {
+	private static long[] mk_tokenSet_8() {
 		long[] data = { 7052689793020331008L, -9218850810677428224L, 18031990695526400L, 0L, 0L, 0L };
 		return data;
 	}
 	
 	public static final BitSet _tokenSet_8 = new BitSet(mk_tokenSet_8());
 	
-	private static final long[] mk_tokenSet_9() {
+	private static long[] mk_tokenSet_9() {
 		long[] data = { 6917529027641081856L, -9218850810408992768L, 18031990695526400L, 0L, 0L, 0L };
 		return data;
 	}
 	
 	public static final BitSet _tokenSet_9 = new BitSet(mk_tokenSet_9());
 	
-	private static final long[] mk_tokenSet_10() {
+	private static long[] mk_tokenSet_10() {
 		long[] data = new long[8];
 		data[0] = -16L;
 		data[1] = -274877906945L;
@@ -4191,7 +4191,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 	
 	public static final BitSet _tokenSet_10 = new BitSet(mk_tokenSet_10());
 	
-	private static final long[] mk_tokenSet_11() {
+	private static long[] mk_tokenSet_11() {
 		long[] data = new long[8];
 		data[0] = -8L;
 		data[1] = -274877906945L;

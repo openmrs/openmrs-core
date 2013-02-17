@@ -56,7 +56,8 @@ public class EncounterRole extends BaseOpenmrsMetadata {
 	/**
 	 * @see OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getEncounterRoleId();
 	}
@@ -64,7 +65,8 @@ public class EncounterRole extends BaseOpenmrsMetadata {
 	/**
 	 * @see OpenmrsObject#setId(Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setEncounterRoleId(id);
 		
 	}

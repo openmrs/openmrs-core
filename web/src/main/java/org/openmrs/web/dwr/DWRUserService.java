@@ -49,9 +49,9 @@ public class DWRUserService {
 	 * @return list of {@link UserListItem}s (or String warning message if none found)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<UserListItem> findUsers(String searchValue, List<String> rolesStrings, boolean includeVoided) {
+	public Collection<UserListItem> findUsers(String searchValue, Iterable<String> rolesStrings, boolean includeVoided) {
 		
-		Vector userList = new Vector();
+		Collection userList = new Vector();
 		
 		try {
 			UserService userService = Context.getUserService();
@@ -88,9 +88,9 @@ public class DWRUserService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Collection<UserListItem> getAllUsers(List<String> roleStrings, boolean includeVoided) {
+	public Collection<UserListItem> getAllUsers(Iterable<String> roleStrings, boolean includeVoided) {
 		
-		Vector userList = new Vector();
+		Collection userList = new Vector();
 		
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		
@@ -100,7 +100,7 @@ public class DWRUserService {
 		} else {
 			try {
 				UserService us = Context.getUserService();
-				Set<User> users = new TreeSet<User>(new UserComparator());
+				Collection<User> users = new TreeSet<User>(new UserComparator());
 				
 				if (roleStrings == null)
 					roleStrings = new Vector<String>();
@@ -157,7 +157,8 @@ public class DWRUserService {
 	 */
 	private class UserComparator implements Comparator<User> {
 		
-		public int compare(User user1, User user2) {
+		@Override
+        public int compare(User user1, User user2) {
 			
 			// compare on full name (and then on user id in case the names are identical) 
 			String name1 = "" + user1.getPersonName() + user1.getUserId();

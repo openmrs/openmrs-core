@@ -100,19 +100,8 @@ public class InitializationFilter extends StartupFilter {
 	 * The second page of the wizard that asks for simple or advanced installation.
 	 */
 	private final String INSTALL_METHOD = "installmethod.vm";
-	
-	/**
-	 * The simple installation setup page.
-	 */
-	private final String SIMPLE_SETUP = "simplesetup.vm";
-	
-	/**
-	 * The first page of the advanced installation of the wizard that asks for a current or past
-	 * database
-	 */
-	private final String DATABASE_SETUP = "databasesetup.vm";
-	
-	/**
+
+    /**
 	 * The page from where the user specifies the url to a remote system, username and password
 	 */
 	private final String TESTING_REMOTE_DETAILS_SETUP = "remotedetails.vm";
@@ -121,14 +110,8 @@ public class InitializationFilter extends StartupFilter {
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
 	private final String DEFAULT_PAGE = CHOOSE_LANG;
-	
-	/**
-	 * This page asks whether database tables/demo data should be inserted and what the
-	 * username/password that will be put into the runtime properties is
-	 */
-	private final String DATABASE_TABLES_AND_USER = "databasetablesanduser.vm";
-	
-	/**
+
+    /**
 	 * This page lets the user define the admin user
 	 */
 	private static final String ADMIN_USER_SETUP = "adminusersetup.vm";
@@ -137,13 +120,8 @@ public class InitializationFilter extends StartupFilter {
 	 * This page lets the user pick an implementation id
 	 */
 	private static final String IMPLEMENTATION_ID_SETUP = "implementationidsetup.vm";
-	
-	/**
-	 * This page asks for settings that will be put into the runtime properties files
-	 */
-	private final String OTHER_RUNTIME_PROPS = "otherruntimeproperties.vm";
-	
-	/**
+
+    /**
 	 * A page that tells the user that everything is collected and will now be processed
 	 */
 	private static final String WIZARD_COMPLETE = "wizardcomplete.vm";
@@ -326,7 +304,22 @@ public class InitializationFilter extends StartupFilter {
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 			return;
 		}
-		if (DEFAULT_PAGE.equals(page)) {
+		/*
+	  This page asks for settings that will be put into the runtime properties files
+	 */
+        String OTHER_RUNTIME_PROPS = "otherruntimeproperties.vm";/*
+	  This page asks whether database tables/demo data should be inserted and what the
+	  username/password that will be put into the runtime properties is
+	 */
+        String DATABASE_TABLES_AND_USER = "databasetablesanduser.vm";/*
+	  The first page of the advanced installation of the wizard that asks for a current or past
+	  database
+	 */
+        String DATABASE_SETUP = "databasesetup.vm";/*
+	  The simple installation setup page.
+	 */
+        String SIMPLE_SETUP = "simplesetup.vm";
+        if (DEFAULT_PAGE.equals(page)) {
 			// get props and render the first page
 			File runtimeProperties = getRuntimePropertiesFile();
 			if (!runtimeProperties.exists()) {
@@ -1272,7 +1265,7 @@ public class InitializationFilter extends StartupFilter {
 		/**
 		 * This class does all the work of creating the desired database, user, updates, etc
 		 */
-		public InitializationCompletion() {
+        private InitializationCompletion() {
 			Runnable r = new Runnable() {
 				
 				/**
@@ -1280,7 +1273,8 @@ public class InitializationFilter extends StartupFilter {
 				 * 
 				 * @see java.lang.Runnable#run()
 				 */
-				public void run() {
+				@Override
+                public void run() {
 					try {
 						String connectionUsername;
 						String connectionPassword;
@@ -1408,7 +1402,7 @@ public class InitializationFilter extends StartupFilter {
 							
 							private String message;
 							
-							public PrintingChangeSetExecutorCallback(String message) {
+							PrintingChangeSetExecutorCallback(String message) {
 								this.message = message;
 							}
 							
@@ -1418,10 +1412,11 @@ public class InitializationFilter extends StartupFilter {
 							 */
 							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
-								setMessage(message + " (" + i++ + "/" + numChangeSetsToRun + "): Author: "
+								setMessage(message + " (" + i + "/" + numChangeSetsToRun + "): Author: "
 								        + changeSet.getAuthor() + " Comments: " + changeSet.getComments() + " Description: "
 								        + changeSet.getDescription());
-								setCompletedPercentage(Math.round(i * 100 / numChangeSetsToRun));
+                                i++;
+                                setCompletedPercentage(Math.round(i * 100 / numChangeSetsToRun));
 							}
 							
 						}

@@ -13,10 +13,7 @@
  */
 package org.openmrs.util.databasechange;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -207,7 +204,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 	 * 
 	 * @param statement
 	 */
-	private void closeStatementQuietly(PreparedStatement statement) {
+	private void closeStatementQuietly(Statement statement) {
 		if (statement != null) {
 			try {
 				statement.close();

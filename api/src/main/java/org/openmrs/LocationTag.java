@@ -89,14 +89,16 @@ public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializ
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getLocationTagId();
 	}
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setLocationTagId(id);
 		
 	}

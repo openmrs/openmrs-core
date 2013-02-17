@@ -111,7 +111,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 				Method method = nameClass.getMethod(methodName, new Class[] {});
 				
 				String thisValue = (String) method.invoke(this);
-				String otherValue = (String) method.invoke(otherName);
+				CharSequence otherValue = (String) method.invoke(otherName);
 				
 				if (otherValue != null && otherValue.length() > 0)
 					returnValue &= otherValue.equals(thisValue);
@@ -187,7 +187,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @return Returns the dateVoided.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public Date getDateVoided() {
 		return super.getDateVoided();
 	}
@@ -195,7 +196,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public void setDateVoided(Date dateVoided) {
 		super.setDateVoided(dateVoided);
 	}
@@ -406,7 +408,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @see #isVoided()
 	 */
-	@Attribute(required = true)
+	@Override
+    @Attribute(required = true)
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -416,7 +419,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @param voided The voided to set.
 	 */
-	@Attribute(required = true)
+	@Override
+    @Attribute(required = true)
 	public void setVoided(Boolean voided) {
 		super.setVoided(voided);
 	}
@@ -426,7 +430,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @return Returns the voidedBy.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public User getVoidedBy() {
 		return super.getVoidedBy();
 	}
@@ -436,7 +441,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @param voidedBy The voidedBy to set.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public void setVoidedBy(User voidedBy) {
 		super.setVoidedBy(voidedBy);
 	}
@@ -446,7 +452,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @return Returns the voidReason.
 	 */
-	@Element(data = true, required = false)
+	@Override
+    @Element(data = true, required = false)
 	public String getVoidReason() {
 		return super.getVoidReason();
 	}
@@ -456,7 +463,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @param voidReason The voidReason to set.
 	 */
-	@Element(data = true, required = false)
+	@Override
+    @Element(data = true, required = false)
 	public void setVoidReason(String voidReason) {
 		super.setVoidReason(voidReason);
 	}
@@ -518,7 +526,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @should return negative if other familyNameSuffix is greater
 	 * @should return negative if other dateCreated is greater
 	 */
-	public int compareTo(PersonName other) {
+	@Override
+    public int compareTo(PersonName other) {
 		int ret = isVoided().compareTo(other.isVoided());
 		if (ret == 0)
 			ret = other.isPreferred().compareTo(isPreferred());
@@ -550,7 +559,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getPersonNameId();
 	}
 	
@@ -558,7 +568,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setPersonNameId(id);
 		
 	}

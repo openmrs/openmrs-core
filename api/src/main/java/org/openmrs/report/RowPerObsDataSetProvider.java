@@ -37,7 +37,8 @@ public class RowPerObsDataSetProvider implements DataSetProvider {
 	/**
 	 * @see org.openmrs.report.DataSetProvider#canEvaluate(org.openmrs.report.DataSetDefinition)
 	 */
-	public boolean canEvaluate(DataSetDefinition dataSetDefinition) {
+	@Override
+    public boolean canEvaluate(DataSetDefinition dataSetDefinition) {
 		return dataSetDefinition instanceof RowPerObsDataSetDefinition;
 	}
 	
@@ -45,7 +46,8 @@ public class RowPerObsDataSetProvider implements DataSetProvider {
 	 * @see org.openmrs.report.DataSetProvider#evaluate(org.openmrs.report.DataSetDefinition,
 	 *      org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
 	 */
-	public DataSet<?> evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {
+	@Override
+    public DataSet<?> evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {
 		
 		RowPerObsDataSetDefinition definition = (RowPerObsDataSetDefinition) dataSetDefinition;
 		Cohort patients = inputCohort;

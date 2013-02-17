@@ -46,7 +46,7 @@ public class ConceptProposalListController extends SimpleFormController {
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		//default empty Object
-		List<ConceptProposal> cpList = new Vector<ConceptProposal>();
+		Iterable<ConceptProposal> cpList = new Vector<ConceptProposal>();
 		Map<String, List<ConceptProposal>> origText = new HashMap<String, List<ConceptProposal>>();
 		
 		//only fill the Object is the user has authenticated properly
@@ -72,7 +72,7 @@ public class ConceptProposalListController extends SimpleFormController {
 		if (sortOn == null)
 			sortOn = "occurences";
 		
-		TreeMap<List<ConceptProposal>, Integer> cpMap = new TreeMap<List<ConceptProposal>, Integer>();
+		Map<List<ConceptProposal>, Integer> cpMap = new TreeMap<List<ConceptProposal>, Integer>();
 		
 		if (sortOn.equals("occurences"))
 			cpMap = new TreeMap<List<ConceptProposal>, Integer>(new CompareListSize(asc));
@@ -107,11 +107,12 @@ public class ConceptProposalListController extends SimpleFormController {
 		
 		private boolean asc = true;
 		
-		public CompareListSize(boolean asc) {
+		private CompareListSize(boolean asc) {
 			this.asc = asc;
 		}
 		
-		public int compare(List<?> list1, List<?> list2) throws ClassCastException {
+		@Override
+        public int compare(List<?> list1, List<?> list2) throws ClassCastException {
 			
 			int value = list2.size() - list1.size();
 			
@@ -120,7 +121,7 @@ public class ConceptProposalListController extends SimpleFormController {
 				value = -1;
 			
 			if (asc)
-				value = value * -1;
+                value *= -1;
 			
 			return value;
 		}
@@ -130,11 +131,12 @@ public class ConceptProposalListController extends SimpleFormController {
 		
 		private boolean asc = true;
 		
-		public CompareListText(boolean asc) {
+		private CompareListText(boolean asc) {
 			this.asc = asc;
 		}
 		
-		public int compare(List<ConceptProposal> list1, List<ConceptProposal> list2) throws ClassCastException {
+		@Override
+        public int compare(List<ConceptProposal> list1, List<ConceptProposal> list2) throws ClassCastException {
 			
 			ConceptProposal cp1 = list1.get(0);
 			ConceptProposal cp2 = list2.get(0);
@@ -146,7 +148,7 @@ public class ConceptProposalListController extends SimpleFormController {
 				value = -1;
 			
 			if (asc)
-				value = value * -1;
+                value *= -1;
 			
 			return value;
 		}

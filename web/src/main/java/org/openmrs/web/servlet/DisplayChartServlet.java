@@ -36,7 +36,8 @@ public class DisplayChartServlet extends AbstractGraphServlet {
 	
 	public static final String CHART_KEY = "chartKey";
 	
-	protected JFreeChart createChart(HttpServletRequest request, HttpServletResponse response) {
+	@Override
+    protected JFreeChart createChart(HttpServletRequest request, HttpServletResponse response) {
 		
 		String key = request.getParameter(CHART_KEY);
 		

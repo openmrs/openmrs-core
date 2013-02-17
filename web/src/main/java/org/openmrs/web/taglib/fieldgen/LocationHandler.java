@@ -21,14 +21,14 @@ import org.openmrs.util.OpenmrsConstants;
  * This is the controller for the /web/web-inf/tags/locationField.tag.
  */
 public class LocationHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "location.field";
-	
-	/**
+
+    /**
 	 * @see org.openmrs.web.taglib.fieldgen.FieldGenHandler#run()
 	 */
-	public void run() {
-		setUrl(defaultUrl);
+	@Override
+    public void run() {
+        String defaultUrl = "location.field";
+        setUrl(defaultUrl);
 		
 		if (fieldGenTag != null) {
 			String initialValue = "";

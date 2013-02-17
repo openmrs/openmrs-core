@@ -14,12 +14,7 @@
 package org.openmrs.web.controller.query;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
@@ -57,7 +52,7 @@ public class LocationQueryController {
 	 */
 	private List<Map<String, Object>> getHierarchy(HierarchyOptions options) throws IOException {
 		// TODO find a way to fetch all locations at once to avoid n+1 lazy-loads
-		List<Location> rootNodes = new ArrayList<Location>();
+		Collection<Location> rootNodes = new ArrayList<Location>();
 		if (options.startFromTag != null) {
 			LocationTag tag = Context.getLocationService().getLocationTagByName(options.startFromTag);
 			rootNodes.addAll(Context.getLocationService().getLocationsByTag(tag));
@@ -121,7 +116,7 @@ public class LocationQueryController {
 			}
 			ret.put("data", sb.toString());
 			if (loc.getChildLocations() != null && loc.getChildLocations().size() > 0) {
-				List<Map<String, Object>> children = new ArrayList<Map<String, Object>>();
+				Collection<Map<String, Object>> children = new ArrayList<Map<String, Object>>();
 				for (Location child : loc.getChildLocations())
 					children.add(toJsonHelper(child, options));
 				ret.put("children", children);

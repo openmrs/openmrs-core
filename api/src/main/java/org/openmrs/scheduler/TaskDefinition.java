@@ -26,10 +26,8 @@ import org.openmrs.User;
  * Represents the metadata for a task that can be scheduled.
  */
 public class TaskDefinition extends BaseOpenmrsMetadata {
-	
-	private Log log = LogFactory.getLog(this.getClass());
-	
-	// Task metadata
+
+    // Task metadata
 	private Integer id;
 	
 	// This class must implement the schedulable interface or it will fail to start
@@ -71,7 +69,8 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	 */
 	public TaskDefinition(Integer id, String name, String description, String taskClass) {
 		this();
-		log.debug("Creating taskconfig: " + id);
+        Log log = LogFactory.getLog(this.getClass());
+        log.debug("Creating taskconfig: " + id);
 		this.id = id;
 		setName(name);
 		setDescription(description);
@@ -83,7 +82,8 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	 * 
 	 * @return <code>Integer</code> identifier of the task
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return this.id;
 	}
 	
@@ -92,7 +92,8 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	 * 
 	 * @param id
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		this.id = id;
 	}
 	
@@ -303,7 +304,8 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	/**
 	 * @deprecated use {@link #getCreator()}
 	 */
-	public Object getCreatedBy() {
+	@Deprecated
+    public Object getCreatedBy() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -311,7 +313,8 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	/**
 	 * @deprecated use {@link #setCreator(User)}
 	 */
-	public void setCreatedBy(User authenticatedUser) {
+	@Deprecated
+    public void setCreatedBy(User authenticatedUser) {
 		// TODO Auto-generated method stub
 		
 	}

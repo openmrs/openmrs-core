@@ -14,11 +14,7 @@
 package org.openmrs;
 
 import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -97,7 +93,7 @@ public class PatientProgramTest {
 		program.setStates(patientStates);
 		
 		// when
-		List<PatientState> sortedStates = (List<PatientState>) getSortedStates.invoke(program);
+		Collection<PatientState> sortedStates = (List<PatientState>) getSortedStates.invoke(program);
 		
 		// then
 		Assert.assertEquals(3, sortedStates.size());

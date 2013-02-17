@@ -32,16 +32,14 @@ public class TaskHelperTest extends BaseWebContextSensitiveTest {
 	private static final String INITIAL_SCHEDULER_TASK_CONFIG_XML = "org/openmrs/web/include/TaskHelperTest.xml";
 	
 	private static final long MAX_WAIT_TIME_IN_MILLISECONDS = 2048;
-	
-	private SchedulerService service;
-	
-	private TaskHelper taskHelper;
+
+    private TaskHelper taskHelper;
 	
 	@Before
 	public void setUp() throws Exception {
 		executeDataSet(INITIAL_SCHEDULER_TASK_CONFIG_XML);
-		
-		service = Context.getSchedulerService();
+
+        SchedulerService service = Context.getSchedulerService();
 		taskHelper = new TaskHelper(service);
 	}
 	

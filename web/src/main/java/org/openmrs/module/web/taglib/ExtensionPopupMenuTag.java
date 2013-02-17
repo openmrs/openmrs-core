@@ -28,6 +28,7 @@ import org.openmrs.module.Extension;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.extension.LinkProviderExtension;
 import org.openmrs.module.web.extension.provider.Link;
+import org.openmrs.module.web.extension.provider.LinkProvider;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.servlet.support.RequestContext;
 
@@ -40,17 +41,23 @@ public class ExtensionPopupMenuTag extends TagSupport {
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
-	private String label;
+	@org.jetbrains.annotations.Nullable
+    private String label;
 	
-	private String pointId;
+	@org.jetbrains.annotations.Nullable
+    private String pointId;
 	
-	private String popupDivId;
+	@org.jetbrains.annotations.Nullable
+    private String popupDivId;
 	
-	private String position;
+	@org.jetbrains.annotations.Nullable
+    private String position;
 	
-	private String parameters;
+	@org.jetbrains.annotations.Nullable
+    private String parameters;
 	
-	private Boolean showLabelIfNoExtensions;
+	@org.jetbrains.annotations.Nullable
+    private Boolean showLabelIfNoExtensions;
 	
 	public ExtensionPopupMenuTag() {
 	}
@@ -91,7 +98,7 @@ public class ExtensionPopupMenuTag extends TagSupport {
 		for (Extension e : extensions) {
 			if (e instanceof LinkProviderExtension) {
 				anyExtensionsFound = true;
-				LinkProviderExtension extension = (LinkProviderExtension) e;
+				LinkProvider extension = (LinkProviderExtension) e;
 				List<Link> links = extension.getLinks();
 				log.debug("extension of class " + e.getClass() + " provides " + links.size() + " links");
 				for (Link link : links) {

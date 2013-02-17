@@ -21,12 +21,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.sql.Driver;
 import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -70,7 +65,7 @@ import org.xml.sax.SAXException;
  * Context.startup) Basic startup needs specific to the web layer: 1) Do the web startup of the
  * modules 2) Copy the custom look/images/messages over into the web layer
  */
-public final class Listener extends ContextLoader implements ServletContextListener { // extends ContextLoaderListener {
+public class Listener extends ContextLoader implements ServletContextListener { // extends ContextLoaderListener {
 
 	private static boolean runtimePropertiesFound = false;
 	
@@ -313,7 +308,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			db.setEntityResolver(new EntityResolver() {
 				
-				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+				@Override
+                public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 					// When asked to resolve external entities (such as a DTD) we return an InputSource
 					// with no data at the end, causing the parser to ignore the DTD.
 					return new InputSource(new StringReader(""));
@@ -568,7 +564,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Throwable {
 		Log log = LogFactory.getLog(Listener.class);
 		
-		List<Module> startedModules = new ArrayList<Module>();
+		Collection<Module> startedModules = new ArrayList<Module>();
 		startedModules.addAll(ModuleFactory.getStartedModules());
 		boolean someModuleNeedsARefresh = false;
 		for (Module mod : startedModules) {

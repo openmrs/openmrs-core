@@ -35,7 +35,8 @@ public class OpenmrsDateFormat extends SimpleDateFormat {
 		this.setLenient(false);
 	}
 	
-	public Date parse(String text) throws ParseException {
+	@Override
+    public Date parse(String text) throws ParseException {
 		
 		// first test to see if the pattern ends in "{non-alphanumeric-character}yyyy"
 		Matcher patternMatch = Pattern.compile("\\Wyyyy$").matcher(this.toPattern());

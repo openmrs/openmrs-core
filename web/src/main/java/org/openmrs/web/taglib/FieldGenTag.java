@@ -46,24 +46,27 @@ public class FieldGenTag extends TagSupport {
 	
 	public static final String DEFAULT_INPUT_CHAR_LENGTH = "2";
 	
-	private String type;
+	@org.jetbrains.annotations.Nullable
+    private String type;
 	
-	private String formFieldName;
+	@org.jetbrains.annotations.Nullable
+    private String formFieldName;
 	
-	private Object val;
+	@org.jetbrains.annotations.Nullable
+    private Object val;
 	
-	private String url;
+	@org.jetbrains.annotations.Nullable
+    private String url;
 	
-	private String parameters = "";
+	@org.jetbrains.annotations.Nullable
+    private String parameters = "";
 	
-	private Map<String, Object> parameterMap = null;
+	@org.jetbrains.annotations.Nullable
+    private Map<String, Object> parameterMap = null;
 	
 	private Boolean allowUserDefault = Boolean.FALSE;
-	
-	// should not be reset each time
-	private FieldGenHandlerFactory factory = null;
-	
-	private Map<String, FieldGenHandler> fieldGenHandlerCache = new HashMap<String, FieldGenHandler>();
+
+    private Map<String, FieldGenHandler> fieldGenHandlerCache = new HashMap<String, FieldGenHandler>();
 	
 	//private String fieldLength;
 	//private String forceInputType;
@@ -193,7 +196,7 @@ public class FieldGenTag extends TagSupport {
 					// this could be an enum - if so, let's display it
 					String className = type;
 					
-					Class cls = null;
+					@org.jetbrains.annotations.Nullable Class cls = null;
 					try {
 						cls = Class.forName(className);
 					}
@@ -429,8 +432,9 @@ public class FieldGenTag extends TagSupport {
 		}
 		
 		String handlerClassName = null;
-		
-		try {
+
+        FieldGenHandlerFactory factory = null;
+        try {
 			//Resource beanDefinition = new ClassPathResource("/web/WEB-INF/openmrs-servlet.xml");
 			//XmlBeanFactory beanFactory = new XmlBeanFactory( beanDefinition );
 			//factory = (FieldGenHandlerFactory)beanFactory.getBean("fieldGenHandlerFactory");

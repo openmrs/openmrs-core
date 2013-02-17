@@ -50,7 +50,8 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 	/**
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		log.debug("setting conceptSets with text: " + text);
 		
 		if (StringUtils.hasText(text)) {
@@ -66,10 +67,10 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 			}
 			
 			// used when adding in concept sets
-			List<Integer> originalConceptSetIds = new ArrayList<Integer>(originalConceptSets.size());
+			Collection<Integer> originalConceptSetIds = new ArrayList<Integer>(originalConceptSets.size());
 			
 			// remove all sets that aren't in the request (aka, that have been deleted by the user)
-			Collection<ConceptSet> copyOfOriginalConceptSets = new ArrayList<ConceptSet>(originalConceptSets);
+			Iterable<ConceptSet> copyOfOriginalConceptSets = new ArrayList<ConceptSet>(originalConceptSets);
 			for (ConceptSet origConceptSet : copyOfOriginalConceptSets) {
 				if (!requestConceptIds.contains(origConceptSet.getConcept().getConceptId()))
 					originalConceptSets.remove(origConceptSet);

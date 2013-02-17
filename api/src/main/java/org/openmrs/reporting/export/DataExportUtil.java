@@ -32,6 +32,7 @@ import org.openmrs.Cohort;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
+import org.openmrs.reporting.ReportObject;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -40,11 +41,14 @@ import org.openmrs.util.OpenmrsUtil;
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
-public class DataExportUtil {
+public final class DataExportUtil {
 	
-	private static Map<String, Object> dataExportKeys = new WeakHashMap<String, Object>();
-	
-	/**
+	private static final Map<String, Object> dataExportKeys = new WeakHashMap<String, Object>();
+
+    private DataExportUtil() {
+    }
+
+    /**
 	 * Allows a module or some other service to add things to the available keys in the velocity
 	 * context
 	 * 
@@ -81,7 +85,7 @@ public class DataExportUtil {
 	/**
 	 * @param exports
 	 */
-	public static void generateExports(List<DataExportReportObject> exports, EvaluationContext context) {
+	public static void generateExports(Iterable<DataExportReportObject> exports, EvaluationContext context) {
 		
 		Log log = LogFactory.getLog(DataExportUtil.class);
 		
@@ -133,13 +137,13 @@ public class DataExportUtil {
 	 * @param context
 	 * @throws Exception
 	 */
-	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, DataExportFunctions functions,
+	public static void generateExport(@org.jetbrains.annotations.Nullable DataExportReportObject dataExport, @org.jetbrains.annotations.Nullable Cohort patientSet, @org.jetbrains.annotations.Nullable DataExportFunctions functions,
 	        EvaluationContext context) throws Exception {
 		
 		// defining log file here to attempt to reduce memory consumption
 		Log log = LogFactory.getLog(DataExportUtil.class);
 		
-		VelocityEngine velocityEngine = new VelocityEngine();
+		@org.jetbrains.annotations.Nullable VelocityEngine velocityEngine = new VelocityEngine();
 		
 		velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
 		    "org.apache.velocity.runtime.log.CommonsLogLogChute");
@@ -155,7 +159,7 @@ public class DataExportUtil {
 		File file = getGeneratedFile(dataExport);
 		PrintWriter report = new PrintWriter(file);
 		
-		VelocityContext velocityContext = new VelocityContext();
+		@org.jetbrains.annotations.Nullable VelocityContext velocityContext = new VelocityContext();
 		
 		// Set up list of patients if one wasn't passed into this method
 		if (patientSet == null) {
@@ -185,7 +189,7 @@ public class DataExportUtil {
 		
 		velocityContext.put("patientSet", patientSet);
 		
-		String template = dataExport.generateTemplate();
+		@org.jetbrains.annotations.Nullable String template = dataExport.generateTemplate();
 		
 		// check if some deprecated columns are being used in this export
 		// warning: hacky.
@@ -240,7 +244,7 @@ public class DataExportUtil {
 	 * 
 	 * @param dataExport
 	 */
-	public static File getGeneratedFile(DataExportReportObject dataExport) {
+	public static File getGeneratedFile(ReportObject dataExport) {
 		File dir = new File(OpenmrsUtil.getApplicationDataDirectory(), "dataExports");
 		dir.mkdirs();
 		

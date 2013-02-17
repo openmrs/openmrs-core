@@ -197,7 +197,7 @@ public class LoginServlet extends HttpServlet {
 	 */
 	private String determineRedirect(HttpServletRequest request) {
 		// first option for redirecting is the "redirect" parameter (set on login.jsp from the session attr)
-		String redirect = request.getParameter("redirect");
+		@org.jetbrains.annotations.Nullable String redirect = request.getParameter("redirect");
 		
 		// second option for redirecting is the referrer parameter set at login.jsp
 		if (redirect == null || redirect.equals("")) {

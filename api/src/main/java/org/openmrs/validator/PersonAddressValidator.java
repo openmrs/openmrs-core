@@ -32,7 +32,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { PersonAddress.class }, order = 50)
 public class PersonAddressValidator implements Validator {
 	
-	private static Log log = LogFactory.getLog(PersonAddressValidator.class);
+	private static final Log log = LogFactory.getLog(PersonAddressValidator.class);
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)

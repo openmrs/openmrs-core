@@ -13,6 +13,7 @@
  */
 package org.openmrs.aop;
 
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
@@ -113,7 +114,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param method acting method
 	 * @param attrs Collection of String privilege names that the user must have
 	 */
-	private void throwUnauthorized(User user, Method method, Collection<String> attrs) {
+	private void throwUnauthorized(User user, Member method, Collection<String> attrs) {
 		if (log.isDebugEnabled())
 			log.debug("User " + user + " is not authorized to access " + method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
@@ -127,7 +128,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param method acting method
 	 * @param attrs privilege names that the user must have
 	 */
-	private void throwUnauthorized(User user, Method method, String attr) {
+	private void throwUnauthorized(User user, Member method, String attr) {
 		if (log.isDebugEnabled())
 			log.debug("User " + user + " is not authorized to access " + method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
@@ -140,7 +141,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param user authenticated user
 	 * @param method acting method
 	 */
-	private void throwUnauthorized(User user, Method method) {
+	private void throwUnauthorized(User user, Member method) {
 		if (log.isDebugEnabled())
 			log.debug("User " + user + " is not authorized to access " + method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.aunthenticationRequired"));

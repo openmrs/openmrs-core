@@ -38,13 +38,13 @@ import org.springframework.util.StringUtils;
  */
 public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
-	private static Log log = LogFactory.getLog(SchedulerServiceTest.class);
+	private static final Log log = LogFactory.getLog(SchedulerServiceTest.class);
 	
 	// so that we can guarantee tests running accurately instead of tests interfering with the next
 	public final Integer SAVE_TASK_LOCK = new Integer(1);
 	
 	// each task provides a key that will be used in this map.  The value is the output
-	private static Map<String, String> output = new HashMap<String, String>();
+	private static final Map<String, String> output = new HashMap<String, String>();
 	
 	@Before
 	public void setUp() throws Exception {
@@ -322,7 +322,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 */
 	public static class BareTask implements Task {
 		
-		public static ArrayList outputList = new ArrayList();
+		public static final Collection outputList = new ArrayList();
 		
 		public void execute() {
 			synchronized (outputList) {

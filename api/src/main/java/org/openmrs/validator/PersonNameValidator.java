@@ -31,7 +31,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { PersonName.class }, order = 50)
 public class PersonNameValidator implements Validator {
 	
-	private static Log log = LogFactory.getLog(PersonNameValidator.class);
+	private static final Log log = LogFactory.getLog(PersonNameValidator.class);
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)

@@ -68,7 +68,8 @@ public class ReportServiceImpl implements ReportService {
 	 * Report renderers that have been registered. This is filled via {@link #setRenderers(Map)} and
 	 * spring's applicationContext-service.xml object
 	 */
-	private static Map<Class<? extends ReportRenderer>, ReportRenderer> renderers = null;
+	@org.jetbrains.annotations.Nullable
+    private static Map<Class<? extends ReportRenderer>, ReportRenderer> renderers = null;
 	
 	/**
 	 * Default constructor
@@ -98,7 +99,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#deleteReportSchema(org.openmrs.report.ReportSchema)
 	 */
-	public void deleteReportSchema(ReportSchema reportSchema) {
+	@Override
+    public void deleteReportSchema(ReportSchema reportSchema) {
 		throw new APIException("Not Yet Implemented");
 	}
 	
@@ -106,7 +108,8 @@ public class ReportServiceImpl implements ReportService {
 	 * @see org.openmrs.api.ReportService#evaluate(org.openmrs.report.ReportSchema,
 	 *      org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public ReportData evaluate(ReportSchema reportSchema, Cohort inputCohort, EvaluationContext evalContext) {
 		ReportData ret = new ReportData();
@@ -127,7 +130,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportRenderer(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public ReportRenderer getReportRenderer(Class<? extends ReportRenderer> clazz) {
 		try {
 			return renderers.get(clazz);
@@ -141,7 +145,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportRenderer(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public ReportRenderer getReportRenderer(String className) {
 		try {
 			return renderers.get(OpenmrsClassLoader.getInstance().loadClass(className));
@@ -155,7 +160,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportRenderers()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Collection<ReportRenderer> getReportRenderers() {
 		return getRenderers().values();
 	}
@@ -163,7 +169,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getRenderingModes(org.openmrs.report.ReportSchema)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<RenderingMode> getRenderingModes(ReportSchema schema) {
 		List<RenderingMode> ret = new Vector<RenderingMode>();
 		for (ReportRenderer r : getReportRenderers()) {
@@ -178,7 +185,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchema(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public ReportSchema getReportSchema(Integer reportSchemaId) throws APIException {
 		ReportSchemaXml xml = getReportSchemaXml(reportSchemaId);
 		return getReportSchema(xml);
@@ -187,7 +195,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchema(org.openmrs.report.ReportSchemaXml)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public ReportSchema getReportSchema(ReportSchemaXml reportSchemaXml) throws APIException {
 		ReportSchema reportSchema = null;
 		if (reportSchemaXml == null || reportSchemaXml.getXml() == null || reportSchemaXml.getXml().length() == 0) {
@@ -207,7 +216,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchemas()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<ReportSchema> getReportSchemas() throws APIException {
 		List<ReportSchema> ret = new ArrayList<ReportSchema>();
 		for (ReportSchemaXml xml : getReportSchemaXmls()) {
@@ -221,7 +231,8 @@ public class ReportServiceImpl implements ReportService {
 	 * 
 	 * @see org.openmrs.api.ReportService#setRenderers(java.util.Map)
 	 */
-	public void setRenderers(Map<Class<? extends ReportRenderer>, ReportRenderer> newRenderers) throws APIException {
+	@Override
+    public void setRenderers(Map<Class<? extends ReportRenderer>, ReportRenderer> newRenderers) throws APIException {
 		for (Map.Entry<Class<? extends ReportRenderer>, ReportRenderer> entry : newRenderers.entrySet()) {
 			registerRenderer(entry.getKey(), entry.getValue());
 		}
@@ -230,7 +241,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getRenderers()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Map<Class<? extends ReportRenderer>, ReportRenderer> getRenderers() throws APIException {
 		if (renderers == null)
 			renderers = new LinkedHashMap<Class<? extends ReportRenderer>, ReportRenderer>();
@@ -242,14 +254,16 @@ public class ReportServiceImpl implements ReportService {
 	 * @see org.openmrs.api.ReportService#registerRenderer(java.lang.Class,
 	 *      org.openmrs.report.ReportRenderer)
 	 */
-	public void registerRenderer(Class<? extends ReportRenderer> rendererClass, ReportRenderer renderer) throws APIException {
+	@Override
+    public void registerRenderer(Class<? extends ReportRenderer> rendererClass, ReportRenderer renderer) throws APIException {
 		getRenderers().put(rendererClass, renderer);
 	}
 	
 	/**
 	 * @see org.openmrs.api.ReportService#registerRenderer(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public void registerRenderer(String rendererClass) throws APIException {
 		try {
 			Class loadedClass = OpenmrsClassLoader.getInstance().loadClass(rendererClass);
@@ -264,21 +278,24 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#removeRenderer(Class)
 	 */
-	public void removeRenderer(Class<? extends ReportRenderer> renderingClass) {
+	@Override
+    public void removeRenderer(Class<? extends ReportRenderer> renderingClass) {
 		renderers.remove(renderingClass);
 	}
 	
 	/**
 	 * @see org.openmrs.api.ReportService#saveReportSchema(org.openmrs.report.ReportSchema)
 	 */
-	public void saveReportSchema(ReportSchema reportSchema) {
+	@Override
+    public void saveReportSchema(ReportSchema reportSchema) {
 		throw new APIException("Not Yet Implemented");
 	}
 	
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchemaXml(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public ReportSchemaXml getReportSchemaXml(Integer reportSchemaXmlId) {
 		return dao.getReportSchemaXml(reportSchemaXmlId);
 	}
@@ -286,7 +303,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#saveReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 */
-	public void saveReportSchemaXml(ReportSchemaXml reportSchemaXml) {
+	@Override
+    public void saveReportSchemaXml(ReportSchemaXml reportSchemaXml) {
 		dao.saveReportSchemaXml(reportSchemaXml);
 	}
 	
@@ -294,7 +312,9 @@ public class ReportServiceImpl implements ReportService {
 	 * @see org.openmrs.api.ReportService#createReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 * @deprecated use saveReportSchemaXml(reportSchemaXml)
 	 */
-	public void createReportSchemaXml(ReportSchemaXml reportSchemaXml) {
+	@Override
+    @Deprecated
+    public void createReportSchemaXml(ReportSchemaXml reportSchemaXml) {
 		Context.getReportService().saveReportSchemaXml(reportSchemaXml);
 	}
 	
@@ -302,21 +322,25 @@ public class ReportServiceImpl implements ReportService {
 	 * @see org.openmrs.api.ReportService#updateReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 * @deprecated use saveReportSchemaXml(reportSchemaXml)
 	 */
-	public void updateReportSchemaXml(ReportSchemaXml reportSchemaXml) {
+	@Override
+    @Deprecated
+    public void updateReportSchemaXml(ReportSchemaXml reportSchemaXml) {
 		Context.getReportService().saveReportSchemaXml(reportSchemaXml);
 	}
 	
 	/**
 	 * @see org.openmrs.api.ReportService#deleteReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 */
-	public void deleteReportSchemaXml(ReportSchemaXml reportSchemaXml) {
+	@Override
+    public void deleteReportSchemaXml(ReportSchemaXml reportSchemaXml) {
 		dao.deleteReportSchemaXml(reportSchemaXml);
 	}
 	
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchemaXmls()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<ReportSchemaXml> getReportSchemaXmls() {
 		return dao.getReportSchemaXmls();
 	}
@@ -324,7 +348,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#getReportXmlMacros()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Properties getReportXmlMacros() {
 		try {
 			String macrosAsString = Context.getAdministrationService().getGlobalProperty(
@@ -343,7 +368,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#saveReportXmlMacros(java.util.Properties)
 	 */
-	public void saveReportXmlMacros(Properties macros) {
+	@Override
+    public void saveReportXmlMacros(Properties macros) {
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			OpenmrsUtil.storeProperties(macros, out, null);
@@ -358,7 +384,8 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * @see org.openmrs.api.ReportService#applyReportXmlMacros(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public String applyReportXmlMacros(String input) {
 		Properties macros = getReportXmlMacros();
 		if (macros != null && macros.size() > 0) {
@@ -371,7 +398,7 @@ public class ReportServiceImpl implements ReportService {
 					String key = prefix + e.getKey() + suffix;
 					String value = e.getValue() == null ? "" : e.getValue().toString();
 					log.debug("Trying to replace " + key + " with " + value);
-					replacement = replacement.replace(key, (String) e.getValue());
+					replacement = replacement.replace(key, (CharSequence) e.getValue());
 				}
 				if (input.equals(replacement)) {
 					log.debug("Macro expansion complete.");

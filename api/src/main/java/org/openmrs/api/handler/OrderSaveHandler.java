@@ -39,7 +39,8 @@ public class OrderSaveHandler implements SaveHandler<Order> {
 	 * @should set the order number
 	 * @should not assign an new order number to an existing order
 	 */
-	public void handle(Order order, User creator, Date dateCreated, String other) {
+	@Override
+    public void handle(Order order, User creator, Date dateCreated, String other) {
 		if (order.getPatient() == null && order.getEncounter() != null)
 			order.setPatient(order.getEncounter().getPatient());
 		if (order.getOrderNumber() == null) {

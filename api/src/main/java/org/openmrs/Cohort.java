@@ -130,7 +130,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
 	@SuppressWarnings("unchecked")
-	public Cohort(String name, String description, Collection patientsOrIds) {
+	public Cohort(String name, String description, Iterable patientsOrIds) {
 		this(name, description, (Integer[]) null);
 		if (patientsOrIds != null) {
 			for (Object o : patientsOrIds) {
@@ -308,7 +308,8 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	 * @deprecated use #getMemberIds()
 	 * @return the memberIds
 	 */
-	public Set<Integer> getPatientIds() {
+	@Deprecated
+    public Set<Integer> getPatientIds() {
 		return getMemberIds();
 	}
 	
@@ -357,7 +358,8 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getCohortId();
 	}
@@ -366,7 +368,8 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setCohortId(id);
 		
 	}

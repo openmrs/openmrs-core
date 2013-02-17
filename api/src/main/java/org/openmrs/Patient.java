@@ -158,7 +158,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 * 
 	 * @param patientIdentifiers
 	 */
-	public void addIdentifiers(Collection<PatientIdentifier> patientIdentifiers) {
+	public void addIdentifiers(Iterable<PatientIdentifier> patientIdentifiers) {
 		for (PatientIdentifier identifier : patientIdentifiers)
 			addIdentifier(identifier);
 	}
@@ -297,10 +297,10 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @see #getIdentifiers()
 	 * @should return preferred identifiers first in the list
 	 */
-	public List<PatientIdentifier> getActiveIdentifiers() {
+	public Collection<PatientIdentifier> getActiveIdentifiers() {
 		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
 		if (getIdentifiers() != null) {
-			List<PatientIdentifier> nonPreferred = new LinkedList<PatientIdentifier>();
+			Collection<PatientIdentifier> nonPreferred = new LinkedList<PatientIdentifier>();
 			for (PatientIdentifier pi : getIdentifiers()) {
 				if (pi.isVoided() == false) {
 					if (pi.isPreferred())

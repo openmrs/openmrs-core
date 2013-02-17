@@ -13,10 +13,7 @@
  */
 package org.openmrs.api.handler;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -56,7 +53,7 @@ public class ExistingVisitAssignmentHandler extends BaseEncounterVisitHandler {
 		if (encounter.getVisit() != null)
 			return;
 		
-		List<Patient> patients = new ArrayList<Patient>();
+		Collection<Patient> patients = new ArrayList<Patient>();
 		patients.add(encounter.getPatient());
 		
 		//Fetch visits for this patient that haven't ended by the encounter date.

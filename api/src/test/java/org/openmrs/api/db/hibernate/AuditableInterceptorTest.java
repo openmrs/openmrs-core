@@ -154,7 +154,7 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		
 		private Task task;
 		
-		public AsDaemonTask(Task task) {
+		private AsDaemonTask(Task task) {
 			super(task);
 			this.task = task;
 		}

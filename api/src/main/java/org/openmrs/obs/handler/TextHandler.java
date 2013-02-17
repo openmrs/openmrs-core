@@ -51,7 +51,8 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
-	public Obs getObs(Obs obs, String view) {
+	@Override
+    public Obs getObs(Obs obs, String view) {
 		File file = getComplexDataFile(obs);
 		log.debug("value complex: " + obs.getValueComplex());
 		log.debug("file path: " + file.getAbsolutePath());

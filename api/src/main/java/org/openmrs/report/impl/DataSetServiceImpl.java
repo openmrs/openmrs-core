@@ -41,7 +41,8 @@ public class DataSetServiceImpl implements DataSetService {
 	/**
 	 * Saved list of DataSetProviders allowed to be used by the dataset service
 	 */
-	private static List<DataSetProvider> providers = null;
+	@org.jetbrains.annotations.Nullable
+    private static List<DataSetProvider> providers = null;
 	
 	/**
 	 * Default no-arg constructor
@@ -62,7 +63,8 @@ public class DataSetServiceImpl implements DataSetService {
 	/**
 	 * @see org.openmrs.api.DataSetService#setProviders(List)
 	 */
-	public void setProviders(List<DataSetProvider> newProviders) {
+	@Override
+    public void setProviders(List<DataSetProvider> newProviders) {
 		for (DataSetProvider provider : newProviders) {
 			registerProvider(provider);
 		}
@@ -71,7 +73,8 @@ public class DataSetServiceImpl implements DataSetService {
 	/**
 	 * @see org.openmrs.api.DataSetService#getProviders()
 	 */
-	public List<DataSetProvider> getProviders() {
+	@Override
+    public List<DataSetProvider> getProviders() {
 		if (providers == null)
 			providers = new Vector<DataSetProvider>();
 		
@@ -81,7 +84,8 @@ public class DataSetServiceImpl implements DataSetService {
 	/**
 	 * @see org.openmrs.api.DataSetService#registerProvider(org.openmrs.report.DataSetProvider)
 	 */
-	public void registerProvider(DataSetProvider newProvider) {
+	@Override
+    public void registerProvider(DataSetProvider newProvider) {
 		for (DataSetProvider currentProvider : getProviders()) {
 			if (currentProvider.getClass().equals(newProvider.getClass()))
 				return;
@@ -94,14 +98,16 @@ public class DataSetServiceImpl implements DataSetService {
 	/**
 	 * @see org.openmrs.api.DataSetService#removeProvider(org.openmrs.report.DataSetProvider)
 	 */
-	public void removeProvider(DataSetProvider provider) {
+	@Override
+    public void removeProvider(DataSetProvider provider) {
 		getProviders().remove(provider);
 	}
 	
 	/**
 	 * @see org.openmrs.api.DataSetService#getProvider(org.openmrs.report.DataSetDefinition)
 	 */
-	public DataSetProvider getProvider(DataSetDefinition definition) {
+	@Override
+    public DataSetProvider getProvider(DataSetDefinition definition) {
 		for (DataSetProvider p : getProviders())
 			if (p.canEvaluate(definition))
 				return p;
@@ -112,7 +118,8 @@ public class DataSetServiceImpl implements DataSetService {
 	 * @see org.openmrs.api.DataSetService#evaluate(org.openmrs.report.DataSetDefinition,
 	 *      org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public DataSet evaluate(DataSetDefinition definition, Cohort inputCohort, EvaluationContext evalContext) {
 		DataSetProvider provider = getProvider(definition);
 		if (provider == null)

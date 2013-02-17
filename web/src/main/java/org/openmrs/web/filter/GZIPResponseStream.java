@@ -40,11 +40,8 @@ public class GZIPResponseStream extends ServletOutputStream {
 	
 	// reference to the output stream to the client's browser
 	protected ServletOutputStream output = null;
-	
-	// default size of the in-memory buffer
-	private int bufferSize = 50000;
-	
-	public GZIPResponseStream(HttpServletResponse response) throws IOException {
+
+    public GZIPResponseStream(HttpServletResponse response) throws IOException {
 		super();
 		closed = false;
 		this.response = response;
@@ -120,8 +117,9 @@ public class GZIPResponseStream extends ServletOutputStream {
 		// check if we are buffering too large of a file
 		if (bufferedOutput instanceof ByteArrayOutputStream) {
 			ByteArrayOutputStream baos = (ByteArrayOutputStream) bufferedOutput;
-			
-			if ((baos.size() + length) > bufferSize) {
+
+            int bufferSize = 50000;
+            if ((baos.size() + length) > bufferSize) {
 				// files too large to keep in memory are sent to the client without Content-Length specified
 				response.addHeader("Content-Encoding", "gzip");
 				

@@ -19,11 +19,11 @@ import org.openmrs.Person;
  * fieldgen handler for Person
  */
 public class PersonHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "person.field";
-	
-	public void run() {
-		setUrl(defaultUrl);
+
+    @Override
+    public void run() {
+        String defaultUrl = "person.field";
+        setUrl(defaultUrl);
 		checkEmptyVal((Person) null);
 		if (fieldGenTag != null) {
 			Object initialValue = this.fieldGenTag.getVal();

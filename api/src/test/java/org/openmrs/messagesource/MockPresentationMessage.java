@@ -25,19 +25,19 @@ import org.databene.benerator.factory.GeneratorFactory;
  */
 public class MockPresentationMessage extends PresentationMessage {
 	
-	static String CODE_PATTERN = "[a-z]{4,12}";
+	static final String CODE_PATTERN = "[a-z]{4,12}";
 	
-	static Generator<String> codeGenerator;
+	static final Generator<String> codeGenerator;
 	
-	static Generator<String> localeGenerator;
+	static final Generator<String> localeGenerator;
 	
-	static String MESSAGE_PATTERN = "[a-z]*";
+	static final String MESSAGE_PATTERN = "[a-z]*";
 	
-	static Generator<String> messageGenerator;
+	static final Generator<String> messageGenerator;
 	
-	static String DESCRIPTION_PATTERN = "[a-z]*";
+	static final String DESCRIPTION_PATTERN = "[a-z]*";
 	
-	static Generator<String> descriptionGenerator;
+	static final Generator<String> descriptionGenerator;
 	
 	static {
 		// create the generators used by the factory

@@ -29,10 +29,8 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 public class ModuleResourcesServlet extends HttpServlet {
-	
-	private final String MODULE_PATH = "/WEB-INF/view/module/";
-	
-	private static final long serialVersionUID = 1239820102030344L;
+
+    private static final long serialVersionUID = 1239820102030344L;
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -92,7 +90,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 		}
 		
 		String relativePath = ModuleUtil.getPathForResource(module, path);
-		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources"
+        String MODULE_PATH = "/WEB-INF/view/module/";
+        String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources"
 		        + relativePath;
 		realPath = realPath.replace("/", File.separator);
 		

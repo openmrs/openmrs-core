@@ -182,7 +182,7 @@ public class DWRConceptServiceTest extends BaseWebContextSensitiveTest {
 	 * @param result the list of concept lookup result items
 	 * @return true if given concept is present among result items
 	 */
-	private boolean isConceptFound(Concept expected, List<Object> result) {
+	private boolean isConceptFound(Concept expected, Iterable<Object> result) {
 		boolean found = Boolean.FALSE;
 		if (result != null) {
 			for (Iterator<?> iterator = result.iterator(); iterator.hasNext();) {

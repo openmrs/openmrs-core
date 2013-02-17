@@ -135,7 +135,7 @@ public class OrderDrugListController extends SimpleFormController {
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		Map<Integer, String> conceptNames = new HashMap<Integer, String>();
 		
-		List<Order> orderList = (List<Order>) obj;
+		Iterable<Order> orderList = (List<Order>) obj;
 		
 		for (Order order : orderList) {
 			Concept c = order.getConcept();

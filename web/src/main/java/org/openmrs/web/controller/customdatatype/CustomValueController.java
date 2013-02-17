@@ -39,12 +39,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class CustomValueController {
 	
 	private final Log log = LogFactory.getLog(getClass());
-	
-	private final String HTML_START = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>";
-	
-	private final String HTML_END = "</body></html>";
-	
-	/**
+
+    /**
 	 * Displays a custom value, as HTML, in its own page.
 	 * 
 	 * @param handlerClassname
@@ -69,7 +65,9 @@ public class CustomValueController {
 		}
 		
 		String html = handler.toHtml(datatype, valueReference);
-		return HTML_START + html + HTML_END;
+        String HTML_END = "</body></html>";
+        String HTML_START = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>";
+        return HTML_START + html + HTML_END;
 	}
 	
 	/**

@@ -73,7 +73,7 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 					cs.updateConceptIndex(currentConcept);
 					
 					// keep memory consumption low
-					if (counter++ > 25) {
+					if (counter > 25) {
 						gp.setPropertyValue(currentConcept.getConceptId().toString());
 						as.saveGlobalProperty(gp);
 						
@@ -82,8 +82,9 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 						Context.clearSession();
 						counter = 0;
 					}
-					
-					currentConcept = cs.getNextConcept(currentConcept);
+                    counter++;
+
+                    currentConcept = cs.getNextConcept(currentConcept);
 				}
 				
 				//we have reached the end, get rid of the GP

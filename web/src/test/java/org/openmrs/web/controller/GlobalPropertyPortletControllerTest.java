@@ -13,10 +13,7 @@
  */
 package org.openmrs.web.controller;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,7 +49,7 @@ public class GlobalPropertyPortletControllerTest extends BaseWebContextSensitive
 		
 		//then
 		portletController.populateModel(request, model);
-		List<GlobalProperty> properties = (List<GlobalProperty>) model.get("properties");
+		Collection<GlobalProperty> properties = (List<GlobalProperty>) model.get("properties");
 		Assert.assertFalse(properties.contains(globalProperties[0]));
 		Assert.assertFalse(properties.contains(globalProperties[1]));
 		Assert.assertTrue(properties.contains(globalProperties[2]));

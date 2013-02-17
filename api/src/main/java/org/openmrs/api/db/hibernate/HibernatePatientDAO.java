@@ -17,12 +17,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -73,14 +68,16 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.PatientService#getPatient(java.lang.Integer)
 	 */
-	public Patient getPatient(Integer patientId) {
+	@Override
+    public Patient getPatient(Integer patientId) {
 		return (Patient) sessionFactory.getCurrentSession().get(Patient.class, patientId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#savePatient(org.openmrs.Patient)
 	 */
-	public Patient savePatient(Patient patient) throws DAOException {
+	@Override
+    public Patient savePatient(Patient patient) throws DAOException {
 		if (patient.getPatientId() == null) {
 			// if we're saving a new patient, just do the normal thing
 			// and rows in the person and patient table will be created by
@@ -187,7 +184,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer,
 	 *      Integer)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException {
 		if (StringUtils.isBlank(name) && StringUtils.isBlank(identifier)
@@ -216,7 +214,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getAllPatients(boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Patient> getAllPatients(boolean includeVoided) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		
@@ -230,7 +229,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.PatientService#purgePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 * @see org.openmrs.api.db.PatientDAO#deletePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
-	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
+	@Override
+    public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
 		sessionFactory.getCurrentSession().delete(patientIdentifierType);
 	}
 	
@@ -240,7 +240,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,
 	 *      java.util.List, java.util.List, java.lang.Boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
 	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,
 	        Boolean isPreferred) throws DAOException {
@@ -280,7 +281,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#savePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
-	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
+	@Override
+    public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(patientIdentifierType);
 		return patientIdentifierType;
 	}
@@ -288,14 +290,16 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.PatientService#deletePatient(org.openmrs.Patient)
 	 */
-	public void deletePatient(Patient patient) throws DAOException {
+	@Override
+    public void deletePatient(Patient patient) throws DAOException {
 		HibernatePersonDAO.deletePersonAndAttributes(sessionFactory, patient);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifierType(java.lang.Integer)
 	 */
-	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws DAOException {
+	@Override
+    public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws DAOException {
 		return (PatientIdentifierType) sessionFactory.getCurrentSession().get(PatientIdentifierType.class,
 		    patientIdentifierTypeId);
 	}
@@ -307,7 +311,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @should return all
 	 * @see org.openmrs.api.db.PatientDAO#getAllPatientIdentifierTypes(boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
 		
@@ -328,7 +333,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierTypes(java.lang.String,
 	 *      java.lang.String, java.lang.Boolean, java.lang.Boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
 	        Boolean hasCheckDigit) throws DAOException {
 		// TODO test this method
@@ -359,7 +365,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getDuplicatePatientsByAttributes(java.util.List)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) {
 		List<Patient> patients = new Vector<Patient>();
 		
@@ -369,28 +376,28 @@ public class HibernatePatientDAO implements PatientDAO {
 			String orderBy = " order by ";
 			
 			Class patient = Patient.class;
-			Set<String> patientFieldNames = new HashSet<String>(patient.getDeclaredFields().length);
+			Collection<String> patientFieldNames = new HashSet<String>(patient.getDeclaredFields().length);
 			for (Field f : patient.getDeclaredFields()) {
 				patientFieldNames.add(f.getName());
 				log.debug(f.getName());
 			}
 			
 			Class person = Person.class;
-			Set<String> personFieldNames = new HashSet<String>(person.getDeclaredFields().length);
+			Collection<String> personFieldNames = new HashSet<String>(person.getDeclaredFields().length);
 			for (Field f : person.getDeclaredFields()) {
 				personFieldNames.add(f.getName());
 				log.debug(f.getName());
 			}
 			
 			Class personName = PersonName.class;
-			Set<String> personNameFieldNames = new HashSet<String>(personName.getDeclaredFields().length);
+			Collection<String> personNameFieldNames = new HashSet<String>(personName.getDeclaredFields().length);
 			for (Field f : personName.getDeclaredFields()) {
 				personNameFieldNames.add(f.getName());
 				log.debug(f.getName());
 			}
 			
 			Class identifier = PatientIdentifier.class;
-			Set<String> identifierFieldNames = new HashSet<String>(identifier.getDeclaredFields().length);
+			Collection<String> identifierFieldNames = new HashSet<String>(identifier.getDeclaredFields().length);
 			for (Field f : identifier.getDeclaredFields()) {
 				identifierFieldNames.add(f.getName());
 				log.debug(f.getName());
@@ -484,7 +491,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getPatientByUuid(java.lang.String)
 	 */
-	public Patient getPatientByUuid(String uuid) {
+	@Override
+    public Patient getPatientByUuid(String uuid) {
 		Patient p = null;
 		
 		p = (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.uuid = :uuid").setString(
@@ -493,7 +501,8 @@ public class HibernatePatientDAO implements PatientDAO {
 		return p;
 	}
 	
-	public PatientIdentifier getPatientIdentifierByUuid(String uuid) {
+	@Override
+    public PatientIdentifier getPatientIdentifierByUuid(String uuid) {
 		return (PatientIdentifier) sessionFactory.getCurrentSession().createQuery(
 		    "from PatientIdentifier p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
@@ -501,7 +510,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierTypeByUuid(java.lang.String)
 	 */
-	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) {
+	@Override
+    public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) {
 		return (PatientIdentifierType) sessionFactory.getCurrentSession().createQuery(
 		    "from PatientIdentifierType pit where pit.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
@@ -512,7 +522,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * 
 	 * @see org.openmrs.api.db.PatientDAO#isIdentifierInUseByAnotherPatient(org.openmrs.PatientIdentifier)
 	 */
-	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
+	@Override
+    public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
 		boolean checkPatient = patientIdentifier.getPatient() != null
 		        && patientIdentifier.getPatient().getPatientId() != null;
 		boolean checkLocation = patientIdentifier.getLocation() != null
@@ -544,7 +555,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getPatientIdentifier(java.lang.Integer)
 	 */
-	public PatientIdentifier getPatientIdentifier(Integer patientIdentifierId) throws DAOException {
+	@Override
+    public PatientIdentifier getPatientIdentifier(Integer patientIdentifierId) throws DAOException {
 		
 		return (PatientIdentifier) sessionFactory.getCurrentSession().get(PatientIdentifier.class, patientIdentifierId);
 		
@@ -553,7 +565,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#savePatientIdentifier(org.openmrs.PatientIdentifier)
 	 */
-	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) {
+	@Override
+    public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) {
 		
 		sessionFactory.getCurrentSession().saveOrUpdate(patientIdentifier);
 		return patientIdentifier;
@@ -564,7 +577,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.PatientService#purgePatientIdentifier(org.openmrs.PatientIdentifier)
 	 * @see org.openmrs.api.db.PatientDAO#deletePatientIdentifier(org.openmrs.PatientIdentifier)
 	 */
-	public void deletePatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException {
+	@Override
+    public void deletePatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException {
 		
 		sessionFactory.getCurrentSession().delete(patientIdentifier);
 		
@@ -573,7 +587,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean)
 	 */
-	public Long getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	@Override
+    public Long getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		//Skip the ordering of names because H2(and i think PostgreSQL) will require one of the ordered

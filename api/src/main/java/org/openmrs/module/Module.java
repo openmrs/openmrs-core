@@ -14,15 +14,7 @@
 package org.openmrs.module;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +27,7 @@ import org.w3c.dom.Document;
  * 
  * @version 1.0
  */
-public final class Module {
+public class Module {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -73,7 +65,7 @@ public final class Module {
 	
 	private List<AdvicePoint> advicePoints = new Vector<AdvicePoint>();
 	
-	private IdentityHashMap<String, String> extensionNames = new IdentityHashMap<String, String>();
+	private Map<String, String> extensionNames = new IdentityHashMap<String, String>();
 	
 	private List<Extension> extensions = new Vector<Extension>();
 	
@@ -99,7 +91,8 @@ public final class Module {
 	// it if necessary
 	private File file = null;
 	
-	private String startupErrorMessage = null;
+	@org.jetbrains.annotations.Nullable
+    private String startupErrorMessage = null;
 	
 	/**
 	 * Simple constructor
@@ -288,7 +281,7 @@ public final class Module {
 	 * 
 	 * @return the list of requiredModules
 	 */
-	public List<String> getRequiredModules() {
+	public Collection<String> getRequiredModules() {
 		return requiredModulesMap == null ? null : new ArrayList<String>(requiredModulesMap.keySet());
 	}
 	
@@ -310,7 +303,7 @@ public final class Module {
 	 * @param requiredModules the requiredModules to set for this module
 	 * @should set modules when there is a null required modules map
 	 */
-	public void setRequiredModules(List<String> requiredModules) {
+	public void setRequiredModules(Iterable<String> requiredModules) {
 		if (requiredModulesMap == null)
 			requiredModulesMap = new HashMap<String, String>();
 		
@@ -357,7 +350,7 @@ public final class Module {
 	 * @since 1.9
 	 * @return the list of awareOfModules
 	 */
-	public List<String> getAwareOfModules() {
+	public Iterable<String> getAwareOfModules() {
 		return awareOfModulesMap == null ? null : new ArrayList<String>(awareOfModulesMap.keySet());
 	}
 	
@@ -385,7 +378,7 @@ public final class Module {
 	/**
 	 * @return the module id, with all . replaced with /
 	 */
-	public String getModuleIdAsPath() {
+	public CharSequence getModuleIdAsPath() {
 		return moduleId == null ? null : moduleId.replace('.', '/');
 	}
 	
@@ -469,7 +462,7 @@ public final class Module {
 	/**
 	 * @return the extensions
 	 */
-	public List<Extension> getExtensions() {
+	public Collection<Extension> getExtensions() {
 		if (extensions.size() == extensionNames.size())
 			return extensions;
 		
@@ -493,7 +486,7 @@ public final class Module {
 	 * @param map from pointid to classname
 	 * @see ModuleFileParser
 	 */
-	public void setExtensionNames(IdentityHashMap<String, String> map) {
+	public void setExtensionNames(Map<String, String> map) {
 		if (log.isDebugEnabled())
 			for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
 				log.debug("Setting extension names: " + entry.getKey() + " : " + entry.getValue());
@@ -548,7 +541,7 @@ public final class Module {
 	/**
 	 * @return the advicePoints
 	 */
-	public List<AdvicePoint> getAdvicePoints() {
+	public Iterable<AdvicePoint> getAdvicePoints() {
 		return advicePoints;
 	}
 	
@@ -586,7 +579,7 @@ public final class Module {
 		this.messages = messages;
 	}
 	
-	public List<GlobalProperty> getGlobalProperties() {
+	public Collection<GlobalProperty> getGlobalProperties() {
 		return globalProperties;
 	}
 	
@@ -594,7 +587,7 @@ public final class Module {
 		this.globalProperties = globalProperties;
 	}
 	
-	public List<Privilege> getPrivileges() {
+	public Collection<Privilege> getPrivileges() {
 		return privileges;
 	}
 	
@@ -626,7 +619,7 @@ public final class Module {
 		this.sqldiff = sqldiff;
 	}
 	
-	public List<String> getMappingFiles() {
+	public Iterable<String> getMappingFiles() {
 		return mappingFiles;
 	}
 	
@@ -640,7 +633,7 @@ public final class Module {
 	 * @return the set of packages to scan
 	 * @since 1.9.2, 1.10
 	 */
-	public Set<String> getPackagesWithMappedClasses() {
+	public Iterable<String> getPackagesWithMappedClasses() {
 		return packagesWithMappedClasses;
 	}
 	

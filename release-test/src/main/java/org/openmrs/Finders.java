@@ -13,8 +13,11 @@
  */
 package org.openmrs;
 
-public class Finders {
-	public static org.openqa.selenium.lift.find.HtmlTagFinder textarea() {
+public final class Finders {
+    private Finders() {
+    }
+
+    public static org.openqa.selenium.lift.find.HtmlTagFinder textarea() {
 		return org.openmrs.find.TextAreaFinder.textarea();
 	}
 	

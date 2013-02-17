@@ -25,14 +25,10 @@ import org.openmrs.Concept;
  */
 
 public class ArdenClause {
-	
-	private ArdenRule rule;
-	
-	private Concept concept;
-	
-	private ArdenClause clause;
-	
-	public static enum Predicate {
+
+    private Concept concept;
+
+    public static enum Predicate {
 		last, first, max, min, avg, greaterThan, lessThan, greaterThanEqual, lessThanEqual
 	};
 	
@@ -54,12 +50,12 @@ public class ArdenClause {
 	}
 	
 	public ArdenClause rule(ArdenRule r) {
-		rule = r;
+        ArdenRule rule = r;
 		return this;
 	}
 	
 	public ArdenClause clause(ArdenClause cl) {
-		clause = cl;
+        ArdenClause clause = cl;
 		return this;
 	}
 	

@@ -70,7 +70,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.db.OrderDAO#saveOrder(org.openmrs.Order)
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
-	public Order saveOrder(Order order) throws DAOException {
+	@Override
+    public Order saveOrder(Order order) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(order);
 		
 		return order;
@@ -80,14 +81,16 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.db.OrderDAO#deleteOrder(org.openmrs.Order)
 	 * @see org.openmrs.api.OrderService#purgeOrder(org.openmrs.Order)
 	 */
-	public void deleteOrder(Order order) throws DAOException {
+	@Override
+    public void deleteOrder(Order order) throws DAOException {
 		sessionFactory.getCurrentSession().delete(order);
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws DAOException {
 		if (log.isDebugEnabled())
 			log.debug("getting order #" + orderId + " with class: " + orderClassType);
@@ -102,7 +105,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 *      java.util.List, java.util.List, java.util.List, java.util.Date, java.util.List,
 	 *      java.util.List)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
 	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude, boolean includeVoided) {
@@ -149,7 +153,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderByUuid(java.lang.String)
 	 */
-	public Order getOrderByUuid(String uuid) {
+	@Override
+    public Order getOrderByUuid(String uuid) {
 		return (Order) sessionFactory.getCurrentSession().createQuery("from Order o where o.uuid = :uuid").setString("uuid",
 		    uuid).uniqueResult();
 	}
@@ -157,7 +162,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderByOrderNumber(java.lang.String)
 	 */
-	public Order getOrderByOrderNumber(String orderNumber) {
+	@Override
+    public Order getOrderByOrderNumber(String orderNumber) {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Order.class, "order");
 		searchCriteria.add(Expression.eq("order.orderNumber", orderNumber));
 		return (Order) searchCriteria.uniqueResult();
@@ -185,7 +191,8 @@ public class HibernateOrderDAO implements OrderDAO {
 		return (Integer) query.uniqueResult();
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient) {
 		Criteria searchDrugOrderCriteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class, "order");
 		

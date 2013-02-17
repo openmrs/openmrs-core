@@ -41,7 +41,8 @@ public class LocationEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		LocationService ls = Context.getLocationService();
 		if (StringUtils.hasText(text)) {
 			try {
@@ -60,7 +61,8 @@ public class LocationEditor extends PropertyEditorSupport {
 		}
 	}
 	
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		Location t = (Location) getValue();
 		if (t == null && Context.isAuthenticated()) {
 			return null; //return Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);

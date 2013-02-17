@@ -51,7 +51,8 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	 * 
 	 * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
 	 */
-	public Properties getRuntimeProperties() {
+	@Override
+    public Properties getRuntimeProperties() {
 		Properties props = super.getRuntimeProperties();
 		
 		// NOTE! This module is modified heavily from the original atd modules.

@@ -22,7 +22,8 @@ public class AdvicePoint {
 	
 	private String point;
 	
-	private Object classInstance;
+	@org.jetbrains.annotations.Nullable
+    private Object classInstance;
 	
 	private Module module;
 	

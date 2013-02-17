@@ -13,10 +13,7 @@
  */
 package org.openmrs;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -86,70 +83,80 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	/**
 	 * @return Returns the address1.
 	 */
-	public String getAddress1() {
+	@Override
+    public String getAddress1() {
 		return address1;
 	}
 	
 	/**
 	 * @param address1 The address1 to set.
 	 */
-	public void setAddress1(String address1) {
+	@Override
+    public void setAddress1(String address1) {
 		this.address1 = address1;
 	}
 	
 	/**
 	 * @return Returns the address2.
 	 */
-	public String getAddress2() {
+	@Override
+    public String getAddress2() {
 		return address2;
 	}
 	
 	/**
 	 * @param address2 The address2 to set.
 	 */
-	public void setAddress2(String address2) {
+	@Override
+    public void setAddress2(String address2) {
 		this.address2 = address2;
 	}
 	
 	/**
 	 * @return Returns the cityVillage.
 	 */
-	public String getCityVillage() {
+	@Override
+    public String getCityVillage() {
 		return cityVillage;
 	}
 	
 	/**
 	 * @param cityVillage The cityVillage to set.
 	 */
-	public void setCityVillage(String cityVillage) {
+	@Override
+    public void setCityVillage(String cityVillage) {
 		this.cityVillage = cityVillage;
 	}
 	
 	/**
 	 * @return Returns the country.
 	 */
-	public String getCountry() {
+	@Override
+    public String getCountry() {
 		return country;
 	}
 	
 	/**
 	 * @param country The country to set.
 	 */
-	public void setCountry(String country) {
+	@Override
+    public void setCountry(String country) {
 		this.country = country;
 	}
 	
 	/**
 	 * @return Returns the latitude.
 	 */
-	public String getLatitude() {
+	@Override
+    public String getLatitude() {
 		return latitude;
 	}
 	
 	/**
 	 * @param latitude The latitude to set.
 	 */
-	public void setLatitude(String latitude) {
+	@Override
+    public void setLatitude(String latitude) {
 		this.latitude = latitude;
 	}
 	
@@ -170,42 +177,48 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	/**
 	 * @return Returns the longitude.
 	 */
-	public String getLongitude() {
+	@Override
+    public String getLongitude() {
 		return longitude;
 	}
 	
 	/**
 	 * @param longitude The longitude to set.
 	 */
-	public void setLongitude(String longitude) {
+	@Override
+    public void setLongitude(String longitude) {
 		this.longitude = longitude;
 	}
 	
 	/**
 	 * @return Returns the postalCode.
 	 */
-	public String getPostalCode() {
+	@Override
+    public String getPostalCode() {
 		return postalCode;
 	}
 	
 	/**
 	 * @param postalCode The postalCode to set.
 	 */
-	public void setPostalCode(String postalCode) {
+	@Override
+    public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
 	}
 	
 	/**
 	 * @return Returns the stateProvince.
 	 */
-	public String getStateProvince() {
+	@Override
+    public String getStateProvince() {
 		return stateProvince;
 	}
 	
 	/**
 	 * @param stateProvince The stateProvince to set.
 	 */
-	public void setStateProvince(String stateProvince) {
+	@Override
+    public void setStateProvince(String stateProvince) {
 		this.stateProvince = stateProvince;
 	}
 	
@@ -221,14 +234,16 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	/**
 	 * @return Returns the countyDistrict.
 	 */
-	public String getCountyDistrict() {
+	@Override
+    public String getCountyDistrict() {
 		return countyDistrict;
 	}
 	
 	/**
 	 * @param countyDistrict The countyDistrict to set.
 	 */
-	public void setCountyDistrict(String countyDistrict) {
+	@Override
+    public void setCountyDistrict(String countyDistrict) {
 		this.countyDistrict = countyDistrict;
 	}
 	
@@ -253,7 +268,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	/**
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
-	public List<Location> findPossibleValues(String searchText) {
+	@Override
+    public List<Location> findPossibleValues(String searchText) {
 		try {
 			return Context.getLocationService().getLocations(searchText);
 		}
@@ -265,7 +281,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	/**
 	 * @see org.openmrs.Attributable#getPossibleValues()
 	 */
-	public List<Location> getPossibleValues() {
+	@Override
+    public List<Location> getPossibleValues() {
 		try {
 			return Context.getLocationService().getAllLocations();
 		}
@@ -277,7 +294,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	/**
 	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
 	 */
-	public Location hydrate(String locationId) {
+	@Override
+    public Location hydrate(String locationId) {
 		try {
 			return Context.getLocationService().getLocation(Integer.valueOf(locationId));
 		}
@@ -289,7 +307,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	/**
 	 * @see org.openmrs.Attributable#serialize()
 	 */
-	public String serialize() {
+	@Override
+    public String serialize() {
 		if (getLocationId() != null)
 			return "" + getLocationId();
 		else
@@ -299,7 +318,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	/**
 	 * @see org.openmrs.Attributable#getDisplayString()
 	 */
-	public String getDisplayString() {
+	@Override
+    public String getDisplayString() {
 		return getName();
 	}
 	
@@ -479,7 +499,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @return Returns the tags which have been attached to this Location.
 	 * @since 1.5
 	 */
-	public Set<LocationTag> getTags() {
+	public Collection<LocationTag> getTags() {
 		return tags;
 	}
 	
@@ -542,7 +562,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.8
 	 * @return the address3
 	 */
-	public String getAddress3() {
+	@Override
+    public String getAddress3() {
 		return address3;
 	}
 	
@@ -550,7 +571,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.8
 	 * @param address3 the address3 to set
 	 */
-	public void setAddress3(String address3) {
+	@Override
+    public void setAddress3(String address3) {
 		this.address3 = address3;
 	}
 	
@@ -558,7 +580,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.8
 	 * @return the address4
 	 */
-	public String getAddress4() {
+	@Override
+    public String getAddress4() {
 		return address4;
 	}
 	
@@ -566,7 +589,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.8
 	 * @param address4 the address4 to set
 	 */
-	public void setAddress4(String address4) {
+	@Override
+    public void setAddress4(String address4) {
 		this.address4 = address4;
 	}
 	
@@ -574,7 +598,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.8
 	 * @return the address6
 	 */
-	public String getAddress6() {
+	@Override
+    public String getAddress6() {
 		return address6;
 	}
 	
@@ -582,7 +607,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.8
 	 * @param address6 the address6 to set
 	 */
-	public void setAddress6(String address6) {
+	@Override
+    public void setAddress6(String address6) {
 		this.address6 = address6;
 	}
 	
@@ -590,7 +616,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.8
 	 * @return the address5
 	 */
-	public String getAddress5() {
+	@Override
+    public String getAddress5() {
 		return address5;
 	}
 	
@@ -598,7 +625,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.8
 	 * @param address5 the address5 to set
 	 */
-	public void setAddress5(String address5) {
+	@Override
+    public void setAddress5(String address5) {
 		this.address5 = address5;
 	}
 	
@@ -606,7 +634,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getLocationId();
 	}
@@ -615,7 +644,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setLocationId(id);
 		
 	}

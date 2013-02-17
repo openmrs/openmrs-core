@@ -13,7 +13,7 @@
  */
 package org.openmrs.web;
 
-public class WebConstants {
+public final class WebConstants {
 	
 	public static final String INIT_REQ_UNIQUE_ID = "__INIT_REQ_UNIQUE_ID__";
 	
@@ -56,9 +56,9 @@ public class WebConstants {
 	public static final String OPENMRS_PORTLET_CACHED_MODEL = "__openmrs_portlet_cached_model";
 	
 	// these vars filled in by org.openmrs.web.Listener at webapp start time
-	public static String BUILD_TIMESTAMP = "";
+	public static final String BUILD_TIMESTAMP = "";
 	
-	public static String WEBAPP_NAME = "openmrs";
+	public static final String WEBAPP_NAME = "openmrs";
 	
 	// ComplexObsHandler views specific to the web layer:
 	public static final String HTML_VIEW = "html_view";
@@ -73,7 +73,7 @@ public class WebConstants {
 	/**
 	 * The url of the module repository. This is filled in at startup by the value in web.xml
 	 */
-	public static String MODULE_REPOSITORY_URL = "";
+	public static final String MODULE_REPOSITORY_URL = "";
 	
 	/**
 	 * Global property name for the number of times one IP can fail at logging in before being
@@ -81,7 +81,7 @@ public class WebConstants {
 	 * 
 	 * @see org.openmrs.web.servlet.LoginServlet
 	 */
-	public static String GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP = "security.loginAttemptsAllowedPerIP";
+	public static final String GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP = "security.loginAttemptsAllowedPerIP";
 	
 	/**
 	 * User names of the logged-in users are stored in this map (session id -> user name) in the
@@ -115,4 +115,7 @@ public class WebConstants {
 	 * Session attribute name for the referer url
 	 */
 	public static final String REFERER_URL = "referer_url";
+
+    private WebConstants() {
+    }
 }

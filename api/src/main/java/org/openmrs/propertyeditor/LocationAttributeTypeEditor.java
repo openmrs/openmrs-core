@@ -18,6 +18,7 @@ import java.beans.PropertyEditorSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.LocationAttributeType;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
@@ -32,8 +33,9 @@ public class LocationAttributeTypeEditor extends PropertyEditorSupport {
 	/**
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
-	public String getAsText() {
-		LocationAttributeType lat = (LocationAttributeType) getValue();
+	@Override
+    public String getAsText() {
+		OpenmrsObject lat = (LocationAttributeType) getValue();
 		return lat == null ? null : lat.getId().toString();
 	}
 	
@@ -43,7 +45,8 @@ public class LocationAttributeTypeEditor extends PropertyEditorSupport {
 	 * 
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		LocationService ls = Context.getLocationService();
 		if (Context.isAuthenticated() && StringUtils.hasText(text)) {
 			try {

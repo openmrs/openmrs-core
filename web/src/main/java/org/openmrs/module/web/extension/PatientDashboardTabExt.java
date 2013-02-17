@@ -54,7 +54,7 @@ public abstract class PatientDashboardTabExt extends Extension {
 	 * This extension does not have a place for any default content to go
 	 */
 	@Override
-	public final String getOverrideContent(String bodyContent) {
+	public String getOverrideContent(String bodyContent) {
 		return null;
 	}
 	

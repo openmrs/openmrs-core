@@ -63,7 +63,8 @@ public class ForEachRecordTag extends BodyTagSupport {
 	
 	private String conceptSet;
 	
-	private Iterator<?> records;
+	@org.jetbrains.annotations.Nullable
+    private Iterator<?> records;
 	
 	public int doStartTag() {
 		
@@ -227,7 +228,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 	 * @param locations
 	 * @param i counter
 	 */
-	private void populateLocationAndDepthList(List<LocationAndDepth> locationAndDepths, Collection<Location> locations,
+	private void populateLocationAndDepthList(List<LocationAndDepth> locationAndDepths, Iterable<Location> locations,
 	        int depth) {
 		for (Location location : locations) {
 			locationAndDepths.add(new LocationAndDepth(depth, location));

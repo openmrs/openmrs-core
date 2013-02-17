@@ -46,7 +46,8 @@ public interface MutableMessageSource extends MessageSource, HierarchicalMessage
 	 * @param version version of the properties
 	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
 	 */
-	public void publishProperties(Properties props, String locale, String namespace, String name, String version);
+	@Deprecated
+    public void publishProperties(Properties props, String locale, String namespace, String name, String version);
 	
 	/**
 	 * Gets all of the available messages, packaged as PresentationMessages.

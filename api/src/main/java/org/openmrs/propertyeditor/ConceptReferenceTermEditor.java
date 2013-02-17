@@ -28,7 +28,8 @@ public class ConceptReferenceTermEditor extends PropertyEditorSupport {
 	public ConceptReferenceTermEditor() {
 	}
 	
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		log.debug("Setting text: " + text);
 		if (StringUtils.hasText(text)) {
 			try {
@@ -42,7 +43,8 @@ public class ConceptReferenceTermEditor extends PropertyEditorSupport {
 		}
 	}
 	
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		ConceptReferenceTerm term = (ConceptReferenceTerm) getValue();
 		if (term == null || term.getConceptReferenceTermId() == null)
 			return "";

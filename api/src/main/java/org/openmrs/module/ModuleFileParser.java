@@ -21,15 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -65,7 +57,7 @@ public class ModuleFileParser {
 	 * List out all of the possible version numbers for config files that openmrs has DTDs for.
 	 * These are usually stored at http://resources.openmrs.org/doctype/config-x.x.dt
 	 */
-	private static List<String> validConfigVersions = new ArrayList<String>();
+	private static Collection<String> validConfigVersions = new ArrayList<String>();
 	
 	static {
 		validConfigVersions.add("1.0");
@@ -165,7 +157,8 @@ public class ModuleFileParser {
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				db.setEntityResolver(new EntityResolver() {
 					
-					public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+					@Override
+                    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 						// When asked to resolve external entities (such as a
 						// DTD) we return an InputSource
 						// with no data at the end, causing the parser to ignore
@@ -242,7 +235,8 @@ public class ModuleFileParser {
 					DocumentBuilder db = dbf.newDocumentBuilder();
 					db.setEntityResolver(new EntityResolver() {
 						
-						public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+						@Override
+                        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 							// When asked to resolve external entities (such as
 							// a
 							// DTD) we return an InputSource

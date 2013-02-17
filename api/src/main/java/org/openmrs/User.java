@@ -174,7 +174,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	 * @return Collection of complete Privileges this user has
 	 */
 	public Collection<Privilege> getPrivileges() {
-		Set<Privilege> privileges = new HashSet<Privilege>();
+		Collection<Privilege> privileges = new HashSet<Privilege>();
 		Set<Role> tmproles = getAllRoles();
 		
 		Role role;
@@ -231,7 +231,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @return Returns the roles.
 	 */
-	public Set<Role> getRoles() {
+	public Collection<Role> getRoles() {
 		return roles;
 	}
 	
@@ -273,7 +273,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
-	public List<User> findPossibleValues(String searchText) {
+	@Override
+    public List<User> findPossibleValues(String searchText) {
 		try {
 			return Context.getUserService().getUsersByName(searchText, "", false);
 		}
@@ -285,7 +286,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @see org.openmrs.Attributable#getPossibleValues()
 	 */
-	public List<User> getPossibleValues() {
+	@Override
+    public List<User> getPossibleValues() {
 		try {
 			return Context.getUserService().getAllUsers();
 		}
@@ -297,7 +299,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
 	 */
-	public User hydrate(String userId) {
+	@Override
+    public User hydrate(String userId) {
 		try {
 			return Context.getUserService().getUser(Integer.valueOf(userId));
 		}
@@ -309,7 +312,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @see org.openmrs.Attributable#serialize()
 	 */
-	public String serialize() {
+	@Override
+    public String serialize() {
 		if (getUserId() != null)
 			return "" + getUserId();
 		else
@@ -319,7 +323,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @see org.openmrs.Attributable#getDisplayString()
 	 */
-	public String getDisplayString() {
+	@Override
+    public String getDisplayString() {
 		String returnString = "";
 		if (getPersonName() != null)
 			returnString += getPersonName().getFullName() + " ";
@@ -615,7 +620,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getUserId();
 	}
 	
@@ -623,7 +629,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setUserId(id);
 	}
 	

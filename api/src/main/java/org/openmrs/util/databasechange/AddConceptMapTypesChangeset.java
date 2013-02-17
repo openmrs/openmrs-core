@@ -80,7 +80,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 		try {
 			connection.setAutoCommit(false);
 			
-			Integer userId = DatabaseUpdater.getAuthenticatedUserId();
+			@org.jetbrains.annotations.Nullable Integer userId = DatabaseUpdater.getAuthenticatedUserId();
 			//if we have no authenticated user(for API users), set as Daemon
 			if (userId == null || userId < 1) {
 				userId = getInt(connection, "SELECT min(user_id) FROM users");

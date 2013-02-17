@@ -26,7 +26,7 @@ import org.openmrs.module.web.extension.provider.Link;
 /**
  * Facilitates processing extensions.
  */
-public class ExtensionUtil {
+public final class ExtensionUtil {
 	
 	private ExtensionUtil() {
 		

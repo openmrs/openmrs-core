@@ -15,11 +15,7 @@ package org.openmrs.web.controller.encounter;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.GlobalProperty;
@@ -96,7 +92,7 @@ public class HierarchyController {
 		}
 		ret.put("data", sb.toString());
 		if (loc.getChildLocations() != null && loc.getChildLocations().size() > 0) {
-			List<Map<String, Object>> children = new ArrayList<Map<String, Object>>();
+			Collection<Map<String, Object>> children = new ArrayList<Map<String, Object>>();
 			for (Location child : loc.getChildLocations())
 				children.add(toJsonHelper(child));
 			ret.put("children", children);

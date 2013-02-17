@@ -100,13 +100,13 @@ public class DWRConceptService {
 	 * @should include
 	 * @since 1.8
 	 */
-	public List<Object> findBatchOfConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
-	        List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames,
+	public List<Object> findBatchOfConcepts(String phrase, boolean includeRetired, Collection<String> includeClassNames,
+	        Collection<String> excludeClassNames, Collection<String> includeDatatypeNames, Collection<String> excludeDatatypeNames,
 	        Integer start, Integer length) {
 		//TODO factor out the reusable code in this and findCountAndConcepts methods to a single utility method
 		// List to return
 		// Object type gives ability to return error strings
-		Vector<Object> objectList = new Vector<Object>();
+		List<Object> objectList = new Vector<Object>();
 		
 		// TODO add localization for messages
 		
@@ -135,7 +135,7 @@ public class DWRConceptService {
 		
 		try {
 			ConceptService cs = Context.getConceptService();
-			List<ConceptSearchResult> searchResults = new Vector<ConceptSearchResult>();
+			Collection<ConceptSearchResult> searchResults = new Vector<ConceptSearchResult>();
 			
 			if (phrase.matches("\\d+")) {
 				// user searched on a number. Insert concept with
@@ -280,7 +280,7 @@ public class DWRConceptService {
 		if (concept == null)
 			throw new Exception("Unable to find a concept with id: " + conceptId);
 		
-		List<ConceptSearchResult> searchResults = new ArrayList<ConceptSearchResult>();
+		Collection<ConceptSearchResult> searchResults = new ArrayList<ConceptSearchResult>();
 		List<Locale> locales = Context.getAdministrationService().getSearchLocales();
 		
 		for (Locale lc : locales) {
@@ -290,14 +290,14 @@ public class DWRConceptService {
 			}
 		}
 		
-		List<Drug> drugAnswers = new Vector<Drug>();
+		Collection<Drug> drugAnswers = new Vector<Drug>();
 		for (ConceptAnswer conceptAnswer : concept.getAnswers(false)) {
 			if (conceptAnswer.getAnswerDrug() != null)
 				drugAnswers.add(conceptAnswer.getAnswerDrug());
 		}
 		
 		List<Object> items = new Vector<Object>();
-		Set<Integer> uniqueItems = new HashSet<Integer>();
+		Collection<Integer> uniqueItems = new HashSet<Integer>();
 		for (ConceptSearchResult searchResult : searchResults) {
 			if (!uniqueItems.add(searchResult.getConcept().getConceptId())) {
 				continue; //Skip already added items
@@ -418,7 +418,7 @@ public class DWRConceptService {
 		List<Object> items = new Vector<Object>();
 		
 		// find drugs for this concept
-		Set<Drug> drugs = new HashSet<Drug>();
+		Collection<Drug> drugs = new HashSet<Drug>();
 		
 		// also find drugs by given phrase, assuming that 
 		// this phrase is a list of concept words
@@ -445,7 +445,7 @@ public class DWRConceptService {
 	}
 	
 	public List<ConceptListItem> getAnswersForQuestion(Integer conceptId) {
-		Vector<ConceptListItem> ret = new Vector<ConceptListItem>();
+		List<ConceptListItem> ret = new Vector<ConceptListItem>();
 		Concept c = Context.getConceptService().getConcept(conceptId);
 		Collection<ConceptAnswer> answers = c.getAnswers(false);
 		// TODO: deal with concept answers (e.g. drug) whose answer concept is null. (Not sure if this actually ever happens)
@@ -507,7 +507,7 @@ public class DWRConceptService {
 	        Integer start, Integer length, boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
-		Vector<Object> objectList = new Vector<Object>();
+		Collection<Object> objectList = new Vector<Object>();
 		
 		// get the list of locales to search on
 		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
@@ -628,11 +628,11 @@ public class DWRConceptService {
 	 */
 	public List<Object> findBatchOfConceptReferenceTerms(String phrase, Integer sourceId, Integer start, Integer length,
 	        boolean includeRetired) {
-		Vector<Object> objectList = new Vector<Object>();
+		List<Object> objectList = new Vector<Object>();
 		MessageSourceService mss = Context.getMessageSourceService();
 		try {
 			ConceptService cs = Context.getConceptService();
-			List<ConceptReferenceTerm> terms = new Vector<ConceptReferenceTerm>();
+			Collection<ConceptReferenceTerm> terms = new Vector<ConceptReferenceTerm>();
 			
 			if (StringUtils.isEmpty(phrase)) {
 				objectList.add(mss.getMessage("searchWidget.searchPhraseCannotBeNull"));

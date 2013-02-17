@@ -52,7 +52,8 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	 * @see org.openmrs.api.db.ActiveListDAO#getActiveListItems(org.openmrs.Person,
 	 *      org.openmrs.activelist.ActiveListType)
 	 */
-	public List<ActiveListItem> getActiveListItems(Person p, ActiveListType type) throws DAOException {
+	@Override
+    public List<ActiveListItem> getActiveListItems(Person p, ActiveListType type) throws DAOException {
 		return getActiveListItems(ActiveListItem.class, p, type);
 	}
 	
@@ -60,7 +61,8 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	 * @see org.openmrs.api.db.ActiveListDAO#getActiveListItems(java.lang.Class, org.openmrs.Person,
 	 *      org.openmrs.activelist.ActiveListType)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public <T extends ActiveListItem> List<T> getActiveListItems(Class<T> clazz, Person p, ActiveListType type)
 	        throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clazz);
@@ -74,7 +76,8 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	/**
 	 * @see org.openmrs.api.db.ActiveListDAO#getActiveListItem(java.lang.Class, java.lang.Integer)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clazz);
 		criteria.add(Restrictions.eq("activeListId", activeListItemId));
@@ -84,7 +87,8 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	/**
 	 * @see org.openmrs.api.db.ActiveListDAO#getActiveListItemByUuid(java.lang.String)
 	 */
-	public ActiveListItem getActiveListItemByUuid(String uuid) throws DAOException {
+	@Override
+    public ActiveListItem getActiveListItemByUuid(String uuid) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ActiveListItem.class);
 		criteria.add(Restrictions.eq("uuid", uuid));
 		return (ActiveListItem) criteria.uniqueResult();
@@ -93,7 +97,8 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	/**
 	 * @see org.openmrs.api.db.ActiveListDAO#saveActiveListItem(org.openmrs.activelist.ActiveListItem)
 	 */
-	public ActiveListItem saveActiveListItem(ActiveListItem item) throws DAOException {
+	@Override
+    public ActiveListItem saveActiveListItem(ActiveListItem item) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(item);
 		return item;
 	}
@@ -101,7 +106,8 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	/**
 	 * @see org.openmrs.api.db.ActiveListDAO#deleteActiveListItem(org.openmrs.activelist.ActiveListItem)
 	 */
-	public void deleteActiveListItem(ActiveListItem item) throws DAOException {
+	@Override
+    public void deleteActiveListItem(ActiveListItem item) throws DAOException {
 		sessionFactory.getCurrentSession().delete(item);
 	}
 }

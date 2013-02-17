@@ -43,7 +43,8 @@ public class ConceptNameEditor extends PropertyEditorSupport {
 	 * 
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		ConceptService cs = Context.getConceptService();
 		if (StringUtils.hasText(text)) {
 			try {
@@ -65,7 +66,8 @@ public class ConceptNameEditor extends PropertyEditorSupport {
 	/**
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		ConceptName cn = (ConceptName) getValue();
 		if (cn == null) {
 			return "";

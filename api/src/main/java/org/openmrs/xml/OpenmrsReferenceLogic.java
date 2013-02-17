@@ -26,7 +26,7 @@ import org.simpleframework.xml.graph.ReferenceLogic;
 @Deprecated
 public class OpenmrsReferenceLogic implements ReferenceLogic {
 	
-	private static Log log = LogFactory.getLog(OpenmrsReferenceLogic.class);
+	private static final Log log = LogFactory.getLog(OpenmrsReferenceLogic.class);
 	
 	private long key = 0L;
 	
@@ -34,7 +34,8 @@ public class OpenmrsReferenceLogic implements ReferenceLogic {
 	 * @see org.simpleframework.xml.graph.ReferenceLogic#getReferenceKey(java.lang.Object)
 	 */
 	public String getReferenceKey(Object arg0) {
-		if (++key >= Long.MAX_VALUE) {
+        ++key;
+        if (key >= Long.MAX_VALUE) {
 			log.warn("We reached the max long value.");
 			key = 0L;
 		}

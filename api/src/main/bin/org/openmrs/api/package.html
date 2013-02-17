@@ -1,0 +1,46 @@
+<html>
+<body>
+<p>
+The primary OpenMRS API interfaces. These services provide the necessary methods to access and 
+manipulate OpenMRS domain objects.
+</p>
+<p>
+Services are obtained statically from the {@link org.openmrs.api.context.Context Context}.
+</p>
+<p>
+These services compose the OpenMRS business layer API. The majority of developer interaction with the
+OpenMRS system should occur through these services.&nbsp; Lower level (database) API methods are 
+reflected within these services so that	business logic hooks may be placed in front of the database 
+layer. Developers should favor calling these services for database access, rather than going directly 
+to the DAO objects in the <code>org.openmrs.api.db</code> package.
+</p>
+<p>
+For example, using the API alone, a start-to-end application would look like this:
+</p>
+<pre>
+  Context.startup("jdbc:mysql://localhost:3306/db-name?autoReconnect=true", "openmrs-db-user", "3dx$ijt", new Properties());
+  try {
+    Context.openSession();
+    Context.authenticate("admin", "test");
+    
+    PatientService ps = Context.getPatientService();
+
+    // fetch patient with identifier 3-4
+    Patient patient = ps.getPatientByIdentifier("3-4");
+  
+    // set the patient's birthdate to today
+    patient.setBirthdate(new Date());
+  
+    // save the patient to database
+    ps.savePatient(patient);
+  finally {
+    Context.closeSession();
+  }
+</pre>
+<p>
+<b>Note:</b> When using OpenMRS within a managed environment (like our web application war file), the only calls that are 
+needed are to get the PatientService, set the birthdate, save the patient with the PatientService.
+<p>  
+
+</body>
+</html>

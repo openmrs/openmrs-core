@@ -13,11 +13,7 @@
  */
 package org.openmrs.web.controller.maintenance;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -64,7 +60,7 @@ public class SettingsController {
 	public void updateSettings(@ModelAttribute(SETTINGS_FORM) SettingsForm settingsForm, Errors errors,
 	        HttpServletRequest request, HttpSession session) {
 		
-		List<GlobalProperty> toSave = new ArrayList<GlobalProperty>();
+		Collection<GlobalProperty> toSave = new ArrayList<GlobalProperty>();
 		try {
 			for (int i = 0; i < settingsForm.getSettings().size(); ++i) {
 				SettingsProperty property = settingsForm.getSettings().get(i);
@@ -114,7 +110,7 @@ public class SettingsController {
 	
 	@ModelAttribute(SECTIONS)
 	public List<String> getSections() {
-		SortedSet<String> sortedSections = new TreeSet<String>();
+		Collection<String> sortedSections = new TreeSet<String>();
 		List<GlobalProperty> globalProperties = getService().getAllGlobalProperties();
 		for (GlobalProperty globalProperty : globalProperties) {
 			SettingsProperty property = new SettingsProperty(globalProperty);

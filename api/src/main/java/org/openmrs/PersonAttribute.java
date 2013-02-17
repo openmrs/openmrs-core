@@ -297,7 +297,8 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @should return negative if other attribute has lower value
 	 * @should return negative if this attribute has lower attribute id than argument
 	 */
-	public int compareTo(PersonAttribute other) {
+	@Override
+    public int compareTo(PersonAttribute other) {
 		int retValue = 0;
 		retValue = isVoided().compareTo(other.isVoided());
 		if (retValue == 0)
@@ -317,7 +318,8 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getPersonAttributeId();
 	}
@@ -326,7 +328,8 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setPersonAttributeId(id);
 		
 	}

@@ -13,7 +13,10 @@ package org.openmrs;
  * <p/>
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-public class TestUtils {
+public final class TestUtils {
+    private TestUtils() {
+    }
+
     public static String prepareJdbcConnectionUrl(String port, String databaseName) {
         return "jdbc:mysql://localhost:" + port + "/"+databaseName+"?"
                 + "autoReconnect=true"

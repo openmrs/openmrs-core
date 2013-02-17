@@ -15,12 +15,7 @@ package org.openmrs.cohort;
 
 import java.io.StreamTokenizer;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -345,9 +340,9 @@ public class CohortSearchHistory extends AbstractReportObject {
 	}
 	
 	public PatientSearch createCompositionFilter(String description) {
-		Set<String> andWords = new HashSet<String>();
-		Set<String> orWords = new HashSet<String>();
-		Set<String> notWords = new HashSet<String>();
+		Collection<String> andWords = new HashSet<String>();
+		Collection<String> orWords = new HashSet<String>();
+		Collection<String> notWords = new HashSet<String>();
 		andWords.add("and");
 		andWords.add("intersection");
 		andWords.add("*");
@@ -409,7 +404,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static boolean testCompositionList(List<Object> list) {
+	private static boolean testCompositionList(Collection<Object> list) {
 		// if length > 2, make sure there's at least one operator
 		// make sure NOT is always followed by something
 		// make sure not everything is a logical operator

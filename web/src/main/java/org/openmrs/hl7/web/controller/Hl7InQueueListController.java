@@ -15,10 +15,7 @@
 package org.openmrs.hl7.web.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -139,7 +136,7 @@ public class Hl7InQueueListController {
 		    sSearch);
 		
 		// form the results dataset
-		List<Object> results = new ArrayList<Object>();
+		Collection<Object> results = new ArrayList<Object>();
 		for (HL7InQueue hl7 : hl7s)
 			results.add(splitHL7InQueue(hl7));
 		

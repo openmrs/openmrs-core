@@ -23,10 +23,13 @@ import java.util.List;
  * <p/>
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-public class ReportsTransformer {
+public final class ReportsTransformer {
 
-    private static File cd = new File(ReportsTransformer.class.getProtectionDomain().getCodeSource().getLocation().getFile())
+    private static final File cd = new File(ReportsTransformer.class.getProtectionDomain().getCodeSource().getLocation().getFile())
             .getParentFile().getParentFile();
+
+    private ReportsTransformer() {
+    }
 
 
     public static void main(String args[]) throws TransformerException, FileNotFoundException {
@@ -50,7 +53,7 @@ public class ReportsTransformer {
             System.out.println("PROCESSING XML::"+xmlName);
             String resultOutputPath = cd + "/target/jbehave/TEST" + xmlName;
             Result resultOutput = new StreamResult(new FileOutputStream(resultOutputPath));
-            DOMResult result = new DOMResult();
+            Result result = new DOMResult();
             Transformer transformer = TransformerFactory.newInstance().newTransformer(xslt);
             transformer.transform(xml, result);
             transformer.transform(xml, resultOutput);

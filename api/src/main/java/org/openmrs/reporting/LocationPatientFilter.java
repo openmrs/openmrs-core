@@ -43,7 +43,8 @@ public class LocationPatientFilter extends CachingPatientFilter {
 		return sb.toString();
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Patients who belong to ");
 		sb.append(getLocation() == null ? "NULL" : getLocation().getName());
@@ -56,7 +57,8 @@ public class LocationPatientFilter extends CachingPatientFilter {
 		return Context.getPatientSetService().getPatientsHavingLocation(getLocation(), getCalculationMethod());
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		return true;
 	}
 	

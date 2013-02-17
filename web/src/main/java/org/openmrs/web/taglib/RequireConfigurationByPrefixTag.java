@@ -14,6 +14,7 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,7 +51,7 @@ public class RequireConfigurationByPrefixTag extends TagSupport {
 	 */
 	public int doStartTag() throws JspException {
 		
-		Set<String> propsToIgnore = new HashSet<String>();
+		Collection<String> propsToIgnore = new HashSet<String>();
 		if (ignoreList != null) {
 			for (String s : ignoreList.split(",")) {
 				s = s.trim();

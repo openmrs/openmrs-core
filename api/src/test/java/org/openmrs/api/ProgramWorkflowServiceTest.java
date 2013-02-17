@@ -18,11 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -170,7 +166,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		ProgramWorkflow wf = p.getWorkflowByName("CIVIL STATUS");
 		assertNotNull(wf);
 		
-		List<String> names = new ArrayList<String>();
+		Collection<String> names = new ArrayList<String>();
 		for (ProgramWorkflowState s : wf.getStates()) {
 			names.add(s.getConcept().getName().getName());
 		}

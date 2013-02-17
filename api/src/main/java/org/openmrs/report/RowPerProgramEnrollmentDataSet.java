@@ -45,15 +45,17 @@ public class RowPerProgramEnrollmentDataSet implements DataSet<Object> {
 		
 		private Iterator<PatientProgram> iter;
 		
-		public HelperIterator(Iterator<PatientProgram> iter) {
+		HelperIterator(Iterator<PatientProgram> iter) {
 			this.iter = iter;
 		}
 		
-		public boolean hasNext() {
+		@Override
+        public boolean hasNext() {
 			return iter.hasNext();
 		}
 		
-		public Map<String, Object> next() {
+		@Override
+        public Map<String, Object> next() {
 			Locale locale = Context.getLocale();
 			PatientProgram pp = iter.next();
 			Map<String, Object> ret = new HashMap<String, Object>();
@@ -66,21 +68,25 @@ public class RowPerProgramEnrollmentDataSet implements DataSet<Object> {
 			return ret;
 		}
 		
-		public void remove() {
+		@Override
+        public void remove() {
 			iter.remove();
 		}
 		
 	}
 	
-	public DataSetDefinition getDefinition() {
+	@Override
+    public DataSetDefinition getDefinition() {
 		return definition;
 	}
 	
-	public Iterator<Map<String, Object>> iterator() {
+	@Override
+    public Iterator<Map<String, Object>> iterator() {
 		return new HelperIterator(data.iterator());
 	}
 	
-	public EvaluationContext getEvaluationContext() {
+	@Override
+    public EvaluationContext getEvaluationContext() {
 		return evaluationContext;
 	}
 	

@@ -53,7 +53,8 @@ public class VelocityMessagePreparator implements MessagePreparator {
 	}
 	
 	// TODO: need better error handling
-	public Message prepare(Template template) throws MessageException {
+	@Override
+    public Message prepare(Template template) throws MessageException {
 		
 		VelocityContext context = new VelocityContext(template.getData());
 		StringWriter writer = new StringWriter();

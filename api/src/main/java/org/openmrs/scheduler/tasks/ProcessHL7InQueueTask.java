@@ -30,7 +30,7 @@ import ca.uhn.hl7v2.HL7Exception;
 public class ProcessHL7InQueueTask extends AbstractTask {
 	
 	// Logger
-	private static Log log = LogFactory.getLog(ProcessHL7InQueueTask.class);
+	private static final Log log = LogFactory.getLog(ProcessHL7InQueueTask.class);
 	
 	// Instance of hl7 processor
 	private static HL7InQueueProcessor processor = null;
@@ -47,7 +47,8 @@ public class ProcessHL7InQueueTask extends AbstractTask {
 	/**
 	 * Process the next form entry in the database and then remove the form entry from the database.
 	 */
-	public void execute() {
+	@Override
+    public void execute() {
 		Context.openSession();
 		try {
 			log.debug("Processing HL7 queue ... ");

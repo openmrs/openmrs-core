@@ -20,10 +20,7 @@ import java.beans.XMLEncoder;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,9 +89,9 @@ public class ReportObjectXMLEncoder {
 		enc.setPersistenceDelegate(PersonAttributeType.class, new PersonAttributeTypeDelegate());
 		enc.setPersistenceDelegate(ConceptNumeric.class, new ConceptNumericDelegate());
 		
-		Set<Class> alreadyAdded = new HashSet<Class>();
+		Collection<Class> alreadyAdded = new HashSet<Class>();
 		{
-			List<Class> enumClasses = new ArrayList<Class>();
+			Collection<Class> enumClasses = new ArrayList<Class>();
 			enumClasses.add(PatientSetService.Modifier.class);
 			enumClasses.add(PatientSetService.TimeModifier.class);
 			enumClasses.add(PatientSetService.BooleanOperator.class);
@@ -141,20 +138,23 @@ public class ReportObjectXMLEncoder {
 	
 	class EnumDelegate extends DefaultPersistenceDelegate {
 		
-		@SuppressWarnings("unchecked")
+		@Override
+        @SuppressWarnings("unchecked")
 		protected Expression instantiate(Object oldInstance, Encoder out) {
 			return new Expression(Enum.class, "valueOf",
 			        new Object[] { oldInstance.getClass(), ((Enum) oldInstance).name() });
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class UserDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			log.debug("INSTANTIATING USER DELEGATE");
 			UserEditor editor = new UserEditor();
 			log.debug("OLD INSTANCE IS " + oldInstance);
@@ -162,7 +162,8 @@ public class ReportObjectXMLEncoder {
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 		
@@ -179,14 +180,16 @@ public class ReportObjectXMLEncoder {
 	
 	class LocationDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			LocationEditor editor = new LocationEditor();
 			Location location = (Location) oldInstance;
 			editor.setAsText(location.getLocationId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 		
@@ -200,168 +203,192 @@ public class ReportObjectXMLEncoder {
 	
 	class CohortDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			CohortEditor editor = new CohortEditor();
 			Cohort cohort = (Cohort) oldInstance;
 			editor.setAsText(cohort.getCohortId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class ConceptDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			ConceptEditor editor = new ConceptEditor();
 			Concept concept = (Concept) oldInstance;
 			editor.setAsText(concept.getConceptId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class DrugDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			DrugEditor editor = new DrugEditor();
 			Drug drug = (Drug) oldInstance;
 			editor.setAsText(drug.getDrugId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class EncounterDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			EncounterEditor editor = new EncounterEditor();
 			Encounter encounter = (Encounter) oldInstance;
 			editor.setAsText(encounter.getEncounterId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class PatientDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			PatientEditor editor = new PatientEditor();
 			Patient patient = (Patient) oldInstance;
 			editor.setAsText(patient.getPatientId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class ProgramDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			ProgramEditor editor = new ProgramEditor();
 			Program program = (Program) oldInstance;
 			editor.setAsText(program.getProgramId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class ProgramWorkflowDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			ProgramWorkflowEditor editor = new ProgramWorkflowEditor();
 			ProgramWorkflow programWorkflow = (ProgramWorkflow) oldInstance;
 			editor.setAsText(programWorkflow.getProgramWorkflowId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class ProgramWorkflowStateDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			ProgramWorkflowStateEditor editor = new ProgramWorkflowStateEditor();
 			ProgramWorkflowState programWorkflowState = (ProgramWorkflowState) oldInstance;
 			editor.setAsText(programWorkflowState.getProgramWorkflowStateId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class ConceptAnswerDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			ConceptAnswerEditor editor = new ConceptAnswerEditor();
 			ConceptAnswer conceptAnswer = (ConceptAnswer) oldInstance;
 			editor.setAsText(conceptAnswer.getConceptAnswerId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class EncounterTypeDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			EncounterTypeEditor editor = new EncounterTypeEditor();
 			EncounterType encounterType = (EncounterType) oldInstance;
 			editor.setAsText(encounterType.getEncounterTypeId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class PersonAttributeTypeDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			PersonAttributeTypeEditor editor = new PersonAttributeTypeEditor();
 			PersonAttributeType personAttributeType = (PersonAttributeType) oldInstance;
 			editor.setAsText(personAttributeType.getPersonAttributeTypeId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}
 	
 	class ConceptNumericDelegate extends DefaultPersistenceDelegate {
 		
-		protected Expression instantiate(Object oldInstance, Encoder out) {
+		@Override
+        protected Expression instantiate(Object oldInstance, Encoder out) {
 			ConceptNumericEditor editor = new ConceptNumericEditor();
 			ConceptNumeric conceptNumeric = (ConceptNumeric) oldInstance;
 			editor.setAsText(conceptNumeric.getConceptId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		
-		protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+		@Override
+        protected boolean mutatesTo(Object oldInstance, Object newInstance) {
 			return oldInstance == newInstance;
 		}
 	}

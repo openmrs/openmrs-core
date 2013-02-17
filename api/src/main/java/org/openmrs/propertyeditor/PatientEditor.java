@@ -40,7 +40,8 @@ public class PatientEditor extends PropertyEditorSupport {
 	 * 
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		PatientService ps = Context.getPatientService();
 		if (StringUtils.hasText(text)) {
 			try {
@@ -62,7 +63,8 @@ public class PatientEditor extends PropertyEditorSupport {
 	/**
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		Patient t = (Patient) getValue();
 		if (t == null) {
 			return "";

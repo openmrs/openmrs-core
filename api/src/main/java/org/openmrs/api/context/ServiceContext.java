@@ -80,9 +80,11 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	private static final Log log = LogFactory.getLog(ServiceContext.class);
 	
-	private static ServiceContext instance;
+	@org.jetbrains.annotations.Nullable
+    private static ServiceContext instance;
 	
-	private ApplicationContext applicationContext;
+	@org.jetbrains.annotations.Nullable
+    private ApplicationContext applicationContext;
 	
 	private static boolean refreshingContext = false;
 	
@@ -95,15 +97,18 @@ public class ServiceContext implements ApplicationContextAware {
 	private boolean useSystemClassLoader = false;
 	
 	// Cached service objects
-	@SuppressWarnings("unchecked")
+	@org.jetbrains.annotations.Nullable
+    @SuppressWarnings("unchecked")
 	Map<Class, Object> services = new HashMap<Class, Object>();
 	
 	// Advisors added to services by this service
-	@SuppressWarnings("unchecked")
+	@org.jetbrains.annotations.Nullable
+    @SuppressWarnings("unchecked")
 	Map<Class, Set<Advisor>> addedAdvisors = new HashMap<Class, Set<Advisor>>();
 	
 	// Advice added to services by this service
-	@SuppressWarnings("unchecked")
+	@org.jetbrains.annotations.Nullable
+    @SuppressWarnings("unchecked")
 	Map<Class, Set<Advice>> addedAdvice = new HashMap<Class, Set<Advice>>();
 	
 	/**

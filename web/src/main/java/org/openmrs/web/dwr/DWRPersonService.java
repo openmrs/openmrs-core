@@ -15,13 +15,7 @@ package org.openmrs.web.dwr;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -57,8 +51,8 @@ public class DWRPersonService {
 	 * @param gender
 	 * @return
 	 */
-	public List<?> getSimilarPeople(String name, String birthdate, String age, String gender) {
-		Vector<Object> personList = new Vector<Object>();
+	public List<?> getSimilarPeople(String name, String birthdate, String age, @org.jetbrains.annotations.Nullable String gender) {
+		List<Object> personList = new Vector<Object>();
 		
 		Integer userId = Context.getAuthenticatedUser().getUserId();
 		log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
@@ -87,7 +81,7 @@ public class DWRPersonService {
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
 			d = c.get(Calendar.YEAR);
-			d = d - Integer.parseInt(age);
+            d -= Integer.parseInt(age);
 		}
 		
 		if (gender.length() < 1)
@@ -241,8 +235,8 @@ public class DWRPersonService {
 	 * @return list of persons that match the given searchPhrase. The PersonListItems
 	 * @since 1.8
 	 */
-	public Vector<Object> findBatchOfPeopleByRoles(String searchPhrase, boolean includeRetired, String roles, Integer start,
-	        Integer length) {
+	public List<Object> findBatchOfPeopleByRoles(String searchPhrase, boolean includeRetired, String roles, Integer start,
+                                                 Integer length) {
 		Vector<Object> personList = new Vector<Object>();
 		try {
 			// if roles were given, search for users with those roles
@@ -308,7 +302,7 @@ public class DWRPersonService {
 		
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
-		Vector<Object> objectList = new Vector<Object>();
+		Collection<Object> objectList = new Vector<Object>();
 		try {
 			UserService us = Context.getUserService();
 			int personCount = 0;

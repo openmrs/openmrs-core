@@ -77,7 +77,7 @@ public class ConfigureVisitsForm {
 	/**
 	 * @return the visitTypesToClose
 	 */
-	public List<VisitType> getVisitTypesToClose() {
+	public Iterable<VisitType> getVisitTypesToClose() {
 		if (visitTypesToClose == null)
 			visitTypesToClose = new ArrayList<VisitType>();
 		return visitTypesToClose;

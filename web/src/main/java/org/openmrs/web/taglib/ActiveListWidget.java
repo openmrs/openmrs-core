@@ -45,20 +45,25 @@ public class ActiveListWidget extends TagSupport {
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
-	private Collection<Obs> observations;
+	@org.jetbrains.annotations.Nullable
+    private Collection<Obs> observations;
 	
 	private Boolean showDate = false;
 	
 	private String displayStyle = "ol";
 	
-	private Date onDate;
+	@org.jetbrains.annotations.Nullable
+    private Date onDate;
 	
 	// pipe-separated lists of "conceptId" or "name:CONCEPT NAME". starting with "set:" means treat this as a set.
-	private String addConcept;
+	@org.jetbrains.annotations.Nullable
+    private String addConcept;
 	
-	private String removeConcept;
+	@org.jetbrains.annotations.Nullable
+    private String removeConcept;
 	
-	private String otherGroupedConcepts;
+	@org.jetbrains.annotations.Nullable
+    private String otherGroupedConcepts;
 	
 	public ActiveListWidget() {
 	}
@@ -101,7 +106,8 @@ public class ActiveListWidget extends TagSupport {
 		List<Map.Entry<Concept, Obs>> ordered = new ArrayList<Map.Entry<Concept, Obs>>(activeList.entrySet());
 		Collections.sort(ordered, new Comparator<Map.Entry<Concept, Obs>>() {
 			
-			public int compare(Map.Entry<Concept, Obs> left, Map.Entry<Concept, Obs> right) {
+			@Override
+            public int compare(Map.Entry<Concept, Obs> left, Map.Entry<Concept, Obs> right) {
 				return left.getValue().getObsDatetime().compareTo(right.getValue().getObsDatetime());
 			}
 		});

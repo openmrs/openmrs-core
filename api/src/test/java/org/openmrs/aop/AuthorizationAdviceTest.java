@@ -5,6 +5,7 @@
 package org.openmrs.aop;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.annotation.Resource;
 import org.junit.Assert;
@@ -62,9 +63,9 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	@Component("listener1")
 	public static class Listener1 implements PrivilegeListener {
 		
-		public List<String> hasPrivileges = new ArrayList<String>();
+		public Collection<String> hasPrivileges = new ArrayList<String>();
 		
-		public List<String> lacksPrivileges = new ArrayList<String>();
+		public Collection<String> lacksPrivileges = new ArrayList<String>();
 		
 		@Override
 		public void privilegeChecked(User user, String privilege, boolean hasPrivilege) {

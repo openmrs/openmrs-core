@@ -37,13 +37,15 @@ public class LocaleUtility implements GlobalPropertyListener {
 	 * Cached version of the default locale. This is cached so that we don't have to look it up in
 	 * the global property table every page load
 	 */
-	private static Locale defaultLocaleCache = null;
+	@org.jetbrains.annotations.Nullable
+    private static Locale defaultLocaleCache = null;
 	
 	/**
 	 * Cached version of the localeAllowedList. This is cached so that we don't have to look it up
 	 * in the global property table every page load
 	 */
-	private static List<Locale> localesAllowedListCache = null;
+	@org.jetbrains.annotations.Nullable
+    private static List<Locale> localesAllowedListCache = null;
 	
 	/**
 	 * Default internal locale.
@@ -178,7 +180,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	 * @should always have default locale default value included in the returned collection
 	 * @since 1.7
 	 */
-	public static Set<Locale> getLocalesInOrder() {
+	public static Iterable<Locale> getLocalesInOrder() {
 		
 		Set<Locale> locales = new LinkedHashSet<Locale>();
 		locales.add(Context.getLocale());

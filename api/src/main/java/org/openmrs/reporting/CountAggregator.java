@@ -22,7 +22,8 @@ public class CountAggregator implements TableRowAggregator {
 	public CountAggregator() {
 	}
 	
-	public Object aggregate(DataTable table) {
+	@Override
+    public Object aggregate(DataTable table) {
 		return table.getRowCount();
 	}
 	

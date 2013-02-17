@@ -350,7 +350,7 @@ public class OpenmrsMessageTag extends OpenmrsHtmlEscapingAwareTag {
 	 * Very simple implementation of {@link TagMessageWriterBehavior} interface that is used by this class by default. It actually
 	 * does not customize passed in message during output rendering.
 	 */
-	static final class DefaultTagWriterBehavior implements TagMessageWriterBehavior {
+	static class DefaultTagWriterBehavior implements TagMessageWriterBehavior {
 		
 		/**
 		 * Hidden constructor.

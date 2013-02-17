@@ -34,10 +34,8 @@ import org.openmrs.web.user.UserProperties;
  * the user to change his password.
  */
 public class ForcePasswordChangeFilter implements Filter {
-	
-	private String excludeURL;
-	
-	private String changePasswordForm;
+
+    private String changePasswordForm;
 	
 	private FilterConfig config;
 	
@@ -89,7 +87,7 @@ public class ForcePasswordChangeFilter implements Filter {
 	 */
 	public void init(FilterConfig config) throws ServletException {
 		this.config = config;
-		excludeURL = config.getInitParameter("excludeURL");
+        String excludeURL = config.getInitParameter("excludeURL");
 		excludedURLs = excludeURL.split(",");
 		changePasswordForm = config.getInitParameter("changePasswordForm");
 	}

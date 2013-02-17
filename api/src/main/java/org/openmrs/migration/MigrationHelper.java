@@ -61,15 +61,18 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class MigrationHelper {
+public final class MigrationHelper {
 	
 	protected final static Log log = LogFactory.getLog(MigrationHelper.class);
 	
 	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	
 	static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
-	public static Date parseDate(String s) throws ParseException {
+
+    private MigrationHelper() {
+    }
+
+    public static Date parseDate(String s) throws ParseException {
 		if (s == null || s.length() == 0) {
 			return null;
 		} else {
@@ -109,12 +112,12 @@ public class MigrationHelper {
 	 * date_created="2001-03-06 08:46:53.0" username="hamish@mit.edu" first_name="Hamish"
 	 * last_name="Fraser" user_id="2001"/> </something> Returns the number of users added
 	 */
-	public static int importUsers(Document document) throws ParseException {
+	public static int importUsers(Node document) throws ParseException {
 		int ret = 0;
 		Random rand = new Random();
 		UserService us = Context.getUserService();
 		
-		List<Node> toAdd = new ArrayList<Node>();
+		Collection<Node> toAdd = new ArrayList<Node>();
 		findNodesNamed(document, "user", toAdd);
 		for (Node node : toAdd) {
 			Element e = (Element) node;
@@ -154,10 +157,10 @@ public class MigrationHelper {
 	 * Takes XML like: <something> <location name="Cerca-la-Source"/> </something> returns the
 	 * number of locations added
 	 */
-	public static int importLocations(Document document) {
+	public static int importLocations(Node document) {
 		int ret = 0;
 		LocationService ls = Context.getLocationService();
-		List<Node> toAdd = new ArrayList<Node>();
+		Collection<Node> toAdd = new ArrayList<Node>();
 		findNodesNamed(document, "location", toAdd);
 		for (Node node : toAdd) {
 			Element e = (Element) node;
@@ -187,11 +190,11 @@ public class MigrationHelper {
 	 * true, then whenever a user is auto-created, if a role exists with the same name as
 	 * relationshipType.name, then the user will be added to that role
 	 */
-	public static int importRelationships(Collection<String> relationships, boolean autoCreateUsers, boolean autoAddRole) {
+	public static int importRelationships(Iterable<String> relationships, boolean autoCreateUsers, boolean autoAddRole) {
 		PatientService ps = Context.getPatientService();
 		UserService us = Context.getUserService();
 		PersonService personService = Context.getPersonService();
-		List<Relationship> relsToAdd = new ArrayList<Relationship>();
+		Collection<Relationship> relsToAdd = new ArrayList<Relationship>();
 		Random rand = new Random();
 		for (String s : relationships) {
 			if (s.indexOf(":") >= 0)
@@ -275,10 +278,10 @@ public class MigrationHelper {
 		return addedSoFar;
 	}
 	
-	public static int importProgramsAndStatuses(List<String> programWorkflow) throws ParseException {
+	public static int importProgramsAndStatuses(Iterable<String> programWorkflow) throws ParseException {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		PatientService ps = Context.getPatientService();
-		List<PatientProgram> patientPrograms = new ArrayList<PatientProgram>();
+		Collection<PatientProgram> patientPrograms = new ArrayList<PatientProgram>();
 		//List<PatientState> patientStates = new ArrayList<PatientState>();
 		Map<String, PatientProgram> knownPatientPrograms = new HashMap<String, PatientProgram>();
 		Map<String, Program> programsByName = new HashMap<String, Program>();

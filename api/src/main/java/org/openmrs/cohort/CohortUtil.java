@@ -27,9 +27,12 @@ import org.openmrs.reporting.PatientSearch;
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
-public class CohortUtil {
-	
-	/**
+public final class CohortUtil {
+
+    private CohortUtil() {
+    }
+
+    /**
 	 * Parses an input string like: [Male] and [Adult] and
 	 * [EnrolledInHivOnDate|program="1"|untilDate="${report.startDate}"] Names between brackets are
 	 * treated as saved PatientSearch objects with that name. Parameter values for those loaded
@@ -40,10 +43,10 @@ public class CohortUtil {
 	 * @return A CohortDefinition (currently always a PatientSearch) parsed from the spec string.
 	 * @should parse specification with and in it
 	 */
-	public static CohortDefinition parse(String spec) {
+	public static CohortDefinition parse(CharSequence spec) {
 		List<Object> tokens = new ArrayList<Object>();
 		{
-			StringBuilder thisElement = null;
+			@org.jetbrains.annotations.Nullable StringBuilder thisElement = null;
 			for (int i = 0; i < spec.length(); ++i) {
 				char c = spec.charAt(i);
 				switch (c) {

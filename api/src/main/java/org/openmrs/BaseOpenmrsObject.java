@@ -28,14 +28,16 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	/**
 	 * @see org.openmrs.OpenmrsObject#getUuid()
 	 */
-	public String getUuid() {
+	@Override
+    public String getUuid() {
 		return uuid;
 	}
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setUuid(java.lang.String)
 	 */
-	public void setUuid(String uuid) {
+	@Override
+    public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
 	
@@ -75,7 +77,7 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 			return true;
 		if (!(obj instanceof BaseOpenmrsObject))
 			return false;
-		BaseOpenmrsObject other = (BaseOpenmrsObject) obj;
+		OpenmrsObject other = (BaseOpenmrsObject) obj;
 		// Need to call getUuid to make sure the hibernate proxy objects return the correct uuid.
 		// The private member may not be set for a hibernate proxy.
 		if (getUuid() == null)

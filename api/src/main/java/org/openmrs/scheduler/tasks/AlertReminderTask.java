@@ -36,7 +36,8 @@ public class AlertReminderTask extends AbstractTask {
 	/**
 	 * Send alert reminder email to user(s) associated with the alert.
 	 */
-	public void execute() {
+	@Override
+    public void execute() {
 		try {
 			// Authenticate
 			if (!Context.isAuthenticated()) {
@@ -87,7 +88,7 @@ public class AlertReminderTask extends AbstractTask {
 	 * @param alerts
 	 * @return
 	 */
-	private Collection<User> getRecipients(Collection<Alert> alerts) {
+	private Collection<User> getRecipients(Iterable<Alert> alerts) {
 		Collection<User> users = new HashSet<User>();
 		for (Alert alert : alerts) {
 			log.debug("Send email to alert recipient(s) ...");

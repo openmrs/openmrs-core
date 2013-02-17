@@ -175,7 +175,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param obsParent current obs to loop over
 	 * @return list of leaf obs
 	 */
-	private List<Obs> getObsLeaves(Obs obsParent) {
+	private Collection<Obs> getObsLeaves(Obs obsParent) {
 		List<Obs> leaves = new ArrayList<Obs>();
 		
 		if (obsParent.hasGroupMembers()) {
@@ -230,7 +230,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return all non-voided obs
 	 * @should not get voided obs
 	 */
-	public Set<Obs> getAllObs() {
+	public Iterable<Obs> getAllObs() {
 		return getAllObs(false);
 	}
 	
@@ -246,7 +246,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should only return the grouped top level obs
 	 * @should get both child and parent obs after removing child from parent grouping
 	 */
-	public Set<Obs> getObsAtTopLevel(boolean includeVoided) {
+	public Iterable<Obs> getObsAtTopLevel(boolean includeVoided) {
 		Set<Obs> ret = new HashSet<Obs>();
 		for (Obs o : getAllObs(includeVoided)) {
 			if (o.getObsGroup() == null)
@@ -287,7 +287,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 			obsToUpdate.add(observation);
 			
 			//prevent infinite recursion if an obs is its own group member
-			Set<Obs> seenIt = new HashSet<Obs>();
+			Collection<Obs> seenIt = new HashSet<Obs>();
 			
 			while (!obsToUpdate.isEmpty()) {
 				Obs o = obsToUpdate.removeFirst();
@@ -450,7 +450,8 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return same provider for person if called twice
 	 * @should not return a voided provider
 	 */
-	public Person getProvider() {
+	@Deprecated
+    public Person getProvider() {
 		if (encounterProviders == null || encounterProviders.isEmpty()) {
 			return null;
 		} else {
@@ -468,7 +469,8 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param provider The provider to set.
 	 * @deprecated use {@link #setProvider(Person)}
 	 */
-	public void setProvider(User provider) {
+	@Deprecated
+    public void setProvider(User provider) {
 		setProvider(provider.getPerson());
 	}
 	
@@ -477,7 +479,8 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated since 1.9, use {@link #setProvider(EncounterRole, Provider)}
 	 * @should set existing provider for unknown role
 	 */
-	public void setProvider(Person provider) {
+	@Deprecated
+    public void setProvider(Person provider) {
 		EncounterRole unknownRole = Context.getEncounterService().getEncounterRoleByUuid(
 		    EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID);
 		if (unknownRole == null) {
@@ -527,7 +530,8 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getEncounterId();
 	}
@@ -536,7 +540,8 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setEncounterId(id);
 		
 	}

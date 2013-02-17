@@ -214,7 +214,7 @@ public class DWROrderService {
 	@SuppressWarnings("unchecked")
 	public Collection<OrderableListItem> getOrderables(String searchValue) {
 		
-		Vector orderableList = new Vector();
+		Collection orderableList = new Vector();
 		
 		try {
 			for (Orderable<?> u : Context.getOrderService().getOrderables(searchValue)) {

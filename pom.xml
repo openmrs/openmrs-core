@@ -37,8 +37,6 @@
 		<module>tools</module>
 		<module>test</module>
 		<module>api</module>
-		<module>web</module>
-		<module>webapp</module>
 		<module>release-test</module>
 	</modules>
 

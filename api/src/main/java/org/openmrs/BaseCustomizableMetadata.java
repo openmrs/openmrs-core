@@ -52,7 +52,7 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 	 */
 	@Override
 	public Collection<A> getActiveAttributes() {
-		List<A> ret = new ArrayList<A>();
+		Collection<A> ret = new ArrayList<A>();
 		if (getAttributes() != null)
 			for (A attr : getAttributes())
 				if (!attr.isVoided())

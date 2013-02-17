@@ -13,16 +13,7 @@
  */
 package org.openmrs.web.controller.encounter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.Vector;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -130,7 +121,7 @@ public class EncounterFormController extends SimpleFormController {
 				EncounterService es = Context.getEncounterService();
 				if (providerIdsArray != null && roleIdsArray != null) {
 					//list to store role provider mappings to be used below to detect removed providers
-					ArrayList<String> unremovedRoleAndProviders = new ArrayList<String>();
+					Collection<String> unremovedRoleAndProviders = new ArrayList<String>();
 					for (int i = 0; i < providerIdsArray.length; i++) {
 						if (StringUtils.hasText(providerIdsArray[i]) && StringUtils.hasText(roleIdsArray[i])) {
 							unremovedRoleAndProviders.add(roleIdsArray[i] + "-" + providerIdsArray[i]);
@@ -262,7 +253,7 @@ public class EncounterFormController extends SimpleFormController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		// obsIds of obs that were edited
-		List<Integer> editedObs = new Vector<Integer>();
+		Collection<Integer> editedObs = new Vector<Integer>();
 		
 		// the map returned to the form
 		// This is a mapping between the formfield and a list of the Obs/ObsGroup in that field
@@ -351,7 +342,8 @@ public class EncounterFormController extends SimpleFormController {
 		/**
 		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 		 */
-		public int compare(FormField formField, FormField other) {
+		@Override
+        public int compare(FormField formField, FormField other) {
 			int temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getPageNumber(), other.getPageNumber());
 			if (temp == 0)
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFieldNumber(), other.getFieldNumber());

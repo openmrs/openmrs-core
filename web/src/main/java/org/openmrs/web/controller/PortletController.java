@@ -14,14 +14,7 @@
 package org.openmrs.web.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -125,7 +118,7 @@ public class PortletController implements Controller {
 				model = (Map<String, Object>) session.getAttribute(WebConstants.OPENMRS_PORTLET_CACHED_MODEL);
 				
 				// remove cached parameters 
-				List<String> parameterKeys = (List<String>) model.get("parameterKeys");
+				Iterable<String> parameterKeys = (List<String>) model.get("parameterKeys");
 				if (parameterKeys != null) {
 					for (String key : parameterKeys) {
 						model.remove(key);
@@ -163,7 +156,7 @@ public class PortletController implements Controller {
 			model.put("size", size);
 			model.put("locale", Context.getLocale());
 			model.put("portletUUID", UUID.randomUUID().toString().replace("-", ""));
-			List<String> parameterKeys = new ArrayList<String>(params.keySet());
+			Collection<String> parameterKeys = new ArrayList<String>(params.keySet());
 			model.putAll(params);
 			if (moreParams != null) {
 				model.putAll(moreParams);
@@ -301,8 +294,8 @@ public class PortletController implements Controller {
 						if (Context.hasPrivilege(PrivilegeConstants.VIEW_ORDERS)) {
 							List<DrugOrder> drugOrderList = Context.getOrderService().getDrugOrdersByPatient(p);
 							model.put("patientDrugOrders", drugOrderList);
-							List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>();
-							List<DrugOrder> discontinuedDrugOrders = new ArrayList<DrugOrder>();
+							Collection<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>();
+							Collection<DrugOrder> discontinuedDrugOrders = new ArrayList<DrugOrder>();
 							Date rightNow = new Date();
 							for (Iterator<DrugOrder> iter = drugOrderList.iterator(); iter.hasNext();) {
 								DrugOrder next = iter.next();
@@ -357,7 +350,7 @@ public class PortletController implements Controller {
 				
 				if (!model.containsKey("personRelationships")) {
 					if (Context.hasPrivilege(PrivilegeConstants.VIEW_RELATIONSHIPS)) {
-						List<Relationship> relationships = new ArrayList<Relationship>();
+						Collection<Relationship> relationships = new ArrayList<Relationship>();
 						relationships.addAll(Context.getPersonService().getRelationshipsByPerson(p));
 						Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
 						for (Relationship rel : relationships) {

@@ -14,6 +14,7 @@
 package org.openmrs.web.dwr;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -56,7 +57,7 @@ public class DWRVisitService {
 		MessageSourceService mss = Context.getMessageSourceService();
 		
 		try {
-			List<Visit> visits = new Vector<Visit>();
+			Collection<Visit> visits = new Vector<Visit>();
 			
 			if (patientId != null) {
 				Patient p = Context.getPatientService().getPatient(patientId);
@@ -104,7 +105,7 @@ public class DWRVisitService {
 		Vector<Object> objectList = new Vector<Object>();
 		
 		try {
-			List<Encounter> encounters = new Vector<Encounter>();
+			Collection<Encounter> encounters = new Vector<Encounter>();
 			
 			if (visitId != null) {
 				Visit v = Context.getVisitService().getVisit(visitId);

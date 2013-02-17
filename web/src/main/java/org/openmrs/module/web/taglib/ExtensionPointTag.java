@@ -76,21 +76,26 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	private Integer index = 0;
 	
 	// private variables
-	private Iterator<Extension> extensions;
+	@org.jetbrains.annotations.Nullable
+    private Iterator<Extension> extensions;
 	
 	private Map<String, String> parameterMap;
 	
-	private BodyContent bodyContent = null;
+	@org.jetbrains.annotations.Nullable
+    private BodyContent bodyContent = null;
 	
 	// tag attributes
-	private String pointId;
+	@org.jetbrains.annotations.Nullable
+    private String pointId;
 	
 	private String parameters = "";
 	
-	private String requiredClass;
+	@org.jetbrains.annotations.Nullable
+    private String requiredClass;
 	
 	/** all tags using this should default to 'html' media type */
-	private String type = "html";
+	@org.jetbrains.annotations.Nullable
+    private String type = "html";
 	
 	/** name of Map containing variables first/last/index */
 	private String varStatus = "varStatus";
@@ -196,8 +201,9 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 			// set up and apply the status variable
 			status.put(STATUS_FIRST, index == 0);
 			status.put(STATUS_LAST, extensions.hasNext() == false);
-			status.put(STATUS_INDEX, index++);
-			pageContext.setAttribute(varStatus, status);
+			status.put(STATUS_INDEX, index);
+            index++;
+            pageContext.setAttribute(varStatus, status);
 		} else {
 			try {
 				bodyContent.getEnclosingWriter().write(overrideContent);

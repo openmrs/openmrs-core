@@ -59,15 +59,18 @@ public class FormatDateTag extends TagSupport {
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
-	private Date date;
+	@org.jetbrains.annotations.Nullable
+    private Date date;
 	
 	private Boolean dateWasSet = false;
 	
-	private String path;
+	@org.jetbrains.annotations.Nullable
+    private String path;
 	
 	private String type;
 	
-	private String format;
+	@org.jetbrains.annotations.Nullable
+    private String format;
 	
 	private boolean showTodayOrYesterday = false;
 	

@@ -13,10 +13,7 @@
  */
 package org.openmrs.web.dwr;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -90,7 +87,7 @@ public class DWREncounterService {
 		
 		try {
 			EncounterService es = Context.getEncounterService();
-			List<Encounter> encs = new Vector<Encounter>();
+			Collection<Encounter> encs = new Vector<Encounter>();
 			
 			if (phrase == null) {
 				objectList.add(mss.getMessage("Encounter.searchPhraseCannotBeNull"));
@@ -147,7 +144,7 @@ public class DWREncounterService {
 	        boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
-		Vector<Object> objectList = new Vector<Object>();
+		Collection<Object> objectList = new Vector<Object>();
 		try {
 			EncounterService es = Context.getEncounterService();
 			int encounterCount = 0;
@@ -283,7 +280,7 @@ public class DWREncounterService {
 		
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
-		Vector<Object> objectList = new Vector<Object>();
+		Collection<Object> objectList = new Vector<Object>();
 		try {
 			LocationService es = Context.getLocationService();
 			int locationCount = 0;

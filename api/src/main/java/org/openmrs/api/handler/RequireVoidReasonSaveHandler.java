@@ -46,7 +46,8 @@ public class RequireVoidReasonSaveHandler implements SaveHandler<Voidable> {
 	 * @should not throw Exception if voidReason is not blank
 	 * @should not throw Exception if voidReason is null for unsupported types
 	 */
-	public void handle(Voidable voidableObject, User currentUser, Date currentDate, String notUsed) {
+	@Override
+    public void handle(Voidable voidableObject, User currentUser, Date currentDate, String notUsed) {
 		
 		if (voidableObject.isVoided() && StringUtils.isBlank(voidableObject.getVoidReason())) {
 			throw new APIException("The voided bit was set to true, so a void reason is required at save time for object: "

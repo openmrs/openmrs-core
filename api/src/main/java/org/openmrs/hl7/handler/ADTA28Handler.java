@@ -13,10 +13,7 @@
  */
 package org.openmrs.hl7.handler;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -207,7 +204,7 @@ public class ADTA28Handler implements Application {
 		if (idList == null || idList.length < 1)
 			throw new HL7Exception("Missing patient identifier in PID segment");
 		
-		List<PatientIdentifier> goodIdentifiers = new ArrayList<PatientIdentifier>();
+		Collection<PatientIdentifier> goodIdentifiers = new ArrayList<PatientIdentifier>();
 		for (CX id : idList) {
 			
 			String assigningAuthority = id.getAssigningAuthority().getNamespaceID().getValue();

@@ -33,7 +33,7 @@ public class ReportObjectFactory {
 	
 	private static ReportObjectFactory singleton;
 	
-	private static Log log = LogFactory.getLog(ReportObjectFactory.class);
+	private static final Log log = LogFactory.getLog(ReportObjectFactory.class);
 	
 	private String defaultValidator;
 	
@@ -278,7 +278,7 @@ public class ReportObjectFactory {
 				setterParamClasses[0] = valClass;
 				Object[] setterParams = new Object[1];
 				setterParams[0] = val;
-				Method m = null;
+				@org.jetbrains.annotations.Nullable Method m = null;
 				try {
 					m = reportObj.getClass().getMethod(methodName, setterParamClasses);
 				}

@@ -69,19 +69,23 @@ public class CohortColumn implements ExportColumn, Serializable {
 		}
 	}
 	
-	public String getColumnName() {
+	@Override
+    public String getColumnName() {
 		return this.columnName;
 	}
 	
-	public void setColumnName(String columnName) {
+	@Override
+    public void setColumnName(String columnName) {
 		this.columnName = columnName;
 	}
 	
-	public String getTemplateColumnName() {
+	@Override
+    public String getTemplateColumnName() {
 		return columnName;
 	}
 	
-	public String toTemplateString() {
+	@Override
+    public String toTemplateString() {
 		if (cohortId != null)
 			return "$!{fn.getCohortMembership(" + cohortId + ", '" + valueIfTrue + "', '" + valueIfFalse + "')}";
 		else if (filterId != null)

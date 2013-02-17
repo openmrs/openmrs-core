@@ -27,13 +27,14 @@ import org.openmrs.api.context.Context;
  */
 public class LocationUtility implements GlobalPropertyListener {
 	
-	private static Log log = LogFactory.getLog(LocationUtility.class);
+	private static final Log log = LogFactory.getLog(LocationUtility.class);
 	
 	/**
 	 * Cached version of the system default location. This is cached so that we don't have to look
 	 * it up in the global property table every time it is requested for
 	 */
-	private static Location defaultLocation = null;
+	@org.jetbrains.annotations.Nullable
+    private static Location defaultLocation = null;
 	
 	/**
 	 * Gets the system default location specified as a global property.

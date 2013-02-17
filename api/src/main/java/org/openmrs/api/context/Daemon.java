@@ -29,7 +29,7 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  * This class allows certain tasks to run with elevated privileges. Primary use is scheduling and
  * module startup when there is no user to authenticate as.
  */
-public class Daemon {
+public final class Daemon {
 	
 	/**
 	 * The uuid defined for the daemon user object
@@ -37,8 +37,11 @@ public class Daemon {
 	protected static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
 	
 	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
-	
-	/**
+
+    private Daemon() {
+    }
+
+    /**
 	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
 	 */
 	public static Module startModule(Module module) throws ModuleException {

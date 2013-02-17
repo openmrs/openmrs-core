@@ -43,7 +43,8 @@ public class PersonAttributeFilter extends CachingPatientFilter {
 		return sb.toString();
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Patients with ");
 		sb.append(getAttribute() != null ? getAttribute().getName() : " any attribute");
@@ -59,7 +60,8 @@ public class PersonAttributeFilter extends CachingPatientFilter {
 		return Context.getPatientSetService().getPatientsHavingPersonAttribute(getAttribute(), getValue());
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		// TODO Auto-generated method stub
 		return true;
 	}

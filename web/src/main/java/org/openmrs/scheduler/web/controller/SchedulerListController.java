@@ -172,7 +172,7 @@ public class SchedulerListController extends SimpleFormController {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		Collection<TaskDefinition> tasks = (Collection<TaskDefinition>) command;
+		Iterable<TaskDefinition> tasks = (Collection<TaskDefinition>) command;
 		Map<TaskDefinition, String> intervals = new HashMap<TaskDefinition, String>();
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 		

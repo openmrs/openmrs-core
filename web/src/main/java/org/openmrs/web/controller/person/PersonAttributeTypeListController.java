@@ -13,12 +13,7 @@
  */
 package org.openmrs.web.controller.person;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -137,7 +132,7 @@ public class PersonAttributeTypeListController {
 			
 			List<PersonAttributeType> attributes = ps.getAllPersonAttributeTypes();
 			
-			Set<PersonAttributeType> attributesToSave = new HashSet<PersonAttributeType>();
+			Collection<PersonAttributeType> attributesToSave = new HashSet<PersonAttributeType>();
 			
 			List<Integer> selectedIds = Arrays.asList(personAttributeTypeId);
 			
@@ -187,7 +182,7 @@ public class PersonAttributeTypeListController {
 			
 			// assumes attributes are returned in sortWeight order
 			
-			Set<PersonAttributeType> attributesToSave = new HashSet<PersonAttributeType>();
+			Collection<PersonAttributeType> attributesToSave = new HashSet<PersonAttributeType>();
 			
 			List<Integer> selectedIds = Arrays.asList(personAttributeTypeId);
 			

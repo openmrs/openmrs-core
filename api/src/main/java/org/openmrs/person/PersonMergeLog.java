@@ -14,6 +14,7 @@
 package org.openmrs.person;
 
 import org.openmrs.BaseOpenmrsData;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.Person;
 import org.openmrs.api.PersonService;
 
@@ -65,7 +66,7 @@ public class PersonMergeLog extends BaseOpenmrsData {
 		this.personMergeLogId = personMergeLogId;
 	}
 	
-	public Person getWinner() {
+	public OpenmrsObject getWinner() {
 		return winner;
 	}
 	
@@ -73,7 +74,7 @@ public class PersonMergeLog extends BaseOpenmrsData {
 		this.winner = winner;
 	}
 	
-	public Person getLoser() {
+	public OpenmrsObject getLoser() {
 		return loser;
 	}
 	
@@ -97,11 +98,13 @@ public class PersonMergeLog extends BaseOpenmrsData {
 		this.personMergeLogData = personMergeLogData;
 	}
 	
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setPersonMergeLogId(id);
 	}
 	
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getPersonMergeLogId();
 	}
 	

@@ -26,7 +26,8 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 	
 	public static final ActiveListType ACTIVE_LIST_TYPE = new ActiveListType(2);
 	
-	private ProblemModifier modifier;
+	@org.jetbrains.annotations.Nullable
+    private ProblemModifier modifier;
 	
 	// so users can sort problem list to their liking (until someone else comes around and changes it)
 	private Double sortWeight;
@@ -104,7 +105,8 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(Problem item) {
+	@Override
+    public int compareTo(Problem item) {
 		Double mySW = this.sortWeight;
 		Double theirSW = item.getSortWeight();
 		

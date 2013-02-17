@@ -652,7 +652,7 @@ public class ConceptFormController extends SimpleFormController {
 		/**
 		 * @return the locales
 		 */
-		public List<Locale> getLocales() {
+		public Iterable<Locale> getLocales() {
 			return locales;
 		}
 		

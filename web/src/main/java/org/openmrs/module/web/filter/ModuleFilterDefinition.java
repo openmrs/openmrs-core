@@ -156,7 +156,7 @@ public class ModuleFilterDefinition implements Serializable {
 	 * @return List of {@link ModuleFilterDefinition}s that have been defined for the passed
 	 *         {@link Module}
 	 */
-	public static List<ModuleFilterDefinition> retrieveFilterDefinitions(Module module) throws ModuleException {
+	public static Iterable<ModuleFilterDefinition> retrieveFilterDefinitions(Module module) throws ModuleException {
 		
 		List<ModuleFilterDefinition> filters = new Vector<ModuleFilterDefinition>();
 		

@@ -57,15 +57,17 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter implem
 		this.parsedCompositionString = parsedCompositionString;
 	}
 	
-	public String getName() {
+	@Override
+    public String getName() {
 		return nameHelper(parsedCompositionString);
 	}
 	
-	public void setName(String name) {
+	@Override
+    public void setName(String name) {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private String nameHelper(List list) {
+	private String nameHelper(Iterable list) {
 		StringBuilder ret = new StringBuilder();
 		for (Object o : list) {
 			if (ret.length() > 0)
@@ -175,17 +177,20 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter implem
 		return toPatientFilter(getParsedCompositionString());
 	}
 	
-	public Cohort filter(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filter(Cohort input, EvaluationContext context) {
 		PatientFilter pf = toPatientFilter(getParsedCompositionString());
 		return pf.filter(input, context);
 	}
 	
-	public Cohort filterInverse(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		PatientFilter pf = toPatientFilter(getParsedCompositionString());
 		return pf.filterInverse(input, context);
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		return true;
 	}
 	

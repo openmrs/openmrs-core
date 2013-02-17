@@ -105,7 +105,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 			length = maximumResults;
 		
 		// the list to return
-		List<Object> patientList = new Vector<Object>();
+		Collection<Object> patientList = new Vector<Object>();
 		
 		PatientService ps = Context.getPatientService();
 		Collection<Patient> patients;
@@ -432,7 +432,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 		PatientService ps = Context.getPatientService();
 		ConceptService cs = Context.getConceptService();
 		
-		Patient patient = null;
+		@org.jetbrains.annotations.Nullable Patient patient = null;
 		try {
 			patient = ps.getPatient(patientId);
 		}
@@ -445,7 +445,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 		}
 		
 		// Get the exit reason concept (if possible)
-		Concept exitReasonConcept = null;
+		@org.jetbrains.annotations.Nullable Concept exitReasonConcept = null;
 		try {
 			exitReasonConcept = cs.getConcept(exitReasonId);
 		}
@@ -459,7 +459,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 		}
 		
 		// Parse the exit date
-		Date exitDate = null;
+		@org.jetbrains.annotations.Nullable Date exitDate = null;
 		if (exitDateStr != null) {
 			SimpleDateFormat sdf = Context.getDateFormat();
 			try {
@@ -492,7 +492,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 				// If the exist reason == patient died
 				if (exitReasonConcept.equals(patientDiedConcept)) {
 					
-					Concept causeOfDeathConcept = null;
+					@org.jetbrains.annotations.Nullable Concept causeOfDeathConcept = null;
 					try {
 						causeOfDeathConcept = cs.getConcept(causeOfDeathConceptId);
 					}

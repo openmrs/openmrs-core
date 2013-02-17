@@ -25,14 +25,7 @@ import java.net.URLConnection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,7 +43,8 @@ import org.openmrs.scheduler.SchedulerService;
  */
 public class OpenmrsClassLoader extends URLClassLoader {
 	
-	private static Log log = LogFactory.getLog(OpenmrsClassLoader.class);
+	@org.jetbrains.annotations.Nullable
+    private static Log log = LogFactory.getLog(OpenmrsClassLoader.class);
 	
 	private static File libCacheFolder;
 	
@@ -60,7 +54,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	private static Map<String, OpenmrsMemento> mementos = new WeakHashMap<String, OpenmrsMemento>();
 	
 	// holds a list of all classes that this classloader loaded so that they can be cleaned up
-	private Set<Class<?>> loadedClasses = new HashSet<Class<?>>();
+	private Collection<Class<?>> loadedClasses = new HashSet<Class<?>>();
 	
 	// suffix of the OpenMRS required library cache folder
 	private static final String LIBCACHESUFFIX = ".openmrs-lib-cache";
@@ -96,9 +90,10 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * storing the instance object on {@link OpenmrsClassLoader} itself so that garbage collection
 	 * can happen correctly.
 	 */
-	private static class OpenmrsClassLoaderHolder {
+	private static final class OpenmrsClassLoaderHolder {
 		
-		private static OpenmrsClassLoader INSTANCE = null;
+		@org.jetbrains.annotations.Nullable
+        private static OpenmrsClassLoader INSTANCE = null;
 		
 	}
 	
@@ -204,7 +199,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public Enumeration<URL> findResources(final String name) throws IOException {
-		Set<URL> results = new HashSet<URL>();
+		Collection<URL> results = new HashSet<URL>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			Enumeration<URL> urls = classLoader.findResources(name);
 			while (urls.hasMoreElements()) {
@@ -244,7 +239,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public Enumeration<URL> getResources(String packageName) throws IOException {
-		Set<URL> results = new HashSet<URL>();
+		Collection<URL> results = new HashSet<URL>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			Enumeration<URL> urls = classLoader.getResources(packageName);
 			while (urls.hasMoreElements()) {
@@ -307,7 +302,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	// List all threads and recursively list all subgroup
-	private static List<Thread> listThreads(ThreadGroup group, String indent) {
+	private static Collection<Thread> listThreads(ThreadGroup group, String indent) {
 		List<Thread> threadToReturn = new ArrayList<Thread>();
 		
 		log.error(indent + "Group[" + group.getName() + ":" + group.getClass() + "]");
@@ -718,7 +713,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	private class OpenmrsURLConnection extends URLConnection {
 		
-		public OpenmrsURLConnection() {
+		private OpenmrsURLConnection() {
 			super(null);
 		}
 		

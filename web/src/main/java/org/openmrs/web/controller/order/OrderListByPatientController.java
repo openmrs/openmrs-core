@@ -178,7 +178,7 @@ public class OrderListByPatientController extends SimpleFormController {
 		// Load international concept names so we can show the correct drug name
 		Map<Integer, String> conceptNames = new HashMap<Integer, String>();
 		
-		List<Order> orderList = (List<Order>) obj;
+		Iterable<Order> orderList = (List<Order>) obj;
 		
 		for (Order order : orderList) {
 			Concept c = order.getConcept();

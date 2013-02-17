@@ -74,7 +74,7 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 * @param text String to display for the alert
 	 * @param users Recipients of this alert
 	 */
-	public Alert(String text, Collection<User> users) {
+	public Alert(String text, Iterable<User> users) {
 		setText(text);
 		for (User user : users)
 			addRecipient(user);
@@ -108,28 +108,32 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	/**
 	 * @return Returns the creator.
 	 */
-	public User getCreator() {
+	@Override
+    public User getCreator() {
 		return creator;
 	}
 	
 	/**
 	 * @param creator The creator to set.
 	 */
-	public void setCreator(User creator) {
+	@Override
+    public void setCreator(User creator) {
 		this.creator = creator;
 	}
 	
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	public Date getDateCreated() {
+	@Override
+    public Date getDateCreated() {
 		return dateCreated;
 	}
 	
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	public void setDateCreated(Date dateCreated) {
+	@Override
+    public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 	
@@ -206,35 +210,39 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	/**
 	 * @return Returns the changedBy.
 	 */
-	public User getChangedBy() {
+	@Override
+    public User getChangedBy() {
 		return changedBy;
 	}
 	
 	/**
 	 * @param changedBy The user that changed this alert
 	 */
-	public void setChangedBy(User changedBy) {
+	@Override
+    public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
 	
 	/**
 	 * @return Returns the date this alert was changed
 	 */
-	public Date getDateChanged() {
+	@Override
+    public Date getDateChanged() {
 		return dateChanged;
 	}
 	
 	/**
 	 * @param dateChanged The date this alert was changed
 	 */
-	public void setDateChanged(Date dateChanged) {
+	@Override
+    public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
 	
 	/**
 	 * @return Returns the Recipients of this alert
 	 */
-	public Set<AlertRecipient> getRecipients() {
+	public Iterable<AlertRecipient> getRecipients() {
 		return recipients;
 	}
 	
@@ -326,7 +334,8 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getAlertId();
 	}
 	
@@ -334,7 +343,8 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setAlertId(id);
 	}
 	

@@ -13,11 +13,7 @@
  */
 package org.openmrs;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
@@ -41,12 +37,14 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	private ConceptName conceptName;
 	
-	private String word;
+	@org.jetbrains.annotations.Nullable
+    private String word;
 	
 	@Deprecated
 	private String synonym;
 	
-	private Locale locale;
+	@org.jetbrains.annotations.Nullable
+    private Locale locale;
 	
 	private Double weight = 0.0;
 	
@@ -214,7 +212,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	 * @should not include voided names
 	 */
 	
-	public static Set<ConceptWord> makeConceptWords(Concept concept) {
+	public static Collection<ConceptWord> makeConceptWords(Concept concept) {
 		Set<ConceptWord> words = new HashSet<ConceptWord>();
 		
 		for (ConceptName name : concept.getNames()) {
@@ -300,7 +298,8 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(ConceptWord word) {
+	@Override
+    public int compareTo(ConceptWord word) {
 		return Double.compare(word.getWeight(), weight);
 	}
 	

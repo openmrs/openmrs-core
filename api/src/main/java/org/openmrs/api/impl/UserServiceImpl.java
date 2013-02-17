@@ -70,14 +70,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#createUser(org.openmrs.User, java.lang.String)
 	 * @deprecated
 	 */
-	public User createUser(User user, String password) throws APIException {
+	@Override
+    @Deprecated
+    public User createUser(User user, String password) throws APIException {
 		return Context.getUserService().saveUser(user, password);
 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
 	 */
-	public User saveUser(User user, String password) throws APIException {
+	@Override
+    public User saveUser(User user, String password) throws APIException {
 		if (user.getUserId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_USERS);
 		} else {
@@ -107,7 +110,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getUser(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public User getUser(Integer userId) throws APIException {
 		return dao.getUser(userId);
 	}
@@ -115,7 +119,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getUserByUsername(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public User getUserByUsername(String username) throws APIException {
 		return dao.getUserByUsername(username);
 	}
@@ -123,7 +128,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public boolean hasDuplicateUsername(User user) throws APIException {
 		return dao.hasDuplicateUsername(user.getUsername(), user.getSystemId(), user.getUserId());
 	}
@@ -131,7 +137,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getUsersByRole(org.openmrs.Role)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<User> getUsersByRole(Role role) throws APIException {
 		List<Role> roles = new Vector<Role>();
 		roles.add(role);
@@ -143,7 +150,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @deprecated replaced by {@link #saveUser(User, String)}
 	 * @see org.openmrs.api.UserService#updateUser(org.openmrs.User)
 	 */
-	public void updateUser(User user) throws APIException {
+	@Override
+    @Deprecated
+    public void updateUser(User user) throws APIException {
 		Context.getUserService().saveUser(user, null);
 	}
 	
@@ -151,7 +160,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#grantUserRole(org.openmrs.User, org.openmrs.Role)
 	 * @deprecated
 	 */
-	public void grantUserRole(User user, Role role) throws APIException {
+	@Override
+    @Deprecated
+    public void grantUserRole(User user, Role role) throws APIException {
 		Context.getUserService().saveUser(user.addRole(role), null);
 	}
 	
@@ -159,21 +170,25 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#revokeUserRole(org.openmrs.User, org.openmrs.Role)
 	 * @deprecated
 	 */
-	public void revokeUserRole(User user, Role role) throws APIException {
+	@Override
+    @Deprecated
+    public void revokeUserRole(User user, Role role) throws APIException {
 		Context.getUserService().saveUser(user.removeRole(role), null);
 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#voidUser(org.openmrs.User, java.lang.String)
 	 */
-	public User voidUser(User user, String reason) throws APIException {
+	@Override
+    public User voidUser(User user, String reason) throws APIException {
 		return Context.getUserService().retireUser(user, reason);
 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#retireUser(org.openmrs.User, java.lang.String)
 	 */
-	public User retireUser(User user, String reason) throws APIException {
+	@Override
+    public User retireUser(User user, String reason) throws APIException {
 		user.setRetired(true);
 		user.setRetireReason(reason);
 		user.setRetiredBy(Context.getAuthenticatedUser());
@@ -185,14 +200,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#unvoidUser(org.openmrs.User)
 	 */
-	public User unvoidUser(User user) throws APIException {
+	@Override
+    public User unvoidUser(User user) throws APIException {
 		return Context.getUserService().unretireUser(user);
 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#unretireUser(org.openmrs.User)
 	 */
-	public User unretireUser(User user) throws APIException {
+	@Override
+    public User unretireUser(User user) throws APIException {
 		user.setRetired(false);
 		user.setRetireReason(null);
 		user.setRetiredBy(null);
@@ -205,7 +222,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#deleteUser(org.openmrs.User)
 	 * @deprecated
 	 */
-	public void deleteUser(User user) throws APIException {
+	@Override
+    @Deprecated
+    public void deleteUser(User user) throws APIException {
 		Context.getUserService().purgeUser(user);
 	}
 	
@@ -213,7 +232,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#getUsers()
 	 * @deprecated
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<User> getUsers() throws APIException {
 		return getAllUsers();
 	}
@@ -221,7 +242,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getAllUsers()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<User> getAllUsers() throws APIException {
 		return dao.getAllUsers();
 	}
@@ -230,7 +252,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#getPrivileges()
 	 * @deprecated
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<Privilege> getPrivileges() throws APIException {
 		return getAllPrivileges();
 	}
@@ -238,7 +262,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getAllPrivileges()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Privilege> getAllPrivileges() throws APIException {
 		return dao.getAllPrivileges();
 	}
@@ -246,7 +271,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getPrivilege(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Privilege getPrivilege(String p) throws APIException {
 		return dao.getPrivilege(p);
 	}
@@ -254,7 +280,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#purgePrivilege(org.openmrs.Privilege)
 	 */
-	public void purgePrivilege(Privilege privilege) throws APIException {
+	@Override
+    public void purgePrivilege(Privilege privilege) throws APIException {
 		if (OpenmrsUtil.getCorePrivileges().keySet().contains(privilege.getPrivilege()))
 			throw new APIException("Cannot delete a core privilege");
 		
@@ -264,7 +291,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#savePrivilege(org.openmrs.Privilege)
 	 */
-	public Privilege savePrivilege(Privilege privilege) throws APIException {
+	@Override
+    public Privilege savePrivilege(Privilege privilege) throws APIException {
 		return dao.savePrivilege(privilege);
 	}
 	
@@ -272,7 +300,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#getRoles()
 	 * @deprecated
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<Role> getRoles() throws APIException {
 		return getAllRoles();
 	}
@@ -280,7 +310,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getAllRoles()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Role> getAllRoles() throws APIException {
 		return dao.getAllRoles();
 	}
@@ -289,7 +320,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#getInheritingRoles(org.openmrs.Role)
 	 * @deprecated
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<Role> getInheritingRoles(Role role) throws APIException {
 		
 		List<Role> roles = new Vector<Role>();
@@ -301,7 +334,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getRole(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Role getRole(String r) throws APIException {
 		return dao.getRole(r);
 	}
@@ -309,7 +343,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#purgeRole(org.openmrs.Role)
 	 */
-	public void purgeRole(Role role) throws APIException {
+	@Override
+    public void purgeRole(Role role) throws APIException {
 		if (role == null || role.getRole() == null)
 			return;
 		
@@ -322,7 +357,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#saveRole(org.openmrs.Role)
 	 */
-	public Role saveRole(Role role) throws APIException {
+	@Override
+    public Role saveRole(Role role) throws APIException {
 		
 		// make sure one of the parents of this role isn't itself...this would
 		// cause an infinite loop
@@ -337,28 +373,32 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#changePassword(org.openmrs.User, java.lang.String)
 	 */
-	public void changePassword(User u, String pw) throws APIException {
+	@Override
+    public void changePassword(User u, String pw) throws APIException {
 		dao.changePassword(u, pw);
 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#changePassword(java.lang.String, java.lang.String)
 	 */
-	public void changePassword(String pw, String pw2) throws APIException {
+	@Override
+    public void changePassword(String pw, String pw2) throws APIException {
 		dao.changePassword(pw, pw2);
 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#changeHashedPassword(User, String, String)
 	 */
-	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException {
+	@Override
+    public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException {
 		dao.changeHashedPassword(user, hashedPassword, salt);
 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#changeQuestionAnswer(User, String, String)
 	 */
-	public void changeQuestionAnswer(User u, String question, String answer) throws APIException {
+	@Override
+    public void changeQuestionAnswer(User u, String question, String answer) throws APIException {
 		dao.changeQuestionAnswer(u, question, answer);
 	}
 	
@@ -366,14 +406,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#changeQuestionAnswer(java.lang.String, java.lang.String,
 	 *      java.lang.String)
 	 */
-	public void changeQuestionAnswer(String pw, String q, String a) {
+	@Override
+    public void changeQuestionAnswer(String pw, String q, String a) {
 		dao.changeQuestionAnswer(pw, q, a);
 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#isSecretAnswer(org.openmrs.User, java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public boolean isSecretAnswer(User u, String answer) {
 		return dao.isSecretAnswer(u, answer);
 	}
@@ -382,7 +424,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#findUsers(String, List, boolean)
 	 * @deprecated
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
 		
 		List<Role> rolesToSearch = new Vector<Role>();
@@ -398,7 +442,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#findUsers(String, String, boolean)
 	 * @deprecated
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<User> findUsers(String givenName, String familyName, boolean includeVoided) {
 		return getUsersByName(givenName, familyName, includeVoided);
 	}
@@ -406,7 +452,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getUsersByName(java.lang.String, java.lang.String, boolean)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeVoided) throws APIException {
 		return dao.getUsersByName(givenName, familyName, includeVoided);
 	}
@@ -414,7 +461,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getUsersByPerson(org.openmrs.Person, boolean)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<User> getUsersByPerson(Person person, boolean includeRetired) throws APIException {
 		return dao.getUsersByPerson(person, includeRetired);
 	}
@@ -423,7 +471,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#getAllUsers(List, boolean)
 	 * @deprecated
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<User> getAllUsers(List<Role> roles, boolean includeVoided) {
 		return getUsers(null, roles, includeVoided);
 	}
@@ -431,7 +481,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getUsers(java.lang.String, java.util.List, boolean)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws APIException {
 		return getUsers(nameSearch, roles, includeVoided, null, null);
 	}
@@ -471,7 +522,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#setUserProperty(User, String, String)
 	 */
-	public User setUserProperty(User user, String key, String value) {
+	@Override
+    public User setUserProperty(User user, String key, String value) {
 		if (user != null) {
 			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USERS) && !user.equals(Context.getAuthenticatedUser()))
 				throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
@@ -492,7 +544,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#removeUserProperty(org.openmrs.User, java.lang.String)
 	 */
-	public User removeUserProperty(User user, String key) {
+	@Override
+    public User removeUserProperty(User user, String key) {
 		if (user != null) {
 			
 			// if the current user isn't allowed to edit users and
@@ -520,7 +573,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * 
 	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public String generateSystemId() {
 		// Hardcoding Luhn algorithm since all existing openmrs user ids have
 		// had check digits generated this way.
@@ -530,9 +584,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		Integer offset = 0;
 		do {
 			// generate and increment the system id if necessary
-			Integer generatedId = dao.generateSystemId() + offset++;
-			
-			systemId = generatedId.toString();
+			Integer generatedId = dao.generateSystemId() + offset;
+            offset++;
+
+            systemId = generatedId.toString();
 			
 			try {
 				systemId = liv.getValidIdentifier(systemId);
@@ -551,14 +606,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#purgeUser(org.openmrs.User)
 	 */
-	public void purgeUser(User user) throws APIException {
+	@Override
+    public void purgeUser(User user) throws APIException {
 		dao.deleteUser(user);
 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#purgeUser(org.openmrs.User, boolean)
 	 */
-	public void purgeUser(User user, boolean cascade) throws APIException {
+	@Override
+    public void purgeUser(User user, boolean cascade) throws APIException {
 		if (cascade == true) {
 			throw new APIException("I don't think we want to cascade here");
 		}
@@ -585,7 +642,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getPrivilegeByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Privilege getPrivilegeByUuid(String uuid) throws APIException {
 		return dao.getPrivilegeByUuid(uuid);
 	}
@@ -593,7 +651,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getRoleByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Role getRoleByUuid(String uuid) throws APIException {
 		return dao.getRoleByUuid(uuid);
 	}
@@ -601,7 +660,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getUserByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public User getUserByUuid(String uuid) throws APIException {
 		return dao.getUserByUuid(uuid);
 	}

@@ -86,7 +86,8 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	/**
 	 * @see OpenmrsSerializer#serialize(java.lang.Object)
 	 */
-	public String serialize(Object o) throws SerializationException {
+	@Override
+    public String serialize(Object o) throws SerializationException {
 		
 		return xstream.toXML(o);
 	}
@@ -94,7 +95,8 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	/**
 	 * @see OpenmrsSerializer#deserialize(String, Class)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException {
 		
 		try {

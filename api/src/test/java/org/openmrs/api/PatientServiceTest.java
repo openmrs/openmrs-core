@@ -623,7 +623,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Visit visit4 = visitService.getVisit(4);
 		Visit visit5 = visitService.getVisit(5);
 		
-		List<String> encounterUuidsThatShouldBeMoved = new ArrayList<String>();
+		Collection<String> encounterUuidsThatShouldBeMoved = new ArrayList<String>();
 		for (Visit v : Arrays.asList(visit1, visit2, visit3)) {
 			for (Encounter e : v.getEncounters()) {
 				encounterUuidsThatShouldBeMoved.add(e.getUuid());
@@ -1725,7 +1725,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(contains(new ArrayList<PatientIdentifier>(preferred.getIdentifiers()), voidedPI.getIdentifier()));
 	}
 	
-	public static boolean contains(List<PatientIdentifier> list, String identifier) {
+	public static boolean contains(Iterable<PatientIdentifier> list, String identifier) {
 		for (PatientIdentifier patientIdentifier : list) {
 			if (patientIdentifier.getIdentifier().equals(identifier)) {
 				return true;
@@ -2611,7 +2611,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		//retrieve order for notPreferred patient
 		List<Order> ordersForUnPreferredPatient = Context.getOrderService().getOrdersByPatient(notPreferred);
-		List<Order> undiscontinuedOrders = new ArrayList<Order>();
+		Collection<Order> undiscontinuedOrders = new ArrayList<Order>();
 		for (Order or : ordersForUnPreferredPatient) {
 			if (!or.getDiscontinued())
 				undiscontinuedOrders.add(or);
@@ -2949,7 +2949,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		return result.get(0);
 	}
 	
-	private boolean isValueInList(String value, List<String> list) {
+	private boolean isValueInList(String value, Collection<String> list) {
 		return (list != null && list.contains(value));
 	}
 	

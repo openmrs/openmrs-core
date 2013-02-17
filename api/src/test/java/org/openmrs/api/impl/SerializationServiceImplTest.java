@@ -62,7 +62,7 @@ public class SerializationServiceImplTest {
 	
 	class MockSerializer1 implements OpenmrsSerializer {
 		
-		public MockSerializer1() {
+		MockSerializer1() {
 		}
 		
 		/**
@@ -84,7 +84,7 @@ public class SerializationServiceImplTest {
 	
 	class MockSerializer2 implements OpenmrsSerializer {
 		
-		public MockSerializer2() {
+		MockSerializer2() {
 		}
 		
 		/**

@@ -29,7 +29,8 @@ public class PatientWidgetTag extends TagSupport {
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
-	private Integer patientId;
+	@org.jetbrains.annotations.Nullable
+    private Integer patientId;
 	
 	private String size = "normal";
 	

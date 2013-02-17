@@ -3,6 +3,7 @@ package org.openmrs.web.dwr;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.Vector;
 
@@ -34,7 +35,7 @@ public class DWRProgramWorkflowServiceTest extends BaseWebContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get possible outcomes for a program", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldReturnOutcomeConceptsFromProgram() throws Exception {
-		Vector<ListItem> possibleOutcomes = dwrProgramWorkflowService.getPossibleOutcomes(4);
+		Collection<ListItem> possibleOutcomes = dwrProgramWorkflowService.getPossibleOutcomes(4);
 		assertFalse(possibleOutcomes.isEmpty());
 		assertEquals(2, possibleOutcomes.size());
 	}
@@ -46,7 +47,7 @@ public class DWRProgramWorkflowServiceTest extends BaseWebContextSensitiveTest {
 		
 		Integer patient = 11;
 		Integer workflow = 501;
-		Vector<ListItem> possibleNextStates;
+		Collection<ListItem> possibleNextStates;
 		
 		possibleNextStates = dwrProgramWorkflowService.getPossibleNextStates(patient, workflow);
 		assertFalse(possibleNextStates.isEmpty());
@@ -61,7 +62,7 @@ public class DWRProgramWorkflowServiceTest extends BaseWebContextSensitiveTest {
 		
 		Integer patient = 11;
 		Integer workflow = 501;
-		Vector<ListItem> possibleNextStates;
+		Collection<ListItem> possibleNextStates;
 		
 		/* retire a concept */
 		PatientProgram pp = Context.getProgramWorkflowService().getPatientProgram(patient);
@@ -92,7 +93,7 @@ public class DWRProgramWorkflowServiceTest extends BaseWebContextSensitiveTest {
 		
 		Integer patient = 11;
 		Integer workflow = 501;
-		Vector<ListItem> possibleNextStates;
+		Collection<ListItem> possibleNextStates;
 		
 		/* retire a workflow state  */
 		PatientProgram pp = Context.getProgramWorkflowService().getPatientProgram(patient);

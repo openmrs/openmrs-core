@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
  */
 public class LocationTagEditor extends PropertyEditorSupport {
 	
-	private static Log log = LogFactory.getLog(LocationTagEditor.class);
+	private static final Log log = LogFactory.getLog(LocationTagEditor.class);
 	
 	public LocationTagEditor() {
 	}
@@ -41,7 +41,8 @@ public class LocationTagEditor extends PropertyEditorSupport {
 	 * 
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		LocationService ls = Context.getLocationService();
 		if (Context.isAuthenticated() && StringUtils.hasText(text)) {
 			try {
@@ -63,7 +64,8 @@ public class LocationTagEditor extends PropertyEditorSupport {
 	/**
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		LocationTag t = (LocationTag) getValue();
 		return t == null ? null : t.getLocationTagId().toString();
 	}

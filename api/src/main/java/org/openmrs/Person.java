@@ -94,7 +94,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * This is "cached" for each user upon first load. When an attribute is changed, the cache is
 	 * cleared and rebuilt on next access.
 	 */
-	Map<String, PersonAttribute> attributeMap = null;
+    @org.jetbrains.annotations.Nullable
+    Map<String, PersonAttribute> attributeMap = null;
 	
 	/**
 	 * default empty constructor
@@ -355,7 +356,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should not get voided attributes
 	 * @should not fail with null attributes
 	 */
-	public List<PersonAttribute> getActiveAttributes() {
+	public Iterable<PersonAttribute> getActiveAttributes() {
 		List<PersonAttribute> attrs = new Vector<PersonAttribute>();
 		for (PersonAttribute attr : getAttributes()) {
 			if (!attr.isVoided())
@@ -919,7 +920,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return true/false whether this person is a user or not
 	 * @deprecated use {@link UserService#getUsersByPerson(Person, boolean)}
 	 */
-	public boolean isUser() {
+	@Deprecated
+    public boolean isUser() {
 		return false;
 	}
 	
@@ -952,7 +954,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getPersonId();
 	}
@@ -961,7 +964,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setPersonId(id);
 		
 	}

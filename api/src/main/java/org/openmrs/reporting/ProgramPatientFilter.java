@@ -46,7 +46,8 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 		super.setSubType("Program Patient Filter");
 	}
 	
-	public Cohort filter(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filter(Cohort input, EvaluationContext context) {
 		if (!isReadyToRun())
 			return null;
 		PatientSetService service = Context.getPatientSetService();
@@ -58,7 +59,8 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 		return input == null ? matches : Cohort.intersect(input, matches);
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		if (!isReadyToRun())
 			return "";
 		Locale locale = Context.getLocale();
@@ -77,7 +79,8 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 		return ret.toString();
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		return program != null;
 	}
 	

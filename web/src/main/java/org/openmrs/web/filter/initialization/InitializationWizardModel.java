@@ -14,6 +14,7 @@
 package org.openmrs.web.filter.initialization;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.openmrs.web.WebConstants;
@@ -50,7 +51,7 @@ public class InitializationWizardModel {
 	/**
 	 * Records completed tasks and are displayed at the top of the page upon error
 	 */
-	public List<String> workLog = new ArrayList<String>();
+	public Collection<String> workLog = new ArrayList<String>();
 	
 	/**
 	 * Whether the runtime properties file could possible be created. (only read by the velocity
@@ -208,7 +209,8 @@ public class InitializationWizardModel {
 	 */
 	public List<WizardTask> tasksToExecute;
 	
-	public String localeToSave = "";
+	@org.jetbrains.annotations.Nullable
+    public String localeToSave = "";
 	
 	/**
 	 * The url to the remote system

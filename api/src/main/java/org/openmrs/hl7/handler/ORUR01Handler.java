@@ -222,14 +222,14 @@ public class ORUR01Handler implements Application {
 		// list of concepts proposed in the obs of this encounter.
 		// these proposals need to be created after the encounter
 		// has been created
-		List<ConceptProposal> conceptProposals = new ArrayList<ConceptProposal>();
+		Collection<ConceptProposal> conceptProposals = new ArrayList<ConceptProposal>();
 		
 		// create observations
 		if (log.isDebugEnabled())
 			log.debug("Creating observations for message " + messageControlId + "...");
 		// we ignore all MEDICAL_RECORD_OBSERVATIONS that are OBRs.  We do not
 		// create obs_groups for them
-		List<Integer> ignoredConceptIds = new ArrayList<Integer>();
+		Collection<Integer> ignoredConceptIds = new ArrayList<Integer>();
 		
 		String obrConceptId = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238");
@@ -440,7 +440,7 @@ public class ORUR01Handler implements Application {
 		boolean patientCanBeEitherPerson = relType.getbIsToA().equals(relType.getaIsToB());
 		
 		// look at existing relationships to determine if a new one is needed
-		Set<Relationship> rels = new HashSet<Relationship>();
+		Collection<Relationship> rels = new HashSet<Relationship>();
 		if (relative != null) {
 			if (patientCanBeEitherPerson || patientIsPersonA)
 				rels.addAll(Context.getPersonService().getRelationships(patient, relative, relType));

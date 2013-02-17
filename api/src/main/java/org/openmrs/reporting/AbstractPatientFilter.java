@@ -50,7 +50,8 @@ public abstract class AbstractPatientFilter extends AbstractReportObject impleme
 	 * @param context
 	 * @return
 	 */
-	public Cohort filterInverse(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		Cohort filterResult = filter(input, context);
 		if (input != null) {
 			return Cohort.subtract(input, filterResult);

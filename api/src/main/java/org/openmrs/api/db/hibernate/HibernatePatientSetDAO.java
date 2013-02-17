@@ -88,6 +88,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * Hibernate specific implementation of the PatientSetDAO. <br/>
@@ -121,7 +122,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @deprecated
 	 * @see org.openmrs.api.db.PatientSetDAO#exportXml(org.openmrs.Cohort)
 	 */
-	public String exportXml(Cohort ps) throws DAOException {
+	@Override
+    @Deprecated
+    public String exportXml(Cohort ps) throws DAOException {
 		StringBuffer ret = new StringBuffer("<patientset>");
 		for (Integer patientId : ps.getMemberIds()) {
 			ret.append(exportXml(patientId));
@@ -213,7 +216,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * 
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public String exportXml(Integer patientId) throws DAOException {
 		Locale locale = Context.getLocale();
 		
@@ -230,7 +234,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			doc = builder.newDocument();
 			
-			Element root = (Element) doc.createElement("patient_data");
+			Node root = (Element) doc.createElement("patient_data");
 			doc.appendChild(root);
 			
 			Element patientNode = doc.createElement("patient");
@@ -415,7 +419,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			List<Obs> allObservations = obsService.getObservationsByPerson(p);
 			if (allObservations != null && allObservations.size() > 0) {
 				log.debug("allObservations has " + allObservations.size() + " obs");
-				Set<Obs> undoneObservations = new HashSet<Obs>();
+				Collection<Obs> undoneObservations = new HashSet<Obs>();
 				for (Obs obs : allObservations) {
 					if (obs.getEncounter() == null) {
 						undoneObservations.add(obs);
@@ -459,7 +463,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Cohort getAllPatients() {
 		
 		Query query = sessionFactory.getCurrentSession().createQuery("select patientId from Patient p where p.voided = '0'");
@@ -482,7 +487,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 *            before this date
 	 * @return Cohort of Patients matching criteria
 	 */
-	public Cohort getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate,
+	@Override
+    public Cohort getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate,
 	        Date toDate) {
 		Integer programId = program == null ? null : program.getProgramId();
 		List<Integer> stateIds = null;
@@ -542,7 +548,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * time after that date if toDate != null, then only those patients who were in the program at
 	 * any time before that date
 	 */
-	public Cohort getPatientsInProgram(Integer programId, Date fromDate, Date toDate) {
+	@Override
+    public Cohort getPatientsInProgram(Integer programId, Date fromDate, Date toDate) {
 		String sql = "select pp.patient_id from patient_program pp ";
 		sql += " inner join patient p on pp.patient_id = p.patient_id and p.voided = false ";
 		sql += " where pp.voided = false and pp.program_id = :programId ";
@@ -564,7 +571,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return new Cohort(query.list());
 	}
 	
-	public Cohort getPatientsHavingObs(Integer conceptId, PatientSetService.TimeModifier timeModifier,
+	@Override
+    public Cohort getPatientsHavingObs(Integer conceptId, PatientSetService.TimeModifier timeModifier,
 	        PatientSetService.Modifier modifier, Object value, Date fromDate, Date toDate) {
 		if (conceptId == null && value == null)
 			throw new IllegalArgumentException("Can't have conceptId == null and value == null");
@@ -738,7 +746,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 *   patients with up to maxCount of the given encounters
 	 * </pre>
 	 */
-	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form,
+	@Override
+    public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form,
 	        Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
 		List<Integer> encTypeIds = null;
 		if (encounterTypeList != null && encounterTypeList.size() > 0) {
@@ -806,7 +815,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @param endTime
 	 * @return PatientSet
 	 */
-	public Cohort getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime) {
+	@Override
+    public Cohort getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("select o.person_id from obs o " + "where concept_id = :concept_id ");
 		sb.append(" and o.value_datetime between :startValue and :endValue");
@@ -822,7 +832,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return new Cohort(query.list());
 	}
 	
-	public Cohort getPatientsHavingNumericObs(Integer conceptId, PatientSetService.TimeModifier timeModifier,
+	@Override
+    public Cohort getPatientsHavingNumericObs(Integer conceptId, PatientSetService.TimeModifier timeModifier,
 	        PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate) {
 		
 		Concept concept = Context.getConceptService().getConcept(conceptId);
@@ -896,12 +907,14 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
+	@Override
+    public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
 	        Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException {
 		return getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly, null);
 	}
 	
-	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
+	@Override
+    public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
 	        Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate) throws DAOException {
 		
 		if (effectiveDate == null) {
@@ -909,7 +922,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 		
 		StringBuffer queryString = new StringBuffer("select patientId from Patient patient");
-		List<String> clauses = new ArrayList<String>();
+		Collection<String> clauses = new ArrayList<String>();
 		
 		clauses.add("patient.voided = false");
 		
@@ -982,7 +995,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	private static final long MS_PER_YEAR = 365L * 24 * 60 * 60 * 1000L;
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, String> getShortPatientDescriptions(Collection<Integer> patientIds) throws DAOException {
 		Map<Integer, String> ret = new HashMap<Integer, String>();
 		
@@ -1014,7 +1028,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients) throws DAOException {
 		Map<Integer, Map<String, Object>> ret = new HashMap<Integer, Map<String, Object>>();
 		Collection<Integer> ids = patients.getMemberIds();
@@ -1044,7 +1059,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	/**
 	 * fromDate and toDate are both inclusive
 	 */
@@ -1098,12 +1114,13 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes,
 	        Integer limit, boolean showMostRecentFirst) {
 		Map<Integer, List<List<Object>>> ret = new HashMap<Integer, List<List<Object>>>();
 		
-		List<String> aliases = new Vector<String>();
+		Collection<String> aliases = new Vector<String>();
 		Boolean conditional = false;
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Obs", "obs");
@@ -1112,7 +1129,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		List<String> columns = new Vector<String>();
 		
 		for (String attribute : attributes) {
-			List<String> classNames = new Vector<String>();
+			Collection<String> classNames = new Vector<String>();
 			if (attribute == null) {
 				columns = findObsValueColumnName(c);
 				if (columns.size() > 1)
@@ -1203,8 +1220,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				int index = 1;
 				List<Object> row = new Vector<Object>();
 				while (index < rowArray.length) {
-					Object value = rowArray[index++];
-					if (tmpConditional) {
+					Object value = rowArray[index];
+                    index++;
+                    if (tmpConditional) {
 						if (index == 2 && value != null) // skip null first value if we must
 							row.add(value);
 						else
@@ -1252,7 +1270,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return columns;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, List<EncounterType> encTypes) {
 		Map<Integer, Encounter> ret = new HashMap<Integer, Encounter>();
 		
@@ -1290,7 +1309,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @param patients the patients to filter by (null will return all encounters for all patients)
 	 * @param forms the forms to filter by
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Encounter> getEncountersByForm(Cohort patients, List<Form> forms) {
 		
 		// default query
@@ -1313,7 +1333,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, Object> getEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr,
 	        Boolean earliestFirst) {
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
@@ -1353,7 +1374,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, Encounter> getEncounters(Cohort patients) {
 		Map<Integer, Encounter> ret = new HashMap<Integer, Encounter>();
 		
@@ -1382,7 +1404,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, List<EncounterType> types) {
 		Map<Integer, Encounter> ret = new HashMap<Integer, Encounter>();
 		
@@ -1414,7 +1437,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll)
 	        throws DAOException {
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
@@ -1517,7 +1541,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @see org.openmrs.api.db.PatientSetDAO#getPersonAttributes(org.openmrs.Cohort,
 	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, Object> getPersonAttributes(Cohort patients, String attributeTypeName, String joinClass,
 	        String joinProperty, String outputColumn, boolean returnAll) {
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
@@ -1574,7 +1599,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	public Cohort getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier) throws DAOException {
+	@Override
+    public Cohort getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier) throws DAOException {
 		Query query;
 		StringBuffer sb = new StringBuffer();
 		sb.append("select o.person_id from obs o ");
@@ -1612,7 +1638,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return new Cohort(query.list());
 	}
 	
-	public Cohort getPatientsHavingLocation(Integer locationId, PatientSetService.PatientLocationMethod method) {
+	@Override
+    public Cohort getPatientsHavingLocation(Integer locationId, PatientSetService.PatientLocationMethod method) {
 		StringBuffer sb = new StringBuffer();
 		boolean argumentAsString = false;
 		if (method == PatientLocationMethod.ANY_ENCOUNTER) {
@@ -1666,7 +1693,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return new Cohort(query.list());
 	}
 	
-	public Cohort convertPatientIdentifier(List<String> identifiers) throws DAOException {
+	@Override
+    public Cohort convertPatientIdentifier(List<String> identifiers) throws DAOException {
 		
 		StringBuffer sb = new StringBuffer();
 		sb.append("select distinct(patient_id) from patient_identifier p ");
@@ -1677,7 +1705,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return new Cohort(query.list());
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Patient> getPatients(Collection<Integer> patientIds) throws DAOException {
 		List<Patient> ret = new ArrayList<Patient>();
 		
@@ -1703,10 +1732,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * 
 	 * @throws DAOException
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, Collection<Integer>> getActiveDrugIds(Collection<Integer> patientIds, Date fromDate, Date toDate)
 	        throws DAOException {
-		HashSet<Integer> idsLookup = patientIds == null ? null
+		Collection<Integer> idsLookup = patientIds == null ? null
 		        : (patientIds instanceof HashSet ? (HashSet<Integer>) patientIds : new HashSet<Integer>(patientIds));
 		
 		Map<Integer, Collection<Integer>> ret = new HashMap<Integer, Collection<Integer>>();
@@ -1738,7 +1768,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (fromDate != null)
 			query.setDate("fromDate", fromDate);
 		
-		List<Object[]> results = (List<Object[]>) query.list();
+		Iterable<Object[]> results = (List<Object[]>) query.list();
 		for (Object[] row : results) {
 			Integer patientId = (Integer) row[0];
 			if (idsLookup == null || idsLookup.contains(patientId)) {
@@ -1754,7 +1784,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf) throws DAOException {
 		Map<Integer, PatientState> ret = new HashMap<Integer, PatientState>();
 		
@@ -1791,7 +1822,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * program which are already complete In all cases this only returns the latest program
 	 * enrollment for each patient.
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, PatientProgram> getPatientPrograms(Cohort ps, Program program, boolean includeVoided,
 	        boolean includePast) throws DAOException {
 		Map<Integer, PatientProgram> ret = new HashMap<Integer, PatientProgram>();
@@ -1822,7 +1854,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(Cohort patients, List<Concept> drugConcepts)
 	        throws DAOException {
 		Map<Integer, List<DrugOrder>> ret = new HashMap<Integer, List<DrugOrder>>();
@@ -1861,7 +1894,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, List<DrugOrder>> getDrugOrders(Cohort patients, List<Concept> drugConcepts) throws DAOException {
 		Map<Integer, List<DrugOrder>> ret = new HashMap<Integer, List<DrugOrder>>();
 		if (patients != null && patients.size() == 0)
@@ -1897,7 +1931,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * This is a small hack to make the relationships work right in Neal's report code. It will be refactored
 	 * when I implement a relationship type filter for the cohort builder. -DJ
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, List<Person>> getRelatives(Cohort patients, RelationshipType relType, boolean forwards) {
 		if (relType == null)
 			throw new IllegalArgumentException("Must give a relationship type");
@@ -1916,7 +1951,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 		}
 		log.debug("criteria: " + criteria);
-		List<Relationship> rels = (List<Relationship>) criteria.list();
+		Iterable<Relationship> rels = (List<Relationship>) criteria.list();
 		for (Relationship rel : rels) {
 			Person fromPerson = forwards ? rel.getPersonA() : rel.getPersonB();
 			Person toPerson = forwards ? rel.getPersonB() : rel.getPersonA();
@@ -1931,7 +1966,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, List<Relationship>> getRelationships(Cohort patients, RelationshipType relType) {
 		Map<Integer, List<Relationship>> ret = new HashMap<Integer, List<Relationship>>();
 		
@@ -1959,7 +1995,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	public Cohort getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value) {
+	@Override
+    public Cohort getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(" select pat.patient_id ");
 		sb.append(" from person p ");
@@ -1982,7 +2019,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return new Cohort(query.list());
 	}
 	
-	public Cohort getPatientsHavingDrugOrder(List<Drug> drugList, List<Concept> drugConceptList, Date startDateFrom,
+	@Override
+    public Cohort getPatientsHavingDrugOrder(@org.jetbrains.annotations.Nullable List<Drug> drugList, @org.jetbrains.annotations.Nullable List<Concept> drugConceptList, Date startDateFrom,
 	        Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued, List<Concept> discontinuedReason) {
 		if (drugList != null && drugList.size() == 0)
 			drugList = null;
@@ -2075,7 +2113,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @param types List<PatientIdentifierTypes> of types to get
 	 * @return Map of {@link PatientIdentifier}s
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Map<Integer, String> getPatientIdentifierByType(Cohort patients, List<PatientIdentifierType> types) {
 		Map<Integer, String> patientIdentifiers = new HashMap<Integer, String>();
 		
@@ -2122,7 +2161,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @see org.openmrs.api.db.PatientSetDAO#getPatientsByRelationship(org.openmrs.RelationshipType,
 	 *      boolean, boolean, org.openmrs.Person)
 	 */
-	public Cohort getPatientsByRelationship(RelationshipType relType, boolean includeAtoB, boolean includeBtoA, Person target) {
+	@Override
+    public Cohort getPatientsByRelationship(RelationshipType relType, boolean includeAtoB, boolean includeBtoA, Person target) {
 		
 		// since members of a relationship aren't necessarily Patients, but we're supposed to be returning
 		// just patients, get all patients first to compare against:

@@ -261,7 +261,8 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	/**
 	 * @deprecated use {@link #getCurrentState(ProgramWorkflow)}
 	 */
-	public PatientState getCurrentState() {
+	@Deprecated
+    public PatientState getCurrentState() {
 		return getCurrentState(null);
 	}
 	
@@ -372,7 +373,8 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getPatientProgramId();
 	}
 	
@@ -380,7 +382,8 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setPatientProgramId(id);
 	}
 	
@@ -403,7 +406,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	/**
 	 * @return states sorted by {@link PatientState#compareTo(PatientState)}
 	 */
-	private List<PatientState> getSortedStates() {
+	private Iterable<PatientState> getSortedStates() {
 		List<PatientState> sortedStates = new ArrayList<PatientState>(getStates());
 		Collections.sort(sortedStates);
 		return sortedStates;

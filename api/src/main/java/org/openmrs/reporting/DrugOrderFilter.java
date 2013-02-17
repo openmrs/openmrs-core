@@ -83,7 +83,8 @@ public class DrugOrderFilter extends CachingPatientFilter {
 		return sb.toString();
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
 		StringBuffer ret = new StringBuffer();
 		boolean currentlyCase = getWithinLastDays() != null && getWithinLastDays() == 0
@@ -131,7 +132,7 @@ public class DrugOrderFilter extends CachingPatientFilter {
 	
 	@Override
 	public Cohort filterImpl(EvaluationContext context) {
-		List<Integer> drugIds = new ArrayList<Integer>();
+		Collection<Integer> drugIds = new ArrayList<Integer>();
 		if (getDrugListToUse() != null)
 			for (Drug d : getDrugListToUse())
 				drugIds.add(d.getDrugId());
@@ -147,7 +148,8 @@ public class DrugOrderFilter extends CachingPatientFilter {
 		        getUntilMonthsAgo(), getSinceDate(), getUntilDate()));
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		return true;
 	}
 	
@@ -160,7 +162,7 @@ public class DrugOrderFilter extends CachingPatientFilter {
 		if (drugList != null)
 			ret.addAll(drugList);
 		if (drugSets != null) {
-			Set<Concept> generics = new HashSet<Concept>();
+			Collection<Concept> generics = new HashSet<Concept>();
 			for (Concept drugSet : drugSets) {
 				List<Concept> list = Context.getConceptService().getConceptsByConceptSet(drugSet);
 				generics.addAll(list);

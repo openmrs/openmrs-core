@@ -52,7 +52,8 @@ public class PersonFormEntryPortletController extends PortletController {
 		FormEntryContext fec = new FormEntryContext(person);
 		Map<Form, FormEntryHandler> entryUrlMap = new TreeMap<Form, FormEntryHandler>(new Comparator<Form>() {
 			
-			public int compare(Form left, Form right) {
+			@Override
+            public int compare(Form left, Form right) {
 				int temp = left.getName().toLowerCase().compareTo(right.getName().toLowerCase());
 				if (temp == 0)
 					temp = OpenmrsUtil.compareWithNullAsLowest(left.getVersion(), right.getVersion());

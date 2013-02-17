@@ -94,11 +94,13 @@ public class ConceptStopWord extends BaseOpenmrsObject implements java.io.Serial
 		this.conceptStopWordId = conceptStopWordId;
 	}
 	
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getConceptStopWordId();
 	}
 	
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setConceptStopWordId(id);
 	}
 	

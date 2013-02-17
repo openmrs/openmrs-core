@@ -41,7 +41,8 @@ public class Tribe implements java.io.Serializable {
 	 * 
 	 * @deprecated use the Tribe module
 	 */
-	public Tribe() {
+	@Deprecated
+    public Tribe() {
 		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
 	}
 	
@@ -50,7 +51,8 @@ public class Tribe implements java.io.Serializable {
 	 * 
 	 * @deprecated use the Tribe module
 	 */
-	public Tribe(Integer tribeId) {
+	@Deprecated
+    public Tribe(Integer tribeId) {
 		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
 	}
 	

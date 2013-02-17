@@ -24,7 +24,8 @@ import org.openmrs.module.web.extension.provider.LinkProvider;
  */
 public abstract class LinkProviderExtension extends Extension implements LinkProvider {
 	
-	public abstract List<Link> getLinks();
+	@Override
+    public abstract List<Link> getLinks();
 	
 	/**
 	 * @see org.openmrs.module.Extension#getMediaType()

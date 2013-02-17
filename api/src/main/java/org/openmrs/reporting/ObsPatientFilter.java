@@ -78,7 +78,8 @@ public class ObsPatientFilter extends CachingPatientFilter {
 		return sb.toString();
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		if (question == null)
 			return value != null && (value instanceof Concept);
 		if (question.getDatatype().getHl7Abbreviation().equals("NM")
@@ -132,7 +133,8 @@ public class ObsPatientFilter extends CachingPatientFilter {
 		        getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()));
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		Locale locale = Context.getLocale();
 		StringBuffer ret = new StringBuffer();
 		if (question == null) {

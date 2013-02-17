@@ -66,7 +66,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 	/**
 	 * @see org.openmrs.api.db.ProviderDAO#saveProvider(org.openmrs.Provider)
 	 */
-	public Provider saveProvider(Provider provider) {
+	@Override
+    public Provider saveProvider(Provider provider) {
 		getSession().saveOrUpdate(provider);
 		return provider;
 	}

@@ -120,7 +120,8 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	 * @deprecated use isPreferred(). This method is kept around for Spring/Hibernate's use
 	 * @return the preferred status
 	 */
-	@SuppressWarnings("unused")
+	@Deprecated
+    @SuppressWarnings("unused")
 	private Boolean getPreferred() {
 		return isPreferred();
 	}
@@ -163,7 +164,8 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getRelationshipTypeId();
 	}
 	
@@ -171,7 +173,8 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setRelationshipTypeId(id);
 		
 	}

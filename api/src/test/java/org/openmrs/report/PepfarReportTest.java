@@ -57,7 +57,7 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 	 * @return
 	 * @throws ParseException
 	 */
-	Map<Parameter, Object> getUserEnteredParameters(Collection<Parameter> params) throws ParseException {
+	Map<Parameter, Object> getUserEnteredParameters(Iterable<Parameter> params) throws ParseException {
 		Map<Parameter, Object> ret = new HashMap<Parameter, Object>();
 		
 		if (params != null)

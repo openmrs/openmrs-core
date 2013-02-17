@@ -17,7 +17,7 @@ package org.openmrs.web.filter.util;
  * This class contains all constants that describes names of properties, which are used as keys,
  * when showing localized error messages on pages of install and databtase wizard
  */
-public class ErrorMessageConstants {
+public final interface ErrorMessageConstants {
 	
 	public static final String ERROR_DB_PSDW_REQ = "install.error.dbPasswd";
 	
@@ -96,4 +96,7 @@ public class ErrorMessageConstants {
 	public static final String ERROR_DB_UNABLE_TO_ADD_MODULES = "install.error.failedToAddModules";
 	
 	public static final String ERROR_DB_UNABLE_TO_FETCH_MODULES = "install.error.failedToFetchModules";
+
+    private ErrorMessageConstants() {
+    }
 }

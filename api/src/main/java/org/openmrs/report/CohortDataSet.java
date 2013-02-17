@@ -48,7 +48,8 @@ public class CohortDataSet implements MapDataSet<Cohort> {
 	/**
 	 * @see org.openmrs.report.MapDataSet#getData()
 	 */
-	public Map<String, Cohort> getData() {
+	@Override
+    public Map<String, Cohort> getData() {
 		return cohortData;
 	}
 	
@@ -57,7 +58,8 @@ public class CohortDataSet implements MapDataSet<Cohort> {
 	 * 
 	 * @see org.openmrs.report.DataSet#iterator()
 	 */
-	public Iterator<Map<String, Cohort>> iterator() {
+	@Override
+    public Iterator<Map<String, Cohort>> iterator() {
 		return Collections.singleton(cohortData).iterator();
 	}
 	
@@ -80,7 +82,8 @@ public class CohortDataSet implements MapDataSet<Cohort> {
 	/**
 	 * @see DataSet#getDefinition()
 	 */
-	public DataSetDefinition getDefinition() {
+	@Override
+    public DataSetDefinition getDefinition() {
 		return definition;
 	}
 	
@@ -94,7 +97,8 @@ public class CohortDataSet implements MapDataSet<Cohort> {
 	/**
 	 * @see DataSet#getEvaluationContext()
 	 */
-	public EvaluationContext getEvaluationContext() {
+	@Override
+    public EvaluationContext getEvaluationContext() {
 		return evaluationContext;
 	}
 	

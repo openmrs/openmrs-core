@@ -124,7 +124,8 @@ public class ConceptStateConversion extends BaseOpenmrsObject implements java.io
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getConceptStateConversionId();
 	}
 	
@@ -132,7 +133,8 @@ public class ConceptStateConversion extends BaseOpenmrsObject implements java.io
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setConceptStateConversionId(id);
 	}
 }

@@ -16,11 +16,11 @@ package org.openmrs.web.taglib.fieldgen;
 import org.openmrs.Patient;
 
 public class PatientHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "patient.field";
-	
-	public void run() {
-		setUrl(defaultUrl);
+
+    @Override
+    public void run() {
+        String defaultUrl = "patient.field";
+        setUrl(defaultUrl);
 		// the following lines are adapted from UserHandler:
 		checkEmptyVal((Patient) null);
 		if (fieldGenTag != null) {

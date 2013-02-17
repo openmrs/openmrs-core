@@ -13,6 +13,7 @@
  */
 package org.openmrs.aop;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -136,7 +137,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				if (args.length > 1)
 					other = (String) args[1];
 				
-				Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) mainArgument;
+				Iterable<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) mainArgument;
 				
 				for (OpenmrsObject object : openmrsObjects) {
 					ValidateUtil.validate(mainArgument);
@@ -152,7 +153,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				return;
 			
 			if (methodName.startsWith("void")) {
-				Voidable voidable = (Voidable) args[0];
+				OpenmrsObject voidable = (Voidable) args[0];
 				String voidReason = (String) args[1];
 				recursivelyHandle(VoidHandler.class, voidable, voidReason);
 				
@@ -163,7 +164,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				recursivelyHandle(UnvoidHandler.class, voidable, originalVoidingUser, originalDateVoided, null, null);
 				
 			} else if (methodName.startsWith("retire")) {
-				Retireable retirable = (Retireable) args[0];
+				OpenmrsObject retirable = (Retireable) args[0];
 				String retireReason = (String) args[1];
 				recursivelyHandle(RetireHandler.class, retirable, retireReason);
 				
@@ -360,7 +361,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @param field
 	 * @return true if the handlerType has been marked as disabled, false otherwise
 	 */
-	protected static boolean isHandlerMarkedAsDisabled(Class<? extends RequiredDataHandler> handlerType, Field field) {
+	protected static boolean isHandlerMarkedAsDisabled(Class<? extends RequiredDataHandler> handlerType, AnnotatedElement field) {
 		
 		// if the annotation isn't present, return false
 		if (!field.isAnnotationPresent(DisableHandlers.class)) {

@@ -36,9 +36,12 @@ import org.apache.commons.collections.comparators.ComparableComparator;
  * &lt;/c:forEach>
  * </pre>
  */
-public class Sort {
-	
-	/**
+public final class Sort {
+
+    private Sort() {
+    }
+
+    /**
 	 * This method will sort a collection based on the natural order of it's elements
 	 * 
 	 * @param c

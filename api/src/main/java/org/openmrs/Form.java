@@ -13,10 +13,7 @@
  */
 package org.openmrs;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
@@ -181,7 +178,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	public List<FormField> getOrderedFormFields() {
 		if (this.formFields != null) {
 			List<FormField> fieldList = new ArrayList<FormField>();
-			Set<FormField> fieldSet = new HashSet<FormField>();
+			Collection<FormField> fieldSet = new HashSet<FormField>();
 			fieldSet.addAll(this.formFields);
 			
 			int fieldSize = fieldSet.size();
@@ -256,7 +253,8 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getFormId();
 	}
@@ -265,7 +263,8 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setFormId(id);
 		
 	}

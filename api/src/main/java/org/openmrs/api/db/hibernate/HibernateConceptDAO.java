@@ -103,7 +103,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptComplex(java.lang.Integer)
 	 */
-	public ConceptComplex getConceptComplex(Integer conceptId) {
+	@Override
+    public ConceptComplex getConceptComplex(Integer conceptId) {
 		ConceptComplex cc;
 		Object obj = sessionFactory.getCurrentSession().get(ConceptComplex.class, conceptId);
 		// If Concept has already been read & cached, we may get back a Concept instead of
@@ -124,7 +125,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConcept(org.openmrs.Concept)
 	 */
-	public Concept saveConcept(Concept concept) throws DAOException {
+	@Override
+    public Concept saveConcept(Concept concept) throws DAOException {
 		if ((concept.getConceptId() != null) && (concept.getConceptId() > 0)) {
 			// this method checks the concept_numeric, concept_derived, etc tables
 			// to see if a row exists there or not.  This is needed because hibernate
@@ -272,7 +274,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#purgeConcept(org.openmrs.Concept)
 	 */
-	public void purgeConcept(Concept concept) throws DAOException {
+	@Override
+    public void purgeConcept(Concept concept) throws DAOException {
 		// must delete all the stored concept words first
 		sessionFactory.getCurrentSession().createQuery("delete ConceptWord where concept = :c").setInteger("c",
 		    concept.getConceptId()).executeUpdate();
@@ -284,28 +287,32 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConcept(java.lang.Integer)
 	 */
-	public Concept getConcept(Integer conceptId) throws DAOException {
+	@Override
+    public Concept getConcept(Integer conceptId) throws DAOException {
 		return (Concept) sessionFactory.getCurrentSession().get(Concept.class, conceptId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptName(java.lang.Integer)
 	 */
-	public ConceptName getConceptName(Integer conceptNameId) throws DAOException {
+	@Override
+    public ConceptName getConceptName(Integer conceptNameId) throws DAOException {
 		return (ConceptName) sessionFactory.getCurrentSession().get(ConceptName.class, conceptNameId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptAnswer(java.lang.Integer)
 	 */
-	public ConceptAnswer getConceptAnswer(Integer conceptAnswerId) throws DAOException {
+	@Override
+    public ConceptAnswer getConceptAnswer(Integer conceptAnswerId) throws DAOException {
 		return (ConceptAnswer) sessionFactory.getCurrentSession().get(ConceptAnswer.class, conceptAnswerId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConcepts(java.lang.String, boolean, boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Concept> getAllConcepts(String sortBy, boolean asc, boolean includeRetired) throws DAOException {
 		
 		boolean isNameField = false;
@@ -360,7 +367,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveDrug(org.openmrs.Drug)
 	 */
-	public Drug saveDrug(Drug drug) throws DAOException {
+	@Override
+    public Drug saveDrug(Drug drug) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(drug);
 		return drug;
 	}
@@ -368,14 +376,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getDrug(java.lang.Integer)
 	 */
-	public Drug getDrug(Integer drugId) throws DAOException {
+	@Override
+    public Drug getDrug(Integer drugId) throws DAOException {
 		return (Drug) sessionFactory.getCurrentSession().get(Drug.class, drugId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getDrugs(java.lang.String, org.openmrs.Concept, boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean includeRetired) throws DAOException {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (includeRetired == false)
@@ -390,7 +400,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getDrugsByIngredient(org.openmrs.Concept)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Drug> getDrugsByIngredient(Concept ingredient) {
 		Criteria searchDrugCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		Criterion rhs = Restrictions.eq("drug.concept", ingredient);
@@ -404,7 +415,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getDrugs(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Drug> getDrugs(String phrase) throws DAOException {
 		List<String> words = ConceptWord.getUniqueWords(phrase);
 		List<Drug> conceptDrugs = new Vector<Drug>();
@@ -430,14 +442,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptClass(java.lang.Integer)
 	 */
-	public ConceptClass getConceptClass(Integer i) throws DAOException {
+	@Override
+    public ConceptClass getConceptClass(Integer i) throws DAOException {
 		return (ConceptClass) sessionFactory.getCurrentSession().get(ConceptClass.class, i);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptClasses(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptClass> getConceptClasses(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
 		if (name != null)
@@ -448,7 +462,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptClasses(boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptClass> getAllConceptClasses(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
 		
@@ -462,7 +477,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConceptClass(org.openmrs.ConceptClass)
 	 */
-	public ConceptClass saveConceptClass(ConceptClass cc) throws DAOException {
+	@Override
+    public ConceptClass saveConceptClass(ConceptClass cc) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(cc);
 		return cc;
 	}
@@ -470,21 +486,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#purgeConceptClass(org.openmrs.ConceptClass)
 	 */
-	public void purgeConceptClass(ConceptClass cc) throws DAOException {
+	@Override
+    public void purgeConceptClass(ConceptClass cc) throws DAOException {
 		sessionFactory.getCurrentSession().delete(cc);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptDatatype(java.lang.Integer)
 	 */
-	public ConceptDatatype getConceptDatatype(Integer i) {
+	@Override
+    public ConceptDatatype getConceptDatatype(Integer i) {
 		return (ConceptDatatype) sessionFactory.getCurrentSession().get(ConceptDatatype.class, i);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptDatatypes(boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptDatatype> getAllConceptDatatypes(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptDatatype.class);
 		
@@ -497,7 +516,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptDatatypes(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptDatatype> getConceptDatatypes(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptDatatype.class);
 		
@@ -510,7 +530,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptDatatypeByName(String)
 	 */
-	public ConceptDatatype getConceptDatatypeByName(String name) throws DAOException {
+	@Override
+    public ConceptDatatype getConceptDatatypeByName(String name) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptDatatype.class);
 		if (name != null) {
 			criteria.add(Restrictions.eq("name", name));
@@ -521,7 +542,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConceptDatatype(org.openmrs.ConceptDatatype)
 	 */
-	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws DAOException {
+	@Override
+    public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(cd);
 		return cd;
 	}
@@ -529,14 +551,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#purgeConceptDatatype(org.openmrs.ConceptDatatype)
 	 */
-	public void purgeConceptDatatype(ConceptDatatype cd) throws DAOException {
+	@Override
+    public void purgeConceptDatatype(ConceptDatatype cd) throws DAOException {
 		sessionFactory.getCurrentSession().delete(cd);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptNumeric(java.lang.Integer)
 	 */
-	public ConceptNumeric getConceptNumeric(Integer i) {
+	@Override
+    public ConceptNumeric getConceptNumeric(Integer i) {
 		ConceptNumeric cn;
 		Object obj = sessionFactory.getCurrentSession().get(ConceptNumeric.class, i);
 		// If Concept has already been read & cached, we may get back a Concept instead of
@@ -558,7 +582,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getConcepts(java.lang.String, java.util.Locale, boolean,
 	 *      java.util.List, java.util.List)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
 	        List<ConceptDatatype> datatypes) throws DAOException {
 		
@@ -617,7 +642,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, org.openmrs.Concept,
 	 *      java.lang.Integer, java.lang.Integer)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
@@ -647,7 +673,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * 
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByAnswer(org.openmrs.Concept)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Concept> getConceptsByAnswer(Concept concept) {
 		String q = "select c from Concept c join c.answers ca where ca.answerConcept = :answer";
 		Query query = sessionFactory.getCurrentSession().createQuery(q);
@@ -659,7 +686,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getPrevConcept(org.openmrs.Concept)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Concept getPrevConcept(Concept c) {
 		Integer i = c.getConceptId();
 		
@@ -674,7 +702,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getNextConcept(org.openmrs.Concept)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Concept getNextConcept(Concept c) {
 		Integer i = c.getConceptId();
 		
@@ -689,7 +718,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptsWithDrugsInFormulary()
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Concept> getConceptsWithDrugsInFormulary() {
 		Query query = sessionFactory.getCurrentSession().createQuery(
 		    "select distinct concept from Drug d where d.retired = false");
@@ -699,14 +729,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#purgeDrug(org.openmrs.Drug)
 	 */
-	public void purgeDrug(Drug drug) throws DAOException {
+	@Override
+    public void purgeDrug(Drug drug) throws DAOException {
 		sessionFactory.getCurrentSession().delete(drug);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#updateConceptWord(org.openmrs.Concept)
 	 */
-	public void updateConceptWord(Concept concept) throws DAOException {
+	@Override
+    public void updateConceptWord(Concept concept) throws DAOException {
 		log.debug("updateConceptWord(" + concept + ")");
 		if (concept != null) {
 			// remove all old words
@@ -764,7 +796,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConceptProposal(org.openmrs.ConceptProposal)
 	 */
-	public ConceptProposal saveConceptProposal(ConceptProposal cp) throws DAOException {
+	@Override
+    public ConceptProposal saveConceptProposal(ConceptProposal cp) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(cp);
 		return cp;
 	}
@@ -772,7 +805,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#purgeConceptProposal(org.openmrs.ConceptProposal)
 	 */
-	public void purgeConceptProposal(ConceptProposal cp) throws DAOException {
+	@Override
+    public void purgeConceptProposal(ConceptProposal cp) throws DAOException {
 		sessionFactory.getCurrentSession().delete(cp);
 		return;
 	}
@@ -780,7 +814,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptProposals(boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptProposal> getAllConceptProposals(boolean includeCompleted) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptProposal.class);
 		
@@ -794,14 +829,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptProposal(java.lang.Integer)
 	 */
-	public ConceptProposal getConceptProposal(Integer conceptProposalId) throws DAOException {
+	@Override
+    public ConceptProposal getConceptProposal(Integer conceptProposalId) throws DAOException {
 		return (ConceptProposal) sessionFactory.getCurrentSession().get(ConceptProposal.class, conceptProposalId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptProposals(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptProposal> getConceptProposals(String text) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptProposal.class);
 		crit.add(Restrictions.eq("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
@@ -812,7 +849,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getProposedConcepts(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Concept> getProposedConcepts(String text) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptProposal.class);
 		crit.add(Restrictions.ne("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
@@ -826,7 +864,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptSetsByConcept(org.openmrs.Concept)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptSet> getConceptSetsByConcept(Concept concept) {
 		return sessionFactory.getCurrentSession().createCriteria(ConceptSet.class).add(
 		    Restrictions.eq("conceptSet", concept)).addOrder(Order.asc("sortWeight")).list();
@@ -835,7 +874,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getSetsContainingConcept(org.openmrs.Concept)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptSet> getSetsContainingConcept(Concept concept) {
 		return sessionFactory.getCurrentSession().createCriteria(ConceptSet.class).add(Restrictions.eq("concept", concept))
 		        .list();
@@ -849,7 +889,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @throws DAOException
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Concept> getParents(Concept current) throws DAOException {
+	private Collection<Concept> getParents(Concept current) throws DAOException {
 		List<Concept> parents = new Vector<Concept>();
 		if (current != null) {
 			Query query = sessionFactory.getCurrentSession().createQuery(
@@ -872,7 +912,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getLocalesOfConceptNames()
 	 */
-	public Set<Locale> getLocalesOfConceptNames() {
+	@Override
+    public Set<Locale> getLocalesOfConceptNames() {
 		Set<Locale> locales = new HashSet<Locale>();
 		
 		Query query = sessionFactory.getCurrentSession().createQuery("select distinct locale from ConceptName");
@@ -887,14 +928,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptNameTag(java.lang.Integer)
 	 */
-	public ConceptNameTag getConceptNameTag(Integer i) {
+	@Override
+    public ConceptNameTag getConceptNameTag(Integer i) {
 		return (ConceptNameTag) sessionFactory.getCurrentSession().get(ConceptNameTag.class, i);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptNameTagByName(java.lang.String)
 	 */
-	public ConceptNameTag getConceptNameTagByName(String name) {
+	@Override
+    public ConceptNameTag getConceptNameTagByName(String name) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptNameTag.class).add(
 		    Restrictions.eq("tag", name));
 		
@@ -908,7 +951,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptNameTags()
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptNameTag> getAllConceptNameTags() {
 		return sessionFactory.getCurrentSession().createQuery("from ConceptNameTag cnt order by cnt.tag").list();
 	}
@@ -916,7 +960,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptSource(java.lang.Integer)
 	 */
-	public ConceptSource getConceptSource(Integer conceptSourceId) {
+	@Override
+    public ConceptSource getConceptSource(Integer conceptSourceId) {
 		return (ConceptSource) sessionFactory.getCurrentSession().get(ConceptSource.class, conceptSourceId);
 	}
 	
@@ -924,7 +969,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptSources()
 	 */
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptSource> getAllConceptSources(boolean includeRetired) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class);
 		
@@ -937,7 +983,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#deleteConceptSource(org.openmrs.ConceptSource)
 	 */
-	public ConceptSource deleteConceptSource(ConceptSource cs) throws DAOException {
+	@Override
+    public ConceptSource deleteConceptSource(ConceptSource cs) throws DAOException {
 		sessionFactory.getCurrentSession().delete(cs);
 		return cs;
 	}
@@ -945,7 +992,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConceptSource(org.openmrs.ConceptSource)
 	 */
-	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws DAOException {
+	@Override
+    public ConceptSource saveConceptSource(ConceptSource conceptSource) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(conceptSource);
 		return conceptSource;
 	}
@@ -953,7 +1001,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConceptNameTag(org.openmrs.ConceptNameTag)
 	 */
-	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag) {
+	@Override
+    public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag) {
 		if (nameTag == null)
 			return null;
 		
@@ -972,7 +1021,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getMaxConceptId()
 	 */
-	public Integer getMaxConceptId() {
+	@Override
+    public Integer getMaxConceptId() {
 		Query query = sessionFactory.getCurrentSession().createQuery("select max(conceptId) from Concept");
 		return (Integer) query.uniqueResult();
 	}
@@ -980,7 +1030,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#conceptIterator()
 	 */
-	public Iterator<Concept> conceptIterator() {
+	@Override
+    public Iterator<Concept> conceptIterator() {
 		return new ConceptIterator();
 	}
 	
@@ -993,7 +1044,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		Concept nextConcept;
 		
-		public ConceptIterator() {
+		private ConceptIterator() {
 			final int firstConceptId = getMinConceptId();
 			nextConcept = getConcept(firstConceptId);
 		}
@@ -1001,14 +1052,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 		/**
 		 * @see java.util.Iterator#hasNext()
 		 */
-		public boolean hasNext() {
+		@Override
+        public boolean hasNext() {
 			return (nextConcept != null);
 		}
 		
 		/**
 		 * @see java.util.Iterator#next()
 		 */
-		public Concept next() {
+		@Override
+        public Concept next() {
 			if (currentConcept != null) {
 				sessionFactory.getCurrentSession().evict(currentConcept);
 			}
@@ -1022,7 +1075,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		/**
 		 * @see java.util.Iterator#remove()
 		 */
-		public void remove() {
+		@Override
+        public void remove() {
 			throw new UnsupportedOperationException();
 		}
 		
@@ -1031,7 +1085,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByMapping(java.lang.String, java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
 		
@@ -1068,7 +1123,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptByUuid(java.lang.String)
 	 */
-	public Concept getConceptByUuid(String uuid) {
+	@Override
+    public Concept getConceptByUuid(String uuid) {
 		return (Concept) sessionFactory.getCurrentSession().createQuery("from Concept c where c.uuid = :uuid").setString(
 		    "uuid", uuid).uniqueResult();
 	}
@@ -1076,32 +1132,38 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptClassByUuid(java.lang.String)
 	 */
-	public ConceptClass getConceptClassByUuid(String uuid) {
+	@Override
+    public ConceptClass getConceptClassByUuid(String uuid) {
 		return (ConceptClass) sessionFactory.getCurrentSession().createQuery("from ConceptClass cc where cc.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
 	}
 	
-	public ConceptAnswer getConceptAnswerByUuid(String uuid) {
+	@Override
+    public ConceptAnswer getConceptAnswerByUuid(String uuid) {
 		return (ConceptAnswer) sessionFactory.getCurrentSession().createQuery("from ConceptAnswer cc where cc.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
 	}
 	
-	public ConceptName getConceptNameByUuid(String uuid) {
+	@Override
+    public ConceptName getConceptNameByUuid(String uuid) {
 		return (ConceptName) sessionFactory.getCurrentSession().createQuery("from ConceptName cc where cc.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
 	}
 	
-	public ConceptSet getConceptSetByUuid(String uuid) {
+	@Override
+    public ConceptSet getConceptSetByUuid(String uuid) {
 		return (ConceptSet) sessionFactory.getCurrentSession().createQuery("from ConceptSet cc where cc.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
 	}
 	
-	public ConceptSource getConceptSourceByUuid(String uuid) {
+	@Override
+    public ConceptSource getConceptSourceByUuid(String uuid) {
 		return (ConceptSource) sessionFactory.getCurrentSession().createQuery("from ConceptSource cc where cc.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
 	}
 	
-	public ConceptWord getConceptWordByUuid(String uuid) {
+	@Override
+    public ConceptWord getConceptWordByUuid(String uuid) {
 		return (ConceptWord) sessionFactory.getCurrentSession().createQuery("from ConceptWord cc where cc.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
 	}
@@ -1109,7 +1171,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptDatatypeByUuid(java.lang.String)
 	 */
-	public ConceptDatatype getConceptDatatypeByUuid(String uuid) {
+	@Override
+    public ConceptDatatype getConceptDatatypeByUuid(String uuid) {
 		return (ConceptDatatype) sessionFactory.getCurrentSession().createQuery(
 		    "from ConceptDatatype cd where cd.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
@@ -1117,7 +1180,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptNumericByUuid(java.lang.String)
 	 */
-	public ConceptNumeric getConceptNumericByUuid(String uuid) {
+	@Override
+    public ConceptNumeric getConceptNumericByUuid(String uuid) {
 		return (ConceptNumeric) sessionFactory.getCurrentSession().createQuery(
 		    "from ConceptNumeric cn where cn.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
@@ -1125,7 +1189,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptProposalByUuid(java.lang.String)
 	 */
-	public ConceptProposal getConceptProposalByUuid(String uuid) {
+	@Override
+    public ConceptProposal getConceptProposalByUuid(String uuid) {
 		return (ConceptProposal) sessionFactory.getCurrentSession().createQuery(
 		    "from ConceptProposal cp where cp.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
@@ -1133,12 +1198,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getDrugByUuid(java.lang.String)
 	 */
-	public Drug getDrugByUuid(String uuid) {
+	@Override
+    public Drug getDrugByUuid(String uuid) {
 		return (Drug) sessionFactory.getCurrentSession().createQuery("from Drug d where d.uuid = :uuid").setString("uuid",
 		    uuid).uniqueResult();
 	}
 	
-	public DrugIngredient getDrugIngredientByUuid(String uuid) {
+	@Override
+    public DrugIngredient getDrugIngredientByUuid(String uuid) {
 		return (DrugIngredient) sessionFactory.getCurrentSession().createQuery("from DrugIngredient d where d.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
 	}
@@ -1146,7 +1213,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptUuids()
 	 */
-	public Map<Integer, String> getConceptUuids() {
+	@Override
+    public Map<Integer, String> getConceptUuids() {
 		Map<Integer, String> ret = new HashMap<Integer, String>();
 		Query q = sessionFactory.getCurrentSession().createQuery("select conceptId, uuid from Concept");
 		List<Object[]> list = q.list();
@@ -1158,7 +1226,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptDescriptionByUuid(java.lang.String)
 	 */
-	public ConceptDescription getConceptDescriptionByUuid(String uuid) {
+	@Override
+    public ConceptDescription getConceptDescriptionByUuid(String uuid) {
 		return (ConceptDescription) sessionFactory.getCurrentSession().createQuery(
 		    "from ConceptDescription cd where cd.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
@@ -1166,7 +1235,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptNameTagByUuid(java.lang.String)
 	 */
-	public ConceptNameTag getConceptNameTagByUuid(String uuid) {
+	@Override
+    public ConceptNameTag getConceptNameTagByUuid(String uuid) {
 		return (ConceptNameTag) sessionFactory.getCurrentSession().createQuery(
 		    "from ConceptNameTag cnt where cnt.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
@@ -1174,7 +1244,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptMapsBySource(ConceptSource)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ConceptMap> getConceptMapsBySource(ConceptSource conceptSource) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
 		criteria.createAlias("conceptReferenceTerm", "term");
@@ -1185,7 +1256,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptSourceByName(java.lang.String)
 	 */
-	public ConceptSource getConceptSourceByName(String conceptSourceName) throws DAOException {
+	@Override
+    public ConceptSource getConceptSourceByName(String conceptSourceName) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class, "source");
 		criteria.add(Restrictions.eq("source.name", conceptSourceName));
 		return (ConceptSource) criteria.uniqueResult();
@@ -1194,7 +1266,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getSavedConceptDatatype(org.openmrs.Concept)
 	 */
-	public ConceptDatatype getSavedConceptDatatype(Concept concept) {
+	@Override
+    public ConceptDatatype getSavedConceptDatatype(Concept concept) {
 		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
 		    "select datatype.* from " + "concept_datatype datatype, " + "concept concept " + "where "
 		            + "datatype.concept_datatype_id = concept.datatype_id " + "and concept.concept_id=:conceptId")
@@ -1215,7 +1288,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptStopWords(java.util.Locale)
 	 */
-	public List<String> getConceptStopWords(Locale locale) throws DAOException {
+	@Override
+    public List<String> getConceptStopWords(Locale locale) throws DAOException {
 		
 		locale = (locale == null ? Context.getLocale() : locale);
 		
@@ -1229,7 +1303,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConceptStopWord(org.openmrs.ConceptStopWord)
 	 */
-	public ConceptStopWord saveConceptStopWord(ConceptStopWord conceptStopWord) throws DAOException {
+	@Override
+    public ConceptStopWord saveConceptStopWord(ConceptStopWord conceptStopWord) throws DAOException {
 		if (conceptStopWord != null) {
 			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptStopWord.class);
 			criteria.add(Restrictions.eq("value", conceptStopWord.getValue()));
@@ -1248,7 +1323,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#deleteConceptStopWord(java.lang.Integer)
 	 */
-	public void deleteConceptStopWord(Integer conceptStopWordId) throws DAOException {
+	@Override
+    public void deleteConceptStopWord(Integer conceptStopWordId) throws DAOException {
 		if (conceptStopWordId == null) {
 			throw new DAOException("conceptStopWordId is null");
 		}
@@ -1263,7 +1339,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptStopWords()
 	 */
-	public List<ConceptStopWord> getAllConceptStopWords() {
+	@Override
+    public List<ConceptStopWord> getAllConceptStopWords() {
 		return sessionFactory.getCurrentSession().createCriteria(ConceptStopWord.class).list();
 	}
 	
@@ -1315,7 +1392,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) throws DAOException {
 		
 		//add the language-only portion of locale if its not in the list of locales already
-		List<Locale> localesToAdd = new Vector<Locale>();
+		Collection<Locale> localesToAdd = new Vector<Locale>();
 		for (Locale locale : locales) {
 			Locale languageOnly = new Locale(locale.getLanguage());
 			if (locales.contains(languageOnly) == false)
@@ -1395,7 +1472,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean)
 	 */
-	public Long getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	@Override
+    public Long getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired) throws DAOException {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (StringUtils.isBlank(drugName) && concept == null)

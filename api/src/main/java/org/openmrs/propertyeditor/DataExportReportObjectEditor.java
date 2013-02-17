@@ -18,6 +18,7 @@ import java.beans.PropertyEditorSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.ReportObject;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.springframework.util.StringUtils;
 
@@ -38,7 +39,8 @@ public class DataExportReportObjectEditor extends PropertyEditorSupport {
 	/**
 	 * 
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		log.debug("Setting report object text " + text);
 		if (StringUtils.hasText(text)) {
 			try {
@@ -57,10 +59,11 @@ public class DataExportReportObjectEditor extends PropertyEditorSupport {
 	/**
 	 * 
 	 */
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		log.debug("Getting cohort text " + getValue());
 		String text = "";
-		DataExportReportObject obj = (DataExportReportObject) getValue();
+		ReportObject obj = (DataExportReportObject) getValue();
 		if (obj != null && obj.getReportObjectId() != null) {
 			text = String.valueOf(obj.getReportObjectId());
 		}

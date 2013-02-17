@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.web.extension;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -63,7 +64,7 @@ public abstract class FormEntryHandler extends Extension {
 	 *            choosing to enter a form from
 	 * @return the list of forms provided by this module.
 	 */
-	public List<Form> getFormsModuleCanEnter(FormEntryContext formEntryContext) {
+	public Collection<Form> getFormsModuleCanEnter(FormEntryContext formEntryContext) {
 		return null;
 	}
 	
@@ -92,7 +93,7 @@ public abstract class FormEntryHandler extends Extension {
 	 * 
 	 * @return the forms for which this module should override the View link
 	 */
-	public Set<Form> getFormsModuleCanView() {
+	public Collection<Form> getFormsModuleCanView() {
 		return null;
 	}
 	
@@ -111,7 +112,7 @@ public abstract class FormEntryHandler extends Extension {
 	 * 
 	 * @return the forms for which this module should override the Edit link
 	 */
-	public Set<Form> getFormsModuleCanEdit() {
+	public Collection<Form> getFormsModuleCanEdit() {
 		return null;
 	}
 	

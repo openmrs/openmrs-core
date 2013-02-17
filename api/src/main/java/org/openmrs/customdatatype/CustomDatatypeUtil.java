@@ -34,11 +34,14 @@ import org.openmrs.util.OpenmrsConstants;
  * Helper methods for dealing with custom datatypes and their handlers
  * @since 1.9
  */
-public class CustomDatatypeUtil {
+public final class CustomDatatypeUtil {
 	
 	private static Log log = LogFactory.getLog(CustomDatatypeUtil.class);
-	
-	/**
+
+    private CustomDatatypeUtil() {
+    }
+
+    /**
 	 * @param descriptor
 	 * @return a configured datatype appropriate for descriptor
 	 */

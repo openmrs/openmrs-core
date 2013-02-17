@@ -53,11 +53,14 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
 /**
  * Utility methods for working and manipulating modules
  */
-public class ModuleUtil {
+public final class ModuleUtil {
 	
 	private static Log log = LogFactory.getLog(ModuleUtil.class);
-	
-	/**
+
+    private ModuleUtil() {
+    }
+
+    /**
 	 * Start up the module system with the given properties.
 	 * 
 	 * @param props Properties (OpenMRS runtime properties)
@@ -144,7 +147,7 @@ public class ModuleUtil {
 	 */
 	public static void shutdown() {
 		
-		List<Module> modules = new Vector<Module>();
+		Collection<Module> modules = new Vector<Module>();
 		modules.addAll(ModuleFactory.getStartedModules());
 		
 		for (Module mod : modules) {
@@ -464,7 +467,7 @@ public class ModuleUtil {
 	@SuppressWarnings("unchecked")
 	public static void expandJar(File fileToExpand, File tmpModuleDir, String name, boolean keepFullPath) throws IOException {
 		JarFile jarFile = null;
-		InputStream input = null;
+		@org.jetbrains.annotations.Nullable InputStream input = null;
 		String docBase = tmpModuleDir.getAbsolutePath();
 		try {
 			jarFile = new JarFile(fileToExpand);
@@ -998,7 +1001,7 @@ public class ModuleUtil {
 		if (!file.getName().endsWith(".jar"))
 			return Collections.EMPTY_SET;
 		
-		Set<String> packagesProvided = new HashSet<String>();
+		Collection<String> packagesProvided = new HashSet<String>();
 		
 		JarFile jar = null;
 		try {
@@ -1046,7 +1049,7 @@ public class ModuleUtil {
 		// clean up packages contained within other packages this is
 		// O(n^2), but its better than putting extra packages into the
 		// set and having the classloader continually loop over them
-		Set<String> packagesProvidedCopy = new HashSet<String>();
+		Collection<String> packagesProvidedCopy = new HashSet<String>();
 		packagesProvidedCopy.addAll(packagesProvided);
 		
 		for (String packageNameOuter : packagesProvidedCopy) {

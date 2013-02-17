@@ -25,7 +25,7 @@ import org.openmrs.test.Verifies;
  */
 public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	
-	private static Log log = LogFactory.getLog(DatabaseUpdaterTest.class);
+	private static final Log log = LogFactory.getLog(DatabaseUpdaterTest.class);
 	
 	/**
 	 * @see {@link DatabaseUpdater#updatesRequired()}

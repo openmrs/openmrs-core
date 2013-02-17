@@ -156,7 +156,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.Date, java.util.List, java.util.List)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
 	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude) {
@@ -453,7 +454,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderable(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Orderable<?> getOrderable(String identifier) throws APIException {
 		if (identifier == null)
 			throw new IllegalArgumentException("Orderable identifier is required");
@@ -505,7 +507,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatientAndIngredient(org.openmrs.Patient,
 	 *      org.openmrs.Concept)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient) throws APIException {
 		if (patient == null)
 			throw new IllegalArgumentException("patient is required");
@@ -519,7 +522,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrdersByPatient(org.openmrs.Patient, java.lang.Boolean)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Order> getOrdersByPatient(Patient patient, boolean includeVoided) throws APIException {
 		if (patient == null)
 			throw new APIException("Unable to get orders if I am not given a patient");
@@ -533,7 +537,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrdersByEncounter(org.openmrs.Encounter)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Order> getOrdersByEncounter(Encounter encounter) throws APIException {
 		if (encounter == null)
 			throw new APIException("Unable to get orders if I am not given an encounter");
@@ -547,7 +552,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrdersByOrderer(org.openmrs.User)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Order> getOrdersByOrderer(User orderer) throws APIException {
 		if (orderer == null)
 			throw new APIException("Unable to get orders if I am not given an orderer");

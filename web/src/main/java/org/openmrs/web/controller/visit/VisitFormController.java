@@ -15,6 +15,7 @@ package org.openmrs.web.controller.visit;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.lang.String;
@@ -129,14 +130,14 @@ public class VisitFormController {
 		String[] ids = ServletRequestUtils.getStringParameters(request, "encounterIds");
 		List<Integer> encounterIds = new ArrayList<Integer>();
 		EncounterService es = Context.getEncounterService();
-		List<Encounter> encountersToSave = new ArrayList<Encounter>();
+		Collection<Encounter> encountersToSave = new ArrayList<Encounter>();
 		if (!ArrayUtils.isEmpty(ids)) {
 			for (String id : ids) {
 				if (StringUtils.hasText(id))
 					encounterIds.add(Integer.valueOf(id));
 			}
 			//validate that the encounters
-			List<Encounter> visitEncounters = (List<Encounter>) model.get("visitEncounters");
+			Iterable<Encounter> visitEncounters = (List<Encounter>) model.get("visitEncounters");
 			for (Encounter e : visitEncounters) {
 				if (!encounterIds.contains(e.getEncounterId())) {
 					//this encounter was removed in the UI, remove it from this visit
@@ -353,7 +354,7 @@ public class VisitFormController {
 		}
 	}
 	
-	private void addEncounterAndObservationCounts(Visit visit, List<Integer> encounterIds, ModelMap model) {
+	private void addEncounterAndObservationCounts(Visit visit, Iterable<Integer> encounterIds, ModelMap model) {
 		int encounterCount = 0;
 		int observationCount = 0;
 		EncounterService encounterService = Context.getEncounterService();

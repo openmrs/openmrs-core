@@ -30,7 +30,8 @@ public class ReportObjectWrapperExceptionListener implements ExceptionListener {
 		// do nothing
 	}
 	
-	public void exceptionThrown(Exception e) {
+	@Override
+    public void exceptionThrown(Exception e) {
 		log.debug("Error deserializing report object: ", e);
 	}
 	

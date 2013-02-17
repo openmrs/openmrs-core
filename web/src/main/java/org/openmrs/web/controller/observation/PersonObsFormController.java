@@ -56,7 +56,8 @@ public class PersonObsFormController extends SimpleFormController {
 		    null, null, null, true);
 		Collections.sort(ret, new Comparator<Obs>() {
 			
-			public int compare(Obs left, Obs right) {
+			@Override
+            public int compare(Obs left, Obs right) {
 				int temp = left.getConcept().getName().getName().compareTo(right.getConcept().getName().getName());
 				if (temp == 0)
 					temp = OpenmrsUtil.compareWithNullAsGreatest(left.getVoided(), right.getVoided());

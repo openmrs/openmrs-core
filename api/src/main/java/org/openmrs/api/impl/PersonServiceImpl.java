@@ -13,15 +13,7 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -69,7 +61,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#setPersonDAO(org.openmrs.api.db.PersonDAO)
 	 */
-	public void setPersonDAO(PersonDAO dao) {
+	@Override
+    public void setPersonDAO(PersonDAO dao) {
 		this.dao = dao;
 	}
 	
@@ -77,7 +70,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer,
 	 *      java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws APIException {
 		return dao.getSimilarPeople(name, birthyear, gender);
 	}
@@ -87,7 +81,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 *      java.lang.String, java.lang.String)
 	 * @deprecated @see {@link #getSimilarPeople(String, Integer, String)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
 	        throws APIException {
 		return getSimilarPeople(nameSearch, birthyear, gender);
@@ -96,7 +92,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getPeople(String, Boolean)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Person> getPeople(String searchPhrase, Boolean dead) throws APIException {
 		
 		return dao.getPeople(searchPhrase, dead);
@@ -105,7 +102,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getPeople(String, Boolean)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided) {
 		if (includeVoided)
 			throw new APIException("You should consider voided people as if they are deleted and they cannot be searched");
@@ -120,7 +119,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getPeople(String, Boolean)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, String roles) {
 		List<String> roleList = null;
 		
@@ -140,7 +141,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getPeople(String, Boolean)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, List<String> roles) {
 		Set<Person> people = new HashSet<Person>();
 		
@@ -160,7 +163,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getAllPersonAttributeTypes()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<PersonAttributeType> getAllPersonAttributeTypes() throws APIException {
 		return getAllPersonAttributeTypes(true);
 	}
@@ -168,7 +172,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getAllPersonAttributeTypes(boolean)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<PersonAttributeType> getAllPersonAttributeTypes(boolean includeRetired) throws APIException {
 		return dao.getAllPersonAttributeTypes(includeRetired);
 	}
@@ -176,7 +181,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getPersonAttributeTypeByName(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public PersonAttributeType getPersonAttributeTypeByName(String typeName) throws APIException {
 		List<PersonAttributeType> types = getPersonAttributeTypes(typeName, null, null, null);
 		
@@ -189,14 +195,16 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#purgePersonAttributeType(org.openmrs.PersonAttributeType)
 	 */
-	public void purgePersonAttributeType(PersonAttributeType type) throws APIException {
+	@Override
+    public void purgePersonAttributeType(PersonAttributeType type) throws APIException {
 		dao.deletePersonAttributeType(type);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#savePersonAttributeType(org.openmrs.PersonAttributeType)
 	 */
-	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException {
+	@Override
+    public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException {
 		if (type.getSortWeight() == null) {
 			List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
 			if (allTypes.size() > 0)
@@ -210,7 +218,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			String newTypeName = type.getName();
 			
 			if (!oldTypeName.equals(newTypeName)) {
-				List<GlobalProperty> props = new ArrayList<GlobalProperty>();
+				Collection<GlobalProperty> props = new ArrayList<GlobalProperty>();
 				
 				AdministrationService as = Context.getAdministrationService();
 				
@@ -236,7 +244,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#retirePersonAttributeType(org.openmrs.PersonAttributeType)
 	 */
-	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException {
+	@Override
+    public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException {
 		if (retiredReason == null || retiredReason.length() < 1) {
 			throw new APIException("A reason is required when retiring a person attribute type");
 		}
@@ -252,14 +261,18 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
-	public void createPersonAttributeType(PersonAttributeType type) throws APIException {
+	@Override
+    @Deprecated
+    public void createPersonAttributeType(PersonAttributeType type) throws APIException {
 		Context.getPersonService().savePersonAttributeType(type);
 	}
 	
 	/**
 	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
-	public void updatePersonAttributeType(PersonAttributeType type) throws APIException {
+	@Override
+    @Deprecated
+    public void updatePersonAttributeType(PersonAttributeType type) throws APIException {
 		Context.getPersonService().savePersonAttributeType(type);
 	}
 	
@@ -267,7 +280,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#getPersonAttributeTypes(java.lang.String,
 	 *      java.lang.String, java.lang.Integer, java.lang.Boolean)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
 	        Boolean searchable) throws APIException {
 		return dao.getPersonAttributeTypes(exactName, format, foreignKey, searchable);
@@ -276,18 +290,23 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #purgePersonAttributeType(PersonAttributeType)}
 	 */
-	public void deletePersonAttributeType(Integer attrTypeId) {
+	@Override
+    @Deprecated
+    public void deletePersonAttributeType(Integer attrTypeId) {
 		Context.getPersonService().deletePersonAttributeType(getPersonAttributeType(attrTypeId));
 	}
 	
 	/**
 	 * @deprecated use {@link #purgePersonAttributeType(PersonAttributeType)}
 	 */
-	public void deletePersonAttributeType(PersonAttributeType type) {
+	@Override
+    @Deprecated
+    public void deletePersonAttributeType(PersonAttributeType type) {
 		dao.deletePersonAttributeType(type);
 	}
 	
-	public void unretirePersonAttributeType(PersonAttributeType type) throws APIException {
+	@Override
+    public void unretirePersonAttributeType(PersonAttributeType type) throws APIException {
 		type.setRetired(false);
 		type.setDateRetired(null);
 		type.setRetiredBy(null);
@@ -299,7 +318,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getAllPersonAttributeTypes()}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<PersonAttributeType> getPersonAttributeTypes() {
 		return getAllPersonAttributeTypes();
 	}
@@ -307,7 +328,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getPersonAttributeType(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public PersonAttributeType getPersonAttributeType(Integer typeId) {
 		return dao.getPersonAttributeType(typeId);
 	}
@@ -315,7 +337,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getPersonAttribute(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public PersonAttribute getPersonAttribute(Integer id) {
 		return dao.getPersonAttribute(id);
 	}
@@ -323,7 +346,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getPersonAttributeTypeByName(String)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public PersonAttributeType getPersonAttributeType(String s) {
 		return getPersonAttributeTypeByName(s);
 	}
@@ -331,7 +356,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationship(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Relationship getRelationship(Integer relationshipId) throws APIException {
 		return dao.getRelationship(relationshipId);
 	}
@@ -339,7 +365,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getAllRelationships()}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<Relationship> getRelationships() throws APIException {
 		return getAllRelationships();
 	}
@@ -347,7 +375,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getRelationshipsByPerson(Person)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<Relationship> getRelationships(Person p, boolean showVoided) throws APIException {
 		if (showVoided)
 			throw new APIException(
@@ -359,7 +389,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getRelationshipsByPerson(Person)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<Relationship> getRelationships(Person p) throws APIException {
 		return getRelationshipsByPerson(p);
 	}
@@ -367,7 +399,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getRelationships(Person, Person, RelationshipType)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<Relationship> getRelationshipsTo(Person toPerson, RelationshipType relType) throws APIException {
 		return getRelationships(null, toPerson, relType);
 	}
@@ -375,7 +409,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getAllRelationshipTypes()}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<RelationshipType> getRelationshipTypes() throws APIException {
 		return getAllRelationshipTypes();
 	}
@@ -383,7 +419,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipType(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws APIException {
 		return dao.getRelationshipType(relationshipTypeId);
 	}
@@ -391,7 +428,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getRelationshipTypeByName(String)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public RelationshipType findRelationshipType(String relationshipTypeName) throws APIException {
 		return getRelationshipTypeByName(relationshipTypeName);
 	}
@@ -399,7 +438,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipTypeByName(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public RelationshipType getRelationshipTypeByName(String relationshipTypeName) throws APIException {
 		List<RelationshipType> types = dao.getRelationshipTypes(relationshipTypeName, null);
 		
@@ -412,42 +452,51 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#purgePerson(org.openmrs.Person)
 	 */
-	public void purgePerson(Person person) throws APIException {
+	@Override
+    public void purgePerson(Person person) throws APIException {
 		dao.deletePerson(person);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#savePerson(org.openmrs.Person)
 	 */
-	public Person savePerson(Person person) throws APIException {
+	@Override
+    public Person savePerson(Person person) throws APIException {
 		return dao.savePerson(person);
 	}
 	
 	/**
 	 * @deprecated use {@link #savePerson(Person)}
 	 */
-	public Person createPerson(Person person) throws APIException {
+	@Override
+    @Deprecated
+    public Person createPerson(Person person) throws APIException {
 		return Context.getPersonService().savePerson(person);
 	}
 	
 	/**
 	 * @deprecated use {@link #savePerson(Person)}
 	 */
-	public void updatePerson(Person person) throws APIException {
+	@Override
+    @Deprecated
+    public void updatePerson(Person person) throws APIException {
 		Context.getPersonService().savePerson(person);
 	}
 	
 	/**
 	 * @deprecated use {@link #purgePerson(Person)}
 	 */
-	public void deletePerson(Person person) throws APIException {
+	@Override
+    @Deprecated
+    public void deletePerson(Person person) throws APIException {
 		Context.getPersonService().purgePerson(person);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#voidPerson(org.openmrs.Person, java.lang.String)
 	 */
-	public Person voidPerson(Person person, String reason) throws APIException {
+	@Override
+    public Person voidPerson(Person person, String reason) throws APIException {
 		if (person == null)
 			return null;
 		
@@ -457,7 +506,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#unvoidPerson(org.openmrs.Person)
 	 */
-	public Person unvoidPerson(Person person) throws APIException {
+	@Override
+    public Person unvoidPerson(Person person) throws APIException {
 		if (person == null)
 			return null;
 		
@@ -467,7 +517,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getPerson(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Person getPerson(Integer personId) throws APIException {
 		if (personId == null)
 			return null;
@@ -477,7 +528,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getPerson(Integer)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public Person getPerson(Patient pat) throws APIException {
 		if (pat == null)
 			return null;
@@ -487,7 +540,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getPerson(Integer)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public Person getPerson(User user) throws APIException {
 		if (user == null)
 			return null;
@@ -497,7 +552,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getAllRelationships()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Relationship> getAllRelationships() throws APIException {
 		return getAllRelationships(false);
 	}
@@ -505,7 +561,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getAllRelationships(boolean)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Relationship> getAllRelationships(boolean includeVoided) throws APIException {
 		return dao.getAllRelationships(includeVoided);
 	}
@@ -514,7 +571,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person,
 	 *      org.openmrs.RelationshipType)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType)
 	        throws APIException {
 		return dao.getRelationships(fromPerson, toPerson, relType);
@@ -524,7 +582,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person,
 	 *      org.openmrs.RelationshipType, java.util.Date)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
 	        Date effectiveDate) throws APIException {
 		return dao.getRelationships(fromPerson, toPerson, relType, effectiveDate, null);
@@ -534,7 +593,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person,
 	 *      org.openmrs.RelationshipType, java.util.Date, java.util.Date)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
 	        Date startEffectiveDate, Date endEffectiveDate) throws APIException {
 		return dao.getRelationships(fromPerson, toPerson, relType, startEffectiveDate, endEffectiveDate);
@@ -543,7 +603,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipsByPerson(org.openmrs.Person)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Relationship> getRelationshipsByPerson(Person p) throws APIException {
 		
 		// search both the left side and the right side of the relationship
@@ -558,7 +619,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#getRelationshipsByPerson(org.openmrs.Person,
 	 *      java.util.Date)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Relationship> getRelationshipsByPerson(Person p, Date effectiveDate) throws APIException {
 		
 		// search both the left side and the right side of the relationship
@@ -572,14 +634,16 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#purgeRelationship(org.openmrs.Relationship)
 	 */
-	public void purgeRelationship(Relationship relationship) throws APIException {
+	@Override
+    public void purgeRelationship(Relationship relationship) throws APIException {
 		dao.deleteRelationship(relationship);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#saveRelationship(org.openmrs.Relationship)
 	 */
-	public Relationship saveRelationship(Relationship relationship) throws APIException {
+	@Override
+    public Relationship saveRelationship(Relationship relationship) throws APIException {
 		if (relationship.getPersonA().equals(relationship.getPersonB()))
 			throw new APIException("Person A and Person B can't be the same");
 		
@@ -589,21 +653,27 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #saveRelationship(Relationship)}
 	 */
-	public void createRelationship(Relationship relationship) throws APIException {
+	@Override
+    @Deprecated
+    public void createRelationship(Relationship relationship) throws APIException {
 		Context.getPersonService().saveRelationship(relationship);
 	}
 	
 	/**
 	 * @deprecated use {@link #saveRelationship(Relationship)}
 	 */
-	public void updateRelationship(Relationship relationship) throws APIException {
+	@Override
+    @Deprecated
+    public void updateRelationship(Relationship relationship) throws APIException {
 		Context.getPersonService().saveRelationship(relationship);
 	}
 	
 	/**
 	 * @deprecated use {@link #purgeRelationship(Relationship)}
 	 */
-	public void deleteRelationship(Relationship relationship) throws APIException {
+	@Override
+    @Deprecated
+    public void deleteRelationship(Relationship relationship) throws APIException {
 		Context.getPersonService().purgeRelationship(relationship);
 	}
 	
@@ -611,7 +681,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#voidRelationship(org.openmrs.Relationship,
 	 *      java.lang.String)
 	 */
-	public Relationship voidRelationship(Relationship relationship, String voidReason) throws APIException {
+	@Override
+    public Relationship voidRelationship(Relationship relationship, String voidReason) throws APIException {
 		if (relationship.isVoided())
 			return relationship;
 		
@@ -628,7 +699,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#unvoidRelationship(org.openmrs.Relationship)
 	 */
-	public Relationship unvoidRelationship(Relationship relationship) throws APIException {
+	@Override
+    public Relationship unvoidRelationship(Relationship relationship) throws APIException {
 		relationship.setVoided(false);
 		relationship.setVoidedBy(null);
 		relationship.setDateVoided(null);
@@ -640,28 +712,35 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #saveRelationshipType(RelationshipType)}
 	 */
-	public void createRelationshipType(RelationshipType relationshipType) throws APIException {
+	@Override
+    @Deprecated
+    public void createRelationshipType(RelationshipType relationshipType) throws APIException {
 		Context.getPersonService().saveRelationshipType(relationshipType);
 	}
 	
 	/**
 	 * @deprecated use {@link #saveRelationshipType(RelationshipType)}
 	 */
-	public void updateRelationshipType(RelationshipType relationshipType) throws APIException {
+	@Override
+    @Deprecated
+    public void updateRelationshipType(RelationshipType relationshipType) throws APIException {
 		Context.getPersonService().saveRelationshipType(relationshipType);
 	}
 	
 	/**
 	 * @deprecated use {@link #purgeRelationshipType(RelationshipType)}
 	 */
-	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException {
+	@Override
+    @Deprecated
+    public void deleteRelationshipType(RelationshipType relationshipType) throws APIException {
 		Context.getPersonService().purgeRelationshipType(relationshipType);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<RelationshipType> getAllRelationshipTypes() throws APIException {
 		return getAllRelationshipTypes(false);
 	}
@@ -669,7 +748,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipTypes(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<RelationshipType> getRelationshipTypes(String searchString) throws APIException {
 		
 		return getRelationshipTypes(searchString, null);
@@ -678,7 +758,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipTypes(java.lang.String, java.lang.Boolean)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<RelationshipType> getRelationshipTypes(String relationshipTypeName, Boolean preferred) throws APIException {
 		Assert.hasText(relationshipTypeName, "The search string cannot be empty");
 		
@@ -688,14 +769,16 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#purgeRelationshipType(org.openmrs.RelationshipType)
 	 */
-	public void purgeRelationshipType(RelationshipType relationshipType) throws APIException {
+	@Override
+    public void purgeRelationshipType(RelationshipType relationshipType) throws APIException {
 		dao.deleteRelationshipType(relationshipType);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType)
 	 */
-	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException {
+	@Override
+    public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException {
 		if (StringUtils.isBlank(relationshipType.getDescription())) {
 			throw new APIException(Context.getMessageSourceService().getMessage("error.required",
 			    new Object[] { Context.getMessageSourceService().getMessage("general.description") }, Context.getLocale()));
@@ -708,7 +791,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#getPersonAttributeTypes(org.openmrs.util.OpenmrsConstants.PERSON_TYPE,
 	 *      org.openmrs.api.PersonService.ATTR_VIEW_TYPE)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<PersonAttributeType> getPersonAttributeTypes(PERSON_TYPE personType, ATTR_VIEW_TYPE viewType)
 	        throws APIException {
 		AdministrationService as = Context.getAdministrationService();
@@ -757,7 +841,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			log.fatal("Should not be here");
 		
 		// the java list object to hold the values from the global properties
-		List<String> attrNames = new Vector<String>();
+		Collection<String> attrNames = new Vector<String>();
 		
 		// split the comma delimited string into a java list object
 		if (attrString != null)
@@ -789,11 +873,13 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @deprecated @see
 	 *             {@link org.openmrs.api.PersonService#getPersonAttributeTypes(java.lang.String, java.lang.String)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public List<PersonAttributeType> getPersonAttributeTypes(String personTypeStr, String displayTypeStr)
 	        throws APIException {
 		
-		PERSON_TYPE personType = null;
+		@org.jetbrains.annotations.Nullable PERSON_TYPE personType = null;
 		if ("patient".equals(personTypeStr))
 			personType = PERSON_TYPE.PATIENT;
 		else if ("user".equals(personTypeStr))
@@ -803,7 +889,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		else
 			throw new APIException(personTypeStr + " is an invalid value for 'personType' attribute");
 		
-		ATTR_VIEW_TYPE attrDisplayType = null;
+		@org.jetbrains.annotations.Nullable ATTR_VIEW_TYPE attrDisplayType = null;
 		if ("listing".equals(displayTypeStr))
 			attrDisplayType = ATTR_VIEW_TYPE.LISTING;
 		else if ("viewing".equals(displayTypeStr))
@@ -821,7 +907,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#parsePersonName(java.lang.String)
 	 */
-	public PersonName parsePersonName(String name) throws APIException {
+	@Override
+    public PersonName parsePersonName(String name) throws APIException {
 		// strip beginning/ending whitespace
 		name = name.trim();
 		
@@ -883,21 +970,25 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated see #parsePersonName(String)
 	 */
-	public PersonName splitPersonName(String name) {
+	@Override
+    @Deprecated
+    public PersonName splitPersonName(String name) {
 		return parsePersonName(name);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#voidPersonName(org.openmrs.PersonName, String)
 	 */
-	public PersonName voidPersonName(PersonName personName, String voidReason) throws APIException {
+	@Override
+    public PersonName voidPersonName(PersonName personName, String voidReason) throws APIException {
 		return Context.getPersonService().savePersonName(personName);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#unvoidPersonName(org.openmrs.PersonName)
 	 */
-	public PersonName unvoidPersonName(PersonName personName) throws APIException {
+	@Override
+    public PersonName unvoidPersonName(PersonName personName) throws APIException {
 		return Context.getPersonService().savePersonName(personName);
 		
 	}
@@ -905,7 +996,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#savePersonName(org.openmrs.PersonName)
 	 */
-	public PersonName savePersonName(PersonName personName) throws APIException {
+	@Override
+    public PersonName savePersonName(PersonName personName) throws APIException {
 		ValidateUtil.validate(personName.getPerson());
 		return dao.savePersonName(personName);
 	}
@@ -913,7 +1005,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipMap(org.openmrs.RelationshipType)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Map<Person, List<Person>> getRelationshipMap(RelationshipType relType) throws APIException {
 		
 		// get all relationships with this type
@@ -942,7 +1035,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @deprecated use {@link #getRelationshipMap(RelationshipType)}
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public Map<Person, List<Person>> getRelationships(RelationshipType relType) throws APIException {
 		return getRelationshipMap(relType);
 	}
@@ -950,7 +1045,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getPersonAttributeTypeByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid) {
 		return dao.getPersonAttributeTypeByUuid(uuid);
 	}
@@ -958,17 +1054,20 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getPersonByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Person getPersonByUuid(String uuid) throws APIException {
 		return dao.getPersonByUuid(uuid);
 	}
 	
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public PersonAddress getPersonAddressByUuid(String uuid) throws APIException {
 		return dao.getPersonAddressByUuid(uuid);
 	}
 	
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public PersonAttribute getPersonAttributeByUuid(String uuid) throws APIException {
 		return dao.getPersonAttributeByUuid(uuid);
 	}
@@ -985,7 +1084,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getPersonNameByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public PersonName getPersonNameByUuid(String uuid) throws APIException {
 		return dao.getPersonNameByUuid(uuid);
 	}
@@ -1033,7 +1133,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @param lst the List of <code> PersonMergeLog</code> objects to deserialize
 	 * @throws SerializationException
 	 */
-	private void deserializeList(List<PersonMergeLog> lst) throws SerializationException {
+	private void deserializeList(Iterable<PersonMergeLog> lst) throws SerializationException {
 		for (PersonMergeLog personMergeLog : lst) {
 			deserialize(personMergeLog);
 		}
@@ -1094,7 +1194,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Relationship getRelationshipByUuid(String uuid) throws APIException {
 		return dao.getRelationshipByUuid(uuid);
 	}
@@ -1102,7 +1203,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipTypeByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public RelationshipType getRelationshipTypeByUuid(String uuid) throws APIException {
 		return dao.getRelationshipTypeByUuid(uuid);
 	}
@@ -1110,7 +1212,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes(boolean)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) throws APIException {
 		return dao.getAllRelationshipTypes(includeRetired);
 	}
@@ -1119,7 +1222,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#retireRelationshipType(org.openmrs.RelationshipType,
 	 *      java.lang.String)
 	 */
-	public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException {
+	@Override
+    public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException {
 		if (retiredReason == null || retiredReason.length() < 1) {
 			throw new APIException("A reason is required when retiring a relationship type");
 		}
@@ -1134,7 +1238,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#unretireRelationshipType(org.openmrs.RelationshipType)
 	 */
-	public RelationshipType unretireRelationshipType(RelationshipType relationshipType) {
+	@Override
+    public RelationshipType unretireRelationshipType(RelationshipType relationshipType) {
 		relationshipType.setRetired(false);
 		relationshipType.setRetiredBy(null);
 		relationshipType.setDateRetired(null);
@@ -1145,21 +1250,24 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#voidPersonAddress(org.openmrs.PersonAddress, String)
 	 */
-	public PersonAddress voidPersonAddress(PersonAddress personAddress, String voidReason) {
+	@Override
+    public PersonAddress voidPersonAddress(PersonAddress personAddress, String voidReason) {
 		return Context.getPersonService().savePersonAddress(personAddress);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#unvoidPersonAddress(org.openmrs.PersonAddress)
 	 */
-	public PersonAddress unvoidPersonAddress(PersonAddress personAddress) throws APIException {
+	@Override
+    public PersonAddress unvoidPersonAddress(PersonAddress personAddress) throws APIException {
 		return Context.getPersonService().savePersonAddress(personAddress);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#savePersonAddress(org.openmrs.PersonAddress)
 	 */
-	public PersonAddress savePersonAddress(PersonAddress personAddress) {
+	@Override
+    public PersonAddress savePersonAddress(PersonAddress personAddress) {
 		return dao.savePersonAddress(personAddress);
 	}
 }

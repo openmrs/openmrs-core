@@ -15,11 +15,9 @@ import static org.openqa.selenium.lift.Matchers.text;
 
 public class UpdatePersonAttributesSteps extends Steps {
 
-    private WebDriver driver;
-
     public UpdatePersonAttributesSteps(WebDriver driver) {
 		super(driver);
-        this.driver = driver;
+        WebDriver driver1 = driver;
     }
 
     @When("I change the attribute description to $description")

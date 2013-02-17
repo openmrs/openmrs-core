@@ -41,7 +41,8 @@ public class ConceptNumericEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		ConceptService cs = Context.getConceptService();
 		if (StringUtils.hasText(text)) {
 			try {
@@ -60,7 +61,8 @@ public class ConceptNumericEditor extends PropertyEditorSupport {
 		}
 	}
 	
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		ConceptNumeric c = (ConceptNumeric) getValue();
 		if (c == null) {
 			return "";

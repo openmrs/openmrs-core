@@ -63,7 +63,8 @@ public class RetireSaveHandler implements SaveHandler<Retireable> {
 	 * @should set dateRetired to null if retired is true
 	 * @should set retiredBy to null if retired is true
 	 */
-	public void handle(Retireable retireableObject, User currentUser, Date currentDate, String notUsed) {
+	@Override
+    public void handle(Retireable retireableObject, User currentUser, Date currentDate, String notUsed) {
 		
 		// retire reason is not set here, it should be set prior to this method
 		

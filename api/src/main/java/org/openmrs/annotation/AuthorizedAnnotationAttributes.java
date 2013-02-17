@@ -14,6 +14,7 @@
 package org.openmrs.annotation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -67,8 +68,8 @@ public class AuthorizedAnnotationAttributes {
 	 * @return Collection of <code>SecurityConfig</code>
 	 * @see Attributes#getAttributes
 	 */
-	public Collection getAttributes(Class target) {
-		Set<String> attributes = new HashSet<String>();
+	public Collection getAttributes(AnnotatedElement target) {
+		Collection<String> attributes = new HashSet<String>();
 		for (Annotation annotation : target.getAnnotations()) {
 			// check for Secured annotations
 			if (annotation instanceof Authorized) {
@@ -89,8 +90,8 @@ public class AuthorizedAnnotationAttributes {
 	 * @return Collection of <code>SecurityConfig</code>
 	 * @see Attributes#getAttributes
 	 */
-	public Collection getAttributes(Method method) {
-		Set<String> attributes = new HashSet<String>();
+	public Collection getAttributes(AnnotatedElement method) {
+		Collection<String> attributes = new HashSet<String>();
 		
 		for (Annotation annotation : method.getAnnotations()) {
 			// check for Secured annotations
@@ -113,7 +114,7 @@ public class AuthorizedAnnotationAttributes {
 	 * @return boolean true/false whether to "and" privileges together
 	 * @see org.openmrs.annotation.Authorized#requireAll()
 	 */
-	public boolean getRequireAll(Class target) {
+	public boolean getRequireAll(AnnotatedElement target) {
 		for (Annotation annotation : target.getAnnotations()) {
 			// check for Secured annotations
 			if (annotation instanceof Authorized) {
@@ -132,7 +133,7 @@ public class AuthorizedAnnotationAttributes {
 	 * @return boolean true/false whether to "and" privileges together
 	 * @see org.openmrs.annotation.Authorized#requireAll()
 	 */
-	public boolean getRequireAll(Method method) {
+	public boolean getRequireAll(AnnotatedElement method) {
 		for (Annotation annotation : method.getAnnotations()) {
 			// check for Secured annotations
 			if (annotation instanceof Authorized) {
@@ -149,7 +150,7 @@ public class AuthorizedAnnotationAttributes {
 	 * @param method
 	 * @return boolean true/false whether this method is annotated for OpenMRS
 	 */
-	public boolean hasAuthorizedAnnotation(Method method) {
+	public boolean hasAuthorizedAnnotation(AnnotatedElement method) {
 		for (Annotation annotation : method.getAnnotations()) {
 			// check for Secured annotations
 			if (annotation instanceof Authorized) {

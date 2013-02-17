@@ -71,7 +71,8 @@ public class FieldType extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getFieldTypeId();
 	}
@@ -80,7 +81,8 @@ public class FieldType extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setFieldTypeId(id);
 		
 	}

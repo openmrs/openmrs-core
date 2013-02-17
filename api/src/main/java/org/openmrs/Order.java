@@ -51,7 +51,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * that order. The order number is passed to ancillary systems in order for results & events
 	 * related to the order to be connected to the original order.
 	 */
-	private String orderNumber;
+	@org.jetbrains.annotations.Nullable
+    private String orderNumber;
 	
 	/**
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
@@ -528,7 +529,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getOrderId();
 	}
 	
@@ -543,7 +545,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setOrderId(id);
 	}
 	

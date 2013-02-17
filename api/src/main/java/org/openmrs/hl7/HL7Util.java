@@ -34,7 +34,7 @@ import ca.uhn.hl7v2.HL7Exception;
  * 
  * @version 1.0
  */
-public class HL7Util {
+public final class HL7Util {
 	
 	private static Log log = LogFactory.getLog(HL7Util.class);
 	
@@ -44,8 +44,11 @@ public class HL7Util {
 	private static final String TIME_FORMAT = "HHmmss.SSSZ";
 	
 	public static final String LOCAL_TIMEZONE_OFFSET = new SimpleDateFormat("Z").format(new Date());
-	
-	/**
+
+    private HL7Util() {
+    }
+
+    /**
 	 * Converts an HL7 timestamp into a java.util.Date object. HL7 timestamps can be created with
 	 * varying levels of precision &mdash; e.g., just the year or just the year and month, etc.
 	 * Since java.util.Date cannot store a partial value, we fill in defaults like January, 01 at

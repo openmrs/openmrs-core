@@ -130,7 +130,8 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		return s;
 	}
 	
-	public String toTemplateString() {
+	@Override
+    public String toTemplateString() {
 		Concept concept = Context.getConceptService().getConcept(conceptId);
 		String toReturn;
 		
@@ -163,7 +164,8 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		this.columnType = columnType;
 	}
 	
-	public String getColumnName() {
+	@Override
+    public String getColumnName() {
 		return columnName;
 	}
 	
@@ -199,7 +201,8 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	/**
 	 * @see org.openmrs.reporting.export.ExportColumn#getTemplateColumnName()
 	 */
-	public String getTemplateColumnName() {
+	@Override
+    public String getTemplateColumnName() {
 		Concept concept = Context.getConceptService().getConcept(conceptId);
 		String toReturn;
 		if (!concept.isSet()) {
@@ -245,7 +248,8 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	}
 	
 	//// left for backwards compatibility to pre 1.0.43
-	public void setColumnName(String columnName) {
+	@Override
+    public void setColumnName(String columnName) {
 		this.columnName = columnName;
 	}
 	

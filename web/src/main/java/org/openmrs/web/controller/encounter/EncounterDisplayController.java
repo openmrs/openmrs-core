@@ -235,7 +235,7 @@ public class EncounterDisplayController implements Controller {
 		/**
 		 * these are the column names in the obsGroup table
 		 */
-		private LinkedHashSet<Concept> groupMemberConcepts;
+		private Set<Concept> groupMemberConcepts;
 		
 		/**
 		 * A row must be created with both a FormField to act as its label and an obs that is the
@@ -366,7 +366,8 @@ public class EncounterDisplayController implements Controller {
 		 * 
 		 * @see org.openmrs.FormField#compareTo(org.openmrs.FormField)
 		 */
-		public int compareTo(FieldHolder other) {
+		@Override
+        public int compareTo(FieldHolder other) {
 			int temp = OpenmrsUtil
 			        .compareWithNullAsGreatest(formField.getPageNumber(), other.getFormField().getPageNumber());
 			if (temp == 0)

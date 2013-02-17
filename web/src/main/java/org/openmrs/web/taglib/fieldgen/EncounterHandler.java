@@ -14,11 +14,11 @@
 package org.openmrs.web.taglib.fieldgen;
 
 public class EncounterHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "encounter.field";
-	
-	public void run() {
-		setUrl(defaultUrl);
+
+    @Override
+    public void run() {
+        String defaultUrl = "encounter.field";
+        setUrl(defaultUrl);
 		/*
 		String output = startingOutput;
 		

@@ -36,7 +36,8 @@ public class DrugOrderValidator extends OrderValidator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	public boolean supports(Class<?> c) {
+	@Override
+    public boolean supports(Class<?> c) {
 		return DrugOrder.class.isAssignableFrom(c);
 	}
 	
@@ -52,7 +53,8 @@ public class DrugOrderValidator extends OrderValidator {
 	 * @should fail if quantity set and units not set
 	 * @should pass validation if all fields are correct
 	 */
-	public void validate(Object obj, Errors errors) {
+	@Override
+    public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
 		
 		DrugOrder order = (DrugOrder) obj;

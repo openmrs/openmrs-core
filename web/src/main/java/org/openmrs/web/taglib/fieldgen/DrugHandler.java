@@ -23,11 +23,11 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 
 public class DrugHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "drug.field";
-	
-	public void run() {
-		setUrl(defaultUrl);
+
+    @Override
+    public void run() {
+        String defaultUrl = "drug.field";
+        setUrl(defaultUrl);
 		
 		if (fieldGenTag != null) {
 			String initialValue = "";

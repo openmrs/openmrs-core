@@ -13,10 +13,7 @@
  */
 package org.openmrs.logic.result;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -112,7 +109,7 @@ public class Result extends ArrayList<Result> {
 	 * @should not fail with null list
 	 * @should not fail with empty list
 	 */
-	public Result(List<Result> list) {
+	public Result(Collection<Result> list) {
 		if (!(list == null || list.size() < 1))
 			this.addAll(list);
 	}
@@ -305,14 +302,14 @@ public class Result extends ArrayList<Result> {
 	}
 	
 	@Deprecated
-	public static final Result nullResult() {
+	public static Result nullResult() {
 		return emptyResult;
 	}
 	
 	/**
 	 * @return null/empty result
 	 */
-	public static final Result emptyResult() {
+	public static Result emptyResult() {
 		return emptyResult;
 	}
 	
@@ -690,7 +687,7 @@ public class Result extends ArrayList<Result> {
 	/**
 	 * @return all results greater than the given value
 	 */
-	public Result gt(Integer value) {
+	public Collection gt(Integer value) {
 		if (isSingleResult()) {
 			if (valueNumeric == null || valueNumeric <= value)
 				return emptyResult;

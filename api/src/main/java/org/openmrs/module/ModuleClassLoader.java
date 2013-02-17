@@ -57,9 +57,11 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	private final Module module;
 	
-	private Module[] requiredModules;
+	@org.jetbrains.annotations.Nullable
+    private Module[] requiredModules;
 	
-	private Module[] awareOfModules;
+	@org.jetbrains.annotations.Nullable
+    private Module[] awareOfModules;
 	
 	private Map<URL, File> libraryCache;
 	
@@ -213,7 +215,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			
 			if (libdir != null && libdir.exists()) {
 				// recursively get files
-				Collection<File> files = (Collection<File>) FileUtils.listFiles(libdir, new String[] { "jar" }, true);
+				Iterable<File> files = (Collection<File>) FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
 					if (log.isDebugEnabled())
 						log.debug("Adding file to results: " + file.getAbsolutePath());
@@ -692,7 +694,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			return libraryCache.get(libUrl);
 		}
 		
-		File result = null;
+		@org.jetbrains.annotations.Nullable File result = null;
 		try {
 			if (cacheFolder == null) {
 				throw new IOException("can't initialize libraries cache folder");
@@ -937,7 +939,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param requestor ModuleClassLoader in which to look
 	 * @return true/false whether this resource is visibile by this classloader
 	 */
-	protected boolean isResourceVisible(final String name, final URL url, final ModuleClassLoader requestor) {
+	protected boolean isResourceVisible(final CharSequence name, final URL url, final ModuleClassLoader requestor) {
 		/*log.debug("isResourceVisible(URL, ModuleClassLoader): URL=" + url
 				+ ", requestor=" + requestor);*/
 		if (this == requestor) {
@@ -993,7 +995,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * 
 	 * @return the additionalPackages
 	 */
-	public Set<String> getAdditionalPackages() {
+	public Iterable<String> getAdditionalPackages() {
 		return additionalPackages;
 	}
 	
@@ -1029,7 +1031,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param providedPackages list/set of strings that are package names
 	 * @see #setProvidedPackages(Set)
 	 */
-	public void addAllAdditionalPackages(Collection<String> providedPackages) {
+	public void addAllAdditionalPackages(Iterable<String> providedPackages) {
 		if (this.additionalPackages == null)
 			this.additionalPackages = new LinkedHashSet<String>();
 		

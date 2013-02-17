@@ -133,7 +133,7 @@ public class PatientProgramItem {
 		this.patientProgramId = patientProgramId;
 	}
 	
-	static DateFormat ymdDf = new SimpleDateFormat("yyyy-MM-dd");
+	static final DateFormat ymdDf = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public String getDateEnrolledAsYmd() {
 		return dateEnrolled == null ? null : ymdDf.format(dateEnrolled);

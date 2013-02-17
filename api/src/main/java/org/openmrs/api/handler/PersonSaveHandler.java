@@ -41,7 +41,8 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
 	 */
-	public void handle(Person person, User creator, Date dateCreated, String other) {
+	@Override
+    public void handle(Person person, User creator, Date dateCreated, String other) {
 		
 		// only set the creator and date created if they weren't set by the developer already
 		if (person.getPersonCreator() == null) {

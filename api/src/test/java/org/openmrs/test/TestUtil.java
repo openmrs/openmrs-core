@@ -33,9 +33,12 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Methods use by the Openmrs tests
  */
-public class TestUtil {
-	
-	/**
+public final class TestUtil {
+
+    private TestUtil() {
+    }
+
+    /**
 	 * Additional assert method for testing that will test that two Collections have equal contents
 	 * The Collections must be of equal size, and each object from one Collection must equal an
 	 * object in the other Collection Order is not considered.
@@ -198,7 +201,7 @@ public class TestUtil {
 	 * @param id
 	 * @return true if list contains object with the id else false
 	 */
-	public static boolean containsId(Collection<? extends BaseOpenmrsObject> list, Integer id) {
+	public static boolean containsId(Iterable<? extends BaseOpenmrsObject> list, Integer id) {
 		for (BaseOpenmrsObject baseOpenmrsObject : list) {
 			if (baseOpenmrsObject.getId().equals(id)) {
 				return true;

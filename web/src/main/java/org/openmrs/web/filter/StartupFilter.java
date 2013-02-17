@@ -103,7 +103,7 @@ public abstract class StartupFilter implements Filter {
 	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
 	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
-	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
 	        ServletException {
 		if (skipFilter((HttpServletRequest) request)) {
 			chain.doFilter(request, response);
@@ -347,7 +347,7 @@ public abstract class StartupFilter implements Filter {
 	 * @param escapeJavascript specifies if javascript special characters should be escaped
 	 * @param sb StringBuffer to append to
 	 */
-	private void toJSONString(List<Object> list, StringBuffer sb, boolean escapeJavascript) {
+	private void toJSONString(Iterable<Object> list, StringBuffer sb, boolean escapeJavascript) {
 		boolean first = true;
 		
 		sb.append('[');

@@ -32,13 +32,15 @@ public class ForEachAlertTag extends LoopTagSupport {
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
-	private User user = null;
+	@org.jetbrains.annotations.Nullable
+    private User user = null;
 	
 	private Boolean includeRead = false;
 	
 	private Boolean includeExpired = false;
 	
-	private Iterator<?> alerts;
+	@org.jetbrains.annotations.Nullable
+    private Iterator<?> alerts;
 	
 	public void prepare() throws JspTagException {
 		

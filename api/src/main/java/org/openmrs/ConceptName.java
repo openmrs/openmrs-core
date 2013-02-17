@@ -207,7 +207,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @return Returns the creator.
 	 */
-	@Element
+	@Override
+    @Element
 	public User getCreator() {
 		return creator;
 	}
@@ -215,7 +216,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @param creator The creator to set.
 	 */
-	@Element
+	@Override
+    @Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -223,7 +225,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element
+	@Override
+    @Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -231,7 +234,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element
+	@Override
+    @Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -241,7 +245,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @return true if the ConceptName has been voided, false otherwise.
 	 */
-	public Boolean isVoided() {
+	@Override
+    public Boolean isVoided() {
 		return voided;
 	}
 	
@@ -260,7 +265,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @param voided the voided status to set.
 	 */
-	@Attribute
+	@Override
+    @Attribute
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
@@ -270,7 +276,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @return the User who voided this ConceptName, or null if not set
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -280,7 +287,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @param voidedBy the user who voided this ConceptName.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
@@ -290,7 +298,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @return the Date this ConceptName was voided.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -300,7 +309,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @param dateVoided the date the ConceptName was voided.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -310,7 +320,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @return the reason this ConceptName was voided
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -320,7 +331,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @param voidReason the reason this ConceptName was voided
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
@@ -653,7 +665,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getConceptNameId();
 	}
 	
@@ -661,7 +674,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setConceptNameId(id);
 	}
 	
@@ -670,7 +684,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @see org.openmrs.Auditable#getChangedBy()
 	 */
-	public User getChangedBy() {
+	@Override
+    public User getChangedBy() {
 		return null;
 	}
 	
@@ -679,7 +694,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @see org.openmrs.Auditable#getDateChanged()
 	 */
-	public Date getDateChanged() {
+	@Override
+    public Date getDateChanged() {
 		return null;
 	}
 	
@@ -688,7 +704,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
 	 */
-	public void setChangedBy(User changedBy) {
+	@Override
+    public void setChangedBy(User changedBy) {
 	}
 	
 	/**
@@ -696,6 +713,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * 
 	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
 	 */
-	public void setDateChanged(Date dateChanged) {
+	@Override
+    public void setDateChanged(Date dateChanged) {
 	}
 }

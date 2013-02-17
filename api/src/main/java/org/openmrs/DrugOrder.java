@@ -79,7 +79,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	/**
 	 * @see org.openmrs.Order#copy()
 	 */
-	public DrugOrder copy() {
+	@Override
+    public DrugOrder copy() {
 		return copyHelper(new DrugOrder());
 	}
 	
@@ -110,7 +111,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		return target;
 	}
 	
-	public boolean isDrugOrder() {
+	@Override
+    public boolean isDrugOrder() {
 		return true;
 	}
 	
@@ -383,14 +385,16 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	/**
 	 * @see org.openmrs.Order#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getOrderId();
 	}
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setOrderId(id);
 	}
 	

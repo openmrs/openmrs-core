@@ -26,8 +26,11 @@ import static org.openmrs.TestUtils.prepareJdbcConnectionUrl;
  * <p/>
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-public class MysqlFactory {
+public final class MysqlFactory {
     public static final String DRIVER = "com.mysql.jdbc.Driver";
+
+    private MysqlFactory() {
+    }
 
     public static void main(String[] args) throws Exception {
         File databaseDir = new File(args[0]);

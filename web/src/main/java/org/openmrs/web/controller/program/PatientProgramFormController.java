@@ -74,7 +74,7 @@ public class PatientProgramFormController implements Controller {
 		Date completionDate = (Date) cde.getValue();
 		Patient patient = Context.getPatientService().getPatient(Integer.valueOf(patientIdStr));
 		
-		Location location;
+		@org.jetbrains.annotations.Nullable Location location;
 		try {
 			location = Context.getLocationService().getLocation(Integer.valueOf(locationIdStr));
 		}

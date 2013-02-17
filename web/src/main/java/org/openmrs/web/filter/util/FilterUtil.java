@@ -30,7 +30,7 @@ import org.openmrs.util.OpenmrsConstants;
  * This class contains convenient methods for storing/retrieving locale parameters into/from DB as
  * admin's user property and as default locale property for OpenMRS system
  */
-public class FilterUtil {
+public final class FilterUtil {
 	
 	private static final Log log = LogFactory.getLog(FilterUtil.class);
 	
@@ -39,8 +39,11 @@ public class FilterUtil {
 	public static final String REMEMBER_ATTRIBUTE = "remember";
 	
 	public static final String ADMIN_USERNAME = "admin";
-	
-	/**
+
+    private FilterUtil() {
+    }
+
+    /**
 	 * Tries to retrieve location parameter. First this method makes an attempt to load locale
 	 * parameter as user's property. And next, if user's property is empty it tries to retrieve
 	 * default system locale (i.e system global property). If it also is empty it uses default value

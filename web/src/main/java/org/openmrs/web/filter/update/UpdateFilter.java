@@ -18,13 +18,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -75,13 +69,8 @@ public class UpdateFilter extends StartupFilter {
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
 	private final String DEFAULT_PAGE = "maintenance.vm";
-	
-	/**
-	 * The page that lists off all the currently unexecuted changes
-	 */
-	private final String REVIEW_CHANGES = "reviewchanges.vm";
-	
-	private final String PROGRESS_VM_AJAXREQUEST = "updateProgress.vm.ajaxRequest";
+
+    private final String PROGRESS_VM_AJAXREQUEST = "updateProgress.vm.ajaxRequest";
 	
 	/**
 	 * The model object behind this set of screens
@@ -154,7 +143,11 @@ public class UpdateFilter extends StartupFilter {
 			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 		
 		// step one
-		if (DEFAULT_PAGE.equals(page)) {
+		/*
+	  The page that lists off all the currently unexecuted changes
+	 */
+        String REVIEW_CHANGES = "reviewchanges.vm";
+        if (DEFAULT_PAGE.equals(page)) {
 			
 			String username = httpRequest.getParameter("username");
 			String password = httpRequest.getParameter("password");
@@ -551,7 +544,8 @@ public class UpdateFilter extends StartupFilter {
 		
 		private Thread thread;
 		
-		private String executingChangesetId = null;
+		@org.jetbrains.annotations.Nullable
+        private String executingChangesetId = null;
 		
 		private List<String> changesetIds = new ArrayList<String>();
 		
@@ -626,7 +620,7 @@ public class UpdateFilter extends StartupFilter {
 		/**
 		 * @return the database updater Warnings
 		 */
-		public synchronized List<String> getUpdateWarnings() {
+		public synchronized Collection<String> getUpdateWarnings() {
 			return updateWarnings;
 		}
 		
@@ -634,7 +628,7 @@ public class UpdateFilter extends StartupFilter {
 			return hasUpdateWarnings;
 		}
 		
-		synchronized public void reportWarnings(List<String> warnings) {
+		synchronized public void reportWarnings(Collection<String> warnings) {
 			updateWarnings.addAll(warnings);
 			hasUpdateWarnings = true;
 		}
@@ -642,7 +636,7 @@ public class UpdateFilter extends StartupFilter {
 		/**
 		 * This class does all the work of creating the desired database, user, updates, etc
 		 */
-		public UpdateFilterCompletion() {
+        private UpdateFilterCompletion() {
 			Runnable r = new Runnable() {
 				
 				/**
@@ -650,7 +644,8 @@ public class UpdateFilter extends StartupFilter {
 				 * 
 				 * @see java.lang.Runnable#run()
 				 */
-				public void run() {
+				@Override
+                public void run() {
 					try {
 						/**
 						 * A callback class that prints out info about liquibase changesets
@@ -659,7 +654,7 @@ public class UpdateFilter extends StartupFilter {
 							
 							private String message;
 							
-							public PrintingChangeSetExecutorCallback(String message) {
+							PrintingChangeSetExecutorCallback(String message) {
 								this.message = message;
 							}
 							
@@ -677,7 +672,7 @@ public class UpdateFilter extends StartupFilter {
 						
 						try {
 							setMessage("Updating the database to the latest version");
-							List<String> warnings = DatabaseUpdater.executeChangelog(null, null,
+							@org.jetbrains.annotations.Nullable List<String> warnings = DatabaseUpdater.executeChangelog(null, null,
 							    new PrintingChangeSetExecutorCallback("Updating database tables to latest version "));
 							executingChangesetId = null; // clear out the last changeset
 							

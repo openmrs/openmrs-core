@@ -39,7 +39,8 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
-	public void execute() {
+	@Override
+    public void execute() {
 		
 		// TODO url should be provided as a property to taskconfig
 		String url = "http://www.google.com:80/index.html";

@@ -26,7 +26,7 @@ import org.openmrs.hl7.HL7Constants;
  * @see org.openmrs.FieldType
  * @see org.openmrs.FieldAnswer
  */
-public class FormConstants {
+public final interface FormConstants {
 	
 	public static final Integer FIELD_TYPE_CONCEPT = 1;
 	
@@ -145,5 +145,7 @@ public class FormConstants {
 	public static final Hashtable<String, String> simpleDatatypes = HL7Constants.simpleDatatypes;
 	
 	public static final int INDENT_SIZE = 2;
-	
+
+    private FormConstants() {
+    }
 }

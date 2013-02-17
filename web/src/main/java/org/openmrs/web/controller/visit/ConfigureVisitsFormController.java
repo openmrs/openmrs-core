@@ -68,7 +68,7 @@ public class ConfigureVisitsFormController {
 	private VisitService visitService;
 	
 	@ModelAttribute(VISIT_ENCOUNTER_HANDLERS)
-	public Collection<EncounterVisitHandler> getEncounterVisitHandlers() {
+	public Iterable<EncounterVisitHandler> getEncounterVisitHandlers() {
 		return encounterService.getEncounterVisitHandlers();
 	}
 	

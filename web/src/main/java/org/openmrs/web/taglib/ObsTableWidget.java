@@ -54,9 +54,11 @@ public class ObsTableWidget extends TagSupport {
 	 *   a concept name (e.g. "name:CD4 COUNT")
 	 *   a concept set, by id or name (e.g. "set:5089" or "set.en:LAB TESTS")
 	 */
-	private String concepts;
+	@org.jetbrains.annotations.Nullable
+    private String concepts;
 	
-	private Collection<Obs> observations;
+	@org.jetbrains.annotations.Nullable
+    private Collection<Obs> observations;
 	
 	private boolean sortDescending = true;
 	
@@ -70,17 +72,22 @@ public class ObsTableWidget extends TagSupport {
 	
 	private Boolean combineEqualResults = true;
 	
-	private String id;
+	@org.jetbrains.annotations.Nullable
+    private String id;
 	
-	private String cssClass;
+	@org.jetbrains.annotations.Nullable
+    private String cssClass;
 	
-	private Date fromDate;
+	@org.jetbrains.annotations.Nullable
+    private Date fromDate;
 	
-	private Date toDate;
+	@org.jetbrains.annotations.Nullable
+    private Date toDate;
 	
 	private Integer limit = 0;
 	
-	private String conceptLink = null;
+	@org.jetbrains.annotations.Nullable
+    private String conceptLink = null;
 	
 	//private String combineBy = "day";
 	
@@ -159,7 +166,7 @@ public class ObsTableWidget extends TagSupport {
 		return sortDescending ? "desc" : "asc";
 	}
 	
-	public void setSort(String sort) {
+	public void setSort(CharSequence sort) {
 		if (sort == null || sort.length() == 0)
 			return;
 		sortDescending = !sort.equals("asc");
@@ -169,7 +176,7 @@ public class ObsTableWidget extends TagSupport {
 		return orientVertical ? "vertical" : "horizontal";
 	}
 	
-	public void setOrientation(String orientation) {
+	public void setOrientation(CharSequence orientation) {
 		if (orientation == null || orientation.length() == 0)
 			return;
 		orientVertical = !orientation.equals("horizontal");
@@ -228,7 +235,7 @@ public class ObsTableWidget extends TagSupport {
 		
 		// determine which concepts we care about
 		List<Concept> conceptList = new ArrayList<Concept>();
-		Set<Integer> conceptIds = new HashSet<Integer>();
+		Collection<Integer> conceptIds = new HashSet<Integer>();
 		ConceptService cs = Context.getConceptService();
 		for (StringTokenizer st = new StringTokenizer(concepts, "|"); st.hasMoreTokens();) {
 			String s = st.nextToken().trim();
@@ -266,7 +273,7 @@ public class ObsTableWidget extends TagSupport {
 		}
 		
 		// organize obs of those concepts by Date and Concept
-		Set<Integer> conceptsWithObs = new HashSet<Integer>();
+		Collection<Integer> conceptsWithObs = new HashSet<Integer>();
 		SortedSet<Date> dates = new TreeSet<Date>();
 		Map<String, List<Obs>> groupedObs = new HashMap<String, List<Obs>>(); // key is conceptId + "." + date
 		for (Obs o : observations) {
@@ -375,7 +382,7 @@ public class ObsTableWidget extends TagSupport {
 		ret.append("</td>");
 	}
 	
-	private void showObservationsIfExists(Locale loc, StringBuilder ret, List<Obs> list) {
+	private void showObservationsIfExists(Locale loc, StringBuilder ret, Iterable<Obs> list) {
 		if (list != null) {
 			if (combineEqualResults) {
 				Collection<String> unique = new LinkedHashSet<String>();

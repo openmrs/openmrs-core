@@ -41,7 +41,8 @@ public class EncounterTypeEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		EncounterService ps = Context.getEncounterService();
 		if (StringUtils.hasText(text)) {
 			try {
@@ -60,7 +61,8 @@ public class EncounterTypeEditor extends PropertyEditorSupport {
 		}
 	}
 	
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		EncounterType t = (EncounterType) getValue();
 		if (t == null) {
 			return "";

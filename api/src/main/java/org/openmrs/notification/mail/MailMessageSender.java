@@ -66,7 +66,8 @@ public class MailMessageSender implements MessageSender {
 	 * 
 	 * @param message the message to be sent
 	 */
-	public void send(Message message) throws MessageException {
+	@Override
+    public void send(Message message) throws MessageException {
 		try {
 			MimeMessage mimeMessage = createMimeMessage(message);
 			Transport.send(mimeMessage);

@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class HttpClient {
 	
-	private static Log log = LogFactory.getLog(HttpClient.class);
+	private static final Log log = LogFactory.getLog(HttpClient.class);
 	
 	private HttpUrl url;
 	

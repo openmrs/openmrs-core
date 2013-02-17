@@ -68,10 +68,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.zip.ZipEntry;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -140,15 +137,18 @@ import org.w3c.dom.DocumentType;
 /**
  * Utility methods used in openmrs
  */
-public class OpenmrsUtil {
+public final class OpenmrsUtil {
 	
 	private static Log log = LogFactory.getLog(OpenmrsUtil.class);
 	
 	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
 	
 	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<Locale, SimpleDateFormat>();
-	
-	/**
+
+    private OpenmrsUtil() {
+    }
+
+    /**
 	 * @param idWithoutCheckdigit
 	 * @return int - the calculated check digit for the given string
 	 * @throws Exception
@@ -228,7 +228,7 @@ public class OpenmrsUtil {
 	 * @param newList
 	 * @return [List toAdd, List toDelete] with respect to origList
 	 */
-	public static <E extends Object> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
+	public static <E extends Object> Collection<Collection<E>> compareLists(Collection<E> origList, Iterable<E> newList) {
 		// TODO finish function
 		
 		Collection<Collection<E>> returnList = new Vector<Collection<E>>();
@@ -727,7 +727,7 @@ public class OpenmrsUtil {
 			return compare(d1, d2);
 	}
 	
-	public static <E extends Comparable<E>> int compareWithNullAsLowest(E c1, E c2) {
+	public static <E extends Comparable<E>> int compareWithNullAsLowest(Comparable c1, E c2) {
 		if (c1 == null && c2 == null)
 			return 0;
 		if (c1 == null)
@@ -738,7 +738,7 @@ public class OpenmrsUtil {
 			return c1.compareTo(c2);
 	}
 	
-	public static <E extends Comparable<E>> int compareWithNullAsGreatest(E c1, E c2) {
+	public static <E extends Comparable<E>> int compareWithNullAsGreatest(Comparable c1, E c2) {
 		if (c1 == null && c2 == null)
 			return 0;
 		if (c1 == null)
@@ -858,7 +858,7 @@ public class OpenmrsUtil {
 		if (delimitedString != null) {
 			String[] tokens = delimitedString.split(delimiter);
 			for (String token : tokens) {
-				Integer conceptId = null;
+				@org.jetbrains.annotations.Nullable Integer conceptId = null;
 				
 				try {
 					conceptId = new Integer(token);
@@ -909,7 +909,7 @@ public class OpenmrsUtil {
 	// ConceptService.getConceptByIdOrName()
 	public static Concept getConceptByIdOrName(String idOrName) {
 		Concept c = null;
-		Integer conceptId = null;
+		@org.jetbrains.annotations.Nullable Integer conceptId = null;
 		
 		try {
 			conceptId = new Integer(idOrName);
@@ -1166,8 +1166,8 @@ public class OpenmrsUtil {
 			else
 				filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
 				        + "OpenMRS";
-			
-			filepath = filepath + File.separator;
+
+            filepath += File.separator;
 		}
 		
 		File folder = new File(filepath);
@@ -1253,8 +1253,8 @@ public class OpenmrsUtil {
 				transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, doctype.getSystemId());
 			}
 			
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(outStream);
+			Source source = new DOMSource(doc);
+			Result result = new StreamResult(outStream);
 			transformer.transform(source, result);
 		}
 		catch (TransformerException e) {
@@ -1304,7 +1304,7 @@ public class OpenmrsUtil {
 		return false;
 	}
 	
-	public static boolean isConceptInList(Concept concept, List<Concept> list) {
+	public static boolean isConceptInList(Concept concept, Iterable<Concept> list) {
 		boolean ret = false;
 		if (concept != null && list != null) {
 			for (Concept c : list) {
@@ -1359,7 +1359,7 @@ public class OpenmrsUtil {
 	 * @param elements
 	 * @return Whether _collection_ contains any of _elements_
 	 */
-	public static <T> boolean containsAny(Collection<T> collection, Collection<T> elements) {
+	public static <T> boolean containsAny(Collection<T> collection, Iterable<T> elements) {
 		for (T obj : elements) {
 			if (collection.contains(obj))
 				return true;
@@ -1813,7 +1813,7 @@ public class OpenmrsUtil {
 	 * @should use equals method for comparison instead of compareTo given List collection
 	 * @should use equals method for comparison instead of compareTo given SortedSet collection
 	 */
-	public static boolean collectionContains(Collection<?> objects, Object obj) {
+	public static boolean collectionContains(Iterable<?> objects, Object obj) {
 		if (obj == null || objects == null)
 			return false;
 		
@@ -1877,7 +1877,7 @@ public class OpenmrsUtil {
 	 * @param user optional User creating this file object
 	 * @return file new file that is able to be written to
 	 */
-	public static File getOutFile(File dir, Date date, User user) {
+	public static File getOutFile(File dir, @org.jetbrains.annotations.Nullable Date date, User user) {
 		
 		File outFile;
 		do {
@@ -2060,7 +2060,7 @@ public class OpenmrsUtil {
 	 * @param file
 	 * @param comment (which appears in comments in properties file)
 	 */
-	public static void storeProperties(Properties properties, OutputStream outStream, String comment) {
+	public static void storeProperties(Map properties, OutputStream outStream, String comment) {
 		try {
 			OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(outStream), "UTF-8");
 			Writer out = new BufferedWriter(osw);
@@ -2097,7 +2097,8 @@ public class OpenmrsUtil {
 	 * @param props the properties object to write into
 	 * @param input the input stream to read from
 	 */
-	public static void loadProperties(Properties props, InputStream input) {
+	@Deprecated
+    public static void loadProperties(Properties props, InputStream input) {
 		try {
 			InputStreamReader reader = new InputStreamReader(input, "UTF-8");
 			props.load(reader);
@@ -2344,7 +2345,7 @@ public class OpenmrsUtil {
 	 * @should return false if string does not contain lower case characters
 	 * @should return false if string does not contain upper case characters
 	 */
-	public static boolean containsUpperAndLowerCase(String test) {
+	public static boolean containsUpperAndLowerCase(CharSequence test) {
 		if (test != null) {
 			Pattern pattern = Pattern.compile("^(?=.*?[A-Z])(?=.*?[a-z])[\\w|\\W]*$");
 			Matcher matcher = pattern.matcher(test);

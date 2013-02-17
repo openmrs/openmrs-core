@@ -52,7 +52,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	 */
 	@Override
 	public Collection<A> getActiveAttributes() {
-		List<A> ret = new ArrayList<A>();
+		Collection<A> ret = new ArrayList<A>();
 		if (getAttributes() != null)
 			for (A attr : getAttributes())
 				if (!attr.isVoided())

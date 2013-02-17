@@ -14,15 +14,7 @@
 package org.openmrs.arden;
 
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.openmrs.Patient;
 
@@ -91,7 +83,7 @@ public class MLMObject {
 	
 	private ArrayList<Conclude> concludes = null;
 	
-	private ArrayList<MLMObjectElement> objElements = null;
+	private List<MLMObjectElement> objElements = null;
 	
 	private HashMap<String, ArrayList<Call>> calls = null;
 	
@@ -466,7 +458,7 @@ public class MLMObject {
 		return retValEval;
 	}
 	
-	private void WriteData(MLMEvaluateElement el, Writer w,
+	private void WriteData(Iterable el, Writer w,
 	//		Comparison comparison
 	        Iterator<Map.Entry<String, Comparison>> comparisonIterator) {
 		
@@ -582,7 +574,7 @@ public class MLMObject {
 		}
 	}
 	
-	private boolean WriteLogic(MLMEvaluateElement el, Writer w, Iterator<LogicAssignment> logicIterator,
+	private boolean WriteLogic(Iterable el, Writer w, Iterator<LogicAssignment> logicIterator,
 	        //Comparison comparison,
 	        Iterator<Map.Entry<String, Comparison>> comparisonIterator, Iterator<Conclude> concludeIterator,
 	        Iterator<Call> callIterator) {
@@ -597,7 +589,7 @@ public class MLMObject {
 			
 			String key = "";
 			Iterator iter = el.iterator();
-			Comparison comparison;
+			@org.jetbrains.annotations.Nullable Comparison comparison;
 			
 			while (iter.hasNext()) { // IF
 				key = (String) iter.next();
@@ -691,7 +683,8 @@ public class MLMObject {
 							if (openBrackets.size() > 0) {
 								openBrackets.removeLast();
 							}
-							openBrackets.add(--openBracket);
+                            --openBracket;
+                            openBrackets.add(openBracket);
 						}
 					}
 				} else if (key.startsWith("Conclude")) {
@@ -712,7 +705,8 @@ public class MLMObject {
 						if (openBrackets.size() > 0) {
 							openBrackets.removeLast();
 						}
-						openBrackets.add(--openBracket);
+                        --openBracket;
+                        openBrackets.add(openBracket);
 					}
 					
 				} else if (key.equalsIgnoreCase("Call")) {
@@ -749,7 +743,7 @@ public class MLMObject {
 		return skipReturn;
 	}
 	
-	private void WriteAction(MLMEvaluateElement el, Writer w,
+	private void WriteAction(Iterable el, Writer w,
 	//		Comparison comparison
 	        Iterator<Map.Entry<String, Comparison>> comparisonIterator, Iterator<Call> callIterator) {
 		boolean skipReturn = false;
@@ -762,7 +756,7 @@ public class MLMObject {
 			
 			String key = "";
 			Iterator iter = el.iterator();
-			Comparison comparison;
+			@org.jetbrains.annotations.Nullable Comparison comparison;
 			
 			while (iter.hasNext()) { // IF
 				key = (String) iter.next();
@@ -923,7 +917,7 @@ public class MLMObject {
 		
 	}
 	
-	private boolean openIf(MLMEvaluateElement mEvalElem) {
+	private boolean openIf(Iterable mEvalElem) {
 		
 		if (mEvalElem == null) {
 			return false;

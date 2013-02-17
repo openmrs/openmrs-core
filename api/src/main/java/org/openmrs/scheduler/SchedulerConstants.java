@@ -15,17 +15,17 @@ package org.openmrs.scheduler;
 
 import org.openmrs.api.context.Daemon;
 
-public class SchedulerConstants {
+public final class SchedulerConstants {
 	
 	// Number of milliseconds per second (used for readability)
-	public static int SCHEDULER_MILLIS_PER_SECOND = 1000;
+	public static final int SCHEDULER_MILLIS_PER_SECOND = 1000;
 	
 	// 0 second delay added before the initial start of a task
-	public static long SCHEDULER_DEFAULT_DELAY = 0;
+	public static final long SCHEDULER_DEFAULT_DELAY = 0;
 	
-	public static String SCHEDULER_DEFAULT_USERNAME = "admin";
+	public static final String SCHEDULER_DEFAULT_USERNAME = "admin";
 	
-	public static String SCHEDULER_DEFAULT_PASSWORD = "test";
+	public static final String SCHEDULER_DEFAULT_PASSWORD = "test";
 	
 	/** The default 'from' address for emails send by the schedule */
 	public final static String SCHEDULER_DEFAULT_FROM = "scheduler@openmrs.org";
@@ -38,19 +38,21 @@ public class SchedulerConstants {
 	 *             {@link Daemon#executeScheduledTask(Task)}
 	 */
 	@Deprecated
-	public static String SCHEDULER_USERNAME_PROPERTY = "scheduler.username";
+	public static final String SCHEDULER_USERNAME_PROPERTY = "scheduler.username";
 	
 	/**
 	 * @deprecated This is not needed anymore since tasks are run as the Daemon user. See
 	 *             {@link Daemon#executeScheduledTask(Task)}
 	 */
 	@Deprecated
-	public static String SCHEDULER_PASSWORD_PROPERTY = "scheduler.password";
+	public static final String SCHEDULER_PASSWORD_PROPERTY = "scheduler.password";
 	
 	/** Scheduler admin email enable property - Tell us whether we can send mail or not */
-	public static String SCHEDULER_ADMIN_EMAIL_ENABLED_PROPERTY = "scheduler.admin_email_enabled";
+	public static final String SCHEDULER_ADMIN_EMAIL_ENABLED_PROPERTY = "scheduler.admin_email_enabled";
 	
 	/** Scheduler admin email property - Used to email administrator if a task fails */
-	public static String SCHEDULER_ADMIN_EMAIL_PROPERTY = "scheduler.admin_email";
-	
+	public static final String SCHEDULER_ADMIN_EMAIL_PROPERTY = "scheduler.admin_email";
+
+    private SchedulerConstants() {
+    }
 }

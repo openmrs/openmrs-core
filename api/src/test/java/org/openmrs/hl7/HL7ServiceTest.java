@@ -523,7 +523,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
-		String result = hl7service.getUuidFromIdentifiers(identifiers);
+		@org.jetbrains.annotations.Nullable String result = hl7service.getUuidFromIdentifiers(identifiers);
 		Assert.assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
 		result = null;
 		

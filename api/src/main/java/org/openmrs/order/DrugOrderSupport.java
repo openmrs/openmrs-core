@@ -30,7 +30,7 @@ public class DrugOrderSupport implements GlobalPropertyListener {
 	
 	private static DrugOrderSupport singleton;
 	
-	private static Log log = LogFactory.getLog(DrugOrderSupport.class);
+	private static final Log log = LogFactory.getLog(DrugOrderSupport.class);
 	
 	List<RegimenSuggestion> standardRegimens;
 	
@@ -98,14 +98,16 @@ public class DrugOrderSupport implements GlobalPropertyListener {
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#supportsPropertyName(java.lang.String)
 	 */
-	public boolean supportsPropertyName(String propertyName) {
+	@Override
+    public boolean supportsPropertyName(String propertyName) {
 		return OpenmrsConstants.GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS.equals(propertyName);
 	}
 	
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
 	 */
-	public void globalPropertyChanged(GlobalProperty newValue) {
+	@Override
+    public void globalPropertyChanged(GlobalProperty newValue) {
 		try {
 			setStandardRegimens(newValue.getPropertyValue());
 		}
@@ -124,7 +126,8 @@ public class DrugOrderSupport implements GlobalPropertyListener {
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
 	 */
-	public void globalPropertyDeleted(String propertyName) {
+	@Override
+    public void globalPropertyDeleted(String propertyName) {
 		if (!OpenmrsConstants.GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS.equals(propertyName))
 			return;
 		setStandardRegimens(new Vector<RegimenSuggestion>());

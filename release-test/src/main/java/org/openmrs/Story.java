@@ -30,6 +30,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class Story extends JUnitStory {
@@ -61,7 +62,7 @@ public abstract class Story extends JUnitStory {
         return new InstanceStepsFactory(configuration(), toArray(steps)).createCandidateSteps();
     }
 
-    private Object[] toArray(List<Steps> steps) {
+    private Object[] toArray(Collection<Steps> steps) {
         return steps.toArray(new Steps[0]);
     }
 

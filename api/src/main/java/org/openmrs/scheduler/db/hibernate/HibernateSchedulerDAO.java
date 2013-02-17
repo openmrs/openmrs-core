@@ -61,7 +61,8 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @param task to be created
 	 * @throws DAOException
 	 */
-	public void createTask(TaskDefinition task) throws DAOException {
+	@Override
+    public void createTask(TaskDefinition task) throws DAOException {
 		// add all data minus the password as a new user
 		sessionFactory.getCurrentSession().save(task);
 	}
@@ -73,7 +74,8 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @return task with given internal identifier
 	 * @throws DAOException
 	 */
-	public TaskDefinition getTask(Integer taskId) throws DAOException {
+	@Override
+    public TaskDefinition getTask(Integer taskId) throws DAOException {
 		TaskDefinition task = (TaskDefinition) sessionFactory.getCurrentSession().get(TaskDefinition.class, taskId);
 		
 		if (task == null) {
@@ -90,7 +92,8 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @return task with given public name
 	 * @throws DAOException
 	 */
-	public TaskDefinition getTaskByName(String name) throws DAOException {
+	@Override
+    public TaskDefinition getTaskByName(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(TaskDefinition.class).add(
 		    Expression.eq("name", name));
 		
@@ -109,7 +112,8 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @param task to be updated
 	 * @throws DAOException
 	 */
-	public void updateTask(TaskDefinition task) throws DAOException {
+	@Override
+    public void updateTask(TaskDefinition task) throws DAOException {
 		sessionFactory.getCurrentSession().merge(task);
 	}
 	
@@ -119,7 +123,8 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @return <code>List<TaskDefinition></code> of all tasks
 	 * @throws DAOException
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<TaskDefinition> getTasks() throws DAOException {
 		return sessionFactory.getCurrentSession().createCriteria(TaskDefinition.class).list();
 	}
@@ -130,7 +135,8 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @param taskId <code>Integer</code> identifier of task to be deleted
 	 * @throws DAOException
 	 */
-	public void deleteTask(Integer taskId) throws DAOException {
+	@Override
+    public void deleteTask(Integer taskId) throws DAOException {
 		TaskDefinition taskConfig = getTask(taskId);
 		deleteTask(taskConfig);
 	}
@@ -141,7 +147,8 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @param taskConfig <code>TaskDefinition</code> of task to be deleted
 	 * @throws DAOException
 	 */
-	public void deleteTask(TaskDefinition taskConfig) throws DAOException {
+	@Override
+    public void deleteTask(TaskDefinition taskConfig) throws DAOException {
 		sessionFactory.getCurrentSession().delete(taskConfig);
 	}
 	
@@ -159,7 +166,8 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @return schedule with given internal identifier
 	 * @throws DAOException
 	 */
-	public Schedule getSchedule(Integer scheduleId) throws DAOException {
+	@Override
+    public Schedule getSchedule(Integer scheduleId) throws DAOException {
 		Schedule schedule = (Schedule) sessionFactory.getCurrentSession().get(Schedule.class, scheduleId);
 		
 		if (schedule == null) {

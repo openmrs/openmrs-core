@@ -54,7 +54,8 @@ public class ArdenServiceImpl implements ArdenService {
 	/**
 	 * @param file - mlm file to be parsed
 	 */
-	public void compileFile(String file, String outFolder) {
+	@Override
+    public void compileFile(String file, String outFolder) {
 		try {
 			// if we have at least one command-line argument
 			if (file.length() > 0) {
@@ -195,7 +196,7 @@ public class ArdenServiceImpl implements ArdenService {
 			 * Implement the other interface methods
 			 */
 			
-			String str = "";
+			@org.jetbrains.annotations.Nullable String str = "";
 			w.write("\t/*** @see org.openmrs.logic.rule.Rule#getDuration()*/\n\t"
 			        + "public int getDuration() {\n\t\treturn 60*30;   // 30 minutes\n\t}\n\n");
 			
@@ -493,7 +494,8 @@ public class ArdenServiceImpl implements ArdenService {
 	/**
 	 * @see org.openmrs.arden.ArdenService#compile(java.lang.String, java.lang.String)
 	 */
-	public void compile(String ardenRuleDefinition, String outputDir) throws APIException {
+	@Override
+    public void compile(String ardenRuleDefinition, String outputDir) throws APIException {
 		try {
 			InputStream inputStream = new ByteArrayInputStream(ardenRuleDefinition.getBytes());
 			parseFile(inputStream, "ConceptDerived", outputDir);

@@ -26,7 +26,7 @@ public class TaskFactory {
 	private static final TaskFactory factory = new TaskFactory();
 	
 	/** Logger */
-	private static Log log = LogFactory.getLog(TaskFactory.class);
+	private static final Log log = LogFactory.getLog(TaskFactory.class);
 	
 	/** Private constructor */
 	private TaskFactory() {

@@ -103,7 +103,7 @@ public class ConceptValidator implements Validator {
 			boolean fullySpecifiedNameForLocaleFound = false;
 			boolean preferredNameForLocaleFound = false;
 			boolean shortNameForLocaleFound = false;
-			Set<String> validNamesFoundInLocale = new HashSet<String>();
+			Collection<String> validNamesFoundInLocale = new HashSet<String>();
 			Collection<ConceptName> namesInLocale = conceptToValidate.getNames(conceptNameLocale);
 			for (ConceptName nameInLocale : namesInLocale) {
 				if (StringUtils.isBlank(nameInLocale.getName())) {

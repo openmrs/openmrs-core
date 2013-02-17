@@ -49,7 +49,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 public class HibernateContextDAO implements ContextDAO {
 	
-	private static Log log = LogFactory.getLog(HibernateContextDAO.class);
+	private static final Log log = LogFactory.getLog(HibernateContextDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -69,7 +69,8 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
-	public User authenticate(String login, String password) throws ContextAuthenticationException {
+	@Override
+    public User authenticate(String login, String password) throws ContextAuthenticationException {
 		
 		String errorMsg = "Invalid username and/or password: " + login;
 		
@@ -199,7 +200,8 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#getUserByUuid(java.lang.String)
 	 */
-	public User getUserByUuid(String uuid) {
+	@Override
+    public User getUserByUuid(String uuid) {
 		
 		// don't flush here in case we're in the AuditableInterceptor.  Will cause a StackOverflowEx otherwise
 		FlushMode flushMode = sessionFactory.getCurrentSession().getFlushMode();
@@ -246,7 +248,8 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	private boolean participate = false;
 	
-	public void openSession() {
+	@Override
+    public void openSession() {
 		log.debug("HibernateContext: Opening Hibernate Session");
 		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
 			if (log.isDebugEnabled())
@@ -264,7 +267,8 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.context.Context#closeSession()
 	 */
-	public void closeSession() {
+	@Override
+    public void closeSession() {
 		log.debug("HibernateContext: closing Hibernate Session");
 		if (!participate) {
 			log.debug("Unbinding session from synchronization manager (" + sessionFactory.hashCode() + ")");
@@ -289,35 +293,40 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#clearSession()
 	 */
-	public void clearSession() {
+	@Override
+    public void clearSession() {
 		sessionFactory.getCurrentSession().clear();
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#evictFromSession(java.lang.Object)
 	 */
-	public void evictFromSession(Object obj) {
+	@Override
+    public void evictFromSession(Object obj) {
 		sessionFactory.getCurrentSession().evict(obj);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#flushSession()
 	 */
-	public void flushSession() {
+	@Override
+    public void flushSession() {
 		sessionFactory.getCurrentSession().flush();
 	}
 	
 	/**
 	 * @see org.openmrs.api.context.Context#startup(Properties)
 	 */
-	public void startup(Properties properties) {
+	@Override
+    public void startup(Properties properties) {
 		
 	}
 	
 	/**
 	 * @see org.openmrs.api.context.Context#shutdown()
 	 */
-	public void shutdown() {
+	@Override
+    public void shutdown() {
 		if (log.isInfoEnabled())
 			showUsageStatistics();
 		
@@ -363,7 +372,8 @@ public class HibernateContextDAO implements ContextDAO {
 	 * 
 	 * @see org.openmrs.api.db.ContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)
 	 */
-	public void mergeDefaultRuntimeProperties(Properties runtimeProperties) {
+	@Override
+    public void mergeDefaultRuntimeProperties(Properties runtimeProperties) {
 		
 		// loop over runtime properties and precede each with "hibernate" if
 		// it isn't already

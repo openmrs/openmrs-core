@@ -58,7 +58,8 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getAllVisitTypes()
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List<VisitType> getAllVisitTypes() throws APIException {
 		return getCurrentSession().createCriteria(VisitType.class).list();
@@ -76,7 +77,8 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitType(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public VisitType getVisitType(Integer visitTypeId) {
 		return (VisitType) sessionFactory.getCurrentSession().get(VisitType.class, visitTypeId);
 	}
@@ -84,7 +86,8 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitTypeByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public VisitType getVisitTypeByUuid(String uuid) {
 		return (VisitType) sessionFactory.getCurrentSession().createQuery("from VisitType vt where vt.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
@@ -93,7 +96,8 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitTypes(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List<VisitType> getVisitTypes(String fuzzySearchPhrase) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(VisitType.class);
@@ -105,7 +109,8 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#saveVisitType(org.openmrs.VisitType)
 	 */
-	@Transactional
+	@Override
+    @Transactional
 	public VisitType saveVisitType(VisitType visitType) {
 		sessionFactory.getCurrentSession().saveOrUpdate(visitType);
 		return visitType;
@@ -114,7 +119,8 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#purgeVisitType(org.openmrs.VisitType)
 	 */
-	@Transactional
+	@Override
+    @Transactional
 	public void purgeVisitType(VisitType visitType) {
 		sessionFactory.getCurrentSession().delete(visitType);
 	}

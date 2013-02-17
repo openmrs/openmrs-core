@@ -49,7 +49,8 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	/**
 	 * @see org.openmrs.messagesource.MessageSourceService#getMessage(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public String getMessage(String s) {
 		return getMessage(s, null, Context.getLocale());
 	}
@@ -59,7 +60,8 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 * 
 	 * @return the activeMessageSource
 	 */
-	public MutableMessageSource getActiveMessageSource() {
+	@Override
+    public MutableMessageSource getActiveMessageSource() {
 		return activeMessageSource;
 	}
 	
@@ -68,7 +70,8 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 * 
 	 * @param activeMessageSource the activeMessageSourceService to set
 	 */
-	public void setActiveMessageSource(MutableMessageSource activeMessageSource) {
+	@Override
+    public void setActiveMessageSource(MutableMessageSource activeMessageSource) {
 		
 		log.debug("Setting activeMessageSource: " + activeMessageSource);
 		
@@ -83,7 +86,8 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 * 
 	 * @see org.openmrs.messagesource.MessageSourceService#getLocales()
 	 */
-	public Collection<Locale> getLocales() {
+	@Override
+    public Collection<Locale> getLocales() {
 		return activeMessageSource.getLocales();
 	}
 	
@@ -95,7 +99,9 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 *      String, String, String)
 	 * @deprecated use {@link #merge(MutableMessageSource, boolean)} instead
 	 */
-	public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
+	@Override
+    @Deprecated
+    public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
 		activeMessageSource.publishProperties(props, locale, namespace, name, version);
 	}
 	
@@ -104,7 +110,8 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 * 
 	 * @see org.openmrs.messagesource.MessageSourceService#getPresentations()
 	 */
-	public Collection<PresentationMessage> getPresentations() {
+	@Override
+    public Collection<PresentationMessage> getPresentations() {
 		return activeMessageSource.getPresentations();
 	}
 	
@@ -135,28 +142,32 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	/**
 	 * @see org.openmrs.messagesource.MutableMessageSource#addPresentation(org.openmrs.messagesource.PresentationMessage)
 	 */
-	public void addPresentation(PresentationMessage message) {
+	@Override
+    public void addPresentation(PresentationMessage message) {
 		activeMessageSource.addPresentation(message);
 	}
 	
 	/**
 	 * @see org.openmrs.messagesource.MutableMessageSource#addPresentation(org.openmrs.messagesource.PresentationMessage)
 	 */
-	public void removePresentation(PresentationMessage message) {
+	@Override
+    public void removePresentation(PresentationMessage message) {
 		activeMessageSource.removePresentation(message);
 	}
 	
 	/**
 	 * @return the availableMessageSources
 	 */
-	public Set<MutableMessageSource> getMessageSources() {
+	@Override
+    public Set<MutableMessageSource> getMessageSources() {
 		return availableMessageSources;
 	}
 	
 	/**
 	 * @param availableMessageSources the availableMessageSources to set
 	 */
-	public void setMessageSources(Set<MutableMessageSource> availableMessageSources) {
+	@Override
+    public void setMessageSources(Set<MutableMessageSource> availableMessageSources) {
 		this.availableMessageSources.addAll(availableMessageSources);
 	}
 	
@@ -165,7 +176,8 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 * 
 	 * @see org.openmrs.messagesource.MutableMessageSource#merge(MutableMessageSource, boolean)
 	 */
-	public void merge(MutableMessageSource fromSource, boolean overwrite) {
+	@Override
+    public void merge(MutableMessageSource fromSource, boolean overwrite) {
 		activeMessageSource.merge(fromSource, overwrite);
 	}
 	
@@ -173,14 +185,16 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String,
 	 *      java.util.Locale)
 	 */
-	public PresentationMessage getPresentation(String key, Locale forLocale) {
+	@Override
+    public PresentationMessage getPresentation(String key, Locale forLocale) {
 		return activeMessageSource.getPresentation(key, forLocale);
 	}
 	
 	/**
 	 * @see org.openmrs.messagesource.MutableMessageSource#getPresentationsInLocale(java.util.Locale)
 	 */
-	public Collection<PresentationMessage> getPresentationsInLocale(Locale locale) {
+	@Override
+    public Collection<PresentationMessage> getPresentationsInLocale(Locale locale) {
 		return activeMessageSource.getPresentationsInLocale(locale);
 	}
 	

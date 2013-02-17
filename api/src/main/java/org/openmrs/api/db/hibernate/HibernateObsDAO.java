@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -66,14 +67,16 @@ public class HibernateObsDAO implements ObsDAO {
 	/**
 	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
 	 */
-	public void deleteObs(Obs obs) throws DAOException {
+	@Override
+    public void deleteObs(Obs obs) throws DAOException {
 		sessionFactory.getCurrentSession().delete(obs);
 	}
 	
 	/**
 	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
-	public Obs getObs(Integer obsId) throws DAOException {
+	@Override
+    public Obs getObs(Integer obsId) throws DAOException {
 		return (Obs) sessionFactory.getCurrentSession().get(Obs.class, obsId);
 	}
 	
@@ -81,7 +84,8 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#getMimeType(java.lang.Integer)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public MimeType getMimeType(Integer mimeTypeId) throws DAOException {
 		return (MimeType) sessionFactory.getCurrentSession().get(MimeType.class, mimeTypeId);
 	}
@@ -90,7 +94,8 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#getAllMimeTypes(boolean)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@SuppressWarnings("unchecked")
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(MimeType.class);
@@ -105,7 +110,8 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#saveMimeType(org.openmrs.MimeType)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public MimeType saveMimeType(MimeType mimeType) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(mimeType);
 		return mimeType;
@@ -115,7 +121,8 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#deleteMimeType(org.openmrs.MimeType)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void deleteMimeType(MimeType mimeType) throws DAOException {
 		sessionFactory.getCurrentSession().delete(mimeType);
 	}
@@ -123,7 +130,8 @@ public class HibernateObsDAO implements ObsDAO {
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#saveObs(org.openmrs.Obs)
 	 */
-	public Obs saveObs(Obs obs) throws DAOException {
+	@Override
+    public Obs saveObs(Obs obs) throws DAOException {
 		if (obs.hasGroupMembers() && obs.getObsId() != null) {
 			// hibernate has a problem updating child collections
 			// if the parent object was already saved so we do it
@@ -142,7 +150,8 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List,
 	 *      Integer, Integer, Date, Date, boolean)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
@@ -159,7 +168,8 @@ public class HibernateObsDAO implements ObsDAO {
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
 	 *      java.util.Date, java.util.Date, boolean)
 	 */
-	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	@Override
+    public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs)
 	        throws DAOException {
@@ -248,7 +258,7 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @param personType
 	 * @return the given criteria (for chaining)
 	 */
-	private Criteria getCriteriaPersonModifier(Criteria criteria, List<PERSON_TYPE> personTypes) {
+	private Criteria getCriteriaPersonModifier(Criteria criteria, Collection<PERSON_TYPE> personTypes) {
 		if (personTypes.contains(PERSON_TYPE.PATIENT)) {
 			DetachedCriteria crit = DetachedCriteria.forClass(Patient.class, "patient").setProjection(
 			    Property.forName("patientId"));
@@ -272,7 +282,8 @@ public class HibernateObsDAO implements ObsDAO {
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#getObsByUuid(java.lang.String)
 	 */
-	public Obs getObsByUuid(String uuid) {
+	@Override
+    public Obs getObsByUuid(String uuid) {
 		return (Obs) sessionFactory.getCurrentSession().createQuery("from Obs o where o.uuid = :uuid").setString("uuid",
 		    uuid).uniqueResult();
 	}

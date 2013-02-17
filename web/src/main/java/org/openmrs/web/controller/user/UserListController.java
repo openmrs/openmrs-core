@@ -73,7 +73,7 @@ public class UserListController {
 		}
 	}
 	
-	protected List<User> getUsers(String action, String name, Role role, Boolean includeDisabled) {
+	protected List<User> getUsers(String action, @org.jetbrains.annotations.Nullable String name, Role role, Boolean includeDisabled) {
 		// only do the search if there are search parameters or 
 		if (action != null || StringUtils.hasText(name) || role != null) {
 			if (includeDisabled == null)

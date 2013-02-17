@@ -69,7 +69,7 @@ public class AbstractHandler {
 		
 		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
-		File outputfile = null;
+		@org.jetbrains.annotations.Nullable File outputfile = null;
 		
 		// Get the output stream
 		if (null == title) {
@@ -81,7 +81,7 @@ public class AbstractHandler {
 		}
 		
 		int i = 0;
-		String tmp = null;
+		@org.jetbrains.annotations.Nullable String tmp = null;
 		
 		// If the Obs does not exist, but the File does, append a two-digit
 		// count number to the filename and save it.
@@ -91,8 +91,10 @@ public class AbstractHandler {
 			tmp = new String(outputfile.getAbsolutePath().replace("." + extension, ""));
 			outputfile = null;
 			// Append two-digit count number to the filename.
-			String filename = (i < 1) ? tmp + "_" + nf.format(Integer.valueOf(++i)) : tmp.replace(nf.format(Integer
-			        .valueOf(i)), nf.format(Integer.valueOf(++i)));
+            ++i;
+            ++i;
+            String filename = (i < 1) ? tmp + "_" + nf.format(Integer.valueOf(i)) : tmp.replace(nf.format(Integer
+			        .valueOf(i)), nf.format(Integer.valueOf(i)));
 			// Append the extension to the filename.
 			outputfile = new File(filename + "." + extension);
 		}

@@ -13,10 +13,7 @@
  */
 package org.openmrs.arden;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
+import java.util.*;
 
 import org.openmrs.Obs;
 import org.openmrs.Patient;
@@ -42,7 +39,7 @@ public class ArdenValue {
 		locale = l;
 	}
 	
-	public void addObs(List<Obs> o) {
+	public void addObs(Collection<Obs> o) {
 		obs.addAll(o);
 	}
 	

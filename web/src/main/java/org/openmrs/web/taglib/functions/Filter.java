@@ -35,11 +35,14 @@ import org.openmrs.Obs;
  * &lt;/c:forEach>
  * </pre>
  */
-public class Filter {
+public final class Filter {
 	
-	private static Log log = LogFactory.getLog(Filter.class);
-	
-	/**
+	private static final Log log = LogFactory.getLog(Filter.class);
+
+    private Filter() {
+    }
+
+    /**
 	 * Returns a subset of the passed set of encounters that match the passed encounter type id
 	 * 
 	 * @param encs: Superset of encounters

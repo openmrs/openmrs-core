@@ -116,7 +116,7 @@ public class ValidateUtil {
 			if (value == null || !(value instanceof String))
 				return;
 			int length = Context.getAdministrationService().getMaximumPropertyLength(aClass, field);
-			if (((String) value).length() > length) {
+			if (((CharSequence) value).length() > length) {
 				errors.rejectValue(field, "error.exceededMaxLengthOfField", new Object[] { length }, null);
 			}
 		}

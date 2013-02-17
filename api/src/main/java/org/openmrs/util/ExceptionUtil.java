@@ -20,9 +20,12 @@ import org.openmrs.api.APIAuthenticationException;
  * Utility methods for dealing with exceptions
  * @since 1.8.4
  */
-public class ExceptionUtil {
-	
-	/**
+public final class ExceptionUtil {
+
+    private ExceptionUtil() {
+    }
+
+    /**
 	 * If any cause in the exception chain is an instance of causeType, then rethrow that exception 
 	 * 
 	 * @param thrown

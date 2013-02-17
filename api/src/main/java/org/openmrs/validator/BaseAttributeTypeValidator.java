@@ -21,6 +21,7 @@ import org.openmrs.attribute.AttributeType;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.RepeatingCustomValueDescriptor;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -46,7 +47,7 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 	@Override
 	public void validate(Object target, Errors errors) {
 		@SuppressWarnings("unchecked")
-		T attributeType = (T) target;
+        RepeatingCustomValueDescriptor attributeType = (T) target;
 		
 		if (attributeType == null) {
 			errors.reject("error.general");

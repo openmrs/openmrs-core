@@ -29,7 +29,8 @@ public class UserWidgetTag extends TagSupport {
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
-	private Integer userId;
+	@org.jetbrains.annotations.Nullable
+    private Integer userId;
 	
 	private String size = "normal";
 	

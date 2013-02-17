@@ -57,7 +57,8 @@ public abstract class SerializingCustomDatatype<T> implements CustomDatatype<T> 
 	 * Passes for all non-null values in the default implementation
 	 * @see org.openmrs.customdatatype.CustomDatatype#validate(java.lang.Object)
 	 */
-	public void validate(T typedValue) throws InvalidCustomValueException {
+	@Override
+    public void validate(T typedValue) throws InvalidCustomValueException {
 		if (typedValue == null)
 			throw new InvalidCustomValueException("cannot be null");
 	}
@@ -73,7 +74,8 @@ public abstract class SerializingCustomDatatype<T> implements CustomDatatype<T> 
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#save(java.lang.Object, java.lang.String)
 	 */
-	public String save(T typedValue, String existingValueReference) throws InvalidCustomValueException {
+	@Override
+    public String save(T typedValue, String existingValueReference) throws InvalidCustomValueException {
 		validate(typedValue);
 		return serialize(typedValue);
 	}
@@ -81,7 +83,8 @@ public abstract class SerializingCustomDatatype<T> implements CustomDatatype<T> 
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#getReferenceStringForValue(java.lang.Object)
 	 */
-	public String getReferenceStringForValue(T typedValue) throws UnsupportedOperationException {
+	@Override
+    public String getReferenceStringForValue(T typedValue) throws UnsupportedOperationException {
 		return serialize(typedValue);
 	}
 	

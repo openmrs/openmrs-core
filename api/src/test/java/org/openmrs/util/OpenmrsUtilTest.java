@@ -48,7 +48,7 @@ import org.openmrs.test.Verifies;
  */
 public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	
-	private static GlobalProperty luhnGP = new GlobalProperty(
+	private static final GlobalProperty luhnGP = new GlobalProperty(
 	        OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR,
 	        OpenmrsConstants.LUHN_IDENTIFIER_VALIDATOR);
 	

@@ -30,16 +30,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 
@@ -842,7 +833,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		// obs 11 in INITIAL_OBS_XML and obs 13 in standardTestDataset
 		Assert.assertEquals(2, obss.size());
-		Set<Integer> ids = new HashSet<Integer>();
+		Collection<Integer> ids = new HashSet<Integer>();
 		for (Obs o : obss) {
 			ids.add(o.getObsId());
 		}

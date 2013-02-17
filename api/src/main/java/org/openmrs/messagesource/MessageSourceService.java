@@ -52,7 +52,9 @@ public interface MessageSourceService extends MutableMessageSource {
 	 *      String, String, String)
 	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
 	 */
-	public void publishProperties(Properties props, String locale, String namespace, String name, String version);
+	@Override
+    @Deprecated
+    public void publishProperties(Properties props, String locale, String namespace, String name, String version);
 	
 	/**
 	 * @return the availableMessageSources

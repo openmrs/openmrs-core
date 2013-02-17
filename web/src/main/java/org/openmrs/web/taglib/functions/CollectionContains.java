@@ -18,9 +18,12 @@ import java.util.Collection;
 /**
  * Function for openmrs tag library to determine whether a collection contains an object
  */
-public class CollectionContains {
-	
-	/**
+public final class CollectionContains {
+
+    private CollectionContains() {
+    }
+
+    /**
 	 * Returns true if collection is not null and contains obj
 	 * 
 	 * @param collection

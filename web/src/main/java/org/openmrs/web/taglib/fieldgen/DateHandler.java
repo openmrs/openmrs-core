@@ -14,11 +14,11 @@
 package org.openmrs.web.taglib.fieldgen;
 
 public class DateHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "date.field";
-	
-	public void run() {
-		setUrl(defaultUrl);
+
+    @Override
+    public void run() {
+        String defaultUrl = "date.field";
+        setUrl(defaultUrl);
 		
 		String needScript = "true";
 		

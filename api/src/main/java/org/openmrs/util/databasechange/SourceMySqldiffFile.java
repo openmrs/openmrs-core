@@ -48,7 +48,7 @@ import org.openmrs.util.OpenmrsUtil;
  */
 public class SourceMySqldiffFile implements CustomTaskChange {
 	
-	private static Log log = LogFactory.getLog(SourceMySqldiffFile.class);
+	private static final Log log = LogFactory.getLog(SourceMySqldiffFile.class);
 	
 	/**
 	 * Absolute path and name of file to source
@@ -162,7 +162,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 				// shorten to the first 6 characters uppercased
 				pathPart = pathPart.substring(0, 6).toUpperCase();
 				// add in the tilda and assume the first one (very hacky part)
-				pathPart = pathPart + "~1";
+                pathPart += "~1";
 			}
 			returnedPath.append(pathPart).append("/");
 		}
@@ -176,7 +176,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	 * @param the string
 	 * @return process exit value
 	 */
-	private Integer execCmd(File wd, String[] cmdWithArguments, StringBuffer out) throws Exception {
+	private Integer execCmd(@org.jetbrains.annotations.Nullable File wd, String[] cmdWithArguments, StringBuffer out) throws Exception {
 		log.debug("executing command: " + Arrays.toString(cmdWithArguments));
 		
 		Integer exitValue = -1;

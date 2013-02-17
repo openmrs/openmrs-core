@@ -14,6 +14,7 @@
 package org.openmrs.web.taglib.fieldgen;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -23,11 +24,11 @@ import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 
 public class ProgramWorkflowHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "programWorkflow.field";
-	
-	public void run() {
-		setUrl(defaultUrl);
+
+    @Override
+    public void run() {
+        String defaultUrl = "programWorkflow.field";
+        setUrl(defaultUrl);
 		
 		if (fieldGenTag != null) {
 			String initialValue = "";
@@ -48,7 +49,7 @@ public class ProgramWorkflowHandler extends AbstractFieldGenHandler implements F
 				        : "false";
 			}
 			
-			List<ProgramWorkflow> workflows = new ArrayList<ProgramWorkflow>();
+			Collection<ProgramWorkflow> workflows = new ArrayList<ProgramWorkflow>();
 			
 			ProgramWorkflowService pws = Context.getProgramWorkflowService();
 			List<Program> programs = pws.getAllPrograms();

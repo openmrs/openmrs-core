@@ -13,14 +13,7 @@
  */
 package org.openmrs.web.controller;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -167,8 +160,9 @@ public class ConceptStatsFormController extends SimpleFormController {
 							total += value;
 							
 							// for histogram
-							obsNumerics[i++] = value;
-							Integer count = counts.get(value);
+							obsNumerics[i] = value;
+                            i++;
+                            Integer count = counts.get(value);
 							counts.put(value, count == null ? 1 : count + 1);
 							
 							// for line chart
@@ -209,7 +203,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 							Double upperQuartileLimit = upperQuartile + innerQuartileLimit;
 							Double lowerQuartileLimit = lowerQuartile - innerQuartileLimit;
 							
-							List<Obs> outliers = new Vector<Obs>();
+							Collection<Obs> outliers = new Vector<Obs>();
 							
 							// move outliers to the outliers list
 							// removing lower quartile outliers
@@ -234,8 +228,9 @@ public class ConceptStatsFormController extends SimpleFormController {
 							counts.clear();
 							for (Obs values : numericAnswers) {
 								Double value = values.getValueNumeric();
-								obsNumericsOutliers[i++] = value;
-								Integer count = counts.get(value);
+								obsNumericsOutliers[i] = value;
+                                i++;
+                                Integer count = counts.get(value);
 								counts.put(value, count == null ? 1 : count + 1);
 							}
 							

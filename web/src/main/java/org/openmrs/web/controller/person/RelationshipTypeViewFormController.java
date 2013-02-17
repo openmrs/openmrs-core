@@ -13,12 +13,7 @@
  */
 package org.openmrs.web.controller.person;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -78,7 +73,7 @@ public class RelationshipTypeViewFormController extends SimpleFormController {
 			
 			String[] relationshipTypeIds = request.getParameterValues("relationshipTypeIds");
 			String[] displayOrders = request.getParameterValues("displayOrders");
-			List<String> preferredTypes = new ArrayList<String>();
+			Collection<String> preferredTypes = new ArrayList<String>();
 			String[] preferredTypesArray = request.getParameterValues("preferredTypes");
 			if (preferredTypesArray != null)
 				Collections.addAll(preferredTypes, preferredTypesArray);
@@ -133,9 +128,9 @@ public class RelationshipTypeViewFormController extends SimpleFormController {
 	protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<RelationshipType> types = (List<RelationshipType>) command;
+		Iterable<RelationshipType> types = (List<RelationshipType>) command;
 		
-		List<RelationshipType> preferredTypes = new Vector<RelationshipType>();
+		Collection<RelationshipType> preferredTypes = new Vector<RelationshipType>();
 		for (RelationshipType type : types) {
 			if (type.isPreferred())
 				preferredTypes.add(type);

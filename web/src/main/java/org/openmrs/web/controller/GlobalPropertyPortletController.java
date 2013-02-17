@@ -14,6 +14,7 @@
 package org.openmrs.web.controller;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +49,7 @@ public class GlobalPropertyPortletController extends PortletController {
 				propertyPrefix = "";
 				model.put("propertyPrefix", propertyPrefix);
 			}
-			String excludePrefix = (String) model.get("excludePrefix");
+			@org.jetbrains.annotations.Nullable String excludePrefix = (String) model.get("excludePrefix");
 			if ("".equals(excludePrefix)) {
 				excludePrefix = null;
 				model.put("excludePrefix", excludePrefix);
@@ -59,7 +60,7 @@ public class GlobalPropertyPortletController extends PortletController {
 				prefixes = excludePrefix.split(";");
 			}
 			
-			List<GlobalProperty> properties = new ArrayList<GlobalProperty>();
+			Collection<GlobalProperty> properties = new ArrayList<GlobalProperty>();
 			for (GlobalProperty p : Context.getAdministrationService().getAllGlobalProperties()) {
 				if (p.getProperty().startsWith(propertyPrefix)) {
 					boolean found = false;
@@ -94,7 +95,7 @@ public class GlobalPropertyPortletController extends PortletController {
 	 */
 	protected void setupModelForModule(Map<String, Object> model) {
 		if (Context.isAuthenticated()) {
-			String forModule = (String) model.get("forModule");
+			@org.jetbrains.annotations.Nullable String forModule = (String) model.get("forModule");
 			if ("".equals(forModule)) {
 				forModule = null;
 				model.put("forModule", forModule);

@@ -82,7 +82,8 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 		return sb.toString();
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Patients who stopped or changed ");
 		if ((getDrugList() != null && getDrugList().size() > 0)
@@ -160,7 +161,8 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 		        untilDate), discontinued, getDiscontinuedReasonList());
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		return getStopDate() != null;
 	}
 	

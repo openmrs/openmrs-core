@@ -34,7 +34,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class PatientSearchParameterTest extends BaseContextSensitiveTest {
 	
-	private static Log log = LogFactory.getLog(PatientSearchParameterTest.class);
+	private static final Log log = LogFactory.getLog(PatientSearchParameterTest.class);
 	
 	protected static final String INITIAL_REPORT_OBJECTS_XML = "org/openmrs/report/include/PatientSearchParameterTest.xml";
 	

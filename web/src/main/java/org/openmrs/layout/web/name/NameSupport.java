@@ -22,7 +22,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> {
 	
 	private static NameSupport singleton;
 	
-	static Log log = LogFactory.getLog(NameSupport.class);
+	static final Log log = LogFactory.getLog(NameSupport.class);
 	
 	public NameSupport() {
 		if (singleton == null)
@@ -37,7 +37,8 @@ public class NameSupport extends LayoutSupport<NameTemplate> {
 		}
 	}
 	
-	public String getDefaultLayoutFormat() {
+	@Override
+    public String getDefaultLayoutFormat() {
 		String ret = Context.getAdministrationService().getGlobalProperty("layout.name.format");
 		return (ret != null && ret.length() > 0) ? ret : defaultLayoutFormat;
 	}

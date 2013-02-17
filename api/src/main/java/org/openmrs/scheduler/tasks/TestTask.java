@@ -33,7 +33,8 @@ public class TestTask extends AbstractTask {
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(TaskDefinition)
 	 */
-	public void initialize(TaskDefinition taskDefinition) {
+	@Override
+    public void initialize(TaskDefinition taskDefinition) {
 		log.info("Initializing task " + taskDefinition);
 	}
 	
@@ -45,7 +46,8 @@ public class TestTask extends AbstractTask {
 		log.info("Executing task at " + new Date());
 		
 		// Throw a runtime exception once every ten executions
-		if (++executionCount % 10 == 0) {
+        ++executionCount;
+        if (executionCount % 10 == 0) {
 			log.info("Throwing a runtime exception in an attempt to break the scheduler");
 			throw new RuntimeException();
 		}
@@ -60,7 +62,8 @@ public class TestTask extends AbstractTask {
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#shutdown()
 	 */
-	public void shutdown() {
+	@Override
+    public void shutdown() {
 		log.info("Shutting down task ...");
 		super.shutdown();
 	}

@@ -60,7 +60,8 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements Pati
 		this.operator = operator;
 	}
 	
-	public Cohort filter(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filter(Cohort input, EvaluationContext context) {
 		if (operator == BooleanOperator.AND) {
 			Cohort temp = input;
 			for (PatientFilter pf : filters) {
@@ -79,7 +80,8 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements Pati
 		}
 	}
 	
-	public Cohort filterInverse(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		if (operator == BooleanOperator.AND) {
 			// NOT(AND(x, y)) -> OR(NOT x, NOT y)
 			Set<Integer> ptIds = new HashSet<Integer>();
@@ -98,7 +100,8 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements Pati
 		}
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		if (super.getDescription() != null)
 			return super.getDescription();
 		else {
@@ -113,7 +116,8 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements Pati
 		}
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		return operator != null && filters != null;
 	}
 	

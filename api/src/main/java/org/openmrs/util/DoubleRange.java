@@ -68,7 +68,8 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	/**
 	 * first sorts according to low-bound (ascending) then according to high-bound (descending)
 	 */
-	public int compareTo(DoubleRange other) {
+	@Override
+    public int compareTo(DoubleRange other) {
 		int temp = low.compareTo(other.low);
 		if (temp == 0) {
 			temp = other.high.compareTo(high);

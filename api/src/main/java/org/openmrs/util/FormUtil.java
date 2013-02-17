@@ -15,13 +15,7 @@ package org.openmrs.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.Vector;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.openmrs.Concept;
@@ -40,9 +34,12 @@ import org.openmrs.hl7.HL7Constants;
  * @see org.openmrs.FieldType
  * @see org.openmrs.FieldAnswer
  */
-public class FormUtil {
-	
-	/**
+public final class FormUtil {
+
+    private FormUtil() {
+    }
+
+    /**
 	 * Converts a string into a valid XML token (tag name)
 	 * 
 	 * @param s string to convert into XML token
@@ -124,7 +121,7 @@ public class FormUtil {
 	 * @return unique XML tag name from given string (guaranteed not to duplicate any tag names
 	 *         already within <code>tagList</code>)
 	 */
-	public static String getNewTag(String s, Vector<String> tagList) {
+	public static String getNewTag(String s, Collection<String> tagList) {
 		String token = getXmlToken(s);
 		if (tagList.contains(token)) {
 			int i = 1;

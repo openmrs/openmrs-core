@@ -16,12 +16,12 @@ package org.openmrs.web.taglib.fieldgen;
 import org.openmrs.Orderable;
 
 public class OrderableHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "orderable.field";
-	
-	public void run() {
-		
-		setUrl(defaultUrl);
+
+    @Override
+    public void run() {
+
+        String defaultUrl = "orderable.field";
+        setUrl(defaultUrl);
 		checkEmptyVal((Orderable<?>) null);
 		if (fieldGenTag != null) {
 			Object initialValue = this.fieldGenTag.getVal();

@@ -15,15 +15,7 @@ package org.openmrs.reporting;
 
 import java.io.StreamTokenizer;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -76,15 +68,15 @@ public class PatientSearch implements CohortDefinition {
 	
 	protected static final Log log = LogFactory.getLog(PatientSearch.class);
 	
-	private static Set<String> andWords = new HashSet<String>();
+	private static Collection<String> andWords = new HashSet<String>();
 	
-	private static Set<String> orWords = new HashSet<String>();
+	private static Collection<String> orWords = new HashSet<String>();
 	
-	private static Set<String> notWords = new HashSet<String>();
+	private static Collection<String> notWords = new HashSet<String>();
 	
-	private static Set<String> openParenthesesWords = new HashSet<String>();
+	private static Collection<String> openParenthesesWords = new HashSet<String>();
 	
-	private static Set<String> closeParenthesesWords = new HashSet<String>();
+	private static Collection<String> closeParenthesesWords = new HashSet<String>();
 	static {
 		andWords.add("and");
 		andWords.add("intersection");
@@ -173,7 +165,7 @@ public class PatientSearch implements CohortDefinition {
 		return createCompositionSearch(Arrays.asList(tokens));
 	}
 	
-	public static PatientSearch createCompositionSearch(List<Object> tokens) {
+	public static PatientSearch createCompositionSearch(Iterable<Object> tokens) {
 		// TODO This is a rewrite of the code in CohortSearchHistory.createCompositionFilter(String). That method should probably delegate to this one in some way.
 		List<Object> currentLine = new ArrayList<Object>();
 		
@@ -298,7 +290,7 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private String compositionStringHelper(List list) {
+	private String compositionStringHelper(Iterable list) {
 		StringBuilder ret = new StringBuilder();
 		for (Object o : list) {
 			if (ret.length() > 0)
@@ -321,7 +313,7 @@ public class PatientSearch implements CohortDefinition {
 			return false;
 	}
 	
-	private boolean requiresHistoryHelper(List<Object> list) {
+	private boolean requiresHistoryHelper(Iterable<Object> list) {
 		for (Object o : list) {
 			if (o instanceof Integer)
 				return true;
@@ -351,7 +343,7 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<Object> copyAndDetachHelper(List<Object> list, CohortSearchHistory history) {
+	private List<Object> copyAndDetachHelper(Iterable<Object> list, CohortSearchHistory history) {
 		List<Object> ret = new ArrayList<Object>();
 		for (Object o : list) {
 			if (o instanceof PatientSearch) {
@@ -386,7 +378,7 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<Object> cloneCompositionHelper(List<Object> list, CohortSearchHistory history, EvaluationContext evalContext) {
+	private List<Object> cloneCompositionHelper(Iterable<Object> list, CohortSearchHistory history, EvaluationContext evalContext) {
 		List<Object> ret = new ArrayList<Object>();
 		for (Object o : list) {
 			if (o instanceof List)
@@ -489,7 +481,8 @@ public class PatientSearch implements CohortDefinition {
 	 * 
 	 * @return <code>List&lt;Parameter></code> of all parameters in the arguments
 	 */
-	public List<Parameter> getParameters() {
+	@Override
+    public List<Parameter> getParameters() {
 		List<Parameter> parameters = new ArrayList<Parameter>();
 		if (arguments != null) {
 			for (SearchArgument a : arguments) {

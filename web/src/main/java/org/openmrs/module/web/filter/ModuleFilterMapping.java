@@ -85,7 +85,7 @@ public class ModuleFilterMapping implements Serializable {
 	/**
 	 * @return a List of all Servlet Names mapped to this Filter
 	 */
-	public List<String> getServletNames() {
+	public Iterable<String> getServletNames() {
 		return servletNames;
 	}
 	
@@ -108,7 +108,7 @@ public class ModuleFilterMapping implements Serializable {
 	/**
 	 * @return - a List of all Url Patterns mapped to this filter
 	 */
-	public List<String> getUrlPatterns() {
+	public Iterable<String> getUrlPatterns() {
 		return urlPatterns;
 	}
 	

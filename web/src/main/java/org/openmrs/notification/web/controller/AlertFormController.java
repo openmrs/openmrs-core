@@ -14,11 +14,7 @@
 package org.openmrs.notification.web.controller;
 
 import java.text.NumberFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -92,9 +88,9 @@ public class AlertFormController extends SimpleFormController {
 			
 			if (Context.isAuthenticated()) {
 				String[] userIdValues = request.getParameter("userIds").split(" ");
-				List<Integer> userIds = new Vector<Integer>();
+				Collection<Integer> userIds = new Vector<Integer>();
 				String[] roleValues = request.getParameter("newRoles").split(",");
-				List<String> roles = new Vector<String>();
+				Collection<String> roles = new Vector<String>();
 				
 				// create user list
 				if (userIdValues != null)
@@ -111,7 +107,7 @@ public class AlertFormController extends SimpleFormController {
 					}
 				
 				// remove all recipients not in the userIds list
-				List<AlertRecipient> recipientsToRemove = new Vector<AlertRecipient>();
+				Collection<AlertRecipient> recipientsToRemove = new Vector<AlertRecipient>();
 				if (alert.getRecipients() != null) {
 					for (AlertRecipient recipient : alert.getRecipients()) {
 						Integer userId = recipient.getRecipient().getUserId();

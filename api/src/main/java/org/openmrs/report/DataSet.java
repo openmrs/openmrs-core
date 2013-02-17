@@ -55,6 +55,7 @@ public interface DataSet<T extends Object> extends Iterable<Map<String, T>> {
 	 * 
 	 * @return an iterator over the rows in this dataset.
 	 */
-	public Iterator<Map<String, T>> iterator();
+	@Override
+    public Iterator<Map<String, T>> iterator();
 	
 }

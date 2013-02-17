@@ -24,11 +24,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 
-public class Format {
+public final class Format {
 	
-	private static Log log = LogFactory.getLog(Format.class);
-	
-	public enum FORMAT_TYPE {
+	private static final Log log = LogFactory.getLog(Format.class);
+
+    private Format() {
+    }
+
+    public enum FORMAT_TYPE {
 		DATE, TIME, TIMESTAMP
 	};
 	

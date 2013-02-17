@@ -62,7 +62,8 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	/**
 	 * @see org.openmrs.api.ProviderService#getAllProviders(boolean)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<Provider> getAllProviders(boolean includeRetired) {
 		return dao.getAllProviders(includeRetired);
 	}
@@ -70,21 +71,24 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	/**
 	 * @see org.openmrs.api.ProviderService#retireProvider(org.openmrs.Provider, java.lang.String)
 	 */
-	public void retireProvider(Provider provider, String reason) {
+	@Override
+    public void retireProvider(Provider provider, String reason) {
 		dao.saveProvider(provider);
 	}
 	
 	/**
 	 * @see org.openmrs.api.ProviderService#unretireProvider(org.openmrs.Provider)
 	 */
-	public Provider unretireProvider(Provider provider) {
+	@Override
+    public Provider unretireProvider(Provider provider) {
 		return dao.saveProvider(provider);
 	}
 	
 	/**
 	 * @see org.openmrs.api.ProviderService#purgeProvider(org.openmrs.Provider)
 	 */
-	public void purgeProvider(Provider provider) {
+	@Override
+    public void purgeProvider(Provider provider) {
 		dao.deleteProvider(provider);
 	}
 	

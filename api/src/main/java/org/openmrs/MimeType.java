@@ -74,7 +74,8 @@ public class MimeType extends BaseOpenmrsMetadata implements java.io.Serializabl
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getMimeTypeId();
 	}
@@ -82,7 +83,8 @@ public class MimeType extends BaseOpenmrsMetadata implements java.io.Serializabl
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setMimeTypeId(id);
 		
 	}

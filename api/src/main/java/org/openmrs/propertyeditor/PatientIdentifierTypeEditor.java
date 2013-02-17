@@ -41,7 +41,8 @@ public class PatientIdentifierTypeEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		PatientService ps = Context.getPatientService();
 		if (StringUtils.hasText(text)) {
 			try {
@@ -60,7 +61,8 @@ public class PatientIdentifierTypeEditor extends PropertyEditorSupport {
 		}
 	}
 	
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		PatientIdentifierType t = (PatientIdentifierType) getValue();
 		if (t == null) {
 			return "";

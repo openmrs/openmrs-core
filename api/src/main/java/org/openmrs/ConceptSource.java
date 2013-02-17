@@ -61,12 +61,14 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 		this.conceptSourceId = conceptSourceId;
 	}
 	
-	@Element
+	@Override
+    @Element
 	public User getCreator() {
 		return super.getCreator();
 	}
 	
-	@Element
+	@Override
+    @Element
 	public void setCreator(User creator) {
 		super.setCreator(creator);
 	}
@@ -74,7 +76,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element
+	@Override
+    @Element
 	public Date getDateCreated() {
 		return super.getDateCreated();
 	}
@@ -82,7 +85,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element
+	@Override
+    @Element
 	public void setDateCreated(Date dateCreated) {
 		super.setDateCreated(dateCreated);
 	}
@@ -90,7 +94,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	/**
 	 * @return Returns the dateVoided.
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Element(required = false)
 	public Date getDateVoided() {
 		return getDateRetired();
@@ -99,18 +104,21 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Element(required = false)
 	public void setDateVoided(Date dateVoided) {
 		setDateRetired(dateVoided);
 	}
 	
-	@Element(data = true)
+	@Override
+    @Element(data = true)
 	public String getDescription() {
 		return super.getDescription();
 	}
 	
-	@Element(data = true)
+	@Override
+    @Element(data = true)
 	public void setDescription(String description) {
 		super.setDescription(description);
 	}
@@ -131,12 +139,14 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 		this.hl7Code = hl7Code;
 	}
 	
-	@Element(data = true)
+	@Override
+    @Element(data = true)
 	public String getName() {
 		return super.getName();
 	}
 	
-	@Element(data = true)
+	@Override
+    @Element(data = true)
 	public void setName(String name) {
 		super.setName(name);
 	}
@@ -145,7 +155,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	 * @return the voided status
 	 * @deprecated use isRetired
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public Boolean isVoided() {
 		return isRetired();
 	}
@@ -167,7 +178,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	 * @param voided The voided status
 	 * @deprecated use setRetired
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Attribute
 	public void setVoided(Boolean voided) {
 		setRetired(voided);
@@ -177,7 +189,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	 * @return Returns the openmrs user that voided this source
 	 * @deprecated use getRetiredBy
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Element(required = false)
 	public User getVoidedBy() {
 		return getRetiredBy();
@@ -187,7 +200,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	 * @param voidedBy The openmrs user that voided this source
 	 * @deprecated use setRetiredBy
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Element(required = false)
 	public void setVoidedBy(User voidedBy) {
 		setRetiredBy(voidedBy);
@@ -197,7 +211,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	 * @return Returns the reason this source was voided
 	 * @deprecated use getRetireReason
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Element(data = true, required = false)
 	public String getVoidReason() {
 		return getRetireReason();
@@ -207,7 +222,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	 * @param voidReason The reason this source is voided
 	 * @deprecated use setRetireReason
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Element(data = true, required = false)
 	public void setVoidReason(String voidReason) {
 		setRetireReason(voidReason);
@@ -217,7 +233,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getConceptSourceId();
 	}
 	
@@ -225,7 +242,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setConceptSourceId(id);
 	}
 }

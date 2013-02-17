@@ -40,20 +40,17 @@ import org.dbunit.operation.DatabaseOperation;
  * {@link BaseContextSensitiveTest#INITIAL_DATA_SET_XML_FILENAME} file is overwritten by values in
  * the database defined by the runtime properties
  */
-public class MigrateDataSet {
-	
-	private static String OLD_SCHEMA_FILE = "/home/ben/workspace/openmrs-trunk/metadata/model/1.3.0-schema-only.sql";
-	
-	private static String OLD_UPDATE_FILE = "/home/ben/workspace/openmrs-trunk/metadata/model/update-to-latest-db.mysqldiff.sql";
-	
-	private static String NEW_UPDATE_FILE = "/home/ben/workspace/openmrs-concept-name-tag/metadata/model/update-to-latest-db.mysqldiff.sql";
-	
-	private static String[] credentials = BaseContextSensitiveTest
+public final class MigrateDataSet {
+
+    private static String[] credentials = BaseContextSensitiveTest
 	        .askForUsernameAndPassword("Enter your MYSQL DATABASE username and password");
 	
 	private static String tempDatabaseName = "junitmigration";
-	
-	/**
+
+    private MigrateDataSet() {
+    }
+
+    /**
 	 * Do the stuff for this class (create the file)
 	 * 
 	 * @throws Exception
@@ -104,8 +101,10 @@ public class MigrateDataSet {
 			System.out.println(execMysqlCmd("DROP DATABASE IF EXISTS " + tempDatabaseName, null, false));
 			System.out.println(execMysqlCmd("CREATE DATABASE " + tempDatabaseName + " DEFAULT CHARACTER SET utf8", null,
 			    false));
-			System.out.println(execMysqlCmd(null, OLD_SCHEMA_FILE, true));
-			System.out.println(execMysqlCmd(null, OLD_UPDATE_FILE, true));
+            String OLD_SCHEMA_FILE = "/home/ben/workspace/openmrs-trunk/metadata/model/1.3.0-schema-only.sql";
+            System.out.println(execMysqlCmd(null, OLD_SCHEMA_FILE, true));
+            String OLD_UPDATE_FILE = "/home/ben/workspace/openmrs-trunk/metadata/model/update-to-latest-db.mysqldiff.sql";
+            System.out.println(execMysqlCmd(null, OLD_UPDATE_FILE, true));
 			
 			// the straight-up database connection
 			String url = "jdbc:mysql://localhost/" + tempDatabaseName;
@@ -113,7 +112,7 @@ public class MigrateDataSet {
 			Connection con = DriverManager.getConnection(url, credentials[0], credentials[1]);
 			
 			// database connection for dbunit
-			IDatabaseConnection dbunitConnection = new DatabaseConnection(con);
+			@org.jetbrains.annotations.Nullable IDatabaseConnection dbunitConnection = new DatabaseConnection(con);
 			
 			try {
 				PreparedStatement ps = con.prepareStatement("SET FOREIGN_KEY_CHECKS=0;");
@@ -125,7 +124,8 @@ public class MigrateDataSet {
 				DatabaseOperation.REFRESH.execute(dbunitConnection, dataset);
 				
 				//turn off foreign key checks here too.
-				System.out.println(execMysqlCmd("SET FOREIGN_KEY_CHECKS=0", NEW_UPDATE_FILE, true));
+                String NEW_UPDATE_FILE = "/home/ben/workspace/openmrs-concept-name-tag/metadata/model/update-to-latest-db.mysqldiff.sql";
+                System.out.println(execMysqlCmd("SET FOREIGN_KEY_CHECKS=0", NEW_UPDATE_FILE, true));
 				
 				System.out.println("Dumping new xml file");
 				

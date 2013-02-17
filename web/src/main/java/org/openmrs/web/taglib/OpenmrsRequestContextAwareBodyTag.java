@@ -48,7 +48,7 @@ public abstract class OpenmrsRequestContextAwareBodyTag extends BodyTagSupport {
 	 * @see javax.servlet.jsp.tagext.BodyTagSupport#doStartTag()
 	 */
 	@Override
-	public final int doStartTag() throws JspException {
+	public int doStartTag() throws JspException {
 		// explicitly tell container that it's need to buffer the tag body content
 		return EVAL_BODY_BUFFERED;
 	}
@@ -58,7 +58,7 @@ public abstract class OpenmrsRequestContextAwareBodyTag extends BodyTagSupport {
 	 * {@link #doEndTagInternal()} for actual work.
 	 */
 	@Override
-	public final int doEndTag() throws JspException {
+	public int doEndTag() throws JspException {
 		try {
 			// get request content available from pageContext
 			this.requestContext = (RequestContext) this.pageContext
@@ -88,7 +88,7 @@ public abstract class OpenmrsRequestContextAwareBodyTag extends BodyTagSupport {
 	/**
 	 * Return the current RequestContext.
 	 */
-	protected final RequestContext getRequestContext() {
+	protected RequestContext getRequestContext() {
 		return this.requestContext;
 	}
 	

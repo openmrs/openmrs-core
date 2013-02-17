@@ -49,22 +49,22 @@ import org.openmrs.web.filter.StartupFilter;
 public class StartupErrorFilter extends StartupFilter {
 	
 	protected final Log log = LogFactory.getLog(getClass());
-	
-	/**
-	 * The velocity macro page to redirect to if an error occurs or on initial startup
-	 */
-	private final String DEFAULT_PAGE = "generalerror.vm";
-	
-	/**
+
+    /**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
 	 * 
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
-	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
+	@Override
+    protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	        ServletException {
 		
-		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException)
+		/*
+	  The velocity macro page to redirect to if an error occurs or on initial startup
+	 */
+        String DEFAULT_PAGE = "generalerror.vm";
+        if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException)
 			renderTemplate("coremoduleerror.vm", new HashMap<String, Object>(), httpResponse);
 		else
 			renderTemplate(DEFAULT_PAGE, new HashMap<String, Object>(), httpResponse);
@@ -111,7 +111,8 @@ public class StartupErrorFilter extends StartupFilter {
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#getModel()
 	 */
-	protected StartupErrorFilterModel getModel() {
+	@Override
+    protected StartupErrorFilterModel getModel() {
 		// this object was initialized in the #init(FilterConfig) method
 		return new StartupErrorFilterModel(Listener.getErrorAtStartup());
 	}
@@ -119,14 +120,16 @@ public class StartupErrorFilter extends StartupFilter {
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#skipFilter()
 	 */
-	public boolean skipFilter(HttpServletRequest request) {
+	@Override
+    public boolean skipFilter(HttpServletRequest request) {
 		return !Listener.errorOccurredAtStartup();
 	}
 	
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#getTemplatePrefix()
 	 */
-	protected String getTemplatePrefix() {
+	@Override
+    protected String getTemplatePrefix() {
 		return "org/openmrs/web/filter/startuperror/";
 	}
 	

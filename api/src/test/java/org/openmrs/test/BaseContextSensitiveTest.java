@@ -122,7 +122,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * This frame contains the password dialog box. In order to bring the frame to the front in the
 	 * TimerTask method, we make it a private field
 	 */
-	private static Frame frame;
+	@org.jetbrains.annotations.Nullable
+    private static Frame frame;
 	
 	/**
 	 * Static variable to keep track of the number of times this class has been loaded (aka, number

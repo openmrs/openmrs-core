@@ -80,7 +80,8 @@ public class DefaultArdenDataSource implements ArdenDataSource {
 		}
 	}
 	*/
-	public ArdenValue eval(Patient p, ArdenClause c) {
+	@Override
+    public ArdenValue eval(Patient p, ArdenClause c) {
 		ArdenValue retVal = new ArdenValue(p, Context.getLocale());
 		List<Obs> obs;
 		/*

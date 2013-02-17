@@ -13,10 +13,7 @@
  */
 package org.openmrs.util;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.*;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -177,7 +174,7 @@ public class Reflect {
 	 * @param field
 	 * @return true if, given field is declared in parameterized class or its sub classes
 	 */
-	public boolean hasField(Field field) {
+	public boolean hasField(Member field) {
 		return isSuperClass(field.getDeclaringClass());
 	}
 	

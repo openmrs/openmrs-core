@@ -16,6 +16,7 @@ package org.openmrs.validator;
 import org.openmrs.annotation.Handler;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.SingleCustomValue;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -40,7 +41,7 @@ public class BaseAttributeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
-		Attribute<?, ?> attribute = (Attribute<?, ?>) target;
+		SingleCustomValue attribute = (Attribute<?, ?>) target;
 		ValidationUtils.rejectIfEmpty(errors, "attributeType", "error.null");
 		ValidationUtils.rejectIfEmpty(errors, "owner", "error.null");
 		Object value = attribute.getValue();

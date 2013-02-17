@@ -131,7 +131,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @return Returns the creator.
 	 */
-	@Element
+	@Override
+    @Element
 	public User getCreator() {
 		return creator;
 	}
@@ -139,7 +140,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @param creator The creator to set.
 	 */
-	@Element
+	@Override
+    @Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -147,7 +149,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element
+	@Override
+    @Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -155,7 +158,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element
+	@Override
+    @Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -163,7 +167,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @return Returns the User who last changed the description.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -171,7 +176,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @param changedBy The user who changed this description
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -179,7 +185,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @return Returns the date the description was last changed.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -189,7 +196,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	 * 
 	 * @param dateChanged the data the description was changed.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -205,7 +213,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getConceptDescriptionId();
 	}
 	
@@ -213,7 +222,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setConceptDescriptionId(id);
 	}
 	

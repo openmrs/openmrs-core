@@ -718,7 +718,7 @@ public class PersonFormController extends SimpleFormController {
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
 			Integer d = c.get(Calendar.YEAR);
-			d = d - Integer.parseInt(age);
+            d -= Integer.parseInt(age);
 			try {
 				birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + d);
 				birthdateEstimated = true;

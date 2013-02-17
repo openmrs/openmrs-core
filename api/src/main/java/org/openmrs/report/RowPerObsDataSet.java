@@ -48,21 +48,23 @@ public class RowPerObsDataSet implements DataSet<Object> {
 		
 		private Iterator<Obs> iter;
 		
-		public HelperIterator(Iterator<Obs> iter) {
+		HelperIterator(Iterator<Obs> iter) {
 			this.iter = iter;
 		}
 		
 		/**
 		 * @see java.util.Iterator#hasNext()
 		 */
-		public boolean hasNext() {
+		@Override
+        public boolean hasNext() {
 			return iter.hasNext();
 		}
 		
 		/**
 		 * @see java.util.Iterator#next()
 		 */
-		public Map<String, Object> next() {
+		@Override
+        public Map<String, Object> next() {
 			Locale locale = Context.getLocale();
 			Obs obs = iter.next();
 			Map<String, Object> ret = new HashMap<String, Object>();
@@ -83,7 +85,8 @@ public class RowPerObsDataSet implements DataSet<Object> {
 		/**
 		 * @see java.util.Iterator#remove()
 		 */
-		public void remove() {
+		@Override
+        public void remove() {
 			iter.remove();
 		}
 		
@@ -92,7 +95,8 @@ public class RowPerObsDataSet implements DataSet<Object> {
 	/**
 	 * @see org.openmrs.report.DataSet#iterator()
 	 */
-	public Iterator<Map<String, Object>> iterator() {
+	@Override
+    public Iterator<Map<String, Object>> iterator() {
 		Iterator<Map<String, Object>> ret = new HelperIterator(data.iterator());
 		return ret;
 	}
@@ -114,7 +118,8 @@ public class RowPerObsDataSet implements DataSet<Object> {
 	/**
 	 * @return the definition
 	 */
-	public RowPerObsDataSetDefinition getDefinition() {
+	@Override
+    public RowPerObsDataSetDefinition getDefinition() {
 		return definition;
 	}
 	
@@ -128,7 +133,8 @@ public class RowPerObsDataSet implements DataSet<Object> {
 	/**
 	 * @see org.openmrs.report.DataSet#getEvaluationContext()
 	 */
-	public EvaluationContext getEvaluationContext() {
+	@Override
+    public EvaluationContext getEvaluationContext() {
 		return evaluationContext;
 	}
 	

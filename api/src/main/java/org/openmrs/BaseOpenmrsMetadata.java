@@ -61,91 +61,104 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	/**
 	 * @return the name
 	 */
-	public String getName() {
+	@Override
+    public String getName() {
 		return name;
 	}
 	
 	/**
 	 * @param name the name to set
 	 */
-	public void setName(String name) {
+	@Override
+    public void setName(String name) {
 		this.name = name;
 	}
 	
 	/**
 	 * @return the description
 	 */
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		return description;
 	}
 	
 	/**
 	 * @param description the description to set
 	 */
-	public void setDescription(String description) {
+	@Override
+    public void setDescription(String description) {
 		this.description = description;
 	}
 	
 	/**
 	 * @see org.openmrs.Auditable#getCreator()
 	 */
-	public User getCreator() {
+	@Override
+    public User getCreator() {
 		return creator;
 	}
 	
 	/**
 	 * @see org.openmrs.Auditable#setCreator(org.openmrs.User)
 	 */
-	public void setCreator(User creator) {
+	@Override
+    public void setCreator(User creator) {
 		this.creator = creator;
 	}
 	
 	/**
 	 * @see org.openmrs.Auditable#getDateCreated()
 	 */
-	public Date getDateCreated() {
+	@Override
+    public Date getDateCreated() {
 		return dateCreated;
 	}
 	
 	/**
 	 * @see org.openmrs.Auditable#setDateCreated(java.util.Date)
 	 */
-	public void setDateCreated(Date dateCreated) {
+	@Override
+    public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 	
 	/**
 	 * @see org.openmrs.Auditable#getChangedBy()
 	 */
-	public User getChangedBy() {
+	@Override
+    public User getChangedBy() {
 		return changedBy;
 	}
 	
 	/**
 	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
 	 */
-	public void setChangedBy(User changedBy) {
+	@Override
+    public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
 	
 	/**
 	 * @see org.openmrs.Auditable#getDateChanged()
 	 */
-	public Date getDateChanged() {
+	@Override
+    public Date getDateChanged() {
 		return dateChanged;
 	}
 	
 	/**
 	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
 	 */
-	public void setDateChanged(Date dateChanged) {
+	@Override
+    public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
 	
 	/**
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
-	public Boolean isRetired() {
+	@Override
+    public Boolean isRetired() {
 		return retired;
 	}
 	
@@ -163,49 +176,56 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	/**
 	 * @see org.openmrs.Retireable#setRetired(java.lang.Boolean)
 	 */
-	public void setRetired(Boolean retired) {
+	@Override
+    public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
 	
 	/**
 	 * @see org.openmrs.Retireable#getDateRetired()
 	 */
-	public Date getDateRetired() {
+	@Override
+    public Date getDateRetired() {
 		return dateRetired;
 	}
 	
 	/**
 	 * @see org.openmrs.Retireable#setDateRetired(java.util.Date)
 	 */
-	public void setDateRetired(Date dateRetired) {
+	@Override
+    public void setDateRetired(Date dateRetired) {
 		this.dateRetired = dateRetired;
 	}
 	
 	/**
 	 * @see org.openmrs.Retireable#getRetiredBy()
 	 */
-	public User getRetiredBy() {
+	@Override
+    public User getRetiredBy() {
 		return retiredBy;
 	}
 	
 	/**
 	 * @see org.openmrs.Retireable#setRetiredBy(org.openmrs.User)
 	 */
-	public void setRetiredBy(User retiredBy) {
+	@Override
+    public void setRetiredBy(User retiredBy) {
 		this.retiredBy = retiredBy;
 	}
 	
 	/**
 	 * @see org.openmrs.Retireable#getRetireReason()
 	 */
-	public String getRetireReason() {
+	@Override
+    public String getRetireReason() {
 		return retireReason;
 	}
 	
 	/**
 	 * @see org.openmrs.Retireable#setRetireReason(java.lang.String)
 	 */
-	public void setRetireReason(String retireReason) {
+	@Override
+    public void setRetireReason(String retireReason) {
 		this.retireReason = retireReason;
 	}
 	

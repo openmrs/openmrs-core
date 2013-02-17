@@ -60,7 +60,7 @@ public class ActiveListPortletController extends PortletController {
 		}
 	}
 	
-	private <T extends ActiveListItem> List<List<T>> separate(List<T> ls) {
+	private <T extends ActiveListItem> List<List<T>> separate(Iterable<T> ls) {
 		List<T> active = new ArrayList<T>();
 		List<T> removed = new ArrayList<T>();
 		

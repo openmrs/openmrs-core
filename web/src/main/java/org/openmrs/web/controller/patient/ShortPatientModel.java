@@ -169,7 +169,7 @@ public class ShortPatientModel {
 	/**
 	 * @return the personAttributes
 	 */
-	public List<PersonAttribute> getPersonAttributes() {
+	public Iterable<PersonAttribute> getPersonAttributes() {
 		return personAttributes;
 	}
 	

@@ -1337,7 +1337,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return a List of ConceptMaps if concept mappings found
 	 * @should return empty List of ConceptMaps if none found
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	@Deprecated
+    @Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws APIException;
 	
 	/**

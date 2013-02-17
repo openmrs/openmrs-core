@@ -39,11 +39,14 @@ import org.openmrs.util.OpenmrsUtil;
  * @deprecated get rid of this before we merge back to trunk
  */
 @Deprecated
-public class OrderUtil {
+public final class OrderUtil {
 	
 	private static final Log log = LogFactory.getLog(OrderUtil.class);
-	
-	/**
+
+    private OrderUtil() {
+    }
+
+    /**
 	 * Discontinues all current orders for the given <code>patient</code>
 	 * 
 	 * @param patient
@@ -294,7 +297,7 @@ public class OrderUtil {
 	 * @throws APIException
 	 * @should get a map from concept to drugs orders in that drug set
 	 */
-	public static Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
+	public static Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(Iterable<DrugOrder> drugOrders, List<Concept> drugSets)
 	        throws APIException {
 		if (log.isDebugEnabled()) {
 			log.debug("in getdrugsetsbyconcepts. drugOrders: " + drugOrders + " drugSets: " + drugSets);

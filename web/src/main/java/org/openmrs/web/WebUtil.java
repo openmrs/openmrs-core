@@ -20,11 +20,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.LocaleUtility;
 
-public class WebUtil {
+public final class WebUtil {
 	
-	private static Log log = LogFactory.getLog(WebUtil.class);
-	
-	public static String escapeHTML(String s) {
+	private static final Log log = LogFactory.getLog(WebUtil.class);
+
+    private WebUtil() {
+    }
+
+    public static String escapeHTML(String s) {
 		
 		if (s == null)
 			return "";

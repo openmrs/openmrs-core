@@ -116,7 +116,8 @@ public class HL7InQueue extends HL7QueueItem implements Serializable {
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 * @since 1.5
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getHL7InQueueId();
 	}
 	
@@ -124,7 +125,8 @@ public class HL7InQueue extends HL7QueueItem implements Serializable {
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 * @since 1.5
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setHL7InQueueId(id);
 	}
 	

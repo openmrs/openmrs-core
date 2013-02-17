@@ -32,10 +32,8 @@ public class MLMObjectElement {
 	private boolean hasWhere;
 	
 	private String whereType;
-	
-	private String durationType;
-	
-	private String durationVal;
+
+    private String durationVal;
 	
 	private String durationOp; // TODO
 	
@@ -50,7 +48,7 @@ public class MLMObjectElement {
 	}
 	
 	public void setDuration(String type, String val, String op) {
-		durationType = type.trim();
+        String durationType = type.trim();
 		durationVal = val.trim();
 		op = op.trim();
 		if (op.toUpperCase().startsWith("MONTH")) {
@@ -88,7 +86,7 @@ public class MLMObjectElement {
 		return cn;
 	}
 	
-	private String getReadTypeAsString() {
+	private CharSequence getReadTypeAsString() {
 		String retVal = "";
 		if (readType != null && !readType.equals("") && !readType.equalsIgnoreCase("exist")) {
 			retVal = "." + readType;

@@ -64,7 +64,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	/**
 	 * @see org.openmrs.messagesource.MessageSourceService#getLocales()
 	 */
-	public Collection<Locale> getLocales() {
+	@Override
+    public Collection<Locale> getLocales() {
 		long now = System.currentTimeMillis();
 		if (locales == null || cacheMilliseconds <= 0 || now - cacheMilliseconds > lastCached) {
 			locales = findLocales();
@@ -150,7 +151,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
 		
 		String filePrefix = (namespace.length() > 0) ? (namespace + "_") : "";
@@ -184,7 +186,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * 
 	 * @see org.openmrs.messagesource.MessageSourceService#getPresentations()
 	 */
-	public Collection<PresentationMessage> getPresentations() {
+	@Override
+    public Collection<PresentationMessage> getPresentations() {
 		Collection<PresentationMessage> presentations = new Vector<PresentationMessage>();
 		
 		for (File propertiesFile : findPropertiesFiles()) {
@@ -230,7 +233,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	/**
 	 * @see org.openmrs.messagesource.MutableMessageSource#addPresentation(org.openmrs.messagesource.PresentationMessage)
 	 */
-	public void addPresentation(PresentationMessage message) {
+	@Override
+    public void addPresentation(PresentationMessage message) {
 		File propertyFile = findPropertiesFileFor(message.getCode());
 		if (propertyFile != null) {
 			Properties props = new Properties();
@@ -248,7 +252,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	/**
 	 * @see org.openmrs.messagesource.MutableMessageSource#removePresentation(org.openmrs.messagesource.PresentationMessage)
 	 */
-	public void removePresentation(PresentationMessage message) {
+	@Override
+    public void removePresentation(PresentationMessage message) {
 		File propertyFile = findPropertiesFileFor(message.getCode());
 		if (propertyFile != null) {
 			Properties props = new Properties();
@@ -338,7 +343,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	/**
 	 * @see org.openmrs.messagesource.MutableMessageSource#merge(MutableMessageSource, boolean)
 	 */
-	public void merge(MutableMessageSource fromSource, boolean overwrite) {
+	@Override
+    public void merge(MutableMessageSource fromSource, boolean overwrite) {
 		
 		// collect all existing properties
 		Collection<File> propertiesFiles = findPropertiesFiles();
@@ -406,7 +412,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String,
 	 *      java.util.Locale)
 	 */
-	public PresentationMessage getPresentation(String key, Locale forLocale) {
+	@Override
+    public PresentationMessage getPresentation(String key, Locale forLocale) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -414,7 +421,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	/**
 	 * @see org.openmrs.messagesource.MutableMessageSource#getPresentationsInLocale(java.util.Locale)
 	 */
-	public Collection<PresentationMessage> getPresentationsInLocale(Locale locale) {
+	@Override
+    public Collection<PresentationMessage> getPresentationsInLocale(Locale locale) {
 		// TODO Auto-generated method stub
 		return null;
 	}

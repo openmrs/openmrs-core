@@ -19,6 +19,7 @@ import java.util.Comparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Drug;
+import org.openmrs.OpenmrsMetadata;
 
 /**
  * The Class DrugsByNameComparator. An Util class which sorts drug names while ignoring any
@@ -33,7 +34,8 @@ public class DrugsByNameComparator implements Comparator<Drug> {
 	/* (non-Jsdoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
-	public int compare(Drug d1, Drug d2) {
+	@Override
+    public int compare(Drug d1, Drug d2) {
 		return compareDrugNamesIgnoringNumericals(d1, d2);
 	}
 	
@@ -50,7 +52,7 @@ public class DrugsByNameComparator implements Comparator<Drug> {
 	 * @should return positive if name for drug1 comes before that of drug2 ignoring dashes
 	 * @should return positive if name for drug1 comes before that of drug2 ignoring numerics
 	 */
-	private int compareDrugNamesIgnoringNumericals(Drug d1, Drug d2) {
+	private int compareDrugNamesIgnoringNumericals(OpenmrsMetadata d1, OpenmrsMetadata d2) {
 		
 		String firstDrugName = remove(d1.getName());
 		String secondDrugName = remove(d2.getName());

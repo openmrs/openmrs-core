@@ -248,7 +248,7 @@ public class VisitListItem {
 		if (this.visitId == null)
 			return super.hashCode();
 		int hash = 5;
-		hash = hash + 51 * this.visitId;
+        hash += 51 * this.visitId;
 		return hash;
 	}
 }

@@ -49,7 +49,8 @@ public class DateColumnClassifier implements TableRowClassifier {
 		this.valueIfNull = valueIfNull;
 	}
 	
-	public String classify(TableRow row) {
+	@Override
+    public String classify(TableRow row) {
 		Object value = row.get(columnName);
 		if (value == null)
 			return valueIfNull;

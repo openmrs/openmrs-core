@@ -13,10 +13,7 @@
  */
 package org.openmrs.reporting;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.EncounterType;
@@ -82,7 +79,8 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 		return sb.toString();
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		StringBuffer ret = new StringBuffer();
 		ret.append("Patients with ");
 		if (atLeastCount != null || atMostCount != null) {
@@ -132,7 +130,8 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 		    atMostCount);
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		return true;
 	}
 	
@@ -150,7 +149,7 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 		getEncounterTypeList().add(encounterType);
 	}
 	
-	public List<EncounterType> getEncounterTypeList() {
+	public Collection<EncounterType> getEncounterTypeList() {
 		return encounterTypeList;
 	}
 	

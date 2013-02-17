@@ -241,7 +241,7 @@ public class DWRObsService {
 		
 		Vector<ObsListItem> ret = new Vector<ObsListItem>();
 		
-		Integer pId = null;
+		@org.jetbrains.annotations.Nullable Integer pId = null;
 		try {
 			pId = new Integer(personId);
 		}
@@ -249,7 +249,7 @@ public class DWRObsService {
 			pId = null;
 		}
 		
-		Integer eId = null;
+		@org.jetbrains.annotations.Nullable Integer eId = null;
 		try {
 			eId = new Integer(encounterId);
 		}

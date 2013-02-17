@@ -26,17 +26,23 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	
 	// Fields
 	
-	private Double hiAbsolute;
+	@org.jetbrains.annotations.Nullable
+    private Double hiAbsolute;
 	
-	private Double hiCritical;
+	@org.jetbrains.annotations.Nullable
+    private Double hiCritical;
 	
-	private Double hiNormal;
+	@org.jetbrains.annotations.Nullable
+    private Double hiNormal;
 	
-	private Double lowAbsolute;
+	@org.jetbrains.annotations.Nullable
+    private Double lowAbsolute;
 	
-	private Double lowCritical;
+	@org.jetbrains.annotations.Nullable
+    private Double lowCritical;
 	
-	private Double lowNormal;
+	@org.jetbrains.annotations.Nullable
+    private Double lowNormal;
 	
 	private String units;
 	

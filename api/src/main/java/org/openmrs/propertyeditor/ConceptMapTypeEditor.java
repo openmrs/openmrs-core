@@ -28,7 +28,8 @@ public class ConceptMapTypeEditor extends PropertyEditorSupport {
 	public ConceptMapTypeEditor() {
 	}
 	
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		log.debug("Setting text: " + text);
 		if (StringUtils.hasText(text)) {
 			try {
@@ -42,7 +43,8 @@ public class ConceptMapTypeEditor extends PropertyEditorSupport {
 		}
 	}
 	
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		ConceptMapType mapType = (ConceptMapType) getValue();
 		if (mapType == null || mapType.getConceptMapTypeId() == null)
 			return "";

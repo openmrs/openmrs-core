@@ -49,7 +49,8 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
-	public Obs getObs(Obs obs, String view) {
+	@Override
+    public Obs getObs(Obs obs, String view) {
 		File file = getComplexDataFile(obs);
 		log.debug("value complex: " + obs.getValueComplex());
 		log.debug("file path: " + file.getAbsolutePath());
@@ -80,7 +81,8 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
-	public Obs saveObs(Obs obs) throws APIException {
+	@Override
+    public Obs saveObs(Obs obs) throws APIException {
 		// Get the buffered file  from the ComplexData.
 		ComplexData complexData = obs.getComplexData();
 		if (complexData == null) {

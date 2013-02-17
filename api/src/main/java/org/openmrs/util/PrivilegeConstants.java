@@ -24,7 +24,7 @@ import org.openmrs.annotation.HasAddOnStartupPrivileges;
  * @since 1.8
  */
 @HasAddOnStartupPrivileges
-public class PrivilegeConstants {
+public final interface PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to get concept entries")
 	public static final String GET_CONCEPTS = "Get Concepts";
@@ -864,4 +864,7 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to add/edit/retire encounter roles")
 	public static final String MANAGE_ENCOUNTER_ROLES = "Manage Encounter Roles";
+
+    private PrivilegeConstants() {
+    }
 }

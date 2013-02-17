@@ -14,6 +14,7 @@
 package org.openmrs.util;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -41,7 +42,7 @@ public class TestTypeFilter implements TypeFilter {
 	/**
 	 * Any class with a super class in this list will not be loaded (scanned) by Spring
 	 */
-	private static List<String> superClassNamesToExclude = new Vector<String>();
+	private static final Collection<String> superClassNamesToExclude = new Vector<String>();
 	
 	static {
 		superClassNamesToExclude.add("org.openmrs.test.BaseContextSensitiveTest");

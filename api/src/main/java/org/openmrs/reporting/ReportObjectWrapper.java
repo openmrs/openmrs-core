@@ -31,11 +31,14 @@ public class ReportObjectWrapper extends BaseOpenmrsObject {
 	
 	private String description;
 	
-	private String xml;
+	@org.jetbrains.annotations.Nullable
+    private String xml;
 	
-	private String type;
+	@org.jetbrains.annotations.Nullable
+    private String type;
 	
-	private String subType;
+	@org.jetbrains.annotations.Nullable
+    private String subType;
 	
 	private User creator;
 	
@@ -310,7 +313,8 @@ public class ReportObjectWrapper extends BaseOpenmrsObject {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getReportObjectId();
 	}
 	
@@ -318,7 +322,8 @@ public class ReportObjectWrapper extends BaseOpenmrsObject {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setReportObjectId(id);
 	}
 	

@@ -13,12 +13,7 @@
  */
 package org.openmrs.web.controller.user;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -130,7 +125,7 @@ public class RoleFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			List<Role> allRoles = Context.getUserService().getAllRoles();
-			Set<Role> inheritingRoles = new HashSet<Role>();
+			Collection<Role> inheritingRoles = new HashSet<Role>();
 			Set<Privilege> inheritedPrivileges = new HashSet<Privilege>();
 			allRoles.remove(role);
 			for (Role r : allRoles) {

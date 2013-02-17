@@ -186,7 +186,7 @@ public class ChangePasswordFormController {
 		 * @param answer answer to the security question
 		 * @param confirmAnswer confirmation of answer
 		 */
-		public NewQuestionAnswer(String question, String answer, String confirmAnswer) {
+        private NewQuestionAnswer(String question, String answer, String confirmAnswer) {
 			this.question = question == null ? "" : question;
 			this.answer = answer == null ? "" : answer;
 			this.confirmAnswer = confirmAnswer == null ? "" : confirmAnswer;
@@ -243,7 +243,7 @@ public class ChangePasswordFormController {
 		/**
 		 * @param user authenticated user
 		 */
-		public NewPasswordValidator(User user) {
+        private NewPasswordValidator(User user) {
 			this.user = user;
 		}
 		
@@ -286,7 +286,7 @@ public class ChangePasswordFormController {
 		 * @param password to be set
 		 * @param confirmPassword to verify
 		 */
-		public NewPassword(String password, String confirmPassword) {
+        private NewPassword(String password, String confirmPassword) {
 			this.password = password == null ? "" : password;
 			this.confirmPassword = confirmPassword == null ? "" : confirmPassword;
 		}

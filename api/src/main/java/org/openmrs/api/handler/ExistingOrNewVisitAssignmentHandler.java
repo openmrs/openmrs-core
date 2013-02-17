@@ -17,11 +17,7 @@ import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Visit;
-import org.openmrs.VisitType;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.VisitService;
@@ -105,7 +101,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 	 * @return
 	 * @throws APIException
 	 */
-	private static VisitType loadVisitType(EncounterType encounterType) throws APIException {
+	private static VisitType loadVisitType(OpenmrsMetadata encounterType) throws APIException {
 		
 		String value = Context.getAdministrationService().getGlobalPropertyValue(
 		    OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING, "");

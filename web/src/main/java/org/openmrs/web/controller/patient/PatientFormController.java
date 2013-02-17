@@ -14,12 +14,7 @@
 package org.openmrs.web.controller.patient;
 
 import java.text.NumberFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -497,9 +492,9 @@ public class PatientFormController extends PersonFormController {
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		
 		Patient patient = (Patient) obj;
-		List<Form> forms = new Vector<Form>();
+		Collection<Form> forms = new Vector<Form>();
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<Encounter> encounters = new Vector<Encounter>();
+		Collection<Encounter> encounters = new Vector<Encounter>();
 		
 		if (Context.isAuthenticated() && patient.getPatientId() != null) {
 			boolean onlyPublishedForms = true;

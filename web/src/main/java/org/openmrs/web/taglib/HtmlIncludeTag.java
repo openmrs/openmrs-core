@@ -51,9 +51,11 @@ public class HtmlIncludeTag extends TagSupport {
 	
 	public static final Map<String, String> rewrites = new HashMap<String, String>();
 	
-	private String type;
+	@org.jetbrains.annotations.Nullable
+    private String type;
 	
-	private String file;
+	@org.jetbrains.annotations.Nullable
+    private String file;
 	
 	/**
 	 * If true, will append &locale=en_US to the url for browser caching purposes Should be used on

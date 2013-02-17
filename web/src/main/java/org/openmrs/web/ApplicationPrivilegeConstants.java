@@ -24,7 +24,7 @@ import org.openmrs.annotation.HasAddOnStartupPrivileges;
  * @since 1.10
  */
 @HasAddOnStartupPrivileges
-public class ApplicationPrivilegeConstants {
+public final interface ApplicationPrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to view the 'Overview' tab on the patient dashboard")
 	public static final String DASHBOARD_OVERVIEW = "Patient Dashboard - View Overview Section";
@@ -67,4 +67,7 @@ public class ApplicationPrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to view the 'Problem List' portlet on the patient dashboard's overview tab")
 	public static final String PATIENT_OVERVIEW_PROBLEM_LIST = "Patient Overview - View Problem List";
+
+    private ApplicationPrivilegeConstants() {
+    }
 }

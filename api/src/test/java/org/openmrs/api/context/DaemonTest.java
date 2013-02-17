@@ -113,7 +113,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		
 		private Task task;
 		
-		public PrivateSchedulerTask(Task task) {
+		private PrivateSchedulerTask(Task task) {
 			super(task);
 			this.task = task;
 		}

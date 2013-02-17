@@ -63,27 +63,32 @@ public class InversePatientFilter extends AbstractPatientFilter implements Patie
 	 * @should not fail with drug order patient filter
 	 * @should not fail with program patient filter
 	 */
-	public Cohort filter(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filter(Cohort input, EvaluationContext context) {
 		return baseFilter.filterInverse(input, context);
 	}
 	
-	public Cohort filterInverse(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		return baseFilter.filter(input, context);
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		// TODO Auto-generated method stub
 		return baseFilter != null;
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		return "NOT " + (baseFilter == null ? "?" : baseFilter.getDescription());
 	}
 	
 	/**
 	 * @see org.openmrs.report.Parameterizable#getParameters()
 	 */
-	public List<Parameter> getParameters() {
+	@Override
+    public List<Parameter> getParameters() {
 		return new ArrayList<Parameter>();
 	}
 	

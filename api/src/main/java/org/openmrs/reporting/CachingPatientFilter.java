@@ -66,7 +66,8 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 	 * @see org.openmrs.reporting.PatientFilter#filter(org.openmrs.Cohort,
 	 *      org.openmrs.report.EvaluationContext)
 	 */
-	public Cohort filter(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filter(Cohort input, EvaluationContext context) {
 		Cohort cached = getAndMaybeCache(context);
 		if (input == null) {
 			if (context != null)
@@ -81,7 +82,8 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 	 * @see org.openmrs.reporting.PatientFilter#filterInverse(org.openmrs.Cohort,
 	 *      org.openmrs.report.EvaluationContext)
 	 */
-	public Cohort filterInverse(Cohort input, EvaluationContext context) {
+	@Override
+    public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		Cohort cached = getAndMaybeCache(context);
 		if (input == null) {
 			if (context != null)
@@ -95,6 +97,7 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 	/**
 	 * @see org.openmrs.reporting.PatientFilter#isReadyToRun()
 	 */
-	public abstract boolean isReadyToRun();
+	@Override
+    public abstract boolean isReadyToRun();
 	
 }

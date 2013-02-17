@@ -31,17 +31,15 @@ public class HiRiskLeadScreen {
 	private Patient patient;
 	
 	private Locale locale;
-	
-	private String firstname;
-	
-	private HashMap<String, String> userVarMap;
+
+    private HashMap<String, String> userVarMap;
 	
 	//Constructor
 	public HiRiskLeadScreen(Integer pid, Locale l) {
 		locale = l;
 		patient = Context.getPatientService().getPatient(pid);
 		userVarMap = new HashMap<String, String>();
-		firstname = patient.getPersonName().getGivenName();
+        String firstname = patient.getPersonName().getGivenName();
 	}
 	
 	public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {

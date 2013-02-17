@@ -13,12 +13,7 @@
  */
 package org.openmrs.web.controller.person;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -177,7 +172,7 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 			privileges = Context.getUserService().getAllPrivileges();
 		}
 		
-		Set<String> formats = new TreeSet<String>(FieldGenHandlerFactory.getSingletonInstance().getHandlers().keySet());
+		Collection<String> formats = new TreeSet<String>(FieldGenHandlerFactory.getSingletonInstance().getHandlers().keySet());
 		
 		// these formats are handled directly by the FieldGenTag.java class and so aren't in the 
 		// "handlers" list in openmrs-servlet.xml

@@ -44,7 +44,8 @@ public class PatientSearchCohortDefinitionProvider implements CohortDefinitionPr
 	 * 
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#getClassHandled()
 	 */
-	public Class<? extends CohortDefinition> getClassHandled() {
+	@Override
+    public Class<? extends CohortDefinition> getClassHandled() {
 		return PatientSearch.class;
 	}
 	
@@ -52,7 +53,8 @@ public class PatientSearchCohortDefinitionProvider implements CohortDefinitionPr
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#evaluate(org.openmrs.cohort.CohortDefinition,
 	 *      org.openmrs.report.EvaluationContext)
 	 */
-	public Cohort evaluate(CohortDefinition cohortDefinition, EvaluationContext evaluationContext) {
+	@Override
+    public Cohort evaluate(CohortDefinition cohortDefinition, EvaluationContext evaluationContext) {
 		PatientSearch search = (PatientSearch) cohortDefinition;
 		PatientFilter filter = OpenmrsUtil.toPatientFilter(search, null, evaluationContext);
 		Cohort ret = filter.filter(null, evaluationContext);
@@ -64,7 +66,8 @@ public class PatientSearchCohortDefinitionProvider implements CohortDefinitionPr
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#getAllCohortDefinitions()
 	 */
-	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
+	@Override
+    public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
 		List<CohortDefinitionItemHolder> ret = new ArrayList<CohortDefinitionItemHolder>();
 		
 		List<AbstractReportObject> patientSearches = Context.getReportObjectService().getReportObjectsByType(
@@ -84,7 +87,8 @@ public class PatientSearchCohortDefinitionProvider implements CohortDefinitionPr
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#getCohortDefinition(java.lang.Integer)
 	 */
-	public CohortDefinition getCohortDefinition(Integer id) {
+	@Override
+    public CohortDefinition getCohortDefinition(Integer id) {
 		PatientSearchReportObject psro = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(id);
 		return psro.getPatientSearch();
 	}
@@ -92,14 +96,16 @@ public class PatientSearchCohortDefinitionProvider implements CohortDefinitionPr
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#purgeCohortDefinition(org.openmrs.cohort.CohortDefinition)
 	 */
-	public void purgeCohortDefinition(CohortDefinition cohortDefinition) {
+	@Override
+    public void purgeCohortDefinition(CohortDefinition cohortDefinition) {
 		throw new APIException("Not Yet Implemented");
 	}
 	
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#saveCohortDefinition(org.openmrs.cohort.CohortDefinition)
 	 */
-	public CohortDefinition saveCohortDefinition(CohortDefinition cohortDefinition) {
+	@Override
+    public CohortDefinition saveCohortDefinition(CohortDefinition cohortDefinition) {
 		throw new APIException("Not Yet Implemented");
 	}
 	

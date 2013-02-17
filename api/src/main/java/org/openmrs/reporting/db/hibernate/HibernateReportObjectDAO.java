@@ -57,7 +57,8 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 	/**
 	 * @see org.openmrs.reporting.db.ReportObjectDAO#getAllReportObjects()
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<AbstractReportObject> getAllReportObjects() {
 		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
 		//List<ReportObjectWrapper> wrappedObjects = new Vector<ReportObjectWrapper>();
@@ -82,7 +83,8 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 	/**
 	 * @see org.openmrs.reporting.db.ReportObjectDAO#getReportObject(java.lang.Integer)
 	 */
-	public AbstractReportObject getReportObject(Integer reportObjId) throws DAOException {
+	@Override
+    public AbstractReportObject getReportObject(Integer reportObjId) throws DAOException {
 		ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(
 		    ReportObjectWrapper.class, reportObjId);
 		
@@ -99,7 +101,8 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 	/**
 	 * @see org.openmrs.reporting.db.ReportObjectDAO#deleteReportObject(org.openmrs.reporting.AbstractReportObject)
 	 */
-	public void deleteReportObject(AbstractReportObject reportObj) throws DAOException {
+	@Override
+    public void deleteReportObject(AbstractReportObject reportObj) throws DAOException {
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);
 		// TODO - The creator/created date needs to be set here otherwise we get an exception
 		// This doesn't matter really since we're just deleting the report object anyway
@@ -113,7 +116,8 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 	/**
 	 * @see org.openmrs.reporting.db.ReportObjectDAO#saveReportObject(org.openmrs.reporting.AbstractReportObject)
 	 */
-	public AbstractReportObject saveReportObject(AbstractReportObject reportObj) throws DAOException {
+	@Override
+    public AbstractReportObject saveReportObject(AbstractReportObject reportObj) throws DAOException {
 		
 		ReportObjectWrapper wrappedReportObject;
 		
@@ -144,7 +148,8 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 	/**
 	 * @see org.openmrs.reporting.db.ReportObjectDAO#getReportObjectsByType(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException {
 		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
 		

@@ -57,7 +57,8 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	 * @param text list of conceptIds (not conceptAnswerIds)
 	 * @should set the sort weights with the least possible changes
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
 			ConceptService cs = Context.getConceptService();
 			String[] conceptIds = text.split(" ");
@@ -161,8 +162,9 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 				for (int i = startIdx; i < requestConceptIds.size(); i++) {
 					Integer id = getConceptId(requestConceptIds.get(i));
 					ConceptAnswer ca = getConceptAnswerFromOriginal(id);
-					ca.setSortWeight(lastWeightSeen++);
-				}
+					ca.setSortWeight(lastWeightSeen);
+                    lastWeightSeen++;
+                }
 			}
 			
 			log.debug("originalConceptAnswers.getConceptId(): ");

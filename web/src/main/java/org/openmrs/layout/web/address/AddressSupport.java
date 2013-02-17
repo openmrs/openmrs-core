@@ -32,7 +32,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	
 	private boolean initialized = false;
 	
-	static Log log = LogFactory.getLog(AddressSupport.class);
+	static final Log log = LogFactory.getLog(AddressSupport.class);
 	
 	private AddressSupport() {
 		if (singleton == null) {
@@ -85,7 +85,8 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	/**
 	 * @return Returns the defaultLayoutFormat
 	 */
-	public String getDefaultLayoutFormat() {
+	@Override
+    public String getDefaultLayoutFormat() {
 		return defaultLayoutFormat;
 	}
 	

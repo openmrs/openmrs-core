@@ -15,6 +15,7 @@ package org.openmrs.web.taglib;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,7 +66,8 @@ public class RequireTag extends TagSupport {
 	private boolean errorOccurred;
 	
 	//these can only be multiple if the anyPrivilege attribute has more than one value
-	private StringBuffer missingPrivilegesBuffer;
+	@org.jetbrains.annotations.Nullable
+    private StringBuffer missingPrivilegesBuffer;
 	
 	/**
 	 * This is where all the magic happens. The privileges are checked and the user is redirected if
@@ -197,7 +199,7 @@ public class RequireTag extends TagSupport {
 		// IE7 and firefox store "localhost" IP addresses differently.
 		// To accomodate switching from firefox browing to IE taskpane,
 		// we assume these addresses to be equivalent
-		List<String> equivalentAddresses = new ArrayList<String>();
+		Collection<String> equivalentAddresses = new ArrayList<String>();
 		equivalentAddresses.add("127.0.0.1");
 		equivalentAddresses.add("0.0.0.0");
 		

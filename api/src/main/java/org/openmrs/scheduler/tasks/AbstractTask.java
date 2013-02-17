@@ -31,7 +31,8 @@ public abstract class AbstractTask implements Task {
 	protected boolean isExecuting = false;
 	
 	// The task definition of the running task
-	protected TaskDefinition taskDefinition;
+	@org.jetbrains.annotations.Nullable
+    protected TaskDefinition taskDefinition;
 	
 	/**
 	 * Default constructor
@@ -52,33 +53,38 @@ public abstract class AbstractTask implements Task {
 	/**
 	 * @see org.openmrs.scheduler.Task#execute()
 	 */
-	public abstract void execute();
+	@Override
+    public abstract void execute();
 	
 	/**
 	 * @see org.openmrs.scheduler.Task#isExecuting()
 	 */
-	public boolean isExecuting() {
+	@Override
+    public boolean isExecuting() {
 		return isExecuting;
 	}
 	
 	/**
 	 * @see org.openmrs.scheduler.Task#initialize(TaskDefinition)
 	 */
-	public void initialize(final TaskDefinition definition) {
+	@Override
+    public void initialize(final TaskDefinition definition) {
 		this.taskDefinition = definition;
 	}
 	
 	/**
 	 * @see org.openmrs.scheduler.Task#getTaskDefinition()
 	 */
-	public TaskDefinition getTaskDefinition() {
+	@Override
+    public TaskDefinition getTaskDefinition() {
 		return this.taskDefinition;
 	}
 	
 	/**
 	 * @see org.openmrs.scheduler.Task#shutdown()
 	 */
-	public void shutdown() {
+	@Override
+    public void shutdown() {
 		taskDefinition = null;
 	}
 	

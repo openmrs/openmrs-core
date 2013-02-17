@@ -45,7 +45,8 @@ public class OrderDrugFormController extends OrderFormController {
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+	@Override
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
 		binder.registerCustomEditor(Drug.class, new DrugEditor());
@@ -61,7 +62,8 @@ public class OrderDrugFormController extends OrderFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	@Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {
 		String view;
 		DrugOrder order = (DrugOrder) obj;
@@ -83,7 +85,8 @@ public class OrderDrugFormController extends OrderFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		OrderService os = Context.getOrderService();
 		

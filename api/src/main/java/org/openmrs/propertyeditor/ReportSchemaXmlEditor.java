@@ -33,7 +33,8 @@ public class ReportSchemaXmlEditor extends PropertyEditorSupport {
 	public ReportSchemaXmlEditor() {
 	}
 	
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
 			try {
 				ReportService rs = (ReportService) Context.getService(ReportService.class);
@@ -48,7 +49,8 @@ public class ReportSchemaXmlEditor extends PropertyEditorSupport {
 		}
 	}
 	
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		ReportSchemaXml rsx = (ReportSchemaXml) getValue();
 		if (rsx == null || rsx.getReportSchemaId() == null) {
 			return "";

@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller.program;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -94,7 +95,7 @@ public class WorkflowFormController extends SimpleFormController {
 			// get list of states, and update the command object
 			String statesStr = request.getParameter("newStates");
 			// This is a brute-force algorithm, but n will be small.
-			Set<Integer> doneSoFar = new HashSet<Integer>(); // concept ids done so far
+			Collection<Integer> doneSoFar = new HashSet<Integer>(); // concept ids done so far
 			for (StringTokenizer st = new StringTokenizer(statesStr, "|"); st.hasMoreTokens();) {
 				String str = st.nextToken();
 				String[] tmp = str.split(",");

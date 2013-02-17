@@ -42,15 +42,19 @@ public class SummaryTest extends TagSupport {
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
-	private Collection<Obs> observations;
+	@org.jetbrains.annotations.Nullable
+    private Collection<Obs> observations;
 	
 	private Collection<Encounter> encounters;
 	
-	private String var;
+	@org.jetbrains.annotations.Nullable
+    private String var;
 	
-	private String ifTrue;
+	@org.jetbrains.annotations.Nullable
+    private String ifTrue;
 	
-	private String ifFalse;
+	@org.jetbrains.annotations.Nullable
+    private String ifFalse;
 	
 	public int doStartTag() {
 		Boolean ret = false;
@@ -78,7 +82,7 @@ public class SummaryTest extends TagSupport {
 	private boolean evaluate(String expr) {
 		expr = expr.trim();
 		log.debug("evaluate " + expr);
-		List<String> commands = new ArrayList<String>();
+		Collection<String> commands = new ArrayList<String>();
 		{
 			StringBuilder command = new StringBuilder();
 			String[] lines = expr.split("\n");
@@ -96,7 +100,7 @@ public class SummaryTest extends TagSupport {
 				commands.add(command.toString());
 		}
 		boolean andMode = true;
-		List<Boolean> commandResults = new ArrayList<Boolean>();
+		Collection<Boolean> commandResults = new ArrayList<Boolean>();
 		for (String s : commands) {
 			String command = (new StringTokenizer(s.toUpperCase())).nextToken();
 			if (command.equals("!AND")) {
@@ -139,7 +143,7 @@ public class SummaryTest extends TagSupport {
 		}
 		
 		PatientSetService.TimeModifier test = PatientSetService.TimeModifier.ANY;
-		Set<Concept> conceptsOfInterest = new HashSet<Concept>();
+		Collection<Concept> conceptsOfInterest = new HashSet<Concept>();
 		Date fromDate = null;
 		Date toDate = null;
 		if (args.containsKey("test"))
@@ -199,7 +203,7 @@ public class SummaryTest extends TagSupport {
 		log.debug("fromDate:" + fromDate);
 		log.debug("toDate:" + toDate);
 		
-		List<Obs> obsThatMatter = new ArrayList<Obs>();
+		Collection<Obs> obsThatMatter = new ArrayList<Obs>();
 		for (Obs o : observations) {
 			if (conceptsOfInterest.contains(o.getConcept())
 			        && (fromDate == null || OpenmrsUtil.compare(fromDate, o.getObsDatetime()) <= 0)

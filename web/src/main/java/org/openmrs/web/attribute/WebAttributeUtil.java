@@ -13,10 +13,7 @@
  */
 package org.openmrs.web.attribute;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,9 +38,12 @@ import org.springframework.validation.BindingResult;
  * Web-layer utility methods related to customizable {@link Attribute}s
  * @since 1.9
  */
-public class WebAttributeUtil {
-	
-	@SuppressWarnings( { "unchecked", "rawtypes" })
+public final class WebAttributeUtil {
+
+    private WebAttributeUtil() {
+    }
+
+    @SuppressWarnings( { "unchecked", "rawtypes" })
 	public static Object getValue(HttpServletRequest request, CustomValueDescriptor descriptor, String paramName) {
 		CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(descriptor);
 		CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(descriptor);
@@ -78,7 +78,7 @@ public class WebAttributeUtil {
 	/**
 	 * Reusable regex pattern for {@link #getFromSquareBrackets(String)}
 	 */
-	private static Pattern betweenSquareBrackets = Pattern.compile("\\[(\\d*)\\]");
+	private static final Pattern betweenSquareBrackets = Pattern.compile("\\[(\\d*)\\]");
 	
 	/**
 	 * something[3] -> 3
@@ -86,7 +86,7 @@ public class WebAttributeUtil {
 	 * @param input
 	 * @return
 	 */
-	private static Integer getFromSquareBrackets(String input) {
+	private static Integer getFromSquareBrackets(CharSequence input) {
 		Matcher matcher = betweenSquareBrackets.matcher(input);
 		matcher.find();
 		return Integer.valueOf(matcher.group(1));
@@ -128,9 +128,9 @@ public class WebAttributeUtil {
 	 */
 	public static <AttributeClass extends BaseAttribute, CustomizableClass extends Customizable<AttributeClass>, AttributeTypeClass extends AttributeType<CustomizableClass>> void handleSubmittedAttributesForType(
 	        CustomizableClass owner, BindingResult errors, Class<AttributeClass> attributeClass, HttpServletRequest request,
-	        List<AttributeTypeClass> attributeTypes) {
+	        Iterable<AttributeTypeClass> attributeTypes) {
 		// TODO figure out if this toVoid thing is still relevant
-		List<AttributeClass> toVoid = new ArrayList<AttributeClass>(); // a bit of a hack to avoid voiding things if there are errors
+		Collection<AttributeClass> toVoid = new ArrayList<AttributeClass>(); // a bit of a hack to avoid voiding things if there are errors
 		for (AttributeType<?> attrType : attributeTypes) {
 			CustomDatatype dt = CustomDatatypeUtil.getDatatype(attrType);
 			CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(attrType);

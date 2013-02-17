@@ -75,7 +75,7 @@ public class GlobalPropertyController extends SimpleFormController {
 				
 				// fetch the backing object
 				// and save it to a hashmap for easy retrieval of already-used-GPs
-				List<GlobalProperty> formBackingObject = (List<GlobalProperty>) obj;
+				Iterable<GlobalProperty> formBackingObject = (List<GlobalProperty>) obj;
 				Map<String, GlobalProperty> formBackingObjectMap = new HashMap<String, GlobalProperty>();
 				for (GlobalProperty prop : formBackingObject) {
 					formBackingObjectMap.put(prop.getProperty(), prop);

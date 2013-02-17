@@ -36,7 +36,8 @@ public class CompoundClassifier implements TableRowClassifier {
 			classifiers.add(c);
 	}
 	
-	public String classify(TableRow row) {
+	@Override
+    public String classify(TableRow row) {
 		StringBuilder sb = new StringBuilder();
 		for (TableRowClassifier classifier : classifiers) {
 			if (sb.length() > 0)

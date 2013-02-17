@@ -90,7 +90,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * @see org.openmrs.api.AdministrationService#createReport(org.openmrs.reporting.Report)
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void createReport(Report r) throws DAOException {
 		r.setCreator(Context.getAuthenticatedUser());
 		r.setDateCreated(new Date());
@@ -101,7 +102,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * @see org.openmrs.api.AdministrationService#updateReport(org.openmrs.reporting.Report)
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void updateReport(Report r) throws DAOException {
 		if (r.getReportId() == null)
 			createReport(r);
@@ -114,7 +116,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * @see org.openmrs.api.AdministrationService#deleteReport(org.openmrs.reporting.Report)
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void deleteReport(Report r) throws DAOException {
 		sessionFactory.getCurrentSession().delete(r);
 	}
@@ -122,7 +125,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String,java.lang.Integer,java.lang.Integer)
 	 */
-	public void mrnGeneratorLog(String site, Integer start, Integer count) {
+	@Override
+    public void mrnGeneratorLog(String site, Integer start, Integer count) {
 		PreparedStatement ps = null;
 		try {
 			String sql = "insert into `";
@@ -156,7 +160,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.AdministrationService#getMRNGeneratorLog()
 	 */
-	public Collection getMRNGeneratorLog() {
+	@Override
+    public Collection getMRNGeneratorLog() {
 		Collection<Map<String, Object>> logs = new Vector<Map<String, Object>>();
 		
 		PreparedStatement ps = null;
@@ -200,7 +205,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void createReportObject(AbstractReportObject ro) throws DAOException {
 		
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
@@ -215,7 +221,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void updateReportObject(AbstractReportObject ro) throws DAOException {
 		if (ro.getReportObjectId() == null)
 			createReportObject(ro);
@@ -234,7 +241,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @deprecated see reportingcompatibility module
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void deleteReportObject(Integer reportObjectId) throws DAOException {
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper();
 		wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(ReportObjectWrapper.class,
@@ -246,7 +254,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalProperty(java.lang.String)
 	 */
-	public String getGlobalProperty(String propertyName) throws DAOException {
+	@Override
+    public String getGlobalProperty(String propertyName) throws DAOException {
 		GlobalProperty gp = getGlobalPropertyObject(propertyName);
 		
 		// if no gp exists, return a null value
@@ -259,7 +268,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertyObject(java.lang.String)
 	 */
-	public GlobalProperty getGlobalPropertyObject(String propertyName) {
+	@Override
+    public GlobalProperty getGlobalPropertyObject(String propertyName) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
 		GlobalProperty gp = (GlobalProperty) criteria.add(Restrictions.eq("property", propertyName).ignoreCase())
 		        .uniqueResult();
@@ -269,7 +279,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		return gp;
 	}
 	
-	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException {
+	@Override
+    public GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException {
 		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().createQuery(
 		    "from GlobalProperty t where t.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 		
@@ -279,7 +290,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getAllGlobalProperties()
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<GlobalProperty> getAllGlobalProperties() throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
 		return criteria.addOrder(Order.asc("property")).list();
@@ -288,7 +300,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertiesByPrefix(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix) {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).add(
 		    Restrictions.ilike("property", prefix, MatchMode.START)).list();
@@ -297,7 +310,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertiesBySuffix(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix) {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).add(
 		    Restrictions.ilike("property", suffix, MatchMode.END)).list();
@@ -306,14 +320,16 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#deleteGlobalProperty(GlobalProperty)
 	 */
-	public void deleteGlobalProperty(GlobalProperty property) throws DAOException {
+	@Override
+    public void deleteGlobalProperty(GlobalProperty property) throws DAOException {
 		sessionFactory.getCurrentSession().delete(property);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
-	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException {
+	@Override
+    public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException {
 		GlobalProperty gpObject = getGlobalPropertyObject(gp.getProperty());
 		if (gpObject != null) {
 			gpObject.setPropertyValue(gp.getPropertyValue());
@@ -329,7 +345,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#executeSQL(java.lang.String, boolean)
 	 */
-	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException {
+	@Override
+    public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException {
 		
 		// (solution for junit tests that usually use hsql
 		// hsql does not like the backtick.  Replace the backtick with the hsql
@@ -383,7 +400,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * @param obj the object that will be validated
 	 * @return list of compatibile validators
 	 */
-	protected List<Validator> getValidators(Object obj) {
+	protected Iterable<Validator> getValidators(Object obj) {
 		List<Validator> matchingValidators = new Vector<Validator>();
 		
 		List<Validator> validators = HandlerUtil.getHandlersForType(Validator.class, obj.getClass());

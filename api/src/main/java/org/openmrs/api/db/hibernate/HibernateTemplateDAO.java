@@ -43,29 +43,34 @@ public class HibernateTemplateDAO implements TemplateDAO {
 		this.sessionFactory = sessionFactory;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Template> getTemplates() {
 		log.info("Getting all templates from the database");
 		return sessionFactory.getCurrentSession().createQuery("from Template").list();
 	}
 	
-	public Template getTemplate(Integer id) {
+	@Override
+    public Template getTemplate(Integer id) {
 		log.info("Get template " + id);
 		return (Template) sessionFactory.getCurrentSession().get(Template.class, id);
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Template> getTemplatesByName(String name) {
 		log.info("Get template " + name);
 		return sessionFactory.getCurrentSession().createQuery("from Template as template where template.name = ?")
 		        .setString(0, name).list();
 	}
 	
-	public void createTemplate(Template template) throws DAOException {
+	@Override
+    public void createTemplate(Template template) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(template);
 	}
 	
-	public void updateTemplate(Template template) throws DAOException {
+	@Override
+    public void updateTemplate(Template template) throws DAOException {
 		if (template.getId() == null) {
 			createTemplate(template);
 		} else {
@@ -74,7 +79,8 @@ public class HibernateTemplateDAO implements TemplateDAO {
 		}
 	}
 	
-	public void deleteTemplate(Template template) throws DAOException {
+	@Override
+    public void deleteTemplate(Template template) throws DAOException {
 		sessionFactory.getCurrentSession().delete(template);
 	}
 	

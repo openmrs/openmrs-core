@@ -41,7 +41,8 @@ public class UserEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		UserService ps = Context.getUserService();
 		if (StringUtils.hasText(text)) {
 			try {
@@ -60,7 +61,8 @@ public class UserEditor extends PropertyEditorSupport {
 		}
 	}
 	
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		User t = (User) getValue();
 		if (t == null) {
 			return "";

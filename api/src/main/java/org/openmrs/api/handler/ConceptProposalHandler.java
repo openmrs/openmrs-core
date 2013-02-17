@@ -34,7 +34,8 @@ public class ConceptProposalHandler implements SaveHandler<ConceptProposal> {
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
 	 */
-	public void handle(ConceptProposal cp, User creator, Date dateCreated, String other) {
+	@Override
+    public void handle(ConceptProposal cp, User creator, Date dateCreated, String other) {
 		if (cp.getState() == null) {
 			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
 		}

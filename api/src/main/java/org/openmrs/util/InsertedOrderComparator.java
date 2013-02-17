@@ -24,11 +24,13 @@ import java.util.Map;
  * 
  * @deprecated this is not needed. Use a LinkedHashSet object instead of this class.
  */
+@Deprecated
 public class InsertedOrderComparator implements Comparator<String> {
 	
 	Map<String, Integer> insertedOrder = new HashMap<String, Integer>();
 	
-	public int compare(String a1, String a2) {
+	@Override
+    public int compare(String a1, String a2) {
 		Integer a1Order = insertedOrder.get(a1);
 		Integer a2Order = insertedOrder.get(a2);
 		

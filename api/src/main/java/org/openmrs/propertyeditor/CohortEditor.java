@@ -40,7 +40,8 @@ public class CohortEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(Context.getCohortService().getCohort(Integer.valueOf(text)));
@@ -58,7 +59,8 @@ public class CohortEditor extends PropertyEditorSupport {
 		}
 	}
 	
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		Cohort c = (Cohort) getValue();
 		if (c == null) {
 			return "";

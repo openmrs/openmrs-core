@@ -16,13 +16,7 @@ package org.openmrs.web.filter.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -179,7 +173,7 @@ public class CustomResourceLoader {
 	/**
 	 * @return the set of locales which are currently supported by OpenMRS
 	 */
-	public Set<Locale> getAvailablelocales() {
+	public Collection<Locale> getAvailablelocales() {
 		return availablelocales;
 	}
 }

@@ -57,12 +57,13 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	/**
 	 * Registered task list
 	 */
-	private Set<TaskDefinition> registeredTasks = new HashSet<TaskDefinition>();
+	private Collection<TaskDefinition> registeredTasks = new HashSet<TaskDefinition>();
 	
 	/**
 	 * Scheduled Task Map
 	 */
-	private static Map<Integer, TimerSchedulerTask> scheduledTasks = new WeakHashMap<Integer, TimerSchedulerTask>();
+	@org.jetbrains.annotations.Nullable
+    private static Map<Integer, TimerSchedulerTask> scheduledTasks = new WeakHashMap<Integer, TimerSchedulerTask>();
 	
 	/**
 	 * A single timer used to keep track of all scheduled tasks. The Timer's associated thread
@@ -96,7 +97,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	/**
 	 * Start up hook for the scheduler and all of its scheduled tasks.
 	 */
-	public void onStartup() {
+	@Override
+    public void onStartup() {
 		log.debug("Starting scheduler service ...");
 		
 		// Get all of the tasks in the database
@@ -123,7 +125,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	/**
 	 * Shutdown hook for the scheduler and all of its scheduled tasks.
 	 */
-	public void onShutdown() {
+	@Override
+    public void onShutdown() {
 		log.debug("Gracefully shutting down scheduler service ...");
 		// gracefully shutdown all tasks and remove all references to the timers, scheduler
 		try {
@@ -194,7 +197,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * @param taskDefinition the task to be scheduled
 	 * @should should handle zero repeat interval
 	 */
-	public Task scheduleTask(TaskDefinition taskDefinition) throws SchedulerException {
+	@Override
+    public Task scheduleTask(TaskDefinition taskDefinition) throws SchedulerException {
 		Task clientTask = null;
 		if (taskDefinition != null) {
 			
@@ -279,7 +283,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * @param taskDefinition the task to be stopped
 	 * @see org.openmrs.scheduler.SchedulerService#shutdownTask(TaskDefinition)
 	 */
-	public void shutdownTask(TaskDefinition taskDefinition) throws SchedulerException {
+	@Override
+    public void shutdownTask(TaskDefinition taskDefinition) throws SchedulerException {
 		if (taskDefinition != null) {
 			
 			// Remove the task from the scheduled tasks and shutdown the timer
@@ -298,7 +303,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * Loop over all currently started tasks and cycle them. This should be done after the
 	 * classloader has been changed (e.g. during module start/stop)
 	 */
-	public void rescheduleAllTasks() throws SchedulerException {
+	@Override
+    public void rescheduleAllTasks() throws SchedulerException {
 		for (TaskDefinition task : getScheduledTasks()) {
 			try {
 				rescheduleTask(task);
@@ -312,7 +318,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	/**
 	 * @see org.openmrs.scheduler.SchedulerService#rescheduleTask(org.openmrs.scheduler.TaskDefinition)
 	 */
-	public Task rescheduleTask(TaskDefinition taskDefinition) throws SchedulerException {
+	@Override
+    public Task rescheduleTask(TaskDefinition taskDefinition) throws SchedulerException {
 		shutdownTask(taskDefinition);
 		return scheduleTask(taskDefinition);
 	}
@@ -331,10 +338,11 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * 
 	 * @return all scheduled tasks
 	 */
-	public Collection<TaskDefinition> getScheduledTasks() {
+	@Override
+    public Collection<TaskDefinition> getScheduledTasks() {
 		// The real list of scheduled tasks is kept up-to-date in the scheduledTasks map
 		// TODO change the index for the scheduledTasks map to be the TaskDefinition rather than the ID
-		List<TaskDefinition> list = new ArrayList<TaskDefinition>();
+		Collection<TaskDefinition> list = new ArrayList<TaskDefinition>();
 		Set<Integer> taskIds = scheduledTasks.keySet();
 		for (Integer id : taskIds) {
 			TaskDefinition task = getTask(id);
@@ -350,7 +358,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * 
 	 * @return all registerd tasks
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Collection<TaskDefinition> getRegisteredTasks() {
 		return getSchedulerDAO().getTasks();
 	}
@@ -360,7 +369,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * 
 	 * @param id the identifier of the task
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public TaskDefinition getTask(Integer id) {
 		if (log.isDebugEnabled())
 			log.debug("get task " + id);
@@ -372,7 +382,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * 
 	 * @param name name of the task
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public TaskDefinition getTaskByName(String name) {
 		if (log.isDebugEnabled())
 			log.debug("get task " + name);
@@ -392,7 +403,9 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * @param task the <code>TaskDefinition</code> to save
 	 * @deprecated use saveTaskDefinition which follows correct naming standard
 	 */
-	public void saveTask(TaskDefinition task) {
+	@Override
+    @Deprecated
+    public void saveTask(TaskDefinition task) {
 		Context.getSchedulerService().saveTaskDefinition(task);
 	}
 	
@@ -401,7 +414,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 *
 	 * @param task the <code>TaskDefinition</code> to save
 	 */
-	public void saveTaskDefinition(TaskDefinition task) {
+	@Override
+    public void saveTaskDefinition(TaskDefinition task) {
 		if (task.getId() != null) {
 			getSchedulerDAO().updateTask(task);
 		} else {
@@ -414,7 +428,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * 
 	 * @param id the identifier of the task
 	 */
-	public void deleteTask(Integer id) {
+	@Override
+    public void deleteTask(Integer id) {
 		
 		TaskDefinition task = getTask(id);
 		if (task.getStarted()) {
@@ -428,8 +443,9 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	/**
 	 * Get system variables.
 	 */
-	public SortedMap<String, String> getSystemVariables() {
-		TreeMap<String, String> systemVariables = new TreeMap<String, String>();
+	@Override
+    public SortedMap<String, String> getSystemVariables() {
+		SortedMap<String, String> systemVariables = new TreeMap<String, String>();
 		// scheduler username and password can be found in the global properties
 		// TODO Look into java.util.concurrent.TimeUnit class.  
 		// TODO Remove this from global properties.  This is a constant value that should never change.  
@@ -442,7 +458,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * 
 	 * @return OpenmrsMemento
 	 */
-	public OpenmrsMemento saveToMemento() {
+	@Override
+    public OpenmrsMemento saveToMemento() {
 		
 		Set<Integer> tasks = new HashSet<Integer>();
 		
@@ -466,13 +483,14 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	/**
 	 * 
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public void restoreFromMemento(OpenmrsMemento memento) {
 		
 		if (memento != null && memento instanceof TimerSchedulerMemento) {
-			TimerSchedulerMemento timerMemento = (TimerSchedulerMemento) memento;
+			@org.jetbrains.annotations.Nullable TimerSchedulerMemento timerMemento = (TimerSchedulerMemento) memento;
 			
-			Set<Integer> taskIds = (HashSet<Integer>) timerMemento.getState();
+			Iterable<Integer> taskIds = (Set<Integer>) timerMemento.getState();
 			
 			// try to start all of the tasks that were stopped right before this restore
 			for (Integer taskId : taskIds) {
@@ -496,7 +514,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * @see org.openmrs.scheduler.SchedulerService#getStatus(java.lang.Integer) TODO
 	 *      internationalization of string status messages
 	 */
-	public String getStatus(Integer id) {
+	@Override
+    public String getStatus(Integer id) {
 		
 		// Get the scheduled timer task
 		TimerSchedulerTask scheduledTask = scheduledTasks.get(id);

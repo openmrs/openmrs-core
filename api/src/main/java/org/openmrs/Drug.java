@@ -163,7 +163,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	 * 
 	 * @return Concept
 	 */
-	public Concept getConcept() {
+	@Override
+    public Concept getConcept() {
 		return this.concept;
 	}
 	
@@ -237,7 +238,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getDrugId();
 	}
@@ -246,7 +248,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setDrugId(id);
 	}
 	

@@ -27,15 +27,18 @@ import org.hibernate.engine.SessionFactoryImplementor;
 /**
  * This class holds common methods and utilities that are used across the hibernate related classes
  */
-public class HibernateUtil {
+public final class HibernateUtil {
 	
-	private static Log log = LogFactory.getLog(HibernateUtil.class);
+	private static final Log log = LogFactory.getLog(HibernateUtil.class);
 	
 	private static Dialect dialect = null;
 	
 	private static Boolean isHSQLDialect = null;
-	
-	/**
+
+    private HibernateUtil() {
+    }
+
+    /**
 	 * Check and cache whether the currect dialect is HSQL or not. This is needed because some
 	 * queries are different if in the hsql world as opposed to the mysql/postgres world
 	 * 

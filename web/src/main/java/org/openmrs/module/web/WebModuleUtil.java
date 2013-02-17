@@ -70,7 +70,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class WebModuleUtil {
+public final class WebModuleUtil {
 	
 	private static Log log = LogFactory.getLog(WebModuleUtil.class);
 	
@@ -89,8 +89,11 @@ public class WebModuleUtil {
 	
 	private static List<ModuleFilterMapping> moduleFilterMappings = Collections
 	        .synchronizedList(new Vector<ModuleFilterMapping>());
-	
-	/**
+
+    private WebModuleUtil() {
+    }
+
+    /**
 	 * Performs the webapp specific startup needs for modules Normal startup is done in
 	 * {@link ModuleFactory#startModule(Module)} If delayContextRefresh is true, the spring context
 	 * is not rerun. This will save a lot of time, but it also means that the calling method is
@@ -344,7 +347,7 @@ public class WebModuleUtil {
 			if (!"true".equalsIgnoreCase(props
 			        .getProperty(ModuleConstants.MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE))) {
 				// set all properties to start with 'moduleName.' if not already
-				List<Object> keys = new Vector<Object>();
+				Collection<Object> keys = new Vector<Object>();
 				keys.addAll(props.keySet());
 				for (Object obj : keys) {
 					String key = (String) obj;
@@ -371,7 +374,7 @@ public class WebModuleUtil {
 	 * @param lang the empty string to represent the locale "en", or something like "_fr" for any other locale
 	 * @return true if the everything worked
 	 */
-	private static boolean insertIntoModuleMessagePropertiesFile(String realPath, Properties props, String lang) {
+	private static boolean insertIntoModuleMessagePropertiesFile(String realPath, Map props, CharSequence lang) {
 		String path = "/WEB-INF/module_messages@LANG@.properties";
 		String currentPath = path.replace("@LANG@", lang);
 		
@@ -619,7 +622,7 @@ public class WebModuleUtil {
 	 * @return A Collection of all {@link ModuleFilterMapping}s that have been registered by a
 	 *         Module
 	 */
-	public static Collection<ModuleFilterMapping> getFilterMappings() {
+	public static Iterable<ModuleFilterMapping> getFilterMappings() {
 		return moduleFilterMappings;
 	}
 	
@@ -630,7 +633,7 @@ public class WebModuleUtil {
 	 * @param request - The request to check for matching {@link Filter}s
 	 * @return List of all {@link Filter}s that have filter mappings that match the passed request
 	 */
-	public static List<Filter> getFiltersForRequest(ServletRequest request) {
+	public static Collection<Filter> getFiltersForRequest(ServletRequest request) {
 		
 		List<Filter> filters = new Vector<Filter>();
 		if (request != null) {
@@ -668,7 +671,8 @@ public class WebModuleUtil {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			db.setEntityResolver(new EntityResolver() {
 				
-				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+				@Override
+                public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 					// When asked to resolve external entities (such as a DTD) we return an InputSource
 					// with no data at the end, causing the parser to ignore the DTD.
 					return new InputSource(new StringReader(""));

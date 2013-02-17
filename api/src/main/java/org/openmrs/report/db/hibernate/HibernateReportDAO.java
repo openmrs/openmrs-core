@@ -50,14 +50,16 @@ public class HibernateReportDAO implements ReportDAO {
 	/**
 	 * @see org.openmrs.report.db.ReportDAO#deleteReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 */
-	public void deleteReportSchemaXml(ReportSchemaXml reportSchemaXml) {
+	@Override
+    public void deleteReportSchemaXml(ReportSchemaXml reportSchemaXml) {
 		sessionFactory.getCurrentSession().delete(reportSchemaXml);
 	}
 	
 	/**
 	 * @see org.openmrs.report.db.ReportDAO#getReportSchemaXml(java.lang.Integer)
 	 */
-	public ReportSchemaXml getReportSchemaXml(Integer reportSchemaXmlId) {
+	@Override
+    public ReportSchemaXml getReportSchemaXml(Integer reportSchemaXmlId) {
 		//return (ReportSchemaXml) sessionFactory.getCurrentSession()
 		//                                       .get(ReportSchemaXml.class, reportSchemaXmlId);
 		
@@ -69,14 +71,16 @@ public class HibernateReportDAO implements ReportDAO {
 	/**
 	 * @see org.openmrs.report.db.ReportDAO#saveReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 */
-	public void saveReportSchemaXml(ReportSchemaXml reportSchemaXml) {
+	@Override
+    public void saveReportSchemaXml(ReportSchemaXml reportSchemaXml) {
 		sessionFactory.getCurrentSession().saveOrUpdate(reportSchemaXml);
 	}
 	
 	/**
 	 * @see org.openmrs.report.db.ReportDAO#getReportSchemaXmls()
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<ReportSchemaXml> getReportSchemaXmls() {
 		return sessionFactory.getCurrentSession().createQuery("from ReportSchemaXml").list();
 	}

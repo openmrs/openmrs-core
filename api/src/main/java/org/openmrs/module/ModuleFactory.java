@@ -56,25 +56,32 @@ import org.springframework.util.StringUtils;
 /**
  * Methods for loading, starting, stopping, and storing OpenMRS modules
  */
-public class ModuleFactory {
+public final class ModuleFactory {
 	
 	private static Log log = LogFactory.getLog(ModuleFactory.class);
 	
-	protected static Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
+	@org.jetbrains.annotations.Nullable
+    protected static Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
 	
-	protected static Map<String, Module> startedModules = new WeakHashMap<String, Module>();
+	@org.jetbrains.annotations.Nullable
+    protected static Map<String, Module> startedModules = new WeakHashMap<String, Module>();
 	
-	protected static Map<String, List<Extension>> extensionMap = new HashMap<String, List<Extension>>();
+	@org.jetbrains.annotations.Nullable
+    protected static Map<String, List<Extension>> extensionMap = new HashMap<String, List<Extension>>();
 	
 	// maps to keep track of the memory and objects to free/close
-	protected static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
+	@org.jetbrains.annotations.Nullable
+    protected static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
 	
 	// the name of the file within a module file
 	private static final String MODULE_CHANGELOG_FILENAME = "liquibase.xml";
 	
 	private static final Map<String, DaemonToken> daemonTokens = new WeakHashMap<String, DaemonToken>();
-	
-	/**
+
+    private ModuleFactory() {
+    }
+
+    /**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an
 	 * error occurred and/or module was not successfully loaded
 	 * 
@@ -163,7 +170,7 @@ public class ModuleFactory {
 	 * 
 	 * @param modulesToLoad the list of files to try and load
 	 */
-	public static void loadModules(List<File> modulesToLoad) {
+	public static void loadModules(Iterable<File> modulesToLoad) {
 		// loop over the modules and load all the modules that we can
 		for (File f : modulesToLoad) {
 			// ignore .svn folder and the like
@@ -188,7 +195,7 @@ public class ModuleFactory {
 	public static void startModules() {
 		// loop over and try starting each of the loaded modules
 		if (getLoadedModules().size() > 0) {
-			List<Module> leftoverModules = new Vector<Module>();
+			Collection<Module> leftoverModules = new Vector<Module>();
 			
 			try {
 				Context.addProxyPrivilege("");
@@ -242,7 +249,7 @@ public class ModuleFactory {
 					log.debug("Trying to start leftover modules: " + leftoverModules);
 				
 				atLeastOneModuleLoaded = false;
-				List<Module> modulesStartedInThisLoop = new Vector<Module>();
+				Collection<Module> modulesStartedInThisLoop = new Vector<Module>();
 				
 				for (Module leftoverModule : leftoverModules) {
 					if (requiredModulesStarted(leftoverModule)) {
@@ -321,12 +328,13 @@ public class ModuleFactory {
 	 * @return <code>List<Module></code> of the modules loaded into the system, with the core
 	 *         modules first.
 	 */
-	public static List<Module> getLoadedModulesCoreFirst() {
+	public static Iterable<Module> getLoadedModulesCoreFirst() {
 		List<Module> list = new ArrayList<Module>(getLoadedModules());
 		final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
 		Collections.sort(list, new Comparator<Module>() {
 			
-			public int compare(Module left, Module right) {
+			@Override
+            public int compare(Module left, Module right) {
 				Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
 				Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
 				return leftVal.compareTo(rightVal);
@@ -344,7 +352,7 @@ public class ModuleFactory {
 	 * @return List<String> of module names + optional required versions:
 	 *         "org.openmrs.formentry 1.8, org.rg.patientmatching"
 	 */
-	private static List<String> getMissingRequiredModules(Module module) {
+	private static Collection<String> getMissingRequiredModules(Module module) {
 		List<String> ret = new ArrayList<String>();
 		for (String moduleName : module.getRequiredModules()) {
 			String moduleVersion = module.getRequiredModuleVersion(moduleName);
@@ -883,7 +891,7 @@ public class ModuleFactory {
 	 *         will never be null.
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
+	public static Collection<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
 	        throws ModuleMustStartException {
 		
 		List<Module> dependentModulesStopped = new Vector<Module>();
@@ -918,7 +926,7 @@ public class ModuleFactory {
 			
 			// stop all dependent modules
 			// copy modules to new list to avoid "concurrent modification exception"
-			List<Module> startedModulesCopy = new ArrayList<Module>();
+			Collection<Module> startedModulesCopy = new ArrayList<Module>();
 			startedModulesCopy.addAll(getStartedModules());
 			for (Module dependentModule : startedModulesCopy) {
 				if (!dependentModule.equals(mod) && dependentModule.getRequiredModules().contains(modulePackage)) {
@@ -1014,7 +1022,7 @@ public class ModuleFactory {
 			mod.setModuleActivator(null);
 			mod.disposeAdvicePointsClassInstance();
 			
-			ModuleClassLoader cl = removeClassLoader(mod);
+			@org.jetbrains.annotations.Nullable ModuleClassLoader cl = removeClassLoader(mod);
 			if (cl != null) {
 				cl.dispose();
 				cl = null;
@@ -1046,7 +1054,7 @@ public class ModuleFactory {
 	 * 
 	 * @param mod module to unload
 	 */
-	public static void unloadModule(Module mod) {
+	public static void unloadModule(@org.jetbrains.annotations.Nullable Module mod) {
 		
 		// remove this module's advice and extensions
 		if (isModuleStarted(mod))
@@ -1057,7 +1065,7 @@ public class ModuleFactory {
 		
 		if (mod != null) {
 			// remove the file from the module repository
-			File file = mod.getFile();
+			@org.jetbrains.annotations.Nullable File file = mod.getFile();
 			
 			boolean deleted = file.delete();
 			if (!deleted) {
@@ -1136,7 +1144,7 @@ public class ModuleFactory {
 	 * 
 	 * @return <code>List<Privilege></code> of the required privileges
 	 */
-	public static List<Privilege> getPrivileges() {
+	public static Iterable<Privilege> getPrivileges() {
 		
 		List<Privilege> privileges = new Vector<Privilege>();
 		
@@ -1154,7 +1162,7 @@ public class ModuleFactory {
 	 * 
 	 * @return <code>List<GlobalProperty></code> object of the module's global properties
 	 */
-	public static List<GlobalProperty> getGlobalProperties() {
+	public static Iterable<GlobalProperty> getGlobalProperties() {
 		
 		List<GlobalProperty> globalProperties = new Vector<GlobalProperty>();
 		
@@ -1227,7 +1235,7 @@ public class ModuleFactory {
 	 * 
 	 * @return Collection<ModuleClassLoader> all known module classloaders or empty list.
 	 */
-	public static Collection<ModuleClassLoader> getModuleClassLoaders() {
+	public static Iterable<ModuleClassLoader> getModuleClassLoaders() {
 		Map<Module, ModuleClassLoader> classLoaders = getModuleClassLoaderMap();
 		if (classLoaders.size() > 0)
 			return classLoaders.values();

@@ -41,7 +41,8 @@ public class CohortDataSetProvider implements DataSetProvider {
 	/**
 	 * @see org.openmrs.report.DataSetProvider#canEvaluate(org.openmrs.report.DataSetDefinition)
 	 */
-	public boolean canEvaluate(DataSetDefinition dataSetDefinition) {
+	@Override
+    public boolean canEvaluate(DataSetDefinition dataSetDefinition) {
 		return (dataSetDefinition instanceof CohortDataSetDefinition);
 	}
 	
@@ -49,7 +50,8 @@ public class CohortDataSetProvider implements DataSetProvider {
 	 * @see org.openmrs.report.DataSetProvider#evaluate(DataSetDefinition, Cohort,
 	 *      EvaluationContext)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {
 		CohortDataSetDefinition def = (CohortDataSetDefinition) dataSetDefinition;
 		

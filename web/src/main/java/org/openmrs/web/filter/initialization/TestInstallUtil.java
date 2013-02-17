@@ -48,11 +48,14 @@ import org.openmrs.web.filter.util.FilterUtil;
  * Contains static methods to be used by the installation wizard when creating a testing
  * installation
  */
-public class TestInstallUtil {
+public final class TestInstallUtil {
 	
 	private static final Log log = LogFactory.getLog(TestInstallUtil.class);
-	
-	/**
+
+    private TestInstallUtil() {
+    }
+
+    /**
 	 * Adds data to the test database from a sql dump file
 	 * 
 	 * @param host

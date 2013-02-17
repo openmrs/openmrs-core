@@ -59,7 +59,8 @@ public class HL7Source extends BaseOpenmrsMetadata implements Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getHL7SourceId();
 	}
 	
@@ -67,7 +68,8 @@ public class HL7Source extends BaseOpenmrsMetadata implements Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setHL7SourceId(id);
 	}
 	

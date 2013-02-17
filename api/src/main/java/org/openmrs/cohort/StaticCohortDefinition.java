@@ -46,7 +46,8 @@ public class StaticCohortDefinition implements CohortDefinition {
 	/**
 	 * @see org.openmrs.report.Parameterizable#getParameters()
 	 */
-	public List<Parameter> getParameters() {
+	@Override
+    public List<Parameter> getParameters() {
 		return new Vector<Parameter>();
 	}
 	

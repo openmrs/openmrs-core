@@ -60,11 +60,13 @@ public class MessageServiceImpl implements MessageService {
 	 * 
 	 * @param messagePreparator
 	 */
-	public void setMessagePreparator(MessagePreparator messagePreparator) {
+	@Override
+    public void setMessagePreparator(MessagePreparator messagePreparator) {
 		this.messagePreparator = messagePreparator;
 	}
 	
-	public MessagePreparator getMessagePreparator() {
+	@Override
+    public MessagePreparator getMessagePreparator() {
 		return this.messagePreparator;
 	}
 	
@@ -73,11 +75,13 @@ public class MessageServiceImpl implements MessageService {
 	 * 
 	 * @param messageSender
 	 */
-	public void setMessageSender(MessageSender messageSender) {
+	@Override
+    public void setMessageSender(MessageSender messageSender) {
 		this.messageSender = messageSender;
 	}
 	
-	public MessageSender getMessageSender() {
+	@Override
+    public MessageSender getMessageSender() {
 		return this.messageSender;
 	}
 	
@@ -87,7 +91,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param message the Message to be sent
 	 * @see org.openmrs.notification.MessageService#sendMessage(org.openmrs.notification.Message)
 	 */
-	public void sendMessage(Message message) throws MessageException {
+	@Override
+    public void sendMessage(Message message) throws MessageException {
 		try {
 			messageSender.send(message);
 		}
@@ -105,7 +110,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param subject the subject of the message
 	 * @param content the content or body of the message
 	 */
-	public Message createMessage(String recipients, String sender, String subject, String content) throws MessageException {
+	@Override
+    public Message createMessage(String recipients, String sender, String subject, String content) throws MessageException {
 		return createMessage(recipients, sender, subject, content, null, null, null);
 	}
 	
@@ -116,7 +122,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param subject the subject of the message
 	 * @param content the content or body of the message
 	 */
-	public Message createMessage(String sender, String subject, String content) throws MessageException {
+	@Override
+    public Message createMessage(String sender, String subject, String content) throws MessageException {
 		return createMessage(null, sender, subject, content);
 	}
 	
@@ -126,7 +133,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param subject the subject of the message
 	 * @param content the content or body of the message
 	 */
-	public Message createMessage(String subject, String content) throws MessageException {
+	@Override
+    public Message createMessage(String subject, String content) throws MessageException {
 		return createMessage(null, null, subject, content);
 	}
 	
@@ -135,7 +143,8 @@ public class MessageServiceImpl implements MessageService {
 	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String,
 	 *      java.lang.String, java.lang.String)
 	 */
-	public Message createMessage(String recipients, String sender, String subject, String content, String attachment,
+	@Override
+    public Message createMessage(String recipients, String sender, String subject, String content, String attachment,
 	        String attachmentContentType, String attachmentFileName) throws MessageException {
 		Message message = new Message();
 		message.setRecipients(recipients);
@@ -152,7 +161,8 @@ public class MessageServiceImpl implements MessageService {
 	 * Send a message using the given parameters. This is a convenience method so that the client
 	 * does not need to create its own Message object.
 	 */
-	public void sendMessage(String recipients, String sender, String subject, String content) throws MessageException {
+	@Override
+    public void sendMessage(String recipients, String sender, String subject, String content) throws MessageException {
 		Message message = createMessage(recipients, sender, subject, content);
 		sendMessage(message);
 	}
@@ -163,7 +173,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param message <code>Message</code> to be sent
 	 * @param recipientId Integer identifier of user (recipient)
 	 */
-	public void sendMessage(Message message, Integer recipientId) throws MessageException {
+	@Override
+    public void sendMessage(Message message, Integer recipientId) throws MessageException {
 		log.debug("Sending message to user with user id " + recipientId);
 		User user = Context.getUserService().getUser(recipientId);
 		message.addRecipient(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
@@ -177,7 +188,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param message the <code>Message</code> to be sent
 	 * @param user the recipient of the message
 	 */
-	public void sendMessage(Message message, User user) throws MessageException {
+	@Override
+    public void sendMessage(Message message, User user) throws MessageException {
 		log.debug("Sending message to user " + user);
 		String address = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
 		if (address != null)
@@ -189,7 +201,8 @@ public class MessageServiceImpl implements MessageService {
 	/**
 	 * Send message to a collection of recipients.
 	 */
-	public void sendMessage(Message message, Collection<User> users) throws MessageException {
+	@Override
+    public void sendMessage(Message message, Collection<User> users) throws MessageException {
 		log.debug("Sending message to users " + users);
 		for (User user : users) {
 			String address = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
@@ -202,7 +215,8 @@ public class MessageServiceImpl implements MessageService {
 	/**
 	 * Send a message to a group of users identified by their role.
 	 */
-	public void sendMessage(Message message, String roleName) throws MessageException {
+	@Override
+    public void sendMessage(Message message, String roleName) throws MessageException {
 		log.debug("Sending message to role with name " + roleName);
 		Role role = Context.getUserService().getRole(roleName);
 		sendMessage(message, role);
@@ -211,7 +225,8 @@ public class MessageServiceImpl implements MessageService {
 	/**
 	 * Sends a message to a group of users identifier by thir role.
 	 */
-	public void sendMessage(Message message, Role role) throws MessageException {
+	@Override
+    public void sendMessage(Message message, Role role) throws MessageException {
 		log.debug("Sending message to role " + role);
 		log.debug("User Service : " + Context.getUserService());
 		
@@ -231,7 +246,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param template the given <code>Template</code>
 	 * @return the prepared <code>Message</code>
 	 */
-	public Message prepareMessage(Template template) throws MessageException {
+	@Override
+    public Message prepareMessage(Template template) throws MessageException {
 		return messagePreparator.prepare(template);
 	}
 	
@@ -242,7 +258,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param data data mapping used for variable substitution within template
 	 * @return the prepared Message
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public Message prepareMessage(String templateName, Map data) throws MessageException {
 		try {
@@ -260,7 +277,8 @@ public class MessageServiceImpl implements MessageService {
 	 * 
 	 * @return list of Templates
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List getAllTemplates() throws MessageException {
 		return templateDAO.getTemplates();
@@ -272,7 +290,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param id template identifier
 	 * @return Template
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Template getTemplate(Integer id) throws MessageException {
 		return templateDAO.getTemplate(id);
 	}
@@ -283,7 +302,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param name the name of the template
 	 * @return list of Templates
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List getTemplatesByName(String name) throws MessageException {
 		return templateDAO.getTemplatesByName(name);
@@ -293,7 +313,9 @@ public class MessageServiceImpl implements MessageService {
 	 * @see org.openmrs.notification.MessageService#create(java.lang.String, java.lang.String)
 	 * @deprecated
 	 */
-	public Message create(String subject, String message) throws MessageException {
+	@Override
+    @Deprecated
+    public Message create(String subject, String message) throws MessageException {
 		return Context.getMessageService().createMessage(subject, message);
 	}
 	
@@ -302,7 +324,9 @@ public class MessageServiceImpl implements MessageService {
 	 *      java.lang.String)
 	 * @deprecated
 	 */
-	public Message create(String sender, String subject, String message) throws MessageException {
+	@Override
+    @Deprecated
+    public Message create(String sender, String subject, String message) throws MessageException {
 		return Context.getMessageService().createMessage(sender, subject, message);
 	}
 	
@@ -311,7 +335,9 @@ public class MessageServiceImpl implements MessageService {
 	 *      java.lang.String, java.lang.String)
 	 * @deprecated
 	 */
-	public Message create(String recipients, String sender, String subject, String message) throws MessageException {
+	@Override
+    @Deprecated
+    public Message create(String recipients, String sender, String subject, String message) throws MessageException {
 		return Context.getMessageService().createMessage(recipients, sender, subject, message);
 	}
 	
@@ -319,7 +345,9 @@ public class MessageServiceImpl implements MessageService {
 	 * @see org.openmrs.notification.MessageService#prepare(java.lang.String, java.util.Map)
 	 * @deprecated
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @Deprecated
+    @SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public Message prepare(String templateName, Map data) throws MessageException {
 		return prepareMessage(templateName, data);
@@ -329,7 +357,9 @@ public class MessageServiceImpl implements MessageService {
 	 * @see org.openmrs.notification.MessageService#prepare(org.openmrs.notification.Template)
 	 * @deprecated
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Deprecated
+    @Transactional(readOnly = true)
 	public Message prepare(Template template) throws MessageException {
 		return prepareMessage(template);
 	}
@@ -338,7 +368,9 @@ public class MessageServiceImpl implements MessageService {
 	 * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message)
 	 * @deprecated use {@link #sendMessage(Message)}
 	 */
-	public void send(Message message) throws MessageException {
+	@Override
+    @Deprecated
+    public void send(Message message) throws MessageException {
 		sendMessage(message);
 	}
 	
@@ -347,7 +379,9 @@ public class MessageServiceImpl implements MessageService {
 	 *      java.lang.String)
 	 * @deprecated use {@link #sendMessage(Message, String)}
 	 */
-	public void send(Message message, String roleName) throws MessageException {
+	@Override
+    @Deprecated
+    public void send(Message message, String roleName) throws MessageException {
 		sendMessage(message, roleName);
 	}
 	
@@ -356,7 +390,9 @@ public class MessageServiceImpl implements MessageService {
 	 *      java.lang.Integer)
 	 * @deprecated use {@link #sendMessage(Message, Integer)}
 	 */
-	public void send(Message message, Integer userId) throws MessageException {
+	@Override
+    @Deprecated
+    public void send(Message message, Integer userId) throws MessageException {
 		sendMessage(message, userId);
 	}
 	
@@ -365,7 +401,9 @@ public class MessageServiceImpl implements MessageService {
 	 *      org.openmrs.User)
 	 * @deprecated use {@link #sendMessage(Message, User)}
 	 */
-	public void send(Message message, User user) throws MessageException {
+	@Override
+    @Deprecated
+    public void send(Message message, User user) throws MessageException {
 		sendMessage(message, user);
 	}
 	
@@ -374,7 +412,9 @@ public class MessageServiceImpl implements MessageService {
 	 *      org.openmrs.Role)
 	 * @deprecated {@link #send(Message, Role)}
 	 */
-	public void send(Message message, Role role) throws MessageException {
+	@Override
+    @Deprecated
+    public void send(Message message, Role role) throws MessageException {
 		sendMessage(message, role);
 	}
 	
@@ -383,7 +423,9 @@ public class MessageServiceImpl implements MessageService {
 	 *      java.util.Collection)
 	 * @deprecated {@link #send(Message, Collection)}
 	 */
-	public void send(Message message, Collection<User> users) throws MessageException {
+	@Override
+    @Deprecated
+    public void send(Message message, Collection<User> users) throws MessageException {
 		sendMessage(message, users);
 	}
 	
@@ -392,7 +434,9 @@ public class MessageServiceImpl implements MessageService {
 	 *      java.lang.String, java.lang.String)
 	 * @deprecated use {@link #send(String, String, String, String)}
 	 */
-	public void send(String recipients, String sender, String subject, String message) throws MessageException {
+	@Override
+    @Deprecated
+    public void send(String recipients, String sender, String subject, String message) throws MessageException {
 		sendMessage(recipients, sender, subject, message);
 	}
 	

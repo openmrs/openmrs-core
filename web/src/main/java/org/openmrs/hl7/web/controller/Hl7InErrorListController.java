@@ -15,10 +15,7 @@
 package org.openmrs.hl7.web.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -121,7 +118,7 @@ public class Hl7InErrorListController {
 		List<HL7InError> hl7s = Context.getHL7Service().getHL7InErrorBatch(iDisplayStart, iDisplayLength, sSearch);
 		
 		// form the results dataset
-		List<Object> results = new ArrayList<Object>();
+		Collection<Object> results = new ArrayList<Object>();
 		for (HL7InError hl7 : hl7s)
 			results.add(splitHL7InError(hl7));
 		

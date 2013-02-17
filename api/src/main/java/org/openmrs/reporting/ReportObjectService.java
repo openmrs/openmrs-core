@@ -90,12 +90,14 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveReportObject(AbstractReportObject)}
 	 */
-	public Integer createReportObject(AbstractReportObject reportObject) throws APIException;
+	@Deprecated
+    public Integer createReportObject(AbstractReportObject reportObject) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #purgeReportObject(AbstractReportObject)}
 	 */
-	public void deleteReport(AbstractReportObject reportObject) throws APIException;
+	@Deprecated
+    public void deleteReport(AbstractReportObject reportObject) throws APIException;
 	
 	/**
 	 * Completely delete the given reportObject from the database
@@ -108,7 +110,8 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveReportObject(AbstractReportObject)}
 	 */
-	public void updateReportObject(AbstractReportObject reportObject) throws APIException;
+	@Deprecated
+    public void updateReportObject(AbstractReportObject reportObject) throws APIException;
 	
 	/**
 	 * Save the given report object to the database
@@ -175,7 +178,8 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveSearchHistory(CohortSearchHistory)}
 	 */
-	public void createSearchHistory(CohortSearchHistory history) throws APIException;
+	@Deprecated
+    public void createSearchHistory(CohortSearchHistory history) throws APIException;
 	
 	/**
 	 * TODO: why is this method in this service?
@@ -190,7 +194,8 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #purgeSearchHistory(CohortSearchHistory)}
 	 */
-	public void deleteSearchHistory(CohortSearchHistory history) throws APIException;
+	@Deprecated
+    public void deleteSearchHistory(CohortSearchHistory history) throws APIException;
 	
 	/**
 	 * Completely delete this method from the database
@@ -212,7 +217,8 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #getAllSearchHistories()}
 	 */
-	public List<CohortSearchHistory> getSearchHistories() throws APIException;
+	@Deprecated
+    public List<CohortSearchHistory> getSearchHistories() throws APIException;
 	
 	/**
 	 * Get all search histories stored in the database

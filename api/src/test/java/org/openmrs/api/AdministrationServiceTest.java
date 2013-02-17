@@ -50,10 +50,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	private AdministrationService adminService = null;
 	
 	protected static final String ADMIN_INITIAL_DATA_XML = "org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml";
-	
-	private HttpClient implementationHttpClient;
-	
-	/**
+
+    /**
 	 * Run this before each unit test in this class. It simply assigns the services used in this
 	 * class to private variables The "@Before" method in {@link BaseContextSensitiveTest} is run
 	 * right before this method and sets up the initial data set and authenticates to the Context
@@ -64,7 +62,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void runBeforeEachTest() throws Exception {
 		if (adminService == null) {
 			adminService = Context.getAdministrationService();
-			implementationHttpClient = mock(HttpClient.class);
+            HttpClient implementationHttpClient = mock(HttpClient.class);
 			adminService.setImplementationIdHttpClient(implementationHttpClient);
 		}
 		

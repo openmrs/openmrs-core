@@ -31,11 +31,14 @@ import org.springframework.util.StringUtils;
  * 
  * @since 1.6
  */
-public class DatabaseUtil {
+public final class DatabaseUtil {
 	
 	private final static Log log = LogFactory.getLog(DatabaseUtil.class);
-	
-	/**
+
+    private DatabaseUtil() {
+    }
+
+    /**
 	 * Load the jdbc driver class for the database which is specified by the connectionUrl parameter <br/>
 	 * This is only needed when loading up a jdbc connection manually for the first time. This is
 	 * not needed by most users and development practices with the openmrs API.

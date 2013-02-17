@@ -164,8 +164,8 @@ public class MergePatientsFormController extends SimpleFormController {
 		Patient p2 = new Patient();
 		Collection<Encounter> patient1Encounters = new Vector<Encounter>();
 		Collection<Encounter> patient2Encounters = new Vector<Encounter>();
-		List<Patient> patientList = new ArrayList<Patient>();
-		List<Collection<Encounter>> encounterList = new ArrayList<Collection<Encounter>>();
+		Collection<Patient> patientList = new ArrayList<Patient>();
+		Collection<Collection<Encounter>> encounterList = new ArrayList<Collection<Encounter>>();
 		if (Context.isAuthenticated()) {
 			EncounterService es = Context.getEncounterService();
 			patient1Encounters = es.getEncountersByPatient(p1);

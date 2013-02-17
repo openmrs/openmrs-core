@@ -13,6 +13,7 @@
  */
 package org.openmrs.module;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.openmrs.util.OpenmrsUtil;
@@ -56,7 +57,7 @@ public class MandatoryModuleException extends ModuleMustStartException {
 	/**
 	 * @param moduleIds list of module ids that are mandatory and didn't start
 	 */
-	public MandatoryModuleException(List<String> moduleIds) {
+	public MandatoryModuleException(Collection<String> moduleIds) {
 		super("The following modules are marked as 'mandatory' but were unable to start: "
 		        + OpenmrsUtil.join(moduleIds, ","));
 		this.moduleId = OpenmrsUtil.join(moduleIds, ",");

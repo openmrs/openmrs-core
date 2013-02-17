@@ -39,16 +39,16 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class BooleanConceptChangeSet implements CustomTaskChange {
 	
-	private static Log log = LogFactory.getLog(BooleanConceptChangeSet.class);
+	private static final Log log = LogFactory.getLog(BooleanConceptChangeSet.class);
 	
 	private Integer trueConceptId;
 	
 	private Integer falseConceptId;
 	
 	//string values for boolean concepts
-	private static Map<String, String[]> trueNames = new HashMap<String, String[]>();
+	private static final Map<String, String[]> trueNames = new HashMap<String, String[]>();
 	
-	private static Map<String, String[]> falseNames = new HashMap<String, String[]>();
+	private static final Map<String, String[]> falseNames = new HashMap<String, String[]>();
 	
 	// how to say True and Yes in OpenMRS core languages
 	static {

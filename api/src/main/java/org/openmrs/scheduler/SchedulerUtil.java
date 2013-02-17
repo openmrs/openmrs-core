@@ -25,11 +25,14 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.PrivilegeConstants;
 
-public class SchedulerUtil {
+public final class SchedulerUtil {
 	
-	private static Log log = LogFactory.getLog(SchedulerUtil.class);
-	
-	/**
+	private static final Log log = LogFactory.getLog(SchedulerUtil.class);
+
+    private SchedulerUtil() {
+    }
+
+    /**
 	 * Start the scheduler given the following start up properties.
 	 * 
 	 * @param p properties used to start the service

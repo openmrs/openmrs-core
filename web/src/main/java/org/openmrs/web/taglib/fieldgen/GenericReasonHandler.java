@@ -24,11 +24,11 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.api.context.Context;
 
 public class GenericReasonHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "reason.field";
-	
-	public void run() {
-		setUrl(defaultUrl);
+
+    @Override
+    public void run() {
+        String defaultUrl = "reason.field";
+        setUrl(defaultUrl);
 		
 		if (fieldGenTag != null) {
 			String initialValue = "";

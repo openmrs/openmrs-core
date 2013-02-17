@@ -194,9 +194,9 @@ public class ShowGraphServlet extends HttpServlet {
 		boolean userSpecifiedMinRange = false;
 		
 		// Fetching obs
-		List<Obs> observations1 = new ArrayList<Obs>();
-		List<Obs> observations2 = new ArrayList<Obs>();
-		Concept concept1 = null, concept2 = null;
+		Iterable<Obs> observations1 = new ArrayList<Obs>();
+		Iterable<Obs> observations2 = new ArrayList<Obs>();
+		@org.jetbrains.annotations.Nullable Concept concept1 = null, concept2 = null;
 		if (conceptId1 != null)
 			concept1 = Context.getConceptService().getConcept(Integer.parseInt(conceptId1));
 		if (conceptId2 != null)

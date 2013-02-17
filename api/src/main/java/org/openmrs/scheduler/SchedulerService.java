@@ -38,13 +38,15 @@ public interface SchedulerService extends OpenmrsService {
 	/**
 	 * Start all tasks that are scheduled to run on startup.
 	 */
-	@Authorized( { "Manage Scheduler" })
+	@Override
+    @Authorized( { "Manage Scheduler" })
 	public void onStartup();
 	
 	/**
 	 * Stop all tasks and clean up the scheduler instance.
 	 */
-	@Authorized( { "Manage Scheduler" })
+	@Override
+    @Authorized( { "Manage Scheduler" })
 	public void onShutdown();
 	
 	/**

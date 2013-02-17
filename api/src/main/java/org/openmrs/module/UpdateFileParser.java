@@ -14,6 +14,7 @@
 package org.openmrs.module;
 
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -35,7 +36,7 @@ import org.xml.sax.InputSource;
  */
 public class UpdateFileParser {
 	
-	private static Log log = LogFactory.getLog(UpdateFileParser.class);
+	private static final Log log = LogFactory.getLog(UpdateFileParser.class);
 	
 	private String content;
 	
@@ -145,7 +146,7 @@ public class UpdateFileParser {
 	 * 
 	 * @return
 	 */
-	private static List<String> validConfigVersions() {
+	private static Collection<String> validConfigVersions() {
 		List<String> versions = new Vector<String>();
 		versions.add("1.0");
 		versions.add("1.1");

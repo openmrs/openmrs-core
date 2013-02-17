@@ -125,7 +125,7 @@ public class WebUtilTest {
 	 * @param id
 	 * @return true if list contains object with the id else false
 	 */
-	public static boolean containsId(Collection<? extends BaseOpenmrsObject> list, Integer id) {
+	public static boolean containsId(Iterable<? extends BaseOpenmrsObject> list, Integer id) {
 		for (BaseOpenmrsObject baseOpenmrsObject : list) {
 			if (baseOpenmrsObject.getId().equals(id)) {
 				return true;

@@ -33,10 +33,8 @@ public class VerhoeffIdentifierValidatorTest {
 	private char[] allowedIdentifiersCheckDigits = { 'G', 'E', 'B', 'A', 'B' };
 	
 	private int[] allowedIdentifiersCheckDigitsInt = { 6, 4, 1, 0, 2 };
-	
-	private char unusedCheckDigit = 'C';
-	
-	private String[] invalidIdentifiers = { "", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def ",
+
+    private String[] invalidIdentifiers = { "", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def ",
 	        "ab32kcdak3", "chaseisreallycoolyay", "1", "moose", "MOOSE", "MooSE", "adD3Eddf429daD999" };
 	
 	/**
@@ -111,7 +109,8 @@ public class VerhoeffIdentifierValidatorTest {
 		
 		//Now test allowed identifiers that just have the wrong check digit.
 		for (int i = 0; i < allowedIdentifiers.length; i++) {
-			assertFalse(validator.isValid(allowedIdentifiers[i] + "-" + unusedCheckDigit));
+            char unusedCheckDigit = 'C';
+            assertFalse(validator.isValid(allowedIdentifiers[i] + "-" + unusedCheckDigit));
 		}
 		
 		//Now test allowed identifiers that have the right check digit.  Test with both

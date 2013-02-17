@@ -208,7 +208,7 @@ public class ConceptListItem {
 		this.description = description;
 	}
 	
-	public String getName() {
+	public CharSequence getName() {
 		return name;
 	}
 	

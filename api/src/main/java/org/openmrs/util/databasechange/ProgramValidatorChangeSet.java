@@ -15,6 +15,7 @@ package org.openmrs.util.databasechange;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import liquibase.change.custom.CustomTaskChange;
@@ -83,7 +84,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		query.append(" group by 	w.concept_id, s.initial ");
 		
 		results = DatabaseUtil.executeSQL(conn, query.toString(), true);
-		List<Integer> missingInitial = new ArrayList<Integer>();
+		Collection<Integer> missingInitial = new ArrayList<Integer>();
 		for (List<Object> row : results) {
 			missingInitial.add(Integer.valueOf(row.get(0).toString()));
 		}

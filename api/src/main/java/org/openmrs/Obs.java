@@ -16,14 +16,7 @@ package org.openmrs;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -305,7 +298,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated The {@link #getObsGroup()} method should be used
 	 * @see #getObsGroup()
 	 */
-	public Integer getObsGroupId() {
+	@Deprecated
+    public Integer getObsGroupId() {
 		if (getObsGroup() == null)
 			return null;
 		
@@ -317,7 +311,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated This method should not be used. The #setObsGroup() method should be used instead
 	 * @see #setObsGroup(Obs)
 	 */
-	public void setObsGroupId(Integer obsGroupId) {
+	@Deprecated
+    public void setObsGroupId(Integer obsGroupId) {
 		throw new APIException("I don't know what to do here because I don't" + "know what the parent is of the group I'm "
 		        + "being put into. This method is deprecated " + "and should not be used.");
 	}
@@ -401,7 +396,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see #addGroupMember(Obs)
 	 * @see #hasGroupMembers()
 	 */
-	public Set<Obs> getGroupMembers() {
+	public Collection<Obs> getGroupMembers() {
 		return getGroupMembers(false); //same as just returning groupMembers
 	}
 	
@@ -548,7 +543,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated use getPerson()
 	 * @return Returns the patient.
 	 */
-	public Patient getPatient() {
+	@Deprecated
+    public Patient getPatient() {
 		return (Patient) getPerson();
 	}
 	
@@ -558,7 +554,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated use setPerson(org.openmrs.Person)
 	 * @param patient
 	 */
-	public void setPatient(Patient patient) {
+	@Deprecated
+    public void setPatient(Patient patient) {
 		setPerson(patient);
 	}
 	
@@ -1021,11 +1018,11 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		return "";
 	}
 	
-	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
-	private static DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+	private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
 	
-	private static DateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private static final DateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	/**
 	 * Sets the value for the obs from a string depending on the datatype of the question concept
@@ -1073,7 +1070,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @deprecated
 	 */
-	public Map<Locale, String> getValueAsString() {
+	@Deprecated
+    public Map<Locale, String> getValueAsString() {
 		Map<Locale, String> localeMap = new HashMap<Locale, String>();
 		Locale[] locales = Locale.getAvailableLocales(); // ABKTODO: get actual available locales
 		for (int i = 0; i < locales.length; i++) {
@@ -1096,7 +1094,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getObsId();
 		
 	}
@@ -1105,7 +1104,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setObsId(id);
 		
 	}

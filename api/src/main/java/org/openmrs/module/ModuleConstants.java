@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Constants used by the module system in openmrs
  */
-public class ModuleConstants {
+public final class ModuleConstants {
 	
 	/**
 	 * A map from "moduleid" to "required version" for all core modules that are required by
@@ -89,5 +89,7 @@ public class ModuleConstants {
 	 * @since 1.9.3
 	 */
 	public static final String MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE = "openmrs.property.MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE";
-	
+
+    private ModuleConstants() {
+    }
 }

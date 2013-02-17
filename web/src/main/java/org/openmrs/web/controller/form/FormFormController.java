@@ -110,7 +110,7 @@ public class FormFormController extends SimpleFormController {
 					
 					FormService fs = Context.getFormService();
 					
-					TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
+					Map<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
 					for (Integer parentFormFieldId : treeMap.keySet()) {
 						float sortWeight = 0;
 						for (FormField formField : treeMap.get(parentFormFieldId)) {

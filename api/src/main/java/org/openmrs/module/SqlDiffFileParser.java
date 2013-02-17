@@ -16,10 +16,7 @@ package org.openmrs.module;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.Vector;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -40,11 +37,14 @@ import org.xml.sax.SAXException;
  * 
  * @version 1.0
  */
-public class SqlDiffFileParser {
+public final class SqlDiffFileParser {
 	
 	private static Log log = LogFactory.getLog(SqlDiffFileParser.class);
-	
-	/**
+
+    private SqlDiffFileParser() {
+    }
+
+    /**
 	 * Get the diff map. Return a sorted map<version, sql statements>
 	 * 
 	 * @return SortedMap<String, String>
@@ -91,7 +91,8 @@ public class SqlDiffFileParser {
 					DocumentBuilder db = dbf.newDocumentBuilder();
 					db.setEntityResolver(new EntityResolver() {
 						
-						public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+						@Override
+                        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 							// When asked to resolve external entities (such as a DTD) we return an InputSource
 							// with no data at the end, causing the parser to ignore the DTD.
 							return new InputSource(new StringReader(""));
@@ -115,8 +116,9 @@ public class SqlDiffFileParser {
 				if (diffNodes != null && diffNodes.getLength() > 0) {
 					int i = 0;
 					while (i < diffNodes.getLength()) {
-						Element el = (Element) diffNodes.item(i++);
-						String version = getElement(el, diffVersion, "version");
+						Element el = (Element) diffNodes.item(i);
+                        i++;
+                        String version = getElement(el, diffVersion, "version");
 						String sql = getElement(el, diffVersion, "sql");
 						map.put(version, sql);
 					}
@@ -168,7 +170,7 @@ public class SqlDiffFileParser {
 	 * 
 	 * @return
 	 */
-	private static List<String> validConfigVersions() {
+	private static Collection<String> validConfigVersions() {
 		List<String> versions = new Vector<String>();
 		versions.add("1.0");
 		return versions;

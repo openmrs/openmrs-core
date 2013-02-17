@@ -38,7 +38,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { PatientIdentifier.class }, order = 50)
 public class PatientIdentifierValidator implements Validator {
 	
-	private static Log log = LogFactory.getLog(PatientIdentifierValidator.class);
+	private static final Log log = LogFactory.getLog(PatientIdentifierValidator.class);
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)

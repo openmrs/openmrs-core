@@ -31,7 +31,7 @@ public class TimerSchedulerTask extends TimerTask {
 	private Task task;
 	
 	/** Logger */
-	private static Log log = LogFactory.getLog(TimerSchedulerTask.class);
+	private static final Log log = LogFactory.getLog(TimerSchedulerTask.class);
 	
 	/** * Public constructor */
 	public TimerSchedulerTask(Task task) {

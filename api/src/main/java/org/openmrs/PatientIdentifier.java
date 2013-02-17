@@ -199,7 +199,8 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(PatientIdentifier other) {
+	@Override
+    public int compareTo(PatientIdentifier other) {
 		int retValue = 0;
 		if (other != null) {
 			retValue = isVoided().compareTo(other.isVoided());
@@ -227,7 +228,8 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getPatientIdentifierId();
 	}
 	
@@ -235,7 +237,8 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setPatientIdentifierId(id);
 	}
 	

@@ -97,10 +97,11 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
 	private int[] getBase(int num, int length) {
 		int[] a = new int[length + 1];
 		int x = 1;
-		for (int i = length; i-- > 0;) {
-			int y = num / x;
+		for (int i = length; i > 0;) {
+            i--;
+            int y = num / x;
 			a[i + 1] = y % 10;
-			x = x * 10;
+            x *= 10;
 		}
 		return a;
 	}

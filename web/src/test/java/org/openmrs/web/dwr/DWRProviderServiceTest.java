@@ -13,10 +13,7 @@
  */
 package org.openmrs.web.dwr;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
@@ -49,7 +46,7 @@ public class DWRProviderServiceTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void findProvider_shouldReturnAMessageWithNoMatchesFoundWhenNoProvidersAreFound() throws Exception {
-		Vector<Object> providers = service.findProvider("noProvider", false, 0, 1);
+		List<Object> providers = service.findProvider("noProvider", false, 0, 1);
 		
 		Assert.assertEquals("Provider.noMatchesFound", ((String) providers.get(0)));
 	}
@@ -85,7 +82,7 @@ public class DWRProviderServiceTest extends BaseWebContextSensitiveTest {
 		Vector<Object> providers = service.findProvider("provider", false, 0, 10);
 		Assert.assertEquals(2, providers.size());
 		
-		final ArrayList<String> providerNames = new ArrayList<String>();
+		final Collection<String> providerNames = new ArrayList<String>();
 		
 		CollectionUtils.forAllDo(providers, new Closure() {
 			

@@ -15,15 +15,7 @@ package org.openmrs.api.db.hibernate;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,14 +33,14 @@ import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBea
 
 public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 	
-	private static Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
+	private static final Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
 	
 	protected Set<String> tmpMappingResources = new HashSet<String>();
 	
 	/**
 	 * @since 1.9.2, 1.10
 	 */
-	protected Set<String> packagesToScan = new HashSet<String>();
+	protected Collection<String> packagesToScan = new HashSet<String>();
 	
 	// @since 1.6.3, 1.7.2, 1.8.0, 1.9
 	protected ChainingInterceptor chainingInterceptor = new ChainingInterceptor();
@@ -146,7 +138,7 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 		super.setPackagesToScan(this.packagesToScan.toArray(new String[0]));
 	}
 	
-	public Set<String> getModuleMappingResources() {
+	public Collection<String> getModuleMappingResources() {
 		for (Module mod : ModuleFactory.getStartedModules()) {
 			for (String s : mod.getMappingFiles()) {
 				tmpMappingResources.add(s);
@@ -161,7 +153,7 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 	 * @return the set of packages with mapped classes
 	 * @since 1.9.2, 1.10
 	 */
-	public Set<String> getModulePackagesWithMappedClasses() {
+	public Collection<String> getModulePackagesWithMappedClasses() {
 		Set<String> packages = new HashSet<String>();
 		for (Module module : ModuleFactory.getStartedModules()) {
 			for (String pack : module.getPackagesWithMappedClasses()) {

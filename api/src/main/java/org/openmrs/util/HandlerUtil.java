@@ -30,11 +30,14 @@ import org.openmrs.api.context.Context;
  * 
  * @since 1.5
  */
-public class HandlerUtil {
+public final class HandlerUtil {
 	
-	private static Log log = LogFactory.getLog(HandlerUtil.class);
-	
-	/**
+	private static final Log log = LogFactory.getLog(HandlerUtil.class);
+
+    private HandlerUtil() {
+    }
+
+    /**
 	 * Retrieves a List of all registered components from the Context that are of the passed
 	 * handlerType and one or more of the following is true:
 	 * <ul>
@@ -82,7 +85,8 @@ public class HandlerUtil {
 		// Return the list of handlers based on the order specified in the Handler annotation
 		Collections.sort(handlers, new Comparator<H>() {
 			
-			public int compare(H o1, H o2) {
+			@Override
+            public int compare(H o1, H o2) {
 				return getOrderOfHandler(o1.getClass()).compareTo(getOrderOfHandler(o2.getClass()));
 			}
 		});

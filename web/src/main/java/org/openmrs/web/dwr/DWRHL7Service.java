@@ -28,7 +28,8 @@ import org.openmrs.hl7.Hl7InArchivesMigrateThread.Status;
  */
 public class DWRHL7Service {
 	
-	private static Hl7InArchivesMigrateThread hl7MigrationThread = null;
+	@org.jetbrains.annotations.Nullable
+    private static Hl7InArchivesMigrateThread hl7MigrationThread = null;
 	
 	/**
 	 * Handles the ajax call for starting the migration of hl7 in archives to the file system

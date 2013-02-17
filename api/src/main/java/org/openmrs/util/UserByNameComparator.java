@@ -29,7 +29,8 @@ public class UserByNameComparator implements Comparator<User> {
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 * @should sort users by personNames
 	 */
-	public int compare(User user1, User user2) {
+	@Override
+    public int compare(User user1, User user2) {
 		
 		// test for null cases (sorting them to be last in a list)
 		if (user1 == null)

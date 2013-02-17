@@ -70,7 +70,8 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	 * @param note to be created
 	 * @throws APIException
 	 */
-	public void createNote(Note note) throws Exception {
+	@Override
+    public void createNote(Note note) throws Exception {
 		log.info("Create a note " + note);
 		getNoteDAO().createNote(note);
 	}
@@ -82,7 +83,8 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	 * @return note with given internal identifier
 	 * @throws APIException
 	 */
-	public Note getNote(Integer noteId) throws Exception {
+	@Override
+    public Note getNote(Integer noteId) throws Exception {
 		log.info("Get note " + noteId);
 		return getNoteDAO().getNote(noteId);
 	}
@@ -93,7 +95,8 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	 * @param note to be updated
 	 * @throws APIException
 	 */
-	public void updateNote(Note note) throws Exception {
+	@Override
+    public void updateNote(Note note) throws Exception {
 		log.info("Update note " + note);
 		getNoteDAO().updateNote(note);
 	}
@@ -104,7 +107,8 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	 * @param user
 	 * @throws APIException
 	 */
-	public List<Note> getNotes(User user) throws Exception {
+	@Override
+    public List<Note> getNotes(User user) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}

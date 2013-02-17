@@ -46,7 +46,8 @@ public class ForEachVisitTag extends BodyTagSupport {
 	
 	private Integer type;
 	
-	private Integer num = null;
+	@org.jetbrains.annotations.Nullable
+    private Integer num = null;
 	
 	private String sortBy;
 	
@@ -83,8 +84,9 @@ public class ForEachVisitTag extends BodyTagSupport {
 		if (matchingVisits.isEmpty()) {
 			return SKIP_BODY;
 		} else {
-			pageContext.setAttribute(var, matchingVisits.get(count++));
-			return EVAL_BODY_BUFFERED;
+			pageContext.setAttribute(var, matchingVisits.get(count));
+            count++;
+            return EVAL_BODY_BUFFERED;
 		}
 	}
 	
@@ -95,8 +97,9 @@ public class ForEachVisitTag extends BodyTagSupport {
 	public int doAfterBody() throws JspException {
 		if (matchingVisits.size() > count && (num == null || count < num.intValue())) {
 			pageContext.setAttribute("count", count);
-			pageContext.setAttribute(var, matchingVisits.get(count++));
-			return EVAL_BODY_BUFFERED;
+			pageContext.setAttribute(var, matchingVisits.get(count));
+            count++;
+            return EVAL_BODY_BUFFERED;
 		} else {
 			return SKIP_BODY;
 		}
@@ -158,7 +161,7 @@ public class ForEachVisitTag extends BodyTagSupport {
 	/**
 	 * @param num the num to set
 	 */
-	public void setNum(Integer num) {
+	public void setNum(@org.jetbrains.annotations.Nullable Integer num) {
 		if (num != 0)
 			this.num = num;
 		else

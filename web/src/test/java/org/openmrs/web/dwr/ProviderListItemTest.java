@@ -31,16 +31,16 @@ public class ProviderListItemTest {
 	public void setup() {
 		provider = new Provider() {
 			
-			{
+			static {
 				setPerson(new Person() {
 					
-					{
+					static {
 						setNames(new HashSet<PersonName>() {
 							
-							{
+							static {
 								add(new PersonName() {
 									
-									{
+									static {
 										setGivenName("givenName");
 										setFamilyName("familyName");
 										setMiddleName("middleName");

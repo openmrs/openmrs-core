@@ -42,7 +42,8 @@ public class ForEachDisplayAttributeTag extends LoopTagSupport {
 	
 	private String displayType = "listing";
 	
-	private Iterator<PersonAttributeType> attrTypes;
+	@org.jetbrains.annotations.Nullable
+    private Iterator<PersonAttributeType> attrTypes;
 	
 	public void prepare() throws JspTagException {
 		

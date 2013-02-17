@@ -13,11 +13,7 @@
  */
 package org.openmrs.web.controller.patient;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -42,7 +38,7 @@ import org.springframework.validation.Validator;
  */
 public class ShortPatientFormValidator implements Validator {
 	
-	private static Log log = LogFactory.getLog(PersonNameValidator.class);
+	private static final Log log = LogFactory.getLog(PersonNameValidator.class);
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
@@ -106,7 +102,7 @@ public class ShortPatientFormValidator implements Validator {
 		if (nameErrors.hasErrors()) {
 			// pick all the personName errors and bind them to the formObject
 			Iterator<ObjectError> it = nameErrors.getAllErrors().iterator();
-			Set<String> errorCodesWithNoArguments = new HashSet<String>();
+			@org.jetbrains.annotations.Nullable Collection<String> errorCodesWithNoArguments = new HashSet<String>();
 			while (it.hasNext()) {
 				ObjectError error = it.next();
 				// don't show similar error message multiple times in the view

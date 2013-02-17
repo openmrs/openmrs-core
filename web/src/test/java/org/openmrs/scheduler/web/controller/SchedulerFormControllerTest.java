@@ -54,16 +54,12 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	@Autowired
 	private SchedulerFormController controller;
-	
-	// should be @Autowired as well but the respective bean is commented out
-	// in applicationContext-service.xml at the time of coding (Jan 2013)
-	private SchedulerService service;
-	
-	@Before
+
+    @Before
 	public void setUpSchedulerService() throws Exception {
 		executeDataSet(INITIAL_SCHEDULER_TASK_CONFIG_XML);
-		
-		service = Context.getSchedulerService();
+
+        SchedulerService service = Context.getSchedulerService();
 		taskHelper = new TaskHelper(service);
 		
 		mockRequest = new MockHttpServletRequest();

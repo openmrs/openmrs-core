@@ -31,7 +31,7 @@ import java.util.Comparator;
  * 
  * @since 1.5
  */
-public final class NaturalStrings {
+public class NaturalStrings {
 	
 	/**
 	 * <p>
@@ -45,7 +45,8 @@ public final class NaturalStrings {
 	 */
 	private static final Comparator<String> NATURAL_COMPARATOR_ASCII = new Comparator<String>() {
 		
-		public int compare(String o1, String o2) {
+		@Override
+        public int compare(String o1, String o2) {
 			return compareNaturalAscii(o1, o2);
 		}
 	};
@@ -62,7 +63,8 @@ public final class NaturalStrings {
 	 */
 	private static final Comparator<String> IGNORE_CASE_NATURAL_COMPARATOR_ASCII = new Comparator<String>() {
 		
-		public int compare(String o1, String o2) {
+		@Override
+        public int compare(String o1, String o2) {
 			return compareNaturalIgnoreCaseAscii(o1, o2);
 		}
 	};
@@ -112,7 +114,8 @@ public final class NaturalStrings {
 		}
 		return new Comparator<String>() {
 			
-			public int compare(String o1, String o2) {
+			@Override
+            public int compare(String o1, String o2) {
 				return compareNatural(collator, o1, o2);
 			}
 		};

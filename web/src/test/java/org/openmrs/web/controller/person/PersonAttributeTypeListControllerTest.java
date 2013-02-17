@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller.person;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -51,7 +52,7 @@ public class PersonAttributeTypeListControllerTest extends BaseWebContextSensiti
 	public void displayPage_shouldPutAllAttributeTypesIntoMap() throws Exception {
 		ModelMap map = new ModelMap();
 		new PersonAttributeTypeListController().displayPage(map);
-		List<PersonAttributeType> alltypes = (List<PersonAttributeType>) map.get("personAttributeTypeList");
+		Collection<PersonAttributeType> alltypes = (List<PersonAttributeType>) map.get("personAttributeTypeList");
 		Assert.assertEquals(3, alltypes.size());
 	}
 	

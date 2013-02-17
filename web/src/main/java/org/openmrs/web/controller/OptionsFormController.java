@@ -13,11 +13,7 @@
  */
 package org.openmrs.web.controller;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -384,7 +380,7 @@ public class OptionsFormController extends SimpleFormController {
 	 * @param gpValue the value of the global property
 	 * @param message the localized message to add
 	 */
-	private void addHint(ArrayList<String> hints, String gpValue, String message) {
+	private void addHint(Collection<String> hints, String gpValue, String message) {
 		if (Boolean.valueOf(gpValue)) {
 			if (!StringUtils.isBlank(message))
 				hints.add(message);

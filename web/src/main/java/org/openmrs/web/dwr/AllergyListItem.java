@@ -32,9 +32,11 @@ public class AllergyListItem {
 	
 	private Date end;
 	
-	private String type;
+	@org.jetbrains.annotations.Nullable
+    private String type;
 	
-	private String severity;
+	@org.jetbrains.annotations.Nullable
+    private String severity;
 	
 	private Integer reactionConceptId;
 	

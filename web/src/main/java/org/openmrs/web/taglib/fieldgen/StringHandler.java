@@ -16,15 +16,15 @@ package org.openmrs.web.taglib.fieldgen;
 import org.openmrs.web.taglib.FieldGenTag;
 
 public class StringHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "string.field";
-	
-	public static final String DEFAULT_TEXTAREA_ROWS = "1";
+
+    public static final String DEFAULT_TEXTAREA_ROWS = "1";
 	
 	public static final String DEFAULT_TEXTAREA_COLS = "40";
 	
-	public void run() {
-		setUrl(defaultUrl);
+	@Override
+    public void run() {
+        String defaultUrl = "string.field";
+        setUrl(defaultUrl);
 		checkEmptyVal((String) null);
 		if (fieldGenTag != null) {
 			Object initialValue = this.fieldGenTag.getVal();

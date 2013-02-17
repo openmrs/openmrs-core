@@ -72,67 +72,95 @@ public class FormatTag extends TagSupport {
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
-	private String var;
+	@org.jetbrains.annotations.Nullable
+    private String var;
 	
-	private Object object;
+	@org.jetbrains.annotations.Nullable
+    private Object object;
 	
-	private Integer conceptId;
+	@org.jetbrains.annotations.Nullable
+    private Integer conceptId;
 	
-	private Concept concept;
+	@org.jetbrains.annotations.Nullable
+    private Concept concept;
 	
-	private String withConceptNameType;
+	@org.jetbrains.annotations.Nullable
+    private String withConceptNameType;
 	
-	private String withConceptNameTag;
+	@org.jetbrains.annotations.Nullable
+    private String withConceptNameTag;
 	
-	private Obs obsValue;
+	@org.jetbrains.annotations.Nullable
+    private Obs obsValue;
 	
-	private Integer userId;
+	@org.jetbrains.annotations.Nullable
+    private Integer userId;
 	
-	private User user;
+	@org.jetbrains.annotations.Nullable
+    private User user;
 	
-	private Integer personId;
+	@org.jetbrains.annotations.Nullable
+    private Integer personId;
 	
-	private Person person;
+	@org.jetbrains.annotations.Nullable
+    private Person person;
 	
-	private Integer encounterId;
+	@org.jetbrains.annotations.Nullable
+    private Integer encounterId;
 	
-	private Encounter encounter;
+	@org.jetbrains.annotations.Nullable
+    private Encounter encounter;
 	
-	private Integer encounterTypeId;
+	@org.jetbrains.annotations.Nullable
+    private Integer encounterTypeId;
 	
-	private EncounterType encounterType;
+	@org.jetbrains.annotations.Nullable
+    private EncounterType encounterType;
 	
-	private Integer locationId;
+	@org.jetbrains.annotations.Nullable
+    private Integer locationId;
 	
-	private Location location;
+	@org.jetbrains.annotations.Nullable
+    private Location location;
 	
-	private Integer locationTagId;
+	@org.jetbrains.annotations.Nullable
+    private Integer locationTagId;
 	
-	private LocationTag locationTag;
+	@org.jetbrains.annotations.Nullable
+    private LocationTag locationTag;
 	
 	private Integer programId;
 	
 	private Program program;
 	
-	private Integer visitTypeId;
+	@org.jetbrains.annotations.Nullable
+    private Integer visitTypeId;
 	
-	private VisitType visitType;
+	@org.jetbrains.annotations.Nullable
+    private VisitType visitType;
 	
-	private Integer visitId;
+	@org.jetbrains.annotations.Nullable
+    private Integer visitId;
 	
-	private Visit visit;
+	@org.jetbrains.annotations.Nullable
+    private Visit visit;
 	
 	private Boolean javaScriptEscape = Boolean.FALSE;
 	
-	private Integer providerId;
+	@org.jetbrains.annotations.Nullable
+    private Integer providerId;
 	
-	private Provider provider;
+	@org.jetbrains.annotations.Nullable
+    private Provider provider;
 	
-	private Map<EncounterRole, Set<Provider>> encounterProviders;
+	@org.jetbrains.annotations.Nullable
+    private Map<EncounterRole, Set<Provider>> encounterProviders;
 	
-	private Form form;
+	@org.jetbrains.annotations.Nullable
+    private Form form;
 	
-	private SingleCustomValue<?> singleCustomValue;
+	@org.jetbrains.annotations.Nullable
+    private SingleCustomValue<?> singleCustomValue;
 	
 	/**
 	 * Applies case conversion to metadata
@@ -252,7 +280,7 @@ public class FormatTag extends TagSupport {
 	 */
 	private void printObject(StringBuilder sb, Object o) {
 		if (o instanceof Collection<?>) {
-			for (Iterator<?> i = ((Collection<?>) o).iterator(); i.hasNext();) {
+			for (Iterator<?> i = ((Iterable<?>) o).iterator(); i.hasNext();) {
 				printObject(sb, i.next());
 				if (i.hasNext())
 					sb.append(", ");
@@ -519,7 +547,7 @@ public class FormatTag extends TagSupport {
 	private void printEncounterProviders(StringBuilder sb, Map<EncounterRole, Set<Provider>> eps) {
 		if (eps != null) {
 			
-			LinkedHashSet<Provider> providerList = getDisplayEncounterProviders(eps);
+			Iterable<Provider> providerList = getDisplayEncounterProviders(eps);
 			
 			String providers = null;
 			for (Provider provider : providerList) {
@@ -558,7 +586,7 @@ public class FormatTag extends TagSupport {
 	 * @param eps the encounter providers to filter.
 	 * @return the filtered encounter providers.
 	 */
-	private LinkedHashSet<Provider> getDisplayEncounterProviders(Map<EncounterRole, Set<Provider>> encounterProviders) {
+	private Iterable<Provider> getDisplayEncounterProviders(Map<EncounterRole, Set<Provider>> encounterProviders) {
 		String encounterRoles = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES, null);
 		

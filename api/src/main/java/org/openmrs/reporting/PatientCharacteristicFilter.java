@@ -27,7 +27,8 @@ import org.openmrs.report.EvaluationContext;
 @Deprecated
 public class PatientCharacteristicFilter extends CachingPatientFilter implements Comparable<PatientCharacteristicFilter> {
 	
-	private String gender;
+	@org.jetbrains.annotations.Nullable
+    private String gender;
 	
 	private Date minBirthdate;
 	
@@ -71,11 +72,13 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 		return sb.toString();
 	}
 	
-	public boolean isReadyToRun() {
+	@Override
+    public boolean isReadyToRun() {
 		return true;
 	}
 	
-	public int compareTo(PatientCharacteristicFilter o) {
+	@Override
+    public int compareTo(PatientCharacteristicFilter o) {
 		return -compareHelper().compareTo(o.compareHelper());
 	}
 	
@@ -94,7 +97,8 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 		return ret;
 	}
 	
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		if (gender == null && minBirthdate == null && maxBirthdate == null && minAge == null && maxAge == null
 		        && aliveOnly == null && deadOnly == null)
 			return "All Patients";

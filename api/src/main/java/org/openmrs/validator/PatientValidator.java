@@ -29,7 +29,7 @@ import org.springframework.validation.Errors;
 @Handler(supports = { Patient.class }, order = 50)
 public class PatientValidator extends PersonValidator {
 	
-	private static Log log = LogFactory.getLog(PersonNameValidator.class);
+	private static final Log log = LogFactory.getLog(PersonNameValidator.class);
 	
 	@Autowired
 	private PatientIdentifierValidator patientIdentifierValidator;
@@ -40,7 +40,8 @@ public class PatientValidator extends PersonValidator {
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("rawtypes")
+	@Override
+    @SuppressWarnings("rawtypes")
 	public boolean supports(Class c) {
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".supports: " + c.getName());
@@ -64,7 +65,8 @@ public class PatientValidator extends PersonValidator {
 	 * @should fail validation if a preferred patient identifier is not chosen for voided patients
 	 * @should not fail when patient has only one identifier and its not preferred
 	 */
-	public void validate(Object obj, Errors errors) {
+	@Override
+    public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");
 		

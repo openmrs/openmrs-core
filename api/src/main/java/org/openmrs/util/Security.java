@@ -15,10 +15,8 @@ package org.openmrs.util;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
+import java.security.spec.AlgorithmParameterSpec;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -37,7 +35,7 @@ import org.springframework.util.StringUtils;
 /**
  * OpenMRS's security class deals with the hashing of passwords.
  */
-public class Security {
+public final class Security {
 	
 	/**
 	 * Defined encoding to avoid using default platform charset 
@@ -48,8 +46,11 @@ public class Security {
 	 * encryption settings
 	 */
 	public static Log log = LogFactory.getLog(Security.class);
-	
-	/**
+
+    private Security() {
+    }
+
+    /**
 	 * Compare the given hash and the given string-to-hash to see if they are equal. The
 	 * string-to-hash is usually of the form password + salt. <br/>
 	 * <br/>
@@ -216,8 +217,8 @@ public class Security {
 	 * @since 1.9
 	 */
 	public static String encrypt(String text, byte[] initVector, byte[] secretKey) {
-		IvParameterSpec initVectorSpec = new IvParameterSpec(initVector);
-		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
+		AlgorithmParameterSpec initVectorSpec = new IvParameterSpec(initVector);
+		Key secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
 		byte[] encrypted;
 		
 		try {
@@ -260,8 +261,8 @@ public class Security {
 	 * @since 1.9
 	 */
 	public static String decrypt(String text, byte[] initVector, byte[] secretKey) {
-		IvParameterSpec initVectorSpec = new IvParameterSpec(initVector);
-		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
+		AlgorithmParameterSpec initVectorSpec = new IvParameterSpec(initVector);
+		Key secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
 		String decrypted = null;
 		
 		try {

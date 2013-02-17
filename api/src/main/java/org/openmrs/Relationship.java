@@ -179,7 +179,9 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 	 * @see #isVoided()
 	 * @return Returns the voided.
 	 */
-	public Boolean getVoided() {
+	@Override
+    @Deprecated
+    public Boolean getVoided() {
 		return isVoided();
 	}
 	
@@ -192,7 +194,8 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		
 		return getRelationshipId();
 	}
@@ -201,7 +204,8 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setRelationshipId(id);
 		
 	}

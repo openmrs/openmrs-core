@@ -29,7 +29,7 @@ import org.simpleframework.xml.stream.NodeMap;
 @Deprecated
 public class OpenmrsLabelLogic implements LabelLogic {
 	
-	private static Log log = LogFactory.getLog(OpenmrsLabelLogic.class);
+	private static final Log log = LogFactory.getLog(OpenmrsLabelLogic.class);
 	
 	/**
 	 * @see org.simpleframework.xml.graph.LabelLogic#getLabel(java.lang.Class, java.lang.Object,

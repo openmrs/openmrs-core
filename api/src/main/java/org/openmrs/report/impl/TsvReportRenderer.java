@@ -24,31 +24,38 @@ public class TsvReportRenderer extends DelimitedTextReportRenderer {
 	public TsvReportRenderer() {
 	}
 	
-	public String getLabel() {
+	@Override
+    public String getLabel() {
 		return "TSV";
 	}
 	
-	public String getFilenameExtension() {
+	@Override
+    public String getFilenameExtension() {
 		return "tsv";
 	}
 	
-	public String getBeforeColumnDelimiter() {
+	@Override
+    public String getBeforeColumnDelimiter() {
 		return "\"";
 	}
 	
-	public String getAfterColumnDelimiter() {
+	@Override
+    public String getAfterColumnDelimiter() {
 		return "\"\t";
 	}
 	
-	public String getBeforeRowDelimiter() {
+	@Override
+    public String getBeforeRowDelimiter() {
 		return "";
 	}
 	
-	public String getAfterRowDelimiter() {
+	@Override
+    public String getAfterRowDelimiter() {
 		return "\n";
 	}
 	
-	public String escape(String text) {
+	@Override
+    public String escape(String text) {
 		if (text == null)
 			return null;
 		else
@@ -65,7 +72,8 @@ public class TsvReportRenderer extends DelimitedTextReportRenderer {
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getRenderedContentType(ReportSchema, String)
 	 */
-	public String getRenderedContentType(ReportSchema model, String argument) {
+	@Override
+    public String getRenderedContentType(ReportSchema model, String argument) {
 		return "text/tsv";
 	}
 	

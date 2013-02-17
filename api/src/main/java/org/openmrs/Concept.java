@@ -185,7 +185,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Deprecated
 	public Collection<ConceptAnswer> getSortedAnswers(Locale locale) {
-		Vector<ConceptAnswer> sortedAnswers = new Vector<ConceptAnswer>(getAnswers(false));
+		List<ConceptAnswer> sortedAnswers = new Vector<ConceptAnswer>(getAnswers(false));
 		Collections.sort(sortedAnswers);
 		return sortedAnswers;
 	}
@@ -267,7 +267,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the changedBy.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -275,7 +276,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param changedBy The changedBy to set.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -351,7 +353,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the creator.
 	 */
-	@Element
+	@Override
+    @Element
 	public User getCreator() {
 		return creator;
 	}
@@ -359,7 +362,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param creator The creator to set.
 	 */
-	@Element
+	@Override
+    @Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -367,7 +371,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the dateChanged.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -375,7 +380,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param dateChanged The dateChanged to set.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -383,7 +389,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element
+	@Override
+    @Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -391,7 +398,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element
+	@Override
+    @Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -933,7 +941,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return a collection of all short names for this concept
 	 */
 	public Collection<ConceptName> getShortNames() {
-		Vector<ConceptName> shortNames = new Vector<ConceptName>();
+		Collection<ConceptName> shortNames = new Vector<ConceptName>();
 		if (getNames().size() == 0) {
 			if (log.isDebugEnabled())
 				log.debug("The Concept with id: " + conceptId + " has no names");
@@ -958,7 +966,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@Deprecated
 	public Collection<ConceptName> getShortNamesForLocale(Locale locale) {
 		//return a list with only the single short name for the locale if any
-		Vector<ConceptName> shortNamesForLocale = new Vector<ConceptName>();
+		Collection<ConceptName> shortNamesForLocale = new Vector<ConceptName>();
 		ConceptName shortNameInLocale = getShortNameInLocale(locale);
 		if (shortNameInLocale != null)
 			shortNamesForLocale.add(shortNameInLocale);
@@ -1048,9 +1056,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return a collection of concept names which are index terms in the given locale
 	 * @since 1.7
 	 */
-	public Collection<ConceptName> getIndexTermsForLocale(Locale locale) {
+	public Iterable<ConceptName> getIndexTermsForLocale(Locale locale) {
 		
-		Vector<ConceptName> indexTermsForLocale = new Vector<ConceptName>();
+		Collection<ConceptName> indexTermsForLocale = new Vector<ConceptName>();
 		if (getIndexTerms().size() > 0) {
 			for (ConceptName name : getIndexTerms()) {
 				if (name.getLocale().equals(locale))
@@ -1231,42 +1239,48 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return the retiredBy
 	 */
-	public User getRetiredBy() {
+	@Override
+    public User getRetiredBy() {
 		return retiredBy;
 	}
 	
 	/**
 	 * @param retiredBy the retiredBy to set
 	 */
-	public void setRetiredBy(User retiredBy) {
+	@Override
+    public void setRetiredBy(User retiredBy) {
 		this.retiredBy = retiredBy;
 	}
 	
 	/**
 	 * @return the dateRetired
 	 */
-	public Date getDateRetired() {
+	@Override
+    public Date getDateRetired() {
 		return dateRetired;
 	}
 	
 	/**
 	 * @param dateRetired the dateRetired to set
 	 */
-	public void setDateRetired(Date dateRetired) {
+	@Override
+    public void setDateRetired(Date dateRetired) {
 		this.dateRetired = dateRetired;
 	}
 	
 	/**
 	 * @return the retireReason
 	 */
-	public String getRetireReason() {
+	@Override
+    public String getRetireReason() {
 		return retireReason;
 	}
 	
 	/**
 	 * @param retireReason the retireReason to set
 	 */
-	public void setRetireReason(String retireReason) {
+	@Override
+    public void setRetireReason(String retireReason) {
 		this.retireReason = retireReason;
 	}
 	
@@ -1322,7 +1336,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the retired.
 	 */
-	public Boolean isRetired() {
+	@Override
+    public Boolean isRetired() {
 		return retired;
 	}
 	
@@ -1342,7 +1357,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param retired The retired to set.
 	 */
-	@Attribute
+	@Override
+    @Attribute
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
@@ -1510,7 +1526,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
-	public List<Concept> findPossibleValues(String searchText) {
+	@Override
+    public List<Concept> findPossibleValues(String searchText) {
 		List<Concept> concepts = new Vector<Concept>();
 		try {
 			
@@ -1528,7 +1545,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @see org.openmrs.Attributable#getPossibleValues()
 	 */
-	public List<Concept> getPossibleValues() {
+	@Override
+    public List<Concept> getPossibleValues() {
 		try {
 			return Context.getConceptService().getConceptsByName("");
 		}
@@ -1541,7 +1559,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
 	 */
-	public Concept hydrate(String s) {
+	@Override
+    public Concept hydrate(String s) {
 		try {
 			return Context.getConceptService().getConcept(Integer.valueOf(s));
 		}
@@ -1556,7 +1575,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * 
 	 * @see org.openmrs.Attributable#serialize()
 	 */
-	public String serialize() {
+	@Override
+    public String serialize() {
 		if (this.getConceptId() == null)
 			return "";
 		
@@ -1566,7 +1586,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @see org.openmrs.Attributable#getDisplayString()
 	 */
-	public String getDisplayString() {
+	@Override
+    public String getDisplayString() {
 		if (getName() == null)
 			return toString();
 		else
@@ -1581,7 +1602,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @since 1.7
 	 * @should return all locales for conceptNames for this concept without duplicates
 	 */
-	public Set<Locale> getAllConceptNameLocales() {
+	public Iterable<Locale> getAllConceptNameLocales() {
 		if (getNames().size() == 0) {
 			if (log.isDebugEnabled())
 				log.debug("The Concept with id: " + conceptId + " has no names");
@@ -1601,7 +1622,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getConceptId();
 	}
 	
@@ -1609,7 +1631,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setConceptId(id);
 	}
 	

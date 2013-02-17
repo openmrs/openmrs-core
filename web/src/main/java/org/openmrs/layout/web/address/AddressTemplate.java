@@ -26,11 +26,13 @@ public class AddressTemplate extends LayoutTemplate implements Serializable {
 		super(string);
 	}
 	
-	public String getLayoutToken() {
+	@Override
+    public String getLayoutToken() {
 		return "IS_ADDR_TOKEN";
 	}
 	
-	public String getNonLayoutToken() {
+	@Override
+    public String getNonLayoutToken() {
 		return "IS_NOT_ADDR_TOKEN";
 	}
 	
@@ -39,7 +41,8 @@ public class AddressTemplate extends LayoutTemplate implements Serializable {
 		return AddressSupport.getInstance();
 	}
 	
-	public String getCodeName() {
+	@Override
+    public String getCodeName() {
 		if (this.codeName == null) {
 			this.codeName = "default";
 			return this.codeName;

@@ -87,14 +87,16 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getColumnKeys()
 	 */
-	public List<String> getColumnKeys() {
+	@Override
+    public List<String> getColumnKeys() {
 		return new Vector<String>(strategies.keySet());
 	}
 	
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getColumnDatatypes()
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public List<Class> getColumnDatatypes() {
 		//return (List<Class>) Collections.nCopies(strategies.size(), Cohort.class);
 		List<Class> ret = new ArrayList<Class>();
@@ -106,21 +108,24 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getName()
 	 */
-	public String getName() {
+	@Override
+    public String getName() {
 		return name;
 	}
 	
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#setName(java.lang.String)
 	 */
-	public void setName(String name) {
+	@Override
+    public void setName(String name) {
 		this.name = name;
 	}
 	
 	/**
 	 * @see org.openmrs.report.Parameterizable#getParameters()
 	 */
-	public List<Parameter> getParameters() {
+	@Override
+    public List<Parameter> getParameters() {
 		List<Parameter> ret = new Vector<Parameter>();
 		if (strategies != null)
 			for (CohortDefinition c : strategies.values())

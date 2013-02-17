@@ -121,7 +121,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#setHL7DAO(org.openmrs.hl7.db.HL7DAO)
 	 */
-	public void setHL7DAO(HL7DAO dao) {
+	@Override
+    public void setHL7DAO(HL7DAO dao) {
 		this.dao = dao;
 	}
 	
@@ -146,7 +147,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#saveHL7Source(org.openmrs.hl7.HL7Source)
 	 */
-	public HL7Source saveHL7Source(HL7Source hl7Source) throws APIException {
+	@Override
+    public HL7Source saveHL7Source(HL7Source hl7Source) throws APIException {
 		if (hl7Source.getCreator() == null)
 			hl7Source.setCreator(Context.getAuthenticatedUser());
 		if (hl7Source.getDateCreated() == null)
@@ -158,14 +160,16 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#purgeHL7Source(org.openmrs.hl7.HL7Source)
 	 */
-	public void purgeHL7Source(HL7Source hl7Source) throws APIException {
+	@Override
+    public void purgeHL7Source(HL7Source hl7Source) throws APIException {
 		dao.deleteHL7Source(hl7Source);
 	}
 	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#retireHL7Source(org.openmrs.hl7.HL7Source)
 	 */
-	public HL7Source retireHL7Source(HL7Source hl7Source) throws APIException {
+	@Override
+    public HL7Source retireHL7Source(HL7Source hl7Source) throws APIException {
 		throw new APIException("Not implemented yet");
 	}
 	
@@ -173,7 +177,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#createHL7Source(org.openmrs.hl7.HL7Source)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void createHL7Source(HL7Source hl7Source) {
 		Context.getHL7Service().saveHL7Source(hl7Source);
 	}
@@ -181,7 +186,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7Source(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public HL7Source getHL7Source(Integer hl7SourceId) {
 		return dao.getHL7Source(hl7SourceId);
 	}
@@ -189,7 +195,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getAllHL7Sources()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<HL7Source> getAllHL7Sources() throws APIException {
 		return dao.getAllHL7Sources();
 	}
@@ -197,7 +204,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7SourceByName(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public HL7Source getHL7SourceByName(String name) throws APIException {
 		return dao.getHL7SourceByName(name);
 	}
@@ -206,7 +214,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#getHL7Source(java.lang.String)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Transactional(readOnly = true)
 	public HL7Source getHL7Source(String name) {
 		return Context.getHL7Service().getHL7SourceByName(name);
@@ -216,7 +225,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#getHL7Sources()
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Transactional(readOnly = true)
 	public Collection<HL7Source> getHL7Sources() {
 		return Context.getHL7Service().getAllHL7Sources();
@@ -226,7 +236,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#updateHL7Source(org.openmrs.hl7.HL7Source)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void updateHL7Source(HL7Source hl7Source) {
 		Context.getHL7Service().saveHL7Source(hl7Source);
 	}
@@ -235,7 +246,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#deleteHL7Source(org.openmrs.hl7.HL7Source)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void deleteHL7Source(HL7Source hl7Source) {
 		Context.getHL7Service().purgeHL7Source(hl7Source);
 	}
@@ -243,7 +255,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getAllHL7InQueues()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<HL7InQueue> getAllHL7InQueues() throws APIException {
 		return dao.getAllHL7InQueues();
 	}
@@ -306,14 +319,16 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#purgeHL7InQueue(org.openmrs.hl7.HL7InQueue)
 	 */
-	public void purgeHL7InQueue(HL7InQueue hl7InQueue) {
+	@Override
+    public void purgeHL7InQueue(HL7InQueue hl7InQueue) {
 		dao.deleteHL7InQueue(hl7InQueue);
 	}
 	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#saveHL7InQueue(org.openmrs.hl7.HL7InQueue)
 	 */
-	public HL7InQueue saveHL7InQueue(HL7InQueue hl7InQueue) throws APIException {
+	@Override
+    public HL7InQueue saveHL7InQueue(HL7InQueue hl7InQueue) throws APIException {
 		if (hl7InQueue.getDateCreated() == null)
 			hl7InQueue.setDateCreated(new Date());
 		
@@ -327,7 +342,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#createHL7InQueue(org.openmrs.hl7.HL7InQueue)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void createHL7InQueue(HL7InQueue hl7InQueue) {
 		Context.getHL7Service().saveHL7InQueue(hl7InQueue);
 	}
@@ -335,7 +351,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InQueue(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public HL7InQueue getHL7InQueue(Integer hl7InQueueId) {
 		return dao.getHL7InQueue(hl7InQueueId);
 	}
@@ -350,7 +367,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#getHL7InQueues()
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Transactional(readOnly = true)
 	public Collection<HL7InQueue> getHL7InQueues() {
 		return Context.getHL7Service().getAllHL7InQueues();
@@ -359,7 +377,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getNextHL7InQueue()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public HL7InQueue getNextHL7InQueue() {
 		return dao.getNextHL7InQueue();
 	}
@@ -368,7 +387,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#deleteHL7InQueue(org.openmrs.hl7.HL7InQueue)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void deleteHL7InQueue(HL7InQueue hl7InQueue) {
 		Context.getHL7Service().purgeHL7InQueue(hl7InQueue);
 	}
@@ -376,7 +396,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveByState(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<HL7InArchive> getHL7InArchiveByState(Integer state) throws APIException {
 		return dao.getHL7InArchiveByState(state);
 	}
@@ -384,7 +405,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InQueueByState(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<HL7InQueue> getHL7InQueueByState(Integer state) throws APIException {
 		return dao.getHL7InQueueByState(state);
 	}
@@ -392,7 +414,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getAllHL7InArchives()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<HL7InArchive> getAllHL7InArchives() throws APIException {
 		return dao.getAllHL7InArchives();
 	}
@@ -400,7 +423,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#purgeHL7InArchive(org.openmrs.hl7.HL7InArchive)
 	 */
-	public void purgeHL7InArchive(HL7InArchive hl7InArchive) throws APIException {
+	@Override
+    public void purgeHL7InArchive(HL7InArchive hl7InArchive) throws APIException {
 		if (hl7InArchive != null)
 			dao.deleteHL7InArchive(hl7InArchive);
 	}
@@ -408,7 +432,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#saveHL7InArchive(org.openmrs.hl7.HL7InArchive)
 	 */
-	public HL7InArchive saveHL7InArchive(HL7InArchive hl7InArchive) throws APIException {
+	@Override
+    public HL7InArchive saveHL7InArchive(HL7InArchive hl7InArchive) throws APIException {
 		if (hl7InArchive.getDateCreated() == null)
 			hl7InArchive.setDateCreated(new Date());
 		return dao.saveHL7InArchive(hl7InArchive);
@@ -418,7 +443,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#createHL7InArchive(org.openmrs.hl7.HL7InArchive)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void createHL7InArchive(HL7InArchive hl7InArchive) {
 		Context.getHL7Service().saveHL7InArchive(hl7InArchive);
 	}
@@ -426,7 +452,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InArchive(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId) {
 		return dao.getHL7InArchive(hl7InArchiveId);
 	}
@@ -435,7 +462,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#getHL7InArchives()
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Transactional(readOnly = true)
 	public Collection<HL7InArchive> getHL7InArchives() {
 		return Context.getHL7Service().getAllHL7InArchives();
@@ -445,7 +473,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#updateHL7InArchive(org.openmrs.hl7.HL7InArchive)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void updateHL7InArchive(HL7InArchive hl7InArchive) {
 		Context.getHL7Service().saveHL7InArchive(hl7InArchive);
 	}
@@ -454,7 +483,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#deleteHL7InArchive(org.openmrs.hl7.HL7InArchive)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void deleteHL7InArchive(HL7InArchive hl7InArchive) {
 		Context.getHL7Service().purgeHL7InArchive(hl7InArchive);
 	}
@@ -469,7 +499,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getAllHL7InErrors()
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public List<HL7InError> getAllHL7InErrors() throws APIException {
 		return dao.getAllHL7InErrors();
 	}
@@ -477,14 +508,16 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#purgeHL7InError(org.openmrs.hl7.HL7InError)
 	 */
-	public void purgeHL7InError(HL7InError hl7InError) throws APIException {
+	@Override
+    public void purgeHL7InError(HL7InError hl7InError) throws APIException {
 		dao.deleteHL7InError(hl7InError);
 	}
 	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#saveHL7InError(org.openmrs.hl7.HL7InError)
 	 */
-	public HL7InError saveHL7InError(HL7InError hl7InError) throws APIException {
+	@Override
+    public HL7InError saveHL7InError(HL7InError hl7InError) throws APIException {
 		if (hl7InError.getDateCreated() == null)
 			hl7InError.setDateCreated(new Date());
 		return dao.saveHL7InError(hl7InError);
@@ -494,7 +527,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#createHL7InError(org.openmrs.hl7.HL7InError)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void createHL7InError(HL7InError hl7InError) {
 		Context.getHL7Service().saveHL7InError(hl7InError);
 	}
@@ -502,7 +536,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InError(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public HL7InError getHL7InError(Integer hl7InErrorId) {
 		return dao.getHL7InError(hl7InErrorId);
 	}
@@ -517,7 +552,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#getHL7InErrors()
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	@Transactional(readOnly = true)
 	public Collection<HL7InError> getHL7InErrors() {
 		return dao.getAllHL7InErrors();
@@ -527,7 +563,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 * @see org.openmrs.hl7.HL7Service#updateHL7InError(org.openmrs.hl7.HL7InError)
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void updateHL7InError(HL7InError hl7InError) {
 		Context.getHL7Service().saveHL7InError(hl7InError);
 	}
@@ -536,7 +573,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#deleteHL7InError(org.openmrs.hl7.HL7InError)
 	 * @deprecated
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void deleteHL7InError(HL7InError hl7InError) {
 		Context.getHL7Service().purgeHL7InError(hl7InError);
 	}
@@ -547,7 +585,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @return Internal ID # of the specified user, or null if that user can't be found or is
 	 *         ambiguous
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Integer resolveUserId(XCN xcn) throws HL7Exception {
 		// TODO: properly handle family and given names. For now I'm treating
 		// givenName+familyName as a username.
@@ -602,7 +641,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#resolvePersonId(ca.uhn.hl7v2.model.v25.datatype.XCN)
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Integer resolvePersonId(XCN xcn) throws HL7Exception {
 		String idNumber = xcn.getIDNumber().getValue();
 		String familyName = xcn.getFamilyName().getSurname().getValue();
@@ -636,7 +676,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @return internal identifier of the specified location, or null if it is not found or
 	 *         ambiguous
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Integer resolveLocationId(PL pl) throws HL7Exception {
 		// TODO: Get rid of hack that allows first component to be an integer
 		// location.location_id
@@ -678,7 +719,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 *         patient is not found, or if the PID segment is ambiguous
 	 * @throws HL7Exception
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Integer resolvePatientId(PID pid) throws HL7Exception {
 		Person p = resolvePersonFromIdentifiers(pid.getPatientIdentifierList());
 		if (p != null && p.isPatient())
@@ -692,7 +734,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 *         if the patient is not found
 	 * @throws HL7Exception
 	 */
-	@Transactional(readOnly = true)
+	@Override
+    @Transactional(readOnly = true)
 	public Person resolvePersonFromIdentifiers(CX[] identifiers) throws HL7Exception {
 		// TODO: Properly handle assigning authority. If specified it's
 		// currently treated as PatientIdentifierType.name
@@ -795,7 +838,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#garbageCollect()
 	 */
-	public void garbageCollect() {
+	@Override
+    public void garbageCollect() {
 		dao.garbageCollect();
 	}
 	
@@ -805,7 +849,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 *             handler, it is created with all obs. Any AOP hooking should be done on the
 	 *             EncounterService.createEncounter(Encounter) method
 	 */
-	@Deprecated
+	@Override
+    @Deprecated
 	public void encounterCreated(Encounter encounter) {
 		// nothing is done here in core. Modules override/hook on this method
 	}
@@ -813,7 +858,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#processHL7InQueue(org.openmrs.hl7.HL7InQueue)
 	 */
-	public HL7InQueue processHL7InQueue(HL7InQueue hl7InQueue) throws HL7Exception {
+	@Override
+    public HL7InQueue processHL7InQueue(HL7InQueue hl7InQueue) throws HL7Exception {
 		
 		if (hl7InQueue == null)
 			throw new HL7Exception("hl7InQueue argument cannot be null");
@@ -902,7 +948,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#parseHL7Message(java.lang.String)
 	 */
-	public Message parseHL7String(String hl7Message) throws HL7Exception {
+	@Override
+    public Message parseHL7String(String hl7Message) throws HL7Exception {
 		// Any pre-parsing for HL7 messages would go here
 		// or a module can use AOP to pre-parse the message
 		
@@ -935,7 +982,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#processHL7Message(ca.uhn.hl7v2.model.Message)
 	 */
-	public Message processHL7Message(Message message) throws HL7Exception {
+	@Override
+    public Message processHL7Message(Message message) throws HL7Exception {
 		// Any post-parsing (pre-routing) processing would go here
 		// or a module can use AOP to do the post-parsing
 		
@@ -980,7 +1028,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#createPersonFromNK1(ca.uhn.hl7v2.model.v25.segment.NK1)
 	 */
-	public Person createPersonFromNK1(NK1 nk1) throws HL7Exception {
+	@Override
+    public Person createPersonFromNK1(NK1 nk1) throws HL7Exception {
 		// NOTE: following block (with minor modifications) stolen from
 		// ADTA28Handler
 		// TODO: generalize this for use with both PID and NK1 segments
@@ -1101,7 +1150,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getUuidFromIdentifiers(ca.uhn.hl7v2.model.v25.datatype.CX[])
 	 */
-	public String getUuidFromIdentifiers(CX[] identifiers) throws HL7Exception {
+	@Override
+    public String getUuidFromIdentifiers(CX[] identifiers) throws HL7Exception {
 		Boolean found = false;
 		String uuid = null;
 		for (CX identifier : identifiers) {
@@ -1121,7 +1171,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#loadHL7InArchiveData(List)
 	 */
-	public void loadHL7InArchiveData(List<HL7InArchive> archives) throws APIException {
+	@Override
+    public void loadHL7InArchiveData(List<HL7InArchive> archives) throws APIException {
 		for (HL7InArchive archive : archives)
 			loadHL7InArchiveData(archive);
 	}
@@ -1129,7 +1180,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#loadHL7InArchiveData(HL7InArchive)
 	 */
-	public void loadHL7InArchiveData(HL7InArchive archive) throws APIException {
+	@Override
+    public void loadHL7InArchiveData(HL7InArchive archive) throws APIException {
 		// quit early if there is no archive to work with
 		if (archive == null)
 			return;
@@ -1153,7 +1205,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	/**
 	 * @see org.openmrs.hl7.HL7Service#migrateHl7InArchivesToFileSystem(Map)
 	 */
-	public void migrateHl7InArchivesToFileSystem(Map<String, Integer> progressStatusMap) throws APIException {
+	@Override
+    public void migrateHl7InArchivesToFileSystem(Map<String, Integer> progressStatusMap) throws APIException {
 		int numberTransferred = 0;
 		int numberOfFailedTransfers = 0;
 		
@@ -1172,11 +1225,13 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 				
 				try {
 					migrateHL7InArchive(archive);
-					progressStatusMap.put(HL7Constants.NUMBER_TRANSFERRED_KEY, numberTransferred++);
-				}
+					progressStatusMap.put(HL7Constants.NUMBER_TRANSFERRED_KEY, numberTransferred);
+                    numberTransferred++;
+                }
 				catch (DAOException e) {
-					progressStatusMap.put(HL7Constants.NUMBER_OF_FAILED_TRANSFERS_KEY, numberOfFailedTransfers++);
-				}
+					progressStatusMap.put(HL7Constants.NUMBER_OF_FAILED_TRANSFERS_KEY, numberOfFailedTransfers);
+                    numberOfFailedTransfers++;
+                }
 			}
 			
 			// fetch more archives to be processed

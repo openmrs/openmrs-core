@@ -84,8 +84,9 @@ public class ForEachObsTag extends BodyTagSupport {
 		if (matchingObs.isEmpty()) {
 			return SKIP_BODY;
 		} else {
-			pageContext.setAttribute(var, matchingObs.get(count++));
-			return EVAL_BODY_BUFFERED;
+			pageContext.setAttribute(var, matchingObs.get(count));
+            count++;
+            return EVAL_BODY_BUFFERED;
 		}
 	}
 	
@@ -94,8 +95,9 @@ public class ForEachObsTag extends BodyTagSupport {
 	 */
 	public int doAfterBody() throws JspException {
 		if (matchingObs.size() > count && (num == null || count < num.intValue())) {
-			pageContext.setAttribute(var, matchingObs.get(count++));
-			return EVAL_BODY_BUFFERED;
+			pageContext.setAttribute(var, matchingObs.get(count));
+            count++;
+            return EVAL_BODY_BUFFERED;
 		} else {
 			return SKIP_BODY;
 		}

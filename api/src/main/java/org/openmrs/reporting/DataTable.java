@@ -38,7 +38,7 @@ public class DataTable {
 		rows = new ArrayList<TableRow>();
 	}
 	
-	public DataTable(List<TableRow> rows) {
+	public DataTable(Collection<TableRow> rows) {
 		if (rows instanceof ArrayList) {
 			this.rows = (ArrayList<TableRow>) rows;
 		} else {
@@ -52,7 +52,7 @@ public class DataTable {
 			columnOrder.add(colName);
 	}
 	
-	public void addColumns(Collection<String> colNames) {
+	public void addColumns(Iterable<String> colNames) {
 		for (String colName : colNames)
 			addColumn(colName);
 	}
@@ -76,7 +76,8 @@ public class DataTable {
 	public void sortByColumn(final String colName) {
 		Collections.sort(rows, new Comparator<TableRow>() {
 			
-			@SuppressWarnings("unchecked")
+			@Override
+            @SuppressWarnings("unchecked")
 			public int compare(TableRow left, TableRow right) {
 				Comparable l = (Comparable) left.get(colName);
 				Comparable r = (Comparable) right.get(colName);

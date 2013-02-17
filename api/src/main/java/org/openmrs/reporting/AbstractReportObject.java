@@ -51,14 +51,16 @@ public class AbstractReportObject extends BaseOpenmrsObject implements ReportObj
 	/**
 	 * @return Returns the reportObjectId.
 	 */
-	public Integer getReportObjectId() {
+	@Override
+    public Integer getReportObjectId() {
 		return reportObjectId;
 	}
 	
 	/**
 	 * @param reportObjectId The reportObjectId to set.
 	 */
-	public void setReportObjectId(Integer reportObjectId) {
+	@Override
+    public void setReportObjectId(Integer reportObjectId) {
 		this.reportObjectId = reportObjectId;
 		
 	}
@@ -66,28 +68,32 @@ public class AbstractReportObject extends BaseOpenmrsObject implements ReportObj
 	/**
 	 * @return Returns the name;
 	 */
-	public String getName() {
+	@Override
+    public String getName() {
 		return name;
 	}
 	
 	/**
 	 * @param name The name to set.
 	 */
-	public void setName(String name) {
+	@Override
+    public void setName(String name) {
 		this.name = name;
 	}
 	
 	/**
 	 * @return Returns the description
 	 */
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		return description;
 	}
 	
 	/**
 	 * @param description The description to set.
 	 */
-	public void setDescription(String description) {
+	@Override
+    public void setDescription(String description) {
 		this.description = description;
 	}
 	
@@ -126,7 +132,8 @@ public class AbstractReportObject extends BaseOpenmrsObject implements ReportObj
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public Integer getId() {
+	@Override
+    public Integer getId() {
 		return getReportObjectId();
 	}
 	
@@ -134,7 +141,8 @@ public class AbstractReportObject extends BaseOpenmrsObject implements ReportObj
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setId(Integer id) {
+	@Override
+    public void setId(Integer id) {
 		setReportObjectId(id);
 	}
 }

@@ -41,7 +41,8 @@ public class ConceptDatatypeEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
-	public void setAsText(String text) throws IllegalArgumentException {
+	@Override
+    public void setAsText(String text) throws IllegalArgumentException {
 		log.debug("setting text: " + text);
 		ConceptService cs = Context.getConceptService();
 		if (StringUtils.hasText(text)) {
@@ -61,7 +62,8 @@ public class ConceptDatatypeEditor extends PropertyEditorSupport {
 		}
 	}
 	
-	public String getAsText() {
+	@Override
+    public String getAsText() {
 		ConceptDatatype t = (ConceptDatatype) getValue();
 		if (t == null) {
 			return "";
