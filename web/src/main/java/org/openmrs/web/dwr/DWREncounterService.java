@@ -61,6 +61,27 @@ public class DWREncounterService {
 	 */
 	public Vector findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length)
 	        throws APIException {
+		return findBatchOfEncounters(phrase, null, includeVoided, null, null);
+	}
+	
+	/**
+	 * Returns a list of matching encounters (depending on values of start and length parameters) if
+	 * the length parameter is not specified, then all matches will be returned from the start index
+	 * if specified.
+	 * 
+	 * @param phrase encounter id, provider identifier, location, encounter type, provider, form or
+	 *            provider name
+	 * @param patientId the patient id
+	 * @param includeVoided Specifies if voided encounters should be included or not
+	 * @param start the beginning index
+	 * @param length the number of matching encounters to return
+	 * @return list of the matching encounters
+	 * @throws APIException
+	 * @since 1.10
+	 */
+	@SuppressWarnings("rawtypes")
+	public Vector findBatchOfEncounters(String phrase, Integer patientId, boolean includeVoided, Integer start,
+	        Integer length) throws APIException {
 		
 		// List to return
 		// Object type gives ability to return error strings
@@ -79,7 +100,7 @@ public class DWREncounterService {
 			if (phrase.matches("\\d+")) {
 				// user searched on a number.  Insert concept with corresponding encounterId
 				Encounter e = es.getEncounter(Integer.valueOf(phrase));
-				if (e != null) {
+				if (e != null && (patientId == null || patientId.equals(e.getPatient().getPatientId()))) {
 					if (!e.isVoided() || includeVoided == true)
 						encs.add(e);
 				}
@@ -88,7 +109,7 @@ public class DWREncounterService {
 			if (phrase == null || phrase.equals("")) {
 				//TODO get all concepts for testing purposes?
 			} else {
-				encs.addAll(es.getEncounters(phrase, start, length, includeVoided));
+				encs.addAll(es.getEncounters(phrase, patientId, start, length, includeVoided));
 			}
 			
 			if (encs.size() == 0) {
