@@ -52,12 +52,12 @@ import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
@@ -719,10 +719,14 @@ public class InitializationFilter extends StartupFilter {
 							}
 							
 							// connect via jdbc with root user and create an openmrs user
-							String sql = "drop user '?'@'localhost'";
+							String host = "'%'";
+							if (wizardModel.databaseConnection.contains("localhost")) {
+								host = "'localhost'";
+							}
+							String sql = "drop user '?'@" + host;
 							executeStatement(true, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 							    connectionUsername);
-							sql = "create user '?'@'localhost' identified by '?'";
+							sql = "create user '?'@" + host + " identified by '?'";
 							if (-1 != executeStatement(false, wizardModel.createUserUsername,
 							    wizardModel.createUserPassword, sql, connectionUsername, connectionPassword)) {
 								wizardModel.workLog.add("Created user " + connectionUsername);
@@ -733,7 +737,7 @@ public class InitializationFilter extends StartupFilter {
 							}
 							
 							// grant the roles
-							sql = "GRANT ALL ON `?`.* TO '?'@'localhost'";
+							sql = "GRANT ALL ON `?`.* TO '?'@" + host;
 							int result = executeStatement(false, wizardModel.createUserUsername,
 							    wizardModel.createUserPassword, sql, wizardModel.databaseName, connectionUsername);
 							// throw the user back to the main screen if this error occurs
