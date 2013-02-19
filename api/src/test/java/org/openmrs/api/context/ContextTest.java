@@ -26,10 +26,13 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.handler.EncounterVisitHandler;
+import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.validation.Validator;
 
 /**
@@ -176,6 +179,32 @@ public class ContextTest extends BaseContextSensitiveTest {
 		List<Location> l = Context.getRegisteredComponents(Location.class);
 		Assert.assertNotNull(l);
 		Assert.assertEquals(0, l.size());
+	}
+	
+	/**
+	 * @see {@link Context#getRegisteredComponent(String,Class)}
+	 */
+	@Test
+	@Verifies(value = "return bean of the correct type", method = "getRegisteredComponent(String, Class)")
+	public void getRegisteredComponent_shouldReturnBeanHaveBeenRegisteredOfThePassedTypeAndName() throws Exception {
+		
+		EncounterVisitHandler registeredComponent = Context.getRegisteredComponent("existingOrNewVisitAssignmentHandler",
+		    EncounterVisitHandler.class);
+		
+		Assert.assertTrue(registeredComponent instanceof ExistingOrNewVisitAssignmentHandler);
+	}
+	
+	/**
+	 * @see {@link Context#getRegisteredComponent(String, Class)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "fail for bean with the given type but different name", method = "getRegisteredComponent(String, Class)")
+	public void getRegisteredComponent_shouldFailIfBeanHaveBeenREgisteredOfThePassedTypeAndNameDoesntExist()
+	        throws Exception {
+		
+		Context.getRegisteredComponent("invalidBeanName", EncounterVisitHandler.class);
+		
+		Assert.fail();
 	}
 	
 	/**
