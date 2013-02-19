@@ -464,7 +464,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertNotNull(actualConcept);
 		assertEquals(concept.getConceptId(), actualConcept.getConceptId());
 	}
-
+	
 	/**
 	 * Test removing short name by adding a blank short name
 	 *
@@ -473,33 +473,33 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	@Test
 	public void shouldVoidShortName() throws Exception {
 		final String CONCEPT_NAME = "default concept name";
-
+		
 		ConceptService cs = Context.getConceptService();
-
+		
 		final Concept concept = new Concept();
 		concept.addName(new ConceptName(CONCEPT_NAME, Locale.ENGLISH));
 		concept.setShortName(new ConceptName("shortname", Locale.ENGLISH));
 		cs.saveConcept(concept);
-
+		
 		Concept actualConcept = cs.getConceptByName(CONCEPT_NAME);
 		assertThat(actualConcept.getShortNameInLocale(Locale.ENGLISH), is(notNullValue()));
 		assertThat(actualConcept.getShortNames().size(), greaterThan(0));
 		assertThat(actualConcept.getNames().size(), is(2));
-
+		
 		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
-
+		
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		
 		mockRequest.setMethod("POST");
 		mockRequest.setParameter("action", "");
 		mockRequest.setParameter("conceptId", concept.getConceptId().toString());
 		mockRequest.setParameter("shortNamesByLocale[en].name", " ");
 		mockRequest.setParameter("concept.datatype", "1");
-
+		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
 		assertNotNull(mav);
-
+		
 		actualConcept = cs.getConceptByName(CONCEPT_NAME);
 		assertThat(actualConcept.getShortNameInLocale(Locale.ENGLISH), is(nullValue()));
 		assertThat(actualConcept.getShortNames().size(), is(0));

@@ -152,16 +152,15 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	
 	@Element(data = true)
 	public void setName(String name) {
-        if (name != null
-                && StringUtils.isBlank(name) && StringUtils.isNotBlank(this.name)
-                && this.getConceptNameType().equals(ConceptNameType.SHORT)) {
-            this.setVoided(true);
-        } else {
-            this.name = name;
-        }
-    }
-
-    /**
+		if (name != null && StringUtils.isBlank(name) && StringUtils.isNotBlank(this.name)
+		        && this.getConceptNameType().equals(ConceptNameType.SHORT)) {
+			this.setVoided(true);
+		} else {
+			this.name = name;
+		}
+	}
+	
+	/**
 	 * 
 	 */
 	@Element
