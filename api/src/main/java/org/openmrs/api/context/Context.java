@@ -1228,6 +1228,14 @@ public class Context {
 	}
 	
 	/**
+	 * @see ServiceContext#getRegisteredComponent(String, Class)
+	 * @since 1.9.3
+	 */
+	public static <T> T getRegisteredComponent(String beanName, Class<T> type) throws APIException {
+		return getServiceContext().getRegisteredComponent(beanName, type);
+	}
+	
+	/**
 	 * @see ServiceContext#getModuleOpenmrsServices(String)
 	 * @since 1.9
 	 */

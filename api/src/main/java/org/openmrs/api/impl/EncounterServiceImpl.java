@@ -669,22 +669,38 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public EncounterVisitHandler getActiveEncounterVisitHandler() throws APIException {
-		String value = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER,
-		    null);
 		
-		if (StringUtils.isBlank(value))
+		String handlerGlobalValue = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER, null);
+		
+		if (StringUtils.isBlank(handlerGlobalValue))
 			return null;
 		
+		EncounterVisitHandler handler = null;
+		
 		try {
-			Object handler = OpenmrsClassLoader.getInstance().loadClass(value).newInstance();
-			if (!(handler instanceof EncounterVisitHandler))
-				throw new APIException(
-				        "The registered visit assignment handler should implement the EncounterVisitHandler interface");
+			// convention = [NamePrefix:beanName] or [className]
+			String namePrefix = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX;
 			
-			return (EncounterVisitHandler) handler;
+			if (handlerGlobalValue.startsWith(namePrefix)) {
+				String beanName = handlerGlobalValue.substring(namePrefix.length());
+				
+				handler = Context.getRegisteredComponent(beanName, EncounterVisitHandler.class);
+			} else {
+				
+				Object instance = OpenmrsClassLoader.getInstance().loadClass(handlerGlobalValue).newInstance();
+				if (!(instance instanceof EncounterVisitHandler))
+					throw new APIException(
+					        "The registered visit assignment handler should implement the EncounterVisitHandler interface");
+				
+				handler = (EncounterVisitHandler) instance;
+			}
+			
+			return handler;
 		}
 		catch (Exception ex) {
-			throw new APIException("Failed to instantiate assignment handler object for class class: " + value, ex);
+			throw new APIException("Failed to instantiate assignment handler object for class class: " + handlerGlobalValue,
+			        ex);
 		}
 	}
 	
