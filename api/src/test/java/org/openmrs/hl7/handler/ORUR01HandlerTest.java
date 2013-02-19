@@ -36,11 +36,13 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
@@ -942,5 +944,60 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 			}
 		}
 		Assert.assertEquals("This is a comment", newObservation.getComment());
+	}
+	
+	/**
+     * @see {@link ORUR01Handler#processMessage(Message)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should set complex data for obs with complex concepts", method = "processMessage(Message)")
+    public void processMessage_shouldSetComplexDataForObsWithComplexConcepts() throws Exception {
+    	ObsHandler handler = new ObsHandler();
+		final String handlerName = "NeigborHandler";
+		final String data = "{\"firstname\":\"Horatio\"}";
+		Context.getObsService().registerHandler(handlerName, handler);
+		try {
+			String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+			        + "PID|||3^^^^||John3^Doe^||\r"
+			        + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+			        + "ORC|RE||||||||20080226102537|1^Super User\r"
+			        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+			        + "OBX|1|ED|6043^uiNEIHBOR^99DCT||^^^^" + data + "|||||||||20080206\r";
+			Message hl7message = parser.parse(hl7string);
+			router.processMessage(hl7message);
+		}
+		finally {
+			Context.getObsService().removeHandler(handlerName);
+		}
+		Assert.assertEquals(data, handler.getCreatedObs().getComplexData().getData());
+    }
+	
+	private class ObsHandler implements ComplexObsHandler {
+		
+		private Obs createdObs;
+		
+		/**
+		 * @return the createdObs
+		 */
+		public Obs getCreatedObs() {
+			return createdObs;
+		}
+		
+		@Override
+		public Obs saveObs(Obs obs) throws APIException {
+			createdObs = obs;
+			return obs;
+		}
+		
+		@Override
+		public Obs getObs(Obs obs, String view) {
+			return null;
+		}
+		
+		@Override
+		public boolean purgeComplexData(Obs obs) {
+			return false;
+		}
 	}
 }

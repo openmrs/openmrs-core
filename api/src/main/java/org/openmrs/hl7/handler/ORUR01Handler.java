@@ -45,6 +45,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7InQueueProcessor;
 import org.openmrs.hl7.HL7Service;
+import org.openmrs.obs.ComplexData;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
@@ -62,6 +63,7 @@ import ca.uhn.hl7v2.model.v25.datatype.CX;
 import ca.uhn.hl7v2.model.v25.datatype.DLD;
 import ca.uhn.hl7v2.model.v25.datatype.DT;
 import ca.uhn.hl7v2.model.v25.datatype.DTM;
+import ca.uhn.hl7v2.model.v25.datatype.ED;
 import ca.uhn.hl7v2.model.v25.datatype.FT;
 import ca.uhn.hl7v2.model.v25.datatype.ID;
 import ca.uhn.hl7v2.model.v25.datatype.IS;
@@ -127,6 +129,7 @@ public class ORUR01Handler implements Application {
 	 * @should set value_Numeric for obs if Question datatype is Numeric
 	 * @should fail if question datatype is coded and a boolean is not a valid answer
 	 * @should fail if question datatype is neither Boolean nor numeric nor coded
+	 * @should set complex data for obs with complex concepts
 	 */
 	public Message processMessage(Message message) throws ApplicationException {
 		
@@ -754,6 +757,22 @@ public class ORUR01Handler implements Application {
 				return null;
 			}
 			obs.setValueText(value.getValue());
+		} else if ("ED".equals(hl7Datatype)) {
+			ED value = (ED) obx5;
+			if (value == null || value.getData() == null || !StringUtils.hasText(value.getData().getValue())) {
+				log.warn("Not creating null valued obs for concept " + concept);
+				return null;
+			}
+			//we need to hydrate the concept so that the EncounterSaveHandler
+			//doesn't fail since it needs to check if it is a concept numeric
+			Concept c = Context.getConceptService().getConcept(obs.getConcept().getConceptId());
+			obs.setConcept(c);
+			String title = null;
+			if (obs.getValueCodedName() != null)
+				title = obs.getValueCodedName().getName();
+			if (!StringUtils.hasText(title))
+				title = c.getName().getName();
+			obs.setComplexData(new ComplexData(title, value.getData().getValue()));
 		} else {
 			// unsupported data type
 			// TODO: support RP (report), SN (structured numeric)
@@ -1009,6 +1028,13 @@ public class ORUR01Handler implements Application {
 		return location;
 	}
 	
+	/**
+	 * needs to find a Form based on information in MSH-21. example: 16^AMRS.ELD.FORMID
+	 * 
+	 * @param msh
+	 * @return
+	 * @throws HL7Exception
+	 */
 	private Form getForm(MSH msh) throws HL7Exception {
 		Integer formId = null;
 		try {

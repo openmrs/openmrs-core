@@ -105,7 +105,7 @@ public class WebModuleUtil {
 	 * @return boolean whether or not the spring context need to be refreshed
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
-
+		
 		if (log.isDebugEnabled())
 			log.debug("trying to start module " + mod);
 		
