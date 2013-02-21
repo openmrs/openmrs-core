@@ -13,16 +13,21 @@
  */
 package org.openmrs.hl7.handler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.ApplicationException;
+import ca.uhn.hl7v2.app.MessageTypeRouter;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.message.ORU_R01;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.OBR;
+import ca.uhn.hl7v2.model.v25.segment.OBX;
+import ca.uhn.hl7v2.parser.GenericParser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,15 +56,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.app.MessageTypeRouter;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.message.ORU_R01;
-import ca.uhn.hl7v2.model.v25.segment.NK1;
-import ca.uhn.hl7v2.model.v25.segment.OBR;
-import ca.uhn.hl7v2.model.v25.segment.OBX;
-import ca.uhn.hl7v2.parser.GenericParser;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TODO finish testing all methods ORUR01Handler
@@ -1099,15 +1098,15 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 	}
-
+	
 	/**
-     * @see {@link ORUR01Handler#processMessage(Message)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should set complex data for obs with complex concepts", method = "processMessage(Message)")
-    public void processMessage_shouldSetComplexDataForObsWithComplexConcepts() throws Exception {
-    	ObsHandler handler = new ObsHandler();
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should set complex data for obs with complex concepts", method = "processMessage(Message)")
+	public void processMessage_shouldSetComplexDataForObsWithComplexConcepts() throws Exception {
+		ObsHandler handler = new ObsHandler();
 		final String handlerName = "NeigborHandler";
 		final String data = "{\"firstname\":\"Horatio\"}";
 		Context.getObsService().registerHandler(handlerName, handler);
@@ -1125,7 +1124,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 			Context.getObsService().removeHandler(handlerName);
 		}
 		Assert.assertEquals(data, handler.getCreatedObs().getComplexData().getData());
-    }
+	}
 	
 	private class ObsHandler implements ComplexObsHandler {
 		
