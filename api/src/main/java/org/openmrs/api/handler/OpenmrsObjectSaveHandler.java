@@ -78,6 +78,12 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 				continue;
 			}
 			
+			// Ignore properties that have a deprecated getter or setter
+			if (property.getWriteMethod().getAnnotation(Deprecated.class) != null
+			        || property.getReadMethod().getAnnotation(Deprecated.class) != null) {
+				continue;
+			}
+			
 			//We are dealing with only strings
 			if (!property.getPropertyType().equals(String.class)) {
 				continue;
