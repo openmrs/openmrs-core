@@ -408,6 +408,20 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test
+	@Verifies(value = "not throw ModuleException if openmrs version with SNAPSHOT greater than 999", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldnotthrowModuleExceptionifopenmrsversionwithSNAPSHOTgreaterthan999()
+	        throws Exception {
+		String openmrsVersion = "1.6.97000";//;
+		String requiredOpenmrsVersion = "1.6.*";
+		
+		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+		
+	}
+	
+	/**
 	 * @see {@link ModuleUtil#compareVersion(String,String)}
 	 */
 	@Test

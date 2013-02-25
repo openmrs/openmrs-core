@@ -273,6 +273,7 @@ public class ModuleUtil {
 	 * @should throw ModuleException if required version with wild card beyond openmrs version
 	 * @should throw ModuleException if required version with wild card on one end beyond openmrs
 	 *         version
+	 * @should not throw ModuleException if openmrs version with SNAPSHOT greater than 999        
 	 * @should throw ModuleException if single entry required version beyond openmrs version
 	 */
 	public static void checkRequiredVersion(String version, String value) throws ModuleException {
@@ -307,10 +308,10 @@ public class ModuleUtil {
 				if (lowerBound.indexOf("*") > 0)
 					lowerBound = lowerBound.replaceAll("\\*", "0");
 				
-				// if the upper contains "*" then change it to 999
-				// assuming 999 will be the max revision number for openmrs
+				// if the upper contains "*" then change it to Maximum Integer
+				// assuming Maximum Integer will be the max revision number for openmrs
 				if (upperBound.indexOf("*") > 0)
-					upperBound = upperBound.replaceAll("\\*", "999");
+					upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
 				
 				int lowerReturn = compareVersion(version, lowerBound);
 				
