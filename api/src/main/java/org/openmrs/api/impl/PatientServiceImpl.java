@@ -726,29 +726,45 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		
 		PersonMergeLogData mergedData = new PersonMergeLogData();
+		mergeVisits(preferred, notPreferred, mergedData);
+		mergeEncounters(preferred, notPreferred, mergedData);
+		mergeProgramEnrolments(preferred, notPreferred, mergedData);
+		mergeRelationships(preferred, notPreferred, mergedData);
+		mergeObservationsNotContainedInEncounters(preferred, notPreferred, mergedData);
+		mergeOrdersNotContainedInEncounters(preferred, notPreferred, mergedData);
+		mergeIdentifiers(preferred, notPreferred, mergedData);
 		
-		// move all visits, including voided ones (encounters will be handled below)
-		// TODO: this should be a copy, not a move
-		VisitService vs = Context.getVisitService();
-		for (Visit v : vs.getVisitsByPatient(notPreferred, true, true)) {
-			if (log.isDebugEnabled()) {
-				log.debug("Merging visit " + v.getVisitId() + " to " + preferred.getPatientId());
-			}
-			v.setPatient(preferred);
-			Visit persisted = vs.saveVisit(v);
-			mergedData.addMovedVisit(persisted.getUuid());
-		}
+		mergeNames(preferred, notPreferred, mergedData);
+		mergeAddresses(preferred, notPreferred, mergedData);
+		mergePersonAttributes(preferred, notPreferred, mergedData);
+		mergeGenderInformation(preferred, notPreferred, mergedData);
+		mergeDateOfBirth(preferred, notPreferred, mergedData);
+		mergeDateOfDeath(preferred, notPreferred, mergedData);
 		
-		// change all encounters, including voided ones. This will cascade to obs and orders contained in those encounters
-		// TODO: this should be a copy, not a move
-		EncounterService es = Context.getEncounterService();
-		for (Encounter e : es.getEncounters(notPreferred, null, null, null, null, null, null, null, null, true)) {
-			e.setPatient(preferred);
-			log.debug("Merging encounter " + e.getEncounterId() + " to " + preferred.getPatientId());
-			Encounter persisted = es.saveEncounter(e);
-			mergedData.addMovedEncounter(persisted.getUuid());
-		}
+		// void the non preferred patient
+		Context.getPatientService().voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
 		
+		// void the person associated with not preferred patient
+		Context.getPersonService().voidPerson(notPreferred,
+		    "The patient corresponding to this person has been voided and Merged with patient #" + preferred.getPatientId());
+		
+		// associate the Users associated with the not preferred person, to the preferred person.
+		changeUserAssociations(preferred, notPreferred, mergedData);
+		
+		// Save the newly update preferred patient
+		// This must be called _after_ voiding the nonPreferred patient so that
+		//  a "Duplicate Identifier" error doesn't pop up.
+		savePatient(preferred);
+		
+		//save the person merge log
+		PersonMergeLog personMergeLog = new PersonMergeLog();
+		personMergeLog.setWinner(preferred);
+		personMergeLog.setLoser(notPreferred);
+		personMergeLog.setPersonMergeLogData(mergedData);
+		Context.getPersonService().savePersonMergeLog(personMergeLog);
+	}
+	
+	private void mergeProgramEnrolments(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all program enrollments
 		ProgramWorkflowService programService = Context.getProgramWorkflowService();
 		for (PatientProgram pp : programService.getPatientPrograms(notPreferred, null, null, null, null, null, false)) {
@@ -760,7 +776,37 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				mergedData.addCreatedProgram(persisted.getUuid());
 			}
 		}
+	}
+	
+	private void mergeVisits(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		// move all visits, including voided ones (encounters will be handled below)
+		//TODO: this should be a copy, not a move
 		
+		VisitService visitService = Context.getVisitService();
+		
+		for (Visit visit : visitService.getVisitsByPatient(notPreferred, true, true)) {
+			if (log.isDebugEnabled()) {
+				log.debug("Merging visit " + visit.getVisitId() + " to " + preferred.getPatientId());
+			}
+			visit.setPatient(preferred);
+			Visit persisted = visitService.saveVisit(visit);
+			mergedData.addMovedVisit(persisted.getUuid());
+		}
+	}
+	
+	private void mergeEncounters(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		// change all encounters. This will cascade to obs and orders contained in those encounters
+		// TODO: this should be a copy, not a move
+		EncounterService es = Context.getEncounterService();
+		for (Encounter e : es.getEncounters(notPreferred, null, null, null, null, null, null, null, null, true)) {
+			e.setPatient(preferred);
+			log.debug("Merging encounter " + e.getEncounterId() + " to " + preferred.getPatientId());
+			Encounter persisted = es.saveEncounter(e);
+			mergedData.addMovedEncounter(persisted.getUuid());
+		}
+	}
+	
+	private void mergeRelationships(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all relationships
 		PersonService personService = Context.getPersonService();
 		Set<String> existingRelationships = new HashSet<String>();
@@ -804,7 +850,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				mergedData.addVoidedRelationship(rel.getUuid());
 			}
 		}
-		
+	}
+	
+	private void mergeObservationsNotContainedInEncounters(Patient preferred, Patient notPreferred,
+	        PersonMergeLogData mergedData) {
 		// move all obs that weren't contained in encounters
 		// TODO: this should be a copy, not a move
 		ObsService obsService = Context.getObsService();
@@ -815,7 +864,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				mergedData.addMovedIndependentObservation(persisted.getUuid());
 			}
 		}
-		
+	}
+	
+	private void mergeOrdersNotContainedInEncounters(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all orders that weren't contained in encounters
 		OrderService os = Context.getOrderService();
 		for (Order o : os.getOrdersByPatient(notPreferred)) {
@@ -826,7 +877,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				mergedData.addCreatedOrder(persisted.getUuid());
 			}
 		}
-		
+	}
+	
+	private void mergeIdentifiers(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all identifiers
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
 		for (PatientIdentifier pi : notPreferred.getActiveIdentifiers()) {
@@ -858,50 +911,90 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				log.debug("Merging identifier " + tmpIdentifier.getIdentifier() + " to " + preferred.getPatientId());
 			}
 		}
+	}
+	
+	private void mergeDateOfDeath(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
+		if (preferred.getDeathDate() == null)
+			preferred.setDeathDate(notPreferred.getDeathDate());
 		
+		if (preferred.getCauseOfDeath() != null)
+			mergedData.setPriorCauseOfDeath(preferred.getCauseOfDeath().getUuid());
+		if (preferred.getCauseOfDeath() == null)
+			preferred.setCauseOfDeath(notPreferred.getCauseOfDeath());
+	}
+	
+	private void mergeDateOfBirth(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		mergedData.setPriorDateOfBirth(preferred.getBirthdate());
+		mergedData.setPriorDateOfBirthEstimated(preferred.isBirthdateEstimated());
+		if (preferred.getBirthdate() == null || (preferred.getBirthdateEstimated() && !notPreferred.getBirthdateEstimated())) {
+			preferred.setBirthdate(notPreferred.getBirthdate());
+			preferred.setBirthdateEstimated(notPreferred.getBirthdateEstimated());
+		}
+	}
+	
+	private void mergePersonAttributes(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		// copy person attributes
+		for (PersonAttribute attr : notPreferred.getAttributes()) {
+			if (!attr.isVoided()) {
+				PersonAttribute tmpAttr = attr.copy();
+				tmpAttr.setPerson(null);
+				tmpAttr.setUuid(UUID.randomUUID().toString());
+				preferred.addAttribute(tmpAttr);
+				mergedData.addCreatedAttribute(tmpAttr.getUuid());
+			}
+		}
+	}
+	
+	private void mergeGenderInformation(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		// move all other patient info
+		mergedData.setPriorGender(preferred.getGender());
+		if (!"M".equals(preferred.getGender()) && !"F".equals(preferred.getGender()))
+			preferred.setGender(notPreferred.getGender());
+	}
+	
+	private void mergeNames(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all names
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
 		for (PersonName newName : notPreferred.getNames()) {
 			boolean containsName = false;
 			for (PersonName currentName : preferred.getNames()) {
-				String given = newName.getGivenName();
-				String middle = newName.getMiddleName();
-				String family = newName.getFamilyName();
-				
-				if ((given != null && given.equals(currentName.getGivenName()))
-				        && (middle != null && middle.equals(currentName.getMiddleName()))
-				        && (family != null && family.equals(currentName.getFamilyName()))) {
-					containsName = true;
+				containsName = currentName.equalsContent(newName);
+				if (containsName) {
+					break;
 				}
 			}
 			if (!containsName) {
-				PersonName tmpName = PersonName.newInstance(newName);
-				tmpName.setPersonNameId(null);
-				tmpName.setVoided(false);
-				tmpName.setVoidedBy(null);
-				tmpName.setVoidReason(null);
-				// we don't want to change the preferred name of the preferred patient
-				tmpName.setPreferred(false);
-				tmpName.setUuid(UUID.randomUUID().toString());
+				PersonName tmpName = constructTemporaryName(newName);
 				preferred.addName(tmpName);
 				mergedData.addCreatedName(tmpName.getUuid());
 				log.debug("Merging name " + newName.getGivenName() + " to " + preferred.getPatientId());
 			}
 		}
-		
+	}
+	
+	private PersonName constructTemporaryName(PersonName newName) {
+		PersonName tmpName = PersonName.newInstance(newName);
+		tmpName.setPersonNameId(null);
+		tmpName.setVoided(false);
+		tmpName.setVoidedBy(null);
+		tmpName.setVoidReason(null);
+		// we don't want to change the preferred name of the preferred patient
+		tmpName.setPreferred(false);
+		tmpName.setUuid(UUID.randomUUID().toString());
+		return tmpName;
+	}
+	
+	private void mergeAddresses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData)
+	        throws SerializationException {
 		// move all addresses
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
 		for (PersonAddress newAddress : notPreferred.getAddresses()) {
 			boolean containsAddress = false;
 			for (PersonAddress currentAddress : preferred.getAddresses()) {
-				String address1 = currentAddress.getAddress1();
-				String address2 = currentAddress.getAddress2();
-				String cityVillage = currentAddress.getCityVillage();
-				
-				if ((address1 != null && address1.equals(newAddress.getAddress1()))
-				        && (address2 != null && address2.equals(newAddress.getAddress2()))
-				        && (cityVillage != null && cityVillage.equals(newAddress.getCityVillage()))) {
-					containsAddress = true;
+				containsAddress = currentAddress.equalsContent(newAddress);
+				if (containsAddress) {
+					break;
 				}
 			}
 			if (!containsAddress) {
@@ -960,7 +1053,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		Context.getPatientService().voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
 		
 		// void the person associated with not preferred patient
-		personService.voidPerson(notPreferred,
+		Context.getPersonService().voidPerson(notPreferred,
 		    "The patient corresponding to this person has been voided and Merged with patient #" + preferred.getPatientId());
 		
 		// associate the Users associated with the not preferred person, to the preferred person.
