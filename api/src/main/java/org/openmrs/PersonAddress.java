@@ -27,7 +27,7 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang.StringUtils.defaultString;
 
 /**
  * This class is the representation of a person's address. This class is many-to-one to the Person
