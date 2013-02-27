@@ -74,6 +74,8 @@ public interface PatientDAO {
 	 * @should return all matching non voided patient identifiers if is preferred is set to null
 	 * @should return all matching non voided patient identifiers if is preferred is set to true
 	 * @should return all matching non voided patient identifiers if is preferred is set to false
+	 * @should fetch all patient identifiers belong to given patient
+	 * @should fetch all patient identifiers belong to given patients
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
 	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,

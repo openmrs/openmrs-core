@@ -1,5 +1,16 @@
 package org.openmrs.api.db;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,12 +21,9 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernatePatientDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class PatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -312,5 +320,61 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		    new ArrayList<Location>(), new ArrayList<Patient>(), Boolean.TRUE);
 		
 		Assert.assertEquals(2, patientIdentifiers.size());
+	}
+	
+	/**
+	 * @see HibernatePatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @verifies fetch all patient identifiers belong to given patient
+	 */
+	@Test
+	public void getPatientIdentifiers_shouldFetchAllPatientIdentifiersBelongToGivenPatient() throws Exception {
+		
+		//There are two identifiers in the test database for patient with id 2
+		Patient patientWithId2 = Context.getPatientService().getPatient(2);
+		
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
+		    new ArrayList<Location>(), Collections.singletonList(patientWithId2), null);
+		
+		assertThat(patientIdentifiers, containsInAnyOrder(hasIdentifier("101"), hasIdentifier("101-6")));
+	}
+	
+	/**
+	 * @see HibernatePatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @verifies fetch all patient identifiers belong to given patients
+	 */
+	@Test
+	public void getPatientIdentifiers_shouldFetchAllPatientIdentifiersBelongToGivenPatients() throws Exception {
+		
+		//There is one identifier[id=12345K] in the test database for patient with id 6 
+		Patient patientWithId6 = Context.getPatientService().getPatient(6);
+		
+		//There is one identifier[id=6TS-4] in the test database for patient with id 7 
+		Patient patientWithId7 = Context.getPatientService().getPatient(7);
+		
+		List<Patient> patientsList = Arrays.asList(patientWithId6, patientWithId7);
+		
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
+		    new ArrayList<Location>(), patientsList, null);
+		
+		assertThat(patientIdentifiers, containsInAnyOrder(hasIdentifier("12345K"), hasIdentifier("6TS-4")));
+	}
+	
+	/**
+	 * Matcher for PatientIdentifier class.
+	 * 
+	 * @param identifier
+	 * @return getIdentifier value matcher.
+	 */
+	private Matcher<PatientIdentifier> hasIdentifier(final String identifier) {
+		
+		return new FeatureMatcher<PatientIdentifier, String>(
+		                                                     is(identifier), "identifier", "identifier") {
+			
+			@Override
+			protected String featureValueOf(PatientIdentifier actual) {
+				return actual.getIdentifier();
+			}
+			
+		};
 	}
 }
