@@ -114,7 +114,7 @@ $j(document).ready( function() {
 	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}"/>- ${error.objectName}<br/>
+			<openmrs:message code="${error.code}" text="${error.code}"/><br/>
 		</c:forEach>
 	</div>
 	<br />
