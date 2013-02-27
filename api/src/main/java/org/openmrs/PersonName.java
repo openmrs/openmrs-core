@@ -29,7 +29,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 import org.springframework.util.StringUtils;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang.StringUtils.defaultString;
 
 /**
  * A Person can have zero to n PersonName(s).
