@@ -13,8 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.hamcrest.Matchers.contains;
-
 import java.util.List;
 
 import org.junit.Assert;
@@ -22,8 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.test.BaseContextSensitiveTest;
-
-import com.google.common.collect.Lists;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	
