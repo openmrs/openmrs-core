@@ -204,13 +204,7 @@
 				<td valign="top">
 					<c:if test="${fn:length(command.concept.conceptSets) == 0}"><openmrs:message code="Concept.conceptSets.empty"/></c:if>
 					<c:forEach items="${command.concept.conceptSets}" var="set">
-						<a href="concept.htm?conceptId=${set.concept.conceptId}"
-							<c:if test="${set.concept.retired}">
-								class="retired" 
-							</c:if>
-						>
-							<openmrs:format concept="${set.concept}"/> (${set.concept.conceptId})
-						</a><br/>
+						<a href="concept.htm?conceptId=${set.concept.conceptId}"><openmrs:format concept="${set.concept}"/> (${set.concept.conceptId})</a><br/>
 					</c:forEach>
 				</td>
 			</tr>
