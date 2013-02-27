@@ -804,14 +804,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		for (PersonName newName : notPreferred.getNames()) {
 			boolean containsName = false;
 			for (PersonName currentName : preferred.getNames()) {
-				String given = newName.getGivenName();
-				String middle = newName.getMiddleName();
-				String family = newName.getFamilyName();
-				
-				if ((given != null && given.equals(currentName.getGivenName()))
-				        && (middle != null && middle.equals(currentName.getMiddleName()))
-				        && (family != null && family.equals(currentName.getFamilyName()))) {
-					containsName = true;
+				containsName = currentName.equalsContent(newName);
+				if (containsName) {
+					break;
 				}
 			}
 			if (!containsName) {
@@ -833,14 +828,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		for (PersonAddress newAddress : notPreferred.getAddresses()) {
 			boolean containsAddress = false;
 			for (PersonAddress currentAddress : preferred.getAddresses()) {
-				String address1 = currentAddress.getAddress1();
-				String address2 = currentAddress.getAddress2();
-				String cityVillage = currentAddress.getCityVillage();
-				
-				if ((address1 != null && address1.equals(newAddress.getAddress1()))
-				        && (address2 != null && address2.equals(newAddress.getAddress2()))
-				        && (cityVillage != null && cityVillage.equals(newAddress.getCityVillage()))) {
-					containsAddress = true;
+				containsAddress = currentAddress.equalsContent(newAddress);
+				if (containsAddress) {
+					break;
 				}
 			}
 			if (!containsAddress) {
@@ -890,13 +880,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		Context.getPatientService().voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
 		
 		// void the person associated with not preferred patient
-		personService.voidPerson(notPreferred,
+		Context.getPersonService().voidPerson(notPreferred,
 		    "The patient corresponding to this person has been voided and Merged with patient #" + preferred.getPatientId());
 		
 		// associate the Users associated with the not preferred person, to the preferred person.
 		changeUserAssociations(preferred, notPreferred);
 		
-		//
 		// Save the newly update preferred patient
 		// This must be called _after_ voiding the nonPreferred patient so that
 		//  a "Duplicate Identifier" error doesn't pop up.
