@@ -90,7 +90,7 @@
 			<property name="complex" type="boolean" column="complex" length="1" not-null="true"/>
 			<property name="quantity" type="int" column="quantity" length="11"/>
 			<!-- bi-directional many-to-one association to Drug -->
-			<many-to-one name="drug" class="org.openmrs.Drug" not-null="true">
+			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false">
 				<column name="drug_inventory_id" />
 			</many-to-one>
 	
