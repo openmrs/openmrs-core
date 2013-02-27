@@ -13,12 +13,13 @@
  */
 package org.openmrs;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import static org.apache.commons.lang.StringUtils.defaultString;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
@@ -97,7 +98,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @should return false if obj has a missing person property
 	 * @should return true if properties are equal and have null person
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof PersonName) {
 			PersonName pname = (PersonName) obj;
 			if (this.personNameId != null && pname.getPersonNameId() != null)
@@ -116,7 +118,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getPersonNameId() == null)
 			return super.hashCode();
 		return this.getPersonNameId().hashCode();
@@ -134,38 +137,14 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean equalsContent(PersonName otherName) {
-		boolean returnValue = true;
-		
-		// these are the methods to compare. All are expected to be Strings
-		String[] methods = { "getGivenName", "getMiddleName", "getFamilyName" };
-		
-		Class nameClass = this.getClass();
-		
-		// loop over all of the selected methods and compare this and other
-		for (String methodName : methods) {
-			try {
-				Method method = nameClass.getMethod(methodName, new Class[] {});
-				
-				String thisValue = (String) method.invoke(this);
-				String otherValue = (String) method.invoke(otherName);
-				
-				if (otherValue != null && otherValue.length() > 0)
-					returnValue &= otherValue.equals(thisValue);
-				
-			}
-			catch (NoSuchMethodException e) {
-				log.warn("No such method for comparison " + methodName, e);
-			}
-			catch (IllegalAccessException e) {
-				log.error("Error while comparing names", e);
-			}
-			catch (InvocationTargetException e) {
-				log.error("Error while comparing names", e);
-			}
-			
-		}
-		
-		return returnValue;
+		return new EqualsBuilder().append(defaultString(otherName.getPrefix()), defaultString(prefix))
+		        .append(defaultString(otherName.getGivenName()), defaultString(givenName))
+		        .append(defaultString(otherName.getMiddleName()), defaultString(middleName))
+		        .append(defaultString(otherName.getFamilyNamePrefix()), defaultString(familyNamePrefix))
+		        .append(defaultString(otherName.getDegree()), defaultString(degree))
+		        .append(defaultString(otherName.getFamilyName()), defaultString(familyName))
+		        .append(defaultString(otherName.getFamilyName2()), defaultString(familyName2))
+		        .append(defaultString(otherName.getFamilyNameSuffix()), defaultString(familyNameSuffix)).isEquals();
 	}
 	
 	/**
@@ -223,7 +202,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @return Returns the dateVoided.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public Date getDateVoided() {
 		return super.getDateVoided();
 	}
@@ -231,7 +211,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public void setDateVoided(Date dateVoided) {
 		super.setDateVoided(dateVoided);
 	}
@@ -254,7 +235,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * @return Returns the familyName.
-	 * @should return obscured name if obscure_patients is set to true 
+	 * @should return obscured name if obscure_patients is set to true
 	 */
 	@Element(data = true, required = false)
 	public String getFamilyName() {
@@ -442,7 +423,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @see #isVoided()
 	 */
-	@Attribute(required = true)
+	@Override
+    @Attribute(required = true)
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -452,7 +434,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @param voided The voided to set.
 	 */
-	@Attribute(required = true)
+	@Override
+    @Attribute(required = true)
 	public void setVoided(Boolean voided) {
 		super.setVoided(voided);
 	}
@@ -462,7 +445,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @return Returns the voidedBy.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public User getVoidedBy() {
 		return super.getVoidedBy();
 	}
@@ -472,7 +456,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @param voidedBy The voidedBy to set.
 	 */
-	@Element(required = false)
+	@Override
+    @Element(required = false)
 	public void setVoidedBy(User voidedBy) {
 		super.setVoidedBy(voidedBy);
 	}
@@ -482,7 +467,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @return Returns the voidReason.
 	 */
-	@Element(data = true, required = false)
+	@Override
+    @Element(data = true, required = false)
 	public String getVoidReason() {
 		return super.getVoidReason();
 	}
@@ -492,7 +478,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * 
 	 * @param voidReason The voidReason to set.
 	 */
-	@Element(data = true, required = false)
+	@Override
+    @Element(data = true, required = false)
 	public void setVoidReason(String voidReason) {
 		super.setVoidReason(voidReason);
 	}
@@ -535,9 +522,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
      */
     @Override
     public String toString() {
-    	// TODO find all uses of this toString() method and 
+    	// TODO find all uses of this toString() method and
     	// change them to use the getFullName() method.  This
-    	// to string should print out the #getPersonNameId() and 
+    	// to string should print out the #getPersonNameId() and
     	// all of the values for each part
     	
     	return getFullName();
