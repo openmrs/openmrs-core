@@ -807,12 +807,18 @@ public class ModuleUtil {
 					
 					if (module.getModuleActivator() != null) {
 						module.getModuleActivator().contextRefreshed();
-						//if it is system start up, call the started method for all started modules
-						if (isOpenmrsStartup)
-							module.getModuleActivator().started();
-						//if refreshing the context after a user started or uploaded a new module
-						else if (!isOpenmrsStartup && module.equals(startedModule))
-							module.getModuleActivator().started();
+						try {
+							//if it is system start up, call the started method for all started modules
+							if (isOpenmrsStartup)
+								module.getModuleActivator().started();
+							//if refreshing the context after a user started or uploaded a new module
+							else if (!isOpenmrsStartup && module.equals(startedModule))
+								module.getModuleActivator().started();
+						}
+						catch (Exception e) {
+							log.warn("Unable to invoke started() method on the module's activator", e);
+							ModuleFactory.stopModule(module);
+						}
 					}
 					
 				}
