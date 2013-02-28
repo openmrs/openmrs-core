@@ -819,7 +819,7 @@ public class ConceptTest {
 		concept.setShortName(cn);
 		Assert.assertEquals(ConceptNameType.SHORT, cn.getConceptNameType());
 	}
-
+	
 	@Test
 	public void setBlankShortName_shouldVoidTheOldOne() {
 		Concept concept = new Concept();
