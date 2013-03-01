@@ -3,11 +3,10 @@ package org.openmrs.api.db.hibernate;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
+import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.api.db.OpenmrsMetadataDAO;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Abstract class implementing basic data access methods for BaseOpenmrsMetadata persistents
@@ -16,35 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @param <T>
  */
-public abstract class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> implements OpenmrsMetadataDAO<T> {
-	
-	@Autowired
-	protected SessionFactory sessionFactory;
-
-	private Class<T> mappedClass;
+public class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends HibernateOpenmrsObjectDAO<T> implements OpenmrsMetadataDAO<T> {
 	
 	public HibernateOpenmrsMetadataDAO(Class<T> mappedClass) {
 		super();
 		this.mappedClass = mappedClass;
-	}
-
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-
-	/**
-	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getById(java.lang.Integer)
-	 */
-	public T getById(Integer id) {
-		return (T) sessionFactory.getCurrentSession().get(mappedClass, id);
-	}
-
-	/**
-	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getByUuid(java.lang.String)
-	 */
-	public T getByUuid(String uuid) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(mappedClass);
-		return (T) crit.add(Restrictions.eq("uuid", uuid)).uniqueResult();
 	}
 
 	/**
@@ -59,20 +34,37 @@ public abstract class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata>
 		
 		return crit.list();
 	}
-
+	
 	/**
-	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#delete(org.openmrs.BaseOpenmrsMetadata)
+	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getAll(boolean, java.lang.Integer, java.lang.Integer)
 	 */
-	public void delete(T metadata) {
-		sessionFactory.getCurrentSession().delete(metadata);
+	public List<T> getAll(boolean includeRetired, Integer firstResult, Integer maxResults) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(mappedClass);
+		
+		if (!includeRetired) {
+			crit.add(Restrictions.eq("retired", false));
+		}
+		crit.setFirstResult(firstResult);
+		crit.setMaxResults(maxResults);
+		
+		return crit.list();
+
 	}
 
 	/**
-	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#saveOrUpdate(org.openmrs.BaseOpenmrsMetadata)
+	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getAllCount(boolean)
 	 */
-	public T saveOrUpdate(T metadata) {
-		sessionFactory.getCurrentSession().saveOrUpdate(metadata);
-		return metadata;
-	}
+	public int getAllCount(boolean includeRetired) {
 
+		String hql = "select count(*)" + " from " + mappedClass;
+
+		if (!includeRetired) {
+			hql += " where retired = false";
+		}
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+
+		Number count = (Number) query.uniqueResult();
+
+		return count == null ? 0 : count.intValue();
+	}
 }

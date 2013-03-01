@@ -3,11 +3,10 @@ package org.openmrs.api.db.hibernate;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
+import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.api.db.OpenmrsDataDAO;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Abstract class implementing basic data access methods for BaseOpenmrsData persistents
@@ -16,28 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @param <T>
  */
-public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> implements OpenmrsDataDAO<T> {
-	
-	@Autowired
-	protected SessionFactory sessionFactory;
-
-	private Class<T> mappedClass;
+public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends HibernateOpenmrsObjectDAO<T> implements OpenmrsDataDAO<T> {
 	
 	public HibernateOpenmrsDataDAO(Class<T> mappedClass) {
 		super();
 		this.mappedClass = mappedClass;
-	}
-
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-
-	/**
-	 * @see org.openmrs.api.db.OpenmrsDataDAO#getByUuid(java.lang.String)
-	 */
-	public T getByUuid(String uuid) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(mappedClass);
-		return (T) crit.add(Restrictions.eq("uuid", uuid)).uniqueResult();
 	}
 
 	/**
@@ -54,18 +36,36 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> implements Openm
 	}
 
 	/**
-	 * @see org.openmrs.api.db.OpenmrsDataDAO#delete(org.openmrs.BaseOpenmrsData)
+	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAll(boolean, java.lang.Integer, java.lang.Integer)
 	 */
-	public void delete(T persistent) {
-		sessionFactory.getCurrentSession().delete(persistent);
+	public List<T> getAll(boolean includeVoided, Integer firstResult, Integer maxResults) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(mappedClass);
+		
+		if (!includeVoided) {
+			crit.add(Restrictions.eq("voided", false));
+		}
+		crit.setFirstResult(firstResult);
+		crit.setMaxResults(maxResults);
+		
+		return crit.list();
+
 	}
 
 	/**
-	 * @see org.openmrs.api.db.OpenmrsDataDAO#saveOrUpdate(org.openmrs.BaseOpenmrsData)
+	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAllCount(boolean)
 	 */
-	public T saveOrUpdate(T persistent) {
-		sessionFactory.getCurrentSession().saveOrUpdate(persistent);
-		return persistent;
+	public int getAllCount(boolean includeVoided) {
+
+		String hql = "select count(*)" + " from " + mappedClass;
+
+		if (!includeVoided) {
+			hql += " where voided = false";
+		}
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+
+		Number count = (Number) query.uniqueResult();
+
+		return count == null ? 0 : count.intValue();
 	}
 
 }

@@ -11,46 +11,31 @@ import org.openmrs.BaseOpenmrsMetadata;
  * 
  * @since 1.10
  */
-public interface OpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> {
+public interface OpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends OpenmrsObjectDAO<T> {
 	
 	/**
-	 * Obtains a metadata object matching a given identifier
-	 * 
-	 * @param id the metadata identifier
-	 * @return the matching metadata object
-	 */
-	public T getById(Integer id) ;
-
-	/**
-	 * Obtains a metadata object matching a given UUID
-	 * 
-	 * @param uuid
-	 * @return the matching metadata object
-	 */
-	public T getByUuid(String uuid);
-
-	/**
-	 * Return a list of metadata objects optionally retired
+	 * Return a list of metadata objects (optionally retired)
 	 * 
 	 * @param includeRetired if true retired metadata is also returned
 	 * @return a list of all metadata objects of the given class
 	 */
-	public List<T> getAll(boolean includeRetired) ;
-
+	List<T> getAll(boolean includeRetired);
+	
 	/**
-	 * Completely deletes a metadata object from the database
-	 * 
-	 * @param metadata The metadata object to delete
+	 * Returns total number of persistents (optionally retired)
+	 * @param includeVoided
+	 * @return
 	 */
-	public void delete(T metadata) ;
-
+	int getAllCount(boolean includeRetired); 
+	
 	/**
-	 * Save or update the given metadata object in the database
-	 * 
-	 * @param metadata The metadata object to save or update
-	 * @return the metadata object that was saved or updated
+	 * Return a lists of metadata objects optionally retired, with paging
+	 * @param includeVoided
+	 * @param firstResult
+	 * @param maxResults
+	 * @return
 	 */
-	public T saveOrUpdate(T metadata) ;
+	List< T > getAll(boolean includeRetired, Integer firstResult, Integer maxResults);
 
 }
 

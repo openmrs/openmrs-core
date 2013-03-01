@@ -11,38 +11,31 @@ import org.openmrs.BaseOpenmrsData;
  * 
  * @since 1.10
  */
-public interface OpenmrsDataDAO<T extends BaseOpenmrsData> {
+public interface OpenmrsDataDAO<T extends BaseOpenmrsData> extends OpenmrsObjectDAO<T> {
 	
 	/**
-	 * Obtains a persistent matching a given UUID
-	 * 
-	 * @param uuid
-	 * @return the matching persistent
-	 */
-	public T getByUuid(String uuid);
-
-	/**
-	 * Return a list of persistents optionally voided
+	 * Return a list of persistents (optionally voided)
 	 * 
 	 * @param includeVoided if true voided persistents are also returned
 	 * @return a list of persistents of the given class
 	 */
-	public List<T> getAll(boolean includeVoided) ;
-
+	List<T> getAll(boolean includeVoided) ;
+	
 	/**
-	 * Completely deletes a persistent from the database
-	 * 
-	 * @param persistent The persistent to delete
+	 * Returns total number of persistents (optionally voided)
+	 * @param includeVoided
+	 * @return
 	 */
-	public void delete(T persistent) ;
-
+	int getAllCount(boolean includeVoided); 
+	
 	/**
-	 * Save or update the given persistent in the database
-	 * 
-	 * @param persistent The persistent to save or update
-	 * @return the persistent that was saved or updated
+	 * Return a lists of persistents optionally voided, with paging
+	 * @param includeVoided
+	 * @param firstResult
+	 * @param maxResults
+	 * @return
 	 */
-	public T saveOrUpdate(T persistent) ;
+	List< T > getAll(boolean includeVoided, Integer firstResult, Integer maxResults);
 
 }
 
