@@ -4,9 +4,11 @@
  */
 package org.openmrs.aop;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import javax.annotation.Resource;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -52,9 +54,9 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 		Context.getConceptService().saveConcept(concept);
 		
 		Assert.assertArrayEquals("listener 1 save concept: " + listener1.hasPrivileges.toString(), new String[] {
-		        "Manage Concepts", "Get Concepts", "Get Observations", "Get Concepts" }, listener1.hasPrivileges.toArray());
+		        "Manage Concepts", "Get Concepts", "Get Observations" }, listener1.hasPrivileges.toArray());
 		Assert.assertArrayEquals("listener 2 save concept: " + listener2.hasPrivileges.toString(), new String[] {
-		        "Manage Concepts", "Get Concepts", "Get Observations", "Get Concepts" }, listener2.hasPrivileges.toArray());
+		        "Manage Concepts", "Get Concepts", "Get Observations" }, listener2.hasPrivileges.toArray());
 		Assert.assertEquals(0, listener1.lacksPrivileges.size());
 		Assert.assertEquals(0, listener2.lacksPrivileges.size());
 	}
@@ -62,9 +64,10 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	@Component("listener1")
 	public static class Listener1 implements PrivilegeListener {
 		
-		public List<String> hasPrivileges = new ArrayList<String>();
+		//We need to preserve order due to the semantics of Assert.assertArrayEquals
+		public Set<String> hasPrivileges = new LinkedHashSet<String>();
 		
-		public List<String> lacksPrivileges = new ArrayList<String>();
+		public Set<String> lacksPrivileges = new LinkedHashSet<String>();
 		
 		@Override
 		public void privilegeChecked(User user, String privilege, boolean hasPrivilege) {
