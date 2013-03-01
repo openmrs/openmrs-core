@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,6 +25,8 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -76,7 +79,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String,java.lang.Integer,java.lang.String,java.lang.String)
-	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(java.lang.String,java.lang.Integer,java.lang.String,java.lang.String)
+	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(String name, Integer birthyear, String gender)
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws DAOException {
@@ -248,25 +251,89 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getPeople(java.lang.String, java.lang.Boolean)
+	 *
+	 * @should get no one by null
+	 * @should get every one by empty string
+	 *
+	 * @should get no one by non-existing attribute
+	 * @should get no one by non-searchable attribute
+	 * @should get no one by voided attribute
+	 * @should get one person by attribute
+	 * @should get one person by random case attribute
+	 * @should get one person by searching for a mix of attribute and voided attribute
+	 * @should get multiple people by single attribute
+	 * @should get multiple people by multiple attributes
+	 *
+	 * @should get no one by non-existing name
+	 * @should get one person by name
+	 * @should get one person by random case name
+	 * @should get multiple people by single name
+	 * @should get multiple people by multiple names
+	 *
+	 * @should get no one by non-existing name and non-existing attribute
+	 * @should get no one by non-existing name and non-searchable attribute
+	 * @should get no one by non-existing name and voided attribute
+	 * @should get one person by name and attribute
+	 * @should get one person by name and voided attribute
+	 * @should get multiple people by name and attribute
+	 *
+	 * @should get one person by given name
+	 * @should get multiple people by given name
+	 *
+	 * @should get one person by middle name
+	 * @should get multiple people by middle name
+	 *
+	 * @should get one person by family name
+	 * @should get multiple people by family name
+	 *
+	 * @should get one person by family name2
+	 * @should get multiple people by family name2
+	 *
+	 * @should get one person by multiple name parts
+	 * @should get multiple people by multiple name parts
+	 *
+	 * @should get no one by voided name
+	 * @should not get voided person
+	 *
+	 * @should not get dead person
+	 * @should get single dead person
+	 * @should get multiple dead people
 	 */
+	
 	@SuppressWarnings("unchecked")
-	public List<Person> getPeople(String name, Boolean dead) {
-		name = name.replace(", ", " ");
-		String[] names = name.split(" ");
+	public List<Person> getPeople(String searchString, Boolean dead) {
+		if (searchString == null)
+			return new ArrayList<Person>();
+		
+		searchString = searchString.replace(", ", " ");
+		String[] values = searchString.split(" ");
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
-		criteria.createAlias("names", "name");
-		for (String n : names) {
-			if (n != null && n.length() > 0) {
-				criteria.add(Expression.or(Expression.like("name.givenName", n, MatchMode.START), Expression.or(Expression
-				        .like("name.familyName", n, MatchMode.START), Expression.or(Expression.like("name.middleName", n,
-				    MatchMode.START), Expression.like("name.familyName2", n, MatchMode.START)))));
+		
+		criteria.createAlias("names", "name", CriteriaSpecification.LEFT_JOIN);
+		criteria.createAlias("attributes", "attribute", CriteriaSpecification.LEFT_JOIN);
+		criteria.createAlias("attribute.attributeType", "attributeType", CriteriaSpecification.LEFT_JOIN);
+		
+		criteria.add(Restrictions.eq("personVoided", false));
+		if (dead != null)
+			criteria.add(Restrictions.eq("dead", dead));
+		
+		Disjunction disjunction = Restrictions.disjunction();
+		for (String value : values) {
+			if (value != null && value.length() > 0) {
+				disjunction.add(
+				    Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(
+				        Restrictions.disjunction().add(Restrictions.ilike("name.givenName", value, MatchMode.START)).add(
+				            Restrictions.ilike("name.middleName", value, MatchMode.START)).add(
+				            Restrictions.ilike("name.familyName", value, MatchMode.START)).add(
+				            Restrictions.ilike("name.familyName2", value, MatchMode.START)))).add(
+				    Restrictions.conjunction().add(Restrictions.eq("attributeType.searchable", true)).add(
+				        Restrictions.eq("attribute.voided", false)).add(
+				        Restrictions.ilike("attribute.value", value, MatchMode.ANYWHERE)));
 			}
 		}
+		criteria.add(disjunction);
 		
-		criteria.add(Expression.eq("personVoided", false));
-		if (dead != null)
-			criteria.add(Expression.eq("dead", dead));
 		criteria.addOrder(Order.asc("personId"));
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		criteria.setMaxResults(getMaximumSearchResults());
@@ -355,6 +422,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonDAO#getPersonAttributeTypes(java.lang.String, java.lang.String,
 	 *      java.lang.Integer, java.lang.Boolean)
 	 */
+	// TODO - PersonServiceTest fails here
 	@SuppressWarnings("unchecked")
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
 	        Boolean searchable) throws DAOException {
@@ -658,7 +726,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PersonDAO#getPersonMergeLogsByWinner(Person)
+	 * @see org.openmrs.api.db.PersonDAO#getAllPersonMergeLogs()
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
