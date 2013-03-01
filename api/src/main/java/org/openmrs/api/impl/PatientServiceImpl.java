@@ -60,6 +60,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -209,6 +210,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#getPatients(java.lang.String, java.lang.String,
 	 *      java.util.List, boolean)
 	 */
+	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) throws APIException {
 		
@@ -1534,7 +1536,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query))
 			return count;
 		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
-		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false, true));
+		
+		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query));
 	}
 	
 	/**
@@ -1567,7 +1570,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query))
 			return patients;
 		
-		return dao.getPatients(query, null, Collections.EMPTY_LIST, false, start, length, true);
+		return dao.getPatients(query, start, length);
 	}
 	
 	/**
