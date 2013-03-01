@@ -22,7 +22,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.gutter.tools" type="html">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 			<li>
-			<a href="<c:url value="${extension.url}" />"><openmrs:message code="${extension.label}"/></a>
+			<a href="${pageContext.request.contextPath}/${extension.url}"><openmrs:message code="${extension.label}"/></a>
 			</li>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>

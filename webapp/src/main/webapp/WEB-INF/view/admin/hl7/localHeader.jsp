@@ -41,7 +41,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.admin.hl7.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test='${fn:endsWith(pageContext.request.requestURI, link.key)}'>class="active"</c:if> >
-					<a href="<c:url value="${link.key}" />">
+					<a href="${pageContext.request.contextPath}/${link.key}">
 						<openmrs:message code="${link.value}"/>
 					</a>
 				</li>
