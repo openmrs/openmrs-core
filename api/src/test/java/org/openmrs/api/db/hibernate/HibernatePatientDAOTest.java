@@ -13,8 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.hamcrest.Matchers.contains;
-
 import java.util.List;
 
 import org.junit.Assert;
@@ -22,8 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.test.BaseContextSensitiveTest;
-
-import com.google.common.collect.Lists;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -44,38 +40,38 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernatePatientDAO#getAllPatientIdentifierTypes(boolean)
-	 * @verifies not return null excluding retired
+	 * @verifies not return null when includeRetired is false
 	 */
 	@Test
-	public void getAllPatientIdentifierTypes_shouldNotReturnNullExcludingRetired() throws Exception {
+	public void getAllPatientIdentifierTypes_shouldNotReturnNullWhenIncludeRetiredIsFalse() throws Exception {
 		Assert.assertNotNull(dao.getAllPatientIdentifierTypes(false));
 	}
 	
 	/**
 	 * @see HibernatePatientDAO#getAllPatientIdentifierTypes(boolean)
-	 * @verifies not return retired
+	 * @verifies not return retired when includeRetired is false
 	 */
 	@Test
-	public void getAllPatientIdentifierTypes_shouldNotReturnRetired() throws Exception {
+	public void getAllPatientIdentifierTypes_shouldNotReturnRetiredWhenIncludeRetiredIsFalse() throws Exception {
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getAllPatientIdentifierTypes(false);
 		Assert.assertEquals("patientIdentifierTypes list should have 2 elements", 2, patientIdentifierTypes.size());
 	}
 	
 	/**
 	 * @see HibernatePatientDAO#getAllPatientIdentifierTypes(boolean)
-	 * @verifies not return null including retired
+	 * @verifies not return null when includeRetired is true
 	 */
 	@Test
-	public void getAllPatientIdentifierTypes_shouldNotReturnNullIncludingRetired() throws Exception {
+	public void getAllPatientIdentifierTypes_shouldNotReturnNullWhenIncludeRetiredIsTrue() throws Exception {
 		Assert.assertNotNull(dao.getAllPatientIdentifierTypes(true));
 	}
 	
 	/**
 	 * @see HibernatePatientDAO#getAllPatientIdentifierTypes(boolean)
-	 * @verifies return all
+	 * @verifies return all when includeRetired is true
 	 */
 	@Test
-	public void getAllPatientIdentifierTypes_shouldReturnAll() throws Exception {
+	public void getAllPatientIdentifierTypes_shouldReturnAllWhenIncludeRetiredIsTrue() throws Exception {
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getAllPatientIdentifierTypes(true);
 		Assert.assertEquals("patientIdentifierTypes list should have 3 elements", 3, patientIdentifierTypes.size());
 	}
