@@ -21,6 +21,7 @@ omsgs.gender="<openmrs:message code="Person.gender" javaScriptEscape="true"/>";
 omsgs.genderRequired="<openmrs:message code='Person.gender.required'/>";
 omsgs.givenName="<openmrs:message code="PersonName.givenName" javaScriptEscape="true"/>";
 omsgs.identifier="<openmrs:message code="Patient.identifier" javaScriptEscape="true"/>";
+omsgs.searchLabel="<openmrs:message code="general.search" javaScriptEscape="true"/>";
 omsgs.includeDisabled="<openmrs:message code="SearchResults.includeDisabled" javaScriptEscape="true"/>";
 omsgs.includeRetired="<openmrs:message code="SearchResults.includeRetired" javaScriptEscape="true"/>";
 omsgs.includeVoided="<openmrs:message code="SearchResults.includeVoided" javaScriptEscape="true"/>";

@@ -25,7 +25,7 @@
 					searchPhrase:'<request:parameter name="phrase"/>',
 					showIncludeVerbose: true,
 					verboseHandler: doGetVerbose,
-					hasSearchButton: true
+					showSearchButton: true
 				});
 	});
 	
