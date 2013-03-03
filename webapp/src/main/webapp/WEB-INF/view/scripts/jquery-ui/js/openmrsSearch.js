@@ -899,10 +899,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		
 		_doKeyEnter: function() {
 			
-			
-			
-			
-			
 			var selectedRowIndex = null;
 			if(this.hoverRowSelection != null) {
 				selectedRowIndex = this.hoverRowSelection;
@@ -912,7 +908,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			
 			if(selectedRowIndex != null) {
 				this._doSelected(selectedRowIndex, this._results[selectedRowIndex]);
-			} else if (showSearchButton && selectedRowIndex == null) {
+			} else if (showSearchButton) {
 				if (($j.trim($j('#inputNode').val()) != '') || self.options.doSearchWhenEmpty) {
 					this._doSearch($j.trim($j('#inputNode').val()));
 				}
