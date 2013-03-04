@@ -408,7 +408,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map)
-	 * @verifies finds retired providers
+	 * @verifies finds retired providers by default
 	 */
 	@Test
 	public void getProviders_shouldReturnRetiredProvidersByDefault() throws Exception {
@@ -418,10 +418,10 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map, boolean)
-	 * @verifies does not find retired providers
+	 * @verifies does not find retired providers if includeRetired is false
 	 */
 	@Test
-	public void getProviders_shouldNotReturnRetiredProvidersIfIncludeRetiredFalse() throws Exception {
+	public void getProviders_shouldNotReturnRetiredProvidersIfIncludeRetiredIsFalse() throws Exception {
 		List<Provider> providers = service.getProviders(null, null, null, null, false);
 		Assert.assertEquals(7, providers.size());
 	}

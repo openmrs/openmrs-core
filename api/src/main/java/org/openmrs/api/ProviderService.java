@@ -174,7 +174,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should get all visits with given attribute values
 	 * @should not find any visits if none have given attribute values
 	 * @should return all providers if query is empty
-	 * @should not return retired providers
+	 * @should return retired providers
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public List<Provider> getProviders(String query, Integer start, Integer length,
