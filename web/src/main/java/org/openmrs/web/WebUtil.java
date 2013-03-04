@@ -171,7 +171,7 @@ public class WebUtil {
 	}
 	
 	/**
-	 * Method that returns WebConstants.WEBAPP_NAME or an empty string WebConstants.WEBAPP_NAME is empty.
+	 * Method that returns WebConstants.WEBAPP_NAME or an empty string if WebConstants.WEBAPP_NAME is empty.
 	 *
 	 * @return return WebConstants.WEBAPP_NAME or empty string if WebConstants.WEBAPP_NAME is null
 	 * @should return empty string if WebConstants.WEBAPP_NAME is null
