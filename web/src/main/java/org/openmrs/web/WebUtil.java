@@ -16,6 +16,7 @@ package org.openmrs.web;
 import java.util.Arrays;
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.LocaleUtility;
@@ -176,10 +177,6 @@ public class WebUtil {
 	 * @should return empty string if WebConstants.WEBAPP_NAME is null
 	 */
 	public static String getContextPath() {
-		return webappNameIsEmpty() ? "" : "/" + WebConstants.WEBAPP_NAME;
-	}
-	
-	private static boolean webappNameIsEmpty() {
-		return WebConstants.WEBAPP_NAME == null || WebConstants.WEBAPP_NAME.equals("");
+		return StringUtils.isEmpty(WebConstants.WEBAPP_NAME) ? "" : "/" + WebConstants.WEBAPP_NAME;
 	}
 }
