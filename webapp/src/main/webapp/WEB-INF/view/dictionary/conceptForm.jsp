@@ -738,7 +738,16 @@
 
 <div id="saveDeleteButtons" style="margin-top: 15px">
 <c:if test="${conceptsLocked != 'true'}">	
-	<input type="submit" name="action" value="<openmrs:message code="Concept.save"/>" onMouseUp="removeHiddenRows()"/>
+	
+	
+	<input type="submit" name="action" value="<openmrs:message code="Concept.saveAndContinue"/>" onMouseUp="removeHiddenRows()"/>
+	
+
+		<input type="submit" name="action" value="<openmrs:message code="Concept.save"/>"/>
+	
+
+		
+	
 	
 	<c:if test="${command.concept.conceptId != null}">
 		<openmrs:hasPrivilege privilege="Delete Concepts">
