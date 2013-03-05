@@ -304,7 +304,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should return only non voided patients and patient identifiers
 	 * @throws APIException
 	 * @should fetch patient identifiers that exactly matches given identifier
-	 * @should fetch patient identifiers that partially matches given identifier
+	 * @should not fetch patient identifiers that partially matches given identifier
 	 * @should fetch patient identifiers that match given patient identifier types
 	 * @should fetch patient identifiers that match given locations
 	 * @should fetch patient identifiers that match given patients
