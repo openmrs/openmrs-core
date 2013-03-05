@@ -70,6 +70,9 @@ public interface PatientDAO {
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,
 	 *      java.util.List, java.util.List, java.lang.Boolean)
+	 *      
+	 * @should fetch patient identifiers that equals given identifier
+	 * @should not fetch patient identifiers that partially matches given identifier  
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
 	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,

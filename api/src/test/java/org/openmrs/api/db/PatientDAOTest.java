@@ -271,5 +271,40 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, patientIdentifiers.size());
 		Assert.assertEquals("12345K", patientIdentifiers.get(0).getIdentifier());
 	}
+
+	/**
+	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @verifies not fetch patient identifiers that partially matches given identifier
+	 */
+	@Test
+	public void getPatientIdentifiers_shouldNotFetchPatientIdentifiersThatPartiallyMatchesGivenIdentifier()
+			throws Exception {
+
+		String identifier = "123"; // identifier [12345K] exist in test dataSet
+		
+		List<PatientIdentifier> patientIdentifiers 
+		= dao.getPatientIdentifiers(identifier, new ArrayList<PatientIdentifierType>(),
+			    new ArrayList<Location>(), new ArrayList<Patient>(), null);
+		
+		Assert.assertTrue(patientIdentifiers.isEmpty() );
+	}
+
+	/**
+	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @verifies fetch patient identifiers that equals given identifier
+	 */
+	@Test
+	public void getPatientIdentifiers_shouldFetchPatientIdentifiersThatEqualsGivenIdentifier()
+			throws Exception {
+		
+		String identifier = "101";
+		
+		List<PatientIdentifier> patientIdentifiers 
+		= dao.getPatientIdentifiers(identifier, new ArrayList<PatientIdentifierType>(),
+			    new ArrayList<Location>(), new ArrayList<Patient>(), null);
+		
+		Assert.assertEquals(1, patientIdentifiers.size());
+		Assert.assertEquals(identifier, patientIdentifiers.get(0).getIdentifier());
+	}
 	
 }

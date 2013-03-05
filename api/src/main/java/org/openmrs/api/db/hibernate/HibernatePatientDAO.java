@@ -255,7 +255,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		// make sure the patient object isn't voided
 		criteria.add(Expression.eq("voided", false));
 		
-		// TODO add junit test for getting by identifier (and for not getting by partial here)
 		if (identifier != null)
 			criteria.add(Expression.eq("identifier", identifier));
 		
