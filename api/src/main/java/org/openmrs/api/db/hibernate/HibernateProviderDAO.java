@@ -13,6 +13,10 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
@@ -32,10 +36,6 @@ import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProviderDAO;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Hibernate specific Provider related functions. This class should not be used directly. All calls
@@ -137,12 +137,20 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public List<Provider> getProviders(String name, Map<ProviderAttributeType, String> serializedAttributeValues,
-	        Integer start, Integer length) {
+	        Integer start, Integer length, boolean includeRetired) {
 		Criteria criteria = prepareProviderCriteria(name);
 		if (start != null)
 			criteria.setFirstResult(start);
 		if (length != null)
 			criteria.setMaxResults(length);
+		
+		if (!includeRetired) {
+			criteria.add(Expression.eq("retired", false));
+		} else {
+			//push retired Provider to the end of the returned list
+			criteria.addOrder(Order.asc("retired"));
+		}
+		
 		List<Provider> providers = criteria.list();
 		if (serializedAttributeValues != null) {
 			CollectionUtils.filter(providers, new AttributeMatcherPredicate<Provider, ProviderAttributeType>(
