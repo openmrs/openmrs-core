@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,14 +60,17 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	
 	private ThreadLocal<Date> date = new ThreadLocal<Date>();
 	
+	//Collection of entities that already have the audit info set
+	private ThreadLocal<HashSet<Object>> updates = new ThreadLocal<HashSet<Object>>();
+	
 	/**
 	 * @see org.hibernate.EmptyInterceptor#afterTransactionBegin(org.hibernate.Transaction)
 	 */
 	@Override
 	public void afterTransactionBegin(Transaction tx) {
 		//Ensures all Auditables in a transaction have uniform date created/changed
-		//NOTE: we still need to check if it is not null where before we use it
-		//Because if this intercetptor is being invoked again due to another commit in this
+		//NOTE: we still need to check if it is not null before we use it because
+		//if this interceptor is being invoked again due to another commit in this
 		//transaction by some other interceptor in the chain, date could be 
 		//null if afterTransactionCompletion which clears them was already called
 		date.set(new Date());
@@ -80,51 +84,57 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	public int[] findDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
 	        String[] propertyNames, Type[] types) {
 		
-		if (entity instanceof Auditable && propertyNames != null) {
-			SessionFactory sf = Context.getRegisteredComponents(SessionFactory.class).get(0);
-			Session currentSession = sf.getCurrentSession();
-			//we will load the previous states of the collection items in a new session
-			Session tempSession = null;
-			try {
-				propertiesLoop: for (int i = 0; i < propertyNames.length; i++) {
-					if (types[i].isCollectionType()) {
-						if (tempSession == null)
-							tempSession = SessionFactoryUtils.getNewSession(sf);
-						
-						Object coll = currentState[i];
-						
-						//TODO handle maps too
-						if (coll != null && Collection.class.isAssignableFrom(coll.getClass())) {
-							Collection<?> collection = (Collection<?>) coll;
-							if (!collection.isEmpty()) {
-								Class<?> elementClass = ((CollectionType) types[i]).getElementType(
-								    (SessionFactoryImplementor) sf).getReturnedClass();
-								ClassMetadata classMetadata = sf.getClassMetadata(elementClass);
-								//skip simple single value types e.g primitives, enums etc that have no classmetadata
-								//An example is Cohort.memberIds where the items are of a simple single value type
-								if (classMetadata != null) {
-									String[] properties = classMetadata.getPropertyNames();
-									for (Object item : collection) {
-										Object[] itemCurrentState = classMetadata.getPropertyValues(item, EntityMode.POJO);
-										//load the previous state from the DB and compare fields for changes
-										Serializable primaryKey = classMetadata.getIdentifier(item,
-										    (SessionImplementor) currentSession);
-										if (primaryKey != null) {//why is it null?
-											Object originalObject = tempSession.get(elementClass, primaryKey);
-											if (originalObject != null) {
-												Object[] itemPreviousState = classMetadata.getPropertyValues(originalObject,
-												    EntityMode.POJO);
-												
-												if (isDirty(itemCurrentState, itemPreviousState, properties)) {
-													try {
-														((Auditable) entity).setChangedBy(Context.getAuthenticatedUser());
-														((Auditable) entity).setDateChanged(new Date());
+		if (updates.get() == null || !updates.get().contains(entity)) {
+			if (entity instanceof Auditable && propertyNames != null) {
+				SessionFactory sf = Context.getRegisteredComponents(SessionFactory.class).get(0);
+				Session currentSession = sf.getCurrentSession();
+				//we will load the previous states of the collection items in a new session
+				Session tempSession = null;
+				try {
+					propertiesLoop: for (int i = 0; i < propertyNames.length; i++) {
+						if (types[i].isCollectionType()) {
+							if (tempSession == null)
+								tempSession = SessionFactoryUtils.getNewSession(sf);
+							
+							Object coll = currentState[i];
+							
+							//TODO handle maps too
+							if (coll != null && Collection.class.isAssignableFrom(coll.getClass())) {
+								Collection<?> collection = (Collection<?>) coll;
+								if (!collection.isEmpty()) {
+									Class<?> elementClass = ((CollectionType) types[i]).getElementType(
+									    (SessionFactoryImplementor) sf).getReturnedClass();
+									ClassMetadata classMetadata = sf.getClassMetadata(elementClass);
+									//skip simple single value types e.g primitives, enums etc that have no classmetadata
+									//An example is Cohort.memberIds where the items are of a simple single value type
+									if (classMetadata != null) {
+										String[] properties = classMetadata.getPropertyNames();
+										for (Object item : collection) {
+											Object[] itemCurrentState = classMetadata.getPropertyValues(item,
+											    EntityMode.POJO);
+											//load the previous state from the DB and compare fields for changes
+											Serializable primaryKey = classMetadata.getIdentifier(item,
+											    (SessionImplementor) currentSession);
+											if (primaryKey != null) {//why is it null?
+												Object originalObject = tempSession.get(elementClass, primaryKey);
+												if (originalObject != null) {
+													Object[] itemPreviousState = classMetadata.getPropertyValues(
+													    originalObject, EntityMode.POJO);
+													
+													if (isDirty(itemCurrentState, itemPreviousState, properties)) {
+														try {
+															((Auditable) entity)
+															        .setChangedBy(Context.getAuthenticatedUser());
+															((Auditable) entity).setDateChanged(new Date());
+														}
+														catch (Exception e) {
+															if (!(e instanceof UnsupportedOperationException))
+																log.warn("Error while setting audit info:", e);
+														}
+														
+														addToUpdates(entity);
+														break propertiesLoop;
 													}
-													catch (Exception e) {
-														if (!(e instanceof UnsupportedOperationException))
-															log.warn("Error while setting audit info:", e);
-													}
-													break propertiesLoop;
 												}
 											}
 										}
@@ -134,10 +144,10 @@ public class AuditableInterceptor extends EmptyInterceptor {
 						}
 					}
 				}
-			}
-			finally {
-				if (tempSession != null)
-					tempSession.close();
+				finally {
+					if (tempSession != null)
+						tempSession.close();
+				}
 			}
 		}
 		
@@ -190,6 +200,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 			if (setValue(currentState, propertyNames, "dateChanged", (date.get() != null) ? date.get() : new Date(), false)) {
 				objectWasChanged = true;
 			}
+			
+			addToUpdates(entity);
 		}
 		
 		return objectWasChanged;
@@ -205,10 +217,13 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	public void onCollectionUpdate(Object collection, Serializable key) throws CallbackException {
 		if (collection != null) {
 			Object owningObject = ((PersistentCollection) collection).getOwner();
-			if (owningObject instanceof Auditable) {
-				Auditable auditable = (Auditable) owningObject;
-				auditable.setDateChanged(new Date());
-				auditable.setChangedBy(Context.getAuthenticatedUser());
+			if (updates.get() == null || !updates.get().contains(owningObject)) {
+				if (owningObject instanceof Auditable) {
+					Auditable auditable = (Auditable) owningObject;
+					auditable.setDateChanged((date.get() != null) ? date.get() : new Date());
+					auditable.setChangedBy(Context.getAuthenticatedUser());
+					addToUpdates(owningObject);
+				}
 			}
 		}
 	}
@@ -219,6 +234,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	@Override
 	public void afterTransactionCompletion(Transaction tx) {
 		date.remove();
+		updates.remove();
 	}
 	
 	/**
@@ -328,5 +344,11 @@ public class AuditableInterceptor extends EmptyInterceptor {
 			}
 		}
 		return false;
+	}
+	
+	private void addToUpdates(Object entity) {
+		if (updates.get() == null)
+			updates.set(new HashSet<Object>());
+		updates.get().add(entity);
 	}
 }

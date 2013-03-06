@@ -275,8 +275,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	@NotTransactional
 	public void onFlushDirty_shouldSetTheAuditInfoOnAParentWhenAnElementInAChildCollectionIsUpdated() throws Exception {
 		try {
-			//This will avoid a LazyInitializationException when accessing the collection
-			//because this is  non transactional test method
 			Context.openSessionWithCurrentUser();
 			ConceptService cs = Context.getConceptService();
 			ConceptReferenceTerm term = cs.getConceptReferenceTerm(1);
