@@ -132,5 +132,6 @@ public class ConceptReferenceTermValidator implements Validator {
 				index++;
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "code", "version");
 	}
 }

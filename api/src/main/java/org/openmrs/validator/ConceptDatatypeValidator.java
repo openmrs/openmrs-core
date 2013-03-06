@@ -58,6 +58,7 @@ public class ConceptDatatypeValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "hl7Abbreviation");
 	}
 	
 }

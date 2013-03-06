@@ -98,6 +98,8 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 				}
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, target.getClass(), "datatypeClassname", "datatypeConfig",
+			    "preferredHandlerClassname", "handlerConfig");
 	}
 	
 }

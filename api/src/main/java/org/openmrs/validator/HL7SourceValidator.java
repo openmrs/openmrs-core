@@ -59,6 +59,7 @@ public class HL7SourceValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
+		
 	}
 	
 }

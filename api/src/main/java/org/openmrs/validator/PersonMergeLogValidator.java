@@ -63,6 +63,7 @@ public class PersonMergeLogValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "winner", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "loser", "error.null");
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "serializedMergedData");
 	}
 	
 }

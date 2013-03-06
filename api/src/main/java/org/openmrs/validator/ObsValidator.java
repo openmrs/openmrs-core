@@ -68,6 +68,8 @@ public class ObsValidator implements Validator {
 		List<Obs> ancestors = new ArrayList<Obs>();
 		//ancestors.add(obs);
 		validateHelper(obs, errors, ancestors, true);
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueText",
+		    "valueComplex", "comment");
 	}
 	
 	/**

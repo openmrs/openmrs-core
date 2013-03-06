@@ -55,5 +55,6 @@ public class RelationshipTypeValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "aIsToB", "RelationshipType.aIsToB.required");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "bIsToA", "RelationshipType.bIsToA.required");
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "aIsToB", "bIsToA");
 	}
 }
