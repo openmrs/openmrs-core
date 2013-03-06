@@ -15,16 +15,28 @@ package org.openmrs.api.db.hibernate;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
+import org.hibernate.EntityMode;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.collection.PersistentCollection;
+import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.engine.SessionImplementor;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.type.CollectionType;
 import org.hibernate.type.Type;
 import org.openmrs.Auditable;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
+import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
 /**
  * This class looks for {@link OpenmrsObject} and {@link Auditable} that are being inserted into the
@@ -34,7 +46,8 @@ import org.openmrs.api.context.Context;
  * <br/>
  * This class replaces the logic that was in the AuditableSaveHandler. It is here so that the
  * cascading does NOT happen for dateChanged/changedBy to child OpenmrsObjects (because all handlers
- * recurse on lists of OpenmrsObjects.
+ * recurse on lists of OpenmrsObjects. However, cascading does happen for dateChanged/changedBy from
+ * items in child collections to their parent objects.
  * 
  * @since 1.9
  */
@@ -44,8 +57,96 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private ThreadLocal<Date> date = new ThreadLocal<Date>();
+	
+	/**
+	 * @see org.hibernate.EmptyInterceptor#afterTransactionBegin(org.hibernate.Transaction)
+	 */
+	@Override
+	public void afterTransactionBegin(Transaction tx) {
+		//Ensures all Auditables in a transaction have uniform date created/changed
+		//NOTE: we still need to check if it is not null where before we use it
+		//Because if this intercetptor is being invoked again due to another commit in this
+		//transaction by some other interceptor in the chain, date could be 
+		//null if afterTransactionCompletion which clears them was already called
+		date.set(new Date());
+	}
+	
+	/**
+	 * @see org.hibernate.EmptyInterceptor#findDirty(java.lang.Object, java.io.Serializable,
+	 *      java.lang.Object[], java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
+	 */
+	@Override
+	public int[] findDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
+	        String[] propertyNames, Type[] types) {
+		
+		if (entity instanceof Auditable && propertyNames != null) {
+			SessionFactory sf = Context.getRegisteredComponents(SessionFactory.class).get(0);
+			Session currentSession = sf.getCurrentSession();
+			//we will load the previous states of the collection items in a new session
+			Session tempSession = null;
+			try {
+				propertiesLoop: for (int i = 0; i < propertyNames.length; i++) {
+					if (types[i].isCollectionType()) {
+						if (tempSession == null)
+							tempSession = SessionFactoryUtils.getNewSession(sf);
+						
+						Object coll = currentState[i];
+						
+						//TODO handle maps too
+						if (coll != null && Collection.class.isAssignableFrom(coll.getClass())) {
+							Collection<?> collection = (Collection<?>) coll;
+							if (!collection.isEmpty()) {
+								Class<?> elementClass = ((CollectionType) types[i]).getElementType(
+								    (SessionFactoryImplementor) sf).getReturnedClass();
+								ClassMetadata classMetadata = sf.getClassMetadata(elementClass);
+								//skip simple single value types e.g primitives, enums etc that have no classmetadata
+								//An example is Cohort.memberIds where the items are of a simple single value type
+								if (classMetadata != null) {
+									String[] properties = classMetadata.getPropertyNames();
+									for (Object item : collection) {
+										Object[] itemCurrentState = classMetadata.getPropertyValues(item, EntityMode.POJO);
+										//load the previous state from the DB and compare fields for changes
+										Serializable primaryKey = classMetadata.getIdentifier(item,
+										    (SessionImplementor) currentSession);
+										if (primaryKey != null) {//why is it null?
+											Object originalObject = tempSession.get(elementClass, primaryKey);
+											if (originalObject != null) {
+												Object[] itemPreviousState = classMetadata.getPropertyValues(originalObject,
+												    EntityMode.POJO);
+												
+												if (isDirty(itemCurrentState, itemPreviousState, properties)) {
+													try {
+														((Auditable) entity).setChangedBy(Context.getAuthenticatedUser());
+														((Auditable) entity).setDateChanged(new Date());
+													}
+													catch (Exception e) {
+														if (!(e instanceof UnsupportedOperationException))
+															log.warn("Error while setting audit info:", e);
+													}
+													break propertiesLoop;
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			finally {
+				if (tempSession != null)
+					tempSession.close();
+			}
+		}
+		
+		return super.findDirty(entity, id, currentState, previousState, propertyNames, types);
+	}
+	
 	/**
 	 * This method is only called when inserting new objects.
+	 * 
 	 * @should return true if dateCreated was null
 	 * @should return true if creator was null
 	 * @should return false if dateCreated and creator was not null
@@ -67,6 +168,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	 * @should set the changedBy field
 	 * @should be called when saving an Auditable
 	 * @should not enter into recursion on entity
+	 * @should set the audit info on a parent when an element in a child collection is updated
 	 * @see org.hibernate.EmptyInterceptor#onFlushDirty(java.lang.Object, java.io.Serializable,
 	 *      java.lang.Object[], java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
 	 */
@@ -85,12 +187,38 @@ public class AuditableInterceptor extends EmptyInterceptor {
 				objectWasChanged = true;
 			}
 			
-			if (setValue(currentState, propertyNames, "dateChanged", new Date(), false)) {
+			if (setValue(currentState, propertyNames, "dateChanged", (date.get() != null) ? date.get() : new Date(), false)) {
 				objectWasChanged = true;
 			}
 		}
 		
 		return objectWasChanged;
+	}
+	
+	/**
+	 * @see org.hibernate.EmptyInterceptor#onCollectionUpdate(java.lang.Object,
+	 *      java.io.Serializable)
+	 * @should set the audit info on a parent when an element is added to a child collection
+	 * @should set the audit info on a parent when an element is removed from a child collection
+	 */
+	@Override
+	public void onCollectionUpdate(Object collection, Serializable key) throws CallbackException {
+		if (collection != null) {
+			Object owningObject = ((PersistentCollection) collection).getOwner();
+			if (owningObject instanceof Auditable) {
+				Auditable auditable = (Auditable) owningObject;
+				auditable.setDateChanged(new Date());
+				auditable.setChangedBy(Context.getAuthenticatedUser());
+			}
+		}
+	}
+	
+	/**
+	 * @see org.hibernate.EmptyInterceptor#afterTransactionCompletion(org.hibernate.Transaction)
+	 */
+	@Override
+	public void afterTransactionCompletion(Transaction tx) {
+		date.remove();
 	}
 	
 	/**
@@ -113,7 +241,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 				objectWasChanged = true;
 			}
 			
-			if (setValue(currentState, propertyNames, "dateCreated", new Date(), true)) {
+			if (setValue(currentState, propertyNames, "dateCreated", (date.get() != null) ? date.get() : new Date(), true)) {
 				objectWasChanged = true;
 			}
 		}
@@ -183,4 +311,22 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		return false;
 	}
 	
+	/**
+	 * Contains custom logic for checking for a dirty object
+	 * 
+	 * @param currentState
+	 * @param previousState
+	 * @param propertyNames
+	 * @return true if the object associated to the states is dirty
+	 */
+	private boolean isDirty(Object[] currentState, Object[] previousState, String[] propertyNames) {
+		for (int i = 0; i < propertyNames.length; i++) {
+			Object previousValue = (previousState != null) ? previousState[i] : null;
+			Object currentValue = (currentState != null) ? currentState[i] : null;
+			if (!OpenmrsUtil.nullSafeEquals(previousValue, currentValue)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
