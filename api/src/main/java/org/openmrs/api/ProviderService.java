@@ -209,7 +209,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should include retired providers if includeRetired is set to true
 	 * @since 1.9.4
 	 */
-	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
+	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public Integer getCountOfProviders(String query, boolean includeRetired);
 	
 	/**
