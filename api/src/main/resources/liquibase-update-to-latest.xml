@@ -34,13 +34,6 @@
 			<column name="edit_privilege" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="1-fix" author="sunbiz" dbms="mysql">
-		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="person_attribute_type" columnName="edit_privilege"/>
-		</preConditions>
-		<comment>(Fixed)Modified edit_privilege to correct column size</comment>
-		<modifyDataType tableName="person_attribute_type" columnName="edit_privilege" newDataType="varchar(50)"/>
-	</changeSet>
 	
 	<changeSet id="2" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
@@ -7028,9 +7021,12 @@
 		<comment>
 			Increasing the size of the edit_privilege column in the person_attribute_type table
 		</comment>
+		<dropForeignKeyConstraint baseTableName="person_attribute_type" constraintName="privilege_which_can_edit"/>
 		<ext:modifyColumn tableName="person_attribute_type">
 		    <column name="edit_privilege" type="varchar(255)" />
 		</ext:modifyColumn>
+		<addForeignKeyConstraint baseTableName="person_attribute_type" baseColumnNames="edit_privilege" constraintName="privilege_which_can_edit"
+                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
 	
 	<changeSet id="20120613-0930" author="wyclif">
@@ -7384,9 +7380,13 @@
 			<columnExists tableName="test_order" columnName="order_id"/>
 		</preConditions>
 		<comment>Removing auto increment from test_order.order_id column</comment>
+		<dropForeignKeyConstraint baseTableName="test_order" constraintName="test_order_order_id_fk"/>
 		<ext:modifyColumn tableName="test_order">
 		    <column name="order_id" type="int" />
 		</ext:modifyColumn>
+		<addForeignKeyConstraint constraintName="test_order_order_id_fk"
+			baseTableName="test_order" baseColumnNames="order_id"
+			referencedTableName="orders" referencedColumnNames="order_id" />
 	</changeSet>
 
     <changeSet id="20121020-TRUNK-3610" author="lluismf">
