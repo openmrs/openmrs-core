@@ -285,4 +285,18 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 		
 		return null;
 	}
+	
+	/**
+	 * Convenience method that returns a display name for the drug, defaults to drug.name
+	 * 
+	 * @return the display name
+	 * @since 1.10
+	 */
+	public String getDisplayName() {
+		if (StringUtils.isNotBlank(getName()))
+			return getName();
+		if (getConcept() != null)
+			return getConcept().getName().getName();
+		return "";
+	}
 }
