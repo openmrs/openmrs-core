@@ -430,6 +430,16 @@
 	&nbsp;
 	<input type="button" value='<openmrs:message code="general.cancel"/>' onclick="history.go(-1); return; document.location='index.htm?autoJump=false&phrase=<request:parameter name="phrase"/>'">
 	</form>
+
+<!-- If new encounter add a provider row by default -->	
+<c:if test="${encounter.encounterId == null}">
+	<script>
+		var providerIds = document.getElementsByName("providerIds");
+		if(providerIds.length == 1) {
+			addProvider();
+		}		
+	</script>
+</c:if>
 	
 <c:if test="${encounter.encounterId != null}">
 	<br/>
