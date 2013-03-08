@@ -134,19 +134,14 @@ public class PatientSearchCriteria {
 		// TODO add junit test for searching on voided identifiers
 		
 		// add the join on the identifiers table
-		if (searchOnNamesOrIdentifiers) {
-			//We need to fetch patients even if only their names match
-			criteria.createAlias("identifiers", "ids", Criteria.LEFT_JOIN);
-		} else {
-			criteria.createAlias("identifiers", "ids");
-		}
+		criteria.createAlias("identifiers", "ids");
 		
 		conjuction.add(Restrictions.eq("ids.voided", false));
 		// do the identifier restriction
 		if (identifier != null) {
 			// if the user wants an exact search, match on that.
 			if (matchIdentifierExactly) {
-				conjuction.add(Restrictions.eq("ids.identifier", identifier));
+				conjuction.add(Restrictions.eq("ids.identifier", identifier).ignoreCase());
 			} else {
 				AdministrationService adminService = Context.getAdministrationService();
 				String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "");
@@ -195,7 +190,7 @@ public class PatientSearchCriteria {
 		String prefix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "");
 		String suffix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "");
 		StringBuffer likeString = new StringBuffer(prefix).append(identifier).append(suffix);
-		return Restrictions.like("ids.identifier", likeString.toString());
+		return Restrictions.ilike("ids.identifier", likeString.toString());
 	}
 	
 	/**

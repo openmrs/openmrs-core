@@ -566,6 +566,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldAllowExactSearchOfForTwoCharacterName() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "2"));
 		assertEquals(1, Context.getPatientService().getPatients("Ho").size());
 	}
 	
@@ -3239,7 +3241,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addIdentifier(pId);
 		patientService.savePatient(patient);
 		
-		Assert.assertEquals(1, patientService.getPatients(identifier, null, (Integer) null).size());
+		Assert.assertEquals(1, patientService.getPatients(identifier).size());
 	}
 	
 	/**
