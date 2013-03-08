@@ -613,6 +613,24 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		_handleResults: function(searchText, curCallCount) {
 			var self = this;
 			return function(results) {
+				//Don't display results from delayed ajax calls when the input box is blank or has less 
+				//than the minimum characters, this can arise when user presses backspace relatively fast
+				//yet there were some intermediate calls that might have returned results
+				var currInput = $j.trim($j("#inputNode").val());
+				if(currInput == '' && !self.options.doSearchWhenEmpty){
+					if($j('#pageInfo').css("visibility") == 'visible')
+						$j('#pageInfo').css("visibility", "hidden");
+					if($j('#spinner').css("visibility") == 'visible')
+						$j("#spinner").css("visibility", "hidden");
+					$j(".openmrsSearchDiv").hide();
+					return;
+				}
+				
+				if(curCallCount && self._lastCallCount > curCallCount) {
+					//stop old ajax calls from over writing later ones
+					return;
+				}
+				
 				if(results["notification"])
 					$j(notification).html(results["notification"]);
 				
@@ -634,26 +652,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				if(matchCount <= self._table.fnSettings()._iDisplayLength){
 					spinnerObj.css("visibility", "hidden");
 					loadingMsgObj.html("");
-				}
-
-				if(curCallCount && self._lastCallCount > curCallCount) {
-					//stop old ajax calls from over writing later ones
-					return;
-				}
-				
-				//Don't display results from delayed ajax calls when the input box is blank or has less 
-				//than the minimum characters, this can arise when user presses backspace relatively fast
-				//yet there were some intermediate calls that might have returned results
-				var currInput = $j.trim($j("#inputNode").val());
-				if(currInput == '' && !self.options.doSearchWhenEmpty){
-					if($j('#pageInfo').css("visibility") == 'visible')
-						$j('#pageInfo').css("visibility", "hidden");
-					if($j('#spinner').css("visibility") == 'visible')
-						$j("#spinner").css("visibility", "hidden");
-					$j(".openmrsSearchDiv").hide();
-					if(currInput.length > 0)
-						$j("#minCharError").css("visibility", "visible");
-					return;
 				}
 				
 				self._doHandleResults(matchCount, searchText);
