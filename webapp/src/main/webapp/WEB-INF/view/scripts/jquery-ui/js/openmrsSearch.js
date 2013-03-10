@@ -208,6 +208,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	    		input.after("<input type='button' id='searchButton' name='searchButton' value='" + omsgs.searchLabel + "' />");
 	    		$j('#searchButton').click(function() {
 	    			if ($j.trim(input.val()) != '' || self.options.doSearchWhenEmpty) {
+	    				//if there is any delay in progress, cancel it
+		    			if(self._searchDelayTimer != null) {
+		    				window.clearTimeout(self._searchDelayTimer);
+		    			}
 	    				self._doSearch($j.trim(input.val()));
 	    				input.focus();
 	    			}
@@ -266,8 +270,14 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		if(!(self._div.find(".openmrsSearchDiv").css("display") != 'none') && ($j.trim(input.val()) == '')) {
 						return true;
 					}
-		    		if(kc == 13)
+		    		if(kc == 13) {
+		    			//if there is any delay in progress, cancel it
+		    			if(self._searchDelayTimer != null) {
+		    				window.clearTimeout(self._searchDelayTimer);
+		    			}
 		    			self._doKeyEnter();
+		    		}
+		    		
 			    	//kill the event
 			    	event.stopPropagation();
 			    				    	
