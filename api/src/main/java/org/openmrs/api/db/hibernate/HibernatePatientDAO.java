@@ -251,7 +251,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		criteria.createAlias("patient", "patient");
 		criteria.add(Expression.eq("patient.voided", false));
 		
-		// TODO add junit test for not getting voided
 		// make sure the patient object isn't voided
 		criteria.add(Expression.eq("voided", false));
 		
