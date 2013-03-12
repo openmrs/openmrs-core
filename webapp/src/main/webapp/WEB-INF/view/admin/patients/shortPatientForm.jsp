@@ -439,7 +439,8 @@
 		<th class="headerCell" valign="top"><openmrs:message code="Person.address"/></th>
 		<td class="inputCell">
 			<spring:nestedPath path="personAddress">
-				<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=false" />
+				<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" 
+					parameters="layoutShowTable=true|layoutShowExtended=false|isNew=${patientModel.personAddress.personAddressId == null}" />
 			</spring:nestedPath>
 		</td>
 	</tr>

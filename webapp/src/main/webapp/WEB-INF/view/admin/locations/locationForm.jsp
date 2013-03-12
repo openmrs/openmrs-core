@@ -55,7 +55,7 @@
 			</td>
 		</tr>
 		<spring:nestedPath path="location">
-			<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=false|layoutShowExtended=false|layoutShowErrors=false" />
+			<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=false|layoutShowExtended=false|layoutShowErrors=false|isNew=${location.locationId == null}" />
 		</spring:nestedPath>
 		<tr>
 			<th valign="top"><openmrs:message code="Location.parentLocation"/></th>

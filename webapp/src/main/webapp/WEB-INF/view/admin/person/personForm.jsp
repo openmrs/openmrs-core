@@ -321,7 +321,7 @@
 				<c:forEach var="address" items="${person.addresses}" varStatus="varStatus">
 					<spring:nestedPath path="person.addresses[${varStatus.index}]">
 						<div id="address${varStatus.index}Data" class="tabBox">
-							<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=${(address.personAddressId == null)}" />
+							<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=${(address.personAddressId == null)}|isNew=${(address.personAddressId == null)}" />
 							<%-- @ include file="include/editPersonAddress.jsp" --%>
 							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<openmrs:message code="Person.removeThisAddress"/>'/><br/> --> <br/>
 						</div>
@@ -329,7 +329,7 @@
 				</c:forEach>
 				<div id="addressData" class="tabBox">
 					<spring:nestedPath path="emptyAddress">
-						<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=true" />
+						<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=true|isNew=true" />
 						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<openmrs:message code="Person.removeThisAddress"/>'/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
