@@ -243,6 +243,15 @@ public abstract class LayoutTemplate {
 	}
 	
 	/**
+	 * Gets an element default by key
+	 * @param key
+	 * @return
+	 */
+	public String getElementDefault(String key) {
+		return elementDefaults == null ? null : elementDefaults.get(key);
+	}
+	
+	/**
 	 * @param elementDefaults the elementDefaults to set
 	 */
 	public void setElementDefaults(Map<String, String> elementDefaults) {
@@ -352,7 +361,7 @@ public abstract class LayoutTemplate {
 	
 	public List<String> nonUniqueStringsGoLast(List<String> strListArg) {
 		List<String> dup = new ArrayList<String>();
-		List<String> strList = new ArrayList(strListArg); // copy the list so we don't get concurrentmodification exceptions
+		List<String> strList = new ArrayList<String>(strListArg); // copy the list so we don't get concurrentmodification exceptions
 		for (String s : strList) {
 			for (String sInner : strList) {
 				if (sInner.indexOf(s) != -1 && s.length() < sInner.length() && !dup.contains(s))
