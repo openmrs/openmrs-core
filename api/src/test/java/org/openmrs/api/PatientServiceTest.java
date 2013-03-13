@@ -3275,4 +3275,108 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * @see PatientService#savePatient(Patient)
+	 * @verifies set the preferred name address and identifier if none is specified
+	 */
+	@Test
+	public void savePatient_shouldSetThePreferredNameAddressAndIdentifierIfNoneIsSpecified() throws Exception {
+		Patient patient = new Patient();
+		patient.setGender("M");
+		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		patient.addIdentifier(identifier);
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
+		patient.addName(name);
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("some address");
+		patient.addAddress(address);
+		
+		patientService.savePatient(patient);
+		Assert.assertTrue(identifier.isPreferred());
+		Assert.assertTrue(name.isPreferred());
+		Assert.assertTrue(address.isPreferred());
+	}
+	
+	/**
+	 * @see PatientService#savePatient(Patient)
+	 * @verifies not set the preferred name address and identifier if they already exist
+	 */
+	@Test
+	public void savePatient_shouldNotSetThePreferredNameAddressAndIdentifierIfTheyAlreadyExist() throws Exception {
+		Patient patient = new Patient();
+		patient.setGender("M");
+		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		PatientIdentifier preferredIdentifier = new PatientIdentifier("QWERTY2", patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		preferredIdentifier.setPreferred(true);
+		patient.addIdentifier(identifier);
+		patient.addIdentifier(preferredIdentifier);
+		
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
+		PersonName preferredName = new PersonName("givenName", "middleName", "familyName");
+		preferredName.setPreferred(true);
+		patient.addName(name);
+		patient.addName(preferredName);
+		
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("some address");
+		PersonAddress preferredAddress = new PersonAddress();
+		preferredAddress.setAddress1("another address");
+		preferredAddress.setPreferred(true);
+		patient.addAddress(address);
+		patient.addAddress(preferredAddress);
+		
+		patientService.savePatient(patient);
+		Assert.assertTrue(preferredIdentifier.isPreferred());
+		Assert.assertTrue(preferredName.isPreferred());
+		Assert.assertTrue(preferredAddress.isPreferred());
+		Assert.assertFalse(identifier.isPreferred());
+		Assert.assertFalse(name.isPreferred());
+		Assert.assertFalse(address.isPreferred());
+	}
+	
+	/**
+	 * @see PatientService#savePatient(Patient)
+	 * @verifies not set a voided name or address or identifier as preferred
+	 */
+	@Test
+	public void savePatient_shouldNotSetAVoidedNameOrAddressOrIdentifierAsPreferred() throws Exception {
+		Patient patient = new Patient();
+		patient.setGender("M");
+		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		PatientIdentifier preferredIdentifier = new PatientIdentifier("QWERTY2", patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		preferredIdentifier.setPreferred(true);
+		preferredIdentifier.setVoided(true);
+		patient.addIdentifier(identifier);
+		patient.addIdentifier(preferredIdentifier);
+		
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
+		PersonName preferredName = new PersonName("givenName", "middleName", "familyName");
+		preferredName.setPreferred(true);
+		preferredName.setVoided(true);
+		patient.addName(name);
+		patient.addName(preferredName);
+		
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("some address");
+		PersonAddress preferredAddress = new PersonAddress();
+		preferredAddress.setAddress1("another address");
+		preferredAddress.setPreferred(true);
+		preferredAddress.setVoided(true);
+		patient.addAddress(address);
+		patient.addAddress(preferredAddress);
+		
+		patientService.savePatient(patient);
+		Assert.assertFalse(preferredIdentifier.isPreferred());
+		Assert.assertFalse(preferredName.isPreferred());
+		Assert.assertFalse(preferredAddress.isPreferred());
+		Assert.assertTrue(identifier.isPreferred());
+		Assert.assertTrue(name.isPreferred());
+		Assert.assertTrue(address.isPreferred());
+	}
+	
 }

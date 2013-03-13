@@ -77,6 +77,9 @@ public interface PatientService extends OpenmrsService {
 	 * @should update an existing patient
 	 * @should fail when patient does not have required patient identifiers
 	 * @should update the date changed and changed by on update of the person address
+	 * @should set the preferred name address and identifier if none is specified
+	 * @should not set the preferred name address and identifier if they already exist
+	 * @should not set a voided name or address or identifier as preferred
 	 */
 	@Authorized( { PrivilegeConstants.ADD_PATIENTS, PrivilegeConstants.EDIT_PATIENTS })
 	public Patient savePatient(Patient patient) throws APIException;

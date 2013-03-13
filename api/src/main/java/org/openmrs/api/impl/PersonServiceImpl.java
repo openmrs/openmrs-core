@@ -420,24 +420,39 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#savePerson(org.openmrs.Person)
 	 */
 	public Person savePerson(Person person) throws APIException {
-		boolean hasPreferredName = false;
-		for (PersonName name : person.getNames()) {
-			if (!hasPreferredName && !name.isVoided()) {
-				name.setPreferred(true);
-				hasPreferredName = true;
-				continue;
-			}
-			name.setPreferred(false);
+		PersonName preferredName = null;
+		PersonName possiblePreferredName = person.getPersonName();
+		if (possiblePreferredName != null && possiblePreferredName.isPreferred() && !possiblePreferredName.isVoided()) {
+			preferredName = possiblePreferredName;
 		}
 		
-		boolean hasPreferredAddress = false;
-		for (PersonAddress address : person.getAddresses()) {
-			if (!hasPreferredAddress && !address.isVoided()) {
-				address.setPreferred(true);
-				hasPreferredAddress = true;
+		for (PersonName name : person.getNames()) {
+			if (preferredName == null && !name.isVoided()) {
+				name.setPreferred(true);
+				preferredName = name;
 				continue;
 			}
-			address.setPreferred(false);
+			
+			if (!name.equals(preferredName))
+				name.setPreferred(false);
+		}
+		
+		PersonAddress preferredAddress = null;
+		PersonAddress possiblePreferredAddress = person.getPersonAddress();
+		if (possiblePreferredAddress != null && possiblePreferredAddress.isPreferred()
+		        && !possiblePreferredAddress.isVoided()) {
+			preferredAddress = possiblePreferredAddress;
+		}
+		
+		for (PersonAddress address : person.getAddresses()) {
+			if (preferredAddress == null && !address.isVoided()) {
+				address.setPreferred(true);
+				preferredAddress = address;
+				continue;
+			}
+			
+			if (!address.equals(preferredAddress))
+				address.setPreferred(false);
 		}
 		
 		return dao.savePerson(person);
