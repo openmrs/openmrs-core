@@ -251,6 +251,9 @@ public class ConceptFormController extends SimpleFormController {
 					if (!errors.hasErrors()) {
 						cs.saveConcept(concept);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
+						if (action.equals(msa.getMessage("Concept.save", "Save Concept"))) {
+							return new ModelAndView(new RedirectView("concept.htm" + "?conceptId=" + concept.getConceptId()));
+						}
 						return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 					}
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
