@@ -58,7 +58,7 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="View Users">
+	<openmrs:hasPrivilege privilege="View Current Users">
 		<li <c:if test='<%= request.getRequestURI().contains("currentUsers") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/currentUsers.list">
 				<openmrs:message code="ViewCurrentUsers.list"/>
