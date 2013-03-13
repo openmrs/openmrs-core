@@ -93,4 +93,9 @@ public interface OrderDAO {
 	 */
 	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient);
 	
+	/**
+	 * Delete Obs that references an order
+	 */
+	public void deleteObsThatReference(Order order);
+	
 }

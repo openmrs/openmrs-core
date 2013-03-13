@@ -28,6 +28,7 @@ import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.GenericDrug;
+import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
 import org.openmrs.Orderable;
@@ -50,6 +51,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	protected static final String DRUG_ORDERS_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-drugOrdersList.xml";
 	
 	protected static final String ORDERS_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-ordersList.xml";
+	
+	protected static final String OBS_THAT_REFERENCE_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-deleteObsThatReference.xml";
 	
 	private OrderService service;
 	
@@ -578,4 +581,21 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(order.getOrderId());
 		Assert.assertNotNull(order.getOrderNumber());
 	}
+	
+	@Test
+	@Verifies(value = "should delete obs that references order", method = "shouldDeleteObsThatReference(Order)")
+	public void purgeOrder_shouldDeleteObsThatReference() throws Exception {
+		executeDataSet(OBS_THAT_REFERENCE_DATASET_XML);
+				
+		Order ord = Context.getOrderService().getOrder(1);
+		Assert.assertNotNull(ord);
+		
+		Obs obs = Context.getObsService().getObs(1);
+		Assert.assertNotNull(obs);
+		
+		Context.getOrderService().purgeOrder(ord, true);
+		Obs obs1 = Context.getObsService().getObs(1);
+		Assert.assertNull(obs1);
+	}
+	
 }

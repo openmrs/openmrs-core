@@ -20,6 +20,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
@@ -200,6 +202,24 @@ public class HibernateOrderDAO implements OrderDAO {
 		searchDrugOrderCriteria.add(Restrictions.or(lhs, rhs));
 		
 		return (List<DrugOrder>) searchDrugOrderCriteria.list();
+	}
+	/*
+	 *  Delete Obs that references (deleted) Order 
+	 */
+	public void deleteObsThatReference(Order order) {
+		int orderId;
+		
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		
+		if (order.getOrderId() != null) {
+			orderId = order.getOrderId();
+			
+			String hqlDelete = "delete Obs where orderId = :order_id";
+			int deletedEntities = session.createQuery(hqlDelete).setInteger("order_id", orderId).executeUpdate();
+			tx.commit();
+			session.close();
+		}
 	}
 	
 }
