@@ -9,7 +9,7 @@
 <h2><openmrs:message code="AddressTemplate.Manage"/></h2>
 
 <div class="boxHeader">
-    <openmrs:message code="AddressTemplate.add"/>
+    <openmrs:message code="AddressTemplate.Manage"/>
 </div>
 <div class="box">
     <form method="post" action="addressTemplateAdd.form">
