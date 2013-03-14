@@ -2065,7 +2065,19 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		for (ConceptReferenceTerm conceptReferenceTerm : matches)
 			Assert.assertTrue(uniqueTerms.add(conceptReferenceTerm));
 	}
-	
+
+        /**
+	 * @see ConceptService#getConceptsByAnswer(ConceptClass)
+	 */
+	@Test
+	public void getConceptsByAnswer_shouldFindAnswersForConcept() throws Exception {
+            Concept concept = conceptService.getConcept(7);
+            Assert.assertNotNull(concept);
+            List<Concept> concepts = conceptService.getConceptsByAnswer(concept);
+            Assert.assertEquals(1, concepts.size());
+            Assert.assertEquals(21, concepts.get(0).getId().intValue());
+	}
+           
 	/**
 	 * @see ConceptService#getConceptsByClass(ConceptClass)
 	 * @verifies not fail due to no name in search
