@@ -1,21 +1,18 @@
 package org.openmrs.web;
 
-import java.nio.charset.Charset;
-
+import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.apache.xerces.impl.dv.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.Charset;
 
 public class BasicAuthInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-		System.out.println("pre - handle !!!!!!");
 
 		// skip if we're already authenticated, or it's not an HTTP request
 		if (!Context.isAuthenticated() && request instanceof HttpServletRequest) {
@@ -48,11 +45,11 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		//To change body of implemented methods use File | Settings | File Templates.
+		// do nothing
 	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-		//To change body of implemented methods use File | Settings | File Templates.
+		// do nothing
 	}
 }
