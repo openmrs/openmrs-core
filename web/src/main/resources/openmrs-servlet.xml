@@ -83,7 +83,7 @@
 	
 	<!-- So that controllers can use annotations like @Controller and @RequestMapping
 -->
-	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	<bean class="org.openmrs.web.OpenMrsAnnotationHandlerMapping">
 		<!-- makes annotations more important than default mappings -->
 		<property name="order"><value>98</value></property>
 		<!-- allows for locale changes on any annotation based page -->
