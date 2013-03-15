@@ -937,8 +937,7 @@ public class ORUR01Handler implements Application {
 			// the concept is local
 			try {
 				Integer conceptId = new Integer(hl7ConceptId);
-				Concept concept = new Concept(conceptId);
-				return concept;
+				return Context.getConceptService().getConcept(conceptId);
 			}
 			catch (NumberFormatException e) {
 				throw new HL7Exception("Invalid concept ID '" + hl7ConceptId + "' in hl7 message with uid: " + uid);
@@ -1062,9 +1061,7 @@ public class ORUR01Handler implements Application {
 		Integer patientId = Context.getHL7Service().resolvePatientId(pid);
 		if (patientId == null)
 			throw new HL7Exception("Could not resolve patient");
-		Patient patient = new Patient();
-		patient.setPatientId(patientId);
-		return patient;
+		return Context.getPatientService().getPatient(patientId);
 	}
 	
 	/**
