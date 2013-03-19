@@ -233,9 +233,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		int orderId;
 		
 		if (order != null) {
-			//orderId = order.getOrderId();
-			Integer ordId = order.getOrderId();
-			orderId = ordId.intValue();
+			orderId = order.getOrderId();
 			log.debug("***** orderId = *****" + orderId);
 			if (log.isTraceEnabled()) {
 				Criteria crit = sessionFactory.getCurrentSession().createCriteria(Obs.class);

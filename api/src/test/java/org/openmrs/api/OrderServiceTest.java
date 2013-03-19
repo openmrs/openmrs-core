@@ -593,19 +593,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order ord = Context.getOrderService().getOrder(1);
 		Assert.assertNotNull(ord);
 		
-		Obs obs = Context.getObsService().getObs(1);
+		Obs obs = Context.getObsService().getObsByUuid(uuid);
 		Assert.assertNotNull(obs);
 		
-		Integer ordOrderId = ord.getOrderId();
-		int orderOrderId = ordOrderId.intValue();
+		Order obsOrder = Context.getObsService().getObsByUuid(uuid).getOrder();
+		Assert.assertNotNull(obsOrder);
 		
-		Order obsOrder = Context.getObsService().getObs(1).getOrder();
-/*	
-		String s = String.valueOf(obsOrder);
-		// gets NumberFormatException
-		int obsOrd = Integer.parseInt(s);
-		Assert.assertEquals(orderOrderId, obsOrd);
-*/
+		Assert.assertEquals(ord.getOrderId(), obsOrder);
+		
 		Context.getOrderService().purgeOrder(ord, true);
 		
 		Obs obs1 = Context.getObsService().getObsByUuid(uuid);
