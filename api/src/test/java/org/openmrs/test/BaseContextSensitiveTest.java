@@ -610,9 +610,13 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
 		
+		turnOffDBConstraints(connection);
+		
 		//Do the actual update/insert:
 		//insert new rows, update existing rows, and leave others alone
 		DatabaseOperation.REFRESH.execute(dbUnitConn, dataset);
+		
+		turnOnDBConstraints(connection);
 	}
 	
 	private IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
