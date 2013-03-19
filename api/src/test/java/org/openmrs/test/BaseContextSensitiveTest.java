@@ -610,14 +610,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
 		
-		turnOffDBConstraints(connection);
-		
 		//Do the actual update/insert:
 		//insert new rows, update existing rows, and leave others alone
 		DatabaseOperation.REFRESH.execute(dbUnitConn, dataset);
-		
-		//i wonder why turning this back on causes trouble TRUNK-3928
-		//turnOnDBConstraints(connection);
 	}
 	
 	private IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
