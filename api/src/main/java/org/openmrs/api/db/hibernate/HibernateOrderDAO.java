@@ -27,12 +27,16 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptWord;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
+import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 
@@ -203,22 +207,58 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		return (List<DrugOrder>) searchDrugOrderCriteria.list();
 	}
+	
 	/*
 	 *  Delete Obs that references (deleted) Order 
 	 */
+	/*	
+		public void deleteObsThatReference(Order order) {
+			int orderId;
+			
+			Session session = sessionFactory.openSession();
+			Transaction tx = session.beginTransaction();
+			
+			if (order.getOrderId() != null) {
+				orderId = order.getOrderId();
+				
+				String hqlDelete = "delete Obs where orderId = :order_id";
+				int deletedEntities = session.createQuery(hqlDelete).setInteger("order_id", orderId).executeUpdate();
+				tx.commit();
+				session.close();
+			}
+		}
+	*/
+	@SuppressWarnings("unchecked")
 	public void deleteObsThatReference(Order order) {
 		int orderId;
 		
-		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
-		
-		if (order.getOrderId() != null) {
-			orderId = order.getOrderId();
+		if (order != null) {
+			//orderId = order.getOrderId();
+			Integer ordId = order.getOrderId();
+			orderId = ordId.intValue();
+			log.debug("***** orderId = *****" + orderId);
+			if (log.isTraceEnabled()) {
+				Criteria crit = sessionFactory.getCurrentSession().createCriteria(Obs.class);
+				crit.add(Restrictions.eq("order", order));
+				
+				List<Obs> obs = crit.list();
+				log.debug("***** obs = " + obs + " *****");
+				
+				Integer authUserId = null;
+				if (Context.isAuthenticated())
+					authUserId = Context.getAuthenticatedUser().getUserId();
+				
+				log.trace(authUserId + "***** Obs " + obs + " *****");
+				
+			}
+			/*
+			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :orderId").setInteger("orderId",
+			    order.getOrderId()).executeUpdate();
+			*/
+			int deletedEntities = sessionFactory.getCurrentSession().createQuery("delete Obs where order = :orderId")
+			        .setInteger("orderId", order.getOrderId()).executeUpdate();
 			
-			String hqlDelete = "delete Obs where orderId = :order_id";
-			int deletedEntities = session.createQuery(hqlDelete).setInteger("order_id", orderId).executeUpdate();
-			tx.commit();
-			session.close();
+			log.debug("***** deletedEntities = " + deletedEntities);
 		}
 	}
 	

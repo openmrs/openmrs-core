@@ -115,7 +115,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			//throw new APIException("Cascade purging of Orders is not written yet");
 			dao.deleteObsThatReference(order);
 		}
-		
+		//dao.deleteOrder(order);
 		dao.deleteOrder(order);
 	}
 	

@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptMapType;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -585,16 +586,29 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should delete obs that references order", method = "shouldDeleteObsThatReference(Order)")
 	public void purgeOrder_shouldDeleteObsThatReference() throws Exception {
+		String uuid = "be3a4d7a-f9ab-47bb-aaad-bc0b452fcda4";
+		
 		executeDataSet(OBS_THAT_REFERENCE_DATASET_XML);
-				
+		
 		Order ord = Context.getOrderService().getOrder(1);
 		Assert.assertNotNull(ord);
 		
 		Obs obs = Context.getObsService().getObs(1);
 		Assert.assertNotNull(obs);
 		
+		Integer ordOrderId = ord.getOrderId();
+		int orderOrderId = ordOrderId.intValue();
+		
+		Order obsOrder = Context.getObsService().getObs(1).getOrder();
+/*	
+		String s = String.valueOf(obsOrder);
+		// gets NumberFormatException
+		int obsOrd = Integer.parseInt(s);
+		Assert.assertEquals(orderOrderId, obsOrd);
+*/
 		Context.getOrderService().purgeOrder(ord, true);
-		Obs obs1 = Context.getObsService().getObs(1);
+		
+		Obs obs1 = Context.getObsService().getObsByUuid(uuid);
 		Assert.assertNull(obs1);
 	}
 	
