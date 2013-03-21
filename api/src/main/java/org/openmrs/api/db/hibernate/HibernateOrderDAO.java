@@ -208,7 +208,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		return (List<DrugOrder>) searchDrugOrderCriteria.list();
 	}
 	
-   /*
+	/*
 	*  Delete Obs that references (deleted) Order 
 	*/
 	@SuppressWarnings("unchecked")
@@ -217,25 +217,18 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		if (order != null) {
 			orderId = order.getOrderId();
-			log.debug("***** orderId = *****" + orderId);
-			if (log.isTraceEnabled()) {
-				Criteria crit = sessionFactory.getCurrentSession().createCriteria(Obs.class);
-				crit.add(Restrictions.eq("order", order));
-				
-				List<Obs> obs = crit.list();
-				log.debug("***** obs = " + obs + " *****");
-				
-				Integer authUserId = null;
-				if (Context.isAuthenticated())
-					authUserId = Context.getAuthenticatedUser().getUserId();
-				
-				log.trace(authUserId + "***** Obs " + obs + " *****");
-				
-			}
-			int deletedEntities = sessionFactory.getCurrentSession().createQuery("delete Obs where order = :orderId")
-			        .setInteger("orderId", order.getOrderId()).executeUpdate();
 			
-			log.debug("***** deletedEntities = " + deletedEntities);
+			Criteria crit = sessionFactory.getCurrentSession().createCriteria(Obs.class);
+			crit.add(Restrictions.eq("order", order));
+			
+			List<Obs> obs = crit.list();
+			
+			Integer authUserId = null;
+			if (Context.isAuthenticated())
+				authUserId = Context.getAuthenticatedUser().getUserId();
+			
+			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :orderId").setInteger("orderId",
+			    order.getOrderId()).executeUpdate();
 		}
 	}
 	

@@ -600,6 +600,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//sanity check to ensure that the obs and order are actually related
 		Assert.assertEquals(order, obs.getOrder());
 		
+		//Ensure that passing false does not delete the related obs
+		service.purgeOrder(order, false);
+		Assert.assertNotNull(os.getObsByUuid(obsUuid));
+		
 		service.purgeOrder(order, true);
 		
 		//Ensure that actually the order got purged
@@ -607,6 +611,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		//Ensure that the related obs got deleted
 		Assert.assertNull(os.getObsByUuid(obsUuid));
+		
 	}
 	
 }
