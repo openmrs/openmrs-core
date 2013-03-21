@@ -389,7 +389,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a Concept if given local coding system", method = "getConcept(String,String)")
 	public void getConcept_shouldReturnAConceptIfGivenLocalCodingSystem() throws Exception {
-		Assert.assertEquals(123, new ORUR01Handler().getConcept("123", "99DCT", "xj39bnj4k34nmf").getId().intValue());
+		Assert.assertEquals(5089, new ORUR01Handler().getConcept("5089", "99DCT", "xj39bnj4k34nmf").getId().intValue());
 	}
 	
 	/**
