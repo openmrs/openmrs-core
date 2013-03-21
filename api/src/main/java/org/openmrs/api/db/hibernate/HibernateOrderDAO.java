@@ -208,25 +208,8 @@ public class HibernateOrderDAO implements OrderDAO {
 		return (List<DrugOrder>) searchDrugOrderCriteria.list();
 	}
 	
-	/*
-	 *  Delete Obs that references (deleted) Order 
-	 */
-	/*	
-		public void deleteObsThatReference(Order order) {
-			int orderId;
-			
-			Session session = sessionFactory.openSession();
-			Transaction tx = session.beginTransaction();
-			
-			if (order.getOrderId() != null) {
-				orderId = order.getOrderId();
-				
-				String hqlDelete = "delete Obs where orderId = :order_id";
-				int deletedEntities = session.createQuery(hqlDelete).setInteger("order_id", orderId).executeUpdate();
-				tx.commit();
-				session.close();
-			}
-		}
+   /*
+	*  Delete Obs that references (deleted) Order 
 	*/
 	@SuppressWarnings("unchecked")
 	public void deleteObsThatReference(Order order) {
