@@ -81,6 +81,18 @@ public interface OrderService extends OpenmrsService {
 	public void purgeOrder(Order order) throws APIException;
 	
 	/**
+	 * Completely delete an order from the database. This should not typically be used unless
+	 * desperately needed. Most orders should just be voided. See {@link #voidOrder(Order, String)}
+	 * 
+	 * @param order The Order to remove from the system
+	 * @param boolean cascade 
+	 * @throws APIException
+	 * @should delete order
+	 */
+	@Authorized(PrivilegeConstants.PURGE_ORDERS)
+	public void purgeOrder(Order order, boolean cascade) throws APIException;
+	
+	/**
 	 * Mark an order as voided. This functionally removes the Order from the system while keeping a
 	 * semblance
 	 * 
