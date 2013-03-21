@@ -249,10 +249,6 @@ public class HibernateOrderDAO implements OrderDAO {
 				log.trace(authUserId + "***** Obs " + obs + " *****");
 				
 			}
-			/*
-			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :orderId").setInteger("orderId",
-			    order.getOrderId()).executeUpdate();
-			*/
 			int deletedEntities = sessionFactory.getCurrentSession().createQuery("delete Obs where order = :orderId")
 			        .setInteger("orderId", order.getOrderId()).executeUpdate();
 			

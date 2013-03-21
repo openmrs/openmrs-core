@@ -584,27 +584,29 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should delete obs that references order", method = "shouldDeleteObsThatReference(Order)")
 	public void purgeOrder_shouldDeleteObsThatReference() throws Exception {
-		String uuid = "be3a4d7a-f9ab-47bb-aaad-bc0b452fcda4";
-		
 		executeDataSet(OBS_THAT_REFERENCE_DATASET_XML);
+		final String ordUuid = "0c96f25c-4949-4f72-9931-d808fbcdb612";
+		final String obsUuid = "be3a4d7a-f9ab-47bb-aaad-bc0b452fcda4";
+		ObsService os = Context.getObsService();
+		OrderService service = Context.getOrderService();
 		
-		Order ord = Context.getOrderService().getOrder(1);
-		Assert.assertNotNull(ord);
-		
-		Obs obs = Context.getObsService().getObsByUuid(uuid);
+		Obs obs = os.getObsByUuid(obsUuid);
 		Assert.assertNotNull(obs);
 		
-		Order obsOrder = Context.getObsService().getObsByUuid(uuid).getOrder();
-		Assert.assertNotNull(obsOrder);
+		Order order = service.getOrderByUuid(ordUuid);
+		Assert.assertNotNull(order);
 		
-		Assert.assertEquals(ord.getOrderId(), obsOrder);
+		//sanity check to ensure that the obs and order are actually related
+		Assert.assertEquals(order, obs.getOrder());
 		
-		Context.getOrderService().purgeOrder(ord, true);
+		service.purgeOrder(order, true);
 		
-		Obs obs1 = Context.getObsService().getObsByUuid(uuid);
-		Assert.assertNull(obs1);
+		//Ensure that actually the order got purged
+		Assert.assertNull(service.getOrderByUuid(ordUuid));
+		
+		//Ensure that the related obs got deleted
+		Assert.assertNull(os.getObsByUuid(obsUuid));
 	}
 	
 }
