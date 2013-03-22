@@ -38,6 +38,12 @@
 			</td>
 		</tr>
 	</c:if>
+	<tr>
+				<c:if test="${conceptClass.conceptClassId != null}">
+					<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+					<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${conceptClass.uuid}</sub></font></td>
+				</c:if>
+	</tr>
 </table>
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptClassForm.inForm" type="html" parameters="conceptClassId=${conceptClass.conceptClassId}" />
 <br />

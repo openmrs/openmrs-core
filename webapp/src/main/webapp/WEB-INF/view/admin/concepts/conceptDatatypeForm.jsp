@@ -22,11 +22,6 @@
 		<th><openmrs:message code="ConceptDatatype.hl7Abbreviation"/></th>
 		<td><c:out value="${conceptDatatype.hl7Abbreviation}"/></td>
 	</tr>
-	<tr>
-		<th><openmrs:message code="general.uuid"/></th>
-		<td><c:out value="${conceptDatatype.uuid}"/></td>
-	</tr>
-
 	<c:if test="${!(conceptDatatype.creator == null)}">
 		<tr>
 			<th><openmrs:message code="general.createdBy" /></th>
@@ -36,6 +31,12 @@
 			</td>
 		</tr>
 	</c:if>
+	<tr>
+		<c:if test="${conceptDatatype.conceptDatatypeId != null}">
+			<th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
+			<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${conceptDatatype.uuid}</sub></font></td>
+		</c:if>
+	</tr>
 </table>
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.inForm" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 <br />

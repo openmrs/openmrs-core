@@ -207,6 +207,7 @@ public class ConceptFormController extends SimpleFormController {
 					cs.saveConcept(concept);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.concept.unRetired.successFully");
 					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
+					
 				}
 				catch (ConceptsLockedException cle) {
 					log.error("Tried to unretire concept while concepts were locked", cle);
@@ -244,7 +245,9 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				// return to the edit screen because an error was thrown
 				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
-			} else {
+			}
+
+			else {
 				Concept concept = conceptBackingObject.getConceptFromFormData();
 				//if the user is editing a concept, initialise the associated creator property
 				//this is aimed at avoiding a lazy initialisation exception when rendering
@@ -260,9 +263,14 @@ public class ConceptFormController extends SimpleFormController {
 					if (!errors.hasErrors()) {
 						cs.saveConcept(concept);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
+						
 						return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 					}
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
+					if (action.equals(msa.getMessage("Concept.save", "Save Concept"))) {
+						return new ModelAndView(new RedirectView("concept.htm" + "?conceptId=" + concept.getConceptId()));
+					}
+					
 				}
 				catch (ConceptsLockedException cle) {
 					log.error("Tried to save concept while concepts were locked", cle);
@@ -281,6 +289,7 @@ public class ConceptFormController extends SimpleFormController {
 				}
 			}
 			// return to the edit form because an error was thrown
+			
 			return showForm(request, response, errors);
 		}
 		
@@ -501,7 +510,9 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				
 				ConceptName shortNameInLocale = shortNamesByLocale.get(locale);
-				concept.setShortName(shortNameInLocale);
+				if (StringUtils.hasText(shortNameInLocale.getName())) {
+					concept.setShortName(shortNameInLocale);
+				}
 				
 				for (ConceptName synonym : synonymsByLocale.get(locale)) {
 					if (synonym != null && StringUtils.hasText(synonym.getName())) {

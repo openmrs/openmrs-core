@@ -187,6 +187,16 @@
 			</spring:bind>
 		</td>
 	</tr>
+	<tr>
+		<c:if test="${program.id != null}">
+		<th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
+		<td colspan="${fn:length(locales)}">
+			<font color="#D0D0D0"><sub>
+			<spring:bind path="program.uuid">
+		  		<c:out value="${status.value}"></c:out>
+			</spring:bind> </sub></font></td>
+			</c:if>
+	</tr>
 </table>
 <br />
 <input type="submit" value='<openmrs:message code="Program.save"/>' onClick="jQuery('#theForm').submit()" />
