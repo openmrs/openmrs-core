@@ -209,9 +209,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/*
-	*  Delete Obs that references (deleted) Order 
+	*  Delete Obs that references (deleted) Order
 	*/
-	@SuppressWarnings("unchecked")
 	public void deleteObsThatReference(Order order) {
 		int orderId;
 		
@@ -220,12 +219,6 @@ public class HibernateOrderDAO implements OrderDAO {
 			
 			Criteria crit = sessionFactory.getCurrentSession().createCriteria(Obs.class);
 			crit.add(Restrictions.eq("order", order));
-			
-			List<Obs> obs = crit.list();
-			
-			Integer authUserId = null;
-			if (Context.isAuthenticated())
-				authUserId = Context.getAuthenticatedUser().getUserId();
 			
 			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :orderId").setInteger("orderId",
 			    order.getOrderId()).executeUpdate();
