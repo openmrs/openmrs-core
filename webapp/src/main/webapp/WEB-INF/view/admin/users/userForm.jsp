@@ -162,7 +162,12 @@
 					</td>
 				</tr>
 			</c:if>
-			
+			<tr>
+				<c:if test="${user.getUserId() != null}">
+					<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid" /></sub></font></td>
+					<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${user.uuid}</sub></font></td>
+				</c:if>
+			</tr>			
 			<tr><td colspan="2">&nbsp;</td></tr>
 			
 			<tr>

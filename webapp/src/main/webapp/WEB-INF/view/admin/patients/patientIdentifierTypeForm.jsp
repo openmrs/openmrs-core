@@ -144,6 +144,18 @@
 			</td>
 		</tr>
 	</c:if>
+	<tr>
+		<c:if test="${patientIdentifierType.getId() != null}">
+			<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+			<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
+				<spring:bind path="patientIdentifierType.uuid">
+		  			<c:out value="${status.value}"></c:out>
+				</spring:bind>
+					</sub>
+				</font>
+			</td>
+		</c:if>
+	</tr>
 </table>
 <input type="hidden" name="patientIdentifierTypeId:int" value="${patientIdentifierType.patientIdentifierTypeId}">
 <br />

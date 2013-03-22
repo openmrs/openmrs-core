@@ -1,4 +1,14 @@
 <c:if test="${empty INCLUDE_PERSON_GENDER || (INCLUDE_PERSON_GENDER == 'true')}">
+<tr>
+		<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+		<td colspan="${fn:length(locales)}">
+			<font color="#D0D0D0"><sub>
+			<spring:bind path="person.uuid">
+		  		<c:out value="${status.value}"></c:out>
+			</spring:bind>
+			</sub></font>
+		</td>
+	</tr>
 	<tr>
 		<td><openmrs:message code="Person.gender"/></td>
 		<td><spring:bind path="gender">

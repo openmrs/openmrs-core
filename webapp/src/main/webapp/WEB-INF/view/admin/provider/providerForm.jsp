@@ -52,6 +52,17 @@ function toggleProviderDetails(){
 		
 		<table cellpadding="3" cellspacing="0">
 			<tr>
+				<c:if test="${provider.getProviderId() != null}">
+					<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+					<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
+					<spring:bind path="provider.uuid">
+		  				<c:out value="${status.value}"></c:out>
+					</spring:bind>
+					</sub></font>
+					</td>
+				</c:if>
+			</tr>
+			<tr>
 				<th><openmrs:message code="Provider.identifier"/></th>
 				<td colspan="4">
 					<spring:bind path="provider.identifier">			

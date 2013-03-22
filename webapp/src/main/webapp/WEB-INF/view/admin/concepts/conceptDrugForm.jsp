@@ -206,6 +206,12 @@
 			</td>
 		</tr>
 	</c:if>
+	<tr>
+				<c:if test="${drug.drugId != null}">
+					<th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
+					<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${drug.uuid}</sub></font></td>
+				</c:if>
+	</tr>
 </table>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.inForm" type="html" parameters="drugId=${drug.drugId}" />

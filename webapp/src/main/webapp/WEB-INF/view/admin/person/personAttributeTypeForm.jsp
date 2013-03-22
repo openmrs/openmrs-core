@@ -125,6 +125,12 @@
 			</td>
 		</tr>
 	</c:if>
+	<tr>
+		<c:if test="${personAttributeType.personAttributeTypeId != null}">
+			<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+			<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${personAttributeType.uuid}</sub></font></td>
+		</c:if>
+	</tr>
 </table>
 <input type="hidden" name="personAttributeTypeId:int" value="${personAttributeType.personAttributeTypeId}">
 <br />
