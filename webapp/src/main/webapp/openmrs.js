@@ -611,3 +611,15 @@ function showError(errorName) {
 function hideError(errorName) {
 	document.getElementById(errorName).style.display = "none";
 }
+
+/**
+ * Forces the length of a field to be a maximum length
+ * See view/admin/encounters/encounterTypeForm.jsp for usage example
+ * @param object(Required) to be limited.
+ * @param maxLength(Required) the length of the limit.
+ */
+function forceMaxLength(object, maxLength) {
+    if( object.value.length >= maxLength) {
+       object.value = object.value.substring(0, maxLength); 
+    }
+}
