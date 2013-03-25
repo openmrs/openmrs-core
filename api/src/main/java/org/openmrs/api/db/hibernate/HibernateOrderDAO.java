@@ -212,16 +212,10 @@ public class HibernateOrderDAO implements OrderDAO {
 	*  Delete Obs that references (deleted) Order
 	*/
 	public void deleteObsThatReference(Order order) {
-		int orderId;
-		
 		if (order != null) {
-			orderId = order.getOrderId();
-			
-			Criteria crit = sessionFactory.getCurrentSession().createCriteria(Obs.class);
-			crit.add(Restrictions.eq("order", order));
-			
-			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :orderId").setInteger("orderId",
+			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :order").setInteger("order",
 			    order.getOrderId()).executeUpdate();
+			
 		}
 	}
 	
