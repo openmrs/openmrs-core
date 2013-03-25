@@ -270,7 +270,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (patients.size() > 0)
 			criteria.add(Expression.in("patient", patients));
 		
-		// TODO add junit test for getting by null/true/false isPreferred
 		if (isPreferred != null)
 			criteria.add(Expression.eq("preferred", isPreferred));
 		
