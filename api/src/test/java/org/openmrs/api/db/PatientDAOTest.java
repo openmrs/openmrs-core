@@ -10,10 +10,12 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernatePatientDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -271,5 +273,49 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, patientIdentifiers.size());
 		Assert.assertEquals("12345K", patientIdentifiers.get(0).getIdentifier());
 	}
+
+	/**
+	 * @see HibernatePatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @verifies fetch all patient identifiers belong to given patient
+	 */
+	@Test
+	public void getPatientIdentifiers_shouldFetchAllPatientIdentifiersBelongToGivenPatient() throws Exception {
+		
+		//There are two identifiers in the test database for patient with id 2
+		Patient patientWithId2 = Context.getPatientService().getPatient(2);
+		
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
+		    new ArrayList<Location>(), Collections.singletonList(patientWithId2), null);
+		
+		Assert.assertEquals(patientWithId2.getActiveIdentifiers().size(), patientIdentifiers.size());
+		Assert.assertEquals("101", patientIdentifiers.get(0).getIdentifier());
+		Assert.assertEquals("101-6", patientIdentifiers.get(1).getIdentifier());
+	}
 	
+	/**
+	 * @see HibernatePatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @verifies fetch all patient identifiers belong to given patients
+	 */
+	@Test
+	public void getPatientIdentifiers_shouldFetchAllPatientIdentifiersBelongToGivenPatients() throws Exception {
+		
+		//There is one identifier[id=12345K] in the test database for patient with id 6 
+		Patient patientWithId6 = Context.getPatientService().getPatient(6);
+		
+		//There is one identifier[id=6TS-4] in the test database for patient with id 7 
+		Patient patientWithId7 = Context.getPatientService().getPatient(7);
+		
+		List<Patient> patientsList = Arrays.asList(patientWithId6, patientWithId7);
+		
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
+		    new ArrayList<Location>(), patientsList, null);
+		
+		int expectedPatientIdentifiersCount 
+			= patientWithId6.getActiveIdentifiers().size() 
+				+ patientWithId7.getActiveIdentifiers().size();
+		
+		Assert.assertEquals(expectedPatientIdentifiersCount, patientIdentifiers.size());
+		Assert.assertEquals("12345K", patientIdentifiers.get(0).getIdentifier());
+		Assert.assertEquals("6TS-4", patientIdentifiers.get(1).getIdentifier());
+	}
 }
