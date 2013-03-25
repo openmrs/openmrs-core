@@ -272,4 +272,45 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("12345K", patientIdentifiers.get(0).getIdentifier());
 	}
 	
+	/**
+	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @verifies return all matching non voided patient identifiers if is preferred is set to false
+	 */
+	@Test
+	public void getPatientIdentifiers_shouldReturnAllMatchingNonVoidedPatientIdentifiersIfIsPreferredIsSetToFalse()
+	        throws Exception {
+		
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
+		    new ArrayList<Location>(), new ArrayList<Patient>(), Boolean.FALSE);
+		
+		Assert.assertEquals(3, patientIdentifiers.size());
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @verifies return all matching non voided patient identifiers if is preferred is set to null
+	 */
+	@Test
+	public void getPatientIdentifiers_shouldReturnAllMatchingNonVoidedPatientIdentifiersIfIsPreferredIsSetToNull()
+	        throws Exception {
+		
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
+		    new ArrayList<Location>(), new ArrayList<Patient>(), null);
+		
+		Assert.assertEquals(5, patientIdentifiers.size());
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @verifies return all matching non voided patient identifiers if is preferred is set to true
+	 */
+	@Test
+	public void getPatientIdentifiers_shouldReturnAllMatchingNonVoidedPatientIdentifiersIfIsPreferredIsSetToTrue()
+	        throws Exception {
+		
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
+		    new ArrayList<Location>(), new ArrayList<Patient>(), Boolean.TRUE);
+		
+		Assert.assertEquals(2, patientIdentifiers.size());
+	}
 }
