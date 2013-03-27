@@ -190,6 +190,10 @@
          <groupId>xml-resolver</groupId>
          <artifactId>xml-resolver</artifactId>
       </dependency>
+       <dependency>
+           <groupId>javax.validation</groupId>
+           <artifactId>validation-api</artifactId>
+       </dependency>
    </dependencies>
    <build>
       <plugins>
