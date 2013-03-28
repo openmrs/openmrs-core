@@ -2380,6 +2380,34 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.getEncounterService().purgeEncounter(encounter, Boolean.TRUE);
 	}
 	
+	@Test(expected = APIException.class)
+	public void getActiveEncounterVisitHandler_shouldThrowIfBeanWithGivenTypeAndNameNotFound() {
+		
+		String incorrectBeanName = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX + "invalidName";
+		
+		GlobalProperty visitHandlerProperty = new GlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER,
+		        incorrectBeanName);
+		
+		Context.getAdministrationService().saveGlobalProperty(visitHandlerProperty);
+		
+		Context.getEncounterService().getActiveEncounterVisitHandler();
+	}
+	
+	@Test
+	public void getActiveEncounterVisitHandler_shouldReturnBeanHaveBeenRegisteredWithGivenName() {
+		
+		String correctBeanName = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX + "existingOrNewVisitAssignmentHandler";
+		
+		GlobalProperty visitHandlerProperty = new GlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER,
+		        correctBeanName);
+		
+		Context.getAdministrationService().saveGlobalProperty(visitHandlerProperty);
+		
+		EncounterVisitHandler activeEncounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
+		
+		Assert.assertNotNull(activeEncounterVisitHandler);
+	}
+	
 	/**
 	 * Gets encounter and adds edit privilege to it
 	 * 
