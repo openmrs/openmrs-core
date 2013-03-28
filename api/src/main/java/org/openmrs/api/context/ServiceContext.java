@@ -922,7 +922,8 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @param beanName the name of registered bean to retrieve
 	 * @param type the type of bean to retrieve 
 	 * @return bean of passed type
-	 * @since 1.9.3
+	 * 
+	 * @since 1.9.4
 	 */
 	public <T> T getRegisteredComponent(String beanName, Class<T> type) throws APIException {
 		try {

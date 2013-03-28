@@ -41,9 +41,4 @@
 			</list>
 		</property>
 	</bean>
-	<!-- 
-		Bean for tests Context#getRegisteredComponent(Class,String) method.
-	 -->
-	<bean id="existingOrNewVisitAssignmentHandler" class="org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler">
-	</bean>
 </beans>
