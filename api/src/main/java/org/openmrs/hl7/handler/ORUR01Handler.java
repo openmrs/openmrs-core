@@ -1062,7 +1062,7 @@ public class ORUR01Handler implements Application {
 		if (patientId == null)
 			throw new HL7Exception("Could not resolve patient");
 		
-		return Context.getPatientService().getPatient(patientId); 
+		return Context.getPatientService().getPatient(patientId);
 	}
 	
 	/**
