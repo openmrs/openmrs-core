@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
 import java.util.Arrays;
@@ -35,9 +36,6 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -63,7 +61,6 @@ import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
-import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
@@ -1370,20 +1367,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		List<Concept> conceptSet = conceptService.getConceptsByConceptSet(concept);
 		
 		assertThat(conceptSet, containsInAnyOrder(hasId(2), hasId(3), hasId(4), hasId(5), hasId(6)));
-	}
-	
-	private Matcher<? super OpenmrsObject> hasId(final Integer id) {
-		return new TypeSafeMatcher<OpenmrsObject>() {
-			
-			@Override
-			public void describeTo(Description description) {
-			}
-			
-			@Override
-			protected boolean matchesSafely(OpenmrsObject item) {
-				return id.equals(item.getId());
-			}
-		};
 	}
 	
 	/**
