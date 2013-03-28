@@ -1241,7 +1241,7 @@ public class Context {
 	
 	/**
 	 * @see ServiceContext#getRegisteredComponent(String, Class)
-	 * @since 1.9.3
+	 * @since 1.9.4
 	 */
 	public static <T> T getRegisteredComponent(String beanName, Class<T> type) throws APIException {
 		return getServiceContext().getRegisteredComponent(beanName, type);

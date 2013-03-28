@@ -756,30 +756,33 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		EncounterVisitHandler handler = null;
 		
-		try {
-			// convention = [NamePrefix:beanName] or [className]
-			String namePrefix = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX;
+		// convention = [NamePrefix:beanName] or [className]
+		String namePrefix = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX;
+		
+		if (handlerGlobalValue.startsWith(namePrefix)) {
+			String beanName = handlerGlobalValue.substring(namePrefix.length());
 			
-			if (handlerGlobalValue.startsWith(namePrefix)) {
-				String beanName = handlerGlobalValue.substring(namePrefix.length());
-				
-				handler = Context.getRegisteredComponent(beanName, EncounterVisitHandler.class);
-			} else {
-				
-				Object instance = OpenmrsClassLoader.getInstance().loadClass(handlerGlobalValue).newInstance();
-				if (!(instance instanceof EncounterVisitHandler))
-					throw new APIException(
-					        "The registered visit assignment handler should implement the EncounterVisitHandler interface");
-				
-				handler = (EncounterVisitHandler) instance;
+			handler = Context.getRegisteredComponent(beanName, EncounterVisitHandler.class);
+		} else {
+			Object instance;
+			
+			try {
+				instance = OpenmrsClassLoader.getInstance().loadClass(handlerGlobalValue).newInstance();
+			}
+			catch (Exception ex) {
+				throw new APIException("Failed to instantiate assignment handler object for class class: "
+				        + handlerGlobalValue, ex);
 			}
 			
-			return handler;
+			if (instance instanceof EncounterVisitHandler) {
+				handler = (EncounterVisitHandler) instance;
+			} else {
+				throw new APIException(
+				        "The registered visit assignment handler should implement the EncounterVisitHandler interface");
+			}
 		}
-		catch (Exception ex) {
-			throw new APIException("Failed to instantiate assignment handler object for class class: " + handlerGlobalValue,
-			        ex);
-		}
+		
+		return handler;
 	}
 	
 	/**
@@ -935,7 +938,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#canEditEncounter(org.openmrs.Encounter, org.openmrs.User)
+	 * @see org.openmrs.api.EncounterService#canEditEncounter(org.openmrs.Encounter,
+	 *      org.openmrs.User)
 	 */
 	@Override
 	public boolean canEditEncounter(Encounter encounter, User user) {
@@ -956,7 +960,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#canViewEncounter(org.openmrs.Encounter, org.openmrs.User)
+	 * @see org.openmrs.api.EncounterService#canViewEncounter(org.openmrs.Encounter,
+	 *      org.openmrs.User)
 	 */
 	@Override
 	public boolean canViewEncounter(Encounter encounter, User user) {

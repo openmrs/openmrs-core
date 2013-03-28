@@ -1775,7 +1775,6 @@ public final class OpenmrsConstants {
 	/** The data type to return on failing to load a custom data type. */
 	public static final String DEFAULT_CUSTOM_DATATYPE = FreeTextDatatype.class.getName();
 	
-	
-  /**Prefix followed by registered component name.*/
-  public static final String REGISTERED_COMPONENT_NAME_PREFIX = "bean:";
+	/**Prefix followed by registered component name.*/
+	public static final String REGISTERED_COMPONENT_NAME_PREFIX = "bean:";
 }
