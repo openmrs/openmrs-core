@@ -15,6 +15,7 @@ package org.openmrs.scheduler.web.controller;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.SchedulerService;
@@ -116,6 +117,7 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 	 * @see {@link SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
 	 */
 	@Test
+	@Ignore("TRUNK-3948")
 	@Verifies(value = "should not reschedule a task if the start time has passed", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldNotRescheduleATaskIfTheStartTimeHasPassed() throws Exception {
 		Date timeOne = taskHelper.getTime(Calendar.MINUTE, 5);
