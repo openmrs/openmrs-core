@@ -13,10 +13,12 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,6 +35,9 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,6 +60,7 @@ import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
@@ -949,8 +955,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should find concepts with names in same specific locale", method = "getConceptByName(String)")
 	public void getConceptByName_shouldFindConceptsWithNamesInSameSpecificLocale() throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
-		// sanity check
-		Assert.assertEquals(Context.getLocale(), Locale.UK);
 		
 		// make sure that concepts are found that have a specific locale on them
 		Assert.assertNotNull(Context.getConceptService().getConceptByName("Numeric name with en_GB locale"));
@@ -1405,12 +1409,21 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		List<Concept> conceptSet = conceptService.getConceptsByConceptSet(concept);
 		
-		Assert.assertEquals(5, conceptSet.size());
-		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(2)));
-		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(3)));
-		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(4)));
-		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(5)));
-		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(6)));
+		assertThat(conceptSet, containsInAnyOrder(hasId(2), hasId(3), hasId(4), hasId(5), hasId(6)));
+	}
+	
+	private Matcher<? super OpenmrsObject> hasId(final Integer id) {
+		return new TypeSafeMatcher<OpenmrsObject>() {
+			
+			@Override
+			public void describeTo(Description description) {
+			}
+			
+			@Override
+			protected boolean matchesSafely(OpenmrsObject item) {
+				return id.equals(item.getId());
+			}
+		};
 	}
 	
 	/**

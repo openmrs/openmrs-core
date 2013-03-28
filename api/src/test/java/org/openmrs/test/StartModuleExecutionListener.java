@@ -65,6 +65,8 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 				if (!Context.isSessionOpen())
 					Context.openSession();
 				
+				ModuleUtil.shutdown();
+				
 				// load the omods that the dev defined for this class
 				String modulesToLoad = StringUtils.join(startModuleAnnotation.value(), " ");
 				
