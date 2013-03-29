@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.collections.ListUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -40,7 +41,9 @@ import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.FormResource;
+import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
+import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -733,6 +736,79 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		reader.close();
 		return sb.toString();
+	}
+	
+	/**
+	 * @see {@link FormService#saveFormField(FormField)}
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	@Verifies(value = "should inject form fields from serializable complex obs handlers", method = "saveFormField(FormField)")
+	public void saveFormField_shouldInjectFormFieldsFromSerializableComplexObsHandlers() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptComplex.xml");
+		Context.getObsService().registerHandler("NeigborHandler", new NeighborHandler());
+		Concept concept = Context.getConceptService().getConcept(6043);
+		Field field = new Field();
+		field.setName("neighbor");
+		field.setConcept(concept);
+		
+		FormField formField = new FormField();
+		formField.setField(field);
+		FormService fs = Context.getFormService();
+		formField.setForm(fs.getForm(1));
+		
+		List<FormField> originalFormFields = fs.getAllFormFields();
+		int initialFormFieldCount = originalFormFields.size();
+		formField = fs.saveFormField(formField);
+		List<FormField> updatedFormFields = fs.getAllFormFields();
+		//should have this and the two form fields from the handler
+		Assert.assertEquals(initialFormFieldCount += 3, updatedFormFields.size());
+		//get the formfields added by the handler and check their parent
+		List<FormField> childFormFields = ListUtils.subtract(updatedFormFields, originalFormFields);
+		childFormFields.remove(formField);//exclude this form field
+		for (FormField ff : childFormFields) {
+			Assert.assertEquals(formField, ff.getParent());
+		}
+	}
+	
+	/**
+	 * This is a test complex obs handler that adds 2 form fields
+	 */
+	private class NeighborHandler implements SerializableComplexObsHandler {
+		
+		public Set<FormField> getFormFields() {
+			Set<FormField> formFields = new HashSet<FormField>();
+			Field firstName = new Field();
+			firstName.setName("firstName");
+			Field lastName = new Field();
+			lastName.setName("lastName");
+			
+			FormField firstNameFormField = new FormField();
+			firstNameFormField.setField(firstName);
+			FormField lastNameFormField = new FormField();
+			lastNameFormField.setField(lastName);
+			
+			formFields.add(firstNameFormField);
+			formFields.add(lastNameFormField);
+			
+			return formFields;
+		}
+		
+		public Obs saveObs(Obs obs) throws APIException {
+			return null;
+		}
+		
+		public Obs getObs(Obs obs, String view) {
+			return null;
+		}
+		
+		public boolean purgeComplexData(Obs obs) {
+			return false;
+		}
+		
+		public String serializeFormData(String data) {
+			return null;
+		}
 	}
 	
 }
