@@ -1020,4 +1020,5 @@
 		<springVersion>3.0.5.RELEASE</springVersion>
 		<customArgLineForTesting></customArgLineForTesting>
 	</properties>
+	
 </project>
