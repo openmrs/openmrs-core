@@ -1661,7 +1661,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust", Collections
 		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
-		//trust is included in 2 names for conceptid=3000 and in one name for conceptid=4000. 
+		//trust is included in 2 names for conceptid=3000 and in one name for conceptid=4000.
 		//So we should see 2 results only
 		Assert.assertEquals(2, searchResults.size());
 	}
@@ -1675,7 +1675,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust now", Collections
 		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
-		//"trust now" is name for conceptid=4000. 
+		//"trust now" is name for conceptid=4000.
 		//So we should see 1 results only
 		Assert.assertEquals(1, searchResults.size());
 	}
@@ -2224,11 +2224,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDefaultConceptMapType_shouldReturnTypeAsSetInGp() throws Exception {
-		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty("concept.defaultConceptMapType", "is-a"));
+		final String testName = "is a";
+		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty("concept.defaultConceptMapType", testName));
 		
 		ConceptMapType conceptMapType = conceptService.getDefaultConceptMapType();
 		Assert.assertNotNull(conceptMapType);
-		Assert.assertEquals("is-a", conceptMapType.getName());
+		Assert.assertEquals(testName, conceptMapType.getName());
 	}
 	
 	/**
