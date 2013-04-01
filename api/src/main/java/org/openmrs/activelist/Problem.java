@@ -20,7 +20,14 @@ import org.openmrs.Concept;
 import org.openmrs.Patient;
 
 /**
- * TODO
+ * This provides functionality for a person to add more details about a problem.<br/>
+ * <br/>
+ * This will inherit from ActiveListItem and override it's attributes 
+ * comments, modifier and sortWeight<br/>
+ * comments will serve to understand the problem more efficiently.<br/>
+ * modifier sets the status of the problem.<br/>
+ * sortWeight will allow the user to sort the problem list to their liking until someone else changes it.<br/>
+ * <br/>
  */
 public class Problem extends ActiveListItem implements Comparable<Problem> {
 	
@@ -39,7 +46,7 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 		super(activeListId);
 		this.activeListType = new ActiveListType(2);
 	}
-	
+
 	public Problem(Patient person, Concept concept, Date startDate, ProblemModifier modifier, String comments,
 	    Double sortWeight) {
 		super(person, new ActiveListType(2), concept, startDate);
