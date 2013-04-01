@@ -272,4 +272,28 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("12345K", patientIdentifiers.get(0).getIdentifier());
 	}
 	
+	
+	/**
+	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @verifies return ordered
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldReturnOrdered() throws Exception {
+		//given
+		PatientIdentifierType patientIdentifierType1 = dao.getPatientIdentifierType(1); //non retired, non required
+		
+		PatientIdentifierType patientIdentifierType2 = dao.getPatientIdentifierType(2); //non retired, required
+		patientIdentifierType2.setRequired(true);
+		dao.savePatientIdentifierType(patientIdentifierType2);
+		
+		PatientIdentifierType patientIdentifierType4 = dao.getPatientIdentifierType(4); //retired
+		
+		//when
+		List<PatientIdentifierType> all = dao.getAllPatientIdentifierTypes(true);
+		
+		//then
+		Assert.assertArrayEquals(new Object[] { patientIdentifierType2, patientIdentifierType1, patientIdentifierType4 },
+		    all.toArray());
+	}
+	
 }
