@@ -258,12 +258,12 @@ public class ConceptFormController extends SimpleFormController {
 					validateConceptUsesPersistedObjects(concept, errors);
 					
 					if (!errors.hasErrors()) {
-						if (action.equals(msa.getMessage("Concept.cancel", "Cancel"))) {
+						if (action.equals(msa.getMessage("Concept.cancel"))) {
 							return new ModelAndView(new RedirectView("concept.htm" + "?conceptId=" + concept.getConceptId()));
 						}
 						cs.saveConcept(concept);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
-						if (action.equals(msa.getMessage("Concept.save", "Save Concept"))) {
+						if (action.equals(msa.getMessage("Concept.save"))) {
 							return new ModelAndView(new RedirectView("concept.htm" + "?conceptId=" + concept.getConceptId()));
 						}
 						return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
