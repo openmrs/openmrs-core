@@ -135,8 +135,6 @@ public class WebTestHelper {
 		
 		Assert.assertTrue("The requested URI has no handlers: " + request.getRequestURI(), supported);
 		
-		Context.clearSession();
-		
 		return new Response(response, request.getSession(), modelAndView);
 	}
 	

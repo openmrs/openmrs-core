@@ -1033,7 +1033,6 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 * @verifies not save changes if there are validation errors
 	 */
 	@Test
-	@NotTransactional
 	public void onSubmit_shouldNotSaveChangesIfThereAreValidationErrors() throws Exception {
 		Integer conceptId = 792;
 		
@@ -1046,6 +1045,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		Response response = webTestHelper.handle(request);
 		assertThat(response.getErrors().hasFieldErrors("synonymsByLocale[en][1].name"), is(true));
+		
+		Context.clearSession();
 		
 		Concept concept = conceptService.getConcept(conceptId);
 		assertThat(concept.getPreferredName(Locale.ENGLISH).getName(), is("STAVUDINE LAMIVUDINE AND NEVIRAPINE"));
