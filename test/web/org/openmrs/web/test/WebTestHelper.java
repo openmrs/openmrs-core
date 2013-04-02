@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
@@ -133,10 +135,6 @@ public class WebTestHelper {
 		
 		Assert.assertTrue("The requested URI has no handlers: " + request.getRequestURI(), supported);
 		
-		//Complete the request by flushing and clearing the Hibernate session
-		Context.flushSession();
-		Context.clearSession();
-		
 		return new Response(response, request.getSession(), modelAndView);
 	}
 	
@@ -152,6 +150,14 @@ public class WebTestHelper {
 			this.http = http;
 			this.session = session;
 			this.modelAndView = modelAndView;
+		}
+		
+		public Errors getErrors(String model) {
+			return (Errors) modelAndView.getModel().get(BindException.MODEL_KEY_PREFIX + model);
+		}
+		
+		public Errors getErrors() {
+			return getErrors("command");
 		}
 	}
 }
