@@ -56,6 +56,7 @@ import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ConceptValidator;
+import org.openmrs.validator.ValidateUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -148,6 +149,7 @@ public class ConceptFormController extends SimpleFormController {
 	 * @should return a concept with a null id if no match is found
 	 * @should void a synonym marked as preferred when it is removed
 	 * @should set the local preferred name
+	 * @should not save changes if there are validation errors
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,

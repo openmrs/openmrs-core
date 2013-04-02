@@ -36,9 +36,13 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.controller.ConceptFormController.ConceptFormBackingObject;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.openmrs.web.test.WebTestHelper;
+import org.openmrs.web.test.WebTestHelper.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -46,6 +50,12 @@ import org.springframework.web.servlet.ModelAndView;
  * Unit testing for the ConceptFormController.
  */
 public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
+	
+	@Autowired
+	WebTestHelper webTestHelper;
+	
+	@Autowired
+	ConceptService conceptService;
 	
 	/**
 	 * Checks that the conceptId query param gets a concept from the database
@@ -748,4 +758,28 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertEquals(true, preferredName.isVoided());
 	}
 	
+	/**
+     * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
+     * @verifies not save changes if there are validation errors
+     */
+    @Test
+    @NotTransactional
+    public void onSubmit_shouldNotSaveChangesIfThereAreValidationErrors() throws Exception {
+    	Integer conceptId = 792;
+    	
+	    MockHttpServletRequest request = new MockHttpServletRequest("POST", "/dictionary/concept.form");
+		request.setParameter("conceptId", conceptId.toString());
+		request.setParameter("namesByLocale[en].name", "should not change");
+		request.setParameter("preferredNamesByLocale[en]", "should not change");
+		request.setParameter("synonymsByLocale[en][1].name", ""); //empty name is invalid
+		request.setParameter("synonymsByLocale[en][1].voided", "false");
+		
+		Response response = webTestHelper.handle(request);
+		assertEquals(true, response.getErrors().hasFieldErrors("synonymsByLocale[en][1].name"));
+		
+		Context.clearSession();
+		
+		Concept concept = conceptService.getConcept(conceptId);
+		assertEquals("STAVUDINE LAMIVUDINE AND NEVIRAPINE", concept.getPreferredName(Locale.ENGLISH).getName());
+    }
 }
