@@ -965,17 +965,17 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		assertEquals(initialConceptMappingCount - 1, cs.getConcept(conceptId).getConceptMappings().size());
 	}
-
+	
 	/**
-     * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
-     * @verifies not save changes if there are validation errors
-     */
-    @Test
-    @NotTransactional
-    public void onSubmit_shouldNotSaveChangesIfThereAreValidationErrors() throws Exception {
-    	Integer conceptId = 792;
-    	
-	    MockHttpServletRequest request = new MockHttpServletRequest("POST", "/dictionary/concept.form");
+	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
+	 * @verifies not save changes if there are validation errors
+	 */
+	@Test
+	@NotTransactional
+	public void onSubmit_shouldNotSaveChangesIfThereAreValidationErrors() throws Exception {
+		Integer conceptId = 792;
+		
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/dictionary/concept.form");
 		request.setParameter("conceptId", conceptId.toString());
 		request.setParameter("namesByLocale[en].name", "should not change");
 		request.setParameter("preferredNamesByLocale[en]", "should not change");
@@ -987,5 +987,5 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		Concept concept = conceptService.getConcept(conceptId);
 		assertThat(concept.getPreferredName(Locale.ENGLISH).getName(), is("STAVUDINE LAMIVUDINE AND NEVIRAPINE"));
-    }
+	}
 }
