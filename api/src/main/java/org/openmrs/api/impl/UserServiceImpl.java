@@ -629,7 +629,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see UserService#notifyPrivilegeListeners(User, String, boolean)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
 		if (privilegeListeners != null) {
 			for (PrivilegeListener privilegeListener : privilegeListeners) {

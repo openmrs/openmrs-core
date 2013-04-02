@@ -13,9 +13,14 @@
  */
 package org.openmrs.web.controller;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -37,19 +42,27 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.controller.ConceptFormController.ConceptFormBackingObject;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.openmrs.web.test.WebTestHelper;
+import org.openmrs.web.test.WebTestHelper.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 
 /**
  * Unit testing for the ConceptFormController.
  */
 public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
+	
+	@Autowired
+	WebTestHelper webTestHelper;
+	
+	@Autowired
+	ConceptService conceptService;
 	
 	/**
 	 * Checks that the conceptId query param gets a concept from the database
@@ -952,4 +965,27 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		assertEquals(initialConceptMappingCount - 1, cs.getConcept(conceptId).getConceptMappings().size());
 	}
+
+	/**
+     * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
+     * @verifies not save changes if there are validation errors
+     */
+    @Test
+    @NotTransactional
+    public void onSubmit_shouldNotSaveChangesIfThereAreValidationErrors() throws Exception {
+    	Integer conceptId = 792;
+    	
+	    MockHttpServletRequest request = new MockHttpServletRequest("POST", "/dictionary/concept.form");
+		request.setParameter("conceptId", conceptId.toString());
+		request.setParameter("namesByLocale[en].name", "should not change");
+		request.setParameter("preferredNamesByLocale[en]", "should not change");
+		request.setParameter("synonymsByLocale[en][1].name", ""); //empty name is invalid
+		request.setParameter("synonymsByLocale[en][1].voided", "false");
+		
+		Response response = webTestHelper.handle(request);
+		assertThat(response.getErrors().hasFieldErrors("synonymsByLocale[en][1].name"), is(true));
+		
+		Concept concept = conceptService.getConcept(conceptId);
+		assertThat(concept.getPreferredName(Locale.ENGLISH).getName(), is("STAVUDINE LAMIVUDINE AND NEVIRAPINE"));
+    }
 }
