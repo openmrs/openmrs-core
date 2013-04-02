@@ -985,6 +985,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		Response response = webTestHelper.handle(request);
 		assertThat(response.getErrors().hasFieldErrors("synonymsByLocale[en][1].name"), is(true));
 		
+		Context.clearSession();
+		
 		Concept concept = conceptService.getConcept(conceptId);
 		assertThat(concept.getPreferredName(Locale.ENGLISH).getName(), is("STAVUDINE LAMIVUDINE AND NEVIRAPINE"));
 	}
