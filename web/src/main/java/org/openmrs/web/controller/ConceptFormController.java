@@ -259,7 +259,7 @@ public class ConceptFormController extends SimpleFormController {
 					
 					if (!errors.hasErrors()) {
 						if (action.equals(msa.getMessage("Concept.cancel"))) {
-							return new ModelAndView(new RedirectView("concept.htm" + "?conceptId=" + concept.getConceptId()));
+							return new ModelAndView(new RedirectView("index.htm"));
 						}
 						cs.saveConcept(concept);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
