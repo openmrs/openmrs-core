@@ -37,7 +37,7 @@ import org.openmrs.test.Verifies;
  * @see Obs
  */
 public class ObsTest {
-
+	
 	/**
 	 * Tests the addToGroup method in ObsGroup
 	 * 
@@ -45,52 +45,51 @@ public class ObsTest {
 	 */
 	@Test
 	public void shouldAddandRemoveObsToGroup() throws Exception {
-
+		
 		Obs obs = new Obs(1);
-
+		
 		Obs obsGroup = new Obs(755);
-
+		
 		// These methods should not fail even with null attributes on the obs
 		assertFalse(obsGroup.isObsGrouping());
 		assertFalse(obsGroup.hasGroupMembers(false));
 		assertFalse(obsGroup.hasGroupMembers(true)); // Check both flags for
-														// false
-
+		// false
+		
 		// adding an obs when the obs group has no other obs
 		// should not throw an error
 		obsGroup.addGroupMember(obs);
 		assertEquals(1, obsGroup.getGroupMembers().size());
-
+		
 		// check duplicate add. should only be one
 		obsGroup.addGroupMember(obs);
 		assertTrue(obsGroup.hasGroupMembers(false));
-		assertEquals("Duplicate add should not increase the grouped obs size",
-				1, obsGroup.getGroupMembers().size());
-
+		assertEquals("Duplicate add should not increase the grouped obs size", 1, obsGroup.getGroupMembers().size());
+		
 		Obs obs2 = new Obs(2);
-
+		
 		obsGroup.removeGroupMember(obs2);
 		assertTrue(obsGroup.hasGroupMembers(false));
-		assertEquals(
-				"Removing a non existent obs should not decrease the number of grouped obs",
-				1, obsGroup.getGroupMembers().size());
-
+		assertEquals("Removing a non existent obs should not decrease the number of grouped obs", 1, obsGroup
+		        .getGroupMembers().size());
+		
 		// testing removing an obs from a group that has a null obs list
 		new Obs().removeGroupMember(obs2);
-
+		
 		obsGroup.removeGroupMember(obs);
-
+		
 		assertEquals(0, obsGroup.getGroupMembers().size());
-
+		
 		// try to add an obs group to itself
 		try {
 			obsGroup.addGroupMember(obsGroup);
 			fail("An APIException about adding an obsGroup should have been thrown");
-		} catch (APIException e) {
+		}
+		catch (APIException e) {
 			// this exception is expected
 		}
 	}
-
+	
 	/**
 	 * tests the getRelatedObservations method:
 	 */
@@ -103,7 +102,7 @@ public class ObsTest {
 		o.setObsDatetime(new Date());
 		o.setPerson(new Patient(2));
 		o.setValueText("childObs");
-
+		
 		// create its sibling
 		Obs oSibling = new Obs();
 		oSibling.setDateCreated(new Date());
@@ -111,7 +110,7 @@ public class ObsTest {
 		oSibling.setObsDatetime(new Date());
 		oSibling.setValueText("childObs2");
 		oSibling.setPerson(new Patient(2));
-
+		
 		// create a parent Obs
 		Obs oParent = new Obs();
 		oParent.setDateCreated(new Date());
@@ -119,7 +118,7 @@ public class ObsTest {
 		oParent.setObsDatetime(new Date());
 		oSibling.setValueText("parentObs");
 		oParent.setPerson(new Patient(2));
-
+		
 		// create a grandparent obs
 		Obs oGrandparent = new Obs();
 		oGrandparent.setDateCreated(new Date());
@@ -127,11 +126,11 @@ public class ObsTest {
 		oGrandparent.setObsDatetime(new Date());
 		oGrandparent.setPerson(new Patient(2));
 		oSibling.setValueText("grandParentObs");
-
+		
 		oParent.addGroupMember(o);
 		oParent.addGroupMember(oSibling);
 		oGrandparent.addGroupMember(oParent);
-
+		
 		// create a leaf observation at the grandparent level
 		Obs o2 = new Obs();
 		o2.setDateCreated(new Date());
@@ -139,9 +138,9 @@ public class ObsTest {
 		o2.setObsDatetime(new Date());
 		o2.setPerson(new Patient(2));
 		o2.setValueText("grandparentLeafObs");
-
+		
 		oGrandparent.addGroupMember(o2);
-
+		
 		/**
 		 * test to make sure that if the original child obs calls
 		 * getRelatedObservations, it returns itself and its siblings: original
@@ -153,7 +152,7 @@ public class ObsTest {
 		 */
 		assertEquals(o.getRelatedObservations().size(), 2);
 		assertEquals(oParent.getRelatedObservations().size(), 3);
-
+		
 		// create a great-grandparent obs
 		Obs oGGP = new Obs();
 		oGGP.setDateCreated(new Date());
@@ -162,7 +161,7 @@ public class ObsTest {
 		oGGP.setPerson(new Patient(2));
 		oGGP.setValueText("grandParentObs");
 		oGGP.addGroupMember(oGrandparent);
-
+		
 		// create a leaf great-grandparent obs
 		Obs oGGPleaf = new Obs();
 		oGGPleaf.setDateCreated(new Date());
@@ -171,7 +170,7 @@ public class ObsTest {
 		oGGPleaf.setPerson(new Patient(2));
 		oGGPleaf.setValueText("grandParentObs");
 		oGGP.addGroupMember(oGGPleaf);
-
+		
 		/**
 		 * now run the previous assertions again. this time there are two
 		 * ancestor leaf obs, so the first assertion should still return a set
@@ -179,96 +178,90 @@ public class ObsTest {
 		 */
 		assertEquals(o.getRelatedObservations().size(), 2);
 		assertEquals(oParent.getRelatedObservations().size(), 4);
-
+		
 		// remove the grandparent leaf observation:
-
+		
 		oGrandparent.removeGroupMember(o2);
-
+		
 		// now the there is only one ancestor leaf obs:
 		assertEquals(o.getRelatedObservations().size(), 2);
 		assertEquals(oParent.getRelatedObservations().size(), 3);
-
+		
 		/**
 		 * finally, test a non-obsGroup and non-member Obs to the function Obs
 		 * o2 is now not connected to our heirarchy: an empty set should be
 		 * returned:
 		 */
-
+		
 		assertNotNull(o2.getRelatedObservations());
 		assertEquals(o2.getRelatedObservations().size(), 0);
-
+		
 	}
-
+	
 	/**
 	 * @see {@link Obs#isComplex()}
 	 */
 	@Test
 	@Verifies(value = "should return true if the concept is complex", method = "isComplex()")
-	public void isComplex_shouldReturnTrueIfTheConceptIsComplex()
-			throws Exception {
+	public void isComplex_shouldReturnTrueIfTheConceptIsComplex() throws Exception {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName("Complex");
 		cd.setHl7Abbreviation("ED");
-
+		
 		ConceptComplex complexConcept = new ConceptComplex();
 		complexConcept.setDatatype(cd);
-
+		
 		Obs obs = new Obs();
 		obs.setConcept(complexConcept);
-
+		
 		Assert.assertTrue(obs.isComplex());
 	}
-
+	
 	/**
 	 * @see {@link Obs#setValueAsString(String)}
 	 */
 	@Test(expected = RuntimeException.class)
 	@Verifies(value = "should fail if the value of the string is empty", method = "setValueAsString(String)")
-	public void setValueAsString_shouldFailIfTheValueOfTheStringIsEmpty()
-			throws Exception {
+	public void setValueAsString_shouldFailIfTheValueOfTheStringIsEmpty() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueAsString("");
 	}
-
+	
 	/**
 	 * @see {@link Obs#setValueAsString(String)}
 	 */
 	@Test(expected = RuntimeException.class)
 	@Verifies(value = "should fail if the value of the string is null", method = "setValueAsString(String)")
-	public void setValueAsString_shouldFailIfTheValueOfTheStringIsNull()
-			throws Exception {
+	public void setValueAsString_shouldFailIfTheValueOfTheStringIsNull() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueAsString(null);
 	}
-
+	
 	/**
 	 * @see {@link Obs#getValueAsBoolean()}
 	 */
 	@Test
 	@Verifies(value = "should return false for value_numeric concepts if value is 0", method = "getValueAsBoolean()")
-	public void getValueAsBoolean_shouldReturnFalseForValue_numericConceptsIfValueIs0()
-			throws Exception {
+	public void getValueAsBoolean_shouldReturnFalseForValue_numericConceptsIfValueIs0() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(0.0);
 		Assert.assertEquals(false, obs.getValueAsBoolean());
 	}
-
+	
 	/**
 	 * @see {@link Obs#getValueAsBoolean()}
 	 */
 	@Test
 	@Verifies(value = "should return null for value_numeric concepts if value is neither 1 nor 0", method = "getValueAsBoolean()")
-	public void getValueAsBoolean_shouldReturnNullForValue_numericConceptsIfValueIsNeither1Nor0()
-			throws Exception {
+	public void getValueAsBoolean_shouldReturnNullForValue_numericConceptsIfValueIsNeither1Nor0() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(24.8);
 		Assert.assertNull(obs.getValueAsBoolean());
 	}
-
+	
 	@Test
 	@Verifies(value = "should return non precise values for NumericConcepts", method = "getValueAsString(Locale)")
-	public void getValueAsString_shouldReturnNonPreciseValuesForNumericConcepts()
-			throws Exception {
+	public void getValueAsString_shouldReturnNonPreciseValuesForNumericConcepts() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(25.125);
 		ConceptNumeric cn = new ConceptNumeric();
@@ -280,21 +273,19 @@ public class ObsTest {
 		String str = "25";
 		Assert.assertEquals(str, obs.getValueAsString(Locale.US));
 	}
-
+	
 	@Test
 	@Verifies(value = "should not return long decimal numbers as scientific notation", method = "getValueAsString(Locale)")
-	public void getValueAsStringShouldNotReturnLongDecimalNumbersAsScientificNotation()
-			throws Exception {
+	public void getValueAsString_shouldNotReturnLongDecimalNumbersAsScientificNotation() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(123456789.0);
 		String str = "123456789.0";
 		Assert.assertEquals(str, obs.getValueAsString(Locale.US));
 	}
-
+	
 	@Test
 	@Verifies(value = "should return proper DateFormat", method = "getValueAsString()")
-	public void getValueAsString_shouldReturnProperDateFormat()
-			throws Exception {
+	public void getValueAsString_shouldReturnProperDateFormat() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueDatetime(new Date());
 		Concept cn = new Concept();
@@ -302,34 +293,31 @@ public class ObsTest {
 		cdt.setHl7Abbreviation("DT");
 		cn.setDatatype(cdt);
 		obs.setConcept(cn);
-
+		
 		Date utilDate = new Date();
-		DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT,
-				Locale.US);
+		DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
 		String dateString = dateFormat.format(utilDate);
 		Assert.assertEquals(dateString, obs.getValueAsString(Locale.US));
 	}
-
+	
 	/**
 	 * @see {@link Obs#getValueAsBoolean()}
 	 */
 	@Test
 	@Verifies(value = "should return true for value_numeric concepts if value is 1", method = "getValueAsBoolean()")
-	public void getValueAsBoolean_shouldReturnTrueForValue_numericConceptsIfValueIs1()
-			throws Exception {
+	public void getValueAsBoolean_shouldReturnTrueForValue_numericConceptsIfValueIs1() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(1.0);
 		Assert.assertEquals(true, obs.getValueAsBoolean());
 	}
-
+	
 	/**
 	 * @see Obs#getGroupMembers(boolean)
 	 * @verifies Get all group members if passed true, and non-voided if passed
 	 *           false
 	 */
 	@Test
-	public void getGroupMembers_shouldGetAllGroupMembersIfPassedTrueAndNonvoidedIfPassedFalse()
-			throws Exception {
+	public void getGroupMembers_shouldGetAllGroupMembersIfPassedTrueAndNonvoidedIfPassedFalse() throws Exception {
 		Obs parent = new Obs(1);
 		Set<Obs> members = new HashSet<Obs>();
 		members.add(new Obs(101));
@@ -339,35 +327,28 @@ public class ObsTest {
 		members.add(voided);
 		parent.setGroupMembers(members);
 		members = parent.getGroupMembers(true);
-		assertEquals("set of all members should have length of 3", 3,
-				members.size());
+		assertEquals("set of all members should have length of 3", 3, members.size());
 		members = parent.getGroupMembers(false);
-		assertEquals("set of non-voided should have length of 2", 2,
-				members.size());
+		assertEquals("set of non-voided should have length of 2", 2, members.size());
 		members = parent.getGroupMembers(); // should be same as false
-		assertEquals("default should return non-voided with length of 2", 2,
-				members.size());
+		assertEquals("default should return non-voided with length of 2", 2, members.size());
 	}
-
+	
 	/**
 	 * @see Obs#hasGroupMembers(boolean)
 	 * @verifies return true if this obs has group members based on parameter
 	 */
 	@Test
-	public void hasGroupMembers_shouldReturnTrueIfThisObsHasGroupMembersBasedOnParameter()
-			throws Exception {
+	public void hasGroupMembers_shouldReturnTrueIfThisObsHasGroupMembersBasedOnParameter() throws Exception {
 		Obs parent = new Obs(5);
 		Obs child = new Obs(33);
 		child.setVoided(true);
 		parent.addGroupMember(child); // Only contains 1 voided child
-		assertTrue("When checking for all members, should return true",
-				parent.hasGroupMembers(true));
-		assertFalse("When checking for non-voided, should return false",
-				parent.hasGroupMembers(false));
-		assertFalse("Default should check for non-voided",
-				parent.hasGroupMembers());
+		assertTrue("When checking for all members, should return true", parent.hasGroupMembers(true));
+		assertFalse("When checking for non-voided, should return false", parent.hasGroupMembers(false));
+		assertFalse("Default should check for non-voided", parent.hasGroupMembers());
 	}
-
+	
 	/**
 	 * @see Obs#isObsGrouping()
 	 * @verifies ignore voided Obs
@@ -378,7 +359,6 @@ public class ObsTest {
 		Obs child = new Obs(33);
 		child.setVoided(true);
 		parent.addGroupMember(child);
-		assertTrue("When checking for Obs grouping, should include voided Obs",
-				parent.isObsGrouping());
+		assertTrue("When checking for Obs grouping, should include voided Obs", parent.isObsGrouping());
 	}
 }
