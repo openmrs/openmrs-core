@@ -22,27 +22,27 @@
 	<attribute>
 		<name>privilege</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>allPrivileges</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>anyPrivilege</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>otherwise</name>
 		<required>true</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>redirect</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>
 
