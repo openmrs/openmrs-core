@@ -14,6 +14,8 @@
 package org.openmrs;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,21 +47,27 @@ import org.openmrs.util.Format.FORMAT_TYPE;
  * Observations are collected and grouped together into one Encounter (one visit). Obs can be
  * grouped in a hierarchical fashion. <br/>
  * <br/>
+ * <p>
  * The {@link #getObsGroup()} method returns an optional parent. That parent object is also an Obs.
  * The parent Obs object knows about its child objects through the {@link #getGroupMembers()}
- * method. (Multi-level hierarchies are achieved by an Obs parent object being a member of another
- * Obs (grand)parent object) Read up on the obs table: http://openmrs.org/wiki/Obs_Table_Primer
+ * method.
+ * </p>
+ * <p>
+ * (Multi-level hierarchies are achieved by an Obs parent object being a member of another Obs
+ * (grand)parent object) Read up on the obs table: http://openmrs.org/wiki/Obs_Table_Primer In an
+ * OpenMRS installation, there may be an occasion need to change an Obs.
+ * </p>
+ * <p>
+ * For example, a site may decide to replace a concept in the dictionary with a more specific set of
+ * concepts. An observation is part of the official record of an encounter. There may be legal,
+ * ethical, and auditing consequences from altering a record. It is recommended that you create a
+ * new Obs and void the old one:
+ * </p>
+ * Obs newObs = Obs.newInstance(oldObs); //copies values from oldObs
+ * newObs.setPreviousVersion(oldObs);
+ * Context.getObsService().saveObs(newObs,"Your reason for the change here");
+ * Context.getObsService().voidObs(oldObs, "Your reason for the change here");
  * 
- * In an OpenMRS installation, there may be an occasion need to change an Obs. 
- * For example, a site may decide to replace a concept in the dictionary with a more specific
- * set of concepts. An observation is part of the official record of an encounter. There may 
- * be legal, ethical, and auditing consequences from altering a record. It is recommended
- * that you create a new Obs and void the old one:
- *      Obs newObs = Obs.newInstance(oldObs); //copies values from oldObs
- *      newObs.setPreviousVersion(oldObs);
- *      Context.getObsService().saveObs(newObs,"Your reason for the change here");
- *      Context.getObsService().voidObs(oldObs, "Your reason for the change here");
- *
  * @see Encounter
  */
 public class Obs extends BaseOpenmrsData implements java.io.Serializable {
@@ -161,8 +169,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return a new Obs object with all the same attributes as the given obs
 	 */
 	public static Obs newInstance(Obs obsToCopy) {
-		Obs newObs = new Obs(obsToCopy.getPerson(), obsToCopy.getConcept(), obsToCopy.getObsDatetime(), obsToCopy
-		        .getLocation());
+		Obs newObs = new Obs(obsToCopy.getPerson(), obsToCopy.getConcept(), obsToCopy.getObsDatetime(),
+		        obsToCopy.getLocation());
 		
 		newObs.setObsGroup(obsToCopy.getObsGroup());
 		newObs.setAccessionNumber(obsToCopy.getAccessionNumber());
@@ -345,10 +353,10 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method that checks for if this obs has 1 or more group members (either voided or non-voided)
-	 * Note this method differs from hasGroupMembers(), as that method excludes voided obs; logic is that
-	 * while a obs that has only voided group members should be seen as "having no group members" it
-	 * still should be considered an "obs grouping"
+	 * Convenience method that checks for if this obs has 1 or more group members (either voided or
+	 * non-voided) Note this method differs from hasGroupMembers(), as that method excludes voided
+	 * obs; logic is that while a obs that has only voided group members should be seen as
+	 * "having no group members" it still should be considered an "obs grouping"
 	 * <p>
 	 * NOTE: This method could also be called "isObsGroup" for a little less confusion on names.
 	 * However, jstl in a web layer (or any psuedo-getter) access isn't good with both an
@@ -877,6 +885,15 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * <pre>
 	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 * Obs obsWithComplexData = Context.getObsService().getComplexObs(obsId, OpenmrsConstants.RAW_VIEW);
 	 * </pre>
 	 * 
@@ -916,8 +933,17 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return first part of valueComplex for non null valueComplexes
 	 * @should return non precise values for NumericConcepts
 	 * @should return proper DateFormat
+	 * @should not return long decimal numbers as scientific notation
+	 * @should use commas or decimal places depending on locale
+	 * @should not use thousand separator
+	 * @should return regular number for size of zero to or greater than ten digits
+	 * @should return regular number if decimal places are as high as six
 	 */
 	public String getValueAsString(Locale locale) {
+		// formatting for the return of numbers of type double
+		NumberFormat nf = NumberFormat.getNumberInstance(locale);
+		DecimalFormat df = (DecimalFormat) nf;
+		df.applyPattern("#0.0#####"); // formatting style up to 6 digits
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
@@ -953,7 +979,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 							int i = (int) d;
 							return Integer.toString(i);
 						} else {
-							getValueNumeric().toString();
+							df.format(getValueNumeric());
 						}
 					}
 				}
@@ -977,7 +1003,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		
 		// if the datatype is 'unknown', default to just returning what is not null
 		if (getValueNumeric() != null)
-			return getValueNumeric().toString();
+			return df.format(getValueNumeric());
 		else if (getValueCoded() != null) {
 			if (getValueDrug() != null)
 				return getValueDrug().getFullName(locale);
@@ -1112,8 +1138,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * When ObsService updates an obs, it voids the old version, creates a new Obs with the updates,
-	 * and adds a reference to the previousVersion in the new Obs. 
-	 * getPreviousVersion returns the last version of this Obs. 
+	 * and adds a reference to the previousVersion in the new Obs. getPreviousVersion returns the
+	 * last version of this Obs.
 	 */
 	public Obs getPreviousVersion() {
 		return previousVersion;
@@ -1121,6 +1147,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * A previousVersion indicates that this Obs replaces an earlier one.
+	 * 
 	 * @param previousVersion the Obs that this Obs superceeds
 	 */
 	public void setPreviousVersion(Obs previousVersion) {
