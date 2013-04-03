@@ -1,0 +1,530 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0xb4f701cf, pid=6457, tid=3079199600
+#
+# JRE version: 6.0_24-b24
+# Java VM: OpenJDK Server VM (20.0-b12 mixed mode linux-x86 )
+# Derivative: IcedTea6 1.11.5
+# Distribution: Ubuntu 11.04, package 6b24-1.11.5-0ubuntu1~11.04.1
+# Problematic frame:
+# J  com.sun.tools.javac.comp.Resolve.findMethod(Lcom/sun/tools/javac/comp/Env;Lcom/sun/tools/javac/code/Type;Lcom/sun/tools/javac/util/Name;Lcom/sun/tools/javac/util/List;Lcom/sun/tools/javac/util/List;Lcom/sun/tools/javac/code/Type;ZLcom/sun/tools/javac/code/Symbol;ZZZ)Lcom/sun/tools/javac/code/Symbol;
+#
+# If you would like to submit a bug report, please include
+# instructions how to reproduce the bug and visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-6/
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0986d400):  JavaThread "main" [_thread_in_Java, id=6465, stack(0xb783d000,0xb788e000)]
+
+siginfo:si_signo=SIGSEGV: si_errno=0, si_code=128 (), si_addr=0x00000000
+
+Registers:
+EAX=0x00000001, EBX=0x00000000, ECX=0x9977fc58, EDX=0xaf7f5780
+ESP=0xb788b8e0, EBP=0x00000000, ESI=0xad5d0c30, EDI=0x9990ace8
+EIP=0xb4f701cf, EFLAGS=0x00010297, CR2=0x00000004
+
+Top of Stack: (sp=0xb788b8e0)
+0xb788b8e0:   ac8d44e0 ad5d0c30 af7f57c0 af7f57e8
+0xb788b8f0:   00000000 00000000 9990ace8 00000001
+0xb788b900:   af7f52b0 997a4cc8 8c7eee58 0986d400
+0xb788b910:   ac8d4498 ad5d0c70 99780808 af7f5318
+0xb788b920:   99780dd8 ac8d44e0 ad5d0c30 b788b92c
+0xb788b930:   8dbc1118 ad5d0c30 ac8d4498 9975c8d0
+0xb788b940:   ad5d0c30 00000000 b788b954 af7f5718
+0xb788b950:   997808c8 b788b954 8db93a30 b788b97c 
+
+Instructions: (pc=0xb4f701cf)
+0xb4f701af:   00 00 89 6c 24 0c 8b 9c 24 0c 01 00 00 89 5c 24
+0xb4f701bf:   10 8b ac 24 10 01 00 00 89 6c 24 14 89 7c 24 18
+0xb4f701cf:   e8 8a 75 00 00 8b 8c 24 88 00 00 00 8b 69 30 8b
+0xb4f701df:   59 34 89 5c 24 38 85 c0 0f 84 97 00 00 00 8b 94 
+
+Register to memory mapping:
+
+EAX=0x00000001 is an unknown value
+EBX=0x00000000 is an unknown value
+ECX=0x9977fc58 is an oop
+com.sun.tools.javac.comp.Resolve 
+ - klass: 'com/sun/tools/javac/comp/Resolve'
+EDX=0xaf7f5780 is an oop
+com.sun.tools.javac.comp.Env 
+ - klass: 'com/sun/tools/javac/comp/Env'
+ESP=0xb788b8e0 is pointing into the stack for thread: 0x0986d400
+EBP=0x00000000 is an unknown value
+ESI=0xad5d0c30 is an oop
+com.sun.tools.javac.code.Symbol$MethodSymbol 
+ - klass: 'com/sun/tools/javac/code/Symbol$MethodSymbol'
+EDI=0x9990ace8 is an oop
+com.sun.tools.javac.util.Warner 
+ - klass: 'com/sun/tools/javac/util/Warner'
+
+
+Stack: [0xb783d000,0xb788e000],  sp=0xb788b8e0,  free space=314k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+J  com.sun.tools.javac.comp.Resolve.findMethod(Lcom/sun/tools/javac/comp/Env;Lcom/sun/tools/javac/code/Type;Lcom/sun/tools/javac/util/Name;Lcom/sun/tools/javac/util/List;Lcom/sun/tools/javac/util/List;Lcom/sun/tools/javac/code/Type;ZLcom/sun/tools/javac/code/Symbol;ZZZ)Lcom/sun/tools/javac/code/Symbol;
+
+[error occurred during error reporting (printing native stack), id 0xb]
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x8b23a000 JavaThread "pool-1-thread-5" [_thread_blocked, id=6486, stack(0x8b80d000,0x8b85e000)]
+  0x8b970400 JavaThread "pool-1-thread-4" [_thread_blocked, id=6485, stack(0x8b85e000,0x8b8af000)]
+  0x09d39000 JavaThread "pool-1-thread-3" [_thread_blocked, id=6484, stack(0x8b8af000,0x8b900000)]
+  0x8b3fc400 JavaThread "pool-1-thread-2" [_thread_blocked, id=6483, stack(0x8ba49000,0x8ba9a000)]
+  0x8b9fd800 JavaThread "pool-1-thread-1" [_thread_blocked, id=6482, stack(0x8ba9a000,0x8baeb000)]
+  0x8c2b5400 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=6476, stack(0x8bba7000,0x8bbf8000)]
+  0x8c2b3400 JavaThread "C2 CompilerThread1" daemon [_thread_in_vm, id=6475, stack(0x8bbf8000,0x8bc79000)]
+  0x8c2b1400 JavaThread "C2 CompilerThread0" daemon [_thread_in_native, id=6474, stack(0x8bc79000,0x8bcfa000)]
+  0x8c2b0000 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=6473, stack(0x8bcfa000,0x8bd4b000)]
+  0x8c2a0800 JavaThread "Finalizer" daemon [_thread_blocked, id=6472, stack(0x8bf4b000,0x8bf9c000)]
+  0x8c29f000 JavaThread "Reference Handler" daemon [_thread_blocked, id=6471, stack(0x8bf9c000,0x8bfed000)]
+=>0x0986d400 JavaThread "main" [_thread_in_Java, id=6465, stack(0xb783d000,0xb788e000)]
+
+Other Threads:
+  0x8c29b400 VMThread [stack: 0x8bfed000,0x8c06e000] [id=6470]
+  0x8c2b7400 WatcherThread [stack: 0x8bb26000,0x8bba7000] [id=6477]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ PSYoungGen      total 122304K, used 104969K [0xa9cd0000, 0xb4770000, 0xb4770000)
+  eden space 111488K, 84% used [0xa9cd0000,0xaf8c4cf8,0xb09b0000)
+  from space 10816K, 99% used [0xb3ce0000,0xb476d9b0,0xb4770000)
+  to   space 31616K, 0% used [0xb09b0000,0xb09b0000,0xb2890000)
+ PSOldGen        total 112704K, used 86484K [0x94770000, 0x9b580000, 0xa9cd0000)
+  object space 112704K, 76% used [0x94770000,0x99be53a8,0x9b580000)
+ PSPermGen       total 28544K, used 21923K [0x8c770000, 0x8e350000, 0x94770000)
+  object space 28544K, 76% used [0x8c770000,0x8dcd8d80,0x8e350000)
+
+Code Cache  [0xb483d000, 0xb4f8d000, 0xb783d000)
+ total_blobs=1987 nmethods=1858 adapters=81 free_code_cache=42837696 largest_free_block=100352
+
+Dynamic libraries:
+00110000-0012a000 r-xp 00000000 08:05 3933021    /lib/i386-linux-gnu/libgcc_s.so.1
+0012a000-0012b000 r--p 00019000 08:05 3933021    /lib/i386-linux-gnu/libgcc_s.so.1
+0012b000-0012c000 rw-p 0001a000 08:05 3933021    /lib/i386-linux-gnu/libgcc_s.so.1
+0012c000-00137000 r-xp 00000000 08:05 395068     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libverify.so
+00137000-00138000 ---p 0000b000 08:05 395068     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libverify.so
+00138000-00139000 r--p 0000b000 08:05 395068     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libverify.so
+00139000-0013a000 rw-p 0000c000 08:05 395068     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libverify.so
+0013a000-00140000 r-xp 00000000 08:05 3945425    /lib/i386-linux-gnu/libnss_compat-2.13.so
+00140000-00141000 r--p 00005000 08:05 3945425    /lib/i386-linux-gnu/libnss_compat-2.13.so
+00141000-00142000 rw-p 00006000 08:05 3945425    /lib/i386-linux-gnu/libnss_compat-2.13.so
+00142000-00148000 r-xp 00000000 08:05 395061     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libzip.so
+00148000-00149000 r--p 00005000 08:05 395061     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libzip.so
+00149000-0014a000 rw-p 00006000 08:05 395061     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libzip.so
+001ad000-001b6000 r-xp 00000000 08:05 3945418    /lib/i386-linux-gnu/libnss_nis-2.13.so
+001b6000-001b7000 r--p 00008000 08:05 3945418    /lib/i386-linux-gnu/libnss_nis-2.13.so
+001b7000-001b8000 rw-p 00009000 08:05 3945418    /lib/i386-linux-gnu/libnss_nis-2.13.so
+001e7000-001f1000 r-xp 00000000 08:05 3945413    /lib/i386-linux-gnu/libnss_files-2.13.so
+001f1000-001f2000 r--p 00009000 08:05 3945413    /lib/i386-linux-gnu/libnss_files-2.13.so
+001f2000-001f3000 rw-p 0000a000 08:05 3945413    /lib/i386-linux-gnu/libnss_files-2.13.so
+00209000-0021c000 r-xp 00000000 08:05 3933076    /lib/i386-linux-gnu/libz.so.1.2.3.4
+0021c000-0021d000 r--p 00012000 08:05 3933076    /lib/i386-linux-gnu/libz.so.1.2.3.4
+0021d000-0021e000 rw-p 00013000 08:05 3933076    /lib/i386-linux-gnu/libz.so.1.2.3.4
+0021e000-0037f000 r-xp 00000000 08:05 3945429    /lib/i386-linux-gnu/libc-2.13.so
+0037f000-00380000 ---p 00161000 08:05 3945429    /lib/i386-linux-gnu/libc-2.13.so
+00380000-00382000 r--p 00161000 08:05 3945429    /lib/i386-linux-gnu/libc-2.13.so
+00382000-00383000 rw-p 00163000 08:05 3945429    /lib/i386-linux-gnu/libc-2.13.so
+00383000-00386000 rw-p 00000000 00:00 0 
+004a0000-004b3000 r-xp 00000000 08:05 3945419    /lib/i386-linux-gnu/libnsl-2.13.so
+004b3000-004b4000 r--p 00012000 08:05 3945419    /lib/i386-linux-gnu/libnsl-2.13.so
+004b4000-004b5000 rw-p 00013000 08:05 3945419    /lib/i386-linux-gnu/libnsl-2.13.so
+004b5000-004b7000 rw-p 00000000 00:00 0 
+0066e000-00692000 r-xp 00000000 08:05 3945431    /lib/i386-linux-gnu/libm-2.13.so
+00692000-00693000 r--p 00023000 08:05 3945431    /lib/i386-linux-gnu/libm-2.13.so
+00693000-00694000 rw-p 00024000 08:05 3945431    /lib/i386-linux-gnu/libm-2.13.so
+006a5000-006c1000 r-xp 00000000 08:05 3945421    /lib/i386-linux-gnu/ld-2.13.so
+006c1000-006c2000 r--p 0001b000 08:05 3945421    /lib/i386-linux-gnu/ld-2.13.so
+006c2000-006c3000 rw-p 0001c000 08:05 3945421    /lib/i386-linux-gnu/ld-2.13.so
+006ee000-006f5000 r-xp 00000000 08:05 3945422    /lib/i386-linux-gnu/librt-2.13.so
+006f5000-006f6000 r--p 00006000 08:05 3945422    /lib/i386-linux-gnu/librt-2.13.so
+006f6000-006f7000 rw-p 00007000 08:05 3945422    /lib/i386-linux-gnu/librt-2.13.so
+008fc000-0091f000 r-xp 00000000 08:05 402734     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libjava.so
+0091f000-00920000 r--p 00022000 08:05 402734     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libjava.so
+00920000-00922000 rw-p 00023000 08:05 402734     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libjava.so
+00ac8000-00ba7000 r-xp 00000000 08:05 4331880    /usr/lib/i386-linux-gnu/libstdc++.so.6.0.14
+00ba7000-00bab000 r--p 000de000 08:05 4331880    /usr/lib/i386-linux-gnu/libstdc++.so.6.0.14
+00bab000-00bac000 rw-p 000e2000 08:05 4331880    /usr/lib/i386-linux-gnu/libstdc++.so.6.0.14
+00bac000-00bb3000 rw-p 00000000 00:00 0 
+00bbf000-00bd4000 r-xp 00000000 08:05 3945430    /lib/i386-linux-gnu/libpthread-2.13.so
+00bd4000-00bd5000 r--p 00015000 08:05 3945430    /lib/i386-linux-gnu/libpthread-2.13.so
+00bd5000-00bd6000 rw-p 00016000 08:05 3945430    /lib/i386-linux-gnu/libpthread-2.13.so
+00bd6000-00bd8000 rw-p 00000000 00:00 0 
+00d52000-00d53000 r-xp 00000000 00:00 0          [vdso]
+00dcf000-00dd1000 r-xp 00000000 08:05 3945424    /lib/i386-linux-gnu/libdl-2.13.so
+00dd1000-00dd2000 r--p 00001000 08:05 3945424    /lib/i386-linux-gnu/libdl-2.13.so
+00dd2000-00dd3000 rw-p 00002000 08:05 3945424    /lib/i386-linux-gnu/libdl-2.13.so
+00e0c000-00e0f000 r-xp 00000000 08:05 402730     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/jli/libjli.so
+00e0f000-00e10000 r--p 00002000 08:05 402730     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/jli/libjli.so
+00e10000-00e11000 rw-p 00003000 08:05 402730     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/jli/libjli.so
+00e11000-014d9000 r-xp 00000000 08:05 395063     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/server/libjvm.so
+014d9000-0151e000 r--p 006c8000 08:05 395063     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/server/libjvm.so
+0151e000-0152d000 rw-p 0070d000 08:05 395063     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/server/libjvm.so
+0152d000-01947000 rw-p 00000000 00:00 0 
+08048000-08051000 r-xp 00000000 08:05 394780     /usr/lib/jvm/java-6-openjdk/jre/bin/java
+08051000-08052000 r--p 00008000 08:05 394780     /usr/lib/jvm/java-6-openjdk/jre/bin/java
+08052000-08053000 rw-p 00009000 08:05 394780     /usr/lib/jvm/java-6-openjdk/jre/bin/java
+09866000-0cfe1000 rw-p 00000000 00:00 0          [heap]
+88100000-881fb000 rw-p 00000000 00:00 0 
+881fb000-88200000 ---p 00000000 00:00 0 
+88200000-882fa000 rw-p 00000000 00:00 0 
+882fa000-88300000 ---p 00000000 00:00 0 
+88300000-883ff000 rw-p 00000000 00:00 0 
+883ff000-88400000 ---p 00000000 00:00 0 
+88400000-884ff000 rw-p 00000000 00:00 0 
+884ff000-88500000 ---p 00000000 00:00 0 
+88500000-885ff000 rw-p 00000000 00:00 0 
+885ff000-88600000 ---p 00000000 00:00 0 
+88700000-887fd000 rw-p 00000000 00:00 0 
+887fd000-88800000 ---p 00000000 00:00 0 
+88900000-88b00000 rw-p 00000000 00:00 0 
+88b00000-88bfd000 rw-p 00000000 00:00 0 
+88bfd000-88c00000 ---p 00000000 00:00 0 
+88c00000-88d00000 rw-p 00000000 00:00 0 
+88d00000-88dfa000 rw-p 00000000 00:00 0 
+88dfa000-88e00000 ---p 00000000 00:00 0 
+88f00000-88fff000 rw-p 00000000 00:00 0 
+88fff000-89000000 ---p 00000000 00:00 0 
+89000000-890ff000 rw-p 00000000 00:00 0 
+890ff000-89100000 ---p 00000000 00:00 0 
+89100000-891fc000 rw-p 00000000 00:00 0 
+891fc000-89200000 ---p 00000000 00:00 0 
+89200000-892c3000 rw-p 00000000 00:00 0 
+892c3000-89300000 ---p 00000000 00:00 0 
+89300000-893fc000 rw-p 00000000 00:00 0 
+893fc000-89400000 ---p 00000000 00:00 0 
+89400000-894fe000 rw-p 00000000 00:00 0 
+894fe000-89500000 ---p 00000000 00:00 0 
+89500000-895f9000 rw-p 00000000 00:00 0 
+895f9000-89600000 ---p 00000000 00:00 0 
+89600000-896f9000 rw-p 00000000 00:00 0 
+896f9000-89700000 ---p 00000000 00:00 0 
+89700000-897f5000 rw-p 00000000 00:00 0 
+897f5000-89800000 ---p 00000000 00:00 0 
+89800000-898fa000 rw-p 00000000 00:00 0 
+898fa000-89900000 ---p 00000000 00:00 0 
+89900000-899eb000 rw-p 00000000 00:00 0 
+899eb000-89a00000 ---p 00000000 00:00 0 
+89a00000-89af6000 rw-p 00000000 00:00 0 
+89af6000-89b00000 ---p 00000000 00:00 0 
+89b00000-89d00000 rw-p 00000000 00:00 0 
+89d00000-89df9000 rw-p 00000000 00:00 0 
+89df9000-89e00000 ---p 00000000 00:00 0 
+89e00000-89efc000 rw-p 00000000 00:00 0 
+89efc000-89f00000 ---p 00000000 00:00 0 
+89f00000-89fff000 rw-p 00000000 00:00 0 
+89fff000-8a000000 ---p 00000000 00:00 0 
+8a000000-8a0fe000 rw-p 00000000 00:00 0 
+8a0fe000-8a100000 ---p 00000000 00:00 0 
+8a100000-8a1fc000 rw-p 00000000 00:00 0 
+8a1fc000-8a200000 ---p 00000000 00:00 0 
+8a200000-8a2fe000 rw-p 00000000 00:00 0 
+8a2fe000-8a300000 ---p 00000000 00:00 0 
+8a300000-8a3fa000 rw-p 00000000 00:00 0 
+8a3fa000-8a400000 ---p 00000000 00:00 0 
+8a400000-8a4fd000 rw-p 00000000 00:00 0 
+8a4fd000-8a500000 ---p 00000000 00:00 0 
+8a500000-8a5c9000 rw-p 00000000 00:00 0 
+8a5c9000-8a600000 ---p 00000000 00:00 0 
+8a600000-8a6c7000 rw-p 00000000 00:00 0 
+8a6c7000-8a700000 ---p 00000000 00:00 0 
+8a700000-8a7e0000 rw-p 00000000 00:00 0 
+8a7e0000-8a800000 ---p 00000000 00:00 0 
+8a800000-8a8fc000 rw-p 00000000 00:00 0 
+8a8fc000-8a900000 ---p 00000000 00:00 0 
+8a900000-8ab00000 rw-p 00000000 00:00 0 
+8ab00000-8abfe000 rw-p 00000000 00:00 0 
+8abfe000-8ac00000 ---p 00000000 00:00 0 
+8ad23000-8ad25000 r--s 00004000 08:05 788171     /home/garima/.m2/repository/org/codehaus/plexus/plexus-resources/1.0-alpha-7/plexus-resources-1.0-alpha-7.jar
+8ad25000-8ad28000 r--s 0000a000 08:05 788152     /home/garima/.m2/repository/org/codehaus/plexus/plexus-io/1.0.1/plexus-io-1.0.1.jar
+8ad28000-8ad2a000 r--s 0000d000 08:05 788151     /home/garima/.m2/repository/commons-codec/commons-codec/1.4/commons-codec-1.4.jar
+8ad2a000-8ad2c000 r--s 0000d000 08:05 788153     /home/garima/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar
+8ad2c000-8ad31000 r--s 00034000 08:05 788164     /home/garima/.m2/repository/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0.jar
+8ad31000-8ad35000 r--s 00021000 08:05 788150     /home/garima/.m2/repository/commons-digester/commons-digester/2.0/commons-digester-2.0.jar
+8ad35000-8ad38000 r--s 00012000 08:05 788190     /home/garima/.m2/repository/org/eclipse/core/contenttype/3.2.100-v20070319/contenttype-3.2.100-v20070319.jar
+8ad38000-8ad3b000 r--s 00017000 08:05 788182     /home/garima/.m2/repository/org/eclipse/equinox/preferences/3.2.100-v20070522/preferences-3.2.100-v20070522.jar
+8ad3b000-8ad3f000 r--s 00024000 08:05 788168     /home/garima/.m2/repository/org/eclipse/equinox/registry/3.3.0-v20070522/registry-3.3.0-v20070522.jar
+8ad3f000-8ad41000 r--s 00012000 08:05 788185     /home/garima/.m2/repository/org/eclipse/core/jobs/3.3.0-v20070423/jobs-3.3.0-v20070423.jar
+8ad41000-8ad43000 r--s 00015000 08:05 788154     /home/garima/.m2/repository/org/eclipse/equinox/common/3.3.0-v20070426/common-3.3.0-v20070426.jar
+8ad43000-8ad51000 r--s 000d5000 08:05 788181     /home/garima/.m2/repository/org/eclipse/osgi/3.3.0-v20070530/osgi-3.3.0-v20070530.jar
+8ad51000-8ad53000 r--s 00010000 08:05 788176     /home/garima/.m2/repository/org/eclipse/core/runtime/3.3.100-v20070530/runtime-3.3.100-v20070530.jar
+8ad53000-8ad57000 r--s 00016000 08:05 788163     /home/garima/.m2/repository/org/eclipse/core/commands/3.3.0-I20070605-0010/commands-3.3.0-I20070605-0010.jar
+8ad57000-8ad58000 r--s 00001000 08:05 787511     /home/garima/.m2/repository/org/sonatype/plexus/plexus-build-api/0.0.4/plexus-build-api-0.0.4.jar
+8ad58000-8ad5a000 r--s 0000d000 08:05 787519     /home/garima/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.12/plexus-interpolation-1.12.jar
+8ad5a000-8ad5e000 r--s 00034000 08:05 787512     /home/garima/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15.jar
+8ad5e000-8ad61000 ---p 00000000 00:00 0 
+8ad61000-8adaf000 rw-p 00000000 00:00 0 
+8adaf000-8adb2000 ---p 00000000 00:00 0 
+8adb2000-8ae00000 rw-p 00000000 00:00 0 
+8ae01000-8ae07000 r--s 00034000 08:05 788165     /home/garima/.m2/repository/org/eclipse/text/3.3.0-v20070606-0010/text-3.3.0-v20070606-0010.jar
+8ae07000-8ae30000 r--s 0041e000 08:05 671378     /home/garima/.m2/repository/org/sonatype/tycho/org.eclipse.jdt.core/3.5.2.v_981_R35x/org.eclipse.jdt.core-3.5.2.v_981_R35x.jar
+8ae30000-8ae32000 r--s 00002000 08:05 5391980    /home/garima/Open MRS/openmrs-code/openmrs-core/tools/target/openmrs-tools-1.10.0-SNAPSHOT.jar
+8ae32000-8ae33000 r--s 00004000 08:05 788027     /home/garima/.m2/repository/com/googlecode/maven-java-formatter-plugin/maven-java-formatter-plugin/0.3/maven-java-formatter-plugin-0.3.jar
+8ae33000-8ae34000 r--s 00004000 08:05 5526958    /home/garima/.m2/repository/org/codehaus/mojo/antlr-maven-plugin/2.1/antlr-maven-plugin-2.1.jar
+8ae34000-8ae37000 ---p 00000000 00:00 0 
+8ae37000-8ae85000 rw-p 00000000 00:00 0 
+8ae85000-8ae8a000 r--s 0003d000 08:05 787743     /home/garima/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.9/plexus-utils-1.5.9.jar
+8ae8a000-8ae95000 r--s 00081000 08:05 671370     /home/garima/.m2/repository/org/apache/maven/surefire/surefire-api/2.5/surefire-api-2.5.jar
+8ae95000-8ae9c000 r--s 00048000 08:05 276962     /home/garima/.m2/repository/org/apache/maven/surefire/surefire-booter/2.5/surefire-booter-2.5.jar
+8ae9c000-8aefc000 r--s 00d92000 08:05 6422549    /usr/lib/jvm/java-6-openjdk/lib/tools.jar
+8aefc000-8aefd000 r--s 00002000 08:05 787572     /home/garima/.m2/repository/org/codehaus/plexus/plexus-compiler-javac/1.6/plexus-compiler-javac-1.6.jar
+8aefd000-8aeff000 r--s 00000000 08:05 787569     /home/garima/.m2/repository/org/codehaus/plexus/plexus-compiler-manager/1.6/plexus-compiler-manager-1.6.jar
+8aeff000-8af00000 r--s 00004000 08:05 787566     /home/garima/.m2/repository/org/codehaus/plexus/plexus-compiler-api/1.6/plexus-compiler-api-1.6.jar
+8af00000-8af02000 r--s 00007000 08:05 787510     /home/garima/.m2/repository/org/apache/maven/shared/maven-filtering/1.0-beta-3/maven-filtering-1.0-beta-3.jar
+8af02000-8af03000 r--s 00006000 08:05 6049304    /home/garima/.m2/repository/org/apache/maven/plugins/maven-compiler-plugin/2.1/maven-compiler-plugin-2.1.jar
+8af03000-8af04000 r--s 00005000 08:05 5649277    /home/garima/.m2/repository/org/apache/maven/plugins/maven-resources-plugin/2.4/maven-resources-plugin-2.4.jar
+8af04000-8af06000 r--s 0000d000 08:05 787462     /home/garima/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.13/plexus-interpolation-1.13.jar
+8af06000-8af09000 r--s 0000c000 08:05 787459     /home/garima/.m2/repository/org/codehaus/plexus/plexus-io/2.0.1/plexus-io-2.0.1.jar
+8af09000-8af0d000 r--s 00028000 08:05 787456     /home/garima/.m2/repository/org/codehaus/plexus/plexus-archiver/2.0.1/plexus-archiver-2.0.1.jar
+8af0d000-8af11000 r--s 00034000 08:05 787453     /home/garima/.m2/repository/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0.jar
+8af11000-8af14000 r--s 0001e000 08:05 787382     /home/garima/.m2/repository/org/mortbay/jetty/servlet-api-2.5/6.1.5/servlet-api-2.5-6.1.5.jar
+8af14000-8af17000 r--s 0001f000 08:05 787371     /home/garima/.m2/repository/org/mortbay/jetty/jetty-util/6.1.5/jetty-util-6.1.5.jar
+8af17000-8af1d000 r--s 00071000 08:05 11610      /home/garima/.m2/repository/org/mortbay/jetty/jetty/6.1.5/jetty-6.1.5.jar
+8af1d000-8af20000 r--s 00020000 08:05 787387     /home/garima/.m2/repository/org/codehaus/plexus/plexus-archiver/1.0-alpha-7/plexus-archiver-1.0-alpha-7.jar
+8af20000-8af23000 r--s 00018000 08:05 787366     /home/garima/.m2/repository/commons-io/commons-io/1.4/commons-io-1.4.jar
+8af23000-8af25000 r--s 00008000 08:05 787357     /home/garima/.m2/repository/org/apache/maven/shared/maven-doxia-tools/1.0.1/maven-doxia-tools-1.0.1.jar
+8af25000-8af26000 r--s 00006000 08:05 787404     /home/garima/.m2/repository/org/apache/maven/doxia/doxia-module-xdoc/1.0-alpha-11/doxia-module-xdoc-1.0-alpha-11.jar
+8af26000-8af27000 r--s 00004000 08:05 787401     /home/garima/.m2/repository/org/apache/maven/doxia/doxia-module-fml/1.0-alpha-11/doxia-module-fml-1.0-alpha-11.jar
+8af27000-8af29000 r--s 0000a000 08:05 787398     /home/garima/.m2/repository/org/apache/maven/doxia/doxia-module-apt/1.0-alpha-11/doxia-module-apt-1.0-alpha-11.jar
+8af29000-8af2d000 r--s 0002f000 08:05 4868354    /home/garima/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar
+8af2d000-8af3a000 r--s 0007f000 08:05 787369     /home/garima/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar
+8af3a000-8af42000 r--s 00058000 08:05 5526944    /home/garima/.m2/repository/org/apache/velocity/velocity/1.5/velocity-1.5.jar
+8af42000-8af44000 r--s 0000a000 08:05 787395     /home/garima/.m2/repository/org/apache/maven/doxia/doxia-site-renderer/1.0-alpha-11/doxia-site-renderer-1.0-alpha-11.jar
+8af44000-8af46000 r--s 0000b000 08:05 787388     /home/garima/.m2/repository/org/apache/maven/doxia/doxia-decoration-model/1.0-alpha-11/doxia-decoration-model-1.0-alpha-11.jar
+8af46000-8af49000 r--s 0000b000 08:05 787374     /home/garima/.m2/repository/org/apache/maven/doxia/doxia-core/1.0-alpha-11/doxia-core-1.0-alpha-11.jar
+8af49000-8af4b000 r--s 00004000 08:05 787363     /home/garima/.m2/repository/org/apache/maven/doxia/doxia-module-xhtml/1.0-alpha-11/doxia-module-xhtml-1.0-alpha-11.jar
+8af4b000-8af4f000 r--s 00030000 08:05 787358     /home/garima/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.1/plexus-utils-1.5.1.jar
+8af4f000-8af52000 ---p 00000000 00:00 0 
+8af52000-8afa0000 rw-p 00000000 00:00 0 
+8afa0000-8afa3000 ---p 00000000 00:00 0 
+8afa3000-8aff1000 rw-p 00000000 00:00 0 
+8aff1000-8b000000 r--s 000a7000 08:05 6180079    /home/garima/.m2/repository/org/tmatesoft/sqljet/sqljet/1.0.4/sqljet-1.0.4.jar
+8b000000-8b0fb000 rw-p 00000000 00:00 0 
+8b0fb000-8b100000 ---p 00000000 00:00 0 
+8b100000-8b1ff000 rw-p 00000000 00:00 0 
+8b1ff000-8b200000 ---p 00000000 00:00 0 
+8b200000-8b2f9000 rw-p 00000000 00:00 0 
+8b2f9000-8b300000 ---p 00000000 00:00 0 
+8b300000-8b3ff000 rw-p 00000000 00:00 0 
+8b3ff000-8b400000 ---p 00000000 00:00 0 
+8b400000-8b4fc000 rw-p 00000000 00:00 0 
+8b4fc000-8b500000 ---p 00000000 00:00 0 
+8b500000-8b5fb000 rw-p 00000000 00:00 0 
+8b5fb000-8b600000 ---p 00000000 00:00 0 
+8b600000-8b6f9000 rw-p 00000000 00:00 0 
+8b6f9000-8b700000 ---p 00000000 00:00 0 
+8b700000-8b7fb000 rw-p 00000000 00:00 0 
+8b7fb000-8b800000 ---p 00000000 00:00 0 
+8b800000-8b801000 r--s 00002000 08:05 787474     /home/garima/.m2/repository/org/codehaus/plexus/plexus-digest/1.0/plexus-digest-1.0.jar
+8b801000-8b803000 r--s 0000e000 08:05 787356     /home/garima/.m2/repository/oro/oro/2.0.8/oro-2.0.8.jar
+8b803000-8b808000 r--s 0003d000 08:05 276947     /home/garima/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.8/plexus-utils-1.5.8.jar
+8b808000-8b80d000 r--s 00068000 08:05 404075     /home/garima/.m2/repository/antlr/antlr/2.7.7/antlr-2.7.7.jar
+8b80d000-8b810000 ---p 00000000 00:00 0 
+8b810000-8b85e000 rw-p 00000000 00:00 0 
+8b85e000-8b861000 ---p 00000000 00:00 0 
+8b861000-8b8af000 rw-p 00000000 00:00 0 
+8b8af000-8b8b2000 ---p 00000000 00:00 0 
+8b8b2000-8b900000 rw-p 00000000 00:00 0 
+8b900000-8b9fe000 rw-p 00000000 00:00 0 
+8b9fe000-8ba00000 ---p 00000000 00:00 0 
+8ba00000-8ba01000 r--s 00004000 08:05 5649270    /home/garima/.m2/repository/org/apache/maven/maven-archiver/2.4.2/maven-archiver-2.4.2.jar
+8ba01000-8ba02000 r--s 00001000 08:05 787377     /home/garima/.m2/repository/org/codehaus/plexus/plexus-velocity/1.1.7/plexus-velocity-1.1.7.jar
+8ba02000-8ba03000 r--s 00002000 08:05 787370     /home/garima/.m2/repository/org/codehaus/plexus/plexus-i18n/1.0-beta-7/plexus-i18n-1.0-beta-7.jar
+8ba03000-8ba06000 r--s 00027000 08:05 141188     /home/garima/.m2/repository/org/antlr/stringtemplate/3.2/stringtemplate-3.2.jar
+8ba06000-8ba09000 r--s 00022000 08:05 11602      /home/garima/.m2/repository/org/antlr/antlr-runtime/3.1.3/antlr-runtime-3.1.3.jar
+8ba09000-8ba0e000 r--s 00039000 08:05 6049292    /home/garima/.m2/repository/org/tmatesoft/svnkit/trilead-ssh2/build213-svnkit-1.3-patch/trilead-ssh2-build213-svnkit-1.3-patch.jar
+8ba0e000-8ba24000 r--s 001b8000 08:05 6049289    /home/garima/.m2/repository/org/tmatesoft/svnkit/svnkit/1.3.5/svnkit-1.3.5.jar
+8ba24000-8ba27000 r--s 000cf000 08:05 5919816    /home/garima/.m2/repository/net/java/dev/jna/jna/3.2.2/jna-3.2.2.jar
+8ba27000-8ba29000 r--s 0000b000 08:05 786666     /home/garima/.m2/repository/com/google/code/maven-scm-provider-svnjava/maven-scm-provider-svnjava/1.13/maven-scm-provider-svnjava-1.13.jar
+8ba29000-8ba2b000 r--s 0000e000 08:05 786890     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-provider-hg/1.7/maven-scm-provider-hg-1.7.jar
+8ba2b000-8ba2d000 r--s 00012000 08:05 786704     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-provider-perforce/1.7/maven-scm-provider-perforce-1.7.jar
+8ba2d000-8ba30000 r--s 0000f000 08:05 786701     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-provider-clearcase/1.7/maven-scm-provider-clearcase-1.7.jar
+8ba30000-8ba33000 r--s 00010000 08:05 786697     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-provider-starteam/1.7/maven-scm-provider-starteam-1.7.jar
+8ba33000-8ba36000 r--s 00011000 08:05 786694     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-provider-cvs-commons/1.7/maven-scm-provider-cvs-commons-1.7.jar
+8ba36000-8ba38000 r--s 00006000 08:05 786691     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-provider-cvsexe/1.7/maven-scm-provider-cvsexe-1.7.jar
+8ba38000-8ba3a000 r--s 00008000 08:05 786687     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-provider-git-commons/1.7/maven-scm-provider-git-commons-1.7.jar
+8ba3a000-8ba3d000 r--s 0000d000 08:05 786684     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-provider-gitexe/1.7/maven-scm-provider-gitexe-1.7.jar
+8ba3d000-8ba42000 r--s 00041000 08:05 4868344    /home/garima/.m2/repository/commons-lang/commons-lang/2.6/commons-lang-2.6.jar
+8ba42000-8ba44000 r--s 00008000 08:05 786681     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-provider-svn-commons/1.7/maven-scm-provider-svn-commons-1.7.jar
+8ba44000-8ba47000 r--s 00010000 08:05 786675     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-provider-svnexe/1.7/maven-scm-provider-svnexe-1.7.jar
+8ba47000-8ba49000 r--s 00005000 08:05 4868347    /home/garima/.m2/repository/regexp/regexp/1.3/regexp-1.3.jar
+8ba49000-8ba4c000 ---p 00000000 00:00 0 
+8ba4c000-8ba9a000 rw-p 00000000 00:00 0 
+8ba9a000-8ba9d000 ---p 00000000 00:00 0 
+8ba9d000-8baeb000 rw-p 00000000 00:00 0 
+8baeb000-8bb26000 r--s 002c7000 08:05 4195844    /usr/local/apache-maven-2.2.1/lib/maven-2.2.1-uber.jar
+8bb26000-8bb27000 ---p 00000000 00:00 0 
+8bb27000-8bba7000 rw-p 00000000 00:00 0 
+8bba7000-8bbaa000 ---p 00000000 00:00 0 
+8bbaa000-8bbf8000 rw-p 00000000 00:00 0 
+8bbf8000-8bbfb000 ---p 00000000 00:00 0 
+8bbfb000-8bc79000 rw-p 00000000 00:00 0 
+8bc79000-8bc7c000 ---p 00000000 00:00 0 
+8bc7c000-8bcfa000 rw-p 00000000 00:00 0 
+8bcfa000-8bcfd000 ---p 00000000 00:00 0 
+8bcfd000-8bd4b000 rw-p 00000000 00:00 0 
+8bd4b000-8bf4b000 r--p 00000000 08:05 4333097    /usr/lib/locale/locale-archive
+8bf4b000-8bf4e000 ---p 00000000 00:00 0 
+8bf4e000-8bf9c000 rw-p 00000000 00:00 0 
+8bf9c000-8bf9f000 ---p 00000000 00:00 0 
+8bf9f000-8bfed000 rw-p 00000000 00:00 0 
+8bfed000-8bfee000 ---p 00000000 00:00 0 
+8bfee000-8c06e000 rw-p 00000000 00:00 0 
+8c06e000-8c200000 r--s 037c2000 08:05 168        /usr/lib/jvm/java-6-openjdk/jre/lib/rt.jar
+8c200000-8c300000 rw-p 00000000 00:00 0 
+8c300000-8c303000 r--s 0000b000 08:05 786672     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-provider-bazaar/1.7/maven-scm-provider-bazaar-1.7.jar
+8c303000-8c304000 r--s 00002000 08:05 786669     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-manager-plexus/1.7/maven-scm-manager-plexus-1.7.jar
+8c304000-8c308000 r--s 00015000 08:05 786661     /home/garima/.m2/repository/org/apache/maven/scm/maven-scm-api/1.7/maven-scm-api-1.7.jar
+8c308000-8c30c000 r--s 00033000 08:05 786660     /home/garima/.m2/repository/org/codehaus/plexus/plexus-utils/2.0.5/plexus-utils-2.0.5.jar
+8c30c000-8c30d000 r--s 00003000 08:05 540512     /home/garima/.m2/repository/org/apache/maven/plugins/maven-install-plugin/2.2/maven-install-plugin-2.2.jar
+8c30d000-8c340000 rw-p 00000000 00:00 0 
+8c340000-8c341000 ---p 00000000 00:00 0 
+8c341000-8c3c1000 rw-p 00000000 00:00 0 
+8c3c1000-8c3c2000 ---p 00000000 00:00 0 
+8c3c2000-8c442000 rw-p 00000000 00:00 0 
+8c442000-8c443000 ---p 00000000 00:00 0 
+8c443000-8c4c3000 rw-p 00000000 00:00 0 
+8c4c3000-8c4c4000 ---p 00000000 00:00 0 
+8c4c4000-8c552000 rw-p 00000000 00:00 0 
+8c552000-8c584000 rw-p 00000000 00:00 0 
+8c584000-8c5bc000 rw-p 00000000 00:00 0 
+8c5bc000-8c62f000 rw-p 00000000 00:00 0 
+8c62f000-8c63d000 rw-p 00000000 00:00 0 
+8c63d000-8c66f000 rw-p 00000000 00:00 0 
+8c66f000-8c6a7000 rw-p 00000000 00:00 0 
+8c6a7000-8c719000 rw-p 00000000 00:00 0 
+8c719000-8c76f000 rw-p 00000000 00:00 0 
+8c76f000-8e350000 rw-p 00000000 00:00 0 
+8e350000-94770000 rw-p 00000000 00:00 0 
+94770000-9b580000 rw-p 00000000 00:00 0 
+9b580000-a9cd0000 rw-p 00000000 00:00 0 
+a9cd0000-b4770000 rw-p 00000000 00:00 0 
+b4770000-b4773000 r--s 0001c000 08:05 540500     /home/garima/.m2/repository/org/apache/maven/plugins/maven-site-plugin/2.0-beta-7/maven-site-plugin-2.0-beta-7.jar
+b4773000-b4775000 r--s 00008000 08:05 404067     /home/garima/.m2/repository/org/apache/maven/shared/maven-shared-io/1.1/maven-shared-io-1.1.jar
+b4775000-b4777000 r--s 00008000 08:05 404064     /home/garima/.m2/repository/org/apache/maven/shared/file-management/1.2/file-management-1.2.jar
+b4777000-b477a000 r--s 00027000 08:05 540484     /home/garima/.m2/repository/org/codehaus/plexus/plexus-utils/1.1/plexus-utils-1.1.jar
+b477a000-b477b000 r--s 00007000 08:05 276872     /home/garima/.m2/repository/org/apache/maven/plugins/maven-jar-plugin/2.3.2/maven-jar-plugin-2.3.2.jar
+b477b000-b477d000 r--s 00007000 08:05 141172     /home/garima/.m2/repository/org/apache/maven/plugins/maven-surefire-plugin/2.5/maven-surefire-plugin-2.5.jar
+b477d000-b479b000 rw-p 00000000 00:00 0 
+b479b000-b483d000 rw-p 00000000 00:00 0 
+b483d000-b4f8d000 rwxp 00000000 00:00 0 
+b4f8d000-b783d000 rw-p 00000000 00:00 0 
+b783d000-b7840000 ---p 00000000 00:00 0 
+b7840000-b7891000 rw-p 00000000 00:00 0 
+b7891000-b7895000 r--s 0002f000 08:05 141163     /home/garima/.m2/repository/org/apache/maven/plugins/maven-assembly-plugin/2.2-beta-5/maven-assembly-plugin-2.2-beta-5.jar
+b7895000-b7896000 r--s 00005000 08:05 141143     /home/garima/.m2/repository/org/codehaus/mojo/build-helper-maven-plugin/1.5/build-helper-maven-plugin-1.5.jar
+b7896000-b7897000 r--s 00006000 08:05 5780946    /home/garima/.m2/repository/org/codehaus/mojo/buildnumber-maven-plugin/1.1/buildnumber-maven-plugin-1.1.jar
+b7897000-b7898000 r--s 00002000 08:05 5649251    /home/garima/.m2/repository/org/apache/maven/plugins/maven-clean-plugin/2.2/maven-clean-plugin-2.2.jar
+b7898000-b7899000 r--p 00000000 00:00 0 
+b7899000-b789d000 r--s 0007d000 08:05 10650      /usr/lib/jvm/java-6-openjdk/jre/lib/jsse.jar
+b789d000-b789f000 r--s 00008000 08:05 4195452    /usr/local/apache-maven-2.2.1/boot/classworlds-1.1.jar
+b789f000-b78a1000 r--s 0000f000 08:05 395029     /usr/lib/jvm/java-6-openjdk/jre/lib/ext/pulse-java.jar
+b78a1000-b78a2000 r--p 007ed000 08:05 4333097    /usr/lib/locale/locale-archive
+b78a2000-b78aa000 rw-s 00000000 08:05 4475015    /tmp/hsperfdata_garima/6457
+b78aa000-b78ab000 rw-p 00000000 00:00 0 
+b78ab000-b78ac000 r--p 00000000 00:00 0 
+b78ac000-b78ae000 rw-p 00000000 00:00 0 
+bff6a000-bff8c000 rw-p 00000000 00:00 0          [stack]
+
+VM Arguments:
+jvm_args: -Dclassworlds.conf=/usr/local/apache-maven-2.2.1/bin/m2.conf -Dmaven.home=/usr/local/apache-maven-2.2.1 
+java_command: org.codehaus.classworlds.Launcher "clean" "install"
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk
+CLASSPATH=../mysql-connector-java-5.1.22/mysql-connector-java-5.1.22-bin.jar:../mysql-connector-java-5.1.22/mysql-connector-java-5.1.22-bin.jar:
+PATH=/usr/lib/jvm/java-1.6.0-openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+USERNAME=garima
+LD_LIBRARY_PATH=/usr/lib/jvm/java-6-openjdk/jre/lib/i386/server:/usr/lib/jvm/java-6-openjdk/jre/lib/i386:/usr/lib/jvm/java-6-openjdk/jre/../lib/i386
+SHELL=/bin/bash
+DISPLAY=:0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0x658630], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGBUS: [libjvm.so+0x658630], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGFPE: [libjvm.so+0x51df60], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGPIPE: [libjvm.so+0x51df60], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGXFSZ: [libjvm.so+0x51df60], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGILL: [libjvm.so+0x51df60], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGUSR1: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGUSR2: [libjvm.so+0x51ddd0], sa_mask[0]=0x00000000, sa_flags=0x10000004
+SIGHUP: [libjvm.so+0x520bc0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGINT: [libjvm.so+0x520bc0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGTERM: [libjvm.so+0x520bc0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGQUIT: [libjvm.so+0x520bc0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+
+
+---------------  S Y S T E M  ---------------
+
+OS:Ubuntu 11.04 (natty)
+uname:Linux 2.6.38-16-generic #67-Ubuntu SMP Thu Sep 6 18:00:43 UTC 2012 i686
+libc:glibc 2.13 NPTL 2.13 
+rlimit: STACK 8192k, CORE 0k, NPROC infinity, NOFILE 4096, AS infinity
+load average:1.03 0.80 0.66
+
+/proc/meminfo:
+MemTotal:        1921808 kB
+MemFree:           60868 kB
+Buffers:           22944 kB
+Cached:           605816 kB
+SwapCached:        56468 kB
+Active:          1030260 kB
+Inactive:         737204 kB
+Active(anon):     757476 kB
+Inactive(anon):   450336 kB
+Active(file):     272784 kB
+Inactive(file):   286868 kB
+Unevictable:          40 kB
+Mlocked:              40 kB
+HighTotal:       1047744 kB
+HighFree:           1528 kB
+LowTotal:         874064 kB
+LowFree:           59340 kB
+SwapTotal:       1955836 kB
+SwapFree:        1269292 kB
+Dirty:             11664 kB
+Writeback:             0 kB
+AnonPages:       1097784 kB
+Mapped:            71480 kB
+Shmem:             69060 kB
+Slab:              40132 kB
+SReclaimable:      20052 kB
+SUnreclaim:        20080 kB
+KernelStack:        3728 kB
+PageTables:        11056 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     2916740 kB
+Committed_AS:    3622048 kB
+VmallocTotal:     122880 kB
+VmallocUsed:       38996 kB
+VmallocChunk:      77884 kB
+HardwareCorrupted:     0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       4096 kB
+DirectMap4k:       16376 kB
+DirectMap4M:      892928 kB
+
+
+CPU:total 4 (2 cores per cpu, 2 threads per core) family 6 model 37 stepping 2, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, ht
+
+Memory: 4k page, physical 1921808k(60868k free), swap 1955836k(1269292k free)
+
+vm_info: OpenJDK Server VM (20.0-b12) for linux-x86 JRE (1.6.0_24-b24), built on Oct 24 2012 21:05:56 by "buildd" with gcc 4.5.2
+
+time: Thu Apr  4 02:34:16 2013
+elapsed time: 41 seconds
+
