@@ -923,7 +923,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		// formatting for the return of numbers of type double
 		NumberFormat nf = NumberFormat.getNumberInstance(locale);
 		DecimalFormat df = (DecimalFormat) nf;
-		df.applyPattern("#0"); // formatting style
+		df.applyPattern("#0.0"); // formatting style
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
