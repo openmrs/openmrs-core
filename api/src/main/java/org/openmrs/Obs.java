@@ -14,6 +14,8 @@
 package org.openmrs;
 
 import java.text.DateFormat;
+import java.text.NumberFormat; // new formatter for getValueAsString
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -916,8 +918,13 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return first part of valueComplex for non null valueComplexes
 	 * @should return non precise values for NumericConcepts
 	 * @should return proper DateFormat
+	 * @should not return long decimal numbers as scientific notation
 	 */
 	public String getValueAsString(Locale locale) {
+		// formatting for the return of numbers of type double
+		NumberFormat nf = NumberFormat.getNumberInstance(locale);
+		DecimalFormat df = (DecimalFormat) nf;
+		df.applyPattern("#0.0"); // formatting style
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
@@ -953,7 +960,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 							int i = (int) d;
 							return Integer.toString(i);
 						} else {
-							getValueNumeric().toString();
+							df.format(getValueNumeric());
 						}
 					}
 				}
@@ -977,7 +984,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		
 		// if the datatype is 'unknown', default to just returning what is not null
 		if (getValueNumeric() != null)
-			return getValueNumeric().toString();
+			return df.format(getValueNumeric());
 		else if (getValueCoded() != null) {
 			if (getValueDrug() != null)
 				return getValueDrug().getFullName(locale);
@@ -1130,5 +1137,4 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	public Boolean hasPreviousVersion() {
 		return getPreviousVersion() != null;
 	}
-	
 }
