@@ -918,6 +918,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return first part of valueComplex for non null valueComplexes
 	 * @should return non precise values for NumericConcepts
 	 * @should return proper DateFormat
+	 * @should not return long decimal numbers as scientific notation
 	 */
 	public String getValueAsString(Locale locale) {
 		// formatting for the return of numbers of type double
@@ -959,7 +960,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 							int i = (int) d;
 							return Integer.toString(i);
 						} else {
-							//getValueNumeric().toString();
 							df.format(getValueNumeric());
 						}
 					}
@@ -984,7 +984,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		
 		// if the datatype is 'unknown', default to just returning what is not null
 		if (getValueNumeric() != null)
-			return df.format(getValueNumeric()); //getValueNumeric().toString();
+			return df.format(getValueNumeric());
 		else if (getValueCoded() != null) {
 			if (getValueDrug() != null)
 				return getValueDrug().getFullName(locale);
