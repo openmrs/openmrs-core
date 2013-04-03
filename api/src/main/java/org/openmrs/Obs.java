@@ -907,7 +907,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * Convenience methods
 	 **************************************************************************/
 	
-	
 	/**
 	 * Convenience method for obtaining the observation's value as a string If the Obs is complex,
 	 * returns the title of the complexData denoted by the section of getValueComplex() before the
@@ -923,7 +922,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	public String getValueAsString(Locale locale) {
 		// formatting for the return of numbers of type double
 		NumberFormat nf = NumberFormat.getNumberInstance(locale);
-		DecimalFormat df = (DecimalFormat)nf;
+		DecimalFormat df = (DecimalFormat) nf;
 		df.applyPattern("#0"); // formatting style
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
@@ -1137,20 +1136,5 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public Boolean hasPreviousVersion() {
 		return getPreviousVersion() != null;
-	}
-	/**
-	 * Test harness to see if formatting of doubles works for getValueAsString
-	 * method.
-	 * @param args
-	 */
-	public static void main(String[] args){
-		
-		Locale locale = new Locale("en","US");
-		Obs o = new Obs(1);
-	
-		o.setValueNumeric(20000032434.99999999);
-		System.out.println(o.getValueAsString(locale));
-		
-		
 	}
 }
