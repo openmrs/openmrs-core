@@ -134,6 +134,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param conceptId the concept id to set
 	 */
 	public Concept(Integer conceptId) {
+		this();
 		this.conceptId = conceptId;
 	}
 	
