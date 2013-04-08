@@ -33,6 +33,7 @@ import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
+import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramNameDuplicatedException;
 import org.openmrs.api.ProgramWorkflowService;
@@ -898,6 +899,13 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflowByUuid(String uuid) {
 		return dao.getWorkflowByUuid(uuid);
+	}
+	
+	@Override
+	@Authorized("Delete ProgramWorkflowState")
+	public void deleteProgramWorkflowState(ProgramWorkflowState state) throws APIException {
+		// TODO Auto-generated method stub
+		dao.deleteProgramWorkflowState(state);
 	}
 	
 }
