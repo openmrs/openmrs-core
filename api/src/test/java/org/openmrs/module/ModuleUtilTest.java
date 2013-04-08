@@ -474,4 +474,15 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 			expectedModuleRepo.deleteOnExit();
 		}
 	}
+	
+	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test(expected = ModuleException.class)
+	@Verifies(value = "should throw ModuleException if SNAPSHOT not handled correctly", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfSNAPSHOTNotHandledCorrectly() throws Exception {
+		String openmrsVersion = "1.4.3";
+		String requiredOpenmrsVersion = "1.4.5 - ";
+		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+	}
 }

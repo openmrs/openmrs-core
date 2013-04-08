@@ -37,6 +37,8 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -48,6 +50,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.Version;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
 /**
@@ -274,12 +277,18 @@ public class ModuleUtil {
 	 * @should throw ModuleException if required version with wild card on one end beyond openmrs
 	 *         version
 	 * @should throw ModuleException if single entry required version beyond openmrs version
+	 * @should throw ModuleException if SNAPSHOT not handled correctly
 	 */
 	public static void checkRequiredVersion(String version, String value) throws ModuleException {
+		String snapshot = "SNAPSHOT";
+		
 		if (value != null && !value.equals("")) {
 			// need to externalize this string
 			String separator = "-";
-			if (value.indexOf("*") > 0 || value.indexOf(separator) > 0) {
+			
+			if ((value.indexOf("*") > 0 || value.indexOf(separator) > 0)
+			        && (!StringUtils.containsIgnoreCase(value, snapshot))) {
+				// if it a snapshot (1.9.2-SNAPSHOT) treat as a single value
 				// if it contains "*" or "-" then we must separate those two
 				// assume it's always going to be two part
 				// assign the upper and lower bound
@@ -388,6 +397,20 @@ public class ModuleUtil {
 		return 0;
 	}
 	
+	/*	
+		public static int compareVersion(String version, String value) {
+			try {
+				int returnValue = new Version(version).compareTo(new Version(value));
+				return(returnValue);
+			}
+			catch (NumberFormatException e) {
+				log.error("Error while converting a version/value to an integer: " + version + "/" + value, e);
+				
+			}
+			// default return value if an error occurs or elements are equal
+			return 0;
+		}
+	*/
 	/**
 	 * Gets the folder where modules are stored. ModuleExceptions are thrown on errors
 	 * 
@@ -1071,5 +1094,5 @@ public class ModuleUtil {
 		
 		return packagesProvided;
 	}
-	
+	// New code here	
 }
