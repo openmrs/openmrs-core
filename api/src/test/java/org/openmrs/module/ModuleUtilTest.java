@@ -430,7 +430,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		//should still return the correct value if the arguments are switched
 		Assert.assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
 	}
-	
+
 	/**
 	 * @see {@link ModuleUtil#getModuleRepository()}
 	 */
