@@ -370,7 +370,7 @@ public class ModuleUtil {
 			version = version.replace("-([^a-zA-Z]+)", ".0");
 			//value = value.replace("-SNAPSHOT", ".0");
 			value = value.replace("-([^a-zA-Z]+)", ".0");
-			/*
+
 			String[] splitVersion;
 			Matcher matcher = Pattern.compile("(.+)-([^a-zA-Z].*)").matcher(version);
 			if (matcher.matches()) {
@@ -386,7 +386,7 @@ public class ModuleUtil {
 				String newValue = splitValue[0] + ".0";
 				version.replace(value, newValue);
 			}
-			*/
+
 			Collections.addAll(versions, version.split("\\."));
 			Collections.addAll(values, value.split("\\."));
 			
