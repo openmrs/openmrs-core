@@ -278,6 +278,7 @@ public class ModuleUtil {
 	 *         version
 	 * @should throw ModuleException if single entry required version beyond openmrs version
 	 * @should throw ModuleException if SNAPSHOT not handled correctly
+	 * @Should treat SNAPSHOT version as a single value
 	 */
 	public static void checkRequiredVersion(String version, String value) throws ModuleException {
 		String snapshot = "SNAPSHOT";
@@ -362,11 +363,30 @@ public class ModuleUtil {
 			List<String> versions = new Vector<String>();
 			List<String> values = new Vector<String>();
 			
+			// 
 			// treat "-SNAPSHOT" as the lowest possible version
-			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0 
-			version = version.replace("-SNAPSHOT", ".0");
-			value = value.replace("-SNAPSHOT", ".0");
+			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0
+			//version = version.replace("-SNAPSHOT", ".0");
+			version = version.replace("-([^a-zA-Z]+)", ".0");
+			//value = value.replace("-SNAPSHOT", ".0");
+			value = value.replace("-([^a-zA-Z]+)", ".0");
+			/*
+			String[] splitVersion;
+			Matcher matcher = Pattern.compile("(.+)-([^a-zA-Z].*)").matcher(version);
+			if (matcher.matches()) {
+				splitVersion = version.split("-");
+				String newVersion = splitVersion[0] + ".0";
+				version.replace(version, newVersion);
+			}
 			
+			String[] splitValue;
+			Matcher matcher2 = Pattern.compile("(.+)-([^a-zA-Z].*)").matcher(value);
+			if (matcher2.matches()) {
+				splitValue = value.split("-");
+				String newValue = splitValue[0] + ".0";
+				version.replace(value, newValue);
+			}
+			*/
 			Collections.addAll(versions, version.split("\\."));
 			Collections.addAll(values, value.split("\\."));
 			

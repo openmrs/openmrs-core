@@ -485,4 +485,17 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		String requiredOpenmrsVersion = "1.4.5 - ";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
 	}
+	
+	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test
+	@Verifies(value = "Should treat SNAPSHOT version as a single value", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldHandleSNAPSHOTVersion() throws Exception {
+		String openMRSVersion = "1.9.2-SNAPSHOT";
+		String valueConfigXml = "1.9.2-SNAPSHOT";
+		ModuleUtil.checkRequiredVersion(openMRSVersion, valueConfigXml);
+		Assert.assertEquals(openMRSVersion, valueConfigXml);
+	}
+	
 }
