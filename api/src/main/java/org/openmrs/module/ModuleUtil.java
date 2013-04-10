@@ -246,6 +246,7 @@ public class ModuleUtil {
 			 * If "value" is not within range specified by "version", then a ModuleException will be thrown.
 			 * Otherwise, just return true at last.
 			 */
+
 			checkRequiredVersion(version, value);
 			return true;
 		}
@@ -281,14 +282,21 @@ public class ModuleUtil {
 	 * @Should treat SNAPSHOT version as a single value
 	 */
 	public static void checkRequiredVersion(String version, String value) throws ModuleException {
-		String snapshot = "SNAPSHOT";
+		String alphaValue = null;
 		
+		alphaValue = fixAlphaVersion(value);
+		
+		log.debug("***** In checkRequiredVersion ***\n");
+		log.debug("***** Version = " + version + "***\n");
+		log.debug("***** Value   = " + value + "***\n");
 		if (value != null && !value.equals("")) {
+			
 			// need to externalize this string
 			String separator = "-";
-			
-			if ((value.indexOf("*") > 0 || value.indexOf(separator) > 0)
-			        && (!StringUtils.containsIgnoreCase(value, snapshot))) {
+			// no alpha value
+			if ((value.indexOf("*") > 0 || value.indexOf(separator) > 0) && (alphaValue == null)) {
+				//&& (!StringUtils.containsIgnoreCase(value, "SNAPSHOT"))) {
+				
 				// if it a snapshot (1.9.2-SNAPSHOT) treat as a single value
 				// if it contains "*" or "-" then we must separate those two
 				// assume it's always going to be two part
@@ -306,7 +314,6 @@ public class ModuleUtil {
 						break;
 					indexOfSeparator = value.indexOf(separator, indexOfSeparator + 1);
 				}
-				
 				// only preserve part of the string that match the following format:
 				// - xx.yy.*
 				// - xx.yy.zz*
@@ -356,6 +363,10 @@ public class ModuleUtil {
 	 * @should treat SNAPSHOT as earliest version
 	 */
 	public static int compareVersion(String version, String value) {
+		String alphaVersion, alphaValue = null;
+		
+		log.debug("***** In compareVersion ***\n");
+		
 		try {
 			if (version == null || value == null)
 				return 0;
@@ -367,26 +378,20 @@ public class ModuleUtil {
 			// treat "-SNAPSHOT" as the lowest possible version
 			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0
 			//version = version.replace("-SNAPSHOT", ".0");
-			version = version.replace("-([^a-zA-Z]+)", ".0");
 			//value = value.replace("-SNAPSHOT", ".0");
-			value = value.replace("-([^a-zA-Z]+)", ".0");
-
-			String[] splitVersion;
-			Matcher matcher = Pattern.compile("(.+)-([^a-zA-Z].*)").matcher(version);
-			if (matcher.matches()) {
-				splitVersion = version.split("-");
-				String newVersion = splitVersion[0] + ".0";
-				version.replace(version, newVersion);
+			
+			// if alpha version replace -ALPHA with ".0" as above 
+			alphaVersion = fixAlphaVersion(version);
+			if (alphaVersion != null) {
+				version.replace(alphaVersion, ".0");
 			}
 			
-			String[] splitValue;
-			Matcher matcher2 = Pattern.compile("(.+)-([^a-zA-Z].*)").matcher(value);
-			if (matcher2.matches()) {
-				splitValue = value.split("-");
-				String newValue = splitValue[0] + ".0";
-				version.replace(value, newValue);
+			// if alpha value replace -ALPHA with ".0" as above 
+			alphaValue = fixAlphaVersion(value);
+			if (alphaValue != null) {
+				version.replace(alphaValue, ".0");
 			}
-
+			
 			Collections.addAll(versions, version.split("\\."));
 			Collections.addAll(values, value.split("\\."));
 			
@@ -417,20 +422,23 @@ public class ModuleUtil {
 		return 0;
 	}
 	
-	/*	
-		public static int compareVersion(String version, String value) {
-			try {
-				int returnValue = new Version(version).compareTo(new Version(value));
-				return(returnValue);
+	// Returns substring to be replaced in compareVersion 
+	public static String fixAlphaVersion(String version) {
+		Pattern re = Pattern.compile("(.+)-([^a-zA-Z].*)");
+		String[] versionParts = re.split(version);
+		String subStr = null;
+		
+		for (int i = 0; i < versionParts.length; i++) {
+			if (versionParts.length > 0) {
+				String str = versionParts[0];
+				int index1 = str.indexOf('-');
+				// Alpha values like "-SNAPSHOT" - will contain '-' followed by alpha version   
+				subStr = str.substring(index1);
 			}
-			catch (NumberFormatException e) {
-				log.error("Error while converting a version/value to an integer: " + version + "/" + value, e);
-				
-			}
-			// default return value if an error occurs or elements are equal
-			return 0;
 		}
-	*/
+		return (subStr);
+	}
+	
 	/**
 	 * Gets the folder where modules are stored. ModuleExceptions are thrown on errors
 	 * 

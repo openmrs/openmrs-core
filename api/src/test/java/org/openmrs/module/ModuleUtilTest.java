@@ -490,7 +490,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
 	 */
 	@Test
-	@Verifies(value = "Should treat SNAPSHOT version as a single value", method = "checkRequiredVersion(String, String)")
+	@Verifies(value = "Should handle SNAPSHOT version ", method = "checkRequiredVersion(String, String)")
 	public void checkRequiredVersion_shouldHandleSNAPSHOTVersion() throws Exception {
 		String openMRSVersion = "1.9.2-SNAPSHOT";
 		String valueConfigXml = "1.9.2-SNAPSHOT";
