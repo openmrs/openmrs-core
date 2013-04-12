@@ -279,10 +279,11 @@ public class ModuleUtil {
 	 * @should throw ModuleException if SNAPSHOT not handled correctly
 	 */
 	public static void checkRequiredVersion(String version, String value) throws ModuleException {
+		// need to externalize this string
+		String separator = "-";
+		
 		if (value != null && !value.equals("")) {
-			// need to externalize this string
-			String separator = "-";
-			if (value.indexOf("*") > 0 || value.indexOf(separator) > 0) {
+			if ((value.indexOf("*") > 0 || value.indexOf(separator) > 0) && (!checkForAlphaVersion(value))) {
 				// if it contains "*" or "-" then we must separate those two
 				// assume it's always going to be two part
 				// assign the upper and lower bound
