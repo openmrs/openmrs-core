@@ -37,8 +37,8 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -50,7 +50,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.util.Version;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
 /**
@@ -246,7 +245,6 @@ public class ModuleUtil {
 			 * If "value" is not within range specified by "version", then a ModuleException will be thrown.
 			 * Otherwise, just return true at last.
 			 */
-
 			checkRequiredVersion(version, value);
 			return true;
 		}
@@ -279,25 +277,12 @@ public class ModuleUtil {
 	 *         version
 	 * @should throw ModuleException if single entry required version beyond openmrs version
 	 * @should throw ModuleException if SNAPSHOT not handled correctly
-	 * @Should treat SNAPSHOT version as a single value
 	 */
 	public static void checkRequiredVersion(String version, String value) throws ModuleException {
-		String alphaValue = null;
-		
-		alphaValue = fixAlphaVersion(value);
-		
-		log.debug("***** In checkRequiredVersion ***\n");
-		log.debug("***** Version = " + version + "***\n");
-		log.debug("***** Value   = " + value + "***\n");
 		if (value != null && !value.equals("")) {
-			
 			// need to externalize this string
 			String separator = "-";
-			// no alpha value
-			if ((value.indexOf("*") > 0 || value.indexOf(separator) > 0) && (alphaValue == null)) {
-				//&& (!StringUtils.containsIgnoreCase(value, "SNAPSHOT"))) {
-				
-				// if it a snapshot (1.9.2-SNAPSHOT) treat as a single value
+			if (value.indexOf("*") > 0 || value.indexOf(separator) > 0) {
 				// if it contains "*" or "-" then we must separate those two
 				// assume it's always going to be two part
 				// assign the upper and lower bound
@@ -314,6 +299,7 @@ public class ModuleUtil {
 						break;
 					indexOfSeparator = value.indexOf(separator, indexOfSeparator + 1);
 				}
+				
 				// only preserve part of the string that match the following format:
 				// - xx.yy.*
 				// - xx.yy.zz*
@@ -363,9 +349,8 @@ public class ModuleUtil {
 	 * @should treat SNAPSHOT as earliest version
 	 */
 	public static int compareVersion(String version, String value) {
-		String alphaVersion, alphaValue = null;
-		
-		log.debug("***** In compareVersion ***\n");
+		String alphaVersion = "";
+		String alphaValue = "";
 		
 		try {
 			if (version == null || value == null)
@@ -374,22 +359,16 @@ public class ModuleUtil {
 			List<String> versions = new Vector<String>();
 			List<String> values = new Vector<String>();
 			
-			// 
-			// treat "-SNAPSHOT" as the lowest possible version
-			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0
-			//version = version.replace("-SNAPSHOT", ".0");
-			//value = value.replace("-SNAPSHOT", ".0");
-			
-			// if alpha version replace -ALPHA with ".0" as above 
-			alphaVersion = fixAlphaVersion(version);
-			if (alphaVersion != null) {
-				version.replace(alphaVersion, ".0");
+			// treat alpha version (i.e. "-SNAPSHOT") as the lowest possible version
+			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0 
+			if (checkForAlphaVersion(version)) {
+				alphaVersion = version.substring(version.indexOf('-'));
+				version = version.replace(alphaVersion, ".0");
 			}
 			
-			// if alpha value replace -ALPHA with ".0" as above 
-			alphaValue = fixAlphaVersion(value);
-			if (alphaValue != null) {
-				version.replace(alphaValue, ".0");
+			if (checkForAlphaVersion(value)) {
+				alphaValue = value.substring(value.indexOf('-'));
+				value = value.replace(alphaValue, ".0");
 			}
 			
 			Collections.addAll(versions, version.split("\\."));
@@ -422,21 +401,16 @@ public class ModuleUtil {
 		return 0;
 	}
 	
-	// Returns substring to be replaced in compareVersion 
-	public static String fixAlphaVersion(String version) {
-		Pattern re = Pattern.compile("(.+)-([^a-zA-Z].*)");
-		String[] versionParts = re.split(version);
-		String subStr = null;
+	// Check for alpha version (i.e 1.9.2-SNAPSHOT ect)
+	public static boolean checkForAlphaVersion(String version) {
+		boolean isAlphaVersion = false;
 		
-		for (int i = 0; i < versionParts.length; i++) {
-			if (versionParts.length > 0) {
-				String str = versionParts[0];
-				int index1 = str.indexOf('-');
-				// Alpha values like "-SNAPSHOT" - will contain '-' followed by alpha version   
-				subStr = str.substring(index1);
-			}
+		Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.(\\d+))?(\\-([A-Z]+))").matcher(version);
+		if (matcher.matches()) {
+			// Matches
+			isAlphaVersion = true;
 		}
-		return (subStr);
+		return (isAlphaVersion);
 	}
 	
 	/**
@@ -1122,5 +1096,5 @@ public class ModuleUtil {
 		
 		return packagesProvided;
 	}
-	// New code here	
+	
 }
