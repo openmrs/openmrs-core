@@ -489,14 +489,34 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
 	 */
-	@Ignore
 	@Test
-	@Verifies(value = "Should handle SNAPSHOT version ", method = "checkRequiredVersion(String, String)")
-	public void checkRequiredVersion_shouldHandleSNAPSHOTVersion() throws Exception {
+	@Verifies(value = "Should handle SNAPSHOT value ", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldHandleAlphaValue() throws Exception {
+		String openMRSVersion = "1.9.2";
+		String valueConfigXml = "1.9.2-SNAPSHOT";
+		ModuleUtil.checkRequiredVersion(openMRSVersion, valueConfigXml);
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test
+	@Verifies(value = "Should handle ALPHA versions ", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldHandleAlphaVersion() throws Exception {
 		String openMRSVersion = "1.9.2-SNAPSHOT";
 		String valueConfigXml = "1.9.2-SNAPSHOT";
 		ModuleUtil.checkRequiredVersion(openMRSVersion, valueConfigXml);
-		Assert.assertEquals(openMRSVersion, valueConfigXml);
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test
+	@Verifies(value = "Should handle all ALPHA versions ", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldHandleAllAlphaVersion() throws Exception {
+		String openMRSVersion = "1.9.2-ALPHA";
+		String valueConfigXml = "1.9.2-ALPHA";
+		ModuleUtil.checkRequiredVersion(openMRSVersion, valueConfigXml);
 	}
 	
 }
