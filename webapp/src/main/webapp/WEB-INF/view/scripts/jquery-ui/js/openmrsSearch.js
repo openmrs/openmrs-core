@@ -1105,9 +1105,15 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 								subCallCounter = self._bufferedAjaxCallCounters[i];
 								//Skip past the ones that come after those that are not yet returned by DWR calls e.g if we have ajax
 								//calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ignore 5 since it has to wait on 4							
-								bufferedRows = buffer[subCallCounter];
-								if(subCallCounter && (subCallCounter == nextSubCallCount) && bufferedRows){
-									self._table.fnAddData(bufferedRows);
+								bufferedData = buffer[subCallCounter];
+								if(subCallCounter && (subCallCounter == nextSubCallCount) && bufferedData){
+									rowsToInsert = new Array();
+									for(var j in bufferedData) {
+										bufferedRowData = bufferedData[j];
+										rowsToInsert.push(self._buildRow(bufferedRowData));
+										self._results.push(bufferedRowData);
+									}
+									self._table.fnAddData(rowsToInsert);
 									buffer[subCallCounter] = null;//drop rows from buffer
 									nextSubCallCount++;
 									wasNextSubCallInBuffer = true;
@@ -1127,15 +1133,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				}
 				else if(!inSerialMode && curSubCallCount > self._lastSubCallCount){
 					//this ajax request returned before others that were made before it, add its results to the buffer
-					var bufferedRows = new Array();
-					for(var x in data) {
-						bufferedData = data[x];
-						bufferedRows.push(self._buildRow(bufferedData));
-						//add the data to the results list
-						self._results.push(bufferedData);
-					}
 					self._bufferedAjaxCallCounters.push(curSubCallCount);	
-					buffer[curSubCallCount] = bufferedRows;
+					buffer[curSubCallCount] = data;
 
 					return;
 				}
