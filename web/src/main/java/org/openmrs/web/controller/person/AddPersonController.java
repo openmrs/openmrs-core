@@ -248,16 +248,12 @@ public class AddPersonController extends SimpleFormController {
 			}
 		}
 		throw new ServletException(
-		        "Seems like you are lost.\n"
-		                + "You entered viewType = \""
+		        "You entered viewType = \""
 		                + viewType
 		                + "\" and personType = \""
 		                + personType
 		                + "\" which is an invalid viewType/personType combination.\n"
-		                + "First of all go to any one of our valid pages, then depending on what you are trying to do, one of these suggestions would be suitable for you:\n"
-		                + "1. If you are trying to add a new patient or view/edit existing patient's information, go to Find/Create Patient.\n"
-		                + "2. If you are trying to add a new person or view/edit existing person's information, go to Administration, there under Persons go to Mangage Persons.\n"
-		                + "3. If you are trying to add a new user or view/edit existing user's information, go to Administration, there under Users go to Mangage Users.\n");
+		                + "Valid viewType/personType combinations are edit/patient, shortEdit/patient, view/patient, anyViewType/user and edit/anyPersonType\n");
 	}
 	
 	/**
