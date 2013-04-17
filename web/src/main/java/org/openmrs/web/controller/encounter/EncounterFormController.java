@@ -39,6 +39,7 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
@@ -112,9 +113,9 @@ public class EncounterFormController extends SimpleFormController {
 				Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				Context.addProxyPrivilege(PrivilegeConstants.VIEW_PATIENTS);
 				
-				if (StringUtils.hasText(request.getParameter("patientId")))
-					encounter.setPatient(Context.getPatientService().getPatient(
-					    Integer.valueOf(request.getParameter("patientId"))));
+//				if (StringUtils.hasText(request.getParameter("patientId")))
+//					encounter.setPatient(Context.getPatientService().getPatient(
+//					    Integer.valueOf(request.getParameter("patientId"))));
 				if (encounter.isVoided())
 					ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 				
@@ -187,12 +188,27 @@ public class EncounterFormController extends SimpleFormController {
 			Context.addProxyPrivilege(PrivilegeConstants.VIEW_PATIENTS);
 			
 			if (Context.isAuthenticated()) {
+				
 				Encounter encounter = (Encounter) obj;
+				
+				Patient oldPatient = encounter.getPatient();
 				
 				// if this is a new encounter, they can specify a patient.  add it
 				if (request.getParameter("patientId") != null)
 					encounter.setPatient(Context.getPatientService().getPatient(
 					    Integer.valueOf(request.getParameter("patientId"))));
+				
+				if (encounter.getEncounterId() != null) {
+
+					Patient newPatient = encounter.getPatient();
+					
+					if (newPatient != null
+						&& oldPatient != null 
+						&& !newPatient.equals(oldPatient)) {
+						
+						encounter = Context.getEncounterService().transferEncounter(encounter, newPatient);
+					}
+				}
 				
 				if (encounter.isVoided() && encounter.getVoidedBy() == null)
 					// if this is a "new" voiding, call voidEncounter to set appropriate attributes
@@ -206,7 +222,7 @@ public class EncounterFormController extends SimpleFormController {
 				view = getSuccessView();
 				view = view + "?encounterId=" + encounter.getEncounterId();
 				
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Encounter.saved");
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Encounter.saved"); //TODO areo - set message to transfered?
 			}
 		}
 		catch (APIException e) {

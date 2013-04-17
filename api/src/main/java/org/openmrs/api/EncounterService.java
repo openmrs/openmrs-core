@@ -900,4 +900,18 @@ public interface EncounterService extends OpenmrsService {
 	 * @should fail if encounter is null
 	 */
 	public boolean canViewEncounter(Encounter encounter, User subject);
+	
+	/**
+	 * Transfer encounter to another patient and add encounter to given visit.
+	 * @param encounter
+	 * @param patient
+	 * @return
+	 * 
+	 * @should transfer an encounter with orders and observations to given patient 
+	 * @should void given encounter
+	 * @should void given encounter visit if given encounter is the only encounter
+	 * @since 1.10
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_ENCOUNTERS })
+	public Encounter transferEncounter(Encounter encounter, Patient patient);
 }

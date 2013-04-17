@@ -20,11 +20,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -45,6 +47,7 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
+import org.openmrs.util.CopyUtil;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -981,6 +984,73 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		return userHasEncounterPrivilege(encounter.getEncounterType().getViewPrivilege(), user);
 	}
 	
+	@Override
+	public Encounter transferEncounter(Encounter encounter, Patient patient) {
+		
+		Encounter copy = CopyUtil.copy(encounter);
+		
+		copy = changePatientReference(copy, patient);
+		copy = resetIdsAndUuidsBeforeSavingCopiedEncounter(copy);
+		
+		// transaction start
+		voidEncounter(encounter, "transfer to patient: id = " + patient.getId());
+		
+		// void visit if voided encounter is the only one
+		Visit visit = encounter.getVisit();
+		if (visit != null && visit.getEncounters().size() == 1) {
+			Context.getVisitService().voidVisit(visit, "Visit does not  contain non-voided encounters");
+		}
+		
+		return saveEncounter(copy);
+	}
+	
+	private Encounter resetIdsAndUuidsBeforeSavingCopiedEncounter(Encounter encounter) {
+		
+		encounter.setEncounterId(null);
+		encounter.setUuid(null);
+		
+		for (Obs obs : encounter.getAllObs()) {
+			obs.setObsId(null);
+			obs.setUuid(null);
+		}
+		
+		for (Order order : encounter.getOrders()) {
+			order.setOrderId(null);
+			order.setUuid(UUID.randomUUID().toString());
+		}
+		
+		for (EncounterProvider encounterProvider : encounter.getEncounterProviders()) {
+			encounterProvider.setEncounterProviderId(null);
+			encounterProvider.setUuid(UUID.randomUUID().toString());
+		}
+		
+		return encounter;
+	}
+	
+	/**
+	 * Set patient reference in encounter and related orders and obses.
+	 * @param encounter
+	 * @param patient
+	 * @return encounter with set changed patient reference
+	 */
+	private Encounter changePatientReference(Encounter encounter, Patient patient) {
+		
+		encounter.setPatient(patient);
+		
+		//obs
+		for (Obs obs : encounter.getAllObs()) {
+			obs.setPerson(patient);
+		}
+		
+		//orders		
+		for (Order order : encounter.getOrders()) {
+			order.setPatient(patient);
+		}
+		
+		return encounter;
+	}
+	
+	// copy method STOP
 	/**
 	 * Convenient method that safely checks if user has given encounter privilege
 	 * 
@@ -996,4 +1066,5 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		return user.hasPrivilege(privilege.getPrivilege());
 	}
+	
 }
