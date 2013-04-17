@@ -132,7 +132,7 @@ public class PersonNameValidator implements Validator {
 		// Make sure the entered name value is sensible 
 		String namePattern = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
-		if (namePattern != null && !namePattern.equals("") ) {
+		if (StringUtils.isNotBlank(namePattern)) {
 			if (StringUtils.isNotBlank(personName.getGivenName()) && !personName.getGivenName().matches(namePattern))
 				errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "GivenName.invalid");
 			if (StringUtils.isNotBlank(personName.getMiddleName()) && !personName.getMiddleName().matches(namePattern))
