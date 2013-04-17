@@ -104,6 +104,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   verboseHandler: function to be called to return the text to display as verbose output
  *   attributes: Array of names for attributes types to display in the list of results
  *   showSearchButton: Boolean, indicating whether to use search button for immediate search
+ *   lastSearchParams: An object with last search parameters, to support preserve data for browser back button
  *   
  * The styling on this table works like this:
  * <pre>  
@@ -194,6 +195,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	notification = div.find("#searchWidgetNotification");
 		    	loadingMsgObj = div.find("#loadingMsg");
 		    	showSearchButton = o.showSearchButton ? true : false;
+		    	lastSearchParams = (o.lastSearchParams !== null) ? o.lastSearchParams : null;
 		    
 		    this._div = div;
 		    
@@ -545,6 +547,20 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		return nRow;
 		    	}
 		    });
+		    
+		    // Browser back button support, for preserve data
+		    if (lastSearchParams !== null) {
+		    	$j('#inputNode').val(lastSearchParams.lastSearchText);
+		    	if (lastSearchParams.includeVoided == 1) {
+		    		$j('#includeVoided').attr('checked','checked');
+		    	}
+		    	if (lastSearchParams.includeVerbose == 1) {
+		    		$j('#includeVerbose').attr('checked','checked');
+		    	}
+		    	var keyEvent = jQuery.Event("keyup");
+		    	keyEvent.keyCode = 13;
+		    	$j("#inputNode").trigger(keyEvent);
+		    }
 		    
 		    //register an onchange event handler for the length dropdown so that we don't lose 
 		    //the row highlight when the user makes changes to the length
