@@ -303,6 +303,21 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		//			}
 		//		}
 		
+		//Give ownership of all threads loaded by this class to the WebappClassLoader
+		//Examples of such threads are: Keep-Alive-Timer, MySQL Statement Cancellation Timer, etc
+		//That way they not longer hold onto the OpenmrsClassLoader and hence
+		//allow it to be garbage collected after a spring application context refresh when
+		//the current OpenmrsClassLoader is destroyed and a new one created.
+		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+		for (Thread thread : threadArray) {
+			if (thread.getContextClassLoader() == OpenmrsClassLoader.getInstance()) {
+				thread.setContextClassLoader(OpenmrsClassLoader.getInstance().getParent());
+			}
+		}
+		
+		OpenmrsClassScanner.destroyInstance();
+		
 		OpenmrsClassLoaderHolder.INSTANCE = null;
 	}
 	
