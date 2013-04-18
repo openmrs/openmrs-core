@@ -40,8 +40,6 @@ public class OpenmrsClassScanner {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	private static final OpenmrsClassScanner instance = new OpenmrsClassScanner();
-	
 	private final MetadataReaderFactory metadataReaderFactory;
 	
 	private final ResourcePatternResolver resourceResolver;
@@ -57,7 +55,14 @@ public class OpenmrsClassScanner {
 	 * @return the instance
 	 */
 	public static OpenmrsClassScanner getInstance() {
-		return instance;
+		if (OpenmrsClassScannerHolder.INSTANCE == null)
+			OpenmrsClassScannerHolder.INSTANCE = new OpenmrsClassScanner();
+		
+		return OpenmrsClassScannerHolder.INSTANCE;
+	}
+	
+	public static void destroyInstance() {
+		OpenmrsClassScannerHolder.INSTANCE = null;
 	}
 	
 	/**
@@ -109,5 +114,15 @@ public class OpenmrsClassScanner {
 		annotationToClassMap.put(annotationClass, types);
 		
 		return types;
+	}
+	
+	/**
+	 * Private class to hold the one class scanner used throughout openmrs. This is an alternative to
+	 * storing the instance object on {@link OpenmrsClassScanner} itself so that garbage collection
+	 * can happen correctly.
+	 */
+	private static class OpenmrsClassScannerHolder {
+		
+		private static OpenmrsClassScanner INSTANCE = null;
 	}
 }
