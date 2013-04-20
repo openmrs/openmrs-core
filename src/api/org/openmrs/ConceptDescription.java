@@ -83,7 +83,7 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 		}
 		ConceptDescription rhs = (ConceptDescription) object;
 		if (conceptDescriptionId != null && rhs.conceptDescriptionId != null)
-			return this.conceptDescriptionId == rhs.conceptDescriptionId;
+			return this.conceptDescriptionId.equals(rhs.conceptDescriptionId);
 		else
 			return this == object;
 	}
