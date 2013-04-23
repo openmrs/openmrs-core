@@ -14,7 +14,7 @@
 package org.openmrs.activelist;
 
 /**
- *
+ *Problem types which OpenMRS provided
  */
 public enum ProblemModifier {
 	RULE_OUT("Rule Out"), HISTORY_OF("History of");
