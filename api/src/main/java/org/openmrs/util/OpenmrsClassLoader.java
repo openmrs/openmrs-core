@@ -374,6 +374,37 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	public static void onShutdown() {
+		
+		//Since we are shutting down, stop all threads that reference the openmrs class loader.
+		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+		for (Thread thread : threadArray) {
+			
+			ClassLoader classLoader = thread.getContextClassLoader();
+			
+			//Threads like Finalizer, Reference Handler, etc have null class loader reference.
+			if (classLoader == null)
+				continue;
+					
+			if (classLoader instanceof OpenmrsClassLoader) {
+				try {					
+					//Set to WebappClassLoader just in case stopping fails.
+					thread.setContextClassLoader(classLoader.getParent());
+					
+					//Stopping the current thread will halt all current cleanup.
+					//So do not ever ever even attempt stopping it. :)
+					if (thread == Thread.currentThread())
+						continue;
+					
+					log.info("onShutdown Stopping thread: " + thread.getName());
+					thread.stop();
+				}
+				catch (Throwable ex) {
+					log.error(ex.getMessage(), ex);
+				}
+			}
+		}
+		
 		clearReferences();
 	}
 	
