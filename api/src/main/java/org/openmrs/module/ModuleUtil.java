@@ -793,6 +793,8 @@ public class ModuleUtil {
 		
 		OpenmrsClassLoader.restoreState();
 		
+		OpenmrsClassLoader.setThreadsToNewClassLoader();
+		
 		// reload the advice points that were lost when refreshing Spring
 		if (log.isDebugEnabled())
 			log.debug("Reloading advice for all started modules: " + ModuleFactory.getStartedModules().size());

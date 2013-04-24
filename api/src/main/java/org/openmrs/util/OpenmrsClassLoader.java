@@ -303,22 +303,39 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		//			}
 		//		}
 		
-		//Give ownership of all threads loaded by this class to the WebappClassLoader
-		//Examples of such threads are: Keep-Alive-Timer, MySQL Statement Cancellation Timer, etc
-		//That way they not longer hold onto the OpenmrsClassLoader and hence
-		//allow it to be garbage collected after a spring application context refresh when
-		//the current OpenmrsClassLoader is destroyed and a new one created.
-		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-		Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
-		for (Thread thread : threadArray) {
-			if (thread.getContextClassLoader() == OpenmrsClassLoader.getInstance()) {
-				thread.setContextClassLoader(OpenmrsClassLoader.getInstance().getParent());
-			}
-		}
-		
 		OpenmrsClassScanner.destroyInstance();
 		
 		OpenmrsClassLoaderHolder.INSTANCE = null;
+	}
+	
+	/**
+	 * Sets the class loader, for all threads referencing a destroyed openmrs class loader, 
+	 * to the current one.
+	 */
+	public static void setThreadsToNewClassLoader() {
+		//Give ownership of all threads loaded by the old class loader to the new one.
+		//Examples of such threads are: Keep-Alive-Timer, MySQL Statement Cancellation Timer, etc
+		//That way they will no longer hold onto the destroyed OpenmrsClassLoader and hence
+		//allow it to be garbage collected after a spring application context refresh, when a new one is created.
+		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+		for (Thread thread : threadArray) {
+			
+			ClassLoader classLoader = thread.getContextClassLoader();
+			
+			//Some threads have a null class loader reference. e.g Finalizer, Reference Handler, etc
+			if (classLoader == null)
+				continue;
+			
+			//Threads referencing the current class loader are good.
+			if (classLoader == getInstance())
+				continue;
+			
+			//For threads referencing any destroyed class loader, point them to the new one.
+			if (classLoader instanceof OpenmrsClassLoader) {
+				thread.setContextClassLoader(getInstance());
+			}
+		}
 	}
 	
 	// List all threads and recursively list all subgroup
