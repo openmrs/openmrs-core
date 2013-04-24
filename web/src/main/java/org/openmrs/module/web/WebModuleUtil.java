@@ -58,6 +58,7 @@ import org.openmrs.module.web.filter.ModuleFilterMapping;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.DispatcherServlet;
+import org.openmrs.web.StaticDispatcherServlet;
 import org.openmrs.web.dwr.OpenmrsDWRServlet;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.support.XmlWebApplicationContext;
@@ -75,6 +76,8 @@ public class WebModuleUtil {
 	private static Log log = LogFactory.getLog(WebModuleUtil.class);
 	
 	private static DispatcherServlet dispatcherServlet = null;
+	
+	private static StaticDispatcherServlet staticDispatcherServlet = null;
 	
 	private static OpenmrsDWRServlet dwrServlet = null;
 	
@@ -847,6 +850,10 @@ public class WebModuleUtil {
 			dispatcherServlet.stopAndCloseApplicationContext();
 		}
 		
+		if (staticDispatcherServlet != null) {
+			staticDispatcherServlet.stopAndCloseApplicationContext();
+		}
+		
 		XmlWebApplicationContext newAppContext = (XmlWebApplicationContext) ModuleUtil.refreshApplicationContext(wac,
 		    isOpenmrsStartup, startedModule);
 		
@@ -855,6 +862,10 @@ public class WebModuleUtil {
 			//the new handlerMappings
 			if (dispatcherServlet != null)
 				dispatcherServlet.reInitFrameworkServlet();
+			
+			if (staticDispatcherServlet != null) {
+				staticDispatcherServlet.refreshApplicationContext();
+			}
 		}
 		catch (ServletException se) {
 			log.warn("Caught a servlet exception while refreshing the dispatcher servlet", se);
@@ -879,6 +890,16 @@ public class WebModuleUtil {
 	public static void setDispatcherServlet(DispatcherServlet ds) {
 		log.debug("Setting dispatcher servlet: " + ds);
 		dispatcherServlet = ds;
+	}
+	
+	/**
+	 * Save the static content dispatcher servlet for use later when refreshing spring
+	 * 
+	 * @param ds
+	 */
+	public static void setStaticDispatcherServlet(StaticDispatcherServlet ds) {
+		log.debug("Setting dispatcher servlet for static content: " + ds);
+		staticDispatcherServlet = ds;
 	}
 	
 	/**
