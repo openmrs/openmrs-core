@@ -58,6 +58,7 @@ import org.openmrs.module.web.filter.ModuleFilterMapping;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.DispatcherServlet;
+import org.openmrs.web.OpenmrsJspServlet;
 import org.openmrs.web.StaticDispatcherServlet;
 import org.openmrs.web.dwr.OpenmrsDWRServlet;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -854,8 +855,16 @@ public class WebModuleUtil {
 			staticDispatcherServlet.stopAndCloseApplicationContext();
 		}
 		
+		if (OpenmrsJspServlet.jspServlet != null) {
+			OpenmrsJspServlet.jspServlet.stop();
+		}
+		
 		XmlWebApplicationContext newAppContext = (XmlWebApplicationContext) ModuleUtil.refreshApplicationContext(wac,
 		    isOpenmrsStartup, startedModule);
+		
+		if (OpenmrsJspServlet.jspServlet != null) {
+			OpenmrsJspServlet.jspServlet.refresh();
+		}
 		
 		try {
 			// must "refresh" the spring dispatcherservlet as well to add in
