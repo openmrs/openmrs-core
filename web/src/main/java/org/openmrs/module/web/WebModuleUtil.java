@@ -843,6 +843,10 @@ public class WebModuleUtil {
 		if (log.isDebugEnabled())
 			log.debug("Refreshing web applciation Context of class: " + wac.getClass().getName());
 		
+		if (dispatcherServlet != null) {
+			dispatcherServlet.stopAndCloseApplicationContext();
+		}
+		
 		XmlWebApplicationContext newAppContext = (XmlWebApplicationContext) ModuleUtil.refreshApplicationContext(wac,
 		    isOpenmrsStartup, startedModule);
 		
