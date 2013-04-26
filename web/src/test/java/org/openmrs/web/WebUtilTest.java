@@ -50,7 +50,9 @@ public class WebUtilTest {
 	@Test
 	public void normalizeLocale_shouldNotAcceptInvalidLocales() throws Exception {
 		Assert.assertNull(WebUtil.normalizeLocale("ptrg"));
-		Assert.assertNull(WebUtil.normalizeLocale("usa"));
+		Assert.assertNull(WebUtil.normalizeLocale("usaa"));
+		//'usa' is accepted by Oracle JDK 1.7.0_09
+		//Assert.assertNull(WebUtil.normalizeLocale("usa"));
 	}
 	
 	/**
@@ -77,7 +79,8 @@ public class WebUtilTest {
 	 */
 	@Test
 	public void sanitizeLocales_shouldSkipOverInvalidLocales() throws Exception {
-		Assert.assertEquals("fr_RW, it, en", WebUtil.sanitizeLocales("és, qqq, fr_RW, it, enñ"));
+		Assert.assertEquals("fr_RW, it, en", WebUtil.sanitizeLocales("és, qqqq, fr_RW, it, enñ"));
+		//'qqq' is accepted by Oracle JDK 1.7.0_09
 	}
 	
 	/**
