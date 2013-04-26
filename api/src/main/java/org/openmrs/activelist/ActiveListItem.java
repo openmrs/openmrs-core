@@ -21,7 +21,7 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 
 /**
- * TODO
+ *The Active list Item table holds the general properties while the allergy and problem tables add on specific properties relevant to those objects. Active lists can be of two types which are  allergies and problems.
  */
 public abstract class ActiveListItem extends BaseOpenmrsData {
 	
@@ -43,13 +43,25 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	
 	protected String comments; //(optional) this is where you'd specify what OTHER NON-CODED means
 	
+	/**
+	 * non argument constructor
+	 */
 	protected ActiveListItem() {
 	}
-	
+	/**
+	 * one argument constructor
+	 * @param activeListId the activeListId to set. the unique Identifier for the object
+	 */
 	protected ActiveListItem(Integer activeListId) {
 		this.activeListId = activeListId;
 	}
-	
+	/**
+	 * four argument constructor
+	 * @param person the person to set
+	 * @param activeListId the activeListId to set
+	 * @param concept the concept to set
+	 * @param startDate the startDate to set
+	 */
 	protected ActiveListItem(Person person, ActiveListType activeListType, Concept concept, Date startDate) {
 		this.person = person;
 		this.activeListType = activeListType;
@@ -58,6 +70,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * get the value activeListId-the unique Identifier for the object
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override
@@ -66,17 +79,24 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * set the value activeListId-the unique Identifier for the object
+	 * @param id the activeListId to set
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	@Override
 	public void setId(Integer id) {
 		setActiveListId(id);
 	}
-	
+	/**
+	 * set the value activeListId-the unique Identifier for the object
+	 * @param activeListId the activeListId to set
+	 */
 	public void setActiveListId(Integer activeListId) {
 		this.activeListId = activeListId;
 	}
-	
+	/**
+	 * get the value activeListId-the unique Identifier for the object
+	 */
 	public Integer getActiveListId() {
 		return activeListId;
 	}
@@ -89,6 +109,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * set the value person
 	 * @param person the person to set
 	 */
 	public void setPerson(Person person) {
@@ -103,6 +124,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * setbthe activeListType
 	 * @param activeListType the activeListType to set
 	 */
 	public void setActiveListType(ActiveListType activeListType) {
@@ -117,6 +139,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * set the concept
 	 * @param concept the concept to set
 	 */
 	protected void setConcept(Concept concept) {
@@ -131,6 +154,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * set the start date
 	 * @param startDate the startDate to set
 	 */
 	public void setStartDate(Date startDate) {
@@ -145,6 +169,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * set the end date
 	 * @param endDate the endDate to set
 	 */
 	public void setEndDate(Date endDate) {
@@ -152,6 +177,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * get the reference to the start obs
 	 * @return the startObs
 	 */
 	public Obs getStartObs() {
@@ -159,6 +185,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * set the reference to the start obs
 	 * @param startObs the startObs to set
 	 */
 	public void setStartObs(Obs startObs) {
@@ -166,6 +193,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * get the reference to the stop obs
 	 * @return the stopObs
 	 */
 	public Obs getStopObs() {
@@ -173,6 +201,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * set the reference to the stop obs
 	 * @param stopObs the stopObs to set
 	 */
 	public void setStopObs(Obs stopObs) {
@@ -187,6 +216,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	}
 	
 	/**
+	 * set comments
 	 * @param comments the comments to set
 	 */
 	public void setComments(String comments) {
