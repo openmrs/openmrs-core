@@ -20,7 +20,8 @@ import org.openmrs.Concept;
 import org.openmrs.Patient;
 
 /**
- * TODO
+ * This keeps track of patient's allergies. Each medicine that is ordered must be carefully checked against the patient's allergy list to avoid harming the patient.
+ * Since OpenMRS 1.7
  */
 public class Allergy extends ActiveListItem {
 	
@@ -31,16 +32,29 @@ public class Allergy extends ActiveListItem {
 	private Concept reaction; // must be of class=Symptom
 	
 	private AllergySeverity severity;
-	
+	/**
+	 * no argument constructor
+	 */
 	public Allergy() {
 		this.activeListType = new ActiveListType(1);
 	}
-	
+	/**
+	 * one argument constructor
+	 * @param activeListId the activeListId to set
+	 */
 	public Allergy(Integer activeListId) {
 		super(activeListId);
 		this.activeListType = new ActiveListType(1);
 	}
-	
+	/**
+	 * six argument constructor
+	 * @param person the person to set
+	 * @param concept the concept to set
+	 * @param startDate the startDate to set
+	 * @param allergyType the allergyType to set
+	 * @param reaction the reaction to set
+	 * @param severity the severity to set
+	 */
 	public Allergy(Patient person, Concept concept, Date startDate, AllergyType allergyType, Concept reaction,
 	    AllergySeverity severity) {
 		super(person, new ActiveListType(1), concept, startDate);
@@ -57,12 +71,16 @@ public class Allergy extends ActiveListItem {
 	}
 	
 	/**
+	 * set the allergyType
 	 * @param allergyType the allergyType to set
 	 */
 	public void setAllergyType(AllergyType allergyType) {
 		this.allergyType = allergyType;
 	}
-	
+	/**
+	 * set the allergyType
+	 * @param type the type to set
+	 */
 	public void setAllergyType(String type) {
 		this.allergyType = StringUtils.isBlank(type) ? null : AllergyType.valueOf(type);
 	}
@@ -91,17 +109,22 @@ public class Allergy extends ActiveListItem {
 	}
 	
 	/**
+	 * Set the severity of the allergy
 	 * @param severity the severity to set
 	 */
 	public void setSeverity(AllergySeverity severity) {
 		this.severity = severity;
 	}
-	
+	/**
+	 * Set the severity of the allergy
+	 * @param severity the severity to set
+	 */
 	public void setSeverity(String severity) {
 		this.severity = StringUtils.isBlank(severity) ? null : AllergySeverity.valueOf(severity);
 	}
 	
 	/**
+	 * Get the allergen concept
 	 * @return the allergen
 	 */
 	public Concept getAllergen() {
