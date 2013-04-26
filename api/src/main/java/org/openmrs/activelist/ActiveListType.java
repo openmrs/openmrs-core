@@ -16,20 +16,26 @@ package org.openmrs.activelist;
 import org.openmrs.BaseOpenmrsMetadata;
 
 /**
- * TODO
+ * Active lists can be of two types: allergies and problems. So the active list type is the metadata that says what kind of item is.
  */
 public class ActiveListType extends BaseOpenmrsMetadata {
 	
 	private Integer activeListTypeId;
-	
+	/**
+	 * no argument constructor
+	 */
 	public ActiveListType() {
 	}
-	
+	/**
+	 * one argument constructor
+	 * @param id the activeListTypeId to set
+	 */
 	public ActiveListType(Integer id) {
 		this.activeListTypeId = id;
 	}
 	
 	/**
+	 * get the activeListTypeId
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override
@@ -38,21 +44,23 @@ public class ActiveListType extends BaseOpenmrsMetadata {
 	}
 	
 	/**
+	 * set the activeListTypeId 
+	 * @param id the activeListTypeId to set
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	@Override
 	public void setId(Integer id) {
 		setActiveListTypeId(id);
 	}
-	
 	/**
+	 * get the activeListTypeId
 	 * @return the activeListTypeId
 	 */
 	public Integer getActiveListTypeId() {
 		return activeListTypeId;
 	}
-	
 	/**
+	 * set the activeListTypeId 
 	 * @param activeListTypeId the activeListTypeId to set
 	 */
 	public void setActiveListTypeId(Integer activeListTypeId) {
