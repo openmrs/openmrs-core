@@ -18,8 +18,7 @@
 <%@page import="org.openmrs.ImplementationId" %>
 
 <br />
-
-<h2>An Internal Error has Occurred</h2>
+<h2><openmrs:message code="uncaughtException.title"/></h2>
 
 <script>
 	function showOrHide() {
@@ -87,18 +86,20 @@ try {
 			out.println("<pre id='exceptionMessage'>" + WebUtil.escapeHTML(exception.getMessage()) + "</pre>");
 		
 		if (UnexpectedRollbackException.class.equals(exception.getClass())) {
-			out.println("<br/><b>Possible cause</b>: A programmer has made an error and forgotten to include a @Transaction(readOnly=true) annotation on a method.<br/>");
+			out.println('<br/><b><openmrs:message code="uncaughtException.possibleCause" /></b><openmrs:message code="uncaughtException.programmerError"<br/>');
 		}
 	}
 %>
 	
 	<br /><br />
-	Consult the <a href="<%= request.getContextPath() %>/help.htm">help document</a>. <br />
-	Contact your friendly neighborhood administrator if it cannot be resolved.
+	<openmrs:message code="help.technical.text" arguments="<a href='https://wiki.openmrs.org/x/-g4z'>,</a>"/>
+	<openmrs:message code="uncaughtException.help" arguments="<a href='<%request.getContextPath() %>/help.htm'>,</a>"/> <br />
+	<openmrs:message code="uncaughtException.contact" />
+
 	
 	<br /><br />
 	
-	<a href="#" onclick="showOrHide()" id="toggleLink" style="font-size: 12px;">Show stack trace</a>
+	<a href="#" onclick="showOrHide()" id="toggleLink" style="font-size: 12px;"><openmrs:message code="uncaughtException.showStackTrace"/></a>
 	<br />
 	<div id="stackTrace">
 	<%
@@ -108,7 +109,7 @@ try {
 	UserContext userContext = (UserContext) session.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
 	if (exception != null) {
 		if (userContext == null || userContext.getAuthenticatedUser() == null) {
-			out.println("You must be logged in to view the stack trace");
+			out.println(<openmrs:message code="uncaughtException.logged.out");
 			// print the stack trace to the servlet container's error logs
 			exception.printStackTrace();
 		}
@@ -130,7 +131,7 @@ try {
 			}
 
             // Collect stack trace for reporting bug description
-            StringBuilder description = new StringBuilder("Stack trace:\n");
+            StringBuilder description = new StringBuilder(<openmrs:message code="uncaughtException.stackTrace"/>+"\n");
 			for (StackTraceElement element : elements) {
                 description.append(element + "\n");
 				if (element.getClassName().contains("openmrs"))
@@ -174,11 +175,11 @@ try {
 		}
 	} 
 	else  {
-    	out.println("<br>No error information available");
+    	out.println("<br>"<openmrs:message code="uncaughtException.noErrorInfo");
 	}
 	
 	// Display current version
-	out.println("<br/><br/>OpenMRS Version: " + OpenmrsConstants.OPENMRS_VERSION);
+	out.println("<br/><br/>OpenMRS"<openmrs:message code="general.version"/> + OpenmrsConstants.OPENMRS_VERSION);
 	    
 } catch (Exception ex) { 
 	ex.printStackTrace(new java.io.PrintWriter(out));
@@ -191,23 +192,23 @@ try {
 
 
 <br/>
- <b> Found a bug? Please fill out and submit the form below - help us make OpenMRS better software -- Thanks! </b>
+ <b> <openmrs:message code="uncaughtException.bugFound"/></b>
 <br/> <br/>
 <table bgcolor="#fafad2" width="70%">
     <tr>
-        <td width="10%" align="right"> Subject:  </td>
+        <td width="10%" align="right"><openmrs:message code="uncaughtException.subject" /></td>
         <td><input type="text" id="issue_subject" size="40" /> </td>
     </tr>
     <tr>
-        <td align="right">Your Name: </td>
+        <td align="right"><openmrs:message code="uncaughtException.name" /></</td>
         <td><input type="text" id="submitter_name" size="40"/> </td>
     </tr>
     <tr>
-        <td align="right">Your Email: </td>
+        <td align="right"><openmrs:message code="uncaughtException.email" /></</td>
         <td><input type="text" id="submitter_email" size="40"/></td>
     </tr>
     <tr>
-        <td align="right" valign="top"> Please describe what you were doing when this error occurred:  </td>
+        <td align="right" valign="top"><openmrs:message code="uncaughtException.doing" /></</td>
         <td><textarea rows="10" cols="80" id="recent_steps"></textarea> </td>
     </tr>
 
@@ -216,14 +217,14 @@ try {
 <br/> <br/>
 
 <div>
-The following data will also be submitted with the report to enable the team to resolve the problem.
+<openmrs:message code="uncaughtException.additionalInfo"/>
 <ul>
-<li>The error message and stack trace</li>
-<li>OpenMRS version</li>
-<li>Application server name and version</li>
-<li>Username of the user currently logged in</li>
-<li>The implementation id of this installation (if defined)</li>
-<li>Names and versions of all installed modules</li>
+<li><openmrs:message code="uncaughtException.additionalInfo.msg"/></li>
+<li><openmrs:message code="uncaughtException.additionalInfo.version"/></li>
+<li><openmrs:message code="uncaughtException.additionalInfo.appNameAndVersion"/></li>
+<li><openmrs:message code="uncaughtException.additionalInfo.username" /></li>
+<li><openmrs:message code="uncaughtException.additonalInfo.implemenationId"/></li>
+<li><openmrs:message code="uncaughtException.additonalInfo.modules"/></li>
 </ul>
 </div>
 
