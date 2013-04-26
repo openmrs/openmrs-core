@@ -9,27 +9,28 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
-
 &nbsp;
 <%@page import="org.openmrs.util.OpenmrsUtil"%>
 <%@page import="org.openmrs.api.context.Context"%>
 <%@page import="org.openmrs.module.ModuleFactory"%>
 <%@page import="org.openmrs.module.Module"%>
 <%@page import="org.openmrs.ImplementationId" %>
-
 <br />
 <h2><openmrs:message code="uncaughtException.title"/></h2>
 
 <script>
+	//var showStackTraceText = <openmrs:message code='uncaughtException.showStackTrace'/>;
+	//var hideStackTraceText = <openmrs:message code='uncaughtException.hideStackTrace'/>;
 	function showOrHide() {
 		var link = document.getElementById("toggleLink");
 		var trace = document.getElementById("stackTrace");
-		if (link.innerHTML == "Show stack trace") {
-			link.innerHTML = "Hide stack trace";
+		
+		if (link.innerHTML == "<openmrs:message code='uncaughtException.showStackTrace'/>"){
+			link.innerHTML = "<openmrs:message code='uncaughtException.hideStackTrace'/>";
 			trace.style.display = "block";
 		}
 		else {
-			link.innerHTML = "Show stack trace";
+			link.innerHTML = "<openmrs:message code='uncaughtException.showStackTrace'/>";
 			trace.style.display = "none";
 		}
 	}
@@ -65,75 +66,61 @@
 
 </script>	
 
-<% 
-	// MSR/ERROR Session attributes are removed after being displayed
-	// If they weren't displayed/removed because of this error, remove them
-	session.removeAttribute(WebConstants.OPENMRS_MSG_ATTR);
-	session.removeAttribute(WebConstants.OPENMRS_ERROR_ATTR); 
-
-try {
-	// The Servlet spec guarantees this attribute will be available
-	//Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception"); 
-
-	if (exception != null) {
-%>
-
 <%@ include file="/WEB-INF/view/authorizationHandlerInclude.jsp" %>
+<% 
+	out.println("<b>" + exception.getClass().getName() + "</b>");
+	if (exception.getMessage() != null)
+		out.println("<pre id='exceptionMessage'>" + WebUtil.escapeHTML(exception.getMessage()) + "</pre>");
 
-<%       
-		out.println("<b>" + exception.getClass().getName() + "</b>");
-		if (exception.getMessage() != null)
-			out.println("<pre id='exceptionMessage'>" + WebUtil.escapeHTML(exception.getMessage()) + "</pre>");
-		
-		if (UnexpectedRollbackException.class.equals(exception.getClass())) {
-			out.println('<br/><b><openmrs:message code="uncaughtException.possibleCause" /></b><openmrs:message code="uncaughtException.programmerError"<br/>');
-		}
+	if (UnexpectedRollbackException.class.equals(exception.getClass())) {
+		out.println("<br/><b><openmrs:message code='uncaughtException.possibleCause' /></b><openmrs:message code='uncaughtException.programmerError'/><br/>");
 	}
 %>
-	
 	<br /><br />
 	<openmrs:message code="help.technical.text" arguments="<a href='https://wiki.openmrs.org/x/-g4z'>,</a>"/>
 	<openmrs:message code="uncaughtException.help" arguments="<a href='<%request.getContextPath() %>/help.htm'>,</a>"/> <br />
 	<openmrs:message code="uncaughtException.contact" />
-
-	
 	<br /><br />
-	
 	<a href="#" onclick="showOrHide()" id="toggleLink" style="font-size: 12px;"><openmrs:message code="uncaughtException.showStackTrace"/></a>
 	<br />
 	<div id="stackTrace">
-	<%
-	// check to see if the current user is authenticated
-	// this logic copied from the OpenmrsFilter because this
-	// page isn't passed through that filter like all other pages	
-	UserContext userContext = (UserContext) session.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
-	if (exception != null) {
-		if (userContext == null || userContext.getAuthenticatedUser() == null) {
-			out.println(<openmrs:message code="uncaughtException.logged.out");
-			// print the stack trace to the servlet container's error logs
-			exception.printStackTrace();
-		}
-		else {
-			java.lang.StackTraceElement[] elements;
-			
-			if (exception instanceof ServletException) {
-				// It's a ServletException: we should extract the root cause
-				ServletException sEx = (ServletException) exception;
-				Throwable rootCause = sEx.getRootCause();
-				if (rootCause == null)
-					rootCause = sEx;
-				out.println("<br/><br/>** Root cause is: "+ rootCause.getMessage());
-				elements = rootCause.getStackTrace();
-			}
-			else {
-				// It's not a ServletException, so we'll just show it
-				elements = exception.getStackTrace(); 
-			}
 
-            // Collect stack trace for reporting bug description
-            StringBuilder description = new StringBuilder(<openmrs:message code="uncaughtException.stackTrace"/>+"\n");
+<% 
+	//MSR/ERROR Session attributes are removed after being displayed
+	// If they weren't displayed/removed because of this error, remove them
+	session.removeAttribute(WebConstants.OPENMRS_MSG_ATTR);
+	session.removeAttribute(WebConstants.OPENMRS_ERROR_ATTR); 
+	try{
+		// check to see if the current user is authenticated
+		// this logic copied from the OpenmrsFilter because this
+		// page isn't passed through that filter like all other pages	
+		UserContext userContext = (UserContext) session.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
+		if (exception != null) {
+			if (userContext == null || userContext.getAuthenticatedUser() == null) {
+				out.println("<openmrs:message code='uncaughtException.logged.out'/>");
+				// print the stack trace to the servlet container's error logs
+				exception.printStackTrace();
+			}else {
+				java.lang.StackTraceElement[] elements;
+				
+				if (exception instanceof ServletException) {
+					// It's a ServletException: we should extract the root cause
+					ServletException sEx = (ServletException) exception;
+					Throwable rootCause = sEx.getRootCause();
+					if (rootCause == null)
+						rootCause = sEx;
+					out.println("<br/><br/>** Root cause is: "+ rootCause.getMessage());
+					elements = rootCause.getStackTrace();
+				}
+				else {
+					// It's not a ServletException, so we'll just show it
+					elements = exception.getStackTrace(); 
+				}
+			
+			 // Collect stack trace for reporting bug description
+	        StringBuilder description = new StringBuilder("Stack Trace\n");
 			for (StackTraceElement element : elements) {
-                description.append(element + "\n");
+	            description.append(element + "\n");
 				if (element.getClassName().contains("openmrs"))
 					out.println("<b>" + element + "</b><br/>");
 				else
@@ -141,53 +128,51 @@ try {
 			}
 			
 			pageContext.setAttribute("reportBugUrl", Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_BUG_URL)); 
-            pageContext.setAttribute("stackTrace", OpenmrsUtil.shortenedStackTrace(description.toString()));
-            pageContext.setAttribute("errorMessage", exception.toString());
-            pageContext.setAttribute("openmrs_version", OpenmrsConstants.OPENMRS_VERSION);
-            pageContext.setAttribute("server_info", session.getServletContext().getServerInfo());
-            String username = Context.getAuthenticatedUser().getUsername();
-            if (username == null || username.length() == 0)
-            	username = Context.getAuthenticatedUser().getSystemId();
-            pageContext.setAttribute("username", username);
-            ImplementationId id = Context.getAdministrationService().getImplementationId();
-            String implementationId = ""; 
-            if (id != null) {
-            	implementationId = id.getImplementationId();
-            	implementationId += " = " + id.getName();
-            }
-            pageContext.setAttribute("implementationId", (implementationId != null) ? implementationId : "");
-            StringBuilder sb = new StringBuilder();
-            boolean isFirst = true;
-            for(Module module : ModuleFactory.getStartedModules()){
-            	if(isFirst){
-            		sb.append(module.getModuleId())
-            		  .append(" v")
-            		  .append(module.getVersion());
-            		isFirst = false;
-            	}
-            	else
-            		sb.append(", ")
-            		  .append(module.getModuleId())
-            		  .append(" v")
-            		  .append(module.getVersion());
-            }
-            pageContext.setAttribute("startedModules", sb.toString());            
+	        pageContext.setAttribute("stackTrace", OpenmrsUtil.shortenedStackTrace(description.toString()));
+	        pageContext.setAttribute("errorMessage", exception.toString());
+	        pageContext.setAttribute("openmrs_version", OpenmrsConstants.OPENMRS_VERSION);
+	        pageContext.setAttribute("server_info", session.getServletContext().getServerInfo());
+	        String username = Context.getAuthenticatedUser().getUsername();
+	        if (username == null || username.length() == 0)
+	        	username = Context.getAuthenticatedUser().getSystemId();
+	        pageContext.setAttribute("username", username);
+	        ImplementationId id = Context.getAdministrationService().getImplementationId();
+	        String implementationId = ""; 
+	        if (id != null) {
+	        	implementationId = id.getImplementationId();
+	        	implementationId += " = " + id.getName();
+	        }
+	        pageContext.setAttribute("implementationId", (implementationId != null) ? implementationId : "");
+	        StringBuilder sb = new StringBuilder();
+	        boolean isFirst = true;
+	        for(Module module : ModuleFactory.getStartedModules()){
+	        	if(isFirst){
+	        		sb.append(module.getModuleId())
+	        		  .append(" v")
+	        		  .append(module.getVersion());
+	        		isFirst = false;
+	        	}
+	        	else{
+	        		sb.append(", ")
+	        		  .append(module.getModuleId())
+	        		  .append(" v")
+	        		  .append(module.getVersion());
+	        	}
+			}
+	        pageContext.setAttribute("startedModules", sb.toString()); 
+			}
 		}
-	} 
-	else  {
-    	out.println("<br>"<openmrs:message code="uncaughtException.noErrorInfo");
+		else {
+			out.println("<br /><openmrs:message code='uncaughtException.noErrorInfo'/>");
+		}
+		// Display current version
+		out.println("<br/><br/>OpenMRS<openmrs:message code='general.version'/>" + OpenmrsConstants.OPENMRS_VERSION);
+	} catch (Exception ex){
+		ex.printStackTrace(new java.io.PrintWriter(out));
 	}
-	
-	// Display current version
-	out.println("<br/><br/>OpenMRS"<openmrs:message code="general.version"/> + OpenmrsConstants.OPENMRS_VERSION);
-	    
-} catch (Exception ex) { 
-	ex.printStackTrace(new java.io.PrintWriter(out));
-}
-%>
+	%>
 	</div> <!-- close stack trace box -->
-
-<br/>
+	<br/>
 <openmrs:extensionPoint pointId="org.openmrs.uncaughtException" type="html" />
 
 
