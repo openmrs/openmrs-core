@@ -13,14 +13,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
@@ -40,6 +32,14 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
@@ -629,6 +629,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see UserService#notifyPrivilegeListeners(User, String, boolean)
 	 */
 	@Override
+    @Transactional(readOnly = true)
 	public void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
 		if (privilegeListeners != null) {
 			for (PrivilegeListener privilegeListener : privilegeListeners) {

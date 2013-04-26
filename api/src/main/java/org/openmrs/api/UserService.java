@@ -13,8 +13,6 @@
  */
 package org.openmrs.api;
 
-import java.util.List;
-
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.PrivilegeListener;
@@ -26,6 +24,8 @@ import org.openmrs.api.context.UserContext;
 import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Contains methods pertaining to Users in the system Use:<br/>
@@ -641,6 +641,5 @@ public interface UserService extends OpenmrsService {
 	 * @param hasPrivilege <code>true</code> if the authenticated user has the required privilege or if it is a proxy privilege
 	 * @since 1.8.4, 1.9.1, 1.10
 	 */
-	@Transactional(readOnly = true)
 	public void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege);
 }
