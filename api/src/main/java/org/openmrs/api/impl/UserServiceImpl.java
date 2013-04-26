@@ -31,7 +31,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -629,7 +628,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see UserService#notifyPrivilegeListeners(User, String, boolean)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
 		if (privilegeListeners != null) {
 			for (PrivilegeListener privilegeListener : privilegeListeners) {

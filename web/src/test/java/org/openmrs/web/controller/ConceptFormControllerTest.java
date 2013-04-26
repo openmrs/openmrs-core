@@ -14,7 +14,6 @@
 package org.openmrs.web.controller;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptComplex;
@@ -970,7 +969,6 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 * @verifies not save changes if there are validation errors
 	 */
 	@Test
-    @Ignore
 	@NotTransactional
 	public void onSubmit_shouldNotSaveChangesIfThereAreValidationErrors() throws Exception {
 		Integer conceptId = 792;
