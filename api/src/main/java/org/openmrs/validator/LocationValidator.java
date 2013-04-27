@@ -13,6 +13,9 @@
  */
 package org.openmrs.validator;
 
+import java.util.Iterator;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
@@ -57,6 +60,7 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	 */
 	public void validate(Object obj, Errors errors) {
 		Location location = (Location) obj;
+		boolean loop = false;
 		if (location == null) {
 			errors.rejectValue("location", "error.general");
 		} else {
@@ -68,9 +72,20 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 					errors.rejectValue("retireReason", "error.null");
 				}
 			}
+			
+			// Traverse all the way up (down?) to the root and check if it equals the root.
+			Location root = location;
+			while (root.getParentLocation() != null) {
+				root = root.getParentLocation();
+				if(root.equals(location)){	//Have gone in a circle
+					//I don't know how to use errors.rejectValue() yet
+					loop = true;
+					break;
+				}
+			}
+			
 		}
-		
-		super.validateAttributes(location, errors, Context.getLocationService().getAllLocationAttributeTypes());
+		if(!loop)
+			super.validateAttributes(location, errors, Context.getLocationService().getAllLocationAttributeTypes());
 	}
-	
 }
