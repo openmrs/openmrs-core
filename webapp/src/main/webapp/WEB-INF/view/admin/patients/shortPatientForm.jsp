@@ -16,6 +16,14 @@
 		idTypeLocationRequired[${idType.patientIdentifierTypeId}] = ${idType.locationBehavior == null || idType.locationBehavior == "REQUIRED"};
 	</c:forEach>
 	
+	
+	function showError(errorName) {
+		document.getElementById(errorName).style.display = "";
+		} 
+		
+	function hideError(errorName) {
+		document.getElementById(errorName).style.display = "none";
+		} 
 	function addIdentifier(initialIdentifierSize) {
 		var index = initialIdentifierSize+numberOfClonedElements;
 		var tbody = document.getElementById('identifiersTbody');
@@ -73,11 +81,25 @@
 	}
 	
 	function updateAge() {
+		
+		console.log('updateAge');
+		
 		var birthdateBox = document.getElementById('birthdate');
+		console.log('birthdateBox  :: '+ birthdateBox );
+		
+		
 		var ageBox = document.getElementById('age');
+		
+		console.log('ageBox ::'+ageBox );
+		
 		try {
 			var birthdate = parseSimpleDate(birthdateBox.value, '<openmrs:datePattern />');
+			
+			console.log('birthdate :: '+birthdate );
+			
 			var age = getAge(birthdate);
+			
+			
 			if (age > 0)
 				ageBox.innerHTML = "(" + age + ' <openmrs:message code="Person.age.years"/>)';
 			else if (age == 1)
@@ -86,14 +108,22 @@
 				ageBox.innerHTML = '( < 1 <openmrs:message code="Person.age.year"/>)';
 			else
 				ageBox.innerHTML = '( ? )';
+			
+			console.log('ageBox.innerHTML  :: '+ ageBox.innerHTML);
+			
 			ageBox.style.display = "";
 		} catch (err) {
+			console.log('updateAge error :: "'+ err);
+			
 			ageBox.innerHTML = "";
 			ageBox.style.display = "none";
 		}
 	}
 	
 	function updateEstimated() {
+		
+		console.log('updateEstimated');
+		
 		var input = document.getElementById("birthdateEstimatedInput");
 		if (input) {
 			input.checked = false;
@@ -105,12 +135,22 @@
 	
 	// age function borrowed from http://anotherdan.com/2006/02/simple-javascript-age-function/
 	function getAge(d, now) {
+		
+		console.log('getAge :: d '+ d + " :: now :: "+ now);
+		
 		var age = -1;
 		if (typeof(now) == 'undefined') now = new Date();
+		
+		console.log('now :: '+ now);
+		
+		
 		while (now >= d) {
 			age++;
 			d.setFullYear(d.getFullYear() + 1);
 		}
+		console.log('age :: '+ age);
+		
+		
 		return age;
 	}
 	
@@ -199,6 +239,52 @@
 			$j('#'+location + '_NA').show();
 		}
 	}
+	
+	function checkDate(){
+		 hideError('birthdateError');
+		console.log('updateAge');
+		
+		var birthdateBox = document.getElementById('birthdate');
+		console.log('birthdateBox  :: '+ birthdateBox );
+		
+		
+		var ageBox = document.getElementById('age');
+		
+		console.log('ageBox ::'+ageBox );
+		
+		try {
+			var birthdate = parseSimpleDate(birthdateBox.value, '<openmrs:datePattern />');
+			
+			console.log('birthdate :: '+birthdate );
+			
+			var age = getAge(birthdate);
+			
+			
+			if(age==-1||age>150||age<0){
+				
+				showError('birthdateError');
+
+				return false;	
+			}else {
+				
+				
+				 hideError('birthdateError');
+					 
+			}
+			
+			ageBox.style.display = "";
+		} catch (err) {
+			console.log('updateAge error :: "'+ err);
+			
+			ageBox.innerHTML = "";
+			ageBox.style.display = "none";
+		}
+		
+		
+		removeHiddenRows();
+	}
+	
+	
 </script>
 
 <style>
@@ -229,7 +315,7 @@
 	</div>
 </spring:hasBindErrors>
 
-<form:form method="post" action="shortPatientForm.form" onsubmit="removeHiddenRows()" modelAttribute="patientModel">
+<form:form method="post" action="shortPatientForm.form" onsubmit="return checkDate();" modelAttribute="patientModel">
 	<c:if test="${patientModel.patient.patientId == null}"><h2><openmrs:message code="Patient.create"/></h2></c:if>
 	<c:if test="${patientModel.patient.patientId != null}"><h2><openmrs:message code="Patient.edit"/></h2></c:if>
 
@@ -409,6 +495,7 @@
 									value="${status.value}"
 									onChange="updateAge(); updateEstimated(this);"
 									onfocus="showCalendar(this,60)" />
+									<span id="birthdateError" class="error" style="display: none;">Please select a valid birthdate or age</span>
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 						</spring:bind>
 						
