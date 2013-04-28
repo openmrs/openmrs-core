@@ -60,7 +60,6 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	 */
 	public void validate(Object obj, Errors errors) {
 		Location location = (Location) obj;
-		boolean loop = false;
 		if (location == null) {
 			errors.rejectValue("location", "error.general");
 		} else {
@@ -79,13 +78,12 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 				root = root.getParentLocation();
 				if(root.equals(location)){	//Have gone in a circle
 					//I don't know how to use errors.rejectValue() yet
-					loop = true;
+					errors.rejectValue("parentLocation", "Location.parentLocation.error");
 					break;
 				}
 			}
 			
 		}
-		if(!loop)
 			super.validateAttributes(location, errors, Context.getLocationService().getAllLocationAttributeTypes());
 	}
 }
