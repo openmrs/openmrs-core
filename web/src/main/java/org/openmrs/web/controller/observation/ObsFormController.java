@@ -107,7 +107,7 @@ public class ObsFormController extends SimpleFormController {
 		}
 		
 		//Set the complex obs value before we validate. See TRUNK-3353
-		if (obs.getConcept() != null && obs.getConcept().isComplex()) {
+		if ( obs.getConcept() != null && obs.getConcept().isComplex()) {
 			InputStream complexDataInputStream = setComplexData(obs, request);
 			complexDataInputStream.close();
 		}
