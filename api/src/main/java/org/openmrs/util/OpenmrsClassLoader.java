@@ -34,6 +34,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import net.sf.ehcache.CacheManager;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
@@ -303,6 +305,25 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		//			}
 		//		}
 		
+		//Shut down and remove all cache managers.
+		List<CacheManager> knownCacheManagers = CacheManager.ALL_CACHE_MANAGERS;
+		while (!knownCacheManagers.isEmpty()) {
+			CacheManager cacheManager = CacheManager.ALL_CACHE_MANAGERS.get(0);
+			try {
+				//This shuts down and removes the cache manager.
+				cacheManager.shutdown();
+				
+				//Just in case the the timer does not stop, set the cacheManager 
+				//timer to null because it references this class loader.
+				Field field = cacheManager.getClass().getDeclaredField("cacheManagerTimer");
+				field.setAccessible(true);
+				field.set(cacheManager, null);
+			}
+			catch (Throwable ex) {
+				log.error(ex.getMessage(), ex);
+			}
+		}
+				
 		OpenmrsClassScanner.destroyInstance();
 		
 		OpenmrsClassLoaderHolder.INSTANCE = null;
