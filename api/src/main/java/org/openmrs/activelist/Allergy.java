@@ -21,7 +21,7 @@ import org.openmrs.Patient;
 
 /**
  * This keeps track of patient's allergies. Each medicine that is ordered must be carefully checked against the patient's allergy list to avoid harming the patient.
- * Since OpenMRS 1.7
+ * Since 1.7
  */
 public class Allergy extends ActiveListItem {
 	
@@ -33,24 +33,24 @@ public class Allergy extends ActiveListItem {
 	
 	private AllergySeverity severity;
 	/**
-	 * no argument constructor
+	 * no argument constructor to construct a allergy
 	 */
 	public Allergy() {
 		this.activeListType = new ActiveListType(1);
 	}
 	/**
-	 * one argument constructor
-	 * @param activeListId the activeListId to set
+	 * Constructs an allergy with a given id
+	 * @param activeListId the activeListId to set. this parameter is the id of the ActiveListItem
 	 */
 	public Allergy(Integer activeListId) {
 		super(activeListId);
 		this.activeListType = new ActiveListType(1);
 	}
 	/**
-	 * six argument constructor
-	 * @param person the person to set
+	 * Convenience constructor to construct an allergy with a given Patient, Concept, start date of the allergy, allergy type and the reaction of the allergy
+	 * @param person the person to set this Allergy
 	 * @param concept the concept to set
-	 * @param startDate the startDate to set
+	 * @param startDate the startDate to set, when the allergy occured 
 	 * @param allergyType the allergyType to set
 	 * @param reaction the reaction to set
 	 * @param severity the severity to set
@@ -71,17 +71,17 @@ public class Allergy extends ActiveListItem {
 	}
 	
 	/**
-	 * set the allergyType
+	 * set the allergyType of the Allergy
 	 * @param allergyType the allergyType to set
 	 */
-	public void setAllergyType(AllergyType allergyType) {
+	public void setAllergyType(AllergyType allergyType) {   
 		this.allergyType = allergyType;
 	}
 	/**
-	 * set the allergyType
-	 * @param type the type to set
+	 * set the allergyType of the Allergy. Here the allergy type will be chosen from the enum values in the {@link AllergyType}, according to the given String type. 
+	 * @param type the allergyType to set   
 	 */
-	public void setAllergyType(String type) {
+	public void setAllergyType(String type) {                
 		this.allergyType = StringUtils.isBlank(type) ? null : AllergyType.valueOf(type);
 	}
 	
@@ -102,9 +102,9 @@ public class Allergy extends ActiveListItem {
 	}
 	
 	/**
-	 * @return the severity
+	 * @return the severity of the allergy
 	 */
-	public AllergySeverity getSeverity() {
+	public AllergySeverity getSeverity() {   
 		return severity;
 	}
 	
@@ -112,19 +112,19 @@ public class Allergy extends ActiveListItem {
 	 * Set the severity of the allergy
 	 * @param severity the severity to set
 	 */
-	public void setSeverity(AllergySeverity severity) {
+	public void setSeverity(AllergySeverity severity) {  
 		this.severity = severity;
 	}
 	/**
-	 * Set the severity of the allergy
+	 * Set the severity of the allergy. Here the allergy type will be chosen from the enum values in the {@link AllergySeverity}, according to the given String severity.
 	 * @param severity the severity to set
 	 */
-	public void setSeverity(String severity) {
+	public void setSeverity(String severity) {         
 		this.severity = StringUtils.isBlank(severity) ? null : AllergySeverity.valueOf(severity);
 	}
 	
 	/**
-	 * Get the allergen concept
+	 * Get the allergen concept. Allergen is a type of antigen that produces an abnormally
 	 * @return the allergen
 	 */
 	public Concept getAllergen() {
@@ -132,7 +132,7 @@ public class Allergy extends ActiveListItem {
 	}
 	
 	/**
-	 * Set the allergen concept
+	 * Set the allergen concept. Allergen is a type of antigen that produces an abnormally
 	 * 
 	 * @param allergen
 	 */
