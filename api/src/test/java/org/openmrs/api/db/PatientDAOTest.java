@@ -279,6 +279,30 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, patientIdentifiers.size());
 		Assert.assertEquals("12345K", patientIdentifiers.get(0).getIdentifier());
 	}
+
+	/**
+	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @verifies not get voided patient identifiers
+	 */
+	@Test
+	public void getPatientIdentifiers_shouldNotGetVoidedPatientIdentifiers()
+			throws Exception {
+		
+
+		List<PatientIdentifier> patientIdentifiers 
+			= dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
+			    new ArrayList<Location>(), new ArrayList<Patient>(), null);
+		
+		//standartTestDataset.xml contains 5 non-voided identifiers
+		
+		Assert.assertEquals(5, patientIdentifiers.size());
+		
+		Assert.assertFalse(patientIdentifiers.get(0).isVoided());
+		Assert.assertFalse(patientIdentifiers.get(1).isVoided());
+		Assert.assertFalse(patientIdentifiers.get(2).isVoided());
+		Assert.assertFalse(patientIdentifiers.get(3).isVoided());
+		Assert.assertFalse(patientIdentifiers.get(4).isVoided());
+	}
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)

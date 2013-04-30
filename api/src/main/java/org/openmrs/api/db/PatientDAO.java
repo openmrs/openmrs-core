@@ -78,6 +78,7 @@ public interface PatientDAO {
 	 * @should fetch all patient identifiers belong to given patients
 	 * @should fetch patient identifiers that equals given identifier
 	 * @should not fetch patient identifiers that partially matches given identifier  
+	 * @should not get voided patient identifiers 
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
 	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,
