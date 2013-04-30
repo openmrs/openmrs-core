@@ -21,7 +21,7 @@ import org.openmrs.Patient;
 
 /**
  * This keeps track of patient's allergies. Each medicine that is ordered must be carefully checked against the patient's allergy list to avoid harming the patient.
- * Since 1.7
+ * @since 1.7
  */
 public class Allergy extends ActiveListItem {
 	
