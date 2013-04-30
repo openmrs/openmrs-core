@@ -343,7 +343,7 @@ function parseDateFromJsToString(sFormat, jsDate) {
  		jsDate = new Date();
  	}
  	
- 	return sFormat.replace(/mm/, tenrule(jsDate.getMonth()+1)).replace(/dd/, tenrule(jsDate.getDate())).replace(/yyyy/, (1900+jsDate.getYear()));
+ 	return sFormat.replace(/mm/, tenrule(jsDate.getMonth()+1)).replace(/dd/, tenrule(jsDate.getDate())).replace(/yyyy/, (jsDate.getFullYear() ? jsDate.getFullYear() : 1900+jsDate.getYear()));
 }
 
 /**
