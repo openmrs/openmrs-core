@@ -323,6 +323,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 				log.error(ex.getMessage(), ex);
 			}
 		}
+		
+		MemoryLeakUtil.clearHibernateSessionFactories();
 				
 		OpenmrsClassScanner.destroyInstance();
 		
