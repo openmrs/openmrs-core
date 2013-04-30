@@ -287,11 +287,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		concept.setDateChanged(new Date());
 		concept.setChangedBy(Context.getAuthenticatedUser());
 		
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		if (errors.hasErrors())
-			throw new APIException("Validation errors found: " + errors.getAllErrors());
-		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
 		// add/remove entries in the concept_word table (used for searching)

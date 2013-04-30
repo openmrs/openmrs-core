@@ -2620,4 +2620,16 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
 	}
 	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should pass when saving a concept after removing a name", method = "saveConcept(Concept)")
+	public void saveConcept_shouldPassWhenSavingAConceptAfterRemovingAName() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		Concept concept = conceptService.getConcept(3000);
+		Assert.assertFalse(concept.getSynonyms().isEmpty());
+		concept.removeName(concept.getSynonyms().iterator().next());
+		conceptService.saveConcept(concept);
+	}
 }
