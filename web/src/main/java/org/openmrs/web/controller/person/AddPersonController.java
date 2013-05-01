@@ -247,7 +247,13 @@ public class AddPersonController extends SimpleFormController {
 				return request.getContextPath() + PERSON_EDIT_URL + getParametersForURL(personId, personType);
 			}
 		}
-		throw new ServletException("Undefined personType/viewType combo: " + personType + "/" + viewType);
+		throw new ServletException(
+		        "You entered viewType = \""
+		                + viewType
+		                + "\" and personType = \""
+		                + personType
+		                + "\" which is an invalid viewType/personType combination.\n"
+		                + "Valid viewType/personType combinations are edit/patient, edit/user, shortEdit/patient, view/patient. The viewType edit is valid without any personType. Also, the personType user is valid without any viewType. \n");
 	}
 	
 	/**
