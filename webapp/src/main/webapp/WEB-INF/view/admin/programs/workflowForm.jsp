@@ -226,7 +226,6 @@ refreshStateTable();
 		code="State.list.title" /> </b>
 
 <form method="post" id="theForm">
-<div id="debug"> </div>
 	<table>
 		<thead>
 			<tr>
