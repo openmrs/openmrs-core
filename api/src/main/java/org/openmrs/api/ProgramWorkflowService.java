@@ -624,6 +624,9 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram, ProgramWorkflow workflow)
 	        throws APIException;
 	
+	@Authorized( { PrivilegeConstants.DELETE_PROGRAMWORKFLOWSTATE })
+	public void deleteProgramWorkflowState(ProgramWorkflowState state) throws APIException;
+	
 	/**
 	 * Returns boolean indicating whether it is legal to transition from one ProgramWorkflowState to
 	 * another

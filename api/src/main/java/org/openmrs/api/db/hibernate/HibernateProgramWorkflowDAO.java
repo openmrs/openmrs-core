@@ -347,4 +347,9 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		squery.setEntity("concept", concept);
 		return squery.list();
 	}
+	
+	@Override
+	public void deleteProgramWorkflowState(ProgramWorkflowState state) throws DAOException {
+		sessionFactory.getCurrentSession().delete(state);
+	}
 }
