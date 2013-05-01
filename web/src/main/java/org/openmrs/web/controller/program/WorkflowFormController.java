@@ -95,8 +95,8 @@ public class WorkflowFormController extends SimpleFormController {
 			ProgramWorkflow wf = (ProgramWorkflow) obj;
 			
 			if (request.getParameter("delete") != null) {
-				String detstatesStr = request.getParameter("deletedStates");
-				for (StringTokenizer st = new StringTokenizer(detstatesStr, "|"); st.hasMoreTokens();) {
+				String deletedStatesStr = request.getParameter("deletedStates");
+				for (StringTokenizer st = new StringTokenizer(deletedStatesStr, "|"); st.hasMoreTokens();) {
 					String str = st.nextToken();
 					String[] tmp = str.split(",");
 					Integer conceptId = Integer.valueOf(tmp[0]);
