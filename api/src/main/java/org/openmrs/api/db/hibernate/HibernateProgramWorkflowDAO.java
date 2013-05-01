@@ -350,7 +350,6 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	
 	@Override
 	public void deleteProgramWorkflowState(ProgramWorkflowState state) throws DAOException {
-		// TODO Auto-generated method stub
 		sessionFactory.getCurrentSession().delete(state);
 	}
 }
