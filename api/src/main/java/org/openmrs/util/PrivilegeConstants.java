@@ -102,7 +102,7 @@ public class PrivilegeConstants {
 	public static final String GET_PATIENT_PROGRAMS = "Get Patient Programs";
 	
 	@AddOnStartup(description = "Able to delete program_workflow_state from the system")
-	public static final String DELETE_PROGRAMWORKFLOWSTATE = "Delete ProgramWorkflowState";
+	public static final String DELETE_PROGRAM_WORKFLOW_STATE = "Delete Program Workflow State";
 	
 	@AddOnStartup(description = "Able to get global properties on the administration screen")
 	public static final String GET_GLOBAL_PROPERTIES = "Get Global Properties";
