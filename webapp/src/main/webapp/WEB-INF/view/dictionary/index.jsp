@@ -14,6 +14,12 @@
 
 <script type="text/javascript">
 	var lastSearch;
+	
+	// Get relevant parameter value, in current URL
+	function getURLParameter(name) {
+		return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20')) || null;
+	}
+	
 	$j(document).ready(function() {
 		new OpenmrsSearch("findConcept", true, doConceptSearch, doSelectionHandler, 
 				[{fieldName:"name", header:" "}, {fieldName:"preferredName", header:" "}],
@@ -25,11 +31,29 @@
 					searchPhrase:'<request:parameter name="phrase"/>',
 					showIncludeVerbose: true,
 					verboseHandler: doGetVerbose,
-					showSearchButton: true
+					showSearchButton: true,
+					lastSearchParams : getURLParameter('lastSearchText')
+						? {
+							'lastSearchText' : getURLParameter('lastSearchText'),
+							'includeVoided' : getURLParameter('includeVoided'),
+							'includeVerbose' : getURLParameter('includeVerbose')
+						}
+						: null
 				});
 	});
 	
 	function doSelectionHandler(index, data) {
+		
+		// Check the browser compatibility and, add an entry to history
+		if (window.history.pushState) {
+			window.history.pushState(
+				{}, "",
+				document.location.pathname + "?lastSearchText=" + document.getElementById('inputNode').value
+				+ "&includeVoided=" + ($j('#includeVoided').is(':checked') ? 1 : 0)
+				+ "&includeVerbose=" + ($j('#includeVerbose').is(':checked') ? 1 : 0)
+			);
+		}
+		
 		document.location = "concept.htm?conceptId=" + data.conceptId;
 	}
 	
