@@ -29,12 +29,11 @@ import org.springframework.validation.Validator;
  * @since 1.5
  **/
 @Handler(supports = { Location.class }, order = 50)
-public class LocationValidator extends BaseCustomizableValidator implements
-		Validator {
-
+public class LocationValidator extends BaseCustomizableValidator implements Validator {
+	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 * 
@@ -44,7 +43,7 @@ public class LocationValidator extends BaseCustomizableValidator implements
 	public boolean supports(Class c) {
 		return c.equals(Location.class);
 	}
-
+	
 	/**
 	 * Checks the form object for any inconsistencies/errors
 	 * 
@@ -55,19 +54,19 @@ public class LocationValidator extends BaseCustomizableValidator implements
 	 * @should set retired to false if retireReason is null or empty
 	 * @should pass validation if all fields are correct
 	 * @should pass validation if retired location is given retired reason
+	 * @should fail validation if parent location creates a loop
 	 */
 	public void validate(Object obj, Errors errors) {
 		Location location = (Location) obj;
 		if (location == null) {
 			errors.rejectValue("location", "error.general");
 		} else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name",
-					"error.name");
-
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			
 			if (location.isRetired()) {
 				if (!StringUtils.hasLength(location.getRetireReason())) {
 					location.setRetired(false); // so that the jsp page displays
-												// properly again
+					// properly again
 					errors.rejectValue("retireReason", "error.null");
 				}
 			}
@@ -78,15 +77,13 @@ public class LocationValidator extends BaseCustomizableValidator implements
 				root = root.getParentLocation();
 				if (root.equals(location)) { // Have gone in a circle
 					// I don't know how to use errors.rejectValue() yet
-					errors.rejectValue("parentLocation",
-							"Location.parentLocation.error");
+					errors.rejectValue("parentLocation", "Location.parentLocation.error");
 					break;
 				}
 			}
 		}
-
-		super.validateAttributes(location, errors, Context.getLocationService()
-				.getAllLocationAttributeTypes());
+		
+		super.validateAttributes(location, errors, Context.getLocationService().getAllLocationAttributeTypes());
 	}
-
+	
 }
