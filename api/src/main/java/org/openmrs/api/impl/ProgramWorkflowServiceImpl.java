@@ -904,7 +904,6 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Override
 	@Authorized("Delete ProgramWorkflowState")
 	public void deleteProgramWorkflowState(ProgramWorkflowState state) throws APIException {
-		// TODO Auto-generated method stub
 		dao.deleteProgramWorkflowState(state);
 	}
 	
