@@ -86,6 +86,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		
 		// check attributes
 		super.validateAttributes(visit, errors, Context.getVisitService().getAllVisitAttributeTypes());
+		
 	}
 	
 }

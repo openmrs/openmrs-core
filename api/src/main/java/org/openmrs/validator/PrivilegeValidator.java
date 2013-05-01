@@ -58,6 +58,7 @@ public class PrivilegeValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "privilege", "error.privilege");
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "privilege");
 	}
 	
 }

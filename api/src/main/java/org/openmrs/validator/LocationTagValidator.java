@@ -45,6 +45,7 @@ public class LocationTagValidator implements Validator {
 			LocationTag locationTag = (LocationTag) target;
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "LocationTag.error.name.required");
 		}
+		
 	}
 	
 }

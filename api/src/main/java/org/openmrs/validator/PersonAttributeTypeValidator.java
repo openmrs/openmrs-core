@@ -53,5 +53,6 @@ public class PersonAttributeTypeValidator implements Validator {
 		if (pat != null && !pat.getPersonAttributeTypeId().equals(patObj.getPersonAttributeTypeId())) {
 			errors.rejectValue("name", "PersonAttributeType.error.nameAlreadyInUse");
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "format");
 	}
 }

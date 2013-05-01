@@ -270,5 +270,6 @@ public class ConceptValidator implements Validator {
 				index++;
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "retireReason", "version");
 	}
 }

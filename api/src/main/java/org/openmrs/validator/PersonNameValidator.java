@@ -63,6 +63,8 @@ public class PersonNameValidator implements Validator {
 		catch (Exception e) {
 			errors.reject(e.getMessage());
 		}
+		ValidateUtil.validateFieldLengths(errors, object.getClass(), "prefix", "givenName", "middleName",
+		    "familyNamePrefix", "familyName", "familyName2", "familyNameSuffix", "degree");
 	}
 	
 	/**

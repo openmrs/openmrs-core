@@ -95,6 +95,7 @@ public class SchedulerFormValidator implements Validator {
 				        .getTaskClass() }, "Class not found error.");
 			}
 		}
+		
 	}
 	
 }
