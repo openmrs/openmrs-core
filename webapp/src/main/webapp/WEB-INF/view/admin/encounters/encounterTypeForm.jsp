@@ -17,14 +17,6 @@
 	
 </script>
 
-<script type="text/javascript">
-   function forceMaxLength(object, maxLength) {
-      if( object.value.length >= maxLength) {
-         object.value = object.value.substring(0, maxLength); 
-      }
-   }
-</script>
-
 <h2><openmrs:message code="EncounterType.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.belowTitle" type="html" parameters="encounterTypeId=${encounterType.encounterTypeId}" />
