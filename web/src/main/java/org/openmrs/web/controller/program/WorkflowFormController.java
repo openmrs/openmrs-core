@@ -87,7 +87,7 @@ public class WorkflowFormController extends SimpleFormController {
 		log.debug("about to save " + obj);
 		
 		HttpSession httpSession = request.getSession();
-		ProgramWorkflowService pwsr = Context.getProgramWorkflowService();
+		ProgramWorkflowService pwser = Context.getProgramWorkflowService();
 		
 		String view = getFormView();
 		
@@ -110,7 +110,7 @@ public class WorkflowFormController extends SimpleFormController {
 					
 					try {
 						wf.removeState(pws);
-						pwsr.deleteProgramWorkflowState(pws);
+						pwser.deleteProgramWorkflowState(pws);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ProgramWorkflowState.delete.success");
 					}
 					catch (DataIntegrityViolationException e) {
