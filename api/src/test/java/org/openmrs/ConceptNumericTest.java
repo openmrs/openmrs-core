@@ -36,4 +36,94 @@ public class ConceptNumericTest {
 		Assert.assertNotSame(c, cn);
 		Assert.assertNotSame(cn, c);
 	}
+	
+	/**
+	 * Tests for TRUNK-3974
+	 * 
+	 * 
+	 * @throws Exception 
+	 */
+	
+	@Test
+	@Verifies(value = "should make deep copie of collections", method = "ConceptNumeric(Concept)")
+	public void equals_shouldNotBeTheSameReference() throws Exception {
+		Concept c = new Concept(123);
+		ConceptNumeric cn = new ConceptNumeric(c);
+		
+		Assert.assertNotSame(c.getAnswers(), cn.getAnswers());
+		Assert.assertNotSame(c.getConceptSets(), cn.getConceptSets());
+		Assert.assertNotSame(cn.getConceptSets(), c.getConceptSets());
+		Assert.assertNotSame(c.getNames(), cn.getNames());
+		Assert.assertNotSame(c.getConceptMappings(), cn.getConceptMappings());
+		Assert.assertNotSame(c.getDescriptions(), cn.getDescriptions());
+	}
+	
+	@Test
+	@Verifies(value = "should change reference to the parent object  for objects in answers collection", method = "ConceptNumeric(Concept)")
+	public void check_parentOfAnswersShouldBeChangeToReferenceOfConceptAnswer() throws Exception {
+		Concept c = new Concept(123);
+		c.addAnswer(new ConceptAnswer(1));
+		c.addAnswer(new ConceptAnswer(2));
+		ConceptNumeric cn = new ConceptNumeric(c);
+		
+		for (ConceptAnswer cAnswer : cn.getAnswers()) {
+			Assert.assertSame(cn, cAnswer.getConcept());
+			Assert.assertNotSame(c, cAnswer.getConcept());
+		}
+	}
+	
+	@Test
+	@Verifies(value = "should change reference to the parent object  for objects in concpetSets collection", method = "ConceptNumeric(Concept)")
+	public void check_parentOfConceptSetShouldBeChangeToReferenceOfConceptNumeric() throws Exception {
+		Concept c = new Concept(123);
+		c.addSetMember(new Concept(1));
+		c.addSetMember(new Concept(2));
+		ConceptNumeric cn = new ConceptNumeric(c);
+		
+		for (ConceptSet cSet : cn.getConceptSets()) {
+			Assert.assertSame(cn, cSet.getConcept());
+			Assert.assertNotSame(c, cSet.getConcept());
+		}
+	}
+	
+	@Test
+	@Verifies(value = "should change reference to the parent object  for objects in names collection", method = "ConceptNumeric(Concept)")
+	public void check_parentOfConceptNameShouldBeChangeToReferenceOfConceptNumeric() throws Exception {
+		Concept c = new Concept(123);
+		c.addName(new ConceptName(1));
+		c.addName(new ConceptName(2));
+		ConceptNumeric cn = new ConceptNumeric(c);
+		
+		for (ConceptName cName : cn.getNames()) {
+			Assert.assertSame(cn, cName.getConcept());
+			Assert.assertNotSame(c, cName.getConcept());
+		}
+	}
+	
+	@Test
+	@Verifies(value = "should change reference to the parent object  for objects in descriptions collection", method = "ConceptNumeric(Concept)")
+	public void check_parentOfConceptDescriptionShouldBeChangeToReferenceOfConceptNumeric() throws Exception {
+		Concept c = new Concept(123);
+		c.addDescription(new ConceptDescription(1));
+		c.addDescription(new ConceptDescription(2));
+		ConceptNumeric cn = new ConceptNumeric(c);
+		
+		for (ConceptDescription cDesc : cn.getDescriptions()) {
+			Assert.assertSame(cn, cDesc.getConcept());
+			Assert.assertNotSame(c, cDesc.getConcept());
+		}
+	}
+	
+	@Test
+	@Verifies(value = "should change reference to the parent object  for objects in conceptMappings collection", method = "ConceptNumeric(Concept)")
+	public void check_parentOfConceptMapShouldBeChangeToReferenceOfConceptNumeric() throws Exception {
+		Concept c = new Concept(123);
+		c.getConceptMappings().add(new ConceptMap(1));
+		c.getConceptMappings().add(new ConceptMap(2));
+		ConceptNumeric cn = new ConceptNumeric(c);
+		for (ConceptMap cMap : cn.getConceptMappings()) {
+			Assert.assertSame(cn, cMap.getConcept());
+			Assert.assertNotSame(c, cMap.getConcept());
+		}
+	}
 }
