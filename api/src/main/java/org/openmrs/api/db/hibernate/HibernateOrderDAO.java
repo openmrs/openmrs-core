@@ -20,17 +20,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptWord;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
+import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 
@@ -200,6 +206,17 @@ public class HibernateOrderDAO implements OrderDAO {
 		searchDrugOrderCriteria.add(Restrictions.or(lhs, rhs));
 		
 		return (List<DrugOrder>) searchDrugOrderCriteria.list();
+	}
+	
+	/*
+	*  Delete Obs that references (deleted) Order
+	*/
+	public void deleteObsThatReference(Order order) {
+		if (order != null) {
+			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :order").setInteger("order",
+			    order.getOrderId()).executeUpdate();
+			
+		}
 	}
 	
 }
