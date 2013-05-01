@@ -253,7 +253,7 @@ public class AddPersonController extends SimpleFormController {
 		                + "\" and personType = \""
 		                + personType
 		                + "\" which is an invalid viewType/personType combination.\n"
-		                + "Valid viewType/personType combinations are edit/patient, shortEdit/patient, view/patient. The viewType edit is valid with any personType. Also, the personType user is valid with any viewType. \n");
+		                + "Valid viewType/personType combinations are edit/patient, shortEdit/patient, view/patient. The viewType edit is valid with any personType (i.e. patient, user, even empty string or any string you enter as personType). Also, the personType user is valid with any viewType (i.e. you can enter any string or even empty string as viewType ). \n");
 	}
 	
 	/**
