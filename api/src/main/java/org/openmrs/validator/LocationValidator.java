@@ -29,11 +29,12 @@ import org.springframework.validation.Validator;
  * @since 1.5
  **/
 @Handler(supports = { Location.class }, order = 50)
-public class LocationValidator extends BaseCustomizableValidator implements Validator {
-	
+public class LocationValidator extends BaseCustomizableValidator implements
+		Validator {
+
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 * 
@@ -43,7 +44,7 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	public boolean supports(Class c) {
 		return c.equals(Location.class);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
 	 * 
@@ -60,17 +61,32 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 		if (location == null) {
 			errors.rejectValue("location", "error.general");
 		} else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name",
+					"error.name");
+
 			if (location.isRetired()) {
 				if (!StringUtils.hasLength(location.getRetireReason())) {
-					location.setRetired(false); // so that the jsp page displays properly again
+					location.setRetired(false); // so that the jsp page displays
+												// properly again
 					errors.rejectValue("retireReason", "error.null");
 				}
 			}
+			// Traverse all the way up (down?) to the root and check if it
+			// equals the root.
+			Location root = location;
+			while (root.getParentLocation() != null) {
+				root = root.getParentLocation();
+				if (root.equals(location)) { // Have gone in a circle
+					// I don't know how to use errors.rejectValue() yet
+					errors.rejectValue("parentLocation",
+							"Location.parentLocation.error");
+					break;
+				}
+			}
 		}
-		
-		super.validateAttributes(location, errors, Context.getLocationService().getAllLocationAttributeTypes());
+
+		super.validateAttributes(location, errors, Context.getLocationService()
+				.getAllLocationAttributeTypes());
 	}
-	
+
 }
