@@ -395,7 +395,7 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<Order> getOrdersByOrderer(User user) throws APIException;
-
+	
 	/**
 	 * Get the history of orders related to a given order number
 	 * 
@@ -405,7 +405,6 @@ public interface OrderService extends OpenmrsService {
 	 * @should return the list of orders in a history
 	 * @since 1.10
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
 	

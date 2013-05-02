@@ -557,10 +557,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		return getOrders(Order.class, null, null, orderers, null, null, null, null);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderHistoryByOrderNumber(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
 		return dao.getOrderHistoryByOrderNumber(orderNumber);
 	}
