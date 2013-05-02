@@ -77,6 +77,7 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 				root = root.getParentLocation();
 				if (root.equals(location)) { // Have gone in a circle
 					// I don't know how to use errors.rejectValue() yet
+					
 					errors.rejectValue("parentLocation", "Location.parentLocation.error");
 					break;
 				}
@@ -85,5 +86,4 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 		
 		super.validateAttributes(location, errors, Context.getLocationService().getAllLocationAttributeTypes());
 	}
-	
 }
