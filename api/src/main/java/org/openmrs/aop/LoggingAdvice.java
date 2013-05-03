@@ -121,10 +121,14 @@ public class LoggingAdvice implements MethodInterceptor {
 			return invocation.proceed();
 		}
 		catch (Throwable t) {
-			if (logGetter || logSetter)
+			if (logGetter || logSetter) {
+				String username = Context.getAuthenticatedUser().getUsername();
+				if (username == null || username.length() == 0)
+					username = Context.getAuthenticatedUser().getSystemId();
 				log.error(String.format(
-				    "An error occurred while executing this method.\nCurrent user: %s\nError message: %s", Context
-				            .getAuthenticatedUser().getUsername(), t.getMessage()), t);
+				    "An error occurred while executing this method.\nCurrent user: %s\nError message: %s", username, t
+				            .getMessage()), t);
+			}
 			throw t;
 		}
 		finally {
