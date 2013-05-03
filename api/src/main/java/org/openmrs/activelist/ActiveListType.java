@@ -20,14 +20,18 @@ import org.openmrs.BaseOpenmrsMetadata;
  */
 public class ActiveListType extends BaseOpenmrsMetadata {
 	
-	private Integer activeListTypeId;
 	/**
-	 *  no argument constructor
+	 * the unique Identifier for the ActiveListType object
+	 */
+	private Integer activeListTypeId;
+	
+	/**
+	 * no argument constructor for construct an ActiveListType object
 	 */
 	public ActiveListType() {
 	}
 	/**
-	 * one argument constructor
+	 * constructs an ActiveListType object with a given id 
 	 * @param id the activeListTypeId to set
 	 */
 	public ActiveListType(Integer id) {
@@ -35,7 +39,7 @@ public class ActiveListType extends BaseOpenmrsMetadata {
 	}
 	
 	/**
-	 * get the activeListTypeId
+	 * This method has to override in here, as the ActiveListType class is the first concrete class in the class hierarchy and no any other super classes of the ActiveListType class override this method.
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override
@@ -44,8 +48,7 @@ public class ActiveListType extends BaseOpenmrsMetadata {
 	}
 	
 	/**
-	 * set the activeListTypeId 
-	 * @param id the activeListTypeId to set
+	 * This method has to override in here, as the ActiveListType class is the first concrete class in the class hierarchy and no any other super classes of the ActiveListType class override this method.
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	@Override
@@ -54,7 +57,7 @@ public class ActiveListType extends BaseOpenmrsMetadata {
 	}
 	
 	/**
-	 * get the activeListTypeId
+	 * get the unique Identifier for the ActiveListType object
 	 * @return the activeListTypeId
 	 */
 	public Integer getActiveListTypeId() {
@@ -62,7 +65,7 @@ public class ActiveListType extends BaseOpenmrsMetadata {
 	}
 	
 	/**
-	 * set the activeListTypeId 
+	 * set the unique Identifier for the ActiveListType object
 	 * @param activeListTypeId the activeListTypeId to set
 	 */
 	public void setActiveListTypeId(Integer activeListTypeId) {
