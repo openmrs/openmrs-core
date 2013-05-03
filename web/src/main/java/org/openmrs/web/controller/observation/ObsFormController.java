@@ -147,7 +147,9 @@ public class ObsFormController extends SimpleFormController {
 								// the handler on the obs.concept is called with the given complex data
 								newlySavedObs = os.saveObs(obs, reason);
 								
-								complexDataInputStream.close();
+								if (complexDataInputStream != null) {
+									complexDataInputStream.close();
+								}
 							}
 						}
 					} else {
@@ -175,6 +177,10 @@ public class ObsFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.unvoidedSuccessfully");
 				}
 				
+			}
+			catch (IllegalArgumentException e) {
+				errors.reject("invalidImage", "Obs.invalidImage");
+				return showForm(request, response, errors);
 			}
 			catch (APIException e) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
