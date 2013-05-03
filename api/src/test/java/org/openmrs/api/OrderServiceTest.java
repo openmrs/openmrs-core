@@ -579,7 +579,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(order.getOrderId());
 		Assert.assertNotNull(order.getOrderNumber());
 	}
-
+	
 	/**
 	 * @throws Exception 
 	 * @see OrderService#getOrderHistoryByOrderNumber(String)
@@ -590,8 +590,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		executeDataSet(ORDERS_DATASET_XML);
 		
-		OrderService orderService = Context.getOrderService();		
-
+		OrderService orderService = Context.getOrderService();
+		
 		List<Order> expectedHistory = new ArrayList<Order>();
 		expectedHistory.add(orderService.getOrderByOrderNumber("ORD-111"));
 		expectedHistory.add(orderService.getOrderByOrderNumber("ORD-222"));
@@ -605,6 +605,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		history = orderService.getOrderHistoryByOrderNumber("ORD-333");
 		Assert.assertEquals(expectedHistory, history);
-
+		
 	}
 }

@@ -202,7 +202,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		return (List<DrugOrder>) searchDrugOrderCriteria.list();
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.openmrs.api.db.OrderDAO#getOrderHistoryByOrderNumber(java.lang.String)
 	 */
@@ -210,13 +210,13 @@ public class HibernateOrderDAO implements OrderDAO {
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
 		
 		Order initial = getOrderByOrderNumber(orderNumber);
-
+		
 		// Find previous orders 
 		String workNumber = initial.getPreviousOrderNumber();
 		LinkedList<Order> previousOrders = new LinkedList<Order>();
 		while (workNumber != null) {
 			Order previous = getOrderByOrderNumber(workNumber);
-			previousOrders.addFirst(previous); 
+			previousOrders.addFirst(previous);
 			workNumber = previous.getPreviousOrderNumber();
 		}
 		
@@ -230,17 +230,17 @@ public class HibernateOrderDAO implements OrderDAO {
 			searchCriteria.add(Restrictions.eq("order.previousOrderNumber", workNumber));
 			nextOrder = (Order) searchCriteria.uniqueResult();
 			if (nextOrder != null) {
-				nextOrders.add(nextOrder); 
+				nextOrders.add(nextOrder);
 				workNumber = nextOrder.getOrderNumber();
 			}
 		} while (nextOrder != null);
-
+		
 		List<Order> result = previousOrders;
 		result.add(initial);
 		result.addAll(nextOrders);
 		
 		return result;
-
+		
 	}
 	
 }
