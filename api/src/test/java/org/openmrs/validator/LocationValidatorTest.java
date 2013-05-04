@@ -107,4 +107,26 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertFalse(errors.hasErrors());
 	}
+	
+	/**
+	 * @see {@link LocationValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if parent location creates a loop", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfParentLocationCreatesALoop() throws Exception {
+		Location location1 = new Location();
+		Location location2 = new Location();
+		Location location3 = new Location();
+		location1.setName("County General");
+		location2.setName("Radiology");
+		location3.setName("Radiology Lab");
+		location3.setParentLocation(location2);
+		location2.setParentLocation(location1);
+		location1.setParentLocation(location3);
+		
+		Errors errors = new BindException(location1, "location");
+		new LocationValidator().validate(location1, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("parentLocation"));
+	}
 }

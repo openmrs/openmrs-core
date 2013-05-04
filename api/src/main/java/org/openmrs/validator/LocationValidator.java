@@ -54,6 +54,7 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	 * @should set retired to false if retireReason is null or empty
 	 * @should pass validation if all fields are correct
 	 * @should pass validation if retired location is given retired reason
+	 * @should fail validation if parent location creates a loop
 	 */
 	public void validate(Object obj, Errors errors) {
 		Location location = (Location) obj;
@@ -64,13 +65,25 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 			
 			if (location.isRetired()) {
 				if (!StringUtils.hasLength(location.getRetireReason())) {
-					location.setRetired(false); // so that the jsp page displays properly again
+					location.setRetired(false); // so that the jsp page displays
+					// properly again
 					errors.rejectValue("retireReason", "error.null");
+				}
+			}
+			// Traverse all the way up (down?) to the root and check if it
+			// equals the root.
+			Location root = location;
+			while (root.getParentLocation() != null) {
+				root = root.getParentLocation();
+				if (root.equals(location)) { // Have gone in a circle
+					// I don't know how to use errors.rejectValue() yet
+					
+					errors.rejectValue("parentLocation", "Location.parentLocation.error");
+					break;
 				}
 			}
 		}
 		
 		super.validateAttributes(location, errors, Context.getLocationService().getAllLocationAttributeTypes());
 	}
-	
 }
