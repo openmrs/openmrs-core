@@ -73,7 +73,6 @@
 	out.println("<b>" + exception.getClass().getName() + "</b>");
 	if (exception.getMessage() != null)
 		out.println("<pre id='exceptionMessage'>" + WebUtil.escapeHTML(exception.getMessage()) + "</pre>");
-	
 	if (UnexpectedRollbackException.class.equals(exception.getClass())) {
 		out.println("<br/><b><openmrs:message code='uncaughtException.possibleCause' /></b><openmrs:message code='uncaughtException.programmerError'/><br/>");
 	}
