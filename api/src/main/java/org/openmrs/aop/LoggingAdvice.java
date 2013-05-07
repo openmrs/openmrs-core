@@ -21,6 +21,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.User;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -122,9 +123,15 @@ public class LoggingAdvice implements MethodInterceptor {
 		}
 		catch (Throwable t) {
 			if (logGetter || logSetter) {
-				String username = Context.getAuthenticatedUser().getUsername();
-				if (username == null || username.length() == 0)
-					username = Context.getAuthenticatedUser().getSystemId();
+				String username;				
+				User user = Context.getAuthenticatedUser();
+				if (user == null) {
+					username = "Guest (Not logged in)";
+				} else {
+					username = Context.getAuthenticatedUser().getUsername();
+					if (username == null || username.length() == 0)
+						username = Context.getAuthenticatedUser().getSystemId();
+				}
 				log.error(String.format(
 				    "An error occurred while executing this method.\nCurrent user: %s\nError message: %s", username, t
 				            .getMessage()), t);
