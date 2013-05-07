@@ -333,6 +333,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Method visibility is package-private for testing
+	 * 
 	 * @param mod
 	 * @param realPath
 	 * @should prefix messages with module id
@@ -369,10 +370,12 @@ public class WebModuleUtil {
 	
 	/**
 	 * Copies a module's messages into the shared module_messages(lang).properties file
-	 *
+	 * 
 	 * @param realPath actual file path of the servlet context
-	 * @param props messages to copy into the shared message properties file (replacing any existing ones)
-	 * @param lang the empty string to represent the locale "en", or something like "_fr" for any other locale
+	 * @param props messages to copy into the shared message properties file (replacing any existing
+	 *            ones)
+	 * @param lang the empty string to represent the locale "en", or something like "_fr" for any
+	 *            other locale
 	 * @return true if the everything worked
 	 */
 	private static boolean insertIntoModuleMessagePropertiesFile(String realPath, Properties props, String lang) {
@@ -672,6 +675,7 @@ public class WebModuleUtil {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			db.setEntityResolver(new EntityResolver() {
 				
+				@Override
 				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 					// When asked to resolve external entities (such as a DTD) we return an InputSource
 					// with no data at the end, causing the parser to ignore the DTD.
@@ -931,6 +935,24 @@ public class WebModuleUtil {
 	 */
 	public static HttpServlet getServlet(String servletName) {
 		return moduleServlets.get(servletName);
+	}
+	
+	/**
+	 * Retrieves a path to a folder that stores web files of a module. <br/>
+	 * (path-to-openmrs/WEB-INF/view/module/moduleid)
+	 * 
+	 * @param moduleId module id (e.g., "basicmodule")
+	 * @return a path to a folder that stores web files or null if not in a web environment
+	 * @should return the correct module folder
+	 * @should return null if the dispatcher servlet is not yet set
+	 */
+	public static String getModuleWebFolder(String moduleId) {
+		if (dispatcherServlet == null) {
+			return null;
+		}
+		String realPath = dispatcherServlet.getServletContext().getRealPath("");
+		String moduleWebFolder = (realPath + "WEB-INF/view/module/" + moduleId).replace("/", File.separator);
+		return moduleWebFolder;
 	}
 	
 }

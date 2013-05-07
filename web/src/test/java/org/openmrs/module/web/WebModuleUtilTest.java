@@ -1,23 +1,31 @@
 package org.openmrs.module.web;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Properties;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.web.DispatcherServlet;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.HashMap;
-import java.util.Properties;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 
 /**
  *
@@ -27,6 +35,8 @@ import static org.mockito.Matchers.anyString;
 public class WebModuleUtilTest {
 	
 	private Properties propertiesWritten;
+	
+	private static final String REAL_PATH = "/usr/local/apache-tomcat-7.0.27/webapps/openmrs";
 	
 	/**
 	 * @see WebModuleUtil#copyModuleMessagesIntoWebapp(org.openmrs.module.Module, String)
@@ -88,6 +98,41 @@ public class WebModuleUtilTest {
 		mod.getMessages().put("en", englishMessages);
 		
 		return mod;
+	}
+	
+	/**
+	 * @see WebModuleUtil#getModuleWebFolder(String)
+	 * @verifies return null if the dispatcher servlet is not yet set
+	 */
+	@Test
+	public void getModuleWebFolder_shouldReturnNullIfTheDispatcherServletIsNotYetSet() throws Exception {
+		//We need to do this in case it is run after getModuleWebFolder_shouldReturnTheCorrectModuleFolder 
+		WebModuleUtil.setDispatcherServlet(null);
+		assertNull(WebModuleUtil.getModuleWebFolder("basicmodule"));
+	}
+	
+	/**
+	 * @see WebModuleUtil#getModuleWebFolder(String)
+	 * @verifies return the correct module folder
+	 */
+	@Test
+	public void getModuleWebFolder_shouldReturnTheCorrectModuleFolder() throws Exception {
+		ServletConfig servletConfig = mock(ServletConfig.class);
+		
+		ServletContext servletContext = mock(ServletContext.class);
+		when(servletContext.getRealPath("")).thenReturn(REAL_PATH);
+		
+		DispatcherServlet dispatcherServlet = mock(DispatcherServlet.class);
+		when(dispatcherServlet.getServletConfig()).thenReturn(servletConfig);
+		when(dispatcherServlet.getServletContext()).thenReturn(servletContext);
+		
+		WebModuleUtil.setDispatcherServlet(dispatcherServlet);
+		
+		String moduleId = "basicmodule";
+		String expectedPath = (REAL_PATH + "WEB-INF/view/module/" + moduleId).replace("/", File.separator);
+		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
+		
+		assertEquals(expectedPath, actualPath);
 	}
 	
 }
