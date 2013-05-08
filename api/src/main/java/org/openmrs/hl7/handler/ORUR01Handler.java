@@ -157,8 +157,7 @@ public class ORUR01Handler implements Application {
 			response = processORU_R01(oru);
 		}
 		catch (ClassCastException e) {
-			log.error(Context.getMessageSourceService().getMessage("error.ORUR01.errorCastingMessage")
-			        + message.getClass().getName(), e);
+			log.error(Context.getMessageSourceService().getMessage("error.ORUR01.errorCastingMessage", message.getClass().getName()), e);
 			throw new ApplicationException(Context.getMessageSourceService().getMessage("error.ORUR01.invalidMessageType"));
 		}
 		catch (HL7Exception e) {
@@ -216,8 +215,7 @@ public class ORUR01Handler implements Application {
 			updateHealthCenter(patient, pv1);
 		}
 		catch (Exception e) {
-			log.error(Context.getMessageSourceService().getMessage("error.ORUR01.errorProcessingLocation")
-			        + messageControlId, e);
+			log.error(Context.getMessageSourceService().getMessage("error.ORUR01.errorProcessingLocation", messageControlId), e);
 		}
 		
 		// process NK1 (relationship) segments
@@ -259,8 +257,7 @@ public class ORUR01Handler implements Application {
 			OBR obr = orderObs.getOBR();
 			
 			if (!StringUtils.hasText(obr.getUniversalServiceIdentifier().getIdentifier().getValue())) {
-				throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.invalidOBR")
-				        + messageControlId);
+				throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.invalidOBR", messageControlId));
 			}
 			
 			// if we're not ignoring this obs group, create an
@@ -356,8 +353,7 @@ public class ORUR01Handler implements Application {
 					// Handle obs-level exceptions
 					if (errorInHL7Queue != null) {
 						throw new HL7Exception(Context.getMessageSourceService().getMessage(
-						    "error.ORUR01.improperlyFormattedOBX")
-						        + PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")),
+						    "error.ORUR01.improperlyFormattedOBX", PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&"))),
 						        HL7Exception.DATA_TYPE_ERROR, errorInHL7Queue);
 					}
 				}
@@ -413,16 +409,14 @@ public class ORUR01Handler implements Application {
 		// guarantee we are working with our custom coding system
 		String relCodingSystem = nk1.getRelationship().getNameOfCodingSystem().getValue();
 		if (!relCodingSystem.equals(HL7Constants.HL7_LOCAL_RELATIONSHIP))
-			throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.relationshipCodingUnknown")
-			        + relCodingSystem);
+			throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.relationshipCodingUnknown", relCodingSystem));
 		
 		// get the relationship type identifier
 		String relIdentifier = nk1.getRelationship().getIdentifier().getValue();
 		
 		// validate the format of the relationship identifier
 		if (!Pattern.matches("[0-9]+[AB]", relIdentifier))
-			throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.relationshipType")
-			        + relIdentifier);
+			throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.relationshipType", relIdentifier));
 		
 		// get the type ID
 		Integer relTypeId = 0;
@@ -430,15 +424,13 @@ public class ORUR01Handler implements Application {
 			relTypeId = Integer.parseInt(relIdentifier.substring(0, relIdentifier.length() - 1));
 		}
 		catch (NumberFormatException e) {
-			throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.relationshipType")
-			        + relIdentifier);
+			throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.relationshipType"), relIdentifier));
 		}
 		
 		// find the relationship type
 		RelationshipType relType = Context.getPersonService().getRelationshipType(relTypeId);
 		if (relType == null)
-			throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.relationshipTypeNotFound")
-			        + relTypeId);
+			throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.relationshipTypeNotFound",relTypeId));
 		
 		// find the relative
 		Person relative = getRelative(nk1);
@@ -667,10 +659,7 @@ public class ORUR01Handler implements Application {
 						obs.setValueNumeric(Double.valueOf(value));
 					}
 					catch (NumberFormatException e) {
-						throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.numeric1") + value
-						        + Context.getMessageSourceService().getMessage("error.ORUR01.numeric2")
-						        + concept.getConceptId() + " (" + conceptName.getName() + ") "
-						        + Context.getMessageSourceService().getMessage("error.ORUR01.numeric3") + uid, e);
+						throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.numeric", value, concept.getConceptId(), conceptName.getName(), uid), e);
 					}
 				else if (concept.getDatatype().isCoded()) {
 					Concept answer = value.equals("1") ? Context.getConceptService().getTrueConcept() : Context
@@ -688,22 +677,17 @@ public class ORUR01Handler implements Application {
 					}
 					//answer the boolean answer concept was't found
 					if (!isValidAnswer)
-						throw new HL7Exception(answer.toString() + " is not a valid answer for obs with uuid " + uid);
+						throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.invalidBoolean",answer.toString(),uid));
 				} else {
 					//throw this exception to make sure that the handler doesn't silently ignore bad hl7 message
-					throw new HL7Exception("Can't set boolean concept answer for concept with id "
-					        + obs.getConcept().getConceptId());
+					throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.cantSetboolean",obs.getConcept().getConceptId()));
 				}
 			} else {
 				try {
 					obs.setValueNumeric(Double.valueOf(value));
 				}
 				catch (NumberFormatException e) {
-					throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.numeric1") + value
-					        + Context.getMessageSourceService().getMessage("error.ORUR01.numeric2") + concept.getConceptId()
-					        + " (" + conceptName.getName() + ") "
-					        + Context.getMessageSourceService().getMessage("error.ORUR01.numeric3") + uid, e);
-					
+					throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.numeric", value, concept.getConceptId(), conceptName.getName(), uid), e);
 				}
 			}
 		} else if ("CWE".equals(hl7Datatype)) {
@@ -738,10 +722,7 @@ public class ORUR01Handler implements Application {
 					}
 				}
 				catch (NumberFormatException e) {
-					throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.invalidConceptID1")
-					        + valueIdentifier
-					        + Context.getMessageSourceService().getMessage("error.ORUR01.invalidConceptID2") + valueName
-					        + "'");
+					throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.invalidConceptID", valueIdentifier, valueName);
 				}
 			}
 			if (log.isDebugEnabled())
@@ -758,10 +739,7 @@ public class ORUR01Handler implements Application {
 					obs.setValueCodedName(getConceptName(value));
 				}
 				catch (NumberFormatException e) {
-					throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.invalidConceptID1")
-					        + valueIdentifier
-					        + Context.getMessageSourceService().getMessage("error.ORUR01.invalidConceptID2") + valueName
-					        + "'");
+					throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.invalidConceptID", valueIdentifier, valueName)
 				}
 			}
 		} else if ("DT".equals(hl7Datatype)) {
@@ -816,8 +794,7 @@ public class ORUR01Handler implements Application {
 			// unsupported data type
 			// TODO: support RP (report), SN (structured numeric)
 			// do we need to support BIT just in case it slips thru?
-			throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.unsupportedObsDatatype")
-			        + hl7Datatype + "'");
+			throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.unsupportedObsDatatype", hl7Datatype);
 		}
 		
 		return obs;
@@ -958,17 +935,13 @@ public class ORUR01Handler implements Application {
 				return concept;
 			}
 			catch (NumberFormatException e) {
-				throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.invalidConceptID1HL7")
-				        + hl7ConceptId + Context.getMessageSourceService().getMessage("error.ORUR01.invalidConceptID2HL7")
-				        + uid);
+				throw new HL7Exception(Context.getMessageSourceService().getMessage("error.ORUR01.invalidConceptIDHL7"), hl7ConceptId, uid);
 			}
 		} else {
 			// the concept is not local, look it up in our mapping
 			Concept concept = Context.getConceptService().getConceptByMapping(hl7ConceptId, codingSystem);
 			if (concept == null)
-				log.error(Context.getMessageSourceService().getMessage("error.ORUR01.unableToFindConcept1") + hl7ConceptId
-				        + Context.getMessageSourceService().getMessage("error.ORUR01.unableToFindConcept2") + codingSystem
-				        + Context.getMessageSourceService().getMessage("error.ORUR01.unableToFindConcept2") + uid);
+				log.error(Context.getMessageSourceService().getMessage("error.ORUR01.unableToFindConcept"), hl7ConceptId,codingSystem,uid);
 			return concept;
 		}
 	}
@@ -1045,13 +1018,13 @@ public class ORUR01Handler implements Application {
 					catch (NumberFormatException e) {
 						// ignore
 					}
-					specificErrorMsg = Context.getMessageSourceService().getMessage("error.ORUR01.specificErrorMsg1");
+					specificErrorMsg = Context.getMessageSourceService().getMessage("error.ORUR01.couldNotResolveProviderID");
 				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_IDENTIFIER.equalsIgnoreCase(assignAuth)) {
 					provider = Context.getProviderService().getProviderByIdentifier(id);
-					specificErrorMsg = Context.getMessageSourceService().getMessage("error.ORUR01.specificErrorMsg2");
+					specificErrorMsg = Context.getMessageSourceService().getMessage("error.ORUR01.couldNotResolveProviderIdentifier");
 				} else if (HL7Constants.PROVIDER_ASSIGNING_AUTH_PROV_UUID.equalsIgnoreCase(assignAuth)) {
 					provider = Context.getProviderService().getProviderByUuid(id);
-					specificErrorMsg = Context.getMessageSourceService().getMessage("error.ORUR01.specificErrorMsg3");
+					specificErrorMsg = Context.getMessageSourceService().getMessage("error.ORUR01.couldNotResolveProviderUuid");
 				}
 			} else {
 				try {
@@ -1063,11 +1036,10 @@ public class ORUR01Handler implements Application {
 				catch (NumberFormatException e) {
 					// ignore
 				}
-				specificErrorMsg = Context.getMessageSourceService().getMessage("error.ORUR01.specificErrorMsg4");
+				specificErrorMsg = Context.getMessageSourceService().getMessage("error.ORUR01.couldNotResolveProviderPerson");
 			}
 			
-			errorMessage = Context.getMessageSourceService().getMessage("error.ORUR01.couldNotResolveProvider")
-			        + specificErrorMsg + ":" + id;
+			errorMessage = Context.getMessageSourceService().getMessage("error.ORUR01.couldNotResolveProvider", specificErrorMsg, id;
 		} else {
 			errorMessage = Context.getMessageSourceService().getMessage("error.ORUR01.noUniqueIDProvider");
 		}
@@ -1248,10 +1220,7 @@ public class ORUR01Handler implements Application {
 			    "Health Center");
 			
 			if (healthCenterAttrType == null) {
-				log.error(Context.getMessageSourceService().getMessage("error.ORUR01.healthCenterNotDefined1")
-				        + patient.getPatientId()
-				        + Context.getMessageSourceService().getMessage("error.ORUR01.healthCenterNotDefined2")
-				        + newLocationId);
+				log.error(Context.getMessageSourceService().getMessage("error.ORUR01.healthCenterNotDefined", patient.getPatientId(), newLocationId));
 				return;
 			}
 			
