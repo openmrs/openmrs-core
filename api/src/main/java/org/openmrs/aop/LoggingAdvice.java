@@ -128,9 +128,9 @@ public class LoggingAdvice implements MethodInterceptor {
 				if (user == null) {
 					username = "Guest (Not logged in)";
 				} else {
-					username = Context.getAuthenticatedUser().getUsername();
+					username = user.getUsername();
 					if (username == null || username.length() == 0)
-						username = Context.getAuthenticatedUser().getSystemId();
+						username = user.getSystemId();
 				}
 				log.error(String.format(
 				    "An error occurred while executing this method.\nCurrent user: %s\nError message: %s", username, t
