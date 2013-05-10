@@ -15,6 +15,8 @@ package org.openmrs.web.controller.person;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -118,6 +120,8 @@ public class AddPersonController extends SimpleFormController {
 	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
+	 * @should catch an invalid birthdate
+	 * @should catch pass for a valid birthdate
 	 */
 	@Override
 	protected List<PersonListItem> formBackingObject(HttpServletRequest request) throws ServletException {
@@ -142,14 +146,28 @@ public class AddPersonController extends SimpleFormController {
 				
 				Integer d = null;
 				birthdate = birthdate.trim();
-				
-				String birthyear = "";
-				if (birthdate.length() > 6)
-					birthyear = birthdate.substring(6); //parse out the year. assuming XX-XX-XXXX
-					
 				age = age.trim();
+				int birthyear = -1;
 				
-				if (birthyear.length() > 3)
+				try {
+					//Do these if there's a value in the birthdate string
+					if (birthdate.length() > 0) {
+						Date birthdateFormatted = (Date) Context.getDateFormat().parse(birthdate);
+						Calendar calender = Calendar.getInstance();
+						calender.setTime(birthdateFormatted);
+						birthyear = calender.get(Calendar.YEAR);
+					}
+				}
+				catch (ParseException e) {
+					// In theory, this should never happen -- the date selector should never allowed the
+					// user set an invalid date, but never know the scripts could be broken
+					if (log.isDebugEnabled())
+						log.debug("Parse exception occurred : " + e);
+					invalidAgeFormat = true;
+				}
+				
+				// -1 means the birth-year has not defined.
+				if (birthyear != -1)
 					d = Integer.valueOf(birthyear);
 				else if (age.length() > 0) {
 					Calendar c = Calendar.getInstance();
