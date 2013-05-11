@@ -672,6 +672,7 @@ public class WebModuleUtil {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			db.setEntityResolver(new EntityResolver() {
 				
+				@Override
 				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 					// When asked to resolve external entities (such as a DTD) we return an InputSource
 					// with no data at the end, causing the parser to ignore the DTD.
@@ -931,6 +932,23 @@ public class WebModuleUtil {
 	 */
 	public static HttpServlet getServlet(String servletName) {
 		return moduleServlets.get(servletName);
+	}
+	
+	/**
+	 * Retrieves a path to a folder that stores web files of a module. <br/>
+	 * (path-to-openmrs/WEB-INF/view/module/moduleid)
+	 * 
+	 * @param moduleId module id (e.g., "basicmodule")
+	 * @return a path to a folder that stores web files
+	 * @throws ModuleException if dispatcherServlet is null
+	 */
+	public static String getModuleWebFolder(String moduleId) {
+		if (dispatcherServlet == null) {
+			throw new ModuleException("Dispatcher servlet must be present in the web environment");
+		}
+		String realPath = dispatcherServlet.getServletContext().getRealPath("");
+		String moduleWebFolder = (realPath + "/WEB-INF/view/module/" + moduleId).replace("/", File.separator);
+		return moduleWebFolder;
 	}
 	
 }
