@@ -2044,7 +2044,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void savePerson_shouldSetThePreferredNameAndAddressIfNoneIsSpecified() throws Exception {
 		Person person = new Person();
 		person.setGender("M");
-        PersonName name = new PersonName("givenName", "middleName", "familyName");
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
 		person.addName(name);
 		PersonAddress address = new PersonAddress();
 		address.setAddress1("some address");
@@ -2063,7 +2063,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void savePerson_shouldNotSetThePreferredNameAndAddressIfTheyAlreadyExist() throws Exception {
 		Person person = new Person();
 		person.setGender("M");
-        PersonName name = new PersonName("givenName", "middleName", "familyName");
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
 		PersonName preferredName = new PersonName("givenName", "middleName", "familyName");
 		preferredName.setPreferred(true);
 		person.addName(name);
@@ -2092,7 +2092,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void savePerson_shouldNotSetAVoidedNameOrAddressAsPreferred() throws Exception {
 		Person person = new Person();
 		person.setGender("M");
-        PersonName name = new PersonName("givenName", "middleName", "familyName");
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
 		PersonName preferredName = new PersonName("givenName", "middleName", "familyName");
 		preferredName.setPreferred(true);
 		preferredName.setVoided(true);
