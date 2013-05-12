@@ -945,13 +945,24 @@ public class WebModuleUtil {
 	 * @return a path to a folder that stores web files or null if not in a web environment
 	 * @should return the correct module folder
 	 * @should return null if the dispatcher servlet is not yet set
+	 * @should return the correct module folder if real path has a trailing slash
 	 */
 	public static String getModuleWebFolder(String moduleId) {
 		if (dispatcherServlet == null) {
 			throw new ModuleException("Dispatcher servlet must be present in the web environment");
 		}
+		
+		String moduleFolder = "WEB-INF/view/module/";
 		String realPath = dispatcherServlet.getServletContext().getRealPath("");
-		String moduleWebFolder = (realPath + "WEB-INF/view/module/" + moduleId).replace("/", File.separator);
+		String moduleWebFolder;
+		if (realPath.endsWith("/"))
+			moduleWebFolder = realPath + moduleFolder;
+		else
+			moduleWebFolder = realPath + "/" + moduleFolder;
+		
+		moduleWebFolder += moduleId;
+		moduleWebFolder.replace("/", File.separator);
+		
 		return moduleWebFolder;
 	}
 	

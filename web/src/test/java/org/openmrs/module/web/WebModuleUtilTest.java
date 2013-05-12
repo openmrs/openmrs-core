@@ -118,22 +118,40 @@ public class WebModuleUtilTest {
 	 */
 	@Test
 	public void getModuleWebFolder_shouldReturnTheCorrectModuleFolder() throws Exception {
+		setupMocks(false);
+		String moduleId = "basicmodule";
+		String expectedPath = (REAL_PATH + "/WEB-INF/view/module/" + moduleId).replace("/", File.separator);
+		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
+		
+		assertEquals(expectedPath, actualPath);
+	}
+	
+	/**
+	 * @see WebModuleUtil#getModuleWebFolder(String)
+	 * @verifies return the correct module folder if real path has a trailing slash
+	 */
+	@Test
+	public void getModuleWebFolder_shouldReturnTheCorrectModuleFolderIfRealPathHasATrailingSlash() throws Exception {
+		setupMocks(true);
+		String moduleId = "basicmodule";
+		String expectedPath = (REAL_PATH + "/WEB-INF/view/module/" + moduleId).replace("/", File.separator);
+		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
+		
+		assertEquals(expectedPath, actualPath);
+	}
+	
+	private static void setupMocks(boolean includeTrailingSlash) {
 		ServletConfig servletConfig = mock(ServletConfig.class);
 		
 		ServletContext servletContext = mock(ServletContext.class);
-		when(servletContext.getRealPath("")).thenReturn(REAL_PATH);
+		String realPath = (includeTrailingSlash) ? REAL_PATH + "/" : REAL_PATH;
+		when(servletContext.getRealPath("")).thenReturn(realPath);
 		
 		DispatcherServlet dispatcherServlet = mock(DispatcherServlet.class);
 		when(dispatcherServlet.getServletConfig()).thenReturn(servletConfig);
 		when(dispatcherServlet.getServletContext()).thenReturn(servletContext);
 		
 		WebModuleUtil.setDispatcherServlet(dispatcherServlet);
-		
-		String moduleId = "basicmodule";
-		String expectedPath = (REAL_PATH + "WEB-INF/view/module/" + moduleId).replace("/", File.separator);
-		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
-		
-		assertEquals(expectedPath, actualPath);
 	}
 	
 }
