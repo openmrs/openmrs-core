@@ -1077,6 +1077,21 @@ public final class OpenmrsConstants {
 	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
 	
 	/**
+	 * Global property for Date display format
+	 */
+	public static final String GLOBAL_POPERTY_DATE_DISPLAY_FORMAT = "displayFormat.date";
+
+	/**
+	 * Global property for Date and Time display format 
+	 */
+	public static final String GLOBAL_PROPERTY_DATEANDTIME_DISPLAY_FORMAT = "displayFormat.dateTime";
+
+	/**
+	 * Global property for Time display format
+	 */
+	public static final String GLOBAL_PROPERTY_TIME_DISPLAY_FORMAT = "displayFormat.time";
+	
+	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
 	 * 
@@ -1248,6 +1263,12 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_CONCEPTS_LOCKED, "false", "if true, do not allow editing concepts",
 		        BooleanDatatype.class, null));
+		
+		props.add(new GlobalProperty(GLOBAL_POPERTY_DATE_DISPLAY_FORMAT, null, "Format for displaying Date"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_DATEANDTIME_DISPLAY_FORMAT, null, "Format for displaying Date and Time at once"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_TIME_DISPLAY_FORMAT, null, "Format for displaying  Time"));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "",
 		        "A comma delimited list of PersonAttributeType names that should be displayed for patients in _lists_"));
