@@ -955,13 +955,13 @@ public class WebModuleUtil {
 		String moduleFolder = "WEB-INF/view/module/";
 		String realPath = dispatcherServlet.getServletContext().getRealPath("");
 		String moduleWebFolder;
-		if (realPath.endsWith("/"))
+		if (realPath.endsWith(File.separator))
 			moduleWebFolder = realPath + moduleFolder;
 		else
 			moduleWebFolder = realPath + "/" + moduleFolder;
 		
 		moduleWebFolder += moduleId;
-		
+
 		return moduleWebFolder.replace("/", File.separator);
 	}
 	
