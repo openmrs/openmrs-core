@@ -106,7 +106,7 @@ public class WebModuleUtil {
 	 * value is returned. Otherwise, false is returned
 	 * 
 	 * @param mod Module to start
-	 * @param ServletContext the current ServletContext
+	 * @param servletContext the current ServletContext
 	 * @param delayContextRefresh true/false whether or not to do the context refresh
 	 * @return boolean whether or not the spring context need to be refreshed
 	 */
@@ -948,7 +948,7 @@ public class WebModuleUtil {
 	 */
 	public static String getModuleWebFolder(String moduleId) {
 		if (dispatcherServlet == null) {
-			return null;
+			throw new ModuleException("Dispatcher servlet must be present in the web environment");
 		}
 		String realPath = dispatcherServlet.getServletContext().getRealPath("");
 		String moduleWebFolder = (realPath + "WEB-INF/view/module/" + moduleId).replace("/", File.separator);

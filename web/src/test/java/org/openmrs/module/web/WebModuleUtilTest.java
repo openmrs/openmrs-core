@@ -22,6 +22,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.module.ModuleException;
 import org.openmrs.web.DispatcherServlet;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -104,11 +105,11 @@ public class WebModuleUtilTest {
 	 * @see WebModuleUtil#getModuleWebFolder(String)
 	 * @verifies return null if the dispatcher servlet is not yet set
 	 */
-	@Test
+	@Test(expected = ModuleException.class)
 	public void getModuleWebFolder_shouldReturnNullIfTheDispatcherServletIsNotYetSet() throws Exception {
 		//We need to do this in case it is run after getModuleWebFolder_shouldReturnTheCorrectModuleFolder 
 		WebModuleUtil.setDispatcherServlet(null);
-		assertNull(WebModuleUtil.getModuleWebFolder("basicmodule"));
+		WebModuleUtil.getModuleWebFolder("");
 	}
 	
 	/**
