@@ -70,6 +70,7 @@ import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
+import org.openmrs.notification.NoteService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportObjectService;
@@ -451,6 +452,13 @@ public class Context {
 	 */
 	public static SerializationService getSerializationService() {
 		return getServiceContext().getSerializationService();
+	}
+	
+	/**
+	 * @return note service
+	 */
+	public static NoteService getNoteService() {
+		return getServiceContext().getNoteService();
 	}
 	
 	/**
