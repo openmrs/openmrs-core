@@ -961,7 +961,7 @@ public class WebModuleUtil {
 			moduleWebFolder = realPath + "/" + moduleFolder;
 		
 		moduleWebFolder += moduleId;
-
+		
 		return moduleWebFolder.replace("/", File.separator);
 	}
 	
