@@ -123,7 +123,7 @@ public class LoggingAdvice implements MethodInterceptor {
 		}
 		catch (Throwable t) {
 			if (logGetter || logSetter) {
-				String username;				
+				String username;
 				User user = Context.getAuthenticatedUser();
 				if (user == null) {
 					username = "Guest (Not logged in)";
