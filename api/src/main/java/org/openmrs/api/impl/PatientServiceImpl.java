@@ -13,18 +13,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.Vector;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,6 +60,18 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.Vector;
 
 /**
  * Default implementation of the patient service. This class should not be used on its own. The
@@ -1548,7 +1548,14 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query))
 			return count;
 		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
-		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false, true));
+		// if there is a number in the query string
+		if (query.matches(".*\\d+.*")) {
+			log.debug("[Identifier search] Query: " + query);
+			return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false));
+		} else {
+			// there is no number in the string, search on name
+			return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query, null, emptyList, false));
+		}
 	}
 	
 	/**
@@ -1574,14 +1581,20 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * @see PatientService#getPatients(String, Integer, Integer)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException {
 		List<Patient> patients = new Vector<Patient>();
 		if (StringUtils.isBlank(query))
 			return patients;
 		
-		return dao.getPatients(query, null, Collections.EMPTY_LIST, false, start, length, true);
+		// if there is a number in the query string
+		if (query.matches(".*\\d+.*")) {
+			log.debug("[Identifier search] Query: " + query);
+			return getPatients(null, query, null, false, start, length);
+		} else {
+			// there is no number in the string, search on name
+			return getPatients(query, null, null, false, start, length);
+		}
 	}
 	
 	/**
@@ -1593,6 +1606,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (identifierTypes == null)
 			identifierTypes = Collections.emptyList();
 		
-		return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly, start, length, false);
+		return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly, start, length);
 	}
 }

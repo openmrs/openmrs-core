@@ -13,33 +13,6 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
-import static org.openmrs.util.AddressMatcher.containsAddress;
-import static org.openmrs.util.NameMatcher.containsFullName;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -81,6 +54,33 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
+import static org.openmrs.util.AddressMatcher.containsAddress;
+import static org.openmrs.util.NameMatcher.containsFullName;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -424,6 +424,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(new PatientIdentifierType(1));
+		
 		// make sure we get back only one patient
 		List<Patient> patients = patientService.getPatients(null, "1234", types, false);
 		assertEquals(1, patients.size());
@@ -566,8 +567,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldAllowExactSearchOfForTwoCharacterName() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
-		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "2"));
 		assertEquals(1, Context.getPatientService().getPatients("Ho").size());
 	}
 	
@@ -3184,40 +3183,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addIdentifier(patientIdentifier);
 		
 		patientService.savePatient(patient);
-	}
-	
-	/**
-	 * @see {@link PatientService#getPatients(String,Integer,Integer)}
-	 */
-	@Test
-	@Verifies(value = "should find a patients with a matching identifier with no digits", method = "getPatients(String,Integer,Integer)")
-	public void getPatients_shouldFindAPatientsWithAMatchingIdentifierWithNoDigits() throws Exception {
-		final String identifier = "XYZ";
-		Patient patient = patientService.getPatient(2);
-		Assert.assertEquals(0, patientService.getPatients(identifier, (Integer) null, (Integer) null).size());
-		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(2),
-		        locationService.getLocation(1));
-		patient.addIdentifier(pId);
-		patientService.savePatient(patient);
-		
-		Assert.assertEquals(1, patientService.getPatients(identifier).size());
-	}
-	
-	/**
-	 * @see {@link PatientService#getCountOfPatients(String)}
-	 */
-	@Test
-	@Verifies(value = "should return the right count of patients with a matching identifier with no digits", method = "getCountOfPatients(String)")
-	public void getCountOfPatients_shouldReturnTheRightCountOfPatientsWithAMatchingIdentifierWithNoDigits() throws Exception {
-		final String identifier = "XYZ";
-		Patient patient = patientService.getPatient(2);
-		Assert.assertEquals(0, patientService.getCountOfPatients(identifier).intValue());
-		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(2),
-		        locationService.getLocation(1));
-		patient.addIdentifier(pId);
-		patientService.savePatient(patient);
-		
-		Assert.assertEquals(1, patientService.getCountOfPatients(identifier).intValue());
 	}
 	
 }

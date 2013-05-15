@@ -191,12 +191,11 @@ public class HibernatePatientDAO implements PatientDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer,
-	 *      Integer, boolean)
+	 *      Integer)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesOrIdentifiers)
-	        throws DAOException {
+	        boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException {
 		if (StringUtils.isBlank(name) && StringUtils.isBlank(identifier)
 		        && (identifierTypes == null || identifierTypes.isEmpty())) {
 			return Collections.emptyList();
@@ -204,7 +203,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly, true, searchOnNamesOrIdentifiers);
+		    matchIdentifierExactly, true);
 		// restricting the search to the max search results value
 		if (start != null)
 			criteria.setFirstResult(start);
@@ -574,16 +573,16 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean, boolean)
+	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean)
 	 */
 	public Long getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly, boolean searchOnNamesOrIdentifiers) {
+	        boolean matchIdentifierExactly) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		//Skip the ordering of names because H2(and i think PostgreSQL) will require one of the ordered
 		//columns to be in the resultset which then contradicts with the combination of 
 		//(Projections.rowCount() and Criteria.uniqueResult()) that expect back only one row with one column
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly, false, searchOnNamesOrIdentifiers);
+		    matchIdentifierExactly, false);
 		criteria.setProjection(Projections.countDistinct("patientId"));
 		return (Long) criteria.uniqueResult();
 	}

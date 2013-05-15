@@ -13,15 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,6 +41,15 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Hibernate specific dao for the {@link EncounterService} All calls should be made on the
@@ -409,7 +409,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				name = query;
 			}
 			criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-			    new ArrayList<PatientIdentifierType>(), false, orderByNames, false);
+			    new ArrayList<PatientIdentifierType>(), false, orderByNames);
 		}
 		
 		return criteria;
