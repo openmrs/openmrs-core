@@ -68,7 +68,7 @@ public interface PatientDAO {
 	 * @should get patients with a matching identifier and type
 	 */
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	
+
 	boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesOrIdentifiers) throws DAOException;
 	
 	/**
