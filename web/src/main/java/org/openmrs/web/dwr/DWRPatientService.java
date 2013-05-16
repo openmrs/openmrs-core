@@ -176,6 +176,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * @should signal for a new search if the new search value has matches and is a first call
 	 * @should not signal for a new search if it is not the first ajax call
 	 * @should not signal for a new search if the new search value has no matches
+	 * @should match patient with identifiers that contain no digit
 	 */
 	public Map<String, Object> findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount)
 	        throws APIException {
