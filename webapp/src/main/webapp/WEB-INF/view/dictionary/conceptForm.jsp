@@ -888,7 +888,9 @@ function resetNewTermForm(){
 	$j(document).ready(function(){
 		// create the Add Answer dialog
 		$j('#addAnswer').dialog({
+			selectFirst: true,
 			autoOpen: false,
+			autoFocus: true,
 			modal: true,
 			title: '<openmrs:message code="conceptAnswer.title" javaScriptEscape="true"/>',
 			width: 'auto',
