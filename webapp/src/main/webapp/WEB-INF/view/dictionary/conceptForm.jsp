@@ -884,18 +884,29 @@ function resetNewTermForm(){
 	<input type="hidden" name="newAnswerType" id="newAnswerType"/>
 </div>
 
+<script>
+	(function( $ ) {
+		$( ".ui-autocomplete-input" ).live( "autocompleteopen", function() {
+			var autocomplete = $( this ).data( "autocomplete" ),
+				menu = autocomplete.menu;
+			if ( !autocomplete.options.selectFirst ) {
+				return;
+			}
+			menu.activate( $.Event({ type: "mouseenter" }), menu.element.children().first() );
+		});
+	}( jQuery ));
+</script>
+
 <script type="text/javascript">
 	$j(document).ready(function(){
 		// create the Add Answer dialog
 		$j('#addAnswer').dialog({
-			selectFirst: true,
 			autoOpen: false,
-			autoFocus: true,
 			modal: true,
 			title: '<openmrs:message code="conceptAnswer.title" javaScriptEscape="true"/>',
 			width: 'auto',
 			open: function() {
-				$j("#newAnswerConcept").val(""); 
+				$j("#newAnswerConcept").val("").autocomplete({  autoFocus: true, selectFirst: true }); 
 				$j("#newAnswerDrug").val(""); 
 				$j("input[name=newAnswerId]").val(""); 
 				$j("input[name=newAnswerType]").val(""); },
