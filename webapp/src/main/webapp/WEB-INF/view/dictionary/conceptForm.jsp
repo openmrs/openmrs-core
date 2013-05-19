@@ -884,6 +884,7 @@ function resetNewTermForm(){
 	<input type="hidden" name="newAnswerType" id="newAnswerType"/>
 </div>
 
+// Added for selectFirst to work (as its not availble in jquery-ui.1.8.2).
 <script>
 	(function( $ ) {
 		$( ".ui-autocomplete-input" ).live( "autocompleteopen", function() {
