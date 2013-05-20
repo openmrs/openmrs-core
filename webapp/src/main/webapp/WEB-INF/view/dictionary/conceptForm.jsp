@@ -884,6 +884,17 @@ function resetNewTermForm(){
 	<input type="hidden" name="newAnswerType" id="newAnswerType"/>
 </div>
 
+// Added for selectFirst to work (as its not availble in jquery-ui.1.8.2).
+<script>
+	(function( $ ) {
+		$( ".ui-autocomplete-input" ).live( "autocompleteopen", function() {
+			var autocomplete = $( this ).data( "autocomplete" ),
+				menu = autocomplete.menu;
+			menu.activate( $.Event({ type: "mouseenter" }), menu.element.children().first() ); // Activates the mouseenter event, over the first element in menu
+		});
+	}( jQuery ));
+</script>
+
 <script type="text/javascript">
 	$j(document).ready(function(){
 		// create the Add Answer dialog
@@ -893,7 +904,7 @@ function resetNewTermForm(){
 			title: '<openmrs:message code="conceptAnswer.title" javaScriptEscape="true"/>',
 			width: 'auto',
 			open: function() {
-				$j("#newAnswerConcept").val(""); 
+				$j("#newAnswerConcept").val("").autocomplete({  autoFocus: true, selectFirst: true }); 
 				$j("#newAnswerDrug").val(""); 
 				$j("input[name=newAnswerId]").val(""); 
 				$j("input[name=newAnswerType]").val(""); },
