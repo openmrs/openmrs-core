@@ -893,7 +893,7 @@ function resetNewTermForm(){
 			if ( !autocomplete.options.selectFirst ) {
 				return;
 			}
-			menu.activate( $.Event({ type: "mouseenter" }), menu.element.children().first() );
+			menu.activate( $.Event({ type: "mouseenter" }), menu.element.children().first() ); // Activates the mouseenter event, over the first element in menu
 		});
 	}( jQuery ));
 </script>
