@@ -104,7 +104,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   verboseHandler: function to be called to return the text to display as verbose output
  *   attributes: Array of names for attributes types to display in the list of results
  *   showSearchButton: Boolean, indicating whether to use search button for immediate search
- *   lastSearchParams: An object with last search parameters, to support preserve data for browser back button
+ *   lastSearchParams: Object with properties lastSearchText, includeVoided and includeVerbose, to preserve data with browser back button
  *   
  * The styling on this table works like this:
  * <pre>  

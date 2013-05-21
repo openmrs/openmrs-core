@@ -77,6 +77,9 @@ public interface PatientService extends OpenmrsService {
 	 * @should update an existing patient
 	 * @should fail when patient does not have required patient identifiers
 	 * @should update the date changed and changed by on update of the person address
+	 * @should set the preferred name address and identifier if none is specified
+	 * @should not set the preferred name address and identifier if they already exist
+	 * @should not set a voided name or address or identifier as preferred
 	 */
 	@Authorized( { PrivilegeConstants.ADD_PATIENTS, PrivilegeConstants.EDIT_PATIENTS })
 	public Patient savePatient(Patient patient) throws APIException;
@@ -563,6 +566,7 @@ public interface PatientService extends OpenmrsService {
 	 * @return a list of matching Patients
 	 * @throws APIException
 	 * @since 1.8
+	 * @should find a patients with a matching identifier with no digits
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException;
@@ -968,6 +972,7 @@ public interface PatientService extends OpenmrsService {
 	 * @return the number of patients matching the given search phrase
 	 * @since 1.8
 	 * @should return the right count when a patient has multiple matching person names
+	 * @should return the right count of patients with a matching identifier with no digits
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public Integer getCountOfPatients(String query);

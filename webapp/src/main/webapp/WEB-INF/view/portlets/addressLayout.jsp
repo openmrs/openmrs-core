@@ -216,11 +216,16 @@
 									<c:catch var="exp">
 										<spring:bind path="${token.codeName}">
 											<c:if test="${token.codeName == 'endDate'}"><input type="hidden" name="_${status.expression}"></c:if>
-											<input id="${status.expression}" type="text" name="${status.expression}" value="<c:out value="${status.value}"/>" size="${token.displaySize}" 
+											<c:set var="elementValue" value="${status.value}" />
+											<c:if test="${model.isNew && empty elementValue && not empty model.layoutTemplate.elementDefaults && not empty model.layoutTemplate.elementDefaults[token.codeName]}">
+												<c:set var="elementValue" value="${model.layoutTemplate.elementDefaults[token.codeName]}" />
+											</c:if>
+											<input id="${status.expression}" type="text" name="${status.expression}" value="${elementValue}" size="${token.displaySize}" 
                                             	<c:if test="${token.codeName == 'startDate' || token.codeName == 'endDate'}">onfocus='showCalendar(this,60)'</c:if> 
                                             	<c:if test="${token.codeName == 'endDate' && status.value == ''}">disabled="disabled" </c:if>
                                                 onkeyup="<c:if test='${model.layoutTemplate.elementRegex[token.codeName] !="" }'>validateFormat(this, '${model.layoutTemplate.elementRegex[token.codeName]}','${token.codeName}' )</c:if>"
                                             />
+                                            <c:remove var="elementValue" scope="page" />
                                             <c:if test="${token.codeName == 'endDate'}">
                                             <script type="text/javascript">updateActiveCheckbox('${status.expression}', ${status.value == ''});</script>
                                             </c:if>

@@ -427,7 +427,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(new PatientIdentifierType(1));
-		
 		// make sure we get back only one patient
 		List<Patient> patients = patientService.getPatients(null, "1234", types, false);
 		assertEquals(1, patients.size());
@@ -570,6 +569,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldAllowExactSearchOfForTwoCharacterName() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "2"));
 		assertEquals(1, Context.getPatientService().getPatients("Ho").size());
 	}
 	
@@ -3273,6 +3274,162 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.mergePatients(preferredPatient, nonPreferredPatient);
 		assertThat(preferredPatient.getAddresses().size(), equalTo(2));
 		
+	}
+	
+	/**
+	 * @see PatientService#savePatient(Patient)
+	 * @verifies set the preferred name address and identifier if none is specified
+	 */
+	@Test
+	public void savePatient_shouldSetThePreferredNameAddressAndIdentifierIfNoneIsSpecified() throws Exception {
+		Patient patient = new Patient();
+		patient.setGender("M");
+		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		patient.addIdentifier(identifier);
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
+		patient.addName(name);
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("some address");
+		patient.addAddress(address);
+		
+		patientService.savePatient(patient);
+		Assert.assertTrue(identifier.isPreferred());
+		Assert.assertTrue(name.isPreferred());
+		Assert.assertTrue(address.isPreferred());
+	}
+	
+	/**
+	 * @see PatientService#savePatient(Patient)
+	 * @verifies not set the preferred name address and identifier if they already exist
+	 */
+	@Test
+	public void savePatient_shouldNotSetThePreferredNameAddressAndIdentifierIfTheyAlreadyExist() throws Exception {
+		Patient patient = new Patient();
+		patient.setGender("M");
+		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		PatientIdentifier preferredIdentifier = new PatientIdentifier("QWERTY2", patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		preferredIdentifier.setPreferred(true);
+		patient.addIdentifier(identifier);
+		patient.addIdentifier(preferredIdentifier);
+		
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
+		PersonName preferredName = new PersonName("givenName", "middleName", "familyName");
+		preferredName.setPreferred(true);
+		patient.addName(name);
+		patient.addName(preferredName);
+		
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("some address");
+		PersonAddress preferredAddress = new PersonAddress();
+		preferredAddress.setAddress1("another address");
+		preferredAddress.setPreferred(true);
+		patient.addAddress(address);
+		patient.addAddress(preferredAddress);
+		
+		patientService.savePatient(patient);
+		Assert.assertTrue(preferredIdentifier.isPreferred());
+		Assert.assertTrue(preferredName.isPreferred());
+		Assert.assertTrue(preferredAddress.isPreferred());
+		Assert.assertFalse(identifier.isPreferred());
+		Assert.assertFalse(name.isPreferred());
+		Assert.assertFalse(address.isPreferred());
+	}
+	
+	/**
+	 * @see PatientService#savePatient(Patient)
+	 * @verifies not set a voided name or address or identifier as preferred
+	 */
+	@Test
+	public void savePatient_shouldNotSetAVoidedNameOrAddressOrIdentifierAsPreferred() throws Exception {
+		Patient patient = new Patient();
+		patient.setGender("M");
+		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		PatientIdentifier preferredIdentifier = new PatientIdentifier("QWERTY2", patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		preferredIdentifier.setPreferred(true);
+		preferredIdentifier.setVoided(true);
+		patient.addIdentifier(identifier);
+		patient.addIdentifier(preferredIdentifier);
+		
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
+		PersonName preferredName = new PersonName("givenName", "middleName", "familyName");
+		preferredName.setPreferred(true);
+		preferredName.setVoided(true);
+		patient.addName(name);
+		patient.addName(preferredName);
+		
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("some address");
+		PersonAddress preferredAddress = new PersonAddress();
+		preferredAddress.setAddress1("another address");
+		preferredAddress.setPreferred(true);
+		preferredAddress.setVoided(true);
+		patient.addAddress(address);
+		patient.addAddress(preferredAddress);
+		
+		patientService.savePatient(patient);
+		Assert.assertFalse(preferredIdentifier.isPreferred());
+		Assert.assertFalse(preferredName.isPreferred());
+		Assert.assertFalse(preferredAddress.isPreferred());
+		Assert.assertTrue(identifier.isPreferred());
+		Assert.assertTrue(name.isPreferred());
+		Assert.assertTrue(address.isPreferred());
+	}
+	
+	/**
+	 * https://tickets.openmrs.org/browse/TRUNK-3728
+	 * 
+	 * @see {@link PatientService#savePatient(Patient)}
+	 */
+	@Test
+	@Verifies(value = "should not throw NonUniqueObjectException when called with person promoted to patient", method = "savePatient(Patient)")
+	public void savePatient_shouldNotThrowNonUniqueObjectExceptionWhenCalledWithPersonPromotedToPatient() throws Exception {
+		Person person = personService.getPerson(1);
+		Patient patient = patientService.getPatientOrPromotePerson(person.getPersonId());
+		PatientIdentifier patientIdentifier = new PatientIdentifier("some identifier", new PatientIdentifierType(2),
+		        new Location(1));
+		patientIdentifier.setPreferred(true);
+		patient.addIdentifier(patientIdentifier);
+		
+		patientService.savePatient(patient);
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatients(String,Integer,Integer)}
+	 */
+	@Test
+	@Verifies(value = "should find a patients with a matching identifier with no digits", method = "getPatients(String,Integer,Integer)")
+	public void getPatients_shouldFindAPatientsWithAMatchingIdentifierWithNoDigits() throws Exception {
+		final String identifier = "XYZ";
+		Patient patient = patientService.getPatient(2);
+		Assert.assertEquals(0, patientService.getPatients(identifier, (Integer) null, (Integer) null).size());
+		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		patient.addIdentifier(pId);
+		patientService.savePatient(patient);
+		
+		Assert.assertEquals(1, patientService.getPatients(identifier).size());
+	}
+	
+	/**
+	 * @see {@link PatientService#getCountOfPatients(String)}
+	 */
+	@Test
+	@Verifies(value = "should return the right count of patients with a matching identifier with no digits", method = "getCountOfPatients(String)")
+	public void getCountOfPatients_shouldReturnTheRightCountOfPatientsWithAMatchingIdentifierWithNoDigits() throws Exception {
+		final String identifier = "XYZ";
+		Patient patient = patientService.getPatient(2);
+		Assert.assertEquals(0, patientService.getCountOfPatients(identifier).intValue());
+		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(2),
+		        locationService.getLocation(1));
+		patient.addIdentifier(pId);
+		patientService.savePatient(patient);
+		
+		Assert.assertEquals(1, patientService.getCountOfPatients(identifier).intValue());
 	}
 	
 }

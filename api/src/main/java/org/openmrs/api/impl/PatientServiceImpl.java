@@ -143,6 +143,58 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			checkPatientIdentifiers(patient);
 		}
 		
+		PatientIdentifier preferredIdentifier = null;
+		PatientIdentifier possiblePreferredId = patient.getPatientIdentifier();
+		if (possiblePreferredId != null && possiblePreferredId.isPreferred() && !possiblePreferredId.isVoided()) {
+			preferredIdentifier = possiblePreferredId;
+		}
+		
+		for (PatientIdentifier id : patient.getIdentifiers()) {
+			if (preferredIdentifier == null && !id.isVoided()) {
+				id.setPreferred(true);
+				preferredIdentifier = id;
+				continue;
+			}
+			
+			if (!id.equals(preferredIdentifier))
+				id.setPreferred(false);
+		}
+		
+		PersonName preferredName = null;
+		PersonName possiblePreferredName = patient.getPersonName();
+		if (possiblePreferredName != null && possiblePreferredName.isPreferred() && !possiblePreferredName.isVoided()) {
+			preferredName = possiblePreferredName;
+		}
+		
+		for (PersonName name : patient.getNames()) {
+			if (preferredName == null && !name.isVoided()) {
+				name.setPreferred(true);
+				preferredName = name;
+				continue;
+			}
+			
+			if (!name.equals(preferredName))
+				name.setPreferred(false);
+		}
+		
+		PersonAddress preferredAddress = null;
+		PersonAddress possiblePreferredAddress = patient.getPersonAddress();
+		if (possiblePreferredAddress != null && possiblePreferredAddress.isPreferred()
+		        && !possiblePreferredAddress.isVoided()) {
+			preferredAddress = possiblePreferredAddress;
+		}
+		
+		for (PersonAddress address : patient.getAddresses()) {
+			if (preferredAddress == null && !address.isVoided()) {
+				address.setPreferred(true);
+				preferredAddress = address;
+				continue;
+			}
+			
+			if (!address.equals(preferredAddress))
+				address.setPreferred(false);
+		}
+		
 		return dao.savePatient(patient);
 	}
 	
@@ -1594,14 +1646,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query))
 			return count;
 		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
-		// if there is a number in the query string
-		if (query.matches(".*\\d+.*")) {
-			log.debug("[Identifier search] Query: " + query);
-			return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false));
-		} else {
-			// there is no number in the string, search on name
-			return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query, null, emptyList, false));
-		}
+		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false, true));
 	}
 	
 	/**
@@ -1627,6 +1672,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * @see PatientService#getPatients(String, Integer, Integer)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException {
@@ -1634,14 +1680,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query))
 			return patients;
 		
-		// if there is a number in the query string
-		if (query.matches(".*\\d+.*")) {
-			log.debug("[Identifier search] Query: " + query);
-			return getPatients(null, query, null, false, start, length);
-		} else {
-			// there is no number in the string, search on name
-			return getPatients(query, null, null, false, start, length);
-		}
+		return dao.getPatients(query, null, Collections.EMPTY_LIST, false, start, length, true);
 	}
 	
 	/**
@@ -1654,6 +1693,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (identifierTypes == null)
 			identifierTypes = Collections.emptyList();
 		
-		return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly, start, length);
+		return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly, start, length, false);
 	}
 }

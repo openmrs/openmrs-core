@@ -13,6 +13,9 @@
  */
 package org.openmrs.api;
 
+import static java.util.Collections.synchronizedSet;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -37,8 +40,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsUtil;
-
-import static java.util.Collections.synchronizedSet;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -239,7 +240,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should fetch an orderable with given identifier", method = "getOrderable(String)")
 	public void getOrderable_shouldFetchAnOrderableWithGivenIdentifier() throws Exception {
-		Orderable orderable = Context.getOrderService().getOrderable("org.openmrs.GenericDrug:concept=3");
+		Orderable<?> orderable = Context.getOrderService().getOrderable("org.openmrs.GenericDrug:concept=3");
 		Assert.assertNotNull(orderable);
 		Assert.assertTrue(orderable.getClass().equals(GenericDrug.class));
 		
@@ -462,7 +463,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(order);
 		
 		String voidReason = "";
-		orderService.voidOrder(order, "");
+		orderService.voidOrder(order, voidReason);
 	}
 	
 	/**
@@ -577,5 +578,33 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		service.saveOrder(order);
 		Assert.assertNotNull(order.getOrderId());
 		Assert.assertNotNull(order.getOrderNumber());
+	}
+	
+	/**
+	 * @throws Exception 
+	 * @see OrderService#getOrderHistoryByOrderNumber(String)
+	 * @verifies return the list of orders in a history
+	 */
+	@Test
+	public void getOrderHistoryByOrderNumber_shouldReturnTheListOfOrdersInAHistory() throws Exception {
+		
+		executeDataSet(ORDERS_DATASET_XML);
+		
+		OrderService orderService = Context.getOrderService();
+		
+		List<Order> expectedHistory = new ArrayList<Order>();
+		expectedHistory.add(orderService.getOrderByOrderNumber("ORD-111"));
+		expectedHistory.add(orderService.getOrderByOrderNumber("ORD-222"));
+		expectedHistory.add(orderService.getOrderByOrderNumber("ORD-333"));
+		
+		List<Order> history = orderService.getOrderHistoryByOrderNumber("ORD-111");
+		Assert.assertEquals(expectedHistory, history);
+		
+		history = orderService.getOrderHistoryByOrderNumber("ORD-222");
+		Assert.assertEquals(expectedHistory, history);
+		
+		history = orderService.getOrderHistoryByOrderNumber("ORD-333");
+		Assert.assertEquals(expectedHistory, history);
+		
 	}
 }

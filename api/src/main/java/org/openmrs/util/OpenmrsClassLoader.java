@@ -325,7 +325,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		
 		MemoryLeakUtil.clearHibernateSessionFactories();
-				
+		
 		OpenmrsClassScanner.destroyInstance();
 		
 		OpenmrsClassLoaderHolder.INSTANCE = null;
@@ -408,9 +408,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			//Threads like Finalizer, Reference Handler, etc have null class loader reference.
 			if (classLoader == null)
 				continue;
-					
+			
 			if (classLoader instanceof OpenmrsClassLoader) {
-				try {					
+				try {
 					//Set to WebappClassLoader just in case stopping fails.
 					thread.setContextClassLoader(classLoader.getParent());
 					
