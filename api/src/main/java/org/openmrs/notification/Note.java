@@ -124,10 +124,16 @@ public class Note extends BaseOpenmrsData implements Serializable {
 		this.weight = weight;
 	}
 
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
     public Integer getId() {
 	    return getNoteId();
     }
 
+    /**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
     public void setId(Integer id) {
 	    setNoteId(noteId);
     }

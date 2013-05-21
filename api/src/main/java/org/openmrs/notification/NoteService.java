@@ -27,16 +27,16 @@ import org.openmrs.util.PrivilegeConstants;
 public interface NoteService {
 	
 	/**
-	 * Get all Notes for a given person, Does not return voided notes.</br>
+	 * Get all Notes for a given user, Does not return voided notes.</br>
 	 * 
 	 * @param user the user to match on
-	 * @return a List<Note> object containing all non-voided notes for the specified person
+	 * @return a List<Note> object containing all non-voided notes for the specified user
 	 */
 	@Authorized(PrivilegeConstants.VIEW_NOTE)
 	public List<Note> getNotes(User user) throws Exception;
 	
 	/**
-	 *Creates a Note for a person.
+	 *Creates a Note for a user.
 	 * @param note, the Note being created
 	 */
 	public void createNote(Note note) throws Exception;

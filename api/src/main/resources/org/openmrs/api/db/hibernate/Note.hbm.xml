@@ -6,7 +6,7 @@
 <hibernate-mapping package="org.openmrs.notification">
 
 	<class name="org.openmrs.notification.Note" table="notification_note"  batch-size="25">
-		<id name="noteId" type="int" column="note_id" unsaved-value="null">
+		<id name="noteId" type="int" column="note_id" >
 			<generator class="native">
 				<param name="sequence">notification_note_note_id_seq</param>
 			</generator>
@@ -15,7 +15,7 @@
 		
 			<property name="noteId" type="java.lang.Integer" length="11" column="note_id" not-null="true" insert="false" update="false" />
 			<property name="text" type="java.lang.String" column="text" not-null="true" length="512" />
-			<many-to-one name="Creator" class="org.openmrs.User" column="creator" not-null="true" />
+			<many-to-one name="creator" class="org.openmrs.User" column="creator" not-null="true" />
 			<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
 			<many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
 			<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
@@ -23,11 +23,11 @@
 			<property name="dateVoided" type="java.util.Date" column="date_voided" not-null="true" length="19" />
 			<many-to-one name="voidedBy" class="org.openmrs.User" column="voided_by" not-null="true" />
 			<property name="voidReason" type="java.lang.String" column="void_reason" length="255" />
-			<property name="priority" type="java.lang.Integer" length="11" column="priority" not-null="true" insert="false" update="false" />
-			<property name="weight" type="java.lang.Integer" length="11" column="weight" not-null="true" insert="false" update="false" />
+			<property name="priority" type="java.lang.Integer" length="11" column="priority" not-null="true" />
+			<property name="weight" type="java.lang.Integer" length="11" column="weight" not-null="true" />
 			<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />	
-			<property name="patient" type="org.openrms" column="patient" not-null="true" length="25" />
-			<property name="noteType" type="org.openmrs.notification" column="note_type" not-null="true" length="" />
+			<property name="patient" type="org.openrms.Patient" column="patient" not-null="true" />
+			<property name="noteType" type="org.openmrs.notification.NoteType" column="note_type" not-null="true" />
 	</class>
 	
 </hibernate-mapping>
