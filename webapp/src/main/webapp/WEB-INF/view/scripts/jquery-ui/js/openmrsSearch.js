@@ -558,7 +558,17 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		$j('#includeVerbose').attr('checked','checked');
 		    	}
 		    	var keyEvent = jQuery.Event("keyup");
-		    	keyEvent.keyCode = 13;
+		    	
+		    	var codex = 13;
+		    	
+		    	// Patient search doesn't support for Enter Key. So invoke keyup
+		    	// event with last character of searched text.
+		    	if (el.attr('id') === "findPatients") {
+		    		var text = $j('#inputNode').val();
+			    	codex = $j('#inputNode').val().charCodeAt($j('#inputNode').val().length - 1);
+		    	}
+		    	
+		    	keyEvent.keyCode = codex;
 		    	$j("#inputNode").trigger(keyEvent);
 		    }
 		    
