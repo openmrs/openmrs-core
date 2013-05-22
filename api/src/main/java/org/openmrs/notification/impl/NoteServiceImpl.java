@@ -38,7 +38,7 @@ public class NoteServiceImpl implements NoteService, Serializable {
 		return dao;
 	}
 	
-	public void setNodeDAO(NoteDAO dao) {
+	public void setNoteDAO(NoteDAO dao) {
 		this.dao = dao;
 	}
 	
