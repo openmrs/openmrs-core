@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <notification_note note_id="1" text="sample text1" creator="1" date_created="2013-04-15 16:35:35.0" changed_by="1" date_changed="2013-05-15 17:00:35.0" is_voided="false" />
+  <notification_note note_id="2" text="sample text2" creator="1" date_created="2013-04-15 16:35:35.0" changed_by="1" date_changed="2013-05-15 17:00:35.0" is_voided="false" />
+  <notification_note note_id="3" text="sample text3" creator="1" date_created="2013-04-15 16:35:35.0" changed_by="1" date_changed="2013-05-15 17:00:35.0" is_voided="true" date_voided="2013-05-15 17:47:35.0"  voided_by="1" void_reason="testing" />
+  <notification_note note_id="4" text="sample text4" creator="1" date_created="2013-05-14 16:35:35.0" changed_by="1" date_changed="2013-05-15 17:00:35.0" is_voided="false" /> 
+  <notification_note note_id="5" text="sample text5" creator="1" date_created="2013-05-14 16:35:35.0" changed_by="1" date_changed="2013-05-15 17:00:35.0" is_voided="false" /> 
+  <notification_note note_id="6" text="sample text6" creator="1" date_created="2013-05-14 16:35:35.0" changed_by="1" date_changed="2013-05-15 17:00:35.0" is_voided="false" /> 
+  <notification_note note_id="7" text="sample text7" creator="1" date_created="2013-05-14 16:35:35.0" changed_by="1" date_changed="2013-05-15 17:00:35.0" is_voided="false" />  
+</dataset>

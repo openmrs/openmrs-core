@@ -16,12 +16,13 @@ package org.openmrs.notification;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Patient;
 
 /**
  * Not currently used.
  */
-public class Note implements Serializable {
+public class Note extends BaseOpenmrsData implements Serializable {
 	
 	/**
 	 * 
@@ -29,7 +30,7 @@ public class Note implements Serializable {
 	private static final long serialVersionUID = -5392076713513109152L;
 	
 	// Data
-	private Integer id;
+	private Integer noteId;
 	
 	private String text;
 	
@@ -54,16 +55,30 @@ public class Note implements Serializable {
 	public Note() {
 	}
 	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
 	public void setId(Integer id) {
-		this.id = id;
+		setNoteId(noteId);
 	}
 	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
 	public Integer getId() {
-		return this.id;
+		return getNoteId();
 	}
 	
 	public Date getDateChanged() {
 		return dateChanged;
+	}
+	
+	public void setNoteId(Integer noteId) {
+		this.noteId = noteId;
+	}
+	
+	public Integer getNoteId() {
+		return this.noteId;
 	}
 	
 	public void setDateChanged(Date dateChanged) {
