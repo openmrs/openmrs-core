@@ -154,6 +154,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
         PatientIdentifierType nonRetiredRequired = dao.getPatientIdentifierType(4);
         nonRetiredRequired.setRetired(false);
         nonRetiredRequired.setRequired(true);
+        dao.savePatientIdentifierType(nonRetiredRequired);
 
         List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, true, null);
 
@@ -220,6 +221,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
         PatientIdentifierType nonRetiredNonRequiredType = dao.getPatientIdentifierType(1);
         PatientIdentifierType nonRetiredRequiredType = dao.getPatientIdentifierType(2);
         nonRetiredRequiredType.setRequired(true);
+        dao.savePatientIdentifierType(nonRetiredRequiredType);
 
         List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, null);
 
@@ -234,12 +236,16 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
     @Test
     public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypes_OrderedByRequiredAndName(){
         PatientIdentifierType openMRSIdNumber = dao.getPatientIdentifierType(1);
+
         PatientIdentifierType oldIdNumber = dao.getPatientIdentifierType(2);
         oldIdNumber.setRequired(true);
+        dao.savePatientIdentifierType(oldIdNumber);
+
         PatientIdentifierType socialSecNumber = dao.getPatientIdentifierType(4);
         socialSecNumber.setName("ASecurityNumber");
         socialSecNumber.setRequired(true);
         socialSecNumber.setRetired(false);
+        dao.savePatientIdentifierType(socialSecNumber);
 
         List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, null);
 
@@ -256,20 +262,21 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
         PatientIdentifierType openMRSIdNumber = dao.getPatientIdentifierType(1);
         openMRSIdNumber.setName("IdNumber");
         openMRSIdNumber.setRequired(true);
+        dao.savePatientIdentifierType(openMRSIdNumber);
 
         PatientIdentifierType oldIdNumber = dao.getPatientIdentifierType(2);
         oldIdNumber.setName("IdNumber");
         oldIdNumber.setRequired(true);
+        dao.savePatientIdentifierType(oldIdNumber);
 
         PatientIdentifierType socialSecNumber = dao.getPatientIdentifierType(4);
         socialSecNumber.setRequired(true);
         socialSecNumber.setRetired(false);
-
+        dao.savePatientIdentifierType(socialSecNumber);
 
         List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, null);
 
         Assert.assertArrayEquals(new Object[]{openMRSIdNumber, oldIdNumber, socialSecNumber},
                 patientIdentifierTypes.toArray());
     }
-
 }
