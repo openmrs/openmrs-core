@@ -38,7 +38,7 @@ public class NoteServiceImpl implements NoteService, Serializable {
 		return dao;
 	}
 	
-	public void setNodeDAO(NoteDAO dao) {
+	public void setNoteDAO(NoteDAO dao) {
 		this.dao = dao;
 	}
 	
@@ -109,4 +109,11 @@ public class NoteServiceImpl implements NoteService, Serializable {
 		return null;
 	}
 	
+	/**
+	 * @see org.openmrs.notification.NoteService#voidNote(org.openmrs.notification.Note, java.lang.String)
+	 */
+	public Note voidNote(Note note, String reason) throws APIException {
+		log.debug("voiding note because " + reason);
+		return dao.voidNote(note, reason);
+	}
 }

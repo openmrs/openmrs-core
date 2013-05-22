@@ -53,6 +53,7 @@ import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
+import org.openmrs.notification.NoteService;
 import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -201,6 +202,13 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public ObsService getObsService() {
 		return getService(ObsService.class);
+	}
+	
+	/**
+	 *@return Note serivce 
+	 */
+	public NoteService getNoteService() {
+		return getService(NoteService.class);
 	}
 	
 	/**
@@ -405,6 +413,13 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setObsService(ObsService obsService) {
 		setService(ObsService.class, obsService);
+	}
+	
+	/**
+	 * @param noteService the noteService to set
+	 */
+	public void setNoteService(NoteService noteService) {
+		setService(NoteService.class, noteService);
 	}
 	
 	/**
