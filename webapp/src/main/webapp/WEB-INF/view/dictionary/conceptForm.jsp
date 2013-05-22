@@ -903,7 +903,7 @@ function resetNewTermForm(){
 			title: '<openmrs:message code="conceptAnswer.title" javaScriptEscape="true"/>',
 			width: 'auto',
 			open: function() {
-				$j("#newAnswerConcept").val("").autocomplete({  autoFocus: true, selectFirst: true }); 
+				$j("#newAnswerConcept").val(""); 
 				$j("#newAnswerDrug").val(""); 
 				$j("input[name=newAnswerId]").val(""); 
 				$j("input[name=newAnswerType]").val(""); },
