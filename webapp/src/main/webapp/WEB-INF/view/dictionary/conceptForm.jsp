@@ -885,6 +885,16 @@ function resetNewTermForm(){
 </div>
 
 <script type="text/javascript">
+	
+	(function( $ ) {
+		// Added for selectFirst to work (as its not availble in jquery-ui.1.8.2).
+		$( ".ui-autocomplete-input" ).live( "autocompleteopen", function() {
+			var autocomplete = $( this ).data( "autocomplete" ),
+				menu = autocomplete.menu;
+			menu.activate( $.Event({ type: "mouseenter" }), menu.element.children().first() ); // Activates the mouseenter event, over the first element in menu
+		});
+	}( jQuery ));
+	
 	$j(document).ready(function(){
 		// create the Add Answer dialog
 		$j('#addAnswer').dialog({
