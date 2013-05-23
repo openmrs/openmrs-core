@@ -492,7 +492,7 @@ public class ModuleFactory {
 	 * @param module Module to start
 	 */
 	public static Module startModuleInternal(Module module) throws ModuleException {
-		return startModuleInternal(module);
+		return startModuleInternal(module, false, null);
 	}
 	
 	/**
