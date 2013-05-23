@@ -65,4 +65,15 @@ public class PersonByNameComparatorTest {
 		int actualValue = PersonByNameComparator.comparePersonsByName(person1, person2);
 		Assert.assertTrue("Expected zero but it was: " + actualValue, actualValue == 0);
 	}
+	
+	@Test
+	@Verifies(value = "should not be case-sensitive", method = "comparePersonsByName(Person,Person)")
+	public void comparePersonsByName_shouldNotBeCaseSensitive() throws Exception {
+		Person person1 = new Person();
+		person1.addName(new PersonName("GIVENNAME", "MIDDLENAME", "FAMILYNAME"));
+		Person person2 = new Person();
+		person2.addName(new PersonName("givenName", "middleName", "familyName"));
+		int actualValue = PersonByNameComparator.comparePersonsByName(person1, person2);
+		Assert.assertTrue("Expected zero but it was: " + actualValue, actualValue == 0);
+	}
 }

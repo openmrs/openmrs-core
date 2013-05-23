@@ -13,10 +13,6 @@
  */
 package org.openmrs.aop;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
@@ -25,6 +21,10 @@ import org.openmrs.User;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class provides the log4j aop around advice for our service layer. This advice is placed on
@@ -123,7 +123,7 @@ public class LoggingAdvice implements MethodInterceptor {
 		}
 		catch (Throwable t) {
 			if (logGetter || logSetter) {
-				String username;				
+				String username;
 				User user = Context.getAuthenticatedUser();
 				if (user == null) {
 					username = "Guest (Not logged in)";
