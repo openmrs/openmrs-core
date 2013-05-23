@@ -52,9 +52,7 @@ function showCalendar(obj, yearsPrevious, yearsNext) {
 		yearsNext= 10;
 	}
 	
-	if (yearsPrevious && yearsNext) {
-		opts["yearRange"] = "-"+yearsPrevious+":+"+yearsNext;
-	}
+	opts["yearRange"] = "-"+yearsPrevious+":+"+yearsNext;
 	
 	var dp = new DatePicker(jsDateFormat, obj.id, opts);
 	jQuery.datepicker.setDefaults(jQuery.datepicker.regional[jsLocale]);
