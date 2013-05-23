@@ -13,17 +13,28 @@
  */
 package org.openmrs.web;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.GlobalPropertyListener;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.Format.FORMAT_TYPE;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsDateFormat;
 
-public class WebUtil {
+public class WebUtil implements GlobalPropertyListener {
 	
 	private static Log log = LogFactory.getLog(WebUtil.class);
+	
+	private static String defaultDateCache = null;
 	
 	public static String escapeHTML(String s) {
 		
@@ -171,12 +182,71 @@ public class WebUtil {
 	}
 	
 	/**
-	 * Method that returns WebConstants.WEBAPP_NAME or an empty string if WebConstants.WEBAPP_NAME is empty.
-	 *
+	 * Method that returns WebConstants.WEBAPP_NAME or an empty string if WebConstants.WEBAPP_NAME
+	 * is empty.
+	 * 
 	 * @return return WebConstants.WEBAPP_NAME or empty string if WebConstants.WEBAPP_NAME is null
 	 * @should return empty string if WebConstants.WEBAPP_NAME is null
 	 */
 	public static String getContextPath() {
 		return StringUtils.isEmpty(WebConstants.WEBAPP_NAME) ? "" : "/" + WebConstants.WEBAPP_NAME;
+	}
+	
+	public static String formatDate(Date date) {
+		return formatDate(date, Context.getLocale(), FORMAT_TYPE.DATE);
+	}
+	
+	public static String formatDate(Date date, Locale locale, FORMAT_TYPE type) {
+		log.debug("Formatting date: " + date + " with locale " + locale);
+		
+		DateFormat dateFormat = null;
+		
+		if (type == FORMAT_TYPE.TIMESTAMP) {
+			String dateTimeFormat = Context.getAdministrationService().getGlobalPropertyValue(
+			    OpenmrsConstants.GP_SEARCH_WIDGET_DATE_DISPLAY_FORMAT, null);
+			if (StringUtils.isEmpty(dateTimeFormat))
+				dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
+			else
+				dateFormat = new OpenmrsDateFormat(new SimpleDateFormat(dateTimeFormat), locale);
+		} else if (type == FORMAT_TYPE.TIME) {
+			String timeFormat = Context.getAdministrationService().getGlobalPropertyValue(
+			    OpenmrsConstants.GP_SEARCH_WIDGET_DATE_DISPLAY_FORMAT, null);
+			if (StringUtils.isEmpty(timeFormat))
+				dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
+			else
+				dateFormat = new OpenmrsDateFormat(new SimpleDateFormat(timeFormat), locale);
+		} else if (type == FORMAT_TYPE.DATE) {
+			String formatValue = Context.getAdministrationService().getGlobalPropertyValue(
+			    OpenmrsConstants.GP_SEARCH_WIDGET_DATE_DISPLAY_FORMAT, "");
+			if (StringUtils.isEmpty(formatValue))
+				dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
+			else
+				dateFormat = new OpenmrsDateFormat(new SimpleDateFormat(formatValue), locale);
+		}
+		return date == null ? "" : dateFormat.format(date);
+	}
+	
+	/**
+	 * @see org.openmrs.api.GlobalPropertyListener#supportsPropertyName(java.lang.String)
+	 */
+	@Override
+	public boolean supportsPropertyName(String propertyName) {
+		return OpenmrsConstants.GP_SEARCH_WIDGET_DATE_DISPLAY_FORMAT.equals(propertyName);
+	}
+	
+	/**
+	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
+	 */
+	@Override
+	public void globalPropertyChanged(GlobalProperty newValue) {
+		defaultDateCache = null;
+	}
+	
+	/**
+	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
+	 */
+	@Override
+	public void globalPropertyDeleted(String propertyName) {
+		defaultDateCache = null;
 	}
 }
