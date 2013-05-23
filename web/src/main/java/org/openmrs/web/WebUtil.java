@@ -203,21 +203,21 @@ public class WebUtil implements GlobalPropertyListener {
 		
 		if (type == FORMAT_TYPE.TIMESTAMP) {
 			String dateTimeFormat = Context.getAdministrationService().getGlobalPropertyValue(
-			    OpenmrsConstants.GP_SEARCH_WIDGET_DATE_DISPLAY_FORMAT, null);
+			    OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT, null);
 			if (StringUtils.isEmpty(dateTimeFormat))
 				dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 			else
 				dateFormat = new OpenmrsDateFormat(new SimpleDateFormat(dateTimeFormat), locale);
 		} else if (type == FORMAT_TYPE.TIME) {
 			String timeFormat = Context.getAdministrationService().getGlobalPropertyValue(
-			    OpenmrsConstants.GP_SEARCH_WIDGET_DATE_DISPLAY_FORMAT, null);
+			    OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT, null);
 			if (StringUtils.isEmpty(timeFormat))
 				dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
 			else
 				dateFormat = new OpenmrsDateFormat(new SimpleDateFormat(timeFormat), locale);
 		} else if (type == FORMAT_TYPE.DATE) {
 			String formatValue = Context.getAdministrationService().getGlobalPropertyValue(
-			    OpenmrsConstants.GP_SEARCH_WIDGET_DATE_DISPLAY_FORMAT, "");
+			    OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT, "");
 			if (StringUtils.isEmpty(formatValue))
 				dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 			else
@@ -231,7 +231,7 @@ public class WebUtil implements GlobalPropertyListener {
 	 */
 	@Override
 	public boolean supportsPropertyName(String propertyName) {
-		return OpenmrsConstants.GP_SEARCH_WIDGET_DATE_DISPLAY_FORMAT.equals(propertyName);
+		return OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT.equals(propertyName);
 	}
 	
 	/**
