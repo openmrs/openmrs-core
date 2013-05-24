@@ -250,7 +250,7 @@ public class ConceptFormController extends SimpleFormController {
 					ValidateUtil.validate(concept, errors);
 					if (!errors.hasErrors()) {
 						if (action.equals(msa.getMessage("Concept.cancel"))) {
-							return new ModelAndView(new RedirectView("index.htm"));
+							return new ModelAndView(new RedirectView("concept.htm" + "?conceptId=" + concept.getConceptId()));
 						}
 						cs.saveConcept(concept);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
