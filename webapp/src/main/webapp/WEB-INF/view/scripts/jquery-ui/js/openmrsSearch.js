@@ -297,9 +297,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    
 		    //catch control keys to stop the cursor in the input box from moving.
 		    input.keydown(function(event) {
-		    	//UP(38), DOWN(40), HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
+		    	//UP(38), DOWN(40), PAGE UP(33), PAGE DOWN(34)
 		    	var kc = event.keyCode;
-		    	if(((kc >= 33) && (kc <= 36)) || (kc == 38) || (kc == 40)) {
+		    	if(kc == 33 || kc == 34 || kc == 38 || kc == 40) {
 		    		if(!(self._div.find(".openmrsSearchDiv").css("display") != 'none')) {
 						return true;
 					}
@@ -311,12 +311,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			    		case 34:
 			    			self._doPageUp();
 			    			break;
-				    	case 35:
-				    		self._doKeyEnd();
-				    		break;
-				    	case 36:
-				    		self._doKeyHome();
-				    		break;
 				    	case 38:
 				    		self._doKeyUp();
 				    		break;
@@ -717,24 +711,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			if(this.curRowSelection != null) {
 				this._doSelected(this.curRowSelection, this._results[this.curRowSelection]);
 			}
-		},
-		
-		_doKeyHome: function() {
-			this._table.fnPageChange('first');
-			this._table.currPage = 1;
-			if(this.curRowSelection == null || this.curRowSelection < this._table.fnSettings()._iDisplayLength)
-				return;
-			this._updateRowHighlight(0);
-		},
-		
-		_doKeyEnd: function() {
-			this._table.fnPageChange('last');
-			this._table.currPage = this._table.numberOfPages;
-			//if the highlight is already on the last page, don't switch it
-			if( this.curRowSelection != null && this.curRowSelection > (this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength )
-				return;
-				
-			this._updateRowHighlight(((this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength));
 		},
 		
 		_doSelected: function(position, rowData) {
