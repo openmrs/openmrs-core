@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.dao.DataIntegrityViolationException;
 
 public class WorkflowFormController extends SimpleFormController {
 	
@@ -85,11 +87,45 @@ public class WorkflowFormController extends SimpleFormController {
 		log.debug("about to save " + obj);
 		
 		HttpSession httpSession = request.getSession();
+		ProgramWorkflowService pwser = Context.getProgramWorkflowService();
 		
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
 			ProgramWorkflow wf = (ProgramWorkflow) obj;
+			
+			if (request.getParameter("delete") != null) {
+				String deletedStatesStr = request.getParameter("deletedStates");
+				for (StringTokenizer st = new StringTokenizer(deletedStatesStr, "|"); st.hasMoreTokens();) {
+					String str = st.nextToken();
+					String[] tmp = str.split(",");
+					Integer conceptId = Integer.valueOf(tmp[0]);
+					ProgramWorkflowState pws = null;
+					for (ProgramWorkflowState s : wf.getStates()) {
+						if (s.getConcept().getConceptId().equals(conceptId)) {
+							pws = s;
+							break;
+						}
+					}
+					
+					try {
+						wf.removeState(pws);
+						pwser.deleteProgramWorkflowState(pws);
+						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ProgramWorkflowState.delete.success");
+					}
+					catch (DataIntegrityViolationException e) {
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.delete");
+					}
+					catch (APIException e) {
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: "
+						        + e.getLocalizedMessage());
+					}
+					view = getSuccessView();
+					return new ModelAndView(new RedirectView(view));
+					
+				}
+				
+			}
 			
 			// get list of states, and update the command object
 			String statesStr = request.getParameter("newStates");
