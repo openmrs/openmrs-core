@@ -1369,9 +1369,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 					if (log.isDebugEnabled())
 						log.debug("Current word: " + w);
 					
-					DetachedCriteria crit = DetachedCriteria.forClass(ConceptWord.class).setProjection(
-					    Property.forName("concept")).add(Expression.eqProperty("concept", "cw1.concept")).add(
-					    Restrictions.like("word", w, MatchMode.START)).add(Expression.in("locale", locales));
+					DetachedCriteria crit = DetachedCriteria.forClass(ConceptWord.class, "cw2").setProjection(
+					    Property.forName("concept")).add(Restrictions.eqProperty("cw2.concept", "cw1.concept")).add(
+					    Restrictions.eqProperty("cw2.conceptName", "cw1.conceptName")).add(
+					    Restrictions.like("word", w, MatchMode.START)).add(Restrictions.in("locale", locales));
 					junction.add(Subqueries.exists(crit));
 				}
 				searchCriteria.add(junction);
@@ -1466,6 +1467,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	                                             List<ConceptDatatype> requireDatatypes,
 	                                             List<ConceptDatatype> excludeDatatypes, Concept answersToConcept,
 	                                             Integer start, Integer size) throws DAOException {
+		if (StringUtils.isBlank(phrase)) {
+			phrase = "%"; // match all
+		}
 		
 		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
 		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
@@ -1475,13 +1479,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (searchCriteria != null) {
 			ProjectionList pl = Projections.projectionList();
 			pl.add(Projections.distinct(Projections.groupProperty("cw1.concept")));
-			pl.add(Projections.property("cw1.word"));
+			pl.add(Projections.groupProperty("cw1.word"));
 			//if we have multiple words for the same concept, get the one with a highest weight
-			pl.add(Projections.max("cw1.weight"));
-			pl.add(Projections.property("cw1.conceptName"));
-			
+			pl.add(Projections.max("cw1.weight"), "maxWeight");
+			//TODO In case a concept has multiple names that contains words that match the search phrase, 
+			//setting this to min or max will select the concept name that was added first or last,
+			//but it should actually be the one that contains the word with the highest weight.
+			//see ConceptServiceTest.getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAWordWithMoreWeight()
+			pl.add(Projections.min("cw1.conceptName"));
 			searchCriteria.setProjection(pl);
-			searchCriteria.addOrder(Order.desc("cw1.weight"));
+			searchCriteria.addOrder(Order.desc("maxWeight"));
 			
 			if (start != null)
 				searchCriteria.setFirstResult(start);
