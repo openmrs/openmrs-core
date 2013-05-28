@@ -112,7 +112,7 @@ public class PersonValidator implements Validator {
 		if (person.isDead())
 			ValidationUtils.rejectIfEmpty(errors, "causeOfDeath", "Person.dead.causeOfDeathNull");
 		
-		ValidateUtil.validateFieldLengths(errors, Person.class, "gender");
+		ValidateUtil.validateFieldLengths(errors, Person.class, "gender", "personVoidReason");
 	}
 	
 }

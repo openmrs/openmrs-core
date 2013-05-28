@@ -85,5 +85,7 @@ public class DrugOrderValidator extends OrderValidator {
 				}
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "doseUnits", "strengthUnits", "quantityUnits",
+		    "frequency", "brandName", "dosageForm", "route", "asNeededCondition", "additionalInstructions", "durationUnits");
 	}
 }

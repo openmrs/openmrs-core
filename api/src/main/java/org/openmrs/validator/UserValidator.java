@@ -108,6 +108,7 @@ public class UserValidator implements Validator {
 				errors.rejectValue("username", "error.username.pattern");
 			}
 		}
+		
 	}
 	
 	/**

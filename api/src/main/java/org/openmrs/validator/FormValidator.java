@@ -69,6 +69,9 @@ public class FormValidator implements Validator {
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "retireReason", "general.retiredReason.empty");
 			}
 		}
+		
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "version");
+		
 	}
 	
 }

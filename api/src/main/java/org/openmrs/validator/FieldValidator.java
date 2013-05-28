@@ -75,5 +75,8 @@ public class FieldValidator implements Validator {
 			errors.rejectValue("selectMultiple", "error.general");
 		if (field.getRetired() == null)
 			errors.rejectValue("retired", "error.general");
+		
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "tableName", "attributeName", "defaultValue");
+		
 	}
 }
