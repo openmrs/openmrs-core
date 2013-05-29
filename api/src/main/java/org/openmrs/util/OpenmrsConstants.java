@@ -14,6 +14,7 @@
 package org.openmrs.util;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -1451,10 +1452,8 @@ public final class OpenmrsConstants {
 		                "true",
 		                "Indicates whether names in the concept_name table are case sensitive or not. Setting this to false for MySQL with a case insensitive collation improves search performance."));
 		
-		props.add(new GlobalProperty(
-						GLOBAL_PROPERTY_USER_EMAIL_AS_USERNAME, 
-						"false",
-						"Whether an email address is allowed as a username"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_EMAIL_AS_USERNAME, "false",
+		        "Whether an email address is allowed as a username"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
@@ -1499,13 +1498,19 @@ public final class OpenmrsConstants {
 	public static final Collection<Locale> OPENMRS_LOCALES() {
 		List<Locale> languages = new Vector<Locale>();
 		
-		languages.add(Locale.US);
-		languages.add(Locale.UK);
-		languages.add(Locale.FRENCH);
-		languages.add(SPANISH_LANGUAGE);
-		languages.add(PORTUGUESE_LANGUAGE);
-		languages.add(ITALIAN_LANGUAGE);
+		//		languages.add(Locale.US);
+		//		languages.add(Locale.UK);
+		//		languages.add(Locale.FRENCH);
+		//		languages.add(SPANISH_LANGUAGE);
+		//		languages.add(PORTUGUESE_LANGUAGE);
+		//		languages.add(ITALIAN_LANGUAGE);
+		//
+		// Add a list of all locale into openMRS locale
+		Locale list[] = SimpleDateFormat.getAvailableLocales();
 		
+		for (int i = 0; i < list.length; i++) {
+			languages.add(list[i]);
+		}
 		return languages;
 	}
 	
@@ -1522,11 +1527,17 @@ public final class OpenmrsConstants {
 	public static final Collection<Locale> OPENMRS_CONCEPT_LOCALES() {
 		List<Locale> languages = new Vector<Locale>();
 		
-		languages.add(Locale.ENGLISH);
+		/*languages.add(Locale.ENGLISH);
 		languages.add(Locale.FRENCH);
 		languages.add(SPANISH_LANGUAGE);
 		languages.add(PORTUGUESE_LANGUAGE);
 		languages.add(ITALIAN_LANGUAGE);
+		*/
+		Locale list[] = SimpleDateFormat.getAvailableLocales();
+		
+		for (int i = 0; i < list.length; i++) {
+			languages.add(list[i]);
+		}
 		
 		return languages;
 	}
