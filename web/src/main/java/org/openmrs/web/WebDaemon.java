@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.ModuleException;
+import org.openmrs.web.filter.initialization.InitializationFilter;
 
 /**
  * This class provides {@link Daemon} functionality in a web context.
@@ -66,5 +67,33 @@ public class WebDaemon extends Daemon {
 			throw new ModuleException("Unable to start OpenMRS. Error thrown was: "
 			        + startOpenmrsThread.getExceptionThrown().getMessage(), startOpenmrsThread.getExceptionThrown());
 		}
+	}
+	
+	/**
+	 * Runs the InitializationFilter's initialization completion task as a daemon thread.
+	 * 
+	 * @since 1.9, 1.10
+	 */
+	public static void runInitializationCompletionJob() {
+		
+		// create a new thread and execute that task in it
+		DaemonThread initCompletionThread = new DaemonThread() {
+			
+			@Override
+			public void run() {
+				isDaemonThread.set(true);
+				try {
+					InitializationFilter.getInstance().startInitJob();
+				}
+				catch (Throwable t) {
+					exceptionThrown = t;
+				}
+				finally {
+					Context.closeSession();
+				}
+			}
+		};
+		
+		initCompletionThread.start();
 	}
 }
