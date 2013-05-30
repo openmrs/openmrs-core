@@ -13,10 +13,19 @@
         This infrastructure is reused across all the modules.
     </description>
 	<dependencies>
+
+        <dependency>
+             <groupId>org.seleniumhq.selenium</groupId>
+             <artifactId>selenium-java</artifactId>
+             <version>2.33.0</version>
+         </dependency>
+
 		<dependency>
 			<groupId>org.jbehave.web</groupId>
 			<artifactId>jbehave-web-selenium</artifactId>
+            <version>3.5.5</version>
 		</dependency>
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
