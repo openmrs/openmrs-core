@@ -50,6 +50,7 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.ImplementationId;
+import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.context.Context;
@@ -1621,7 +1622,11 @@ public class InitializationFilter extends StartupFilter {
 					// change the admin user password from "test" to what they input above
 					if (wizardModel.createTables) {
 						Context.authenticate("admin", "test");
-						Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
+						
+						//Need to pass an explicit user such that we do not try change
+						//the current user's (daemon thread user) password.
+						User adminUser = Context.getUserService().getUserByUsername("admin");
+						Context.getUserService().changePassword(adminUser, wizardModel.adminUserPassword);
 						Context.logout();
 					}
 					
