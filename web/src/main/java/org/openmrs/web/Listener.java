@@ -571,7 +571,7 @@ public final class Listener extends ContextLoaderListener {
 			catch (Throwable t) {
 				Throwable rootCause = getActualRootCause(t, true);
 				if (rootCause != null)
-					log.fatal("Unable to refresh the spring application context.  Root Cause was:",  rootCause);
+					log.fatal("Unable to refresh the spring application context.  Root Cause was:", rootCause);
 				else
 					log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", t);
 				
