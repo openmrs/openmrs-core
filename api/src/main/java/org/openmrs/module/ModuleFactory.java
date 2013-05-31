@@ -346,8 +346,21 @@ public class ModuleFactory {
 	private static List<String> getMissingRequiredModules(Module module) {
 		List<String> ret = new ArrayList<String>();
 		for (String moduleName : module.getRequiredModules()) {
-			String moduleVersion = module.getRequiredModuleVersion(moduleName);
-			ret.add(moduleName + (moduleVersion != null ? " " + moduleVersion : ""));
+			boolean started = false;
+			for (Module mod : getStartedModules()) {
+				if (mod.getPackageName().equals(moduleName)) {
+					String reqVersion = module.getRequiredModuleVersion(moduleName);
+					if (reqVersion == null || ModuleUtil.compareVersion(mod.getVersion(), reqVersion) >= 0) {
+						started = true;
+					}
+					break;
+				}
+			}
+			
+			if (!started) {
+				String moduleVersion = module.getRequiredModuleVersion(moduleName);
+				ret.add(moduleName + (moduleVersion != null ? " " + moduleVersion : ""));
+			}
 		}
 		return ret;
 	}
