@@ -29,51 +29,20 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Field.class }, order = 50)
 public class FieldValidator implements Validator {
-	
-	private static final Log log = LogFactory.getLog(FieldValidator.class);
-	
-	/**
-	 * Returns whether or not this validator supports validating a given class.
-	 * 
-	 * @param c The class to check for support.
-	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
-	 */
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class c) {
-		if (log.isDebugEnabled())
-			log.debug(this.getClass().getName() + ".supports: " + c.getName());
-		return Field.class.isAssignableFrom(c);
-	}
-	
-	/**
-	 * Validates the given Field. 
-	 * Ensures that the field name is present and valid
-	 * 
-	 * @param obj The Field to validate.
-	 * @param errors Errors
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
-	 *      org.springframework.validation.Errors)
-	 * @should fail if field name is null
-	 * @should fail if field name is empty
-	 * @should fail if field name is all whitespace
-	 * @should fail if selectMultiple is null
-	 * @should fail if retired is null
-	 * @should pass if name is ok and fieldType, selectMultiple, and retired are non-null
-	 * should not fail if fieldType is null
-	 */
-	public void validate(Object obj, Errors errors) throws APIException {
-		if (log.isDebugEnabled())
-			log.debug(this.getClass().getName() + ".validate...");
-		
-		if (obj == null || !(obj instanceof Field))
-			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Field.class);
-		
-		Field field = (Field) obj;
-		
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.null", "Field name is required");
-		if (field.getSelectMultiple() == null)
-			errors.rejectValue("selectMultiple", "error.general");
-		if (field.getRetired() == null)
-			errors.rejectValue("retired", "error.general");
-	}
-}
+	 
+    public void supports(Object obj, Errors errors) {
+        ConceptClass cc = (ConceptClass) obj;
+    }
+ 
+    public void validate(Object target, Errors errors) {
+       ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+ 	ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
+
+       if (!errors.hasFieldErrors("name"))
+			{
+				List<ConceptClass> ccs = Context.getConceptService().getAllConceptClasses();
+				ValidateUtil.rejectIfDuplicateMetadataName(cc, ccs, errors, "name", "general.error.nameAlreadyInUse");
+			}
+
+    }
+ }
