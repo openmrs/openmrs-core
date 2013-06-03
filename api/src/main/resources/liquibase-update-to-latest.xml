@@ -6953,44 +6953,31 @@
 	</changeSet>
 	
 	<changeSet id="1-increase-privilege-col-size-privilege" author="dkayiwa">
-        <validCheckSum>3:b5f33650ea723f2304f40fd60fde36df</validCheckSum>
         <preConditions onFail="MARK_RAN">
 			<columnExists tableName="privilege" columnName="privilege"/>
 		</preConditions>
 		<comment>
 			Increasing the size of the privilege column in the privilege table
 		</comment>
-        <dropForeignKeyConstraint constraintName="privilege_which_can_edit" baseTableName="person_attribute_type" />
-        <dropForeignKeyConstraint constraintName="privilege_definitons" baseTableName="role_privilege" />
 		<ext:modifyColumn tableName="privilege">
 		    <column name="privilege" type="varchar(255)">
 				<constraints nullable="false" />
 			</column>
 		</ext:modifyColumn>
-        <addForeignKeyConstraint baseTableName="person_attribute_type" baseColumnNames="edit_privilege" constraintName="privilege_which_can_edit"
-                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
-        <addForeignKeyConstraint constraintName="privilege_definitions"
-                                 baseTableName="role_privilege" baseColumnNames="privilege"
-                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
 	
 	<changeSet id="2-increase-privilege-col-size-rol-privilege" author="dkayiwa">
-        <validCheckSum>3:96a937a1719f8e7a98ad682a5608f54b </validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="role_privilege" columnName="privilege"/>
 		</preConditions>
 		<comment>
 			Increasing the size of the privilege column in the role_privilege table
 		</comment>
-        <dropForeignKeyConstraint constraintName="privilege_definitions" baseTableName="role_privilege" />
 		<ext:modifyColumn tableName="role_privilege">
 		    <column name="privilege" type="varchar(255)">
 				<constraints nullable="false" />
 			</column>
 		</ext:modifyColumn>
-        <addForeignKeyConstraint constraintName="privilege_definitions"
-                                 baseTableName="role_privilege" baseColumnNames="privilege"
-                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
 	
 	<changeSet id="201205241728-1" author="mvorobey">
