@@ -1415,7 +1415,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptService.saveConceptStopWord(conceptStopWord);
 		
 		List<String> conceptStopWords = conceptService.getConceptStopWords(Locale.US);
-		assertEquals(2, conceptStopWords.size());
+		assertEquals(1, conceptStopWords.size());
 	}
 	
 	/**
