@@ -37,6 +37,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -92,6 +93,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeAllTests() throws Exception {
 		conceptService = Context.getConceptService();
+	}
+	
+	@After
+	public void revertToDefaultLocale() throws Exception {
+		Context.setLocale(Locale.US);
 	}
 	
 	/**
@@ -953,6 +959,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should find concepts with names in same specific locale", method = "getConceptByName(String)")
 	public void getConceptByName_shouldFindConceptsWithNamesInSameSpecificLocale() throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		Context.setLocale(Locale.UK);
 		
 		// make sure that concepts are found that have a specific locale on them
 		Assert.assertNotNull(Context.getConceptService().getConceptByName("Numeric name with en_GB locale"));
