@@ -205,7 +205,7 @@ public class Context {
 	 * 
 	 * @param ctx UserContext to set
 	 */
-	public static void setUserContext(UserContext ctx) {
+	public static synchronized void setUserContext(UserContext ctx) {
 		if (log.isTraceEnabled())
 			log.trace("Setting user context " + ctx);
 		
