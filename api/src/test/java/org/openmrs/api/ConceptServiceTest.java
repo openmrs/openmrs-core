@@ -13,7 +13,9 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -1413,9 +1415,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void saveConceptStopWord_shouldSaveConceptStopWordAssignDefaultLocaleIsItNull() throws Exception {
 		ConceptStopWord conceptStopWord = new ConceptStopWord("The");
 		conceptService.saveConceptStopWord(conceptStopWord);
-		
-		List<String> conceptStopWords = conceptService.getConceptStopWords(Locale.US);
-		assertEquals(1, conceptStopWords.size());
+
+		List<String> conceptStopWords = conceptService.getConceptStopWords(Context.getLocale());
+		assertThat(conceptStopWords, hasItem("THE"));
 	}
 	
 	/**
