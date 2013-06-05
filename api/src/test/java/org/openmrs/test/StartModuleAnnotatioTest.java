@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.openmrs.api.context.Context;
 
 @StartModule( { "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atd-0.51.omod" })
-public class StartModuleAnnotatioTest extends BaseContextSensitiveTest {
+public class StartModuleAnnotatioTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
 	public void shouldStartModules() throws Exception {
