@@ -43,7 +43,7 @@ public class ConceptTag extends BodyTagSupport {
 	
 	private String nameVar;
 	
-	private String shortNameVar;
+	private String shortestNameVar;
 	
 	private String numericVar;
 	
@@ -87,11 +87,9 @@ public class ConceptTag extends BodyTagSupport {
 			log.debug("Retrieved name " + cName.getName() + ", set to variable: " + nameVar);
 		}
 		
-		/**
-		 * ABK - no short name attribute exists in openmrs.tld ConceptName shortName =
-		 * c.getShortName(loc); if (shortNameVar != null && shortName != null)
-		 * pageContext.setAttribute(shortNameVar, shortName);
-		 */
+		if (shortestNameVar != null) {
+			pageContext.setAttribute(shortestNameVar, c.getShortestName(loc, false));
+		}
 		
 		if (numericVar != null) {
 			pageContext.setAttribute(numericVar, cs.getConceptNumeric(conceptId));
@@ -199,6 +197,14 @@ public class ConceptTag extends BodyTagSupport {
 	 */
 	public String getSetMemberVar() {
 		return setMemberVar;
+	}
+	
+	public String getShortestNameVar() {
+		return shortestNameVar;
+	}
+	
+	public void setShortestNameVar(String shortestNameVar) {
+		this.shortestNameVar = shortestNameVar;
 	}
 	
 	/**

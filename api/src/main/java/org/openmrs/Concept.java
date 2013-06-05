@@ -991,8 +991,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		ConceptName shortestNameForConcept = null;
 		
 		if (locale != null) {
-			for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
-				ConceptName possibleName = i.next();
+			for (ConceptName possibleName : getNames()) {
 				if (possibleName.getLocale().equals(locale)) {
 					if ((shortestNameForLocale == null)
 					        || (possibleName.getName().length() < shortestNameForLocale.getName().length())) {

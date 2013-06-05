@@ -165,7 +165,7 @@
 <table id="patientHeaderObs">
 	<openmrs:globalProperty key="concept.weight" var="weightConceptId" />
 	<openmrs:globalProperty key="concept.height" var="heightConceptId" />
-	<openmrs:globalProperty key="concept.cd4_count" var="cd4ConceptId" />
+	<openmrs:globalProperty key="dashboard.header.showConcept" var="conceptIds" listSeparator="," />
 
 	<tr class="patientObsRow">
 		<th id="patientHeaderObsWeight"><openmrs:message
@@ -178,13 +178,18 @@
 					observations="${model.patientObs}" concept="${heightConceptId}"
 					showUnits="true" locale="${model.locale}" showDate="false" /> )
 		</small></th>
-		<td id="patientHeaderObsCD4"><openmrs:message code="Patient.cd4" />:
-			<openmrs_tag:mostRecentObs observations="${model.patientObs}"
-				concept="${cd4ConceptId}" locale="${model.locale}" /></td>
-		<td id="patientHeaderObsReturnVisit"><openmrs:message
-				code="Patient.returnVisit" />: <openmrs_tag:mostRecentObs
-				observations="${model.patientObs}" concept="5096"
-				locale="${model.locale}" /></td>
+
+        <c:forEach items="${conceptIds}" var="conceptId">
+            <td class="patientRecentObsConfigured">
+                <openmrs:concept conceptId="${conceptId}" var="c" nameVar="n" numericVar="num" shortestNameVar="sn">
+                    <span title="${n.description}">${sn}:</span>
+                </openmrs:concept>
+                <openmrs_tag:mostRecentObs
+                    observations="${model.patientObs}" concept="${conceptId}"
+                    showUnits="true" locale="${model.locale}" showDate="false" />
+            </td>
+        </c:forEach>
+
 		<td id="patientHeaderObsRegimen"><openmrs:message
 				code="Patient.regimen" />: <span id="patientHeaderRegimen">
 				<c:forEach items="${model.currentDrugOrders}" var="drugOrder"

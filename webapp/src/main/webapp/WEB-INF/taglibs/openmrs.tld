@@ -416,6 +416,12 @@
 		<type>java.lang.String</type>
 	</attribute>
 	<attribute>
+		<name>shortestNameVar</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
 		<name>numericVar</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>

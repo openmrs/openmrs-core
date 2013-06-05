@@ -1081,6 +1081,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
 	
+	public static final String GP_DASHBOARD_CONCEPTS = "dashboard.header.showConcept";
+	
 	public static final String GP_MAIL_SMTP_STARTTLS_ENABLE = "mail.smtp.starttls.enable";
 	
 	/**
@@ -1105,6 +1107,10 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty("dashboard.overview.showConcepts", "",
 		        "Comma delimited list of concepts ids to show on the patient dashboard overview tab"));
+		
+		props.add(new GlobalProperty(GP_DASHBOARD_CONCEPTS, "5497",
+		        "Comma delimited list of concepts ids to show on the patient header overview"));
+		
 		props
 		        .add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true",
 		                "true/false whether or not to show empty fields on the 'View Encounter' window",
@@ -1215,9 +1221,7 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));
-		props
-		        .add(new GlobalProperty("concept.cd4_count", "5497",
-		                "Concept id of the concept defining the CD4 count concept"));
+		
 		props.add(new GlobalProperty("concept.causeOfDeath", "5002",
 		        "Concept id of the concept defining the CAUSE OF DEATH concept"));
 		props.add(new GlobalProperty("concept.none", "1107", "Concept id of the concept defining the NONE concept"));

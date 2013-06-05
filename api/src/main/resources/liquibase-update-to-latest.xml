@@ -7488,6 +7488,21 @@
                     </column>
 		</addColumn>
 	</changeSet>
+    <changeSet id="20130626-TRUNK-439" author="jthoenes">
+        <comment>
+            Adding configurability to Patient Header on Dashboard. Therefore the cd4_count property is dropped and
+            replaced with a header.showConcept property.
+        </comment>
+        <update tableName="global_property">
+            <column name="property"
+                    value="dashboard.header.showConcept" />
+            <column name="description"
+                    value="Comma delimited list of concepts ids to show on the patient header overview" />
+            <where>
+                property='concept.cd4_count'
+            </where>
+        </update>
+    </changeSet>
 
 	<changeSet id="201306141103-TRUNK-3884" author="susantan">
 		<comment>Adding 3 foreign key relationships (creator,created_by,voided_by) to encounter_provider table</comment>
