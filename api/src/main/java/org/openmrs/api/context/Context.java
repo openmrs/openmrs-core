@@ -199,8 +199,8 @@ public class Context {
 	/**
 	 * Sets the user context on the thread local so that the service layer can perform
 	 * authentication/authorization checks.<br/>
-     * <br />
-     * This is thread safe since it stores the given user context in ThreadLocal.
+	 * <br />
+	 * This is thread safe since it stores the given user context in ThreadLocal.
 	 * 
 	 * @param ctx UserContext to set
 	 */
