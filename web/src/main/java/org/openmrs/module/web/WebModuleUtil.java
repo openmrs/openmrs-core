@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -955,10 +956,13 @@ public class WebModuleUtil {
 		String moduleFolder = "WEB-INF/view/module/";
 		String realPath = dispatcherServlet.getServletContext().getRealPath("");
 		String moduleWebFolder;
-		if (realPath.endsWith(File.separator))
+		
+		//RealPath may contain '/' on Windows when running tests with the mocked servlet context
+		if (realPath.endsWith(File.separator) || realPath.endsWith("/")) {
 			moduleWebFolder = realPath + moduleFolder;
-		else
+		} else {
 			moduleWebFolder = realPath + "/" + moduleFolder;
+		}
 		
 		moduleWebFolder += moduleId;
 		
