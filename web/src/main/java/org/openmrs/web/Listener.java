@@ -544,15 +544,16 @@ public final class Listener extends ContextLoaderListener {
 	 * @throws ModuleMustStartException if the context cannot restart due to a
 	 *             {@link MandatoryModuleException} or {@link OpenmrsCoreModuleException}
 	 */
-	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Exception {		
+	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Exception {
 		List<Module> startedModules = new ArrayList<Module>();
 		startedModules.addAll(ModuleFactory.getStartedModules());
 		performWebStartOfModules(startedModules, servletContext);
 	}
 	
-	public static void performWebStartOfModules(Collection<Module> startedModules, ServletContext servletContext) throws ModuleMustStartException, Exception {
+	public static void performWebStartOfModules(Collection<Module> startedModules, ServletContext servletContext)
+	        throws ModuleMustStartException, Exception {
 		Log log = LogFactory.getLog(Listener.class);
-
+		
 		boolean someModuleNeedsARefresh = false;
 		for (Module mod : startedModules) {
 			try {
