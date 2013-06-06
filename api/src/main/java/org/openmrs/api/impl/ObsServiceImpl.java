@@ -212,11 +212,33 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		}
 		
 		if (cascade) {
-			throw new APIException("Cascading purge of obs not yet implemented");
+			//throw new APIException("Cascading purge of obs not yet implemented");
 			// TODO delete any related objects here before deleting the obs
 			// obsGroups objects?
 			// orders?
+			if (obs.isObsGrouping()){
+				Set<Obs>CheckObsGroupMembers = obs.getGroupMembers(true);
+					
+				if(!checkObsGroupMembers.isEmpty()){
+						for(Obs gMember:checkObsGroupMembers){
+							
+							set<Obs>  obset = gMember.getRelatedObservations();
+							for(Obs obsMember:obset){
+								dao.deleteObs(obsMember);
+							}
+						}
+						
+					}
+					else{
+						dao.deleteObs(obs);
+					}
+			}
+			else{
+				dao.deleteObs(obs)
+			}
+		
 		}
+		
 		
 		dao.deleteObs(obs);
 	}
