@@ -199,8 +199,8 @@ public class Context {
 	/**
 	 * Sets the user context on the thread local so that the service layer can perform
 	 * authentication/authorization checks.<br/>
-     * <br />
-     * This is thread safe since it stores the given user context in ThreadLocal.
+	 * <br />
+	 * This is thread safe since it stores the given user context in ThreadLocal.
 	 * 
 	 * @param ctx UserContext to set
 	 */
@@ -249,7 +249,7 @@ public class Context {
 	 * 
 	 * @return the current ServiceContext
 	 */
-	private static ServiceContext getServiceContext() {
+	static ServiceContext getServiceContext() {
 		if (serviceContext == null) {
 			log.error("serviceContext is null.  Creating new ServiceContext()");
 			serviceContext = ServiceContext.getInstance();
