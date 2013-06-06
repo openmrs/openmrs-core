@@ -62,8 +62,12 @@ import org.hibernate.dialect.H2Dialect;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -127,6 +131,14 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	private static Integer loadCount = 0;
 	
 	/**
+	 * Allows mocking services returned by Context. See {@link ContextMockHelper}
+	 * 
+	 * @since 1.11, 1.10, 1.9.9
+	 */
+	@InjectMocks
+	protected ContextMockHelper contextMockHelper;
+	
+	/**
 	 * Basic constructor for the super class to all openmrs api unit tests. This constructor sets up
 	 * the classloader and the properties file so that by the type spring gets around to finally
 	 * starting, the openmrs runtime properties are already in place A static load count is kept to
@@ -146,6 +158,24 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		Context.setRuntimeProperties(props);
 		
 		loadCount++;
+	}
+	
+	/**
+	 * Initializes fields annotated with {@link Mock}.
+	 * 
+	 * @since 1.11, 1.10, 1.9.9
+	 */
+	@Before
+	public void initMocks() {
+		MockitoAnnotations.initMocks(this);
+	}
+	
+	/**
+	 * @since 1.11, 1.10, 1.9.9
+	 */
+	@After
+	public void revertContextMocks() {
+		contextMockHelper.revertMocks();
 	}
 	
 	/**

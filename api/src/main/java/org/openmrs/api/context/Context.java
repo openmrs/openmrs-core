@@ -250,7 +250,7 @@ public class Context {
 	 * 
 	 * @return the current ServiceContext
 	 */
-	private static ServiceContext getServiceContext() {
+	static ServiceContext getServiceContext() {
 		if (serviceContext == null) {
 			log.error("serviceContext is null.  Creating new ServiceContext()");
 			serviceContext = ServiceContext.getInstance();
