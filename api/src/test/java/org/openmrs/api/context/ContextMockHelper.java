@@ -30,6 +30,9 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.messagesource.MessageSourceService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Helps to mock or spy on services. It can be used with {@link InjectMocks}. See
  * {@link org.openmrs.module.ModuleUtilTest} for example. In general you should always try to refactor code first so
@@ -77,10 +80,30 @@ public class ContextMockHelper {
 	
 	VisitService visitService;
 	
+	Map<Class<?>, Object> realServices = new HashMap<Class<?>, Object>();
+	
 	public ContextMockHelper() {
 	}
 	
+	public void revertMocks() {
+		for (Map.Entry<Class<?>, Object> realService : realServices.entrySet()) {
+			Context.getServiceContext().setService(realService.getKey(), realService.getValue());
+		}
+		realServices.clear();
+	}
+	
 	public void setService(Class<?> type, Object service) {
+		Object realService = null;
+		try {
+			realService = Context.getService(type);
+		}
+		catch (Exception e) {
+			//let's not fail if context is not configured
+		}
+		
+		if (!realServices.containsKey(type)) {
+			realServices.put(type, realService);
+		}
 		Context.getServiceContext().setService(type, service);
 	}
 	

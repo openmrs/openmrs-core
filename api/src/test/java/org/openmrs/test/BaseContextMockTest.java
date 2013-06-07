@@ -11,11 +11,13 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.api.context;
+package org.openmrs.test;
 
+import org.junit.After;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
+import org.openmrs.api.context.ContextMockHelper;
 
 /**
  * Tests extending this class may have mocked Context.get...Service() calls.
@@ -28,5 +30,10 @@ public abstract class BaseContextMockTest {
 	@Before
 	public void initContextMockHelper() {
 		MockitoAnnotations.initMocks(this);
+	}
+	
+	@After
+	public void revertContextMockHelper() {
+		contextMockHelper.revertMocks();
 	}
 }

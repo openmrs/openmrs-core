@@ -14,23 +14,22 @@
 package org.openmrs.module;
 
 import junit.framework.Assert;
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.BaseContextMockTest;
-import org.openmrs.api.context.ContextMockHelper;
+import org.openmrs.test.BaseContextMockTest;
+import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.test.Verifies;
 
 import java.util.Arrays;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +44,8 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	@Mock
 	AdministrationService administrationService;
 	
+	Properties initialRuntimeProperties;
+	
 	/**
 	 * @see {@link org.openmrs.module.ModuleUtil#checkMandatoryModulesStarted()}
 	 */
@@ -52,7 +53,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	@Verifies(value = "should throw ModuleException if a mandatory module is not started", method = "checkMandatoryModulesStarted()")
 	public void checkMandatoryModulesStarted_shouldThrowModuleExceptionIfAMandatoryModuleIsNotStarted() throws Exception {
 		//given
-		assertThat(ModuleFactory.getStartedModulesMap().entrySet(), empty());
+		assertThat(ModuleFactory.getStartedModules(), empty());
 		
 		GlobalProperty gp1 = new GlobalProperty("module1.mandatory", "true");
 		when(administrationService.getGlobalPropertiesBySuffix(".mandatory")).thenReturn(Arrays.asList(gp1));
@@ -69,13 +70,26 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	@Verifies(value = "should throw ModuleException if a core module is not started", method = "checkOpenmrsCoreModulesStarted()")
 	public void checkMandatoryModulesStarted_shouldThrowModuleExceptionIfACoreModuleIsNotStarted() throws Exception {
 		//given
-		assertThat(ModuleFactory.getStartedModulesMap().entrySet(), empty());
+		assertThat(ModuleFactory.getStartedModules(), empty());
 		assertThat(ModuleConstants.CORE_MODULES.keySet(), contains("logic"));
+		
+		initialRuntimeProperties = new Properties(Context.getRuntimeProperties());
+		Properties runtimeProperties = Context.getRuntimeProperties();
+		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "false");
+		Context.setRuntimeProperties(runtimeProperties);
 		
 		//when
 		ModuleUtil.checkOpenmrsCoreModulesStarted();
 		
 		//then exception
+	}
+	
+	@After
+	public void revertRuntimeProperties() {
+		if (initialRuntimeProperties != null) {
+			Context.setRuntimeProperties(initialRuntimeProperties);
+			initialRuntimeProperties = null;
+		}
 	}
 	
 	/**
