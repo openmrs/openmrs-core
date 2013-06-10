@@ -6953,7 +6953,8 @@
 	</changeSet>
 	
 	<changeSet id="1-increase-privilege-col-size-privilege" author="dkayiwa">
-        <validCheckSum>3:b5f33650ea723f2304f40fd60fde36df</validCheckSum>
+        <validCheckSum>3:b5f33650ea723f2304f40fd60fde36df</validCheckSum><!-- old -->
+        <validCheckSum>3:6ecff8787eca17532e310087cfd65a06</validCheckSum><!-- New after fixing bug where we have to first drop constraints -->
         <preConditions onFail="MARK_RAN">
 			<columnExists tableName="privilege" columnName="privilege"/>
 		</preConditions>
@@ -6975,7 +6976,8 @@
 	</changeSet>
 	
 	<changeSet id="2-increase-privilege-col-size-rol-privilege" author="dkayiwa">
-        <validCheckSum>3:96a937a1719f8e7a98ad682a5608f54b </validCheckSum>
+        <validCheckSum>3:96a937a1719f8e7a98ad682a5608f54b</validCheckSum><!-- old -->
+        <validCheckSum>3:6fc0247ae054fedeb32a4af3775046f4</validCheckSum><!-- New after fixing bug where we have to first drop constraints -->
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="role_privilege" columnName="privilege"/>
 		</preConditions>

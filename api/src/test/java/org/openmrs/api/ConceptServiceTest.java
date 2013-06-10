@@ -13,7 +13,9 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -36,6 +38,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -94,6 +97,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeAllTests() throws Exception {
 		conceptService = Context.getConceptService();
+	}
+	
+	@After
+	public void revertToDefaultLocale() throws Exception {
+		Context.setLocale(Locale.US);
 	}
 	
 	/**
@@ -919,6 +927,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getConceptByName_shouldFindConceptsWithNamesInSameSpecificLocale() throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
+		Context.setLocale(Locale.UK);
+		
 		// make sure that concepts are found that have a specific locale on them
 		Assert.assertNotNull(Context.getConceptService().getConceptByName("Numeric name with en_GB locale"));
 	}
@@ -1389,11 +1399,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should assign default Locale ", method = "saveConceptStopWord(ConceptStopWord)")
 	public void saveConceptStopWord_shouldSaveConceptStopWordAssignDefaultLocaleIsItNull() throws Exception {
-		ConceptStopWord conceptStopWord = new ConceptStopWord("The", Locale.UK);
+		ConceptStopWord conceptStopWord = new ConceptStopWord("The");
 		conceptService.saveConceptStopWord(conceptStopWord);
 		
-		List<String> conceptStopWords = conceptService.getConceptStopWords(Locale.UK);
-		assertEquals(2, conceptStopWords.size());
+		List<String> conceptStopWords = conceptService.getConceptStopWords(Context.getLocale());
+		assertThat(conceptStopWords, hasItem("THE"));
 	}
 	
 	/**
