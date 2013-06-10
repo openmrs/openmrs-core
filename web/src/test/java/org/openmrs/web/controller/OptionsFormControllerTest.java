@@ -221,4 +221,18 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 			assertEquals(correctAddress, optionsForm.getNotificationAddress());
 		}
 	}
+	
+	@Test
+	public void shouldRejectEmptyNotificationAddress() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
+		request.setParameter("notification", "email");
+		request.setParameter("notificationAddress", "");
+		
+		HttpServletResponse response = new MockHttpServletResponse();
+		ModelAndView modelAndView = controller.handleRequest(request, response);
+		
+		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel().get(
+		    "org.springframework.validation.BindingResult.opts");
+		Assert.assertTrue(bindingResult.hasErrors());
+	}
 }

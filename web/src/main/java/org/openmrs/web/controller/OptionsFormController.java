@@ -201,10 +201,10 @@ public class OptionsFormController extends SimpleFormController {
 			String notifyType = opts.getNotification();
 			if (notifyType != null) {
 				if (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType.equals("email")) {
-					if (StringUtils.isNotEmpty(opts.getNotificationAddress())) {
-						if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {
-							errors.reject("error.options.notificationAddress.invalid");
-						}
+					if (opts.getNotificationAddress().isEmpty()) {
+						errors.reject("error.options.notificationAddress.empty");
+					} else if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {
+						errors.reject("error.options.notificationAddress.invalid");
 					}
 				}
 			}
