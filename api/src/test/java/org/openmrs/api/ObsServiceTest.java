@@ -294,8 +294,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		childLeafObs.setDateVoided(new Date(childLeafObs.getDateVoided().getTime() - 5000));
 		//os.saveObs(childLeafObs, "saving child leaf obs");
-		os.unvoidObs(oGGGPThatWasUpdated);
-		
+		os.unvoidObs(oGGGPThatWasUpdated);	
 		// commenting this out because junit4 doesn't seem to care
 		//commitTransaction(false);
 

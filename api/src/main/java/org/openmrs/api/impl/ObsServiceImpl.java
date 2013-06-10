@@ -12,7 +12,6 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 package org.openmrs.api.impl;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
