@@ -37,6 +37,8 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -274,12 +276,14 @@ public class ModuleUtil {
 	 * @should throw ModuleException if required version with wild card on one end beyond openmrs
 	 *         version
 	 * @should throw ModuleException if single entry required version beyond openmrs version
+	 * @should throw ModuleException if SNAPSHOT not handled correctly
 	 */
 	public static void checkRequiredVersion(String version, String value) throws ModuleException {
+		// need to externalize this string
+		String separator = "-";
+		
 		if (value != null && !value.equals("")) {
-			// need to externalize this string
-			String separator = "-";
-			if (value.indexOf("*") > 0 || value.indexOf(separator) > 0) {
+			if ((value.indexOf("*") > 0 || value.indexOf(separator) > 0) && (!checkForAlphaVersion(value))) {
 				// if it contains "*" or "-" then we must separate those two
 				// assume it's always going to be two part
 				// assign the upper and lower bound
@@ -346,6 +350,9 @@ public class ModuleUtil {
 	 * @should treat SNAPSHOT as earliest version
 	 */
 	public static int compareVersion(String version, String value) {
+		String alphaVersion = "";
+		String alphaValue = "";
+		
 		try {
 			if (version == null || value == null)
 				return 0;
@@ -353,10 +360,17 @@ public class ModuleUtil {
 			List<String> versions = new Vector<String>();
 			List<String> values = new Vector<String>();
 			
-			// treat "-SNAPSHOT" as the lowest possible version
+			// treat alpha version (i.e. "-SNAPSHOT") as the lowest possible version
 			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0 
-			version = version.replace("-SNAPSHOT", ".0");
-			value = value.replace("-SNAPSHOT", ".0");
+			if (checkForAlphaVersion(version)) {
+				alphaVersion = version.substring(version.indexOf('-'));
+				version = version.replace(alphaVersion, ".0");
+			}
+			
+			if (checkForAlphaVersion(value)) {
+				alphaValue = value.substring(value.indexOf('-'));
+				value = value.replace(alphaValue, ".0");
+			}
 			
 			Collections.addAll(versions, version.split("\\."));
 			Collections.addAll(values, value.split("\\."));
@@ -386,6 +400,18 @@ public class ModuleUtil {
 		
 		// default return value if an error occurs or elements are equal
 		return 0;
+	}
+	
+	// Check for alpha version (i.e 1.9.2-SNAPSHOT ect)
+	public static boolean checkForAlphaVersion(String version) {
+		boolean isAlphaVersion = false;
+		
+		Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.(\\d+))?(\\-([A-Z]+))").matcher(version);
+		if (matcher.matches()) {
+			// Matches
+			isAlphaVersion = true;
+		}
+		return (isAlphaVersion);
 	}
 	
 	/**
