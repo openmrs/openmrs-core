@@ -583,7 +583,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(order.getOrderId());
 		Assert.assertNotNull(order.getOrderNumber());
 	}
-
+	
 	/**
 	 * @throws Exception 
 	 * @see OrderService#getOrderHistoryByOrderNumber(String)
@@ -611,7 +611,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(expectedHistory, history);
 		
 	}
-
+	
 	@Test
 	public void purgeOrder_shouldDeleteObsThatReference() throws Exception {
 		executeDataSet(OBS_THAT_REFERENCE_DATASET_XML);
@@ -642,5 +642,5 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(os.getObsByUuid(obsUuid));
 		
 	}
-
+	
 }

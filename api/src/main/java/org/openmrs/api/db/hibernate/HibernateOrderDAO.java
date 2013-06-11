@@ -208,17 +208,17 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		return (List<DrugOrder>) searchDrugOrderCriteria.list();
 	}
-
-    /**
-     *  Delete Obs that references (deleted) Order
-     */
-    public void deleteObsThatReference(Order order) {
-        if (order != null) {
-            sessionFactory.getCurrentSession().createQuery("delete Obs where order = :order").setParameter("order", order)
-                    .executeUpdate();
-
-        }
-    }
+	
+	/**
+	 *  Delete Obs that references (deleted) Order
+	 */
+	public void deleteObsThatReference(Order order) {
+		if (order != null) {
+			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :order").setParameter("order", order)
+			        .executeUpdate();
+			
+		}
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.openmrs.api.db.OrderDAO#getOrderHistoryByOrderNumber(java.lang.String)

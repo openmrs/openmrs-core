@@ -33,7 +33,8 @@ public class WebDaemon extends Daemon {
 	 * 
 	 * @param servletContext the servlet context.
 	 */
-	public static void startOpenmrs(final ServletContext servletContext) throws DatabaseUpdateException, InputRequiredException {
+	public static void startOpenmrs(final ServletContext servletContext) throws DatabaseUpdateException,
+	        InputRequiredException {
 		
 		// create a new thread and start openmrs in it.
 		DaemonThread startOpenmrsThread = new DaemonThread() {

@@ -97,10 +97,10 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrderHistoryByOrderNumber(java.lang.String)
 	 */
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
-
-	 /**
-	  * Delete Obs that references an order
-	  */
+	
+	/**
+	 * Delete Obs that references an order
+	 */
 	public void deleteObsThatReference(Order order);
 	
 }
