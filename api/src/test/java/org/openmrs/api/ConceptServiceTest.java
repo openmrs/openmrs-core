@@ -1415,7 +1415,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void saveConceptStopWord_shouldSaveConceptStopWordAssignDefaultLocaleIsItNull() throws Exception {
 		ConceptStopWord conceptStopWord = new ConceptStopWord("The");
 		conceptService.saveConceptStopWord(conceptStopWord);
-
+		
 		List<String> conceptStopWords = conceptService.getConceptStopWords(Context.getLocale());
 		assertThat(conceptStopWords, hasItem("THE"));
 	}
@@ -2250,11 +2250,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDefaultConceptMapType_shouldReturnTypeAsSetInGp() throws Exception {
-		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty("concept.defaultConceptMapType", "is-a"));
+		final String testName = "is a";
+		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty("concept.defaultConceptMapType", testName));
 		
 		ConceptMapType conceptMapType = conceptService.getDefaultConceptMapType();
 		Assert.assertNotNull(conceptMapType);
-		Assert.assertEquals("is-a", conceptMapType.getName());
+		Assert.assertEquals(testName, conceptMapType.getName());
 	}
 	
 	/**
