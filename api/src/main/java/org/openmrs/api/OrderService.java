@@ -89,8 +89,9 @@ public interface OrderService extends OpenmrsService {
 	 * Obs that references the Order.
 	 * 
 	 * @param order The Order to remove from the system
-	 * @param boolean cascade 
+	 * @param cascade
 	 * @throws APIException
+     * @since 1.9.4
 	 * @should delete order
 	 * @should delete order when cascade is false
 	 * @should delete order when cascade is true and also delete any Obs that references it
@@ -117,7 +118,7 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Get order by internal primary key identifier
 	 * 
-	 * @param orderId internal order identifier
+	 * @param orderId internal order identifpurgeier
 	 * @return order with given internal identifier
 	 * @throws APIException
 	 * @see #getOrder(Integer, Class)
