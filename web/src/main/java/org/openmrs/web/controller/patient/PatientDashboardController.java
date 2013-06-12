@@ -62,8 +62,10 @@ public class PatientDashboardController {
 			log.warn("There is no patient with id: '" + patientId + "'", noPatientEx);
 		}
 		
-		if (patient == null)
-			throw new ServletException("There is no patient with id: '" + patientId + "'");
+		if (patient == null) {
+			String message = "There is no patient with id: '" + patientId + "'";
+			return "redirect:/findPatient.htm?error_message=" + message;
+		}
 		
 		log.debug("patient: '" + patient + "'");
 		map.put("patient", patient);
