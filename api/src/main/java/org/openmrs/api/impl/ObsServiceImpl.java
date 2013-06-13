@@ -106,6 +106,20 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			}
 		}
 		
+		if (null != obs && obs.hasGroupMembers()) {
+			for (Obs member : obs.getGroupMembers()) {
+				if (null != member && null != member.getConcept() && member.getConcept().isComplex()
+				        && null != member.getComplexData().getData()) {
+					ComplexObsHandler handler = getHandler(member);
+					if (null != handler) {
+						handler.saveObs(member);
+					} else {
+						throw new APIException("Unknown handler for " + member.getConcept());
+					}
+				}
+			}
+		}
+		
 		if (obs.getObsId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_OBS);
 			return dao.saveObs(obs);
