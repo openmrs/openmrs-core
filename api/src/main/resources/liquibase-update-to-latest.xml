@@ -7508,5 +7508,10 @@
 		</addColumn>
 	</changeSet>
 
-</databaseChangeLog>
+	<changeSet id="201306131003" author="@ArcTanSusan">
+    	<comment>Rename column name from precise to allow_decimal</comment>
+    	<renameColumn tableName="concept_numeric" columnDataType="BOOLEAN"
+            oldColumnName="precise" newColumnName="allow_decimal"/>
+	</changeSet>
 
+</databaseChangeLog>
