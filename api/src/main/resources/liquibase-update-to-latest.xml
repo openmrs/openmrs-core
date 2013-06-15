@@ -7499,7 +7499,7 @@
 			<not><columnExists tableName="person" columnName="deathdate_estimated"/></not>
 		</preConditions>
 		<comment>
-			Adding deathdate_estimated column to person.  
+			Adding deathdate_estimated column to person.
 		</comment>
 		<addColumn tableName="person">
                     <column defaultValueBoolean="false" name="deathdate_estimated" type="BOOLEAN">
@@ -7508,5 +7508,11 @@
 		</addColumn>
 	</changeSet>
 
-</databaseChangeLog>
+	<changeSet id="201306141103-TRUNK-3884" author="@ArcTanSusan">
+		<comment>Adding 3 foreign key relationships (creator,created_by,voided_by) to encounter_provider table</comment>
+		<addForeignKeyConstraint constraintName="fk_creator_encounter_provider" baseTableName="encounter_provider" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="fk_changed_by_encounter_provider" baseTableName="encounter_provider" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="fk_voided_by_encounter_provider" baseTableName="encounter_provider" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
 
+</databaseChangeLog>
