@@ -6411,5 +6411,12 @@
 			<where>name='Auto Close Visits Task'</where>
 		</update>
 	</changeSet>
+	
+	<changeSet id="201306141103-TRUNK-3884" author="susantan">
+		<comment>Adding 3 foreign key relationships (creator,created_by,voided_by) to encounter_provider table</comment>
+		<addForeignKeyConstraint constraintName="encounter_provider_creator" baseTableName="encounter_provider" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="encounter_provider_changed_by" baseTableName="encounter_provider" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="encounter_provider_voided_by" baseTableName="encounter_provider" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
 
 </databaseChangeLog>
