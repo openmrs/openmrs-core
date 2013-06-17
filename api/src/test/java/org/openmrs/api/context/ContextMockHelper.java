@@ -42,7 +42,6 @@ import java.util.Map;
  * @deprecated Avoid using this by not calling Context.get...Service() in your code.
  * @since 1.10
  */
-@SuppressWarnings("UnusedDeclaration")
 @Deprecated
 public class ContextMockHelper {
 	
@@ -80,7 +79,13 @@ public class ContextMockHelper {
 	
 	VisitService visitService;
 	
+	UserContext userContext;
+	
 	Map<Class<?>, Object> realServices = new HashMap<Class<?>, Object>();
+	
+	UserContext realUserContext;
+	
+	boolean userContextMocked = false;
 	
 	public ContextMockHelper() {
 	}
@@ -90,20 +95,27 @@ public class ContextMockHelper {
 			Context.getServiceContext().setService(realService.getKey(), realService.getValue());
 		}
 		realServices.clear();
+		
+		if (userContextMocked) {
+			Context.setUserContext(realUserContext);
+			realUserContext = null;
+			userContextMocked = false;
+		}
 	}
 	
 	public void setService(Class<?> type, Object service) {
-		Object realService = null;
-		try {
-			realService = Context.getService(type);
-		}
-		catch (Exception e) {
-			//let's not fail if context is not configured
-		}
-		
 		if (!realServices.containsKey(type)) {
+			Object realService = null;
+			try {
+				realService = Context.getService(type);
+			}
+			catch (Exception e) {
+				//let's not fail if context is not configured
+			}
+			
 			realServices.put(type, realService);
 		}
+		
 		Context.getServiceContext().setService(type, service);
 	}
 	
@@ -181,4 +193,20 @@ public class ContextMockHelper {
 		setService(VisitService.class, visitService);
 		this.visitService = visitService;
 	}
+	
+	public void setUserContext(UserContext userContext) {
+		if (!userContextMocked) {
+			try {
+				realUserContext = Context.getUserContext();
+			}
+			catch (Exception e) {
+				//let's not fail if context is not configured
+			}
+			userContextMocked = true;
+		}
+		
+		Context.setUserContext(userContext);
+		this.userContext = userContext;
+	}
+	
 }

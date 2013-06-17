@@ -174,12 +174,12 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	@Before
-	public void initContextMockHelper() {
+	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
 	}
 	
 	@After
-	public void revertContextMockHelper() {
+	public void revertContextMocks() {
 		contextMockHelper.revertMocks();
 	}
 	

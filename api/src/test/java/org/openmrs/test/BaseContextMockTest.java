@@ -13,27 +13,44 @@
  */
 package org.openmrs.test;
 
+import static org.mockito.Mockito.when;
+
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openmrs.User;
 import org.openmrs.api.context.ContextMockHelper;
+import org.openmrs.api.context.UserContext;
+import org.openmrs.module.ModuleUtilTest;
 
 /**
- * Tests extending this class may have mocked Context.get...Service() calls.
+ * Tests extending this class have a mocked UserContext and User. In addition you can mock
+ * Context.get...Service() calls by annotating fields with {@link Mock}.
+ * 
+ * @see ModuleUtilTest
  */
 public abstract class BaseContextMockTest {
+	
+	@Mock
+	protected UserContext userContext;
+	
+	@Mock
+	protected User authenticatedUser;
 	
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
 	
 	@Before
-	public void initContextMockHelper() {
+	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
+		
+		when(userContext.getAuthenticatedUser()).thenReturn(authenticatedUser);
 	}
 	
 	@After
-	public void revertContextMockHelper() {
+	public void revertContextMocks() {
 		contextMockHelper.revertMocks();
 	}
 }

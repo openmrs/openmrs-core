@@ -13,25 +13,25 @@
  */
 package org.openmrs.module;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Properties;
+
 import junit.framework.Assert;
+
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.test.BaseContextMockTest;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.test.BaseContextMockTest;
 import org.openmrs.test.Verifies;
-
-import java.util.Arrays;
-import java.util.Properties;
-
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests methods on the {@link org.openmrs.module.ModuleUtil} class
