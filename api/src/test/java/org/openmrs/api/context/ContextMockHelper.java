@@ -24,6 +24,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
@@ -70,6 +71,8 @@ public class ContextMockHelper {
 	OrderService orderService;
 	
 	PatientService patientService;
+	
+	ProviderService providerService;
 	
 	ReportService reportService;
 	
@@ -172,6 +175,11 @@ public class ContextMockHelper {
 	public void setPatientService(PatientService patientService) {
 		setService(PatientService.class, patientService);
 		this.patientService = patientService;
+	}
+	
+	public void setProviderService(ProviderService providerService) {
+		setService(ProviderService.class, providerService);
+		this.providerService = providerService;
 	}
 	
 	public void setReportService(ReportService reportService) {
