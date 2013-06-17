@@ -66,6 +66,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -90,7 +91,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
         "classpath*:moduleApplicationContext.xml" })
-@TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
+@TestExecutionListeners({ TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
         StartModuleExecutionListener.class })
 @Transactional
 @TransactionConfiguration(defaultRollback = true)
@@ -173,11 +174,19 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		loadCount++;
 	}
 	
+	/**
+	 * Initializes fields annotated with {@link Mock}.
+	 * 
+	 * @since 1.10
+	 */
 	@Before
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
 	}
 	
+	/**
+	 * @since 1.10
+	 */
 	@After
 	public void revertContextMocks() {
 		contextMockHelper.revertMocks();
@@ -260,8 +269,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			tempappdir.mkdir(); // turn it into a directory
 			tempappdir.deleteOnExit(); // clean up when we're done with tests
 			
-			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
-			        .getAbsolutePath());
+			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY,
+			    tempappdir.getAbsolutePath());
 			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = tempappdir.getAbsolutePath();
 		}
 		catch (IOException e) {
@@ -362,7 +371,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
 		catch (Exception e) {
-
+			
 		}
 		
 		if (message == null || "".equals(message))

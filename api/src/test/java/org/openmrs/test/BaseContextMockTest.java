@@ -30,6 +30,7 @@ import org.openmrs.module.ModuleUtilTest;
  * Context.get...Service() calls by annotating fields with {@link Mock}.
  * 
  * @see ModuleUtilTest
+ * @since 1.10
  */
 public abstract class BaseContextMockTest {
 	
@@ -42,6 +43,9 @@ public abstract class BaseContextMockTest {
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
 	
+	/**
+	 * Initializes fields annotated with {@link Mock}. Sets userContext and authenticatedUser.
+	 */
 	@Before
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
