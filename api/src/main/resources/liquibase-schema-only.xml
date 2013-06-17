@@ -822,7 +822,6 @@
             <column name="error_msg" type="text"/>
             <column name="date_created" type="DATETIME"/>
             <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
-        </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
         </modifySql>
