@@ -29,7 +29,7 @@
             <column name="void_reason" type="varchar(255)"/>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -77,7 +77,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -100,7 +100,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="sort_weight" type="double precision"></column>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -129,7 +129,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -159,7 +159,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -187,7 +187,7 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -215,7 +215,7 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -247,7 +247,7 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -276,7 +276,7 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -337,7 +337,7 @@
             <column defaultValue="" name="locale" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -371,7 +371,7 @@
             <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -414,7 +414,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -428,7 +428,7 @@
             <column defaultValueNumeric="0" name="concept_id" type="int"/>
             <column defaultValueNumeric="0" name="program_workflow_id" type="int"/>
             <column defaultValueNumeric="0" name="program_workflow_state_id" type="int"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -486,7 +486,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -555,7 +555,7 @@
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
             <column name="visit_id" type="int"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -584,7 +584,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-			<column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -621,7 +621,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -641,7 +641,7 @@
             <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -663,7 +663,7 @@
             <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -702,7 +702,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retired_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -737,7 +737,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="sort_weight" type="real"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -750,7 +750,7 @@
             </column>
             <column name="property_value" type="text"/>
             <column name="description" type="text"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
                 <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -772,7 +772,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="message_state" type="int" defaultValueNumeric="2" remarks="2=processed, 4=deleted"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -797,7 +797,7 @@
             <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -821,7 +821,8 @@
             <column name="date_processed" type="DATETIME"/>
             <column name="error_msg" type="text"/>
             <column name="date_created" type="DATETIME"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
+        </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
         </modifySql>
@@ -841,7 +842,7 @@
             <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -882,7 +883,7 @@
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
             <column name="parent_location" type="int"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -910,7 +911,7 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -939,7 +940,7 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -957,7 +958,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="date_changed" type="timestamp"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -974,7 +975,7 @@
             <column name="sender" type="varchar(255)"/>
             <column name="recipients" type="varchar(512)"/>
             <column defaultValueNumeric="0" name="ordinal" type="int"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1022,7 +1023,7 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1051,7 +1052,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1096,7 +1097,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="accession_number" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1156,7 +1157,7 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1197,7 +1198,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1232,7 +1233,7 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1265,7 +1266,7 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1300,7 +1301,7 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1344,7 +1345,7 @@
             <column name="address6" type="varchar(255)"/>
             <column name="date_changed" type="DATETIME"/>
             <column name="changed_by" type="int"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1378,7 +1379,7 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1416,7 +1417,7 @@
             <column name="retire_reason" type="varchar(255)"/>
             <column name="edit_privilege" type="varchar(50)"/>
             <column name="sort_weight" type="double precision"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1455,7 +1456,7 @@
             <column name="void_reason" type="varchar(255)"/>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1469,7 +1470,7 @@
             <column defaultValue="" name="description" type="varchar(250)">
                 <constraints nullable="false"/>
             </column>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1499,7 +1500,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="varchar(500)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1527,7 +1528,7 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1561,7 +1562,7 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="DATETIME"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1597,7 +1598,7 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1635,7 +1636,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1671,7 +1672,7 @@
             <column name="voided_by" type="int"/>
             <column name="date_voided" type="DATETIME"/>
             <column name="void_reason" type="varchar(255)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1691,7 +1692,7 @@
             <column name="xml_data" type="text">
                 <constraints nullable="false"/>
             </column>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1705,7 +1706,7 @@
             <column defaultValue="" name="description" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1759,7 +1760,7 @@
             <column name="last_execution_time" type="DATETIME">
                 <constraints nullable="true"/>
             </column>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1830,7 +1831,7 @@
             <column name="retired_by" type="int"/>
             <column name="date_retired" type="DATETIME"/>
             <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)"/>
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1865,7 +1866,7 @@
             <column name="retired_by" type="int" />
             <column name="date_retired" type="datetime" />
             <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
@@ -1916,7 +1917,7 @@
             <column name="date_retired" type="DATETIME"/>
             <column name="retired_by" type="int"/>
             <column name="retire_reason" type="varchar(1000)"/>
-            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
