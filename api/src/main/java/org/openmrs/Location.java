@@ -403,6 +403,25 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	}
 	
 	/**
+	 * Returns the descendant locations.
+	 * 
+	 * @param includeRetired specifies whether or not to include voided childLocations
+	 * @return Returns a Set<Location> of the descendant location.
+	 * @since 1.10
+	 */
+	public Set<Location> getDescendantLocations(boolean includeRetired) {
+		Set<Location> result = new HashSet<Location>();
+		
+		for (Location childLocation : getChildLocations()) {
+			if (!childLocation.isRetired() || includeRetired) {
+				result.add(childLocation);
+				result.addAll(childLocation.getDescendantLocations(includeRetired));
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * @param childLocations The childLocations to set.
 	 * @since 1.5
 	 */
