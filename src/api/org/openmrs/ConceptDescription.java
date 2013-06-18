@@ -77,13 +77,14 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	 * @should not return true with different objects and null ids
 	 * @should default to object equality
 	 */
-	public boolean equals(Object object) {
+	@Override
+    public boolean equals(Object object) {
 		if (!(object instanceof ConceptDescription)) {
 			return false;
 		}
 		ConceptDescription rhs = (ConceptDescription) object;
 		if (conceptDescriptionId != null && rhs.conceptDescriptionId != null)
-			return this.conceptDescriptionId == rhs.conceptDescriptionId;
+			return this.conceptDescriptionId.equals(rhs.conceptDescriptionId);
 		else
 			return this == object;
 	}
@@ -91,7 +92,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getConceptDescriptionId() == null)
 			return super.hashCode();
 		int hash = 8;
@@ -225,7 +227,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		return this.description;
 	}
 	
