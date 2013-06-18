@@ -1287,8 +1287,8 @@
             </column>
             <column name="death_date" type="DATETIME"/>
             <column name="cause_of_death" type="int"/>
-            <column defaultValueNumeric="0" name="creator" type="int">
-                <constraints nullable="false"/>
+            <column name="creator" type="int">
+                <constraints nullable="true"/>
             </column>
             <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
