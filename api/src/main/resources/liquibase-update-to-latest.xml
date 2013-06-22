@@ -7510,6 +7510,9 @@
 
 	<changeSet id="201306130110" author="@ArcTanSusan">
     	<comment>Add new column display_precision, which contains int value</comment>
+      	<preConditions onFail="MARK_RAN">
+      		<not><columnExists tableName="concept_numeric" columnName="display_precision"/></not>
+      	</preConditions>
       	<addColumn tableName="concept_numeric">
    			<column name="display_precision" type="int"/>
 	    </addColumn>

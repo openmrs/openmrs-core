@@ -304,7 +304,6 @@
             <column name="low_critical" type="double precision"/>
             <column name="low_normal" type="double precision"/>
             <column name="units" type="varchar(50)"/>
-            <column name="display_precision" type="int" />
             <column defaultValueBoolean="false" name="precise" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
