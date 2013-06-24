@@ -56,5 +56,9 @@
 		    <groupId>org.hamcrest</groupId>
 		    <artifactId>hamcrest-library</artifactId>
 		</dependency>
+		<dependency>
+		    <groupId>com.carrotsearch</groupId>
+		    <artifactId>junit-benchmarks</artifactId>
+		</dependency>
    </dependencies>
 </project>

@@ -290,5 +290,15 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>performance-only</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.openmrs.contrib</groupId>
+					<artifactId>mvpconceptdictionary</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 	</profiles>
 </project>
