@@ -55,7 +55,9 @@ import org.dbunit.dataset.DefaultDataSet;
 import org.dbunit.dataset.DefaultTable;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.stream.StreamingDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlProducer;
 import org.dbunit.dataset.xml.XmlDataSet;
 import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
@@ -81,6 +83,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+import org.xml.sax.InputSource;
 
 /**
  * This is the base for spring/context tests. Tests that NEED to use calls to the Context class and
@@ -572,6 +575,41 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		
 		executeDataSet(xmlDataSetToRun);
+	}
+	
+	/**
+	 * Runs the large flat xml dataset. It does not cache the file as opposed to
+	 * {@link #executeDataSet(String)}.
+	 * 
+	 * @param datasetFilename
+	 * @throws Exception
+	 * @since 1.10
+	 */
+	public void executeLargeDataSet(String datasetFilename) throws Exception {
+		InputStream inputStream = null;
+		try {
+			final File file = new File(datasetFilename);
+			if (file.exists()) {
+				inputStream = new FileInputStream(datasetFilename);
+			} else {
+				inputStream = getClass().getClassLoader().getResourceAsStream(datasetFilename);
+				if (inputStream == null)
+					throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
+			}
+			
+			final FlatXmlProducer flatXmlProducer = new FlatXmlProducer(new InputSource(inputStream));
+			final StreamingDataSet streamingDataSet = new StreamingDataSet(flatXmlProducer);
+			
+			final ReplacementDataSet replacementDataSet = new ReplacementDataSet(streamingDataSet);
+			replacementDataSet.addReplacementObject("[NULL]", null);
+			
+			executeDataSet(replacementDataSet);
+			
+			inputStream.close();
+		}
+		finally {
+			IOUtils.closeQuietly(inputStream);
+		}
 	}
 	
 	/**
