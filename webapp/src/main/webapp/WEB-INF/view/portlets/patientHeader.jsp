@@ -165,7 +165,6 @@
 <table id="patientHeaderObs">
 	<openmrs:globalProperty key="concept.weight" var="weightConceptId" />
 	<openmrs:globalProperty key="concept.height" var="heightConceptId" />
-	<openmrs:globalProperty key="concept.cd4_count" var="cd4ConceptId" />
 	<openmrs:globalProperty key="dashboard.header.showConcept" var="conceptIds" listSeparator="," />
 
 	<tr class="patientObsRow">
@@ -190,10 +189,6 @@
                     showUnits="true" locale="${model.locale}" showDate="false" />
             </td>
         </c:forEach>
-
-		<%--<td id="patientHeaderObsCD4"><openmrs:message code="Patient.cd4" />:--%>
-			<%--<openmrs_tag:mostRecentObs observations="${model.patientObs}"--%>
-				<%--concept="${cd4ConceptId}" locale="${model.locale}" /></td>--%>
 
 		<td id="patientHeaderObsReturnVisit"><openmrs:message
 				code="Patient.returnVisit" />: <openmrs_tag:mostRecentObs
