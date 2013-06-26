@@ -818,8 +818,8 @@ public class ServiceContext implements ApplicationContextAware {
 						        + cls.getClass().getClassLoader().hashCode());
 						//pay attention that here, cls = Class.forName(classString), the system class loader and
 						//cls2 is the openmrs class loader, like above.
-						log.debug("cls==cls2: " + String.valueOf(cls == 
-								OpenmrsClassLoader.getInstance().loadClass(classString)));
+						log.debug("cls==cls2: "
+						        + String.valueOf(cls == OpenmrsClassLoader.getInstance().loadClass(classString)));
 					}
 				}
 				catch (Exception e) { /*pass*/}

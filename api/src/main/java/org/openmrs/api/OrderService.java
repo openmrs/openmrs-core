@@ -152,26 +152,26 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDERS)
 	public void purgeOrder(Order order) throws APIException;
-
-    /**
-     * Completely delete an order from the database. This should not typically be used unless
-     * desperately needed. Most orders should just be voided. See {@link #voidOrder(Order, String)}
-     * This method is different from purgeOrder(Order order) above:
-     * If param cascade is false will completely delete an order from the database period
-     * If param cascade is true will completely delete an order from the database and delete any
-     * Obs that references the Order.
-     *
-     * @param order The Order to remove from the system
-     * @param cascade
-     * @throws APIException
-     * @since 1.9.4
-     * @should delete order
-     * @should delete order when cascade is false
-     * @should delete order when cascade is true and also delete any Obs that references it
-     *
-     */
-    @Authorized(PrivilegeConstants.PURGE_ORDERS)
-    public void purgeOrder(Order order, boolean cascade) throws APIException;
+	
+	/**
+	 * Completely delete an order from the database. This should not typically be used unless
+	 * desperately needed. Most orders should just be voided. See {@link #voidOrder(Order, String)}
+	 * This method is different from purgeOrder(Order order) above:
+	 * If param cascade is false will completely delete an order from the database period
+	 * If param cascade is true will completely delete an order from the database and delete any
+	 * Obs that references the Order.
+	 *
+	 * @param order The Order to remove from the system
+	 * @param cascade
+	 * @throws APIException
+	 * @since 1.9.4
+	 * @should delete order
+	 * @should delete order when cascade is false
+	 * @should delete order when cascade is true and also delete any Obs that references it
+	 *
+	 */
+	@Authorized(PrivilegeConstants.PURGE_ORDERS)
+	public void purgeOrder(Order order, boolean cascade) throws APIException;
 	
 	/**
 	 * Mark an order as voided. This functionally removes the Order from the system while keeping a

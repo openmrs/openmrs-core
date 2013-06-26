@@ -33,7 +33,7 @@ import org.openmrs.test.Verifies;
 public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String DRUG_ORDERS_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-drugOrdersList.xml";
-
+	
 	/**
 	 * @see {@link OrderService#saveOrder(Order)}
 	 */
@@ -45,7 +45,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setPatient(null);
 		orderService.saveOrder(order);
 	}
-
+	
 	/**
 	 * @see {@link OrderService#getOrderByUuid(String)}
 	 *
@@ -57,7 +57,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order order = Context.getOrderService().getOrderByUuid(uuid);
 		Assert.assertEquals(1, (int) order.getOrderId());
 	}
-
+	
 	/**
 	 * @see {@link OrderService#getOrderByUuid(String)}
 	 *
@@ -67,7 +67,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getOrderService().getOrderByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link OrderService#getOrderTypeByUuid(String)}
 	 *
@@ -79,7 +79,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderType orderType = Context.getOrderService().getOrderTypeByUuid(uuid);
 		Assert.assertEquals(1, (int) orderType.getOrderTypeId());
 	}
-
+	
 	/**
 	 * @see {@link OrderService#getOrderTypeByUuid(String)}
 	 *
@@ -89,7 +89,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getOrderService().getOrderTypeByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link OrderService#saveOrder(Order)}
 	 */
@@ -99,16 +99,16 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		String uuid = "921de0a3-05c4-444a-be03-e01b4c4b9142";
 		Order order = Context.getOrderService().getOrderByUuid(uuid);
 		String discontinuedReasonNonCoded = "Non coded discontinued reason";
-
+		
 		order.setDiscontinuedReasonNonCoded(discontinuedReasonNonCoded);
 		OrderService orderService = Context.getOrderService();
 		orderService.saveOrder(order);
-
+		
 		order = Context.getOrderService().getOrderByUuid(uuid);
-
+		
 		Assert.assertEquals(discontinuedReasonNonCoded, order.getDiscontinuedReasonNonCoded());
 	}
-
+	
 	/**
 	 * @see {@link OrderService#getDrugOrdersByPatient(Patient, ORDER_STATUS, boolean)}
 	 */
@@ -121,7 +121,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		    Boolean.FALSE);
 		Assert.assertEquals(4, drugOrders.size());
 	}
-
+	
 	@Test
 	public void voidDrugSet_shouldNotVoidThePatient() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
@@ -129,35 +129,35 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Context.getOrderService().voidDrugSet(p, "1", "Reason", OrderService.SHOW_ALL);
 		Assert.assertFalse(p.isVoided());
 	}
-
-    @Test
-    public void purgeOrder_shouldDeleteObsThatReference() throws Exception {
-        executeDataSet("org/openmrs/api/include/OrderServiceTest-deleteObsThatReference.xml");
-        final String ordUuid = "0c96f25c-4949-4f72-9931-d808fbcdb612";
-        final String obsUuid = "be3a4d7a-f9ab-47bb-aaad-bc0b452fcda4";
-        ObsService os = Context.getObsService();
-        OrderService service = Context.getOrderService();
-
-        Obs obs = os.getObsByUuid(obsUuid);
-        Assert.assertNotNull(obs);
-
-        Order order = service.getOrderByUuid(ordUuid);
-        Assert.assertNotNull(order);
-
-        //sanity check to ensure that the obs and order are actually related
-        Assert.assertEquals(order, obs.getOrder());
-
-        //Ensure that passing false does not delete the related obs
-        service.purgeOrder(order, false);
-        Assert.assertNotNull(os.getObsByUuid(obsUuid));
-
-        service.purgeOrder(order, true);
-
-        //Ensure that actually the order got purged
-        Assert.assertNull(service.getOrderByUuid(ordUuid));
-
-        //Ensure that the related obs got deleted
-        Assert.assertNull(os.getObsByUuid(obsUuid));
-
-    }
+	
+	@Test
+	public void purgeOrder_shouldDeleteObsThatReference() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-deleteObsThatReference.xml");
+		final String ordUuid = "0c96f25c-4949-4f72-9931-d808fbcdb612";
+		final String obsUuid = "be3a4d7a-f9ab-47bb-aaad-bc0b452fcda4";
+		ObsService os = Context.getObsService();
+		OrderService service = Context.getOrderService();
+		
+		Obs obs = os.getObsByUuid(obsUuid);
+		Assert.assertNotNull(obs);
+		
+		Order order = service.getOrderByUuid(ordUuid);
+		Assert.assertNotNull(order);
+		
+		//sanity check to ensure that the obs and order are actually related
+		Assert.assertEquals(order, obs.getOrder());
+		
+		//Ensure that passing false does not delete the related obs
+		service.purgeOrder(order, false);
+		Assert.assertNotNull(os.getObsByUuid(obsUuid));
+		
+		service.purgeOrder(order, true);
+		
+		//Ensure that actually the order got purged
+		Assert.assertNull(service.getOrderByUuid(ordUuid));
+		
+		//Ensure that the related obs got deleted
+		Assert.assertNull(os.getObsByUuid(obsUuid));
+		
+	}
 }

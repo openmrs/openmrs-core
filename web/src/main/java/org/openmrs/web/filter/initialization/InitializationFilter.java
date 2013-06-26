@@ -1572,7 +1572,7 @@ public class InitializationFilter extends StartupFilter {
 						
 						// start openmrs
 						try {
-							WebDaemon.startOpenmrs(filterConfig.getServletContext()); 
+							WebDaemon.startOpenmrs(filterConfig.getServletContext());
 						}
 						catch (DatabaseUpdateException updateEx) {
 							log.warn("Error while running the database update file", updateEx);
@@ -1607,7 +1607,7 @@ public class InitializationFilter extends StartupFilter {
 						
 						// TODO catch openmrs errors here and drop the user back out to the setup screen
 						
-						Context.openSession(); 
+						Context.openSession();
 						
 						if (!wizardModel.implementationId.equals("")) {
 							try {

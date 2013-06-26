@@ -113,8 +113,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public void purgeOrder(Order order, boolean cascade) throws APIException {
 		if (cascade) {
-            dao.deleteObsThatReference(order);
-        }
+			dao.deleteObsThatReference(order);
+		}
 		
 		dao.deleteOrder(order);
 	}

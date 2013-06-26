@@ -192,15 +192,15 @@ public class HibernateOrderDAO implements OrderDAO {
 		return (OrderType) sessionFactory.getCurrentSession().createQuery("from OrderType ot where ot.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
 	}
-
-    /**
-     * Delete Obs that references (deleted) Order
-     */
-    public void deleteObsThatReference(Order order) {
-        if (order != null) {
-            sessionFactory.getCurrentSession().createQuery("delete Obs where order = :order").setParameter("order", order)
-                    .executeUpdate();
-        }
-    }
+	
+	/**
+	 * Delete Obs that references (deleted) Order
+	 */
+	public void deleteObsThatReference(Order order) {
+		if (order != null) {
+			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :order").setParameter("order", order)
+			        .executeUpdate();
+		}
+	}
 	
 }
