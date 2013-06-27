@@ -30,6 +30,7 @@ import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.validation.BindException;
@@ -41,6 +42,9 @@ import org.springframework.web.servlet.ModelAndView;
 public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	private static final String INITIAL_SCHEDULER_TASK_CONFIG_XML = "org/openmrs/web/include/SchedulerServiceTest.xml";
+	
+	@Autowired
+	private SchedulerFormController controller;
 	
 	/**
 	 * @see {@link SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
@@ -180,5 +184,16 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 			Assert.assertFalse(task.getTaskInstance().isExecuting());
 			Assert.assertFalse(task.getStarted());
 		}
+	}
+	
+	/**
+	 * See TRUNK-3970: Error when adding a task in version 1.9.3
+	 * https://tickets.openmrs.org/browse/TRUNK-3970
+	 */
+	@Test
+	public void addANewTaskShouldNotError() throws Exception {
+		HttpServletRequest request = new MockHttpServletRequest("GET", "/openmrs/admin/scheduler/scheduler.form");
+		ModelAndView mav = controller.handleRequest(request, new MockHttpServletResponse());
+		assertNotNull(mav);
 	}
 }
