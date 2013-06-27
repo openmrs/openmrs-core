@@ -1076,6 +1076,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
 	
+	public static final String GP_MAIL_SMTP_STARTTLS = "mail.smtp.starttls.enable";
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -1154,7 +1155,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE, "default",
 		        "Type of widget to use for location fields"));
 		
-		props.add(new GlobalProperty("mail.smtp.starttls.enable", "false"));
+		props.add(new GlobalProperty(GP_MAIL_SMTP_STARTTLS, "false"));
 		
 		String standardRegimens = "<list>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
 		        + "        <drugId>2</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
