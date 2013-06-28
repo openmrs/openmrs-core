@@ -1155,7 +1155,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE, "default",
 		        "Type of widget to use for location fields"));
 		
-		props.add(new GlobalProperty(GP_MAIL_SMTP_STARTTLS, "false"));
+		props.add(new GlobalProperty(GP_MAIL_SMTP_STARTTLS, "false", "Enable TLS encrption if wanted"));
 		
 		String standardRegimens = "<list>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
 		        + "        <drugId>2</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
