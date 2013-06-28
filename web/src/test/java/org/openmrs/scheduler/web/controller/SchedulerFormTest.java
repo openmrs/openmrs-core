@@ -20,7 +20,6 @@ public class SchedulerFormTest extends BaseWebContextSensitiveTest {
 	 * See TRUNK-3970: Error when adding a task in version 1.9.3
 	 * https://tickets.openmrs.org/browse/TRUNK-3970
 	 */
-	//	@Ignore
 	@Test
 	public void addANewTaskShouldNotError() throws Exception {
 		HttpServletRequest request = new MockHttpServletRequest("GET", "/openmrs/admin/scheduler/scheduler.form");
