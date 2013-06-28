@@ -1603,8 +1603,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createPersonPurgeVoidTest.xml");
 		Person person = Context.getPersonService().getPerson(1002);
 		
-		//Assert.assertTrue(person.isVoided());
-		//Assert.assertNotNull(person.getDateVoided());
+		Assert.assertTrue(person.isVoided());
+		Assert.assertNotNull(person.getDateVoided());
 		
 		Person unvoidedPerson = Context.getPersonService().unvoidPerson(person);
 		
@@ -1645,7 +1645,12 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void voidPerson_shouldReturnVoidedPersonWithGivenReason() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createPersonPurgeVoidTest.xml");
 		Person person = Context.getPersonService().getPerson(1001);
-		Person voidedPerson = Context.getPersonService().voidPerson(person, "Test Voiding Person");
+		Context.getPersonService().voidPerson(person, "Test Voiding Person");
+		
+		Context.flushSession();
+		Context.clearSession();
+		
+		Person voidedPerson = Context.getPersonService().getPerson(1001);
 		
 		Assert.assertTrue(voidedPerson.isVoided());
 		Assert.assertNotNull(voidedPerson.getVoidedBy());
