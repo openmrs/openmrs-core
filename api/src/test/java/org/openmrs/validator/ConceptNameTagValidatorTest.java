@@ -13,10 +13,14 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.ConceptNameTag;
-import org.openmrs.api.impl.ConceptServiceImpl;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -32,7 +36,7 @@ public class ConceptNameTagValidatorTest {
 	 * @verifies fail validation if tag is null or empty or whitespace
 	 */
 	@Test
-	public void validate_ShouldFailValidationIfTagIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfTagIsNullOrEmptyOrWhitespace() throws Exception {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		Errors errors = new BindException(cnt, "cnt");
@@ -55,7 +59,7 @@ public class ConceptNameTagValidatorTest {
 	 * @verifies fail validation if description is null or empty or whitespace
 	 */
 	@Test
-	public void validate_ShouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		Errors errors = new BindException(cnt, "cnt");
@@ -78,7 +82,7 @@ public class ConceptNameTagValidatorTest {
 	 * @verifies pass validation if all required fields have proper values
 	 */
 	@Test
-	public void validate_ShouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		cnt.setTag("tag");
@@ -90,13 +94,19 @@ public class ConceptNameTagValidatorTest {
 	}
 	
 	/**
-	 * @see ConceptNameTagValidator#validate(Object,Errors)
-	 * @verifies confirm that a faulty conceptNameTag will not be saved
+	 * @see ConceptService#saveConceptNameTag(Object,Errors)
+	 * @verifies {@link ConceptService#saveConceptNameTag(ConceptNameTag)} test = not save a concept
+	 *           name tag if tag is faulty
 	 */
 	@Test
-	public void validate_ShouldConfirmThatAFaultyConceptNameTagWillNotBeSaved() throws Exception {
+	public void saveConceptNameTag_shouldNotSaveATagIfItIsFaulty() throws Exception {
 		ConceptNameTag cnt = new ConceptNameTag();
-		ConceptServiceImpl impl = new ConceptServiceImpl();
-		Assert.assertTrue("falty ConceptNameTag",impl.saveConceptNameTag(cnt).equals(null));
+		ConceptService cs = Context.getConceptService();
+		
+		ConceptNameTag faultyNameTag = cs.saveConceptNameTag(cnt);
+		
+		assertNotNull(cnt.getId());
+		assertEquals(faultyNameTag.getId(), cnt.getId());
+		
 	}
 }

@@ -17,14 +17,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Validates attributes on the {@link ConceptNameTag} object. </br> need to add a (jsp file i.e
- * ConceptNameTag.jsp) page for ConceptNameTag whose fields this file will validate
+ * Validates attributes on the {@link ConceptNameTag} object.
  * 
  * @since 1.10
  */
@@ -52,7 +50,6 @@ public class ConceptNameTagValidator implements Validator {
 	 * @should fail validation if tag is null or empty or whitespace
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
-	 * @should confirm that a faulty conceptNameTag will not be saved
 	 */
 	
 	public void validate(Object obj, Errors errors) {
@@ -62,12 +59,6 @@ public class ConceptNameTagValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tag", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
-			
-			for (ConceptNameTag currentTag : Context.getConceptService().getAllConceptNameTags()) {
-				if (currentTag.getTag().trim().equals(cnt.getTag().trim())) {
-					errors.rejectValue("tag", "conceptsearch.error.duplicate");
-				}
-			}
 		}
 	}
 	
