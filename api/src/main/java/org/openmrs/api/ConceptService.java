@@ -52,12 +52,16 @@ import org.openmrs.util.PrivilegeConstants;
  * <pre>
  * 
  * 
+ * 
+ * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
  * 
  * To get a single concept:
  * 
  * <pre>
+ * 
+ * 
  * 
  * 
  * // if there is a concept row in the database with concept_id = 3845
@@ -674,6 +678,15 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPT_CLASSES)
 	public void purgeConceptClass(ConceptClass cc) throws APIException;
+	
+	/**
+	 * Purge a ConceptNameTag
+	 * 
+	 * @param cnt ConceptNameTag to delete
+	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.PURGE_CONCEPT_CLASSES)
+	public void purgeConceptNameTag(ConceptNameTag cnt) throws APIException;
 	
 	/**
 	 * Create or update a ConceptDatatype

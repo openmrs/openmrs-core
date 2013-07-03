@@ -475,6 +475,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ConceptDAO#purgeConceptClass(org.openmrs.ConceptClass)
+	 */
+	public void deleteConceptNameTag(ConceptNameTag cnt) throws DAOException {
+		sessionFactory.getCurrentSession().delete(cnt);
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptDatatype(java.lang.Integer)
 	 */
 	public ConceptDatatype getConceptDatatype(Integer i) {
