@@ -341,7 +341,10 @@
 	<filter-mapping>
 		<filter-name>jspClassLoader</filter-name> 
 		<url-pattern>*.jsp</url-pattern> 
+		<dispatcher>ERROR</dispatcher>
 		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
 	</filter-mapping>
 		
 	<welcome-file-list>
