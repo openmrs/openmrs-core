@@ -190,10 +190,6 @@
             </td>
         </c:forEach>
 
-		<td id="patientHeaderObsReturnVisit"><openmrs:message
-				code="Patient.returnVisit" />: <openmrs_tag:mostRecentObs
-				observations="${model.patientObs}" concept="5096"
-				locale="${model.locale}" /></td>
 		<td id="patientHeaderObsRegimen"><openmrs:message
 				code="Patient.regimen" />: <span id="patientHeaderRegimen">
 				<c:forEach items="${model.currentDrugOrders}" var="drugOrder"
