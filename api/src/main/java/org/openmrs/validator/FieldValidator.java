@@ -1,79 +1,70 @@
-/**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
- *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
- */
 package org.openmrs.validator;
-
+import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Field;
-import org.openmrs.annotation.Handler;
-import org.openmrs.api.APIException;
+import org.openmrs.RelationshipType;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+/****/
+public class RelationshipTypeValidator implements Validator {
+	/** Log for this class and subclasses */
+protected final Log log = LogFactory.getLog(getClass());
 
-/**
- * Validator for {@link Field} class
- * 
- * @since 1.10
- */
-@Handler(supports = { Field.class }, order = 50)
-public class FieldValidator implements Validator {
-	
-	private static final Log log = LogFactory.getLog(FieldValidator.class);
-	
 	/**
-	 * Returns whether or not this validator supports validating a given class.
-	 * 
-	 * @param c The class to check for support.
+	 * Determines if the command object being submitted is a valid type
+ * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
-		if (log.isDebugEnabled())
-			log.debug(this.getClass().getName() + ".supports: " + c.getName());
-		return Field.class.isAssignableFrom(c);
+		return c.equals(RelationshipType.class);
 	}
 	
 	/**
-	 * Validates the given Field. 
-	 * Ensures that the field name is present and valid
-	 * 
-	 * @param obj The Field to validate.
-	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail if field name is null
-	 * @should fail if field name is empty
-	 * @should fail if field name is all whitespace
-	 * @should fail if selectMultiple is null
-	 * @should fail if retired is null
-	 * @should pass if name is ok and fieldType, selectMultiple, and retired are non-null
-	 * should not fail if fieldType is null
+	 * @should fail validation if aIsToB is null or empty
+	 * @should fail validation if bIsToA is null or empty
+	 * @should fail validation if non-retired record with same combination exists
+	 * @should fail validation if non-retired record with reverse combination exists
+	 * @should pass validation if retired record with same combination exists
 	 */
-	public void validate(Object obj, Errors errors) throws APIException {
-		if (log.isDebugEnabled())
-			log.debug(this.getClass().getName() + ".validate...");
-		
-		if (obj == null || !(obj instanceof Field))
-			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Field.class);
-		
-		Field field = (Field) obj;
-		
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.null", "Field name is required");
-		if (field.getSelectMultiple() == null)
-			errors.rejectValue("selectMultiple", "error.general");
-		if (field.getRetired() == null)
-			errors.rejectValue("retired", "error.general");
+	public void validate(Object obj, Errors errors) {
+		RelationshipType relationshipType = (RelationshipType) obj;
+		if (relationshipType == null) {
+			errors.rejectValue("relationshipType", "error.general");
+		} else {
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "aIsToB", "error.name");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "bIsToA", "error.name");
+
+			if (!errors.hasFieldErrors("aIsToB") && !errors.hasFieldErrors("bIsToA"))
+			{
+				//check duplicate name
+				List<RelationshipType> rts = Context.getPersonService().getAllRelationshipTypes();
+				
+				String aIsToB = relationshipType.getaIsToB().toUpperCase();
+				String bIsToA = relationshipType.getbIsToA().toUpperCase();
+
+				if (!relationshipType.isRetired() && rts != null) {
+					for (RelationshipType dupobj : rts) {
+						if (!dupobj.getId().equals(relationshipType.getId()) && !dupobj.isRetired()) {
+							if (dupobj.getaIsToB().toUpperCase().equals(aIsToB)
+							        && dupobj.getbIsToA().toUpperCase().equals(bIsToA)) {
+								errors.rejectValue("aIsToB", "general.error.nameAlreadyInUse");
+							errors.rejectValue("bIsToA", "general.error.nameAlreadyInUse");
+								break;
+							} else if (dupobj.getaIsToB().toUpperCase().equals(bIsToA)
+							        && dupobj.getbIsToA().toUpperCase().equals(aIsToB)) {
+								errors.rejectValue("aIsToB", "general.error.nameAlreadyInUse");
+								errors.rejectValue("bIsToA", "general.error.nameAlreadyInUse");
+								break;
+							}
+						}
+					}
+				}	
+			}
+		}
 	}
 }
