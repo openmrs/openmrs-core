@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -59,6 +60,12 @@ public class ConceptNameTagValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tag", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
+			
+			for (ConceptNameTag currentTag : Context.getConceptService().getAllConceptNameTags()) {
+				if (currentTag.getTag().trim()==(cnt.getTag().trim())) {
+					errors.rejectValue("tag", "conceptsearch.error.duplicate");
+				}
+			}
 		}
 	}
 	

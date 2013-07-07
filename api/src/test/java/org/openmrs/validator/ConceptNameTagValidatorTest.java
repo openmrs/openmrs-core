@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -29,7 +30,7 @@ import org.springframework.validation.Errors;
  * 
  * @since 1.10
  */
-public class ConceptNameTagValidatorTest {
+public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest{
 	
 	/**
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
