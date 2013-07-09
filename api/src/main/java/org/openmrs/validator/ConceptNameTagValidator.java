@@ -61,9 +61,11 @@ public class ConceptNameTagValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tag", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 			
-			for (ConceptNameTag currentTag : Context.getConceptService().getAllConceptNameTags()) {
-				if (currentTag.getTag().trim()==(cnt.getTag().trim())) {
-					errors.rejectValue("tag", "conceptsearch.error.duplicate");
+			if (cnt.getTag() != null) {
+				for (ConceptNameTag currentTag : Context.getConceptService().getAllConceptNameTags()) {
+					if (currentTag.getTag().trim() == (cnt.getTag().trim())) {
+						errors.rejectValue("tag", "conceptsearch.error.duplicate");
+					}
 				}
 			}
 		}

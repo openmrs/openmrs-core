@@ -30,7 +30,7 @@ import org.springframework.validation.Errors;
  * 
  * @since 1.10
  */
-public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest{
+public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
@@ -97,10 +97,10 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest{
 	/**
 	 * @see ConceptService#saveConceptNameTag(Object,Errors)
 	 * @verifies {@link ConceptService#saveConceptNameTag(ConceptNameTag)} test = not save a concept
-	 *           name tag if tag is faulty
+	 *           name tag if tag is invalid
 	 */
-	@Test
-	public void saveConceptNameTag_shouldNotSaveATagIfItIsFaulty() throws Exception {
+	@Test(expected = Exception.class)
+	public void saveConceptNameTag_shouldNotSaveATagIfItIsInvalid() throws Exception {
 		ConceptNameTag cnt = new ConceptNameTag();
 		ConceptService cs = Context.getConceptService();
 		
