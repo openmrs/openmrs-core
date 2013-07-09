@@ -16,6 +16,7 @@ package org.openmrs.api.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Address;
 import org.openmrs.Location;
@@ -165,7 +166,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 * @see org.openmrs.api.LocationService#getLocations(java.lang.String)
 	 */
 	public List<Location> getLocations(String nameFragment) throws APIException {
-		return getLocations(nameFragment, false, null, null);
+		return getLocations(nameFragment, null, null, false, null, null);
 	}
 	
 	/**
@@ -328,10 +329,22 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see LocationService#getLocations(String, boolean, Integer, Integer)
 	 */
-	@Override
+	@Deprecated
 	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
 	        throws APIException {
-		return dao.getLocations(nameFragment, includeRetired, start, length);
+		return dao.getLocations(nameFragment, null, null, includeRetired, start, length);
+	}
+	
+	/**
+	 * @see LocationService#getLocations(String, org.openmrs.Location, java.util.Map, boolean, Integer, Integer)
+	 */
+	@Override
+	public List<Location> getLocations(String nameFragment, Location parent,
+	        Map<LocationAttributeType, Object> attributeValues, boolean includeRetired, Integer start, Integer length) {
+		Map<LocationAttributeType, String> serializedAttributeValues = CustomDatatypeUtil
+		        .getValueReferences(attributeValues);
+		
+		return dao.getLocations(nameFragment, parent, serializedAttributeValues, includeRetired, start, length);
 	}
 	
 	/**
