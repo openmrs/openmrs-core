@@ -207,30 +207,6 @@ public class HibernateLocationDAO implements LocationDAO {
 	}
 	
 	/**
-	 * @see LocationDAO#getLocations(String, Integer, Integer)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
-	        throws DAOException {
-		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
-		if (!includeRetired)
-			criteria.add(Restrictions.eq("retired", false));
-		
-		if (StringUtils.isNotBlank(nameFragment))
-			criteria.add(Restrictions.ilike("name", nameFragment, MatchMode.START));
-		
-		criteria.addOrder(Order.asc("name"));
-		if (start != null)
-			criteria.setFirstResult(start);
-		if (length != null && length > 0)
-			criteria.setMaxResults(length);
-		
-		return criteria.list();
-	}
-	
-	/**
 	 * @see LocationDAO#getLocations(String, org.openmrs.Location, java.util.Map, boolean, Integer, Integer)
 	 */
 	@Override

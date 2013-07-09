@@ -69,15 +69,6 @@ public interface LocationDAO {
 	public List<Location> getAllLocations(boolean includeRetired);
 	
 	/**
-	 * Returns a specified number of locations starting with a given string from the specified index
-	 *
-	 * @deprecated replaced by {@link LocationDAO#getLocations(String, org.openmrs.Location, java.util.Map, boolean, Integer, Integer)}
-	 */
-	@Deprecated
-	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
-	        throws DAOException;
-	
-	/**
 	 * Gets the locations matching the specified arguments
 	 *
 	 * @param nameFragment is the string used to search for locations

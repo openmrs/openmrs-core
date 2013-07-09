@@ -332,7 +332,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	@Deprecated
 	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
 	        throws APIException {
-		return dao.getLocations(nameFragment, includeRetired, start, length);
+		return dao.getLocations(nameFragment, null, null, includeRetired, start, length);
 	}
 	
 	/**
