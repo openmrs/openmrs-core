@@ -108,6 +108,7 @@ public class ORUR01Handler implements Application {
 	 * 
 	 * @return true
 	 */
+	@Override
 	public boolean canProcess(Message message) {
 		return message != null && "ORU_R01".equals(message.getName());
 	}
@@ -139,6 +140,7 @@ public class ORUR01Handler implements Application {
 	 * @should fail if the provider name type code is not specified and is not a personId
 	 * @should set complex data for obs with complex concepts
 	 */
+	@Override
 	public Message processMessage(Message message) throws ApplicationException {
 		
 		if (!(message instanceof ORU_R01))
@@ -152,12 +154,13 @@ public class ORUR01Handler implements Application {
 			response = processORU_R01(oru);
 		}
 		catch (ClassCastException e) {
-			log.error("Error casting " + message.getClass().getName() + " to ORU_R01", e);
-			throw new ApplicationException("Invalid message type for handler");
+			log.warn("Error casting " + message.getClass().getName() + " to ORU_R01", e);
+			throw new ApplicationException("Invalid message type for handler. Error casting " + message.getClass().getName()
+			        + " to ORU_R01", e);
 		}
 		catch (HL7Exception e) {
-			log.error("Error while processing ORU_R01 message", e);
-			throw new ApplicationException(e);
+			log.warn("Error while processing ORU_R01 message", e);
+			throw new ApplicationException("Error while processing ORU_R01 message", e);
 		}
 		
 		log.debug("Finished processing ORU_R01 message");
@@ -933,11 +936,7 @@ public class ORUR01Handler implements Application {
 			}
 		} else {
 			// the concept is not local, look it up in our mapping
-			Concept concept = Context.getConceptService().getConceptByMapping(hl7ConceptId, codingSystem);
-			if (concept == null)
-				log.error("Unable to find concept with code: " + hl7ConceptId + " and mapping: " + codingSystem
-				        + " in hl7 message with uid: " + uid);
-			return concept;
+			return Context.getConceptService().getConceptByMapping(hl7ConceptId, codingSystem);
 		}
 	}
 	
