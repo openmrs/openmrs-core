@@ -835,7 +835,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public void setPersonChangedBy(User changedBy) {
 		this.personChangedBy = changedBy;
-	    this.setChangedBy(changedBy);
+		this.setChangedBy(changedBy);
 	}
 	
 	public Date getPersonDateChanged() {
