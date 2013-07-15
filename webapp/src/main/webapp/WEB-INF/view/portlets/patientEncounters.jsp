@@ -117,7 +117,7 @@ Parameters
 
 	<openmrs:hasPrivilege privilege="View Encounters">
 		<div id="encounters">
-			<div class="boxHeader${model.patientVariation}"><c:choose><c:when test="${empty model.title}"><openmrs:message code="Encounter.header"/></c:when><c:otherwise><openmrs:message code="${model.title}"/></c:otherwise></c:choose></div>
+			<div class="boxHeader${model.patientVariation}"><c:choose><c:when test="${empty model.title}"><openmrs:message code="Encounter.header"/></c:when><c:otherwise><openmrs:message code="${model.title}" arguments="${model.num}"/></c:otherwise></c:choose></div>
 			<div class="box${model.patientVariation}">
 				<div>
 					<table cellspacing="0" cellpadding="2" id="patientEncountersTable">
