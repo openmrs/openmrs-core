@@ -39,6 +39,7 @@ import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -99,12 +100,9 @@ public class FormFormController extends SimpleFormController {
 						Context.getFormService().purgeForm(form);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.deleted");
 					}
-					catch (Exception e) {
-						log.error("Error while deleting form " + form.getFormId(), e);
-						errors.reject(e.getMessage());
+					catch (DataIntegrityViolationException e) {
 						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
-						return showForm(request, response, errors);
-						//return new ModelAndView(new RedirectView(getSuccessView()));
+						return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
 					}
 				} else if (action.equals(msa.getMessage("Form.updateSortOrder"))) {
 					
