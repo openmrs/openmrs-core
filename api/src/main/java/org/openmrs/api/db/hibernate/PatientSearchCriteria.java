@@ -240,7 +240,7 @@ public class PatientSearchCriteria {
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
-		// TODO add junit test for searching on voided patient names
+
 		if (names.length > 0) {
 			String nameSoFar = names[0];
 			for (int i = 0; i < names.length; i++) {
