@@ -284,7 +284,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	}
 
     @Test
-    public void searchByPatientName_shouldNotMatchVoidedPersonNames(){
+    public void getPatients_shouldNotMatchVoidedPatients(){
         List<PatientIdentifierType> identifierTypes = Collections.emptyList();
         List<Patient> patients = dao.getPatients("Hornblower3", null, identifierTypes, false, 0, 11, false);
         Assert.assertEquals(1, patients.size());
