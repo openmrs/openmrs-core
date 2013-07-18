@@ -224,7 +224,7 @@
 			<div id="formEntry" style="display:none;">
 			
 				<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.FormEntryTabHeader" type="html" parameters="patientId=${patient.patientId}" />
-				<openmrs:portlet url="personFormEntry" id="formEntryPortlet" personId="${patient.personId}" parameters="showDecoration=true|showLastThreeEncounters=true|returnUrl=${pageContext.request.contextPath}/patientDashboard.form"/>
+				<openmrs:portlet url="personFormEntry" id="formEntryPortlet" personId="${patient.personId}" parameters="showDecoration=true|showDefinedNumberOfEncounters=true|returnUrl=${pageContext.request.contextPath}/patientDashboard.form"/>
 				
 			</div>
 		</openmrs:hasPrivilege>
