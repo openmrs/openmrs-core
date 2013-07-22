@@ -14,6 +14,7 @@
 package org.openmrs.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Address;
 import org.openmrs.Location;
@@ -155,6 +156,8 @@ public interface LocationService extends OpenmrsService {
 	 * returned if there are no locations. Search is case insensitive. matching this
 	 * <code>nameFragment</code>. If start and length are not specified, then all matches are
 	 * returned
+	 *
+	 * @deprecated replaced by {@link LocationService#getLocations(String, org.openmrs.Location, java.util.Map, boolean, Integer, Integer)}
 	 * 
 	 * @param nameFragment is the string used to search for locations
 	 * @param includeRetired Specifies if retired locations should be returned
@@ -162,8 +165,30 @@ public interface LocationService extends OpenmrsService {
 	 * @param length the number of matching locations to return
 	 * @since 1.8
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
+	        throws APIException;
+	
+	/**
+	 * Gets the locations matching the specified arguments. A null list will never be returned. An empty list will be
+	 * returned if there are no locations. Search is case insensitive. matching this <code>nameFragment</code>. If start
+	 * and length are not specified, then all matches are returned.
+	 *
+	 * @param nameFragment    is the string used to search for locations
+	 * @param parent          only return children of this parent
+	 * @param attributeValues the attribute values
+	 * @param includeRetired  specifies if retired locations should also be returned
+	 * @param start           the beginning index
+	 * @param length          the number of matching locations to return
+	 * @return the list of locations
+	 * @should return empty list when no location has matching attribute values
+	 * @should get locations having all matching attribute values
+	 * @since 1.10
+	 */
+	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
+	public List<Location> getLocations(String nameFragment, Location parent,
+	        Map<LocationAttributeType, Object> attributeValues, boolean includeRetired, Integer start, Integer length)
 	        throws APIException;
 	
 	/**

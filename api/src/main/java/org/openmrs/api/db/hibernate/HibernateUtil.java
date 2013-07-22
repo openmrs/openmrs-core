@@ -15,14 +15,23 @@ package org.openmrs.api.db.hibernate;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.engine.SessionFactoryImplementor;
+import org.openmrs.Location;
+import org.openmrs.attribute.AttributeType;
 
 /**
  * This class holds common methods and utilities that are used across the hibernate related classes
@@ -108,4 +117,28 @@ public class HibernateUtil {
 			return oldString;
 	}
 	
+	/**
+	 * Adds attribute value criteria to the given criteria query
+	 * @param criteria the criteria
+	 * @param serializedAttributeValues the serialized attribute values
+	 * @param <AT> the attribute type
+	 */
+	public static <AT extends AttributeType> void addAttributeCriteria(Criteria criteria,
+	        Map<AT, String> serializedAttributeValues) {
+		Conjunction conjunction = Restrictions.conjunction();
+		int a = 0;
+		
+		for (Map.Entry<AT, String> entry : serializedAttributeValues.entrySet()) {
+			String alias = "attributes" + (a++);
+			DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Location.class).setProjection(Projections.id());
+			detachedCriteria.createAlias("attributes", alias);
+			detachedCriteria.add(Restrictions.eq(alias + ".attributeType", entry.getKey()));
+			detachedCriteria.add(Restrictions.eq(alias + ".valueReference", entry.getValue()));
+			detachedCriteria.add(Restrictions.eq(alias + ".voided", false));
+			
+			conjunction.add(Property.forName("id").in(detachedCriteria));
+		}
+		
+		criteria.add(conjunction);
+	}
 }
