@@ -68,12 +68,9 @@ import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.validator.ConceptValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 
 /**
  * Default Implementation of ConceptService service layer classes
@@ -844,6 +841,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	public void purgeConceptClass(ConceptClass cc) {
 		dao.purgeConceptClass(cc);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#purgeConceptNameTag(org.openmrs.ConceptNameTag)
+	 */
+	public void purgeConceptNameTag(ConceptNameTag cnt) {
+		dao.deleteConceptNameTag(cnt);
 	}
 	
 	/**
