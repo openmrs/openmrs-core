@@ -19,6 +19,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.NoteDAO;
 import org.openmrs.notification.Note;
@@ -80,4 +81,9 @@ public class HibernateNoteDAO implements NoteDAO {
 		sessionFactory.getCurrentSession().delete(note);
 	}
 	
+	public Note voidNote(Note note, String reason) throws APIException {
+		log.debug("voiding note because " + reason);
+		sessionFactory.getCurrentSession().save(note);
+		return note;
+	}
 }
