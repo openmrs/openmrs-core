@@ -282,18 +282,18 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertArrayEquals(new Object[] { openMRSIdNumber, oldIdNumber, socialSecNumber }, patientIdentifierTypes
 		        .toArray());
 	}
-
-    @Test
-    public void getPatients_shouldNotMatchVoidedPatients(){
-        List<PatientIdentifierType> identifierTypes = Collections.emptyList();
-        List<Patient> patients = dao.getPatients("Hornblower3", null, identifierTypes, false, 0, 11, false);
-        Assert.assertEquals(1, patients.size());
-
-        Patient patient = patients.get(0);
-        patient.setVoided(true);
-        dao.savePatient(patient);
-
-        patients = dao.getPatients("Hornblower3", null, identifierTypes, false, 0, 11, false);
-        Assert.assertEquals(0, patients.size());
-    }
+	
+	@Test
+	public void getPatients_shouldNotMatchVoidedPatients() {
+		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
+		List<Patient> patients = dao.getPatients("Hornblower3", null, identifierTypes, false, 0, 11, false);
+		Assert.assertEquals(1, patients.size());
+		
+		Patient patient = patients.get(0);
+		patient.setVoided(true);
+		dao.savePatient(patient);
+		
+		patients = dao.getPatients("Hornblower3", null, identifierTypes, false, 0, 11, false);
+		Assert.assertEquals(0, patients.size());
+	}
 }
