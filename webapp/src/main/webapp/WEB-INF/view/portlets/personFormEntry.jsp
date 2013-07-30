@@ -21,7 +21,7 @@ Parameters:
 <c:if test="${model.showDefinedNumberOfEncounters}">  <%-- showDefinedNumberOfEncounters shows the given number of encounters entered in the dashboard.encounters.maximumNumberToShow global property value --%>
 	<openmrs:hasPrivilege privilege="View Encounters">
 		<openmrs:globalProperty var="maxEncs" key="dashboard.encounters.maximumNumberToShow" defaultValue="" />
-		<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=${maxEncs}|title=Encounter.last.definedEncounters|formEntryReturnUrl=${pageContext.request.contextPath}/patientDashboard.form" />
+		<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=${maxEncs}|title=Encounter.last.definedNumberOfEncounters|formEntryReturnUrl=${pageContext.request.contextPath}/patientDashboard.form" />
 		<br/>
 	</openmrs:hasPrivilege>
 </c:if>
