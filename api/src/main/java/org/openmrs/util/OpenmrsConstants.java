@@ -1484,7 +1484,7 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(
 		                GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW,
-		                "",
+		                "3",
 		                "An integer which, if specified, would determine the maximum number of encounters to display on the encounter tab of the patient dashboard."));
 		
 		props.add(new GlobalProperty(GP_VISIT_TYPES_TO_AUTO_CLOSE, "",
