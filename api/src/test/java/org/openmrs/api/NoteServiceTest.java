@@ -38,13 +38,17 @@ public class NoteServiceTest extends BaseContextSensitiveTest {
 	public void voidNote_shouldVoidTheNoteAndSetTheVoidReason() throws Exception {
 		executeDataSet(INITIAL_NOTE_XML);
 		
-		Note note = new Note();
+		NoteService noteService = Context.getNoteService();
+		
+		Note note = noteService.getNote(0);
+		
 		Assert.assertFalse(note.isVoided());
 		Assert.assertNull(note.getVoidReason());
 		Assert.assertNull(note.getDateVoided());
 		Assert.assertNull(note.getDateVoided());
 		
-		note = Context.getNoteService().voidNote(note, "test reason");
+		noteService.voidNote(note, "test reason");
+		
 		assertTrue(note.isVoided());
 		assertEquals("test reason", note.getVoidReason());
 		assertEquals(Context.getAuthenticatedUser(), note.getVoidedBy());

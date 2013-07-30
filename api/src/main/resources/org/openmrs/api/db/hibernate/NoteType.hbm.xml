@@ -4,20 +4,19 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping package="org.openmrs.notification">
-
-	<class name="org.openmrs.notification.Note" table="notification_note"
+	<class name="org.openmrs.notification.NoteType" table="notification_note"
 		batch-size="25">
-		<id name="noteId" type="int" column="note_id" unsaved-value="0">
+		<id name="noteTypeId" type="int" column="note_type_id" unsaved-value="0">
 			<generator class="native">
 				<param name="sequence">notification_note_note_id_seq</param>
 			</generator>
 		</id>
-		<discriminator column="note_id" insert="false" />
+		<discriminator column="note_type_id" insert="false" />
 
-		<property name="text" type="java.lang.String" column="text"
-			not-null="true" length="512" />
-		<many-to-one name="creator" class="org.openmrs.User"
-			column="creator" not-null="true" />
+		<property name="name" type="java.lang.String" column="name"
+			length="50" />
+		<property name="description" type="java.lang.String" column="description"
+			length="2147483647" />
 		<property name="dateCreated" type="java.util.Date" column="date_created"
 			not-null="true" length="19" />
 		<many-to-one name="changedBy" class="org.openmrs.User"
@@ -32,16 +31,5 @@
 			column="voided_by" not-null="true" />
 		<property name="voidReason" type="java.lang.String" column="void_reason"
 			length="255" />
-		<property name="priority" type="java.lang.Integer" length="11"
-			column="priority" not-null="true" />
-		<property name="weight" type="java.lang.Integer" length="11"
-			column="weight" not-null="true" />
-		<property name="uuid" type="java.lang.String" column="uuid"
-			length="38" unique="true" />
-		<many-to-one name="patient" class="org.openmrs.Patient"
-			column="patient" not-null="true" />
-		<many-to-one name="noteType" class="org.openmrs.notification.NoteType"
-			column="note_type" not-null="true" />
 	</class>
-
 </hibernate-mapping>
