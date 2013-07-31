@@ -15,11 +15,11 @@
 		<discriminator column="note_id" insert="false" />
 
 		<property name="text" type="java.lang.String" column="text"
-			not-null="false" length="512" />
+			not-null="true" length="512" />
 		<many-to-one name="creator" class="org.openmrs.User"
-			column="creator" not-null="false" />
+			column="creator" not-null="true" />
 		<property name="dateCreated" type="java.util.Date" column="date_created"
-			not-null="false" length="19" />
+			not-null="true" length="19" />
 		<many-to-one name="changedBy" class="org.openmrs.User"
 			column="changed_by" />
 		<property name="dateChanged" type="java.util.Date" column="date_changed"
