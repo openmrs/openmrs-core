@@ -47,6 +47,9 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to get patient observations")
 	public static final String GET_OBS = "Get Observations";
 	
+	@AddOnStartup(description = "Able to get patient notes")
+	public static final String GET_NOTE = "Get Notes";
+	
 	@AddOnStartup(description = "Able to get patients")
 	public static final String GET_PATIENTS = "Get Patients";
 	
@@ -281,6 +284,19 @@ public class PrivilegeConstants {
 	public static final String DELETE_OBS = "Delete Observations";
 	
 	public static final String PURGE_OBS = "Purge Observations";
+	
+	/**
+	 * @deprecated Use org.openmrs.util.PrivilegeConstants.GET_NOTE
+	 */
+	@Deprecated
+	@AddOnStartup(description = "Able to view patient notes")
+	public static final String VIEW_NOTE = GET_NOTE;
+	
+	@AddOnStartup(description = "Able to edit patient notes")
+	public static final String EDIT_NOTE = "Edit Notes";
+	
+	@AddOnStartup(description = "Able to delete patient notes")
+	public static final String DELETE_NOTE = "Delete Notes";
 	
 	/**
 	 * @deprecated Use org.openmrs.util.PrivilegeConstants.GET_PATIENTS

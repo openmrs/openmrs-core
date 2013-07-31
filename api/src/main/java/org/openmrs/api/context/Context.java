@@ -70,6 +70,7 @@ import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
+import org.openmrs.notification.NoteService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportObjectService;
@@ -389,6 +390,13 @@ public class Context {
 	 */
 	public static ObsService getObsService() {
 		return getServiceContext().getObsService();
+	}
+	
+	/**
+	 * @return note services
+	 */
+	public static NoteService getNoteService() {
+		return getServiceContext().getNoteService();
 	}
 	
 	/**
@@ -747,8 +755,9 @@ public class Context {
 	}
 	
 	/**
-	 * Used to define a unit of work which does not require clearing out the currently authenticated user. 
-	 * Remember to call closeSessionWithCurrentUser in a, preferably, finally block after this work.
+	 * Used to define a unit of work which does not require clearing out the currently authenticated
+	 * user. Remember to call closeSessionWithCurrentUser in a, preferably, finally block after this
+	 * work.
 	 * 
 	 * @since 1.10
 	 */
@@ -757,8 +766,8 @@ public class Context {
 	}
 	
 	/**
-	 * Used when the a unit of work which started with a call for openSessionWithCurrentUser has finished.
-	 * This should be in a, preferably, finally block.
+	 * Used when the a unit of work which started with a call for openSessionWithCurrentUser has
+	 * finished. This should be in a, preferably, finally block.
 	 * 
 	 * @since 1.10
 	 */
@@ -828,7 +837,7 @@ public class Context {
 	 *      the required question/datatypes
 	 */
 	public static void startup(Properties props) throws DatabaseUpdateException, InputRequiredException,
-	        ModuleMustStartException {
+	    ModuleMustStartException {
 		// do any context database specific startup
 		getContextDAO().startup(props);
 		
@@ -872,7 +881,7 @@ public class Context {
 	 *      the required question/datatypes
 	 */
 	public static void startup(String url, String username, String password, Properties properties)
-	        throws DatabaseUpdateException, InputRequiredException, ModuleMustStartException {
+	    throws DatabaseUpdateException, InputRequiredException, ModuleMustStartException {
 		if (properties == null)
 			properties = new Properties();
 		
@@ -1168,7 +1177,7 @@ public class Context {
 	/**
 	 * Set a piece of information for the currently authenticated user. This information is stored
 	 * only temporarily. When a new module is loaded or the server is restarted, this information
-	 * will disappear 
+	 * will disappear
 	 * 
 	 * @param key identifying string for this information
 	 * @param value information to be stored

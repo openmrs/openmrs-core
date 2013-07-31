@@ -53,6 +53,7 @@ import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
+import org.openmrs.notification.NoteService;
 import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -201,6 +202,13 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public ObsService getObsService() {
 		return getService(ObsService.class);
+	}
+	
+	/**
+	 * @return note services
+	 */
+	public NoteService getNoteService() {
+		return getService(NoteService.class);
 	}
 	
 	/**
@@ -405,6 +413,13 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setObsService(ObsService obsService) {
 		setService(ObsService.class, obsService);
+	}
+	
+	/**
+	 * @param noteService the noteService to set
+	 */
+	public void setNoteService(NoteService noteService) {
+		setService(NoteService.class, noteService);
 	}
 	
 	/**
@@ -924,9 +939,8 @@ public class ServiceContext implements ApplicationContextAware {
 	 * Retrieves a bean that match the given type (including subclasses) and name.
 	 * 
 	 * @param beanName the name of registered bean to retrieve
-	 * @param type the type of bean to retrieve 
+	 * @param type the type of bean to retrieve
 	 * @return bean of passed type
-	 * 
 	 * @since 1.9.4
 	 */
 	public <T> T getRegisteredComponent(String beanName, Class<T> type) throws APIException {
