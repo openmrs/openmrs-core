@@ -76,7 +76,7 @@ public class ProviderTest {
 		Person person = new Person(1);
 		person.addName(new PersonName("givenName", "middleName", "familyName"));
 		provider.setPerson(person);
-		Assert.assertEquals(provider.toString(), "[Provider: providerId: 1[givenName middleName familyName] ]");
+		Assert.assertEquals(provider.toString(), "[Provider: providerId:1 providerName:[givenName middleName familyName] ]");
 	}
 	
 }
