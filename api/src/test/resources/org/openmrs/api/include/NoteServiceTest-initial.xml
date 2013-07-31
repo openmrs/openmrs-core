@@ -22,4 +22,6 @@
 	<notification_note note_id="7" text="sample text7"
 		creator="1" date_created="2013-05-14 16:35:35.0" changed_by="1"
 		date_changed="2013-05-15 17:00:35.0" is_voided="false" />
+
+	<notification_note note_type_id="2" name="sample name" />
 </dataset>

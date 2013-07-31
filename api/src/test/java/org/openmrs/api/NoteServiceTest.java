@@ -40,7 +40,7 @@ public class NoteServiceTest extends BaseContextSensitiveTest {
 		
 		NoteService noteService = Context.getNoteService();
 		
-		Note note = noteService.getNote(0);
+		Note note = noteService.getNote(1);
 		
 		Assert.assertFalse(note.isVoided());
 		Assert.assertNull(note.getVoidReason());

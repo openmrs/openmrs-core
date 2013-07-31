@@ -416,6 +416,13 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
+	 * @param noteService the noteService to set
+	 */
+	public void setNoteService(NoteService noteService) {
+		setService(NoteService.class, noteService);
+	}
+	
+	/**
 	 * @param orderService the orderService to set
 	 */
 	public void setOrderService(OrderService orderService) {
