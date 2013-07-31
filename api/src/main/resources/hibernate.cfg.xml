@@ -54,6 +54,8 @@
         <mapping resource="org/openmrs/api/db/hibernate/FormResource.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/GlobalProperty.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Obs.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/Note.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/NoteType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Person.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAttributeType.hbm.xml" />
