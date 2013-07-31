@@ -1266,6 +1266,7 @@
 	        <list value-type="org.openmrs.api.GlobalPropertyListener">
 	            <bean class="org.openmrs.web.controller.PseudoStaticContentController" />
 	            <bean class="org.openmrs.web.dwr.DWRPatientService" />
+	            <bean class="org.openmrs.web.WebUtil" />
 	        </list>
 	    </property>
 	</bean>
