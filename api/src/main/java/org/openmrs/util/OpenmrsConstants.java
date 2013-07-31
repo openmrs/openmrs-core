@@ -1444,8 +1444,9 @@ public final class OpenmrsConstants {
 		                "400",
 		                "Specifies time interval in milliseconds when searching, between keyboard keyup event and triggering the search off, should be higher if most users are slow when typing so as to minimise the load on the server"));
 		
-		props.add(new GlobalProperty(GP_SEARCH_DATE_DISPLAY_FORMAT, null,
-                "Date display format to be used to display the date somewhere in the UI i.e the search widgets and autocompletes"));
+		props
+		        .add(new GlobalProperty(GP_SEARCH_DATE_DISPLAY_FORMAT, null,
+		                "Date display format to be used to display the date somewhere in the UI i.e the search widgets and autocompletes"));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME, "Unknown Location",
 		        "The name of the location to use as a system default"));
