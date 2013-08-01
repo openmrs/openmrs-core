@@ -114,10 +114,9 @@ public class WebTestHelper {
 		
 		HandlerExecutionChain handlerChain = null;
 		for (HandlerMapping handlerMapping : handlerMappings) {
-			if (handlerChain == null) {
-				handlerChain = handlerMapping.getHandler(request);
-			} else {
-				Assert.fail("The requested URI has more than one mapping: " + request.getRequestURI());
+			handlerChain = handlerMapping.getHandler(request);
+			if (handlerChain != null) {
+				break;
 			}
 		}
 		Assert.assertNotNull("The requested URI has no mapping: " + request.getRequestURI(), handlerChain);
