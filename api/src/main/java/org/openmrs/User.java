@@ -414,6 +414,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	 * @deprecated Use LoginCredentials
 	 * @return Returns the secretQuestion.
 	 */
+	@Deprecated
 	public String getSecretQuestion() {
 		return secretQuestion;
 	}
@@ -423,6 +424,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	 * @param secretQuestion The secretQuestion to set.
 	 *
 	 */
+	@Deprecated
 	public void setSecretQuestion(String secretQuestion) {
 		this.secretQuestion = secretQuestion;
 	}
