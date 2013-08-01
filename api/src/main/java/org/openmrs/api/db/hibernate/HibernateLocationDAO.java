@@ -14,6 +14,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
@@ -202,19 +203,29 @@ public class HibernateLocationDAO implements LocationDAO {
 	}
 	
 	/**
-	 * @see LocationDAO#getLocations(String, Integer, Integer)
+	 * @see LocationDAO#getLocations(String, org.openmrs.Location, java.util.Map, boolean, Integer, Integer)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
-	        throws DAOException {
+	public List<Location> getLocations(String nameFragment, Location parent,
+	        Map<LocationAttributeType, String> serializedAttributeValues, boolean includeRetired, Integer start,
+	        Integer length) {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
+		
+		if (StringUtils.isNotBlank(nameFragment)) {
+			criteria.add(Restrictions.ilike("name", nameFragment, MatchMode.START));
+		}
+		
+		if (parent != null) {
+			criteria.add(Restrictions.eq("parentLocation", parent));
+		}
+		
+		if (serializedAttributeValues != null) {
+			HibernateUtil.addAttributeCriteria(criteria, serializedAttributeValues);
+		}
+		
 		if (!includeRetired)
 			criteria.add(Restrictions.eq("retired", false));
-		
-		if (StringUtils.isNotBlank(nameFragment))
-			criteria.add(Restrictions.ilike("name", nameFragment, MatchMode.START));
 		
 		criteria.addOrder(Order.asc("name"));
 		if (start != null)

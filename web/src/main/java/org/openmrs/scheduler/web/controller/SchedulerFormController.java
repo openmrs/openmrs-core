@@ -58,6 +58,7 @@ public class SchedulerFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
+	@Override
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
@@ -120,6 +121,7 @@ public class SchedulerFormController extends SimpleFormController {
 	 * @should not reschedule a task if the start time has passed
 	 * @should not reschedule an executing task
 	 */
+	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	        BindException errors) throws Exception {
 		
@@ -156,6 +158,7 @@ public class SchedulerFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
+	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		TaskDefinition task = new TaskDefinition();
@@ -184,8 +187,11 @@ public class SchedulerFormController extends SimpleFormController {
 		TaskDefinition task = (TaskDefinition) command;
 		
 		Long interval = task.getRepeatInterval();
+		if (interval == null) {
+			interval = (long) 60;
+		}
 		Long repeatInterval;
-		if (interval == null || interval < 60) {
+		if (interval < 60) {
 			map.put("units", "seconds");
 			repeatInterval = interval;
 		} else if (interval < 3600) {

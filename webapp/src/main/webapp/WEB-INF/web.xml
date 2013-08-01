@@ -5,7 +5,7 @@
 	version="2.4">
 
 	<display-name>@WEBAPP.DISPLAY.NAME@</display-name>
-	<display-name>@WEBAPP.DESCRIPTION@</display-name> 
+	<description>@WEBAPP.DESCRIPTION@</description> 
 
 	<context-param>
         <param-name>contextConfigLocation</param-name>
@@ -341,7 +341,10 @@
 	<filter-mapping>
 		<filter-name>jspClassLoader</filter-name> 
 		<url-pattern>*.jsp</url-pattern> 
+		<dispatcher>ERROR</dispatcher>
 		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
 	</filter-mapping>
 		
 	<welcome-file-list>

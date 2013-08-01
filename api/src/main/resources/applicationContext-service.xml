@@ -99,6 +99,7 @@
         <property name="activeListService"><ref bean="activeListService"/></property>
         <property name="visitService"><ref bean="visitService"/></property>
         <property name="providerService"><ref bean="providerService"/></property>
+        <property name="noteService"><ref bean="noteService" /></property>
 	</bean>	
 	
 	<bean id="context" class="org.openmrs.api.context.Context">
@@ -281,6 +282,11 @@
         <property name="providerDAO"><ref bean="providerDAO"/></property>
 	</bean>	
 	
+	<!-- Note Service setup -->
+	<bean id="noteServiceTarget" class="org.openmrs.notification.impl.NoteServiceImpl">
+		<property name="noteDAO"><ref bean="noteDAO" /></property>
+	</bean>
+
 	<!-- Cohort Service setup -->
 	<bean id="cohortServiceTarget" class="org.openmrs.api.impl.CohortServiceImpl">
 		<property name="cohortDAO"><ref bean="cohortDAO"/></property>
@@ -611,6 +617,12 @@
 	    <property name="transactionAttributeSource"><ref local="transactionAttributeSource"/></property>
     </bean>
 	
+	<bean id="noteService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="noteServiceTarget"/></property>
+		<property name="preInterceptors"><ref local="serviceInterceptors"/></property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource"/></property>
+	</bean>
 	
 	<!--
 		Scheduler service bean pool.

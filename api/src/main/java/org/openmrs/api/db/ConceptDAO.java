@@ -183,6 +183,11 @@ public interface ConceptDAO {
 	public void purgeConceptClass(ConceptClass cc) throws DAOException;
 	
 	/**
+	 * @see org.openmrs.api.ConceptService#purgeConceptNameTag(org.openmrs.ConceptNameTag)
+	 */
+	public void deleteConceptNameTag(ConceptNameTag cnt) throws DAOException;
+	
+	/**
 	 * @see org.openmrs.api.ConceptService#getAllConceptDatatypes(boolean)
 	 */
 	public List<ConceptDatatype> getAllConceptDatatypes(boolean includeRetired) throws DAOException;

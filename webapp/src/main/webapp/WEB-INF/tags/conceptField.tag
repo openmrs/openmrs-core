@@ -30,10 +30,10 @@
 	
 	$j(document).ready( function() {
 
-		var includeC = "${includeClasses}".split(",");
-		var excludeC = "${excludeClasses}".split(",");
-		var includeD = "${includeDatatypes}".split(",");
-		var excludeD = "${excludeDatatypes}".split(",");
+		var includeC = <c:choose> <c:when test="${not empty includeClasses}"> "${includeClasses}".split(",") </c:when> <c:otherwise> null </c:otherwise> </c:choose>;
+		var excludeC = <c:choose> <c:when test="${not empty excludeClasses}"> "${excludeClasses}".split(",") </c:when> <c:otherwise> null </c:otherwise> </c:choose>;
+		var includeD = <c:choose> <c:when test="${not empty includeDatatypes}"> "${includeDatatypes}".split(",") </c:when> <c:otherwise> null </c:otherwise> </c:choose>;
+		var excludeD = <c:choose> <c:when test="${not empty excludeDatatypes}"> "${excludeDatatypes}".split(",") </c:when> <c:otherwise> null </c:otherwise> </c:choose>;
 
 		// the typical callback
 		var callback = new CreateCallback({includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD}).conceptCallback();

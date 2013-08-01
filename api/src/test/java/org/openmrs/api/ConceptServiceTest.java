@@ -13,7 +13,6 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
@@ -1772,6 +1771,20 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(mapType);
 		Context.getConceptService().purgeConceptMapType(mapType);
 		Assert.assertNull(Context.getConceptService().getConceptMapType(1));
+	}
+	
+	/**
+	 * @see {@link ConceptService#purgeConceptNameTag(ConceptNameTag)}
+	 */
+	@Test
+	@Verifies(value = "should delete the specified ConceptNameTag from the database", method = "purgeConceptNameTag(ConceptNameTag)")
+	public void purgeConceptNameTag_shouldDeleteTheSpecifiedConceptNameTagFromTheDatabase() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-tags.xml");
+		//sanity check
+		ConceptNameTag nameTag = Context.getConceptService().getConceptNameTagByName("preferred_en");
+		Assert.assertNotNull(nameTag);
+		Context.getConceptService().purgeConceptNameTag(nameTag);
+		Assert.assertNull(Context.getConceptService().getConceptNameTagByName("preferred_en"));
 	}
 	
 	/**

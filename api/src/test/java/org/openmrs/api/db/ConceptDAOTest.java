@@ -32,7 +32,6 @@ import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSearchResult;
-import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
