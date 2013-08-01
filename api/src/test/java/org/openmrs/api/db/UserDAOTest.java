@@ -88,7 +88,6 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		}
 	}
 	
-
 	@Test
 	@Verifies(value = "creates a new user", method = "saveUser(u, pwd)")
 	public void saveUser_shouldCreateNewUser() throws Exception {
