@@ -13,31 +13,13 @@
  */
 package org.openmrs.web.filter.initialization;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
+import java.sql.*;
+import java.util.*;
 import java.util.zip.ZipInputStream;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,17 +38,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
-import org.openmrs.scheduler.SchedulerUtil;
-import org.openmrs.util.DatabaseUpdateException;
-import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.*;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
-import org.openmrs.util.DatabaseUtil;
-import org.openmrs.util.InputRequiredException;
-import org.openmrs.util.MemoryAppender;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.util.Security;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebDaemon;
@@ -330,6 +303,23 @@ public class InitializationFilter extends StartupFilter {
 		if (DEFAULT_PAGE.equals(page)) {
 			// get props and render the first page
 			File runtimeProperties = getRuntimePropertiesFile();
+			// check for db config file
+			if (getInstallationProperties().isEmpty() == false) {
+				// get custom install vars
+				Properties h2Properties = getInstallationProperties();
+				wizardModel.databaseConnection = h2Properties.getProperty("connection.url", wizardModel.databaseConnection);
+				wizardModel.databaseDriver = h2Properties.getProperty("connection.driver_class", wizardModel.databaseDriver);
+				wizardModel.currentDatabaseUsername = h2Properties.getProperty("connection.db.username",
+				    wizardModel.currentDatabaseUsername);
+				wizardModel.currentDatabasePassword = h2Properties.getProperty("connection.db.password",
+				    wizardModel.currentDatabasePassword);
+				wizardModel.createDatabaseUsername = h2Properties.getProperty("create.db.username",
+				    wizardModel.createDatabaseUsername);
+				wizardModel.createDatabasePassword = h2Properties.getProperty("create.db.password",
+				    wizardModel.createDatabasePassword);
+				wizardModel.createTables = true;
+				wizardModel.createDatabaseUser = false;
+			}
 			if (!runtimeProperties.exists()) {
 				try {
 					runtimeProperties.createNewFile();
@@ -1295,6 +1285,8 @@ public class InitializationFilter extends StartupFilter {
 								sql = "create database if not exists `?` default character set utf8";
 							} else if (wizardModel.databaseConnection.contains("postgresql")) {
 								sql = "create database `?` encoding 'utf8'";
+							} else if (wizardModel.databaseConnection.contains("h2")) {
+								sql = "";
 							} else {
 								sql = "create database `?`";
 							}
@@ -1368,6 +1360,9 @@ public class InitializationFilter extends StartupFilter {
 						String finalDatabaseConnectionString = wizardModel.databaseConnection.replace("@DBNAME@",
 						    wizardModel.databaseName);
 						
+						finalDatabaseConnectionString = finalDatabaseConnectionString.replace("@APPLICATIONDATADIR@",
+						    OpenmrsUtil.getApplicationDataDirectory());
+						
 						// verify that the database connection works
 						if (!verifyConnection(connectionUsername, connectionPassword, finalDatabaseConnectionString)) {
 							setMessage("Verify that the database connection works");
@@ -1388,6 +1383,8 @@ public class InitializationFilter extends StartupFilter {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
 						if (finalDatabaseConnectionString.contains("sqlserver"))
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
+						if (finalDatabaseConnectionString.contains("h2"))
+							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
 						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
 						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY, Base64.encode(Security
@@ -1798,5 +1795,36 @@ public class InitializationFilter extends StartupFilter {
 	private static boolean goBack(HttpServletRequest httpRequest) {
 		return "Back".equals(httpRequest.getParameter("back"))
 		        || (httpRequest.getParameter("back.x") != null && httpRequest.getParameter("back.y") != null);
+	}
+	
+	/**
+	 * Convenience method to get custom install file
+	 * 
+	 * @return Properties contained in custom install file
+	 */
+	private Properties getInstallationProperties() {
+		Properties prop = new Properties();
+		String fileName = System.getProperty("installation.script", null);
+		File file = new File(fileName);
+		if (!file.exists()) {
+			try {
+				prop.load(getClass().getClassLoader().getResourceAsStream(fileName));
+				log.info(prop);
+			}
+			catch (IOException ex) {
+				log.error("Failed to load installation properties: " + fileName, ex);
+			}
+		} else {
+			try {
+				FileInputStream propertyStream = new FileInputStream(fileName);
+				prop.load(propertyStream);
+				log.info(prop);
+				IOUtils.closeQuietly(propertyStream);
+			}
+			catch (IOException ex) {
+				log.error("Failed to load installation properties: " + fileName, ex);
+			}
+		}
+		return prop;
 	}
 }
