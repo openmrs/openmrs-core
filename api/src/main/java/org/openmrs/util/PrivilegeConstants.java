@@ -125,7 +125,7 @@ public class PrivilegeConstants {
 	public static final String DELETE_OBS = "Delete Observations";
 	
 	public static final String PURGE_OBS = "Purge Observations";
-	
+
 	@AddOnStartup(description = "Able to view patients")
 	public static final String VIEW_PATIENTS = "View Patients";
 	
