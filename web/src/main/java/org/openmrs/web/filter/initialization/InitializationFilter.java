@@ -171,28 +171,68 @@ public class InitializationFilter extends StartupFilter {
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	        ServletException {
+		loadInstallationScriptIfPresent();
 		
-		String page = httpRequest.getParameter("page");
-		Map<String, Object> referenceMap = new HashMap<String, Object>();
-		if (httpRequest.getServletPath().equals("/" + AUTO_RUN_OPENMRS)) {
-			autoRunOpenMRS(httpRequest);
-			return;
-		}
 		// we need to save current user language in references map since it will be used when template
 		// will be rendered
-		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
-			referenceMap
-			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) == null) {
+			checkLocaleAttributesForFirstTime(httpRequest);
 		}
+		
+		Map<String, Object> referenceMap = new HashMap<String, Object>();
+		String page = httpRequest.getParameter("page");
+		
+		referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+		
+		httpResponse.setHeader("Cache-Control", "no-cache");
+		
 		// if any body has already started installation and this is not an ajax request for the progress
 		if (isInstallationStarted() && !PROGRESS_VM_AJAXREQUEST.equals(page)) {
 			referenceMap.put("isInstallationStarted", true);
 			httpResponse.setContentType("text/html");
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
+		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
+			httpResponse.setContentType("text/json");
+			Map<String, Object> result = new HashMap<String, Object>();
+			if (initJob != null) {
+				result.put("hasErrors", initJob.hasErrors());
+				if (initJob.hasErrors()) {
+					result.put("errorPage", initJob.getErrorPage());
+					errors.putAll(initJob.getErrors());
+				}
+				
+				result.put("initializationComplete", isInitializationComplete());
+				result.put("message", initJob.getMessage());
+				result.put("actionCounter", initJob.getStepsComplete());
+				if (!isInitializationComplete()) {
+					result.put("executingTask", initJob.getExecutingTask());
+					result.put("executedTasks", initJob.getExecutedTasks());
+					result.put("completedPercentage", initJob.getCompletedPercentage());
+				}
+				
+				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
+				if (appender instanceof MemoryAppender) {
+					MemoryAppender memoryAppender = (MemoryAppender) appender;
+					List<String> logLines = memoryAppender.getLogLines();
+					// truncate the list to the last 5 so we don't overwhelm jquery
+					if (logLines.size() > 5)
+						logLines = logLines.subList(logLines.size() - 5, logLines.size());
+					result.put("logLines", logLines);
+				} else {
+					result.put("logLines", new ArrayList<String>());
+				}
+			}
+			
+			PrintWriter writer = httpResponse.getWriter();
+			writer.write(toJSONString(result, true));
+			writer.close();
+		} else if (InitializationWizardModel.INSTALL_METHOD_AUTO.equals(wizardModel.installMethod)
+		        || httpRequest.getServletPath().equals("/" + AUTO_RUN_OPENMRS)) {
+			autoRunOpenMRS(httpRequest);
+			referenceMap.put("isInstallationStarted", true);
+			httpResponse.setContentType("text/html");
+			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (page == null) {
-			checkLocaleAttributesForFirstTime(httpRequest);
-			referenceMap
-			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 			httpResponse.setContentType("text/html");// if any body has already started installation
 			renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 		} else if (INSTALL_METHOD.equals(page)) {
@@ -237,40 +277,58 @@ public class InitializationFilter extends StartupFilter {
 			// do step one of the wizard
 			httpResponse.setContentType("text/html");
 			renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
-		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
-			httpResponse.setContentType("text/json");
-			httpResponse.setHeader("Cache-Control", "no-cache");
-			Map<String, Object> result = new HashMap<String, Object>();
-			if (initJob != null) {
-				result.put("hasErrors", initJob.hasErrors());
-				if (initJob.hasErrors()) {
-					result.put("errorPage", initJob.getErrorPage());
-					errors.putAll(initJob.getErrors());
-				}
-				
-				result.put("initializationComplete", isInitializationComplete());
-				result.put("message", initJob.getMessage());
-				result.put("actionCounter", initJob.getStepsComplete());
-				if (!isInitializationComplete()) {
-					result.put("executingTask", initJob.getExecutingTask());
-					result.put("executedTasks", initJob.getExecutedTasks());
-					result.put("completedPercentage", initJob.getCompletedPercentage());
-				}
-				
-				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
-				if (appender instanceof MemoryAppender) {
-					MemoryAppender memoryAppender = (MemoryAppender) appender;
-					List<String> logLines = memoryAppender.getLogLines();
-					// truncate the list to the last 5 so we don't overwhelm jquery
-					if (logLines.size() > 5)
-						logLines = logLines.subList(logLines.size() - 5, logLines.size());
-					result.put("logLines", logLines);
-				} else {
-					result.put("logLines", new ArrayList<String>());
-				}
+		}
+	}
+	
+	private void loadInstallationScriptIfPresent() {
+		Properties script = getInstallationScript();
+		if (!script.isEmpty()) {
+			wizardModel.installMethod = script.getProperty("install_method", wizardModel.installMethod);
+			
+			wizardModel.databaseConnection = script.getProperty("connection.url", wizardModel.databaseConnection);
+			wizardModel.databaseDriver = script.getProperty("connection.driver_class", wizardModel.databaseDriver);
+			wizardModel.currentDatabaseUsername = script.getProperty("connection.username",
+			    wizardModel.currentDatabaseUsername);
+			wizardModel.currentDatabasePassword = script.getProperty("connection.password",
+			    wizardModel.currentDatabasePassword);
+			
+			String has_current_openmrs_database = script.getProperty("has_current_openmrs_database");
+			if (has_current_openmrs_database != null) {
+				wizardModel.hasCurrentOpenmrsDatabase = Boolean.valueOf(has_current_openmrs_database);
+			}
+			wizardModel.createDatabaseUsername = script.getProperty("create_database_username",
+			    wizardModel.createDatabaseUsername);
+			wizardModel.createDatabasePassword = script.getProperty("create_database_password",
+			    wizardModel.createDatabasePassword);
+			
+			String create_tables = script.getProperty("create_tables");
+			if (create_tables != null) {
+				wizardModel.createTables = Boolean.valueOf(create_tables);
 			}
 			
-			httpResponse.getWriter().write(toJSONString(result, true));
+			String create_database_user = script.getProperty("create_database_user");
+			if (create_database_user != null) {
+				wizardModel.createDatabaseUser = Boolean.valueOf(create_database_user);
+			}
+			wizardModel.createUserUsername = script.getProperty("create_user_username", wizardModel.createUserUsername);
+			wizardModel.createUserPassword = script.getProperty("create_user_password", wizardModel.createUserPassword);
+			
+			String add_demo_data = script.getProperty("add_demo_data");
+			if (add_demo_data != null) {
+				wizardModel.addDemoData = Boolean.valueOf(add_demo_data);
+			}
+			
+			String module_web_admin = script.getProperty("module_web_admin");
+			if (module_web_admin != null) {
+				wizardModel.moduleWebAdmin = Boolean.valueOf(module_web_admin);
+			}
+			
+			String auto_update_database = script.getProperty("auto_update_database");
+			if (auto_update_database != null) {
+				wizardModel.autoUpdateDatabase = Boolean.valueOf(auto_update_database);
+			}
+			
+			wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
 		}
 	}
 	
@@ -283,7 +341,6 @@ public class InitializationFilter extends StartupFilter {
 	@Override
 	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	        ServletException {
-		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
 		// we need to save current user language in references map since it will be used when template
@@ -303,23 +360,6 @@ public class InitializationFilter extends StartupFilter {
 		if (DEFAULT_PAGE.equals(page)) {
 			// get props and render the first page
 			File runtimeProperties = getRuntimePropertiesFile();
-			// check for db config file
-			if (getInstallationProperties().isEmpty() == false) {
-				// get custom install vars
-				Properties h2Properties = getInstallationProperties();
-				wizardModel.databaseConnection = h2Properties.getProperty("connection.url", wizardModel.databaseConnection);
-				wizardModel.databaseDriver = h2Properties.getProperty("connection.driver_class", wizardModel.databaseDriver);
-				wizardModel.currentDatabaseUsername = h2Properties.getProperty("connection.db.username",
-				    wizardModel.currentDatabaseUsername);
-				wizardModel.currentDatabasePassword = h2Properties.getProperty("connection.db.password",
-				    wizardModel.currentDatabasePassword);
-				wizardModel.createDatabaseUsername = h2Properties.getProperty("create.db.username",
-				    wizardModel.createDatabaseUsername);
-				wizardModel.createDatabasePassword = h2Properties.getProperty("create.db.password",
-				    wizardModel.createDatabasePassword);
-				wizardModel.createTables = true;
-				wizardModel.createDatabaseUser = false;
-			}
 			if (!runtimeProperties.exists()) {
 				try {
 					runtimeProperties.createNewFile();
@@ -811,10 +851,15 @@ public class InitializationFilter extends StartupFilter {
 	private void autoRunOpenMRS(HttpServletRequest httpRequest) {
 		File runtimeProperties = getRuntimePropertiesFile();
 		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
-		if (httpRequest.getParameter("database_user_name") != null)
-			wizardModel.createDatabaseUsername = httpRequest.getParameter("database_user_name");
+		
+		if (!InitializationWizardModel.INSTALL_METHOD_AUTO.equals(wizardModel.installMethod)) {
+			if (httpRequest.getParameter("database_user_name") != null)
+				wizardModel.createDatabaseUsername = httpRequest.getParameter("database_user_name");
+			
+			createSimpleSetup(httpRequest.getParameter("database_root_password"), "yes");
+		}
+		
 		checkLocaleAttributes(httpRequest);
-		createSimpleSetup(httpRequest.getParameter("database_root_password"), "yes");
 		try {
 			loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection, wizardModel.databaseDriver);
 		}
@@ -1286,13 +1331,18 @@ public class InitializationFilter extends StartupFilter {
 							} else if (wizardModel.databaseConnection.contains("postgresql")) {
 								sql = "create database `?` encoding 'utf8'";
 							} else if (wizardModel.databaseConnection.contains("h2")) {
-								sql = "";
+								sql = null;
 							} else {
 								sql = "create database `?`";
 							}
 							
-							int result = executeStatement(false, wizardModel.createDatabaseUsername,
-							    wizardModel.createDatabasePassword, sql, wizardModel.databaseName);
+							int result;
+							if (sql != null) {
+								result = executeStatement(false, wizardModel.createDatabaseUsername,
+								    wizardModel.createDatabasePassword, sql, wizardModel.databaseName);
+							} else {
+								result = 1;
+							}
 							// throw the user back to the main screen if this error occurs
 							if (result < 0) {
 								reportError(ErrorMessageConstants.ERROR_DB_CREATE_NEW, DEFAULT_PAGE);
@@ -1361,7 +1411,7 @@ public class InitializationFilter extends StartupFilter {
 						    wizardModel.databaseName);
 						
 						finalDatabaseConnectionString = finalDatabaseConnectionString.replace("@APPLICATIONDATADIR@",
-						    OpenmrsUtil.getApplicationDataDirectory());
+						    OpenmrsUtil.getApplicationDataDirectory().replace("\\", "/"));
 						
 						// verify that the database connection works
 						if (!verifyConnection(connectionUsername, connectionPassword, finalDatabaseConnectionString)) {
@@ -1798,33 +1848,54 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
-	 * Convenience method to get custom install file
+	 * Convenience method to get custom installation script
 	 * 
-	 * @return Properties contained in custom install file
+	 * @return Properties from custom installation script or empty if none specified
+	 * @throws RuntimeException if path to installation script is invalid
 	 */
-	private Properties getInstallationProperties() {
+	private Properties getInstallationScript() {
 		Properties prop = new Properties();
-		String fileName = System.getProperty("installation.script", null);
+		
+		String fileName = System.getProperty("installation.script");
+		if (fileName == null) {
+			return prop;
+		}
+		
 		File file = new File(fileName);
-		if (!file.exists()) {
+		if (file.exists()) {
+			InputStream input = null;
 			try {
-				prop.load(getClass().getClassLoader().getResourceAsStream(fileName));
-				log.info(prop);
+				input = new FileInputStream(fileName);
+				prop.load(input);
+				log.info("Using installation script from absolute path: " + file.getAbsolutePath());
+				
+				input.close();
 			}
 			catch (IOException ex) {
-				log.error("Failed to load installation properties: " + fileName, ex);
+				log.error("Failed to load installation script from absolute path: " + file.getAbsolutePath(), ex);
+				throw new RuntimeException(ex);
+			}
+			finally {
+				IOUtils.closeQuietly(input);
 			}
 		} else {
+			InputStream input = null;
 			try {
-				FileInputStream propertyStream = new FileInputStream(fileName);
-				prop.load(propertyStream);
-				log.info(prop);
-				IOUtils.closeQuietly(propertyStream);
+				input = getClass().getClassLoader().getResourceAsStream(fileName);
+				prop.load(input);
+				log.info("Using installation script from classpath: " + fileName);
+				
+				input.close();
 			}
 			catch (IOException ex) {
-				log.error("Failed to load installation properties: " + fileName, ex);
+				log.error("Failed to load installation script from classpath: " + fileName, ex);
+				throw new RuntimeException(ex);
+			}
+			finally {
+				IOUtils.closeQuietly(input);
 			}
 		}
+		
 		return prop;
 	}
 }

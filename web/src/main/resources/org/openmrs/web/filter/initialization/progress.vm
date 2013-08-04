@@ -107,6 +107,8 @@
 		//register elements for toggling(show/hide output logs)
 		jQuery(document).ready(
 			function(){
+                showProgress();
+
 				jQuery("#output").click(
 					function () {
 						jQuery(".logsDetailsToggle").toggle();
@@ -114,8 +116,6 @@
    				);
    			}
    		);
-   		
-   		jQuery(function() { showProgress(); });
 		 		 
 	</script>
 	

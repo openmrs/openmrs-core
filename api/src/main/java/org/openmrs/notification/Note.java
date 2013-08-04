@@ -119,11 +119,11 @@ public class Note extends BaseOpenmrsData implements Serializable {
 		this.weight = weight;
 	}
 	
-    public Integer getNoteId() {
-    	return noteId;
-    }
+	public Integer getNoteId() {
+		return noteId;
+	}
 	
-    public void setNoteId(Integer noteId) {
-    	this.noteId = noteId;
-    }	
+	public void setNoteId(Integer noteId) {
+		this.noteId = noteId;
+	}
 }
