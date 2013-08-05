@@ -264,6 +264,12 @@
 
         <profile>
             <id>install-h2</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </dependency>
+            </dependencies>
             <properties>
                 <installation.script>installation.h2.properties</installation.script>
             </properties>
