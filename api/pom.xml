@@ -214,10 +214,6 @@
            <groupId>org.codehaus.jackson</groupId>
            <artifactId>jackson-mapper-asl</artifactId>
        </dependency>
-       <dependency>
-           <groupId>com.h2database</groupId>
-           <artifactId>h2</artifactId>
-       </dependency>
    </dependencies>
    <build>
       <plugins>

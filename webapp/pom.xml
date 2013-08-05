@@ -103,6 +103,12 @@
                   <scanTarget>../api/target/classes</scanTarget>
                   <scanTarget>../web/target/classes</scanTarget>
                </scanTargets>
+               <systemProperties>
+                   <systemProperty>
+                       <name>installation.script</name>
+                       <value>${installation.script}</value>
+                   </systemProperty>
+               </systemProperties>
             </configuration>
          </plugin>
          <plugin>
@@ -245,6 +251,23 @@
 				</plugins>
 			</build>
 		</profile>
+
+        <profile>
+            <id>h2</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>install-h2</id>
+            <properties>
+                <installation.script>installation.h2.properties</installation.script>
+            </properties>
+        </profile>
    </profiles>
 
    <properties>
