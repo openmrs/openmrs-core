@@ -285,13 +285,6 @@ public class PrivilegeConstants {
 	
 	public static final String PURGE_OBS = "Purge Observations";
 	
-	/**
-	* @deprecated Use org.openmrs.util.PrivilegeConstants.GET_NOTE
-	*/
-	@Deprecated
-	@AddOnStartup(description = "Able to view patient notes")
-	public static final String VIEW_NOTE = GET_NOTE;
-
 	@AddOnStartup(description = "Able to edit patient notes")
 	public static final String EDIT_NOTE = "Edit Notes";
 

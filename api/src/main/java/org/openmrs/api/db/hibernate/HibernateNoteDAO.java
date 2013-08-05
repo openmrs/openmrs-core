@@ -81,6 +81,9 @@ public class HibernateNoteDAO implements NoteDAO {
 		sessionFactory.getCurrentSession().delete(note);
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.NoteDAO#voidNote(org.openmrs.notification.Note, java.lang.String)
+	 */
 	public Note voidNote(Note note, String reason) throws APIException {
 		log.debug("voiding note because " + reason);
 		sessionFactory.getCurrentSession().save(note);

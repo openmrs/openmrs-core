@@ -393,7 +393,7 @@ public class Context {
 	}
 	
 	/**
-	 * @return note services
+	 * @return note service
 	 */
 	public static NoteService getNoteService() {
 		return getServiceContext().getNoteService();

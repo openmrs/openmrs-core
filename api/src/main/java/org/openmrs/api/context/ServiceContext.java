@@ -205,7 +205,7 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * @return note services
+	 * @return note service
 	 */
 	public NoteService getNoteService() {
 		return getService(NoteService.class);
