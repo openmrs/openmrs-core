@@ -27,6 +27,8 @@ public class ConceptDatatypeTest extends BaseContextSensitiveTest {
 	
 	ConceptDatatype datatype;
 	
+	private String uuid = "559fa388-fe06-11e2-8ebb-f23c91aec05e";
+	
 	@Before
 	public void before() {
 		datatype = new ConceptDatatype();
@@ -39,6 +41,7 @@ public class ConceptDatatypeTest extends BaseContextSensitiveTest {
 	@Test
 	public void serialize_shouldReturnAConceptUuidDuringSerialization() throws Exception {
 		Concept concept = new Concept();
+		concept.setUuid(uuid);
 		Assert.assertEquals(concept.getUuid(), datatype.serialize(concept));
 	}
 	
@@ -48,8 +51,7 @@ public class ConceptDatatypeTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void deserialize_shouldReconstructAConceptSerializedByThisHandler() throws Exception {
-		String uuid = "9bc5693a-f558-40c9-8177-145a4b119ca7";
 		Concept concept = Context.getConceptService().getConceptByUuid(uuid);
-		Assert.assertEquals(concept, datatype.deserialize(datatype.serialize(concept)));
+		Assert.assertEquals(concept, datatype.deserialize(uuid));
 	}
 }
