@@ -671,23 +671,38 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		if (log.isDebugEnabled())
 			log.debug("Getting conceptName for locale: " + locale);
-		if (exact && locale != null) {
-			ConceptName preferredName = getPreferredName(locale);
-			if (preferredName != null)
-				return preferredName;
-			
-			ConceptName fullySpecifiedName = getFullySpecifiedName(locale);
-			if (fullySpecifiedName != null)
-				return fullySpecifiedName;
-			else if (getSynonyms(locale).size() > 0)
-				return getSynonyms(locale).iterator().next();
-			
-			return null;
-			
-		} else {
-			//just get any name
-			return getName();
+		
+		ConceptName exactlyName = getNameExacly(locale);
+		
+		if (exactlyName != null) {
+			return exactlyName;
 		}
+		
+		if (exact) {
+			return null;
+		}
+		
+		//just get any name
+		return getName();
+	}
+	
+	/**
+	 * Get name exacly for given locale.
+	 * @param locale
+	 * @return null if name in given locale doesn't exist
+	 */
+	private ConceptName getNameExacly(Locale locale) {
+		ConceptName preferredName = getPreferredName(locale);
+		if (preferredName != null)
+			return preferredName;
+		
+		ConceptName fullySpecifiedName = getFullySpecifiedName(locale);
+		if (fullySpecifiedName != null)
+			return fullySpecifiedName;
+		else if (getSynonyms(locale).size() > 0)
+			return getSynonyms(locale).iterator().next();
+		
+		return null;
 	}
 	
 	/**
