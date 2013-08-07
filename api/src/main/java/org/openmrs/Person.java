@@ -835,6 +835,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public void setPersonChangedBy(User changedBy) {
 		this.personChangedBy = changedBy;
+		this.setChangedBy(changedBy);
 	}
 	
 	public Date getPersonDateChanged() {
@@ -843,6 +844,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public void setPersonDateChanged(Date dateChanged) {
 		this.personDateChanged = dateChanged;
+		this.setDateChanged(dateChanged);
 	}
 	
 	public User getPersonCreator() {
@@ -851,6 +853,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public void setPersonCreator(User creator) {
 		this.personCreator = creator;
+		this.setCreator(creator);
 	}
 	
 	public Date getPersonDateCreated() {
@@ -859,6 +862,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public void setPersonDateCreated(Date dateCreated) {
 		this.personDateCreated = dateCreated;
+		this.setDateCreated(dateCreated);
 	}
 	
 	public Date getPersonDateVoided() {
@@ -867,10 +871,12 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public void setPersonDateVoided(Date dateVoided) {
 		this.personDateVoided = dateVoided;
+		this.setDateVoided(dateVoided);
 	}
 	
 	public void setPersonVoided(Boolean voided) {
 		this.personVoided = voided;
+		this.setVoided(voided);
 	}
 	
 	public Boolean getPersonVoided() {
@@ -887,6 +893,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public void setPersonVoidedBy(User voidedBy) {
 		this.personVoidedBy = voidedBy;
+		this.setVoidedBy(voidedBy);
 	}
 	
 	public String getPersonVoidReason() {
@@ -895,6 +902,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public void setPersonVoidReason(String voidReason) {
 		this.personVoidReason = voidReason;
+		this.setVoidReason(voidReason);
 	}
 	
 	/**

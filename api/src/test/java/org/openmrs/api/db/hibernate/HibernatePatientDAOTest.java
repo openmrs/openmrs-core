@@ -13,13 +13,15 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.test.BaseContextSensitiveTest;
+
+import java.util.Collections;
+import java.util.List;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -279,5 +281,19 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		
 		Assert.assertArrayEquals(new Object[] { openMRSIdNumber, oldIdNumber, socialSecNumber }, patientIdentifierTypes
 		        .toArray());
+	}
+	
+	@Test
+	public void getPatients_shouldNotMatchVoidedPatients() {
+		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
+		List<Patient> patients = dao.getPatients("Hornblower3", null, identifierTypes, false, 0, 11, false);
+		Assert.assertEquals(1, patients.size());
+		
+		Patient patient = patients.get(0);
+		patient.setVoided(true);
+		dao.savePatient(patient);
+		
+		patients = dao.getPatients("Hornblower3", null, identifierTypes, false, 0, 11, false);
+		Assert.assertEquals(0, patients.size());
 	}
 }

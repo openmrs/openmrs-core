@@ -98,4 +98,9 @@ public interface OrderDAO {
 	 */
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
 	
+	/**
+	 * Delete Obs that references an order
+	 */
+	public void deleteObsThatReference(Order order);
+	
 }

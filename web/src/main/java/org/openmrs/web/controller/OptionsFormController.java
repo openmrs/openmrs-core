@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.validator.EmailValidator;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -195,6 +196,17 @@ public class OptionsFormController extends SimpleFormController {
 				// if they left the old password blank but filled in new
 				// password
 				errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
+			}
+			
+			String notifyType = opts.getNotification();
+			if (notifyType != null) {
+				if (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType.equals("email")) {
+					if (opts.getNotificationAddress().isEmpty()) {
+						errors.reject("error.options.notificationAddress.empty");
+					} else if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {
+						errors.reject("error.options.notificationAddress.invalid");
+					}
+				}
 			}
 			
 			if (opts.getUsername().length() > 0 && !errors.hasErrors()) {

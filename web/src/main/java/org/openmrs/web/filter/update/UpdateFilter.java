@@ -428,7 +428,7 @@ public class UpdateFilter extends StartupFilter {
 	 * @param servletContext the servletContext from the filterconfig
 	 * @see Listener#startOpenmrs(ServletContext)
 	 */
-	private void startOpenmrs(ServletContext servletContext) throws IOException, ServletException {
+	private void startOpenmrs(ServletContext servletContext) throws Exception {
 		// start spring
 		// after this point, all errors need to also call: contextLoader.closeWebApplicationContext(event.getServletContext())
 		// logic copied from org.springframework.web.context.ContextLoaderListener
@@ -438,9 +438,9 @@ public class UpdateFilter extends StartupFilter {
 		try {
 			WebDaemon.startOpenmrs(servletContext);
 		}
-		catch (ServletException servletException) {
+		catch (Exception exception) {
 			contextLoader.closeWebApplicationContext(servletContext);
-			throw servletException;
+			throw exception;
 		}
 	}
 	

@@ -70,6 +70,7 @@ import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
+import org.openmrs.notification.NoteService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportObjectService;
@@ -249,7 +250,7 @@ public class Context {
 	 * 
 	 * @return the current ServiceContext
 	 */
-	private static ServiceContext getServiceContext() {
+	static ServiceContext getServiceContext() {
 		if (serviceContext == null) {
 			log.error("serviceContext is null.  Creating new ServiceContext()");
 			serviceContext = ServiceContext.getInstance();
@@ -389,6 +390,13 @@ public class Context {
 	 */
 	public static ObsService getObsService() {
 		return getServiceContext().getObsService();
+	}
+	
+	/**
+	 * @return note services
+	 */
+	public static NoteService getNoteService() {
+		return getServiceContext().getNoteService();
 	}
 	
 	/**

@@ -1870,8 +1870,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<Encounter> encs = Context.getEncounterService().getEncountersNotAssignedToAnyVisit(
 		    Context.getPatientService().getPatient(10));
 		Assert.assertEquals(2, encs.size());
-		Assert.assertEquals(17, encs.get(0).getEncounterId().intValue());
-		Assert.assertEquals(18, encs.get(1).getEncounterId().intValue());
+		Assert.assertNull(encs.get(0).getVisit());
+		Assert.assertNull(encs.get(1).getVisit());
 	}
 	
 	/**

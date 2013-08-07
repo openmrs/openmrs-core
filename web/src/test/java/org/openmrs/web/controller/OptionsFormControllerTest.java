@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.web.controller;
 
 import static org.hamcrest.Matchers.is;
@@ -19,11 +32,14 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.OptionsForm;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.openmrs.web.test.WebTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.web.servlet.ModelAndView;
 
 public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 	
@@ -168,5 +184,55 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		//then
 		Assert.assertThat("a", is(not(Context.getAuthenticatedUser().getUsername())));
+	}
+	
+	@Test
+	public void shouldRejectInvalidNotificationAddress() throws Exception {
+		final String incorrectAddress = "gayan@gmail";
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
+		request.setParameter("notification", "email");
+		request.setParameter("notificationAddress", incorrectAddress);
+		
+		HttpServletResponse response = new MockHttpServletResponse();
+		ModelAndView modelAndView = controller.handleRequest(request, response);
+		
+		OptionsForm optionsForm = (OptionsForm) controller.formBackingObject(request);
+		assertEquals(incorrectAddress, optionsForm.getNotificationAddress());
+		
+		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel().get(
+		    "org.springframework.validation.BindingResult.opts");
+		Assert.assertTrue(bindingResult.hasErrors());
+	}
+	
+	@Test
+	public void shouldAcceptValidNotificationAddress() throws Exception {
+		String notificationTypes[] = { "internal", "internalProtected", "email" };
+		String correctAddress = "gayan@gmail.com";
+		
+		for (String notifyType : notificationTypes) {
+			MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
+			request.setParameter("notification", notifyType);
+			request.setParameter("notificationAddress", correctAddress);
+			
+			HttpServletResponse response = new MockHttpServletResponse();
+			controller.handleRequest(request, response);
+			
+			OptionsForm optionsForm = (OptionsForm) controller.formBackingObject(request);
+			assertEquals(correctAddress, optionsForm.getNotificationAddress());
+		}
+	}
+	
+	@Test
+	public void shouldRejectEmptyNotificationAddress() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
+		request.setParameter("notification", "email");
+		request.setParameter("notificationAddress", "");
+		
+		HttpServletResponse response = new MockHttpServletResponse();
+		ModelAndView modelAndView = controller.handleRequest(request, response);
+		
+		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel().get(
+		    "org.springframework.validation.BindingResult.opts");
+		Assert.assertTrue(bindingResult.hasErrors());
 	}
 }

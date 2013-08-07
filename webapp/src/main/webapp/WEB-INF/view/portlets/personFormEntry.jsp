@@ -2,7 +2,7 @@
 <%--
 Parameters:
 	showDecoration (boolean): whether or not to put this in a box
-	showLastThreeEncounters (boolean): whether or not to show a snippet of encounters
+	showDefinedNumberOfEncounters (boolean): whether or not to show a snippet of encounters
 	returnUrl (String): where to go back to when a form has been cancelled or successfully filled out
 --%>
 
@@ -18,9 +18,10 @@ Parameters:
 <%-- hack because calling a portlet clears parameters --%>
 <c:set var="showDecorationProp" value="${model.showDecoration}" />
 
-<c:if test="${model.showLastThreeEncounters}">
+<c:if test="${model.showDefinedNumberOfEncounters}">  <%-- showDefinedNumberOfEncounters shows the given number of encounters entered in the dashboard.encounters.maximumNumberToShow global property value --%>
 	<openmrs:hasPrivilege privilege="View Encounters">
-		<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=3|hideHeader=true|title=Encounter.last.encounters|hideFormEntry=true" />
+		<openmrs:globalProperty var="maxEncs" key="dashboard.encounters.maximumNumberToShow" defaultValue="" />
+		<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=${maxEncs}|title=Encounter.last.definedNumberOfEncounters|formEntryReturnUrl=${pageContext.request.contextPath}/patientDashboard.form" />
 		<br/>
 	</openmrs:hasPrivilege>
 </c:if>

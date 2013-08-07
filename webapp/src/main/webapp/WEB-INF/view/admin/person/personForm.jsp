@@ -235,7 +235,7 @@
 
 <h2><openmrs:message code="Person.title"/></h2>
 
-<c:if test="${person.voided}">
+<c:if test="${person.personVoided}">
 	<div id="personFormVoided" class="retiredMessage">
 		<div><openmrs:message code="Person.voidedMessage"/></div>
 	</div>
@@ -248,13 +248,13 @@
 </c:if>
 
 <openmrs:hasPrivilege privilege="Delete Person">
-<c:if test="${person.voided}">
+<c:if test="${person.personVoided}">
 	<div id="personFormVoided" class="retiredMessage">
 	<div><openmrs:message code="Person.voidedMessage"/></div>
     <div>
-    	<c:if test="${person.voidedBy.personName != null}"><openmrs:message code="general.byPerson"/> ${person.voidedBy.personName}</c:if> 
-    	<c:if test="${person.dateVoided != null}"> <openmrs:message code="general.onDate"/> <openmrs:formatDate date="${person.dateVoided}" type="long" /> </c:if> 
-   		<c:if test="${person.voidReason != ''}"> - ${person.voidReason} </c:if>
+    	<c:if test="${person.personVoidedBy.personName != null}"><openmrs:message code="general.byPerson"/> ${person.personVoidedBy.personName}</c:if> 
+    	<c:if test="${person.personDateVoided != null}"> <openmrs:message code="general.onDate"/> <openmrs:formatDate date="${person.personDateVoided}" type="long" /> </c:if> 
+   		<c:if test="${person.personVoidReason != ''}"> - ${person.personVoidReason} </c:if>
     </div>
 	<div>
 		<form action="" method="post" ><input type="submit" name="action" value="<openmrs:message code="Person.unvoid"/>" /></form></div> 
@@ -377,7 +377,7 @@
 </form>
 <br/>
 <openmrs:hasPrivilege privilege="Delete Person">
-	<c:if test="${person.personId != null && person.voided == false}">
+	<c:if test="${person.personId != null && person.personVoided == false}">
 	<form action="" method="post">
 		<fieldset>
 			<legend><h4><openmrs:message code="Person.void"/></h4></legend>
