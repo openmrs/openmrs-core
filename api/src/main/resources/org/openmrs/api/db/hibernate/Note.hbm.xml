@@ -41,7 +41,7 @@
 		<many-to-one name="patient" class="org.openmrs.Patient"
 			column="patient" not-null="true" />
 		<many-to-one name="noteType" class="org.openmrs.notification.NoteType"
-			column="note_type_id" not-null="true" />
+			column="notification_note_type_id" not-null="true" />
 	</class>
 
 </hibernate-mapping>
