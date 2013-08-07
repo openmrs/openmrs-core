@@ -57,7 +57,7 @@ public class VerifyPatientDashboardSteps extends Steps {
     	assertPresenceOf(div().with(attribute("id",equalTo("patientHeaderPatientName"))).with(text(equalTo("Mr. Horatio L Hornblower Esq."))));
 		assertPresenceOf(cell().with(attribute("id",equalTo("patientHeaderPatientAge"))).with(text(containsString("71 yrs"))));
 		assertPresenceOf(table().with(attribute("id",equalTo("patientHeaderObs"))));
-		assertPresenceOf(cell().with(attribute("id",equalTo("patientHeaderObsCD4"))));
+		assertPresenceOf(cell().with(attribute("class",equalTo("patientRecentObsConfigured"))));
 		assertPresenceOf(cell().with(attribute("id", equalTo("patientHeaderObsRegimen"))));
 		assertPresenceOf(div().with(attribute("id",equalTo("patientHeaderPreferredIdentifier"))).with(text(containsString("101-6"))));
 		assertPresenceOf(cell().with(attribute("id", equalTo("patientHeaderOtherIdentifiers"))).with(text(containsString("Old Identification Number: 101"))));

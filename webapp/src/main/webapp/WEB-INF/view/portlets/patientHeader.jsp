@@ -180,7 +180,7 @@
 		</small></th>
 
         <c:forEach items="${conceptIds}" var="conceptId">
-            <td>
+            <td class="patientRecentObsConfigured">
                 <openmrs:concept conceptId="${conceptId}" var="c" nameVar="n" numericVar="num" shortestNameVar="sn">
                     <span title="${n.description}">${sn}:</span>
                 </openmrs:concept>
