@@ -773,6 +773,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_CONCEPTS_LOCKED = "concepts.locked";
 	
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED = "patientIdentifierTypes.locked";
+	
 	public static final String GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES = "patient.listingAttributeTypes";
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES = "patient.viewingAttributeTypes";

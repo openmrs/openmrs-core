@@ -412,6 +412,17 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		 */
 	}
 	
+	@Test(expected = PatientIdentifierTypeLockedException.class)
+	public void checkIfPatientIdentifierTypeIsLocked_should_throwLockedExceptionWhenLocked() {
+		lockPatientIdentifierTypes();
+		patientService.checkIfPatientIdentifierTypeIsLocked();
+	}
+	
+	public void lockPatientIdentifierTypes() {
+		Context.getAdministrationService().setGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED, "true");
+	}
+	
 	/**
 	 * Test the PatientService.getPatients(String, String, List) method with both an identifier and
 	 * an identifiertype
@@ -444,17 +455,21 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, patients.size());
 	}
 	
+	public PatientIdentifierType newPatientIdentifierType() {
+		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
+		patientIdentifierType.setName("testing");
+		patientIdentifierType.setDescription("desc");
+		patientIdentifierType.setRequired(false);
+		return patientIdentifierType;
+	}
+	
 	/**
 	 * @see {@link PatientService#purgePatientIdentifierType(PatientIdentifierType)}
 	 */
 	@Test
 	@Verifies(value = "should delete type from database", method = "purgePatientIdentifierType(PatientIdentifierType)")
 	public void purgePatientIdentifierType_shouldDeleteTypeFromDatabase() throws Exception {
-		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
-		
-		patientIdentifierType.setName("testing");
-		patientIdentifierType.setDescription("desc");
-		patientIdentifierType.setRequired(false);
+		PatientIdentifierType patientIdentifierType = newPatientIdentifierType();
 		
 		patientService.savePatientIdentifierType(patientIdentifierType);
 		
@@ -464,23 +479,41 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertNull(patientService.getPatientIdentifierType(patientIdentifierType.getId()));
 	}
 	
+	@Test(expected = PatientIdentifierTypeLockedException.class)
+	public void purgePatientIdentifierType_shouldThrowLockedExceptionWhenLocked() {
+		PatientIdentifierType patientIdentifierType = newPatientIdentifierType();
+		patientService.savePatientIdentifierType(patientIdentifierType);
+		
+		PatientIdentifierType type = patientService.getPatientIdentifierType(patientIdentifierType.getId());
+		
+		lockPatientIdentifierTypes();
+		
+		patientService.purgePatientIdentifierType(type);
+	}
+	
 	/**
 	 * @see {@link PatientService#savePatientIdentifierType(PatientIdentifierType)}
 	 */
 	@Test
 	@Verifies(value = "should create new type", method = "savePatientIdentifierType(PatientIdentifierType)")
 	public void savePatientIdentifierType_shouldCreateNewType() throws Exception {
-		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
-		
-		patientIdentifierType.setName("testing");
-		patientIdentifierType.setDescription("desc");
-		patientIdentifierType.setRequired(false);
+		PatientIdentifierType patientIdentifierType = newPatientIdentifierType();
 		
 		patientService.savePatientIdentifierType(patientIdentifierType);
 		
 		PatientIdentifierType newPatientIdentifierType = patientService.getPatientIdentifierType(patientIdentifierType
 		        .getPatientIdentifierTypeId());
 		assertNotNull(newPatientIdentifierType);
+	}
+	
+	@Test(expected = PatientIdentifierTypeLockedException.class)
+	@Verifies(value = "should get locked exception when attempting locked save", method = "savePatientIdentifierType(PatientIdentifierType)")
+	public void savePatientIdentifierType_shouldThrowExceptionWhenLocked() {
+		PatientIdentifierType patientIdentifierType = newPatientIdentifierType();
+		
+		lockPatientIdentifierTypes();
+		
+		patientService.savePatientIdentifierType(patientIdentifierType);
 	}
 	
 	/**
@@ -1430,17 +1463,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should create new patient identifier type", method = "savePatientIdentifierType(PatientIdentifierType)")
 	public void savePatientIdentifierType_shouldCreateNewPatientIdentifierType() throws Exception {
-		PatientIdentifierType identifierType = new PatientIdentifierType();
+		PatientIdentifierType patientIdentifierType = newPatientIdentifierType();
 		
-		identifierType.setName("test");
-		identifierType.setDescription("test description");
-		identifierType.setRequired(false);
+		Assert.assertNull(patientIdentifierType.getPatientIdentifierTypeId());
 		
-		Assert.assertNull(identifierType.getPatientIdentifierTypeId());
+		patientService.savePatientIdentifierType(patientIdentifierType);
 		
-		patientService.savePatientIdentifierType(identifierType);
-		
-		PatientIdentifierType savedIdentifierType = patientService.getPatientIdentifierType(identifierType
+		PatientIdentifierType savedIdentifierType = patientService.getPatientIdentifierType(patientIdentifierType
 		        .getPatientIdentifierTypeId());
 		assertNotNull(savedIdentifierType);
 		

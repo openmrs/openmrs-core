@@ -55,6 +55,7 @@ import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientIdentifierException;
+import org.openmrs.api.PatientIdentifierTypeLockedException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
@@ -564,7 +565,16 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
+		checkIfPatientIdentifierTypeIsLocked();
 		return dao.savePatientIdentifierType(patientIdentifierType);
+	}
+	
+	@Transactional(readOnly = true)
+	public void checkIfPatientIdentifierTypeIsLocked() throws PatientIdentifierTypeLockedException {
+		String locked = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED, "false");
+		if (locked.toLowerCase().equals("true"))
+			throw new PatientIdentifierTypeLockedException();
 	}
 	
 	/**
@@ -667,6 +677,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#purgePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public void purgePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
+		checkIfPatientIdentifierTypeIsLocked();
 		dao.deletePatientIdentifierType(patientIdentifierType);
 	}
 	
