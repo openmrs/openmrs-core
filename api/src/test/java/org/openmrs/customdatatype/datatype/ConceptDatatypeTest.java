@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * test class for the org.openmrs.customdatatype.datatype.ConceptDatatype
@@ -27,7 +28,7 @@ public class ConceptDatatypeTest extends BaseContextSensitiveTest {
 	
 	ConceptDatatype datatype;
 	
-	private String uuid = "559fa388-fe06-11e2-8ebb-f23c91aec05e";
+	private String uuid = "32d3611a-6699-4d52-823f-b4b788bac3e3";
 	
 	@Before
 	public void before() {
@@ -36,22 +37,25 @@ public class ConceptDatatypeTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Concept#serialize(Concept)
-	 * @verifies return a concept uuid during serialization
 	 */
 	@Test
+	@Verifies(value = "return a concept uuid during serialization", method = "serialize(Concept)")
 	public void serialize_shouldReturnAConceptUuidDuringSerialization() throws Exception {
 		Concept concept = new Concept();
 		concept.setUuid(uuid);
+		
 		Assert.assertEquals(concept.getUuid(), datatype.serialize(concept));
 	}
 	
 	/**
 	 * @see Concept#deserialize(String)
-	 * @verifies reconstruct a concept serialized by this handler
 	 */
 	@Test
+	@Verifies(value = "reconstruct a concept serialized by this handler", method = "deserialize(String)")
 	public void deserialize_shouldReconstructAConceptSerializedByThisHandler() throws Exception {
 		Concept concept = Context.getConceptService().getConceptByUuid(uuid);
+		
 		Assert.assertEquals(concept, datatype.deserialize(uuid));
+		Assert.assertNotNull(concept);
 	}
 }
