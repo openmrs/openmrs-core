@@ -31,11 +31,11 @@ public interface NoteService {
 	 * 
 	 * @param user the user to match on
 	 * @return a List<Note> object containing all non-voided notes for the specified user Get all
-	 *         Notes for a given person, Does not return voided notes.</br>
+	 *         Notes for a given user, Does not return voided notes.</br>
 	 * @param user the user to match on
-	 * @return a List<Note> object containing all non-voided notes for the specified person
+	 * @return a List<Note> object containing all non-voided notes for the specified user
 	 */
-	@Authorized(PrivilegeConstants.VIEW_NOTE)
+	@Authorized(PrivilegeConstants.GET_NOTE)
 	public List<Note> getNotes(User user) throws Exception;
 	
 	/**

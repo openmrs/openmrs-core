@@ -30,6 +30,10 @@ public class Note extends BaseOpenmrsData implements Serializable {
 	private static final long serialVersionUID = -5392076713513109152L;
 	
 	// Data
+	
+	/**
+	 * noteId, an identifier for a patient note.
+	 */
 	private Integer noteId;
 	
 	private String text;
@@ -55,10 +59,16 @@ public class Note extends BaseOpenmrsData implements Serializable {
 	public Note() {
 	}
 	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
 	public void setId(Integer id) {
 		setNoteId(noteId);
 	}
 	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
 	public Integer getId() {
 		return getNoteId();
 	}
@@ -119,10 +129,16 @@ public class Note extends BaseOpenmrsData implements Serializable {
 		this.weight = weight;
 	}
 	
+	/**
+	 * @return Returns the noteId.
+	 */
 	public Integer getNoteId() {
 		return noteId;
 	}
 	
+	/**
+	 * @param noteId the noteId to set.
+	 */
 	public void setNoteId(Integer noteId) {
 		this.noteId = noteId;
 	}
