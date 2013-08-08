@@ -105,8 +105,8 @@
                </scanTargets>
                <systemProperties>
                    <systemProperty>
-                       <name>installation.script</name>
-                       <value>${installation.script}</value>
+                       <name>OPENMRS_INSTALLATION_SCRIPT</name>
+                       <value>${OPENMRS_INSTALLATION_SCRIPT}</value>
                    </systemProperty>
                </systemProperties>
             </configuration>
@@ -271,7 +271,7 @@
                 </dependency>
             </dependencies>
             <properties>
-                <installation.script>installation.h2.properties</installation.script>
+                <OPENMRS_INSTALLATION_SCRIPT>classpath:installation.h2.properties</OPENMRS_INSTALLATION_SCRIPT>
             </properties>
         </profile>
    </profiles>
