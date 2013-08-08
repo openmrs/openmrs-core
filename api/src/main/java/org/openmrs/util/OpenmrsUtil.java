@@ -846,10 +846,10 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Parses and loads a delimited list of concept ids or names
+	 * 
 	 * @param delimitedString the delimited list of concept ids or names
 	 * @param delimiter the delimiter, e.g. ","
 	 * @return the list of concepts
-	 * 
 	 * @since 1.10, 1.9.2, 1.8.5
 	 */
 	public static List<Concept> delimitedStringToConceptList(String delimitedString, String delimiter) {
@@ -1149,6 +1149,9 @@ public class OpenmrsUtil {
 	 * init parameter "application.data.directory." If not found, returns:
 	 * a) "{user.home}/.OpenMRS" on UNIX-based systems
 	 * b) "{user.home}\Application Data\OpenMRS" on Windows
+	 * 
+	 * Path can be set via systemproperty OPENMRS_APPLICATION_DATA_DIRECTORY
+	 * for development purposes.
 	 * </pre>
 	 * 
 	 * @return The path to the directory on the file system that will hold miscellaneous data about
@@ -1157,17 +1160,21 @@ public class OpenmrsUtil {
 	public static String getApplicationDataDirectory() {
 		
 		String filepath = null;
-		
-		if (OpenmrsConstants.APPLICATION_DATA_DIRECTORY != null) {
-			filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
+		if (System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY") != null) {
+			filepath = System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY");
 		} else {
-			if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM)
-				filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
-			else
-				filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
-				        + "OpenMRS";
 			
-			filepath = filepath + File.separator;
+			if (OpenmrsConstants.APPLICATION_DATA_DIRECTORY != null) {
+				filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
+			} else {
+				if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM)
+					filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
+				else
+					filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
+					        + "OpenMRS";
+				
+				filepath = filepath + File.separator;
+			}
 		}
 		
 		File folder = new File(filepath);
