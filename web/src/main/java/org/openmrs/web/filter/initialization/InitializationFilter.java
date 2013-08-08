@@ -1856,29 +1856,12 @@ public class InitializationFilter extends StartupFilter {
 	private Properties getInstallationScript() {
 		Properties prop = new Properties();
 		
-		String fileName = System.getProperty("installation.script");
+		String fileName = System.getProperty("OPENMRS_INSTALLATION_SCRIPT");
 		if (fileName == null) {
 			return prop;
 		}
-		
-		File file = new File(fileName);
-		if (file.exists()) {
-			InputStream input = null;
-			try {
-				input = new FileInputStream(fileName);
-				prop.load(input);
-				log.info("Using installation script from absolute path: " + file.getAbsolutePath());
-				
-				input.close();
-			}
-			catch (IOException ex) {
-				log.error("Failed to load installation script from absolute path: " + file.getAbsolutePath(), ex);
-				throw new RuntimeException(ex);
-			}
-			finally {
-				IOUtils.closeQuietly(input);
-			}
-		} else {
+		if (fileName.startsWith("classpath:")) {
+			fileName = fileName.substring(10);
 			InputStream input = null;
 			try {
 				input = getClass().getClassLoader().getResourceAsStream(fileName);
@@ -1894,8 +1877,26 @@ public class InitializationFilter extends StartupFilter {
 			finally {
 				IOUtils.closeQuietly(input);
 			}
+		} else {
+			File file = new File(fileName);
+			if (file.exists()) {
+				InputStream input = null;
+				try {
+					input = new FileInputStream(fileName);
+					prop.load(input);
+					log.info("Using installation script from absolute path: " + file.getAbsolutePath());
+					
+					input.close();
+				}
+				catch (IOException ex) {
+					log.error("Failed to load installation script from absolute path: " + file.getAbsolutePath(), ex);
+					throw new RuntimeException(ex);
+				}
+				finally {
+					IOUtils.closeQuietly(input);
+				}
+			}
 		}
-		
 		return prop;
 	}
 }
