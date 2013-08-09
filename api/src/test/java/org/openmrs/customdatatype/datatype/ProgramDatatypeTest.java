@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * test class for the org.openmrs.customdatatype.datatype.ProgramDatatype
@@ -27,6 +28,8 @@ public class ProgramDatatypeTest extends BaseContextSensitiveTest {
 	
 	ProgramDatatype datatype;
 	
+	private String uuid = "da4a0391-ba62-4fad-ad66-1e3722d16380";
+	
 	@Before
 	public void before() {
 		datatype = new ProgramDatatype();
@@ -34,21 +37,25 @@ public class ProgramDatatypeTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Program#serialize(Program)
-	 * @verifies return a program uuid during serialization
 	 */
 	@Test
+	@Verifies(value = "return a program uuid during serialization", method = "serialize(Program)")
 	public void serialize_shouldReturnAProgramUuidDuringSerialization() throws Exception {
 		Program program = new Program();
+		program.setUuid(uuid);
+		
 		Assert.assertEquals(program.getUuid(), datatype.serialize(program));
 	}
 	
 	/**
 	 * @see Program#deserialize(String)
-	 * @verifies reconstruct a program serialized by this handler
 	 */
 	@Test
+	@Verifies(value = "reconstruct a program serialized by this handler", method = "deserialize(String)")
 	public void deserialize_shouldReconstructAProgramSerializedByThisHandler() throws Exception {
-		Program program = Context.getProgramWorkflowService().getProgramByUuid("9bc5693a-f558-40c9-8177-145a4b119ca7");
-		Assert.assertEquals(program, datatype.deserialize(datatype.serialize(program)));
+		Program program = Context.getProgramWorkflowService().getProgramByUuid(uuid);
+		Assert.assertNotNull(program);
+		
+		Assert.assertEquals(program, datatype.deserialize(uuid));
 	}
 }
