@@ -3475,27 +3475,6 @@
 		<dropForeignKeyConstraint baseTableName="concept_name_tag_map" constraintName="mapped_concept_name_tag"/>		
 	</changeSet>
 
-	<changeSet id="20100607-1550e" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<sqlCheck expectedResult="0">
-					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 4
-				</sqlCheck>
-			</not>
-		</preConditions>
-		<comment>Converting preferred names to FULLY_SPECIFIED names</comment>
-		<update tableName="concept_name">
-			<column name="concept_name_type" value="FULLY_SPECIFIED"/>
-			<where>concept_name_id IN (SELECT concept_name_id FROM concept_name_tag_map WHERE concept_name_tag_id = 4)</where>
-		</update>			
-		<delete tableName="concept_name_tag_map">
-			<where>concept_name_tag_id = 4</where>
-		</delete>	
-		<delete tableName="concept_name_tag">
-			<where>concept_name_tag_id = 4</where>
-		</delete>
-	</changeSet>
-
 	<changeSet id="20100607-1550d" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -3520,29 +3499,31 @@
 	<changeSet id="20100607-1550f" author="wyclif">
 		<validCheckSum><comment>After changing to boolean</comment>3:b57c0f651ed477457fd16e503eaf51a4</validCheckSum>
 		<validCheckSum>3:002108aacdf55731f4fd472d5308c5c8</validCheckSum>
+        <validCheckSum>3:6a72bbb390155596e52da4e8d065d1a2</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
-					SELECT count(*) FROM concept_name_tag WHERE tag like 'preferred\___'
+					SELECT count(*) FROM concept_name_tag WHERE tag like 'preferred%'
 				</sqlCheck>
 			</not>
 		</preConditions>
 		<comment>
-			Converting concept names with country specific concept name tags to preferred names
+			Converting concept names with preferred concept name tags to preferred and fully specified names
 		</comment>    	
 		<update tableName="concept_name">
+            <column name="concept_name_type" value="FULLY_SPECIFIED"/>
 			<column name="locale_preferred" valueBoolean="true"/>
 			<where>
 				concept_name_id IN (SELECT concept_name_id FROM concept_name_tag cnt, concept_name_tag_map cntm 
-				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND cnt.tag LIKE 'preferred\___')
+				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND cnt.tag LIKE 'preferred%')
 			</where>
 		</update>
 		<delete tableName="concept_name_tag_map">
 			<where>
-				concept_name_tag_id IN (SELECT concept_name_tag_id FROM concept_name_tag WHERE tag LIKE 'preferred\___') 
+				concept_name_tag_id IN (SELECT concept_name_tag_id FROM concept_name_tag WHERE tag LIKE 'preferred%')
 			</where>
 		</delete>
-		<delete tableName="concept_name_tag"><where>tag LIKE 'preferred\___'</where></delete>
+		<delete tableName="concept_name_tag"><where>tag LIKE 'preferred%'</where></delete>
 	</changeSet>
 
 	<changeSet id="20100607-1550g" author="wyclif">
