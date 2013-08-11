@@ -830,6 +830,14 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
+	 * @see org.openmrs.api.EncounterService#getEncounterRoleByName(String)
+	 */
+	@Override
+	public EncounterRole getEncounterRoleByName(String name) {
+		return dao.getEncounterRoleByName(name);
+	}
+	
+	/**
 	 * @see org.openmrs.api.EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)
 	 */
 	@Override
@@ -996,4 +1004,5 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		return user.hasPrivilege(privilege.getPrivilege());
 	}
+	
 }

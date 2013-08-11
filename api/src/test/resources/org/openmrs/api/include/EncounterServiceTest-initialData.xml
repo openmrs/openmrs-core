@@ -11,7 +11,7 @@
   <encounter_type encounter_type_id="4" name="Some Retired Type" description="This type is retired." creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="Because" uuid="c0c579b0-8e59-401d-8a4a-976a0b183519"/>
   <encounter_type encounter_type_id="1" name="Test Enc Type B" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="759799ab-c9a5-435e-b671-77773ada74e4"/>
   <encounter_type encounter_type_id="2" name="Test Enc Type A" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="4ee21921-01cc-4720-a6bf-a61a17c4d05b"/>
-  <encounter_type encounter_type_id="3" name="Test Enc Type A" description="This type is retired" creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="This name intentionally matches enc type #2" uuid="070ac0c2-9b3b-485c-8e74-4bd81130c4f8"/>
+  <encounter_type encounter_type_id="3" name="Test Enc Type C" description="This type is retired" creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="This name intentionally matches enc type #2" uuid="070ac0c2-9b3b-485c-8e74-4bd81130c4f8"/>
   
   <!-- an encounter role -->
   <encounter_role encounter_role_id="2" name = "surgeon" description = "who did the operation" creator="1" date_created="2005-01-01 00:00:00.0" retired = "true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="for testing" uuid="430bbb70-6a9c-4e1e-badb-9c1054b1b5e9"/>
