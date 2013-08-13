@@ -22,10 +22,7 @@
 	 function validateDependencies(module){
 		 var moduleId = module.parentNode.parentNode.id;
 	     var path = "${pageContext.request.contextPath}/admin/modules/manage/checkdependencies.form";
-	     var result = false;
-	 	path = path + "?moduleId=" + moduleId;
-		  alert(path);
-		  var x = '';
+   		 path = path + "?moduleId=" + moduleId;
 	$j.ajax({
 		async : false,
 		type : "GET",
