@@ -11,6 +11,59 @@
 <script type="text/javascript">
 	var oTable;
 	
+	 function escapeSpecialCharacters(moduleId){
+		 var segments = moduleId.split(".");
+         if(segments.length > 1){
+         moduleId = segments[0] + ('\\.') + segments[1];
+         }
+        return moduleId;
+	 }
+	
+	 function validateDependencies(module){
+		 var moduleId = module.parentNode.parentNode.id;
+	     var path = "${pageContext.request.contextPath}/admin/modules/manage/checkdependencies.form";
+	     var result = false;
+	 	path = path + "?moduleId=" + moduleId;
+		  alert(path);
+		  var x = '';
+	$j.ajax({
+		async : false,
+		type : "GET",
+		url : path,
+		dataType : "text",
+		success : function(data) {
+			if(data != ""){
+				var message = '<openmrs:message code="Module.dependencyShutdownNotice" javaScriptEscape="true"/>';
+				message += '<br/><br/>' + data.toString();
+				
+				document.getElementById('dependency-confirmation-message').innerHTML = message;
+			    $j( "#dialog-confirm" ).dialog({
+			        resizable: false,
+			        width: '50%',
+			        modal: true,
+			        buttons: {
+			          "Stop module": function() {
+			            $j( this ).dialog( "close" );	
+			            
+			            moduleId = escapeSpecialCharacters(moduleId);			                			            
+			            $j('#' + moduleId + '-form').append('<input type="hidden" name="stop.x" value="stop.x">');
+						$j('#' + moduleId + '-form').submit();
+			          },
+			          Cancel: function() {			        	  
+			            $j( this ).dialog( "close" );
+			          }
+			        }
+			      });
+			}else{
+	            moduleId = escapeSpecialCharacters(moduleId);			                
+				$j('#' + moduleId + '-form').append('<input type="hidden" name="stop.x" value="stop.x">');
+				$j('#' + moduleId + '-form').submit();
+			}
+		}
+	});
+	return false;
+	}
+	 
 	$j(document).ready(function() {
 		$j('#addUpgradePopup').dialog({
 			autoOpen: false,
@@ -68,6 +121,7 @@
 <h2><openmrs:message code="Module.header" /></h2>
 
 <p><openmrs:message code="Module.notice" /></p>
+<div id="dialog-confirm" title="<openmrs:message code="Module.dependencyValidationNotice"/>"><p id="dependency-confirmation-message"></p></div>
 
 <c:choose>
 	<c:when test="${allowAdmin == 'true'}">
@@ -149,7 +203,7 @@
 				<tbody>
 	</c:if>
 			
-				<form method="post">
+				<form id="${module.moduleId}-form" method="post">
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
 					<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" }' id="${module.moduleId}">
 						<c:choose>
@@ -160,7 +214,7 @@
 											<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="start" onclick="document.getElementById('hiddenAction').value = this.value" title="<openmrs:message code="Module.start.help"/>" alt="<openmrs:message code="Module.start"/>" />
 										</c:when>
 										<c:otherwise>
-											<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="document.getElementById('hiddenAction').value = this.value" title="<openmrs:message code="Module.stop.help"/>" alt="<openmrs:message code="Module.stop"/>" />
+											<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="return validateDependencies(this);" title="<openmrs:message code="Module.stop.help"/>" alt="<openmrs:message code="Module.stop"/>" />
 										</c:otherwise>
 									</c:choose>
 								</td>

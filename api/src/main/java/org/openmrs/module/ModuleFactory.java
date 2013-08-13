@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.Vector;
 import java.util.WeakHashMap;
@@ -1445,5 +1446,29 @@ public class ModuleFactory {
 		catch (Throwable t) {
 			log.warn("Unable to save the global property", t);
 		}
+	}
+	
+	/**
+	 * Convenience method used to identify module interdependencies and alert the user before modules are shut down.
+	 * 
+	 * @param moduleId the moduleId used to identify the module being validated
+	 * @return List<dependentModules> the list of moduleId's which depend on the module about to be shutdown.
+	 * @since 1.10
+	 */
+	public static List<String> validateDependencies(String moduleId) {
+		List<String> dependentModules = null;
+		Module module = getModuleById(moduleId);
+		
+		Map<String, Module> startedModules = getStartedModulesMap();
+		String modulePackage = module.getPackageName();
+		
+		for (Entry<String, Module> entry : startedModules.entrySet()) {
+			if (!moduleId.equals(entry.getKey()) && entry.getValue().getRequiredModules().contains(modulePackage)) {
+				if (dependentModules == null)
+					dependentModules = new ArrayList<String>();
+				dependentModules.add(entry.getKey() + " " + entry.getValue().getVersion());
+			}
+		}
+		return dependentModules;
 	}
 }
