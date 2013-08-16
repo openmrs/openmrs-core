@@ -14,7 +14,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -293,8 +292,8 @@ public class PatientStateTest {
 	@Test
 	@Verifies(value = "return positive or negative if two states have the same start date and end date but different uuids", method = "compareTo(PatientState)")
 	public void compareTo_shouldReturnPositiveOrNegativeIfTwoStatesHaveTheSameStartDatesEndDatesAndUuids() throws Exception {
-		uuid1 = UUID.randomUUID().toString();
-		uuid2 = UUID.randomUUID().toString();
+		uuid1 = "some uuid 1";
+		uuid2 = "some uuid 2";
 		
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(leftRange);
