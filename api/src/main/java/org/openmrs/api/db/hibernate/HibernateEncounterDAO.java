@@ -47,6 +47,7 @@ import org.openmrs.Provider;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
@@ -162,7 +163,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#saveEncounterType(org.openmrs.EncounterType)
 	 */
-	public EncounterType saveEncounterType(EncounterType encounterType) {
+	public EncounterType saveEncounterType(EncounterType encounterType) throws EncounterTypeLockedException {
 		sessionFactory.getCurrentSession().saveOrUpdate(encounterType);
 		return encounterType;
 	}

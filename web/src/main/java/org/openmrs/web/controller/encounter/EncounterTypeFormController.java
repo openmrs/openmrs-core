@@ -29,6 +29,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Privilege;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.PrivilegeEditor;
 import org.openmrs.web.WebConstants;
@@ -81,9 +82,15 @@ public class EncounterTypeFormController extends SimpleFormController {
 			EncounterService es = Context.getEncounterService();
 			
 			if (request.getParameter("save") != null) {
-				es.saveEncounterType(encounterType);
-				view = getSuccessView();
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.saved");
+				try {
+	                es.saveEncounterType(encounterType);
+	                view = getSuccessView();
+	                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.saved");
+                }
+                catch (EncounterTypeLockedException e) {
+                	log.error("tried to save encounter type while encounter types were locked");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "EncounterType.encounterTypes.locked");
+                }
 			}
 
 			// if the user is retiring out the EncounterType
@@ -94,18 +101,30 @@ public class EncounterTypeFormController extends SimpleFormController {
 					return showForm(request, response, errors);
 				}
 				
-				es.retireEncounterType(encounterType, retireReason);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.retiredSuccessfully");
-				
-				view = getSuccessView();
+				try {
+	                es.retireEncounterType(encounterType, retireReason);
+	                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.retiredSuccessfully");
+	                
+	                view = getSuccessView();
+                }
+                catch (EncounterTypeLockedException e) {
+                	log.error("tried to retire encounter type while encounter types were locked");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "EncounterType.encounterTypes.locked");
+                }
 			}
 
 			// if the user is unretiring the EncounterType
 			else if (request.getParameter("unretire") != null) {
-				es.unretireEncounterType(encounterType);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.unretiredSuccessfully");
-				
-				view = getSuccessView();
+				try {
+	                es.unretireEncounterType(encounterType);
+	                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.unretiredSuccessfully");
+	                
+	                view = getSuccessView();
+                }
+				catch (EncounterTypeLockedException e) {
+                	log.error("tried to unretire encounter type while encounter types were locked");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "EncounterType.encounterTypes.locked");
+                }
 			}
 
 			// if the user is purging the encounterType
@@ -120,6 +139,10 @@ public class EncounterTypeFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
 					view = "encounterType.form?encounterTypeId=" + encounterType.getEncounterTypeId();
 				}
+				catch (EncounterTypeLockedException e) {
+					log.error("tried to delete encounter type while encounter types were locked");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "EncounterType.encounterTypes.locked");
+				}	
 				catch (APIException e) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
 					view = "encounterType.form?encounterTypeId=" + encounterType.getEncounterTypeId();

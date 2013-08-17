@@ -269,7 +269,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should update an existing encounter type name
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
-	public EncounterType saveEncounterType(EncounterType encounterType);
+	public EncounterType saveEncounterType(EncounterType encounterType) throws EncounterTypeLockedException;
 	
 	/**
 	 * Get encounterType by internal identifier
@@ -356,7 +356,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should throw error if given null reason parameter
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
-	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws APIException;
+	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws EncounterTypeLockedException, APIException;
 	
 	/**
 	 * Unretire an EncounterType. This brings back the given encounter type and says that it can be
@@ -377,7 +377,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should purge type
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTER_TYPES })
-	public void purgeEncounterType(EncounterType encounterType) throws APIException;
+	public void purgeEncounterType(EncounterType encounterType) throws EncounterTypeLockedException, APIException;
 	
 	/**
 	 * Creates a new encounter
@@ -900,4 +900,11 @@ public interface EncounterService extends OpenmrsService {
 	 * @should fail if encounter is null
 	 */
 	public boolean canViewEncounter(Encounter encounter, User subject);
+	
+	/**
+	 * Check if the encounter types are locked, and if so, throw exception during manipulation of encounter type
+	 * 
+	 * @throws EncounterTypeLockedException
+	 */
+	public void checkIfLocked() throws EncounterTypeLockedException;
 }
