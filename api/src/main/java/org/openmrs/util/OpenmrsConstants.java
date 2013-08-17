@@ -879,6 +879,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_ADDRESS_TEMPLATE = "layout.address.format";
 	
+	public static final String GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED = "EncounterType.encounterTypes.locked";
+	
 	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
 	        + "    <nameMappings class=\"properties\">\n"
 	        + "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
@@ -1431,6 +1433,9 @@ public final class OpenmrsConstants {
 		                GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING,
 		                "",
 		                "Specifies how encounter types are mapped to visit types when automatically assigning encounters to visits. e.g 1:1, 2:1, 3:2 in the format encounterTypeId:visitTypeId"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED, "false",
+		        "saving, retiring or deleting an Encounter Type is not permitted, if true", BooleanDatatype.class, null));
 		
 		props
 		        .add(new GlobalProperty(
