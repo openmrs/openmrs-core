@@ -19,7 +19,7 @@
         return moduleId;
 	 }
 	
-	 function validateDependencies(module){
+	 function getDependencies(module, isUnloadFlag){
 		 var moduleId = module.parentNode.parentNode.id;
 	     var path = "${pageContext.request.contextPath}/admin/modules/manage/checkdependencies.form";
    		 path = path + "?moduleId=" + moduleId;
@@ -30,8 +30,13 @@
 		dataType : "text",
 		success : function(data) {
 			if(data != ""){
-				var message = '<openmrs:message code="Module.dependencyShutdownNotice" javaScriptEscape="true"/>';
-				message += '<br/><br/>' + data.toString();
+				var message;
+				if(isUnloadFlag == false){
+					message = '<openmrs:message code="Module.dependencyShutdownNotice" javaScriptEscape="true"/>';
+				}else{
+					message = '<openmrs:message code="Module.dependencyUnloadNotice" javaScriptEscape="true"/>';
+				}
+				message += '<br/><br/>' + JSON.parse(data);
 				
 				document.getElementById('dependency-confirmation-message').innerHTML = message;
 			    $j( "#dialog-confirm" ).dialog({
@@ -39,7 +44,7 @@
 			        width: '50%',
 			        modal: true,
 			        buttons: {
-			          "Stop module": function() {
+			          "Ok": function() {
 			            $j( this ).dialog( "close" );	
 			            
 			            moduleId = escapeSpecialCharacters(moduleId);			                			            
@@ -211,11 +216,11 @@
 											<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="start" onclick="document.getElementById('hiddenAction').value = this.value" title="<openmrs:message code="Module.start.help"/>" alt="<openmrs:message code="Module.start"/>" />
 										</c:when>
 										<c:otherwise>
-											<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="return validateDependencies(this);" title="<openmrs:message code="Module.stop.help"/>" alt="<openmrs:message code="Module.stop"/>" />
+											<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="return getDependencies(this, false);" title="<openmrs:message code="Module.stop.help"/>" alt="<openmrs:message code="Module.stop"/>" />
 										</c:otherwise>
 									</c:choose>
 								</td>
-								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirm('<openmrs:message code="Module.unloadWarning"/>');" title="<openmrs:message code="Module.unload.help"/>" title="<openmrs:message code="Module.unload"/>" alt="<openmrs:message code="Module.unload"/>" /></td>
+								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return getDependencies(this, true);" title="<openmrs:message code="Module.unload.help"/>" title="<openmrs:message code="Module.unload"/>" alt="<openmrs:message code="Module.unload"/>" /></td>
 							</c:when>
 							<c:otherwise>
 								<td valign="top">

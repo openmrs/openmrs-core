@@ -1455,7 +1455,7 @@ public class ModuleFactory {
 	 * @return List<dependentModules> the list of moduleId's which depend on the module about to be shutdown.
 	 * @since 1.10
 	 */
-	public static List<String> validateDependencies(String moduleId) {
+	public static List<String> getDependencies(String moduleId) {
 		List<String> dependentModules = null;
 		Module module = getModuleById(moduleId);
 		

@@ -42,9 +42,9 @@ public class ModuleManagementController {
 	
 	@RequestMapping(value = "/checkdependencies", method = RequestMethod.GET)
 	@ResponseBody
-	public List<String> manage(@RequestParam(value = "moduleId", required = true) String moduleId,
-	        HttpServletRequest request, HttpServletResponse response) throws IOException {
-		return ModuleFactory.validateDependencies(moduleId);
+	public List<String> manage(@RequestParam(value = "moduleId") String moduleId, HttpServletRequest request,
+	        HttpServletResponse response) throws IOException {
+		return ModuleFactory.getDependencies(moduleId);
 		
 	}
 	
