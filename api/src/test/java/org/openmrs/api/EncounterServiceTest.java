@@ -36,6 +36,7 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
@@ -45,6 +46,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -1427,4 +1429,77 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(4, Context.getEncounterService().getCountOfEncounters("qwerty", true).intValue());
 	}
 	
+	/**
+	 * @see {@link EncounterService#saveEncounterType(EncounterType)}}
+	 * @see {@link EncounterService#checkIfEncounterTypesAreLocked()}}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to save encounter type when encounter types are locked", method = "saveEncounterType(EncounterType)")
+	public void saveEncounterType_shouldThrowErrorWhenTryingToSaveEncounterTypeWhenEncounterTypesAreLocked()
+	                                                                                                        throws Exception {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(1);
+		
+		Assert.assertNotNull(encounterType);
+		
+		encounterService.saveEncounterType(encounterType);
+	}
+	
+	/**
+	 * @see {@link EncounterService#retireEncounterType(EncounterType, String)}}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to retire encounter type when encounter types are locked", method = "retireEncounterType(EncounterType, String)")
+	public void retireEncounterType_shouldThrowErrorWhenTryingToRetireEncounterTypeWhenEncounterTypesAreLocked()
+	                                                                                                            throws Exception {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(1);
+		Assert.assertNotNull(encounterType);
+		
+		encounterService.retireEncounterType(encounterType, "reason");
+	}
+	
+	/**
+	 * @see {@link EncounterService#unretireEncounterType(EncounterType)}}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to unretire encounter type when encounter types are locked", method = "unretireEncounterType(EncounterType)")
+	public void unretireEncounterType_shouldThrowErrorWhenTryingToUnretireEncounterTypeWhenEncounterTypesAreLocked()
+	                                                                                                                throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(2);
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		encounterService.unretireEncounterType(encounterType);
+	}
+	
+	/**
+	 * @see {@link EncounterService#purgeEncounterType(EncounterType)}}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to delete encounter type when encounter types are locked", method = "purgeEncounterType(EncounterType)")
+	public void purgeEncounterType_shouldThrowErrorWhenTryingToDeleteEncounterTypeWhenEncounterTypesAreLocked()
+	                                                                                                           throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(1);
+		
+		Assert.assertNotNull(encounterType);
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		encounterService.purgeEncounterType(encounterType);
+	}
 }

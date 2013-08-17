@@ -31,10 +31,12 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -310,6 +312,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#saveEncounterType(org.openmrs.EncounterType)
 	 */
 	public EncounterType saveEncounterType(EncounterType encounterType) {
+		//make sure the user has not turned off encounter types editing
+		checkIfEncounterTypesAreLocked();
+		
 		dao.saveEncounterType(encounterType);
 		return encounterType;
 	}
@@ -356,6 +361,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (reason == null)
 			throw new IllegalArgumentException("The 'reason' argument is required");
 		
+		//make sure the user has not turned off encounter types editing
+		checkIfEncounterTypesAreLocked();
+		
 		encounterType.setRetired(true);
 		encounterType.setRetireReason(reason);
 		return saveEncounterType(encounterType);
@@ -365,6 +373,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#unretireEncounterType(org.openmrs.EncounterType)
 	 */
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException {
+		checkIfEncounterTypesAreLocked();
+		
 		encounterType.setRetired(false);
 		return saveEncounterType(encounterType);
 	}
@@ -373,6 +383,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#purgeEncounterType(org.openmrs.EncounterType)
 	 */
 	public void purgeEncounterType(EncounterType encounterType) throws APIException {
+		//make sure the user has not turned off encounter types editing
+		checkIfEncounterTypesAreLocked();
+		
 		dao.deleteEncounterType(encounterType);
 	}
 	
@@ -567,5 +580,16 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	public Integer getCountOfEncounters(String query, boolean includeVoided) {
 		return dao.getCountOfEncounters(query, includeVoided);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#checkIfEncounterTypesAreLocked()
+	 */
+	public void checkIfEncounterTypesAreLocked() {
+		String locked = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED, "false");
+		if (locked.toLowerCase().equals("true")) {
+			throw new EncounterTypeLockedException();
+		}
 	}
 }

@@ -223,9 +223,10 @@ public interface EncounterService extends OpenmrsService {
 	 * @should not overwrite creator or date created
 	 * @should not overwrite date created
 	 * @should update an existing encounter type name
+	 * @should throw error when trying to save encounter type when encounter types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
-	public EncounterType saveEncounterType(EncounterType encounterType);
+	public EncounterType saveEncounterType(EncounterType encounterType) throws APIException;
 	
 	/**
 	 * Get encounterType by internal identifier
@@ -316,6 +317,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 * @should retire type and set attributes
 	 * @should throw error if given null reason parameter
+	 * @should should throw error when trying to retire encounter type when encounter types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
 	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws APIException;
@@ -327,6 +329,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType the encounter type to unretire
 	 * @throws APIException
 	 * @should unretire type and unmark attributes
+	 * @should should throw error when trying to unretire encounter type when encounter types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException;
@@ -337,6 +340,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType
 	 * @throws APIException
 	 * @should purge type
+	 * @should should throw error when trying to delete encounter type when encounter types are locked
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTER_TYPES })
 	public void purgeEncounterType(EncounterType encounterType) throws APIException;
@@ -625,4 +629,11 @@ public interface EncounterService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
 	public Integer getCountOfEncounters(String query, boolean includeVoided);
 	
+	/**
+	 * Check if the encounter types are locked, and if so, throw exception during manipulation of encounter type
+	 * 
+	 * @throws EncounterTypeLockedException
+	 */
+	@Transactional(readOnly = true)
+	public void checkIfEncounterTypesAreLocked() throws EncounterTypeLockedException;
 }
