@@ -356,7 +356,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @should throw error if given null reason parameter
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
-	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws EncounterTypeLockedException, APIException;
+	public EncounterType retireEncounterType(EncounterType encounterType, String reason)
+	        throws EncounterTypeLockedException, APIException;
 	
 	/**
 	 * Unretire an EncounterType. This brings back the given encounter type and says that it can be

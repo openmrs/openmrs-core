@@ -97,12 +97,9 @@
 
 <br/>
 
-<openmrs:globalProperty key="EncounterType.encounterTypes.locked" var="EncounterTypesLocked"/>
-
 <c:if test="${not encounterType.retired && not empty encounterType.encounterTypeId}">
 	<form method="post">
 		<fieldset>
-			<c:if test="${EncounterTypesLocked != 'true'}">
 			<h4><openmrs:message code="EncounterType.retireEncounterType"/></h4>
 			
 			<b><openmrs:message code="general.reason"/></b>
@@ -114,7 +111,6 @@
 			</spring:hasBindErrors>
 			<br/>
 			<input type="submit" value='<openmrs:message code="EncounterType.retireEncounterType"/>' name="retire"/>
-			</c:if>
 		</fieldset>
 	</form>
 </c:if>
@@ -122,12 +118,10 @@
 <c:if test="${encounterType.retired && not empty encounterType.encounterTypeId}">
 	<form method="post">
 		<fieldset>
-			<c:if test="${EncounterTypesLocked != 'true'}">
 			<h4><openmrs:message code="EncounterType.unretireEncounterType"/></h4>
 			
 			<br/>
-			<input type="submit" value='<openmrs:message code="EncounterType.unretireEncounterType"/>' name="unretire"/>
-			</c:if>
+			<input type="submit" value='<openmrs:message code="EncounterType.unretireEncounterType"/>' name="unretire"/>	
 		</fieldset>
 	</form>
 </c:if>
@@ -135,7 +129,6 @@
 <br/>
 
 <c:if test="${not empty encounterType.encounterTypeId}">
-	<c:if test="${EncounterTypesLocked != 'true'}">
 	<openmrs:hasPrivilege privilege="Purge Encounter Types">
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>
@@ -144,7 +137,6 @@
 			</fieldset>
 		</form>
 	</openmrs:hasPrivilege>
-	</c:if>
 </c:if>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterTypeForm.footer" type="html" parameters="encounterTypeId=${encounterType.encounterTypeId}" />

@@ -83,14 +83,15 @@ public class EncounterTypeFormController extends SimpleFormController {
 			
 			if (request.getParameter("save") != null) {
 				try {
-	                es.saveEncounterType(encounterType);
-	                view = getSuccessView();
-	                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.saved");
-                }
-                catch (EncounterTypeLockedException e) {
-                	log.error("tried to save encounter type while encounter types were locked");
+					es.saveEncounterType(encounterType);
+					view = getSuccessView();
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.saved");
+				}
+				catch (EncounterTypeLockedException e) {
+					log.error("tried to save encounter type while encounter types were locked");
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "EncounterType.encounterTypes.locked");
-                }
+					view = "encounterType.form?encounterTypeId=" + encounterType.getEncounterTypeId();
+				}
 			}
 
 			// if the user is retiring out the EncounterType
@@ -102,29 +103,31 @@ public class EncounterTypeFormController extends SimpleFormController {
 				}
 				
 				try {
-	                es.retireEncounterType(encounterType, retireReason);
-	                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.retiredSuccessfully");
-	                
-	                view = getSuccessView();
-                }
-                catch (EncounterTypeLockedException e) {
-                	log.error("tried to retire encounter type while encounter types were locked");
+					es.retireEncounterType(encounterType, retireReason);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.retiredSuccessfully");
+					
+					view = getSuccessView();
+				}
+				catch (EncounterTypeLockedException e) {
+					log.error("tried to retire encounter type while encounter types were locked");
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "EncounterType.encounterTypes.locked");
-                }
+					view = "encounterType.form?encounterTypeId=" + encounterType.getEncounterTypeId();
+				}
 			}
 
 			// if the user is unretiring the EncounterType
 			else if (request.getParameter("unretire") != null) {
 				try {
-	                es.unretireEncounterType(encounterType);
-	                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.unretiredSuccessfully");
-	                
-	                view = getSuccessView();
-                }
+					es.unretireEncounterType(encounterType);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.unretiredSuccessfully");
+					
+					view = getSuccessView();
+				}
 				catch (EncounterTypeLockedException e) {
-                	log.error("tried to unretire encounter type while encounter types were locked");
+					log.error("tried to unretire encounter type while encounter types were locked");
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "EncounterType.encounterTypes.locked");
-                }
+					view = "encounterType.form?encounterTypeId=" + encounterType.getEncounterTypeId();
+				}
 			}
 
 			// if the user is purging the encounterType
@@ -142,7 +145,8 @@ public class EncounterTypeFormController extends SimpleFormController {
 				catch (EncounterTypeLockedException e) {
 					log.error("tried to delete encounter type while encounter types were locked");
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "EncounterType.encounterTypes.locked");
-				}	
+					view = "encounterType.form?encounterTypeId=" + encounterType.getEncounterTypeId();
+				}
 				catch (APIException e) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
 					view = "encounterType.form?encounterTypeId=" + encounterType.getEncounterTypeId();

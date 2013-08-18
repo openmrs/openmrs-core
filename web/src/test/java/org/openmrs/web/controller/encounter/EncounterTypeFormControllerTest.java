@@ -34,13 +34,15 @@ public class EncounterTypeFormControllerTest extends BaseWebContextSensitiveTest
 		
 		EncounterService es = Context.getEncounterService();
 		
-		EncounterTypeFormController controller = (EncounterTypeFormController) applicationContext.getBean("encounterTypeForm");
+		EncounterTypeFormController controller = (EncounterTypeFormController) applicationContext
+		        .getBean("encounterTypeForm");
 		controller.setApplicationContext(applicationContext);
 		controller.setSuccessView("index.htm");
 		controller.setFormView("EncounterType.form");
 		
 		// setting up the request and doing an initial "get" equivalent to the user loading the page for the first time
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin/encounters/encounterType.form?encounterTypeId=1");
+		MockHttpServletRequest request = new MockHttpServletRequest("GET",
+		        "/admin/encounters/encounterType.form?encounterTypeId=1");
 		request.setSession(new MockHttpSession(null));
 		HttpServletResponse response = new MockHttpServletResponse();
 		controller.handleRequest(request, response);
