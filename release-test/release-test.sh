@@ -28,7 +28,7 @@ cd $dir
 error=1
 success=0
 verbose="-q"
-buffer=true
+buffer=false
 testname="*"
 profile="integration-test"
 database="openmrsReleaseTest"
