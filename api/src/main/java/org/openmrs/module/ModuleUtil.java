@@ -750,7 +750,8 @@ public class ModuleUtil {
 	public static AbstractRefreshableApplicationContext refreshApplicationContext(AbstractRefreshableApplicationContext ctx,
 	        boolean isOpenmrsStartup, Module startedModule) {
 		//notify all started modules that we are about to refresh the context
-		for (Module module : ModuleFactory.getStartedModules()) {
+		Set<Module> startedModules = new HashSet<Module>(ModuleFactory.getStartedModules());
+		for (Module module : startedModules) {
 			try {
 				if (module.getModuleActivator() != null)
 					module.getModuleActivator().willRefreshContext();
@@ -791,7 +792,7 @@ public class ModuleUtil {
 		
 		// reload the advice points that were lost when refreshing Spring
 		if (log.isDebugEnabled())
-			log.debug("Reloading advice for all started modules: " + ModuleFactory.getStartedModules().size());
+			log.debug("Reloading advice for all started modules: " + startedModules.size());
 		
 		try {
 			//The call backs in this block may need lazy loading of objects
@@ -799,8 +800,11 @@ public class ModuleUtil {
 			//was closed when the application context was refreshed as above.
 			//So we need to open another session now. TRUNK-3739
 			Context.openSessionWithCurrentUser();
-			
-			for (Module module : ModuleFactory.getStartedModules()) {
+			for (Module module : startedModules) {
+				if (!module.isStarted()) {
+					continue;
+				}
+				
 				ModuleFactory.loadAdvice(module);
 				try {
 					ModuleFactory.passDaemonToken(module);
@@ -817,7 +821,7 @@ public class ModuleUtil {
 						}
 						catch (Exception e) {
 							log.warn("Unable to invoke started() method on the module's activator", e);
-							ModuleFactory.stopModule(module);
+							ModuleFactory.stopModule(module, true, true);
 						}
 					}
 					
