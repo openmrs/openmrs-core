@@ -880,6 +880,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_ADDRESS_TEMPLATE = "layout.address.format";
 	
+	public static final String GLOBAL_PROPERTY_FORMS_LOCKED = "Form.forms.locked";
+	
 	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
 	        + "    <nameMappings class=\"properties\">\n"
 	        + "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
@@ -1490,6 +1492,9 @@ public final class OpenmrsConstants {
 		                GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES,
 		                "",
 		                "A comma-separated list of encounter roles (by name or id). Providers with these roles in an encounter will be displayed on the encounter tab of the patient dashboard."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_FORMS_LOCKED, "false",
+		        "if true, cause a FormsLockedException when editing a form"));
 		
 		props.add(new GlobalProperty(GP_SEARCH_WIDGET_MAXIMUM_RESULTS, "2000",
 		        "Specifies the maximum number of results to return from a single search in the search widgets"));

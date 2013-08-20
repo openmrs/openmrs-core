@@ -33,6 +33,7 @@ import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.FormService;
+import org.openmrs.api.FormsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.util.FormUtil;
@@ -89,6 +90,11 @@ public class FormFormController extends SimpleFormController {
 						form = Context.getFormService().saveForm(form);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
 					}
+					catch (FormsLockedException e) {
+						log.error("tried to save form while forms were locked");
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.forms.locked");
+						return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
+					}
 					catch (Exception e) {
 						log.error("Error while saving form " + form.getFormId(), e);
 						errors.reject(e.getMessage());
@@ -102,6 +108,11 @@ public class FormFormController extends SimpleFormController {
 					}
 					catch (DataIntegrityViolationException e) {
 						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
+						return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
+					}
+					catch (FormsLockedException e) {
+						log.error("tried to delete form while forms were locked");
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.forms.locked");
 						return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
 					}
 					catch (Exception e) {

@@ -813,4 +813,11 @@ public interface FormService extends OpenmrsService {
 	 * @since 1.9
 	 */
 	public void purgeFormResource(FormResource formResource) throws APIException;
+	
+	/**
+	 * Check if the forms are locked, and if locked, throw exception during manipulation/editing of a form
+	 * 
+	 * @throws FormsLockedException
+	 */
+	public void checkIfLocked() throws FormsLockedException;
 }

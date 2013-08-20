@@ -40,12 +40,14 @@ import org.openmrs.FormResource;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
+import org.openmrs.api.FormsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.FormDAO;
 import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.obs.SerializableComplexObsHandler;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.FormValidator;
 import org.springframework.transaction.annotation.Transactional;
@@ -192,6 +194,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#retireForm(org.openmrs.Form, java.lang.String)
 	 */
 	public void retireForm(Form form, String reason) throws APIException {
+		checkIfLocked();
 		form.setRetired(true);
 		form.setRetireReason(reason);
 		saveForm(form);
@@ -201,6 +204,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#unretireForm(org.openmrs.Form)
 	 */
 	public void unretireForm(Form form) throws APIException {
+		checkIfLocked();
 		form.setRetired(false);
 		saveForm(form);
 	}
@@ -211,6 +215,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Deprecated
 	public void deleteForm(Form form) throws APIException {
+		checkIfLocked();
 		Context.getFormService().purgeForm(form, false);
 	}
 	
@@ -716,6 +721,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#saveForm(org.openmrs.Form)
 	 */
 	public Form saveForm(Form form) throws APIException {
+		//make sure the user has not turned or locked off forms editing
+		checkIfLocked();
+		
 		BindException errors = new BindException(form, "form");
 		formValidator.validate(form, errors);
 		if (errors.hasErrors()) {
@@ -963,4 +971,15 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		}
 	}
 	
+	/**
+	 * @see org.openmrs.api.FormService#checkIfLocked()
+	 */
+	@Transactional(readOnly = true)
+	public void checkIfLocked() {
+		String locked = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FORMS_LOCKED,
+		    "false");
+		if (locked.toLowerCase().equals("true")) {
+			throw new FormsLockedException();
+		}
+	}
 }
