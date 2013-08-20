@@ -27,6 +27,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
@@ -425,7 +426,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		List<String> requiredPrivs = new Vector<String>();
 		
 		for (Role r : roles) {
-			if (r.getRole().equals(RoleConstants.SUPERUSER) && !authUser.hasRole(RoleConstants.SUPERUSER))
+			if (r.getRole().equals(RoleConstants.SUPERUSER)
+			        && !Context.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE))
 				throw new APIException("You must have the role '" + RoleConstants.SUPERUSER + "' in order to assign it.");
 			if (r.getPrivileges() != null) {
 				for (Privilege p : r.getPrivileges())
