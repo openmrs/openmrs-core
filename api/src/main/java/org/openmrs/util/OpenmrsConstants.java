@@ -1484,8 +1484,7 @@ public final class OpenmrsConstants {
 		                "Specifies how encounter types are mapped to visit types when automatically assigning encounters to visits. e.g 1:1, 2:1, 3:2 in the format encounterTypeId:visitTypeId or encounterTypeUuid:visitTypeUuid or a combination of encounter/visit type uuids and ids e.g 1:759799ab-c9a5-435e-b671-77773ada74e4"));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED, "false",
-		        "if true, cause an EncounterTypeLockedException when saving, retiring or deleting a Encounter Type",
-		        BooleanDatatype.class, null));
+		        "saving, retiring or deleting an Encounter Type is not permitted, if true", BooleanDatatype.class, null));
 		
 		props
 		        .add(new GlobalProperty(

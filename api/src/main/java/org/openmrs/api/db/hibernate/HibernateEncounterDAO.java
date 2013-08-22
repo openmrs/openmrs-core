@@ -163,7 +163,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#saveEncounterType(org.openmrs.EncounterType)
 	 */
-	public EncounterType saveEncounterType(EncounterType encounterType) throws EncounterTypeLockedException {
+	public EncounterType saveEncounterType(EncounterType encounterType) {
 		sessionFactory.getCurrentSession().saveOrUpdate(encounterType);
 		return encounterType;
 	}

@@ -57,6 +57,31 @@ public class EncounterTypeFormControllerTest extends BaseWebContextSensitiveTest
 		
 		Assert.assertNotSame("The purge attempt should have failed!", "index.htm", mav.getViewName());
 		Assert.assertNotNull(es.getEncounterType(1));
+	}
+	
+	@Test
+	public void shouldSaveEncounterTypeWhenEncounterTypesAreNotLocked() throws Exception {
+		EncounterService es = Context.getEncounterService();
 		
+		EncounterTypeFormController controller = (EncounterTypeFormController) applicationContext
+		        .getBean("encounterTypeForm");
+		controller.setApplicationContext(applicationContext);
+		controller.setSuccessView("index.htm");
+		controller.setFormView("EncounterType.form");
+		
+		MockHttpServletRequest request = new MockHttpServletRequest("GET",
+		        "/admin/encounters/encounterType.form?encounterTypeId=1");
+		request.setSession(new MockHttpSession(null));
+		HttpServletResponse response = new MockHttpServletResponse();
+		controller.handleRequest(request, response);
+		
+		request.setMethod("POST");
+		
+		request.addParameter("action", "Save EncounterType"); // so that the form is processed
+		
+		ModelAndView mav = controller.handleRequest(request, response);
+		
+		Assert.assertNotSame("The save attempt should have passed!", "index.htm", mav.getViewName());
+		Assert.assertNotNull(es.getEncounterType(1));
 	}
 }

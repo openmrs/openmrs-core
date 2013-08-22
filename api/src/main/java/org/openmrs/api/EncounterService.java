@@ -907,5 +907,5 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @throws EncounterTypeLockedException
 	 */
-	public void checkIfLocked() throws EncounterTypeLockedException;
+	public void checkIfEncounterTypesAreLocked() throws EncounterTypeLockedException;
 }

@@ -433,7 +433,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public EncounterType saveEncounterType(EncounterType encounterType) {
 		//make sure the user has not turned off encounter types editing
-		checkIfLocked();
+		checkIfEncounterTypesAreLocked();
 		
 		dao.saveEncounterType(encounterType);
 		return encounterType;
@@ -487,7 +487,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new IllegalArgumentException("The 'reason' for retiring is required");
 		
 		//make sure the user has not turned off encounter types editing
-		checkIfLocked();
+		checkIfEncounterTypesAreLocked();
 		
 		encounterType.setRetired(true);
 		encounterType.setRetireReason(reason);
@@ -498,7 +498,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#unretireEncounterType(org.openmrs.EncounterType)
 	 */
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException {
-		checkIfLocked();
+		checkIfEncounterTypesAreLocked();
 		
 		encounterType.setRetired(false);
 		return saveEncounterType(encounterType);
@@ -509,7 +509,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public void purgeEncounterType(EncounterType encounterType) throws APIException {
 		//make sure the user has not turned off encounter types editing
-		checkIfLocked();
+		checkIfEncounterTypesAreLocked();
 		
 		dao.deleteEncounterType(encounterType);
 	}
@@ -1010,10 +1010,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#checkIfLocked()
+	 * @see org.openmrs.api.EncounterService#checkIfLocked()
 	 */
 	@Transactional(readOnly = true)
-	public void checkIfLocked() {
+	public void checkIfEncounterTypesAreLocked() {
 		String locked = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED, "false");
 		if (locked.toLowerCase().equals("true")) {
