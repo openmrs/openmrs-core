@@ -267,6 +267,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should not overwrite creator or date created
 	 * @should not overwrite date created
 	 * @should update an existing encounter type name
+	 * @should not save encounter type if encounter types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
 	public EncounterType saveEncounterType(EncounterType encounterType) throws EncounterTypeLockedException;

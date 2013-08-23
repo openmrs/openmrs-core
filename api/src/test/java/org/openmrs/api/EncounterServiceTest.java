@@ -2538,4 +2538,28 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldMatchOnTheFormName() throws Exception {
 		Assert.assertEquals(2, Context.getEncounterService().getEncounters("Basic", 3, null, null, false).size());
 	}
+	
+	/**
+	 * @see {@link EncounterService#saveEncounterType(EncounterType)}}
+	 * @see {@link EncounterService#checkIfEncounterTypesAreLocked()}}
+	 */
+	@Test
+	@Verifies(value = "not save encounter type if encounter types are locked", method = "saveEncounterType(EncounterType)")
+	public void saveEncounterType_shouldNotSaveEncounterTypeIfEncounterTypesAreLocked() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = new EncounterType("testing", "desc");
+		
+		String locked = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED, "false");
+		if (locked.toLowerCase().equals("true")) {
+		encounterService.saveEncounterType(encounterType);
+		
+		// making sure an encounter type id was not created
+		assertNull(encounterType.getEncounterTypeId());
+		
+		// make sure we cannot fetch this new encounter type from the database
+		EncounterType newEncounterType = encounterService.getEncounterType(encounterType.getEncounterTypeId());
+		assertNull(newEncounterType);
+		}
+	}
 }

@@ -1010,7 +1010,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#checkIfLocked()
+	 * @see org.openmrs.api.EncounterService#checkIfEncounterTypesAreLocked()
 	 */
 	@Transactional(readOnly = true)
 	public void checkIfEncounterTypesAreLocked() {
