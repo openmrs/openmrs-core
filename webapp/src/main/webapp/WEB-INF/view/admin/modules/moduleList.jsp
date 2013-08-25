@@ -31,11 +31,7 @@
 		success : function(data) {
 			if(data != ""){
 				var message;
-				if(isUnloadFlag == false){
-					message = '<openmrs:message code="Module.dependencyShutdownNotice" javaScriptEscape="true"/>';
-				}else{
-					message = '<openmrs:message code="Module.dependencyUnloadNotice" javaScriptEscape="true"/>';
-				}
+				message = '<openmrs:message code="Module.dependencyShutdownNotice" javaScriptEscape="true"/>';				
 				message += '<br/><br/>' + JSON.parse(data);
 				
 				document.getElementById('dependency-confirmation-message').innerHTML = message;
@@ -47,8 +43,13 @@
 			          "Ok": function() {
 			            $j( this ).dialog( "close" );	
 			            
-			            moduleId = escapeSpecialCharacters(moduleId);			                			            
+			            moduleId = escapeSpecialCharacters(moduleId);	
+			            if(isUnloadFlag == false){
 			            $j('#' + moduleId + '-form').append('<input type="hidden" name="stop.x" value="stop.x">');
+			            }else{
+				            $j('#' + moduleId + '-form').append('<input type="hidden" name="unload.x" value="unload.x">');
+     	
+			            }
 						$j('#' + moduleId + '-form').submit();
 			          },
 			          Cancel: function() {			        	  
@@ -57,8 +58,12 @@
 			        }
 			      });
 			}else{
-	            moduleId = escapeSpecialCharacters(moduleId);			                
+	            moduleId = escapeSpecialCharacters(moduleId);	
+	            if(isUnloadFlag == false){
 				$j('#' + moduleId + '-form').append('<input type="hidden" name="stop.x" value="stop.x">');
+	            }else{
+					$j('#' + moduleId + '-form').append('<input type="hidden" name="unload.x" value="unload.x">');
+	            }
 				$j('#' + moduleId + '-form').submit();
 			}
 		}
