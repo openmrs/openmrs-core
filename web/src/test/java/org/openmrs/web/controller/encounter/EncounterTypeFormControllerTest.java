@@ -14,6 +14,7 @@
 package org.openmrs.web.controller.encounter;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.html.FormView;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,7 +56,8 @@ public class EncounterTypeFormControllerTest extends BaseWebContextSensitiveTest
 		// send the parameters to the controller
 		ModelAndView mav = controller.handleRequest(request, response);
 		
-		Assert.assertNotSame("The purge attempt should have failed!", "index.htm", mav.getViewName());
+		Assert.assertEquals("The purge attempt should have failed!", "EncounterType.form", mav.getViewName());
+		Assert.assertSame(controller.getFormView(), mav.getViewName());
 		Assert.assertNotNull(es.getEncounterType(1));
 	}
 	
@@ -77,11 +79,12 @@ public class EncounterTypeFormControllerTest extends BaseWebContextSensitiveTest
 		
 		request.setMethod("POST");
 		
-		request.addParameter("action", "Save EncounterType"); // so that the form is processed
+		request.addParameter("action", "Save EncounterType");
 		
 		ModelAndView mav = controller.handleRequest(request, response);
 		
-		Assert.assertNotSame("The save attempt should have passed!", "index.htm", mav.getViewName());
+		Assert.assertSame(controller.getFormView(), mav.getViewName());
+		Assert.assertNotEquals("The save attempt should have passed!", "index.htm", mav.getViewName());
 		Assert.assertNotNull(es.getEncounterType(1));
 	}
 }
