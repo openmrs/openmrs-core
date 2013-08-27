@@ -29,6 +29,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Privilege;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.PrivilegeEditor;
 import org.openmrs.web.WebConstants;
@@ -80,52 +81,60 @@ public class EncounterTypeFormController extends SimpleFormController {
 			EncounterType encounterType = (EncounterType) obj;
 			EncounterService es = Context.getEncounterService();
 			
-			if (request.getParameter("save") != null) {
-				es.saveEncounterType(encounterType);
-				view = getSuccessView();
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.saved");
-			}
-
-			// if the user is retiring out the EncounterType
-			else if (request.getParameter("retire") != null) {
-				String retireReason = request.getParameter("retireReason");
-				if (encounterType.getEncounterTypeId() != null && !(StringUtils.hasText(retireReason))) {
-					errors.reject("retireReason", "general.retiredReason.empty");
-					return showForm(request, response, errors);
+			try {
+				if (request.getParameter("save") != null) {
+					es.saveEncounterType(encounterType);
+					view = getSuccessView();
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.saved");
 				}
-				
-				es.retireEncounterType(encounterType, retireReason);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.retiredSuccessfully");
-				
-				view = getSuccessView();
-			}
 
-			// if the user is unretiring the EncounterType
-			else if (request.getParameter("unretire") != null) {
-				es.unretireEncounterType(encounterType);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.unretiredSuccessfully");
-				
-				view = getSuccessView();
-			}
-
-			// if the user is purging the encounterType
-			else if (request.getParameter("purge") != null) {
-				
-				try {
-					es.purgeEncounterType(encounterType);
-					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.purgedSuccessfully");
+				// if the user is retiring out the EncounterType
+				else if (request.getParameter("retire") != null) {
+					String retireReason = request.getParameter("retireReason");
+					if (encounterType.getEncounterTypeId() != null && !(StringUtils.hasText(retireReason))) {
+						errors.reject("retireReason", "general.retiredReason.empty");
+						return showForm(request, response, errors);
+					}
+					es.retireEncounterType(encounterType, retireReason);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.retiredSuccessfully");
+					
 					view = getSuccessView();
 				}
-				catch (DataIntegrityViolationException e) {
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
-					view = "encounterType.form?encounterTypeId=" + encounterType.getEncounterTypeId();
+
+				// if the user is unretiring the EncounterType
+				else if (request.getParameter("unretire") != null) {
+					es.unretireEncounterType(encounterType);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.unretiredSuccessfully");
+					
+					view = getSuccessView();
 				}
-				catch (APIException e) {
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
+
+				// if the user is purging the encounterType
+				else if (request.getParameter("purge") != null) {
+					
+					try {
+						es.purgeEncounterType(encounterType);
+						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.purgedSuccessfully");
+						view = getSuccessView();
+					}
+					catch (DataIntegrityViolationException e) {
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
+						view = "encounterType.form?encounterTypeId=" + encounterType.getEncounterTypeId();
+					}
+					catch (APIException e) {
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: "
+						        + e.getLocalizedMessage());
+						view = "encounterType.form?encounterTypeId=" + encounterType.getEncounterTypeId();
+					}
+				}
+			}
+			catch (EncounterTypeLockedException e) {
+				log.error("tried to save, retire, unretire or delete encounter type while encounter types were locked", e);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "EncounterType.encounterTypes.locked");
+				if (encounterType.getEncounterTypeId() != null) {
 					view = "encounterType.form?encounterTypeId=" + encounterType.getEncounterTypeId();
 				}
 			}
-			
 		}
 		
 		return new ModelAndView(new RedirectView(view));
