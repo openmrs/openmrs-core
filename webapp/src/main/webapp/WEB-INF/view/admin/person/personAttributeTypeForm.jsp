@@ -128,7 +128,15 @@
 </table>
 <input type="hidden" name="personAttributeTypeId:int" value="${personAttributeType.personAttributeTypeId}">
 <br />
+
+<openmrs:globalProperty key="PersonAttributeType.locked" var="PersonAttributeTypesLocked"/>
+
+<c:if test="${PersonAttributeTypesLocked != 'true'}">
 <input type="submit" value="<openmrs:message code="PersonAttributeType.save"/>" name="save">
+</c:if>
+<c:if test="${PersonAttributeTypesLocked == 'true'}">
+<input type="submit" value="<openmrs:message code="PersonAttributeType.save"/>" name="save" disabled>
+</c:if>
 </fieldset>
 </form>
 
@@ -147,7 +155,12 @@
 				</c:forEach>
 			</spring:hasBindErrors>
 			<br/>
+			<c:if test="${PersonAttributeTypesLocked != 'true'}">
 			<input type="submit" value='<openmrs:message code="PersonAttributeType.retirePersonAttributeType"/>' name="retire"/>
+			</c:if>
+			<c:if test="${PersonAttributeTypesLocked == 'true'}">
+			<input type="submit" value='<openmrs:message code="PersonAttributeType.retirePersonAttributeType"/>' name="retire" disabled/>
+			</c:if>
 		</fieldset>
 	</form>
 </c:if>
@@ -160,9 +173,15 @@
 		<fieldset>
 		<h4><openmrs:message
 			code="PersonAttributeType.UnretirePersonAttributeType" /></h4>
+		<c:if test="${PersonAttributeTypesLocked != 'true'}">	
 		<input type="submit"
 			value='<openmrs:message code="PersonAttributeType.UnretirePersonAttributeType"/>'
-			name="unretire" /></fieldset>
+			name="unretire" /></c:if>
+		<c:if test="${PersonAttributeTypesLocked == 'true'}">	
+		<input type="submit"
+			value='<openmrs:message code="PersonAttributeType.UnretirePersonAttributeType" disabled/>'
+			name="unretire" /></c:if>
+		</fieldset>
 		</form>
 	</openmrs:hasPrivilege>
 </c:if>
@@ -173,7 +192,12 @@
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>
 				<h4><openmrs:message code="PersonAttributeType.purgePersonAttributeType"/></h4>
+				<c:if test="${PersonAttributeTypesLocked != 'true'}">
 				<input type="submit" value='<openmrs:message code="PersonAttributeType.purgePersonAttributeType"/>' name="purge" />
+				</c:if>
+				<c:if test="${PersonAttributeTypesLocked == 'true'}">
+				<input type="submit" value='<openmrs:message code="PersonAttributeType.purgePersonAttributeType"/>' name="purge" disabled/>
+				</c:if>
 			</fieldset>
 		</form>
 	</openmrs:hasPrivilege>

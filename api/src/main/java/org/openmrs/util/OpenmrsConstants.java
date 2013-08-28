@@ -1,5 +1,5 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
+F * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://license.openmrs.org
@@ -793,6 +793,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_APPLICATION_NAME = "application.name";
 	
+	public static String GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES_LOCKED = "PersonAttributeType.locked";
+	
 	/**
 	 * Array of all core global property names that represent comma-separated lists of
 	 * PersonAttributeTypes. (If you rename a PersonAttributeType then these global properties are
@@ -1166,6 +1168,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE, "default",
 		        "Type of widget to use for location fields"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES_LOCKED, "false",
+		        "if true, do not allow editing person attribute types", BooleanDatatype.class, null));
 		
 		props.add(new GlobalProperty(GP_MAIL_SMTP_STARTTLS_ENABLE, "false",
 		        "Set to true to enable TLS encryption, else set to false"));
