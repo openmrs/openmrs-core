@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.lang.SerializationUtils;
+import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -37,6 +39,7 @@ import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -61,6 +64,8 @@ import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
+import com.google.common.collect.Lists;
+
 /**
  * Tests all methods in the {@link EncounterService}
  */
@@ -69,6 +74,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-initialData.xml";
 	
 	protected static final String UNIQUE_ENC_WITH_PAGING_XML = "org/openmrs/api/include/EncounterServiceTest-pagingWithUniqueEncounters.xml";
+	
+	protected static final String TRANSFER_ENC_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-transferEncounter.xml";
 	
 	/**
 	 * This method is run before all of the tests in this class because it has the @Before
@@ -2538,4 +2545,91 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldMatchOnTheFormName() throws Exception {
 		Assert.assertEquals(2, Context.getEncounterService().getEncounters("Basic", 3, null, null, false).size());
 	}
+	
+	/**
+	 * @see EncounterService#transferEncounter(Encounter,Patient)
+	 * @verifies transfer an encounter with orders and observations to given patient
+	 */
+	@Test
+	public void transferEncounter_shouldTransferAnEncounterWithOrdersAndObservationsToGivenPatient() throws Exception {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+		
+		Patient targetPatient = Context.getPatientService().getPatient(201);
+		
+		// encounter has 2 obs which are connected with the same order
+		Encounter sourceEncounter = Context.getEncounterService().getEncounter(201);
+		
+		//transfer
+		Encounter transferredEncounter = Context.getEncounterService().transferEncounter(sourceEncounter, targetPatient);
+		List<Order> transferredOrders = Lists.newArrayList(transferredEncounter.getOrders());
+		List<Obs> transferredObservations = Lists.newArrayList(transferredEncounter.getObs());
+		
+		//check
+		//check if transferredEncounter is newly created encounter
+		Assert.assertNotEquals(sourceEncounter.getId(), transferredEncounter.getId());
+		
+		Assert.assertEquals(targetPatient, transferredEncounter.getPatient());
+		
+		//check order
+		Assert.assertThat(transferredOrders, IsCollectionWithSize.hasSize(1));
+		
+		Order transferredOrder = transferredOrders.get(0);
+		
+		Assert.assertEquals(targetPatient, transferredOrder.getPatient());
+		
+		//check obs
+		Assert.assertThat(transferredEncounter.getObs(), IsCollectionWithSize.hasSize(2));
+		Assert.assertEquals(targetPatient, transferredObservations.get(0).getPerson());
+		Assert.assertEquals(targetPatient, transferredObservations.get(1).getPerson());
+		
+		//check if obs has reference to the same order
+		Assert.assertEquals(transferredOrder, transferredObservations.get(0).getOrder());
+		Assert.assertEquals(transferredOrder, transferredObservations.get(1).getOrder());
+		Assert.assertSame(transferredObservations.get(0).getOrder(), transferredObservations.get(1).getOrder());
+		
+		//check if form is transferred
+		Assert.assertNotNull(transferredEncounter.getForm());
+		
+	}
+	
+	/**
+	 * @see EncounterService#transferEncounter(Encounter,Patient)
+	 * @verifies void given encounter
+	 */
+	@Test
+	public void transferEncounter_shouldVoidGivenEncounter() throws Exception {
+		
+		Patient anyPatient = new Patient(2);
+		
+		Encounter sourceEncounter = Context.getEncounterService().getEncounter(1);
+		
+		Context.getEncounterService().transferEncounter(sourceEncounter, anyPatient);
+		
+		//get fresh encounter from db
+		Encounter sourceEncounterAfterTransfer = Context.getEncounterService().getEncounter(sourceEncounter.getId());
+		
+		Assert.assertTrue(sourceEncounterAfterTransfer.isVoided());
+	}
+	
+	/**
+	 * @see EncounterService#transferEncounter(Encounter,Patient)
+	 * @verifies void given encounter visit if given encounter is the only encounter
+	 */
+	@Test
+	public void transferEncounter_shouldVoidGivenEncounterVisitIfGivenEncounterIsTheOnlyEncounter() throws Exception {
+		
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+		Patient anyPatient = new Patient(2);
+		
+		//belongs to visit with id 2 (has this encounter only)
+		Encounter sourceEncounter = Context.getEncounterService().getEncounter(200);
+		
+		Context.getEncounterService().transferEncounter(sourceEncounter, anyPatient);
+		
+		Visit visit = Context.getVisitService().getVisit(200);
+		
+		Assert.assertTrue(visit.isVoided());
+		
+	}
+	
 }

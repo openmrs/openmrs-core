@@ -59,13 +59,16 @@
   <!-- A real non-voided encounter -->   
   <encounter encounter_id="1" encounter_type="1" form_id="1" encounter_datetime="2005-01-01 00:00:00.0" patient_id="3" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="430bbb70-6a9c-4e1e-badb-9d1034b1b5e9"/>
   <encounter_provider encounter_provider_id="2" encounter_id="1" provider_id="2" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="b566821c-1ad9-473b-836b-9e9c67688e02" />
+ 
+   <orders order_id="1" patient_id="3" encounter_id="1" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false" uuid="0d86e8b4-2f33-495e-aa22-6954785e4e9e" urgency="ROUTINE"/>
+  
+ 
   <obs obs_id="1" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="false" uuid="f0b5fbfb-6c8b-43fd-918d-41d578d571ec"/>
   <obs obs_id="2" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="2.0" creator="1" date_created="2006-02-11 15:57:35.0" voided="false" uuid="96d6835c-c038-4ca1-bead-4bfa36bd7fa0"/>
   <!--  this obs datetime is intentionally different than the encounter datetime above  -->
   <obs obs_id="3" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2006-01-01 00:00:00.0" location_id="1" value_numeric="3.0" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="544c0a4c-fdbf-4eb8-be4b-8fde603a76f7"/>
   
-  <orders order_id="1" patient_id="3" encounter_id="1" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false" uuid="0d86e8b4-2f33-495e-aa22-6954785e4e9e" urgency="ROUTINE"/>
-  
+
   <!-- an encounter with a mismatched order.patient_id -->
   <encounter encounter_id="15" encounter_type="1" form_id="1" encounter_datetime="2001-01-01 00:00:00.0" patient_id="3" location_id="1" visit_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="7fffd6b9-0970-4967-88c7-0b7b50f12bc6"/>
   <encounter_provider encounter_provider_id="3" encounter_id="15" provider_id="1" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="8a030bef-4362-4a1c-9967-ac4a4b425b45" />
@@ -83,5 +86,4 @@
   <privilege privilege="Some Privilege For View Encounter Types" description="This is a test privilege for view encounter types" uuid="d979d066-15e6-467c-9d4b-cb575ef12345"/>
   <privilege privilege="Some Privilege For Edit Encounter Types" description="This is a test privilege for edit encounter types" uuid="d979d066-15e6-467c-9d4b-cb575ef54321"/>
   <users user_id="5506" person_id="501" system_id="7-5" username="test_user" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="06d05314-e132-11de-babe-001e37123456"/>
-
 </dataset>
