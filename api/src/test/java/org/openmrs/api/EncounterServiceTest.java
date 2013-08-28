@@ -1540,6 +1540,18 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNull("returns null for invalid uuid", encounterRole);
 	}
 	
+	@Test
+	@Verifies(value = "find encounter roles based on their name", method = "getEncounterRolesByName(String)")
+	public void getEncounterRolesByName_shouldFindEncounterRolesByName() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		String name = "surgeon";
+		List<EncounterRole> encounterRoles = encounterService.getEncounterRolesByName(name);
+		assertNotNull("valid EncounterROle object should be returned", encounterRoles);
+		assertEquals(encounterRoles.size(), 1);
+		assertEquals(encounterRoles.get(0).getName(), name);
+
+	}
+	
 	/**
 	 * @see {@link EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)}
 	 */

@@ -474,6 +474,15 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounterRolesByName(String)
+	 */
+	@Override
+	public List<EncounterRole> getEncounterRolesByName(String name) throws DAOException {
+		return sessionFactory.getCurrentSession().createCriteria(EncounterRole.class).add(Restrictions.eq("name", name))
+		        .list();
+	}
+	
+	/**
 	 * Convenience method since this DAO fetches several different domain objects by uuid
 	 * 
 	 * @param uuid uuid to fetch

@@ -769,6 +769,17 @@ public interface EncounterService extends OpenmrsService {
 	public EncounterRole getEncounterRoleByUuid(String uuid) throws APIException;
 	
 	/**
+	 * Get EncounterRoles by name
+	 * 
+	 * @param name
+	 * @return List of EncounterRole objects
+	 * @since 1.9
+	 * @should find encounter roles based on their name
+	 */
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
+	public List<EncounterRole> getEncounterRolesByName(String name);
+	
+	/**
 	 * Retire an EncounterRole. This essentially marks the given encounter role as a non-current
 	 * type that shouldn't be used anymore.
 	 * 

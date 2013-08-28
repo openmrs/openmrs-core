@@ -239,6 +239,16 @@ public interface EncounterDAO {
 	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired) throws DAOException;
 	
 	/**
+	 * Get enconter roles by name
+	 * 
+	 * @param name encounter role name 
+	 * @return enconter roles
+	 * @throws org.openmrs.api.db.DAOException
+	 * @see org.openmrs.api.EncounterRoleService#getEncounterRolesByName(String name)
+	 */
+	public List<EncounterRole> getEncounterRolesByName(String name) throws DAOException;
+	
+	/**
 	 * @see EncounterService#getEncountersNotAssignedToAnyVisit(Patient)
 	 */
 	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws DAOException;
@@ -253,4 +263,5 @@ public interface EncounterDAO {
 	 * @see EncounterService#getEncountersByVisitsAndPatientCount(Patient, boolean, String)
 	 */
 	Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query);
+	
 }
