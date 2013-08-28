@@ -166,7 +166,7 @@ public class FormFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			fieldTypes = Context.getFormService().getAllFieldTypes();
-			encTypes = Context.getEncounterService().getAllEncounterTypes();
+			encTypes = Context.getEncounterService().getAllEncounterTypes(false);
 		}
 		
 		map.put("fieldTypes", fieldTypes);
