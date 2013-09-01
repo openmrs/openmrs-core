@@ -49,9 +49,8 @@ public class ConceptNameTagValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if tag is null or empty or whitespace
-	 * @should fail validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
-	 * @should save a conceptNameTag which has just been edited
+	 * @should fail if the concept name tag is a duplicate
 	 */
 	
 	public void validate(Object obj, Errors errors) {
@@ -60,12 +59,13 @@ public class ConceptNameTagValidator implements Validator {
 			errors.rejectValue("conceptNameTag", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tag", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 			
 			if (cnt.getTag() != null) {
 				for (ConceptNameTag currentTag : Context.getConceptService().getAllConceptNameTags()) {
-					if (currentTag.getTag().trim() == (cnt.getTag().trim())) {
-						errors.rejectValue("tag", "conceptsearch.error.duplicate");
+					if (currentTag != null) {
+						if (currentTag.getTag().trim().equals((cnt.getTag().trim()))) {
+							errors.rejectValue("tag", "Concept.name.tag.duplicate");
+						}
 					}
 				}
 			}

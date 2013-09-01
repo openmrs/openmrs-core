@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Concept;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
@@ -60,35 +61,11 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "fail validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
-		ConceptNameTag cnt = new ConceptNameTag();
-		
-		Errors errors = new BindException(cnt, "cnt");
-		new ConceptNameTagValidator().validate(cnt, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		
-		cnt.setDescription("");
-		errors = new BindException(cnt, "cnt");
-		new ConceptNameTagValidator().validate(cnt, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		
-		cnt.setDescription(" ");
-		errors = new BindException(cnt, "cnt");
-		new ConceptNameTagValidator().validate(cnt, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-	}
-	
-	/**
-	 * @see ConceptNameTagValidator#validate(Object,Errors)
-	 */
-	@Test
 	@Verifies(value = "pass validation if all required fields have proper values", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		cnt.setTag("tag");
-		cnt.setDescription("tag");
 		
 		Errors errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
@@ -99,9 +76,9 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "save a conceptNameTag which has just been edited", method = "validate(Object,Errors)")
-	public void validate_shouldSaveAConceptNameTagWhichHasJustBeenEdited() throws Exception {
-		String errorMsg = "failed to save the conceptNameTag that has just been edited";
+	@Verifies(value = "should fail if the concept name tag is a duplicate", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfTheConceptNameTagIsADuplicate() throws Exception {
+		String errorMsg = "failed since concept name tag was a duplicate";
 		
 		ConceptNameTag cnt = Context.getConceptService().getConceptNameTag(1);
 		cnt.setTag("tag");
@@ -109,5 +86,6 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(cnt, errorMsg);
 		new ConceptNameTagValidator().validate(cnt, errors);
 		Assert.assertTrue(errors.hasErrors());
+		Assert.assertEquals(true, errors.hasFieldErrors("tag"));
 	}
 }
