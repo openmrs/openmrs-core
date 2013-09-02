@@ -80,7 +80,7 @@ public class PersonAttributeTypeFormControllerTest extends BaseWebContextSensiti
 		ModelAndView mav = controller.handleRequest(request, response);
 		
 		Assert.assertSame(controller.getFormView(), mav.getViewName());
-		Assert.assertNotEquals("The save attempt should have passed!", "index.htm", mav.getViewName());
+		Assert.assertNotEquals("The delete attempt should have passed!", "index.htm", mav.getViewName());
 		Assert.assertNotNull(personService.getPersonAttributeType(1));
 	}
 }
