@@ -423,7 +423,10 @@ public class ModuleClassLoader extends URLClassLoader {
 			
 			result = classLoader.getClassIfLoaded(name);
 			if (result != null) {
-				return result;
+				//TODO This was added as a fix for TRUNK-4053
+				//Still wondering why it makes bamboo fail, but not local setups for various devs
+				//So trying to comment out to see if it fixes bamboo
+				//return result;
 			}
 		}
 		
