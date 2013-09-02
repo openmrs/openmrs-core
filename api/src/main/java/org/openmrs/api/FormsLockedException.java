@@ -20,7 +20,7 @@ import org.openmrs.util.OpenmrsConstants;
  * by a global property being true/false.
  * 
  * @see OpenmrsConstants#GLOBAL_PROPERTY_FORMS_LOCKED
- * @see FormService#checkIfLocked()
+ * @see FormService#checkIfFormsAreLocked()
  */
 public class FormsLockedException extends APIException {
 	

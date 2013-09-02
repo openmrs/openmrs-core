@@ -41,11 +41,13 @@ import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.FormResource;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * TODO clean up and finish this test for all methods in FormService
@@ -811,4 +813,71 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		}
 	}
 	
+	/**
+	 * @see {@link FormService#saveForm(Form)}
+	 */
+	@Test(expected = FormsLockedException.class)
+	@Verifies(value = "throw an error when trying to save a form while forms are locked", method = "saveForm(Form)")
+	public void saveForm_shouldThrowAnErrorWhenTryingToSaveAFormWhileFormsAreLocked() throws APIException {
+		FormService formService = Context.getFormService();
+		
+		Form form = Context.getFormService().getForm(1);
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FORMS_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		formService.saveForm(form);
+	}
+	
+	/**
+	 * @see {@link FormService#retireForm(Form, String)}
+	 */
+	@Test(expected = FormsLockedException.class)
+	@Verifies(value = "throw an error when trying to retire a form while forms are locked", method = "retireForm(Form, String)")
+	public void retireForm_shouldThrowAnErrorWhenTryingToRetireAFormWhileFormsAreLocked() throws APIException {
+		FormService formService = Context.getFormService();
+		
+		Form form = Context.getFormService().getForm(1);
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FORMS_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		formService.retireForm(form, "Reason");
+	}
+	
+	/**
+	 * @see {@link FormService#unretireForm(Form)}
+	 */
+	@Test(expected = FormsLockedException.class)
+	@Verifies(value = "throw an error when trying to unretire a form while forms are locked", method = "unretireForm(Form)")
+	public void unretireForm_shouldThrowAnErrorWhenTryingToUnretireAFormWhileFormsAreLocked() throws APIException {
+		FormService formService = Context.getFormService();
+		
+		Form form = Context.getFormService().getForm(1);
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FORMS_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		formService.unretireForm(form);
+	}
+	
+	/**
+	 * @see {@link FormService#purge(Form)}
+	 */
+	@Test(expected = FormsLockedException.class)
+	@Verifies(value = "throw an error when trying to delete a form while forms are locked", method = "purgeForm(Form)")
+	public void purgeForm_shouldThrowAnErrorWhenTryingToDeleteAFormWhileFormsAreLocked() throws APIException {
+		FormService formService = Context.getFormService();
+		
+		Form form = Context.getFormService().getForm(1);
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FORMS_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		formService.purgeForm(form);
+	}
 }

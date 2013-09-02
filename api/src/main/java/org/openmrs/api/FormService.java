@@ -42,6 +42,7 @@ public interface FormService extends OpenmrsService {
 	 * @throws APIException
 	 * @should save given form successfully
 	 * @should update an existing form
+	 * @should throw an error when trying to save a form while forms are locked
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Form saveForm(Form form) throws APIException;
@@ -264,6 +265,7 @@ public interface FormService extends OpenmrsService {
 	 * @param reason the retiredReason to set
 	 * @throws APIException
 	 * @should set the retired bit before saving
+	 * @should throw an error when trying to retire a form while forms are locked
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void retireForm(Form form, String reason) throws APIException;
@@ -274,6 +276,7 @@ public interface FormService extends OpenmrsService {
 	 * @param form the Form to revive
 	 * @throws APIException
 	 * @should unset the retired bit before saving
+	 * @should throw an error when trying to unretire a form while forms are locked
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void unretireForm(Form form) throws APIException;
@@ -286,6 +289,7 @@ public interface FormService extends OpenmrsService {
 	 * @throws APIException
 	 * @should delete given form successfully
 	 * @should delete form resources for deleted form
+	 * @should throw an error when trying to delete a form while forms are locked
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void purgeForm(Form form) throws APIException;
@@ -815,9 +819,9 @@ public interface FormService extends OpenmrsService {
 	public void purgeFormResource(FormResource formResource) throws APIException;
 	
 	/**
-	 * Check if the forms are locked, and if locked, throw exception during manipulation/editing of a form
+	 * Check if the forms are locked, and if locked, throw exception during manipulation or editing of a form
 	 * 
 	 * @throws FormsLockedException
 	 */
-	public void checkIfLocked() throws FormsLockedException;
+	public void checkIfFormsAreLocked() throws FormsLockedException;
 }

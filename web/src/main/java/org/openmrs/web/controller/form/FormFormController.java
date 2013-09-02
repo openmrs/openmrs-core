@@ -84,72 +84,70 @@ public class FormFormController extends SimpleFormController {
 			if (action == null) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
 			} else {
-				if (action.equals(msa.getMessage("Form.save"))) {
-					try {
-						// save form
-						form = Context.getFormService().saveForm(form);
-						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
-					}
-					catch (FormsLockedException e) {
-						log.error("tried to save form while forms were locked");
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.forms.locked");
-						return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
-					}
-					catch (Exception e) {
-						log.error("Error while saving form " + form.getFormId(), e);
-						errors.reject(e.getMessage());
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
-						return showForm(request, response, errors);
-					}
-				} else if (action.equals(msa.getMessage("Form.delete"))) {
-					try {
-						Context.getFormService().purgeForm(form);
-						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.deleted");
-					}
-					catch (DataIntegrityViolationException e) {
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
-						return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
-					}
-					catch (FormsLockedException e) {
-						log.error("tried to delete form while forms were locked");
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.forms.locked");
-						return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
-					}
-					catch (Exception e) {
-						log.error("Error while deleting form " + form.getFormId(), e);
-						errors.reject(e.getMessage());
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
-						return showForm(request, response, errors);
-						//return new ModelAndView(new RedirectView(getSuccessView()));
-					}
-				} else if (action.equals(msa.getMessage("Form.updateSortOrder"))) {
-					
-					FormService fs = Context.getFormService();
-					
-					TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
-					for (Integer parentFormFieldId : treeMap.keySet()) {
-						float sortWeight = 0;
-						for (FormField formField : treeMap.get(parentFormFieldId)) {
-							formField.setSortWeight(sortWeight);
-							fs.saveFormField(formField);
-							sortWeight += 50;
+				try {
+					if (action.equals(msa.getMessage("Form.save"))) {
+						try {
+							// save form
+							form = Context.getFormService().saveForm(form);
+							httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
+						}
+						catch (Exception e) {
+							log.error("Error while saving form " + form.getFormId(), e);
+							errors.reject(e.getMessage());
+							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
+							return showForm(request, response, errors);
+						}
+					} else if (action.equals(msa.getMessage("Form.delete"))) {
+						try {
+							Context.getFormService().purgeForm(form);
+							httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.deleted");
+						}
+						catch (DataIntegrityViolationException e) {
+							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
+							return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
+						}
+						catch (Exception e) {
+							log.error("Error while deleting form " + form.getFormId(), e);
+							errors.reject(e.getMessage());
+							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
+							return showForm(request, response, errors);
+							//return new ModelAndView(new RedirectView(getSuccessView()));
+						}
+					} else if (action.equals(msa.getMessage("Form.updateSortOrder"))) {
+						
+						FormService fs = Context.getFormService();
+						
+						TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
+						for (Integer parentFormFieldId : treeMap.keySet()) {
+							float sortWeight = 0;
+							for (FormField formField : treeMap.get(parentFormFieldId)) {
+								formField.setSortWeight(sortWeight);
+								fs.saveFormField(formField);
+								sortWeight += 50;
+							}
+						}
+						
+					} else {
+						try {
+							Context.getFormService().duplicateForm(form);
+							httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.duplicated");
+						}
+						catch (Exception e) {
+							log.error("Error while duplicating form " + form.getFormId(), e);
+							errors.reject(e.getMessage());
+							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.duplicate");
+							return showForm(request, response, errors);
 						}
 					}
-					
-				} else {
-					try {
-						Context.getFormService().duplicateForm(form);
-						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.duplicated");
-					}
-					catch (Exception e) {
-						log.error("Error while duplicating form " + form.getFormId(), e);
-						errors.reject(e.getMessage());
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.duplicate");
-						return showForm(request, response, errors);
+					view = getSuccessView();
+				}
+				catch (FormsLockedException e) {
+					log.error("tried to edit form while forms were locked", e);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.forms.locked");
+					if (form != null) {
+						view = "forms/formEdit.form?formId=" + form.getFormId();
 					}
 				}
-				
-				view = getSuccessView();
 			}
 		}
 		

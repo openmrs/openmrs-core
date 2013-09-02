@@ -58,8 +58,33 @@ public class FormFormControllerTest extends BaseWebContextSensitiveTest {
 		// send the parameters to the controller
 		ModelAndView mav = controller.handleRequest(request, response);
 		
+		Assert.assertSame(controller.getFormView(), mav.getViewName());
 		Assert.assertNotSame("The save attempt should have failed!", "index.htm", mav.getViewName());
 		Assert.assertNotNull(fs.getForm(1));
+	}
+	
+	@Test
+	public void shouldDeleteFormWhenFormsAreNotLocked() throws Exception {
+		FormService formService = Context.getFormService();
 		
+		FormFormController controller = (FormFormController) applicationContext.getBean("formEditForm");
+		controller.setApplicationContext(applicationContext);
+		controller.setSuccessView("index.htm");
+		controller.setFormView("form.form");
+		
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin/forms/formEdit.form?formId=1");
+		request.setSession(new MockHttpSession(null));
+		HttpServletResponse response = new MockHttpServletResponse();
+		controller.handleRequest(request, response);
+		
+		request.setMethod("POST");
+		
+		request.addParameter("action", "Delete form");
+		
+		ModelAndView mav = controller.handleRequest(request, response);
+		
+		Assert.assertSame(controller.getFormView(), mav.getViewName());
+		Assert.assertNotEquals("The delete attempt should have passed!", "index.htm", mav.getViewName());
+		Assert.assertNotNull(formService.getForm(1));
 	}
 }

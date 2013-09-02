@@ -194,7 +194,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#retireForm(org.openmrs.Form, java.lang.String)
 	 */
 	public void retireForm(Form form, String reason) throws APIException {
-		checkIfLocked();
+		checkIfFormsAreLocked();
 		form.setRetired(true);
 		form.setRetireReason(reason);
 		saveForm(form);
@@ -204,7 +204,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#unretireForm(org.openmrs.Form)
 	 */
 	public void unretireForm(Form form) throws APIException {
-		checkIfLocked();
+		checkIfFormsAreLocked();
 		form.setRetired(false);
 		saveForm(form);
 	}
@@ -215,7 +215,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Deprecated
 	public void deleteForm(Form form) throws APIException {
-		checkIfLocked();
+		checkIfFormsAreLocked();
 		Context.getFormService().purgeForm(form, false);
 	}
 	
@@ -681,6 +681,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#purgeForm(org.openmrs.Form, boolean)
 	 */
 	public void purgeForm(Form form, boolean cascade) throws APIException {
+		checkIfFormsAreLocked();
 		if (cascade == true)
 			throw new APIException("Not Yet Implemented");
 		
@@ -722,7 +723,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	public Form saveForm(Form form) throws APIException {
 		//make sure the user has not turned or locked off forms editing
-		checkIfLocked();
+		checkIfFormsAreLocked();
 		
 		BindException errors = new BindException(form, "form");
 		formValidator.validate(form, errors);
@@ -972,10 +973,10 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#checkIfLocked()
+	 * @see org.openmrs.api.FormService#checkIfFormsAreLocked()
 	 */
 	@Transactional(readOnly = true)
-	public void checkIfLocked() {
+	public void checkIfFormsAreLocked() {
 		String locked = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FORMS_LOCKED,
 		    "false");
 		if (locked.toLowerCase().equals("true")) {
