@@ -13,6 +13,21 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +48,28 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.hibernate.transform.Transformers;
-import org.openmrs.*;
+import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptComplex;
+import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptMap;
+import org.openmrs.ConceptMapType;
+import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
+import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptReferenceTermMap;
+import org.openmrs.ConceptSearchResult;
+import org.openmrs.ConceptSet;
+import org.openmrs.ConceptSetDerived;
+import org.openmrs.ConceptSource;
+import org.openmrs.ConceptStopWord;
+import org.openmrs.ConceptWord;
+import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -41,11 +77,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.util.OpenmrsConstants;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.*;
 
 /**
  * The Hibernate class for Concepts, Drugs, and related classes. <br/>
@@ -797,7 +828,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	//TODO:  eventually, this method should probably just run updateConceptSetDerived(Concept) inside an iteration of all concepts... (or something else less transactionally-intense)
-	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#updateConceptSetDerived()
 	 */
@@ -841,7 +871,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * utility method used in updateConceptSetDerived(...)
 	 *
-	 * @param List    of parent Concept objects
+	 * @param List of parent Concept objects
 	 * @param Concept current
 	 * @return Set of ConceptSetDerived
 	 */
@@ -1375,17 +1405,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * Utility method that returns a criteria for searching for conceptWords that match the
 	 * specified search phrase and arguments
 	 *
-	 * @param phrase           matched to the start of any word in any of the names of a concept
-	 * @param locales          List<Locale> to restrict to
-	 * @param includeRetired   boolean if false, will exclude retired concepts
-	 * @param requireClasses   List<ConceptClass> to restrict to
-	 * @param excludeClasses   List<ConceptClass> to leave out of results
+	 * @param phrase matched to the start of any word in any of the names of a concept
+	 * @param locales List<Locale> to restrict to
+	 * @param includeRetired boolean if false, will exclude retired concepts
+	 * @param requireClasses List<ConceptClass> to restrict to
+	 * @param excludeClasses List<ConceptClass> to leave out of results
 	 * @param requireDatatypes List<ConceptDatatype> to restrict to
 	 * @param excludeDatatypes List<ConceptDatatype> to leave out of results
 	 * @param answersToConcept all results will be a possible answer to this concept
-	 * @param start            all results less than this number will be removed
-	 * @param size             if non zero, all results after <code>start</code> + <code>size</code> will be
-	 *                         removed
+	 * @param start all results less than this number will be removed
+	 * @param size if non zero, all results after <code>start</code> + <code>size</code> will be
+	 *            removed
 	 * @return the generated criteria object
 	 */
 	private Criteria createConceptWordSearchCriteria(String phrase, List<Locale> locales, boolean includeRetired,
