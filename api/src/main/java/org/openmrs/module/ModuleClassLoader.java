@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -67,12 +66,6 @@ public class ModuleClassLoader extends URLClassLoader {
 	private boolean probeParentLoaderLast = true;
 	
 	private Set<String> additionalPackages = new LinkedHashSet<String>();
-	
-	/**
-	 * Holds a list of all classes for this classloader so that they can be cleaned up.
-	 * This is also used to fix: https://tickets.openmrs.org/browse/TRUNK-4053
-	 */
-	private Map<String, Class<?>> loadedClasses = new HashMap<String, Class<?>>();
 	
 	/**
 	 * @param module Module
@@ -394,8 +387,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		requiredModules = null;
 		awareOfModules = null;
 		//resourceLoader = null;
-		
-		loadedClasses.clear();
 	}
 	
 	/**
@@ -414,22 +405,6 @@ public class ModuleClassLoader extends URLClassLoader {
 	@Override
 	protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
 		Class<?> result = null;
-		
-		//if this class was already loaded by some other class loader, do not load it again.
-		Collection<ModuleClassLoader> classLoaders = ModuleFactory.getModuleClassLoaders();
-		for (ModuleClassLoader classLoader : classLoaders) {
-			if (classLoader == this)
-				continue;
-			
-			result = classLoader.getClassIfLoaded(name);
-			if (result != null) {
-				//TODO This was added as a fix for TRUNK-4053
-				//Still wondering why it makes bamboo fail, but not local setups for various devs
-				//So trying to comment out to see if it fixes bamboo
-				//return result;
-			}
-		}
-		
 		if (probeParentLoaderLast) {
 			try {
 				result = loadClass(name, resolve, this, null);
@@ -455,14 +430,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 		}
 		
-		if (result != null) {
-			//add only if this is its class loader
-			if (result.getClassLoader() == this) {
-				loadedClasses.put(name, result);
-			}
-			
+		if (result != null)
 			return result;
-		}
 		
 		throw new ClassNotFoundException(name);
 	}
@@ -597,16 +566,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		
 		return result;
-	}
-	
-	/**
-	 * Gets a class instance if it was already loaded by this class loader.
-	 * 
-	 * @param name String path and name of the class to load.
-	 * @return the class instance if it was already loaded, else null.
-	 */
-	public Class<?> getClassIfLoaded(final String name) {
-		return loadedClasses.get(name);
 	}
 	
 	/**
