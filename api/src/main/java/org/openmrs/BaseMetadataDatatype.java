@@ -16,7 +16,7 @@ package org.openmrs;
 import org.openmrs.customdatatype.SerializingCustomDatatype;
 
 /**
- * 
+ * This is an abstract super class for Metadata like ConceptDatatype, ProviderDatatype, LocationDatatype, ProgramDatatype etc
  */
 public abstract class BaseMetadataDatatype<T extends OpenmrsMetadata> extends SerializingCustomDatatype<T> {
 	
@@ -28,9 +28,4 @@ public abstract class BaseMetadataDatatype<T extends OpenmrsMetadata> extends Se
 			return null;
 		return typedValue.getUuid();
 	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
-	 */
-	public abstract T deserialize(String serializedValue);
 }
