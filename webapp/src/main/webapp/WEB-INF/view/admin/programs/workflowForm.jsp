@@ -12,11 +12,16 @@
 	width: 50px;
 	border: 1px solid #009d8e;
 }
+.statesToDelete{
+	border:1px solid #009d8e;
+	width:50px;
+}
 </style>
 <script type="text/javascript">
 	var displayedStates = new Array();
 	var idToNameMap = new Array();
 	var retiredStates = new Array();
+	var deletedStates=new Array();
 	var allSates= new Array();
 	var activeStates=new Array();
 	var isActiveDisplay=true;
@@ -39,7 +44,8 @@
 					function (st) { return getIdToNameMap(st[0]); },
 					function (st) { return '<input type="checkbox" id="initial_' + st[0] + '" ' + (st[1] ? 'checked' : '') + '/>'; },
 					function (st) { return '<input type="checkbox" id="terminal_' + st[0] + '" ' + (st[2] ? 'checked' : '') + '/>'; },
-					function (st) { return getButton(st[0]); }
+					function (st) { return getButton(st[0]); },
+					function (st) { return getDeleteButton(st[0]); }
 				], { escapeHtml:false });
 		} else {
 			dwr.util.addRows('stateTable', ['<openmrs:message code="general.none"/>'], [
@@ -96,7 +102,7 @@
 }
 function getButton(conceptId){
 	if(isStateRetired(conceptId)){
-		
+
 		return '<input type="button" class="statesToRetire" value="<openmrs:message code="general.unretire"/>" onclick="unretireState('+conceptId+')"}/>';
 	 }else{
 		 
@@ -105,6 +111,34 @@ function getButton(conceptId){
 	 }
 	
 }
+
+function getDeleteButton(conceptId){
+	return '<form id="delete'+conceptId+'" method="post" onsubmit="return deleteState('+conceptId+')">' + '<input type="submit" name="Delete" class="statesToDelete" value="delete" /> <input type="hidden" id="statesToDelete" name="deletedStates" /> </form>';
+}
+function deleteState(conceptId) {
+	for (var i = 0; i < activeStates.length; ++i) {
+		if (activeStates[i][0] == conceptId) {
+			var x=window.confirm("<openmrs:message code='State.delete.confirmation'/>")
+			if (x) {
+				var tmp = "";
+				var conceptId = activeStates[i][0];
+				var isInitial = jQuery('#initial_' + conceptId).is(':checked');
+				var isTerminal = jQuery('#terminal_' + conceptId).is(':checked');
+				tmp += conceptId + ",";
+				tmp += isInitial + ",";
+				tmp += isTerminal + "|";
+				var t=document.forms['delete'+conceptId].elements['deletedStates'];
+				t.value=tmp;
+				jQuery('#statesToDelete').val(tmp);
+				return true;
+			}
+			else
+				return false;
+		}
+	}
+	return false;
+}
+
 
 function isStateRetired(conceptId){
 	for(var i = 0; i < retiredStates.length;++i){
@@ -213,8 +247,10 @@ refreshStateTable();
 		</tbody>
 	</table>
 	<input type="hidden" id="statesToSubmit" name="newStates" />
+	<input type="hidden" id="statesToDelete" name="deletedStates" />
 	<input type="button" onClick="handleSave()" value="<openmrs:message code="general.save" />" />
 </form>
+
 
 <script type="text/javascript">
 <c:forEach var="state" items="${workflow.states}">

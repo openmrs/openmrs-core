@@ -273,4 +273,6 @@ public interface ProgramWorkflowDAO {
 	 * @return - A List of ProgramWorkflowStates
 	 */
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
+	
+	public void deleteProgramWorkflowState(ProgramWorkflowState state);
 }
