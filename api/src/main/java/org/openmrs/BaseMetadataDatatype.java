@@ -16,7 +16,9 @@ package org.openmrs;
 import org.openmrs.customdatatype.SerializingCustomDatatype;
 
 /**
- * This is an abstract super class for Metadata like ConceptDatatype, ProviderDatatype, LocationDatatype, ProgramDatatype etc
+ * This is a superclass for custom datatypes
+ * 
+ * @since 1.10
  */
 public abstract class BaseMetadataDatatype<T extends OpenmrsMetadata> extends SerializingCustomDatatype<T> {
 	

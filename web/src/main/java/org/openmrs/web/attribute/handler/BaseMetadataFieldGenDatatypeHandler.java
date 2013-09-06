@@ -16,16 +16,53 @@ package org.openmrs.web.attribute.handler;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.SerializingCustomDatatype;
 import org.openmrs.messagesource.MessageSourceService;
 
 /**
- * This is an abstract super class for handlers like ProviderFieldGenDatatypeHandler,
- * ConceptFieldGenDatatypeHandler, LocationFieldGenDatatypeHandler, ProgramFieldGenDatatypeHandler etc
+ * This is a superclass for associated handlers of custom datatypes
+ * 
+ * @since 1.10
  */
 public abstract class BaseMetadataFieldGenDatatypeHandler<T extends OpenmrsMetadata> implements FieldGenDatatypeHandler<SerializingCustomDatatype<T>, T> {
+	
+	/**
+	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getValue(org.openmrs.customdatatype.CustomDatatype, javax.servlet.http.HttpServletRequest, java.lang.String)
+	 */
+	@Override
+    public T getValue(SerializingCustomDatatype<T> datatype, HttpServletRequest request, String formFieldValue)
+        throws InvalidCustomValueException {
+		String result = request.getParameter(formFieldValue);
+		if (StringUtils.isBlank(result)){
+			return null;
+		}
+	    return datatype.deserialize(result);
+    }
+
+	/**
+	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtmlSummary(org.openmrs.customdatatype.CustomDatatype,
+	 *      java.lang.String)
+	 */
+	@Override
+	public CustomDatatype.Summary toHtmlSummary(CustomDatatype<T> datatype, String valueReference) {
+		return new CustomDatatype.Summary(valueReference, true);
+	}
+	
+	/**
+	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtml(org.openmrs.customdatatype.CustomDatatype,
+	 *      java.lang.String)
+	 */
+	@Override
+	public String toHtml(CustomDatatype<T> datatype, String valueReference) {
+		return valueReference;
+	}
 	
 	/**
 	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getWidgetConfiguration()
