@@ -16,7 +16,7 @@ package org.openmrs;
 import org.openmrs.customdatatype.SerializingCustomDatatype;
 
 /**
- * This is a superclass for custom datatypes
+ * This is a superclass for custom datatypes for metadata
  * 
  * @since 1.10
  */
