@@ -91,6 +91,7 @@ public final class Module {
 	
 	private Document sqldiff = null;
 	
+	@Deprecated
 	private Document log4j = null;
 	
 	private boolean mandatory = Boolean.FALSE;
@@ -130,7 +131,8 @@ public final class Module {
 		log.debug("Creating module " + name);
 	}
 	
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj != null && obj instanceof Module) {
 			Module mod = (Module) obj;
 			return getModuleId().equals(mod.getModuleId());
@@ -610,10 +612,18 @@ public final class Module {
 		this.config = config;
 	}
 	
+	/**
+	 * @deprecated module should not hardcode it's logging properties
+	 */
+	@Deprecated
 	public Document getLog4j() {
 		return log4j;
 	}
 	
+	/**
+	 * @deprecated module should not hardcode it's logging properties
+	 */
+	@Deprecated
 	public void setLog4j(Document log4j) {
 		this.log4j = log4j;
 	}
@@ -713,7 +723,7 @@ public final class Module {
 		sb.append(t.getMessage());
 		sb.append("\n");
 		
-		// loop over and append all stacktrace elements marking the "openmrs" ones 
+		// loop over and append all stacktrace elements marking the "openmrs" ones
 		for (StackTraceElement traceElement : t.getStackTrace()) {
 			if (traceElement.getClassName().contains("openmrs"))
 				sb.append(" ** ");
@@ -736,7 +746,8 @@ public final class Module {
 		this.startupErrorMessage = null;
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		if (moduleId == null)
 			return super.toString();
 		
