@@ -36,6 +36,7 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import org.aopalliance.aop.Advice;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -343,6 +344,7 @@ public class ModuleFactory {
 		final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
 		Collections.sort(list, new Comparator<Module>() {
 			
+			@Override
 			public int compare(Module left, Module right) {
 				Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
 				Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
@@ -879,10 +881,22 @@ public class ModuleFactory {
 			catch (IOException e) {
 				throw new ModuleException("Unable to get jar file", module.getName(), e);
 			}
-			ZipEntry liquiEntry = jarFile.getEntry(MODULE_CHANGELOG_FILENAME);
 			
-			//check whether module has a moduleid-liquibase.xml
-			liquibaseFileExists = liquiEntry != null;
+			//check whether module has a liquibase.xml
+			InputStream inStream = null;
+			ZipEntry entry = null;
+			try {
+				inStream = ModuleUtil.getResourceFromApi(jarFile, module.getModuleId(), module.getVersion(),
+				    MODULE_CHANGELOG_FILENAME);
+				if (inStream == null) {
+					// Try the old way. Loading from the root of the omod
+					entry = jarFile.getEntry(MODULE_CHANGELOG_FILENAME);
+				}
+				liquibaseFileExists = (inStream != null) || (entry != null);
+			}
+			finally {
+				IOUtils.closeQuietly(inStream);
+			}
 		}
 		finally {
 			try {
@@ -1079,7 +1093,7 @@ public class ModuleFactory {
 			//we need to clear them, else we shall never be able to unload the class loader until
 			//when we unload the module, hence resulting into two problems:
 			// 1) Memory leakage for start/stop module.
-			// 2) Calls to Context.getService(Service.class) which are made within these extensions 
+			// 2) Calls to Context.getService(Service.class) which are made within these extensions
 			//	  will throw APIException("Service not found: ") because their calls to Service.class
 			//    will pass in a Class from the old module class loader (which loaded them) yet the
 			//    ServiceContext will have new services from a new module class loader.
