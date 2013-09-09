@@ -13,11 +13,21 @@
  */
 package org.openmrs;
 
+import org.openmrs.customdatatype.SerializingCustomDatatype;
+
 /**
- * This is a superclass for custom datatypes for metadata
+ * This is a superclass for custom datatypes for data
  * 
  * @since 1.10
  */
-public abstract class BaseMetadataDatatype<T extends OpenmrsMetadata> extends BaseOpenmrsDatatype<T> {
+public abstract class BaseOpenmrsDatatype<T extends OpenmrsObject> extends SerializingCustomDatatype<T> {
 	
+	/**
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
+	 */
+	public String serialize(T typedValue) {
+		if (typedValue == null)
+			return null;
+		return typedValue.getUuid();
+	}
 }

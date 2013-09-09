@@ -13,12 +13,9 @@
  */
 package org.openmrs.web.attribute.handler;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.customdatatype.CustomDatatype;
-import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.SerializingCustomDatatype;
 
 /**
@@ -29,26 +26,13 @@ import org.openmrs.customdatatype.SerializingCustomDatatype;
 public abstract class BaseMetadataFieldGenDatatypeHandler<T extends OpenmrsMetadata> implements FieldGenDatatypeHandler<SerializingCustomDatatype<T>, T> {
 	
 	/**
-	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getValue(org.openmrs.customdatatype.CustomDatatype,
-	 *      javax.servlet.http.HttpServletRequest, java.lang.String)
-	 */
-	@Override
-	public T getValue(SerializingCustomDatatype<T> datatype, HttpServletRequest request, String formFieldValue)
-	    throws InvalidCustomValueException {
-		String result = request.getParameter(formFieldValue);
-		if (StringUtils.isBlank(result)) {
-			return null;
-		}
-		return datatype.deserialize(formFieldValue);
-	}
-	
-	/**
 	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtmlSummary(org.openmrs.customdatatype.CustomDatatype,
 	 *      java.lang.String)
 	 */
 	@Override
 	public CustomDatatype.Summary toHtmlSummary(CustomDatatype<T> datatype, String valueReference) {
-		return new CustomDatatype.Summary(StringUtils.isBlank(getWidgetName()) ? toString() : getWidgetName(), true);
+		SerializingCustomDatatype<T> dt = (SerializingCustomDatatype<T>) datatype;
+		return new CustomDatatype.Summary(dt.deserialize(valueReference).getName(), true);
 	}
 	
 	/**
@@ -57,9 +41,12 @@ public abstract class BaseMetadataFieldGenDatatypeHandler<T extends OpenmrsMetad
 	 */
 	@Override
 	public String toHtml(CustomDatatype<T> datatype, String valueReference) {
-		if (StringUtils.isBlank(getWidgetName())) {
+		SerializingCustomDatatype<T> dt = (SerializingCustomDatatype<T>) datatype;
+		String result = dt.deserialize(valueReference).getName();
+		
+		if (StringUtils.isBlank(result)) {
 			toString();
 		}
-		return getWidgetName();
+		return result;
 	}
 }
