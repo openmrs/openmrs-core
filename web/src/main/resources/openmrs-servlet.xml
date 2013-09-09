@@ -981,7 +981,7 @@
 	<!-- Use an alias to the messageSourceService (defined in applicationContext-service.xml)
 		to override the application MessageSource, which must be named "messageSource".
 	-->	
-	<alias name="messageSourceServiceTarget" alias="messageSource"/>
+	<alias name="messageSourceService" alias="messageSource"/>
 	
 	<bean id="parentTheme" class="org.openmrs.web.StaticThemeSource">
 		<property name="themeName"><value>/themes/defaults</value></property>
@@ -1249,7 +1249,7 @@
 	</bean>
 
     <!--  COMPLEX OBS HANDLER SECTION -->
-    <bean parent="obsServiceTarget" >
+    <bean parent="obsService" >
         <property name="handlers">
             <map>
                 <entry>
