@@ -16,7 +16,7 @@ package org.openmrs.web.attribute.handler;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.OpenmrsData;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.SerializingCustomDatatype;
 
@@ -25,7 +25,7 @@ import org.openmrs.customdatatype.SerializingCustomDatatype;
  * 
  * @since 1.10
  */
-public abstract class BaseOpenmrsFieldGenDatatypeHandler<T extends OpenmrsData> implements FieldGenDatatypeHandler<SerializingCustomDatatype<T>, T> {
+public abstract class BaseOpenmrsFieldGenDatatypeHandler<T extends OpenmrsObject> implements FieldGenDatatypeHandler<SerializingCustomDatatype<T>, T> {
 	
 	/**
 	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getValue(org.openmrs.customdatatype.CustomDatatype,
