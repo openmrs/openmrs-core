@@ -5,7 +5,7 @@
 	version="2.4">
 
 	<display-name>@WEBAPP.DISPLAY.NAME@</display-name>
-	<display-name>@WEBAPP.DESCRIPTION@</display-name> 
+	<description>@WEBAPP.DESCRIPTION@</description> 
 
 	<context-param>
         <param-name>contextConfigLocation</param-name>
