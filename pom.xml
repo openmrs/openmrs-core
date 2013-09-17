@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>1.9.4-SNAPSHOT</version>
+	<version>1.9.4</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -1018,6 +1018,6 @@
 		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}</openmrs.version.shortnumericonly>
 
 		<springVersion>3.0.5.RELEASE</springVersion>
-		<customArgLineForTesting></customArgLineForTesting>
+		<customArgLineForTesting />
 	</properties>
 </project>
