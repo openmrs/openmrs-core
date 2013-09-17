@@ -1623,7 +1623,7 @@ public class InitializationFilter extends StartupFilter {
 							else
 								wizardModel.workLog
 								        .add("Unable to adjust RuntimePropertiesFile to disallow world to read it");
-
+							
 							// don't need to catch errors here because we tested it at the beginning of the wizard
 						}
 						finally {
