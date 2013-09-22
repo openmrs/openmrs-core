@@ -82,7 +82,7 @@ import org.openmrs.util.OpenmrsConstants;
  * The Hibernate class for Concepts, Drugs, and related classes. <br/>
  * <br/>
  * Use the {@link ConceptService} to access these methods
- *
+ * 
  * @see ConceptService
  */
 public class HibernateConceptDAO implements ConceptDAO {
@@ -93,7 +93,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	
 	/**
 	 * Sets the session factory
-	 *
+	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -141,7 +141,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * Convenience method that will check this concept for subtype values (ConceptNumeric,
 	 * ConceptDerived, etc) and insert a line into that subtable if needed. This prevents a
 	 * hibernate ConstraintViolationException
-	 *
+	 * 
 	 * @param concept the concept that will be inserted
 	 */
 	private void insertRowIntoSubclassIfNecessary(Concept concept) {
@@ -630,7 +630,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	
 	/**
 	 * gets questions for the given answer concept
-	 *
+	 * 
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByAnswer(org.openmrs.Concept)
 	 */
 	@SuppressWarnings("unchecked")
@@ -722,7 +722,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	
 	/**
 	 * Deletes all concept words for a concept. Called by {@link #updateConceptWord(Concept)}
-	 *
+	 * 
 	 * @param concept
 	 * @throws DAOException
 	 */
@@ -870,7 +870,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	
 	/**
 	 * utility method used in updateConceptSetDerived(...)
-	 *
+	 * 
 	 * @param List of parent Concept objects
 	 * @param Concept current
 	 * @return Set of ConceptSetDerived
@@ -948,7 +948,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	
 	/**
 	 * returns a list of n-generations of parents of a concept in a concept set
-	 *
+	 * 
 	 * @param Concept current
 	 * @return List<Concept>
 	 * @throws DAOException
@@ -1404,7 +1404,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * Utility method that returns a criteria for searching for conceptWords that match the
 	 * specified search phrase and arguments
-	 *
+	 * 
 	 * @param phrase matched to the start of any word in any of the names of a concept
 	 * @param locales List<Locale> to restrict to
 	 * @param includeRetired boolean if false, will exclude retired concepts
@@ -1585,7 +1585,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			pl.add(Projections.groupProperty("cw1.word"));
 			//if we have multiple words for the same concept, get the one with a highest weight
 			pl.add(Projections.max("cw1.weight"), "maxWeight");
-			//TODO In case a concept has multiple names that contains words that match the search phrase,
+			//TODO In case a concept has multiple names that contains words that match the search phrase, 
 			//setting this to min or max will select the concept name that was added first or last,
 			//but it should actually be the one that contains the word with the highest weight.
 			//see ConceptServiceTest.getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAWordWithMoreWeight()
@@ -1660,7 +1660,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * Utility method that computes the bonus weight for a concept word based on the
 	 * {@link ConceptNameType}, the length of the full concept name and the weightCoefficient
-	 *
+	 * 
 	 * @param weightCoefficient
 	 * @param word
 	 * @return
@@ -1679,7 +1679,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		else if (conceptName.isShort())
 			bonusWeight += weightCoefficient * 0.21;
 		
-		//the shorter the full concept name, the higher the weight, the word 'MEASELS' in
+		//the shorter the full concept name, the higher the weight, the word 'MEASELS' in 
 		//'MEASELS ON EARTH' should weigh more than another 'MEASELS' in 'MEASELS ON JUPITER'
 		bonusWeight += weightCoefficient / new Double(conceptName.getName().length());
 		
