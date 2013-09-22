@@ -1529,9 +1529,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException {
 		//if the argument or the following required fields are not specified
-		if (patientIdentifier == null || patientIdentifier.getPatient() == null
-		        || patientIdentifier.getIdentifierType() == null || patientIdentifier.getLocation() == null
-		        || StringUtils.isBlank(patientIdentifier.getIdentifier()))
+		PatientIdentifierType.LocationBehavior locationBehavior = patientIdentifier.getIdentifierType()
+		        .getLocationBehavior();
+		if (patientIdentifier == null
+		        || patientIdentifier.getPatient() == null
+		        || patientIdentifier.getIdentifierType() == null
+		        || StringUtils.isBlank(patientIdentifier.getIdentifier())
+		        || (locationBehavior == PatientIdentifierType.LocationBehavior.REQUIRED && patientIdentifier.getLocation() == null))
 			throw new APIException("PatientIdentifier argument or one of its required fields is null or invalid");
 		if (patientIdentifier.getPatientIdentifierId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_PATIENT_IDENTIFIERS);

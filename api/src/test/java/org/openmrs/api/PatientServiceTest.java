@@ -2174,16 +2174,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @verifies {@link PatientService#savePatientIdentifier(PatientIdentifier)} test = should throw
-	 *           an APIException when a null argument is passed
-	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should throw an APIException when a null argument is passed", method = "savePatientIdentifier(PatientIdentifier)")
-	public void savePatientIdentifier_shouldThrowAnAPIExceptionWhenANullArgumentIsPassed() throws Exception {
-		patientService.savePatientIdentifier(null);
-	}
-	
-	/**
-	 * @verifies {@link PatientService#savePatientIdentifier(PatientIdentifier)} test = should throw
 	 *           an APIException when one of the required fields is null
 	 */
 	@Test(expected = APIException.class)
@@ -2217,6 +2207,30 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	        throws Exception {
 		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
 		patientIdentifier.setIdentifier("");
+		patientService.savePatientIdentifier(patientIdentifier);
+	}
+	
+	/**
+	 * @see {@link PatientService#savePatientIdentifier(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should pass if patient identifer type's location behaviour is NOT_USED and location is null", method = "savePatientIdentifier(PatientIdentifierType)")
+	public void savePatientIdentifier_shouldAllowLocationToBeNullWhenLocationBehaviourIsNotUsed() {
+		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
+		patientIdentifier.setLocation(null);
+		patientIdentifier.getIdentifierType().setLocationBehavior(PatientIdentifierType.LocationBehavior.NOT_USED);
+		patientService.savePatientIdentifier(patientIdentifier);
+	}
+	
+	/**
+	 * @see {@link PatientService#savePatientIdentifier(PatientIdentifier)}
+	 */
+	@Test(expected = ValidationException.class)
+	@Verifies(value = "should fail if patient identifer type's location behaviour is REQUIRED and location is null", method = "savePatientIdentifier(PatientIdentifierType)")
+	public void savePatientIdentifier_shouldAllowLocationToBeNullWhenLocationBehaviourIsRequired() {
+		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
+		patientIdentifier.setLocation(null);
+		patientIdentifier.getIdentifierType().setLocationBehavior(PatientIdentifierType.LocationBehavior.REQUIRED);
 		patientService.savePatientIdentifier(patientIdentifier);
 	}
 	
