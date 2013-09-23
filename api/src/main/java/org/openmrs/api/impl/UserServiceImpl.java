@@ -431,7 +431,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 				throw new APIException("You must have the role '" + RoleConstants.SUPERUSER + "' in order to assign it.");
 			if (r.getPrivileges() != null) {
 				for (Privilege p : r.getPrivileges())
-					if (!authUser.hasPrivilege(p.getPrivilege()))
+					if (!Context.hasPrivilege(p.getPrivilege()))
 						requiredPrivs.add(p.getPrivilege());
 			}
 		}
