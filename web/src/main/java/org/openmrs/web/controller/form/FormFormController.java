@@ -14,6 +14,7 @@
 package org.openmrs.web.controller.form;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.util.FormUtil;
+import org.openmrs.util.MetadataComparator;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -162,11 +164,13 @@ public class FormFormController extends SimpleFormController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		List<FieldType> fieldTypes = new Vector<FieldType>();
-		List<EncounterType> encTypes = new Vector<EncounterType>();
+		List<EncounterType> encTypes = new Vector<EncounterType>(); 
 		
 		if (Context.isAuthenticated()) {
 			fieldTypes = Context.getFormService().getAllFieldTypes();
 			encTypes = Context.getEncounterService().getAllEncounterTypes();
+			// Non-retired types first
+			Collections.sort(encTypes, new MetadataComparator(Context.getLocale()));
 		}
 		
 		map.put("fieldTypes", fieldTypes);
