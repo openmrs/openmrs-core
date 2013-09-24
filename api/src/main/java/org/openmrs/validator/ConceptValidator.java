@@ -177,7 +177,7 @@ public class ConceptValidator implements Validator {
 									continue;
 								
 								//skip same
-								if (conceptToValidate.getUuid() != null
+								if (conceptToValidate.getConceptId() != null
 								        && conceptToValidate.getUuid().equals(concept.getUuid()))
 									continue;
 								
