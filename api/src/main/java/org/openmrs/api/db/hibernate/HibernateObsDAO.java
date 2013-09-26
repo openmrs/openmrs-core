@@ -31,7 +31,6 @@ import org.hibernate.criterion.Subqueries;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
