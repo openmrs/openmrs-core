@@ -31,6 +31,7 @@ import org.hibernate.criterion.Subqueries;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
@@ -243,7 +244,6 @@ public class HibernateObsDAO implements ObsDAO {
 	/**
 	 * Convenience method that adds an expression to the given <code>criteria</code> according to
 	 * what types of person objects is wanted
-	 * 
 	 * @param criteria
 	 * @param personType
 	 * @return the given criteria (for chaining)
@@ -275,6 +275,17 @@ public class HibernateObsDAO implements ObsDAO {
 	public Obs getObsByUuid(String uuid) {
 		return (Obs) sessionFactory.getCurrentSession().createQuery("from Obs o where o.uuid = :uuid").setString("uuid",
 		    uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#getObsByAccessionNumber(java.lang.String)
+	 */
+	public List<Obs> getObsByAccessionNumber(String accessionNumber) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Obs.class);
+		crit.add(Expression.eq("accessionNumber", accessionNumber));
+		List<Obs> obsList = (List<Obs>) crit.list();
+		
+		return obsList;
 	}
 	
 }

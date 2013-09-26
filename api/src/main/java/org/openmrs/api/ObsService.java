@@ -138,6 +138,17 @@ public interface ObsService extends OpenmrsService {
 	public Obs getObsByUuid(String uuid) throws APIException;
 	
 	/**
+	 * Get Obs by its AccessionNumber
+	 * 
+	 * @param accessionNumber
+	 * @return
+	 * @should find objects given valid accessionNumber
+	 * @should return null if no objects are found with given accessionNumber
+	 */
+	@Authorized(PrivilegeConstants.VIEW_OBS)
+	public List<Obs> getObsByAccessionNumber(String accessionNumber) throws APIException;
+	
+	/**
 	 * Save changes to observation
 	 * 
 	 * @param obs
