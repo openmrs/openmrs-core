@@ -1081,6 +1081,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
 	
+	public static String GP_LOGIN_LOCKOUT_DURATION = "security.loginLockoutDuration";
+	
 	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
 	
 	public static final String GP_DASHBOARD_CONCEPTS = "dashboard.header.showConcept";
@@ -1510,6 +1512,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT, "7",
 		        "Maximum number of failed logins allowed after which username is locked out"));
+		
+		props.add(new GlobalProperty(GP_LOGIN_LOCKOUT_DURATION, "300000",
+		        "User lockout duration in milliseconds. A value of 0 equals no lockout time."));
 		
 		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "NARROWER-THAN",
 		        "Default concept map type which is used when no other is set"));
