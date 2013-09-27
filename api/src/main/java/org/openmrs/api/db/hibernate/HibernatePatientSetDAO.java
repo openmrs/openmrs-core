@@ -47,7 +47,6 @@ import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -1172,8 +1171,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (patients != null)
 			criteria.add(Restrictions.in("obs.personId", patients.getMemberIds()));
 		
-		criteria.add(Expression.eq("obs.concept", c));
-		criteria.add(Expression.eq("obs.voided", false));
+		criteria.add(Restrictions.eq("obs.concept", c));
+		criteria.add(Restrictions.eq("obs.voided", false));
 		
 		if (showMostRecentFirst)
 			criteria.addOrder(org.hibernate.criterion.Order.desc("obs.obsDatetime"));
@@ -1449,10 +1448,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			if (className.equals("org.openmrs.Person"))
 				// the voided column on the person table is mapped to the person object 
 				// through the getPersonVoided() to distinguish it from patient/user.voided 
-				criteria.add(Expression.eq("personVoided", false));
+				criteria.add(Restrictions.eq("personVoided", false));
 			else
 				// this is here to support PersonName and PersonAddress
-				criteria.add(Expression.eq("voided", false));
+				criteria.add(Restrictions.eq("voided", false));
 		}
 		// if one of the Patient tables
 		else {
@@ -1463,7 +1462,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				criteria.add(Restrictions.in("patient.personId", patients.getMemberIds()));
 			
 			// do not include voided patients
-			criteria.add(Expression.eq("voided", false));
+			criteria.add(Restrictions.eq("voided", false));
 		}
 		criteria.setProjection(projectionList);
 		

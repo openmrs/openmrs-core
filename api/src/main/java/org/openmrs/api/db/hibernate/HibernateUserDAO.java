@@ -546,7 +546,7 @@ public class HibernateUserDAO implements UserDAO {
 			}
 		}
 		
-		if (includeRetired == false)
+		if (!includeRetired)
 			criteria.add("user.retired = false");
 		
 		// build the hql query
