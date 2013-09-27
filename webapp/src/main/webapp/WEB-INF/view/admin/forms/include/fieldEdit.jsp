@@ -39,7 +39,7 @@
 					<c:forEach items="${fieldTypes}" var="ft">
 						<option value="${ft.fieldTypeId}"
 							<c:if test="${ft.fieldTypeId == status.value.fieldTypeId}">selected</c:if>>
-							${ft.name}
+							<c:out value="${ft.name}"/>
 						</option>
 					</c:forEach>
 				</select>
