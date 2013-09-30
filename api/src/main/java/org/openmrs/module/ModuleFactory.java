@@ -73,6 +73,8 @@ public class ModuleFactory {
 	
 	private static final Map<String, DaemonToken> daemonTokens = new WeakHashMap<String, DaemonToken>();
 	
+	private static List<String> actualStartupOrder;
+	
 	/**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an
 	 * error occurred and/or module was not successfully loaded
@@ -185,6 +187,8 @@ public class ModuleFactory {
 	 * Modules that are already started will be skipped.
 	 */
 	public static void startModules() {
+		List<String> currentStartupOrder = new ArrayList<String>();
+		
 		// loop over and try starting each of the loaded modules
 		if (getLoadedModules().size() > 0) {
 			List<Module> leftoverModules = new Vector<Module>();
@@ -214,6 +218,7 @@ public class ModuleFactory {
 									log.debug("starting module: " + mod.getModuleId());
 								
 								startModule(mod);
+								currentStartupOrder.add(mod.getModuleId());
 							}
 							catch (Exception e) {
 								log.error("Error while starting module: " + mod.getName(), e);
@@ -253,6 +258,7 @@ public class ModuleFactory {
 							// it would only be on the leftover modules list if
 							// it were set to true already
 							startModule(leftoverModule);
+							currentStartupOrder.add(leftoverModule.getModuleId());
 							
 							// set this boolean flag to true so we keep looping over the modules
 							atLeastOneModuleLoaded = true;
@@ -287,6 +293,7 @@ public class ModuleFactory {
 				}
 		}
 		
+		actualStartupOrder = currentStartupOrder;
 	}
 	
 	/**
@@ -402,6 +409,18 @@ public class ModuleFactory {
 		return Collections.emptyList();
 	}
 	
+	public static List<Module> getStartedModulesInOrder() {
+		List<Module> modules = new ArrayList<Module>();
+		if (actualStartupOrder != null) {
+			for (String moduleId : actualStartupOrder) {
+				modules.add(getStartedModulesMap().get(moduleId));
+			}
+		} else {
+			modules.addAll(getStartedModules());
+		}
+		return modules;
+	}
+	
 	/**
 	 * Returns the modules that have been successfully started in the form of a map&lt;ModuleId,
 	 * Module&gt;
@@ -429,7 +448,7 @@ public class ModuleFactory {
 			module = new ModuleFileParser(moduleFile).parse();
 		}
 		catch (ModuleException e) {
-			log.error("Error getting module object from file", e);
+			log.error("Error getting module object from file " + moduleFile.getName(), e);
 			throw e;
 		}
 		
