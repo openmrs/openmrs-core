@@ -22,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
@@ -95,8 +94,8 @@ public class HibernateObsDAO implements ObsDAO {
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(MimeType.class);
 		
-		if (includeRetired == false)
-			crit.add(Expression.eq("retired", Boolean.FALSE));
+		if (!includeRetired)
+			crit.add(Restrictions.eq("retired", Boolean.FALSE));
 		
 		return crit.list();
 	}
@@ -235,7 +234,7 @@ public class HibernateObsDAO implements ObsDAO {
 		if (CollectionUtils.isNotEmpty(valueCodedNameAnswers))
 			criteria.add(Restrictions.in("valueCodedName", valueCodedNameAnswers));
 		
-		if (includeVoidedObs == false)
+		if (!includeVoidedObs)
 			criteria.add(Restrictions.eq("voided", false));
 		return criteria;
 	}
