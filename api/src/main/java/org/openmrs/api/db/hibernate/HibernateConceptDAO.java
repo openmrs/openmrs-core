@@ -1577,7 +1577,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
 		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
 		
-		List<ConceptSearchResult> results = new Vector<ConceptSearchResult>();
+		List<ConceptSearchResult> conceptSearchResults = new Vector<ConceptSearchResult>();
 		
 		if (searchCriteria != null) {
 			ProjectionList pl = Projections.projectionList();
@@ -1599,16 +1599,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 				searchCriteria.setMaxResults(size);
 			
 			searchCriteria.setResultTransformer(Transformers.TO_LIST);
-			List resultObjects = searchCriteria.list();
+			List matchingConcepts = searchCriteria.list();
 			
-			for (Object obj : resultObjects) {
-				List list = (List) obj;
-				results.add(new ConceptSearchResult((String) list.get(1), (Concept) list.get(0), (ConceptName) list.get(3),
-				        (Double) list.get(2)));
-			}
+			new ConceptTreeLoader(new HibernateLazyLoader()).loadTree(conceptSearchResults, matchingConcepts);
 		}
 		
-		return results;
+		return conceptSearchResults;
 	}
 	
 	/**
