@@ -127,6 +127,7 @@ public class ModuleFileParser {
 	 * Get the module
 	 * 
 	 * @return new module object
+	 * @should parse start-before modules
 	 */
 	public Module parse() throws ModuleException {
 		
@@ -267,8 +268,10 @@ public class ModuleFileParser {
 			module.setRequireDatabaseVersion(getElement(rootNode, configVersion, "require_database_version").trim());
 			module.setRequireOpenmrsVersion(getElement(rootNode, configVersion, "require_version").trim());
 			module.setUpdateURL(getElement(rootNode, configVersion, "updateURL").trim());
+			
 			module.setRequiredModulesMap(getRequiredModules(rootNode, configVersion));
-			module.setAwareOfModulesMap(getAwareOfModules(rootNode, configVersion));
+			module.setAwareOfModulesMap(getAwareOfModules(rootNode));
+			module.setStartBeforeModulesMap(getStartBeforeModules(rootNode));
 			
 			module.setAdvicePoints(getAdvice(rootNode, configVersion, module));
 			module.setExtensionNames(getExtensions(rootNode, configVersion));
@@ -332,29 +335,7 @@ public class ModuleFileParser {
 	 * @since 1.5
 	 */
 	private Map<String, String> getRequiredModules(Element root, String version) {
-		NodeList requiredModulesParents = root.getElementsByTagName("require_modules");
-		
-		Map<String, String> packageNamesToVersion = new HashMap<String, String>();
-		
-		// TODO test require_modules section
-		if (requiredModulesParents.getLength() > 0) {
-			Node requiredModulesParent = requiredModulesParents.item(0);
-			
-			NodeList requiredModules = requiredModulesParent.getChildNodes();
-			
-			int i = 0;
-			while (i < requiredModules.getLength()) {
-				Node n = requiredModules.item(i);
-				if (n != null && "require_module".equals(n.getNodeName())) {
-					NamedNodeMap attributes = n.getAttributes();
-					Node versionNode = attributes.getNamedItem("version");
-					String reqVersion = versionNode == null ? null : versionNode.getNodeValue();
-					packageNamesToVersion.put(n.getTextContent().trim(), reqVersion);
-				}
-				i++;
-			}
-		}
-		return packageNamesToVersion;
+		return getModuleToVersionMap("require_modules", "require_module", root);
 	}
 	
 	/**
@@ -365,25 +346,42 @@ public class ModuleFileParser {
 	 * @return map from module package name to aware of version
 	 * @since 1.9
 	 */
-	private Map<String, String> getAwareOfModules(Element root, String version) {
-		NodeList awareOfModulesParents = root.getElementsByTagName("aware_of_modules");
+	private Map<String, String> getAwareOfModules(Element root) {
+		
+		return getModuleToVersionMap("aware_of_modules", "aware_of_module", root);
+	}
+	
+	private Map<String, String> getStartBeforeModules(Element root) {
+		return getModuleToVersionMap("start_before_modules", "module", root);
+	}
+	
+	/**
+	 * Gets map where key is module name and velue is module version
+	 * @param elementParentName name of element that are container for elements
+	 * @param elementName element that contain module name and version
+	 * @param root
+	 * 
+	 * @return map where key is module name and value is version of module
+	 */
+	private Map<String, String> getModuleToVersionMap(String elementParentName, String elementName, Element root) {
+		
+		NodeList modulesParents = root.getElementsByTagName(elementParentName);
 		
 		Map<String, String> packageNamesToVersion = new HashMap<String, String>();
 		
-		// TODO test aware_of_modules section
-		if (awareOfModulesParents.getLength() > 0) {
-			Node awareOfModulesParent = awareOfModulesParents.item(0);
+		if (modulesParents.getLength() > 0) {
+			Node modulesParent = modulesParents.item(0);
 			
-			NodeList awareOfModules = awareOfModulesParent.getChildNodes();
+			NodeList childModules = modulesParent.getChildNodes();
 			
 			int i = 0;
-			while (i < awareOfModules.getLength()) {
-				Node n = awareOfModules.item(i);
-				if (n != null && "aware_of_module".equals(n.getNodeName())) {
+			while (i < childModules.getLength()) {
+				Node n = childModules.item(i);
+				if (n != null && elementName.equals(n.getNodeName())) {
 					NamedNodeMap attributes = n.getAttributes();
 					Node versionNode = attributes.getNamedItem("version");
-					String awareOfVersion = versionNode == null ? null : versionNode.getNodeValue();
-					packageNamesToVersion.put(n.getTextContent().trim(), awareOfVersion);
+					String moduleVersion = versionNode == null ? null : versionNode.getNodeValue();
+					packageNamesToVersion.put(n.getTextContent().trim(), moduleVersion);
 				}
 				i++;
 			}

@@ -71,6 +71,8 @@ public final class Module {
 	
 	private Map<String, String> awareOfModulesMap;
 	
+	private Map<String, String> startBeforeModulesMap;
+	
 	private List<AdvicePoint> advicePoints = new Vector<AdvicePoint>();
 	
 	private IdentityHashMap<String, String> extensionNames = new IdentityHashMap<String, String>();
@@ -335,8 +337,33 @@ public final class Module {
 	 * 
 	 * @return a map from required module to the version that is required
 	 */
-	public Map<String, String> setRequiredModulesMap() {
+	public Map<String, String> getRequiredModulesMap() {
 		return requiredModulesMap;
+	}
+	
+	/**
+	 * Sets modules that muststart before this module
+	 * @param startBeforeModulesMap the startedBefore modules to set
+	 */
+	public void setStartBeforeModulesMap(Map<String, String> startBeforeModulesMap) {
+		this.startBeforeModulesMap = startBeforeModulesMap;
+	}
+	
+	/**
+	 * Gets modules that this module must be started before them
+	 * @return map where key is module name and value is module version
+	 */
+	public Map<String, String> getStartBeforeModulesMap() {
+		return this.startBeforeModulesMap;
+	}
+	
+	/**
+	 * Gets modules name that this module must be started before them
+	 * @since 2.0
+	 * @return
+	 */
+	public List<String> getStartBeforeModules() {
+		return this.startBeforeModulesMap == null ? null : new ArrayList<String>(this.startBeforeModulesMap.keySet());
 	}
 	
 	/**

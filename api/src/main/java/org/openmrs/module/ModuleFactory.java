@@ -214,7 +214,7 @@ public class ModuleFactory {
 					// as this is probably the first time they are loading it
 					if (startedProp == null || startedProp.equals("true") || "true".equalsIgnoreCase(mandatoryProp)
 					        || mod.isMandatory() || isCoreToOpenmrs) {
-						if (requiredModulesStarted(mod))
+						if (areDependentModulesStarted(mod))
 							try {
 								if (log.isDebugEnabled())
 									log.debug("starting module: " + mod.getModuleId());
@@ -251,7 +251,7 @@ public class ModuleFactory {
 				List<Module> modulesStartedInThisLoop = new Vector<Module>();
 				
 				for (Module leftoverModule : leftoverModules) {
-					if (requiredModulesStarted(leftoverModule)) {
+					if (areDependentModulesStarted(leftoverModule)) {
 						if (log.isDebugEnabled())
 							log.debug("starting leftover module: " + leftoverModule.getModuleId());
 						
@@ -560,7 +560,7 @@ public class ModuleFactory {
 				ModuleUtil.checkRequiredVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireVersion);
 				
 				// check for required modules
-				if (!requiredModulesStarted(module)) {
+				if (!areDependentModulesStarted(module)) {
 					throw new ModuleException("Module " + module.getName()
 					        + " cannot be added because it requires the following module(s): "
 					        + OpenmrsUtil.join(getMissingRequiredModules(module), ", ")
@@ -1293,13 +1293,17 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * Tests whether all modules mentioned in module.requiredModules are loaded and started already
+	 * Tests whether all modules mentioned in module.requiredModules 
+	 * and modules need to be started before are loaded and started already
+	 * 
 	 * (by being in the startedModules list)
 	 * 
 	 * @param module
 	 * @return true/false boolean whether this module's required modules are all started
 	 */
-	private static boolean requiredModulesStarted(Module module) {
+	private static boolean areDependentModulesStarted(Module module) {
+		
+		//required
 		for (String reqModPackage : module.getRequiredModules()) {
 			boolean started = false;
 			for (Module mod : getStartedModules()) {
@@ -1313,6 +1317,19 @@ public class ModuleFactory {
 			
 			if (!started)
 				return false;
+		}
+		
+		//start-before
+		//check if any of loaded (not started) modules must be started before this module
+		for (Module loadedModule : getLoadedModules()) {
+			
+			if (isModuleStarted(loadedModule)) {
+				break;
+			}
+			//loaded but NOT started
+			if (loadedModule.getStartBeforeModules().contains(module.getPackageName())) {
+				return false;
+			}
 		}
 		
 		return true;
