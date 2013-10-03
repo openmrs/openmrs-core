@@ -58,6 +58,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -83,6 +84,14 @@ public class MigrationHelper {
 	public static Document parseXml(String xml) throws ParserConfigurationException {
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		try {
+			// Disable resolution of external entities. See TRUNK-3942
+			builder.setEntityResolver(new EntityResolver() {
+				
+				public InputSource resolveEntity(String publicId, String systemId) {
+					return new InputSource(new StringReader(""));
+				}
+			});
+			
 			return builder.parse(new InputSource(new StringReader(xml)));
 		}
 		catch (IOException ex) {
