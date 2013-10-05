@@ -13,14 +13,19 @@
  */
 package org.openmrs.validator;
 
+import java.beans.PropertyDescriptor;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.api.APIException;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -66,6 +71,12 @@ public class ValidateUtil {
 	public static void validate(Object obj) throws ValidationException {
 		BindException errors = new BindException(obj, "");
 		
+		if (obj instanceof HibernateProxy) {
+			validateFieldLengths(Hibernate.getClass(obj), errors);
+		} else {
+			validateFieldLengths(obj.getClass(), errors);
+		}
+		
 		Context.getAdministrationService().validate(obj, errors);
 		
 		if (errors.hasErrors()) {
@@ -94,7 +105,7 @@ public class ValidateUtil {
 	 * @since 1.9
 	 * @should populate errors if object invalid
 	 */
-	public static void validate(Object obj, Errors errors) {
+	public static void validate(OpenmrsObject obj, Errors errors) {
 		Context.getAdministrationService().validate(obj, errors);
 	}
 	
@@ -108,7 +119,6 @@ public class ValidateUtil {
 	 * @should fail validation if regEx field length is too long
 	 * @should fail validation if name field length is too long
 	 */
-	
 	public static void validateFieldLengths(Errors errors, Class aClass, String... fields) {
 		Assert.notNull(errors, "Errors object must not be null");
 		for (String field : fields) {
@@ -121,4 +131,35 @@ public class ValidateUtil {
 			}
 		}
 	}
+	
+	/**
+	 * Test the field lengths are valid
+	 * 
+	 * @param errors
+	 * @param aClass the class of the object being tested
+	 * @should pass validation if all fields are not too long
+	 * @should fail validation if some field is too long
+	 */
+	public static void validateFieldLengths(Class aClass, Errors errors) {
+		Assert.notNull(errors, "Errors object must not be null");
+		PropertyDescriptor[] properties = PropertyUtils.getPropertyDescriptors(aClass);
+		for (PropertyDescriptor property : properties) {
+			Class<?> fieldType = errors.getFieldType(property.getName());
+			if(fieldType != null && fieldType == String.class) {
+				Object value = null;
+				try {
+				value = errors.getFieldValue(property.getName());
+				} catch (InvalidPropertyException e) {
+					// Ignore exceptions returned by getter
+				}
+				if (value != null) {
+					int length = Context.getAdministrationService().getMaximumPropertyLength(aClass, property.getName());
+					if (length > 0 && ((String) value).length() > length) {
+						errors.rejectValue(property.getName(), "error.exceededMaxLengthOfField", new Object[] { length }, null);
+					}
+				}
+			}
+		}
+	}
+	
 }
