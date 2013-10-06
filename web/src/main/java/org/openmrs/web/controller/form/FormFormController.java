@@ -164,7 +164,7 @@ public class FormFormController extends SimpleFormController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		List<FieldType> fieldTypes = new Vector<FieldType>();
-		List<EncounterType> encTypes = new Vector<EncounterType>(); 
+		List<EncounterType> encTypes = new Vector<EncounterType>();
 		
 		if (Context.isAuthenticated()) {
 			fieldTypes = Context.getFormService().getAllFieldTypes();

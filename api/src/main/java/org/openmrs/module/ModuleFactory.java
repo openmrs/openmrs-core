@@ -961,6 +961,12 @@ public class ModuleFactory {
 			}
 			
 			getStartedModulesMap().remove(moduleId);
+            if (actualStartupOrder != null) {
+                actualStartupOrder.remove(moduleId);
+                for (Module depModule : dependentModulesStopped) {
+                    actualStartupOrder.remove(depModule.getModuleId());
+                }
+            }
 			
 			if (skipOverStartedProperty == false && !Context.isRefreshingContext()) {
 				saveGlobalProperty(moduleId + ".started", "false", getGlobalPropertyStartedDescription(moduleId));
