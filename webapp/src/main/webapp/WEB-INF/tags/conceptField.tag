@@ -77,7 +77,9 @@
 	})
 	
 	function func${escapedFormFieldId}AutoCompleteOnSelect(concept, item) {
-		jquerySelectEscaped('${formFieldId}').val(concept.conceptId);
+
+        var conceptId = concept ? concept.conceptId : null
+		jquerySelectEscaped('${formFieldId}').val(conceptId);
 
 		// if called with initialValue, show the name ourselves
 		if (!item) {
@@ -87,7 +89,7 @@
 
 		<c:if test="${not empty showOther}">
 			// if showOther is the concept that is selected, show a text field so user can enter that "other" data
-			if (concept && concept.conceptId == ${showOther}) {
+			if (conceptId && conceptId == ${showOther}) {
 				jquerySelectEscaped("${otherInputId}").show();
 			}
 			else
