@@ -7519,5 +7519,11 @@
 			<column name="code"/>
 		</createIndex>
 	</changeSet>
+	
+	<changeSet id="20131021" author="k-joseph">
+		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_numeric" columnName="precise"/></preConditions>
+		<comment>Rename column name from "precise" to "allow_decimal"</comment>
+		<renameColumn columnDataType="BOOLEAN" oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric" />
+	</changeSet>
 
 </databaseChangeLog>
