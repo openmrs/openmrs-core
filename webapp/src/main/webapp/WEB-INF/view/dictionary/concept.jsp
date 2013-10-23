@@ -277,6 +277,15 @@
 								</spring:bind>
 							</td>
 						</tr>
+						<tr>
+							<th><openmrs:message code="command.concept.displayPrecision"/></th>
+							<td colspan="2">
+								<spring:bind path="command.concept.displayPrecision">
+									<input type="text" name="${status.expression}" value="${status.value}" class="mediumWidth" />
+									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+								</spring:bind>
+							</td>
+						</tr>
 					</table>
 				</td>
 			</tr>

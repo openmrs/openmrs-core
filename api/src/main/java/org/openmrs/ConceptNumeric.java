@@ -42,6 +42,8 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	
 	private Boolean precise = false;
 	
+	private Integer displayPrecision;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -208,5 +210,13 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	@Override
 	public boolean isNumeric() {
 		return (getDatatype().getName().equals("Numeric"));
+	}
+	
+	public Integer getDisplayPrecision() {
+		return displayPrecision;
+	}
+	
+	public void setDisplayPrecision(Integer displayPrecision) {
+		this.displayPrecision = displayPrecision;
 	}
 }
