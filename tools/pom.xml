@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.openmrs</groupId>
         <artifactId>openmrs</artifactId>
-        <version>1.10.0-SNAPSHOT</version>
+        <version>1.11.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.openmrs.tools</groupId>
