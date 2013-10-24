@@ -378,7 +378,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@SuppressWarnings("unchecked")
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean includeRetired) throws DAOException {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
-		if (includeRetired == false)
+		if (!includeRetired)
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
 			searchCriteria.add(Restrictions.eq("drug.concept", concept));
@@ -453,7 +453,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
 		
 		// Minor bug - was assigning includeRetired instead of evaluating
-		if (includeRetired == false)
+		if (!includeRetired)
 			crit.add(Restrictions.eq("retired", false));
 		
 		return crit.list();
@@ -495,7 +495,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptDatatype> getAllConceptDatatypes(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptDatatype.class);
 		
-		if (includeRetired == false)
+		if (!includeRetired)
 			crit.add(Restrictions.eq("retired", false));
 		
 		return crit.list();
@@ -791,7 +791,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptProposal> getAllConceptProposals(boolean includeCompleted) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptProposal.class);
 		
-		if (includeCompleted == false) {
+		if (!includeCompleted) {
 			crit.add(Restrictions.eq("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
 		}
 		crit.addOrder(Order.asc("originalText"));
@@ -935,7 +935,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptSource> getAllConceptSources(boolean includeRetired) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class);
 		
-		if (includeRetired == false)
+		if (!includeRetired)
 			criteria.add(Restrictions.eq("retired", false));
 		
 		return criteria.list();
@@ -1353,7 +1353,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class, "cw1");
 			searchCriteria.add(Restrictions.in("locale", locales));
 			
-			if (includeRetired == false) {
+			if (!includeRetired) {
 				searchCriteria.createAlias("concept", "concept");
 				searchCriteria.add(Restrictions.eq("concept.retired", false));
 			}
@@ -1408,7 +1408,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return 0L;
 		
-		if (includeRetired == false)
+		if (!includeRetired)
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
 			searchCriteria.add(Restrictions.eq("drug.concept", concept));
@@ -1436,7 +1436,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return Collections.emptyList();
 		
-		if (includeRetired == false)
+		if (!includeRetired)
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
 			searchCriteria.add(Restrictions.eq("drug.concept", concept));

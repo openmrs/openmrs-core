@@ -22,7 +22,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -291,10 +290,10 @@ public class PatientSearchCriteria {
 		    OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS,
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS);
 		if (name != null && name.length() < minChars) {
-			givenName = Expression.eq(givenNameProperty, name).ignoreCase();
-			middleName = Expression.eq(middleNameProperty, name).ignoreCase();
-			familyName = Expression.eq(familyNameProperty, name).ignoreCase();
-			familyName2 = Expression.eq(familyName2Property, name).ignoreCase();
+			givenName = Restrictions.eq(givenNameProperty, name).ignoreCase();
+			middleName = Restrictions.eq(middleNameProperty, name).ignoreCase();
+			familyName = Restrictions.eq(familyNameProperty, name).ignoreCase();
+			familyName2 = Restrictions.eq(familyName2Property, name).ignoreCase();
 		} else {
 			MatchMode mode = MatchMode.START;
 			String matchModeConstant = OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE;
@@ -304,14 +303,14 @@ public class PatientSearchCriteria {
 				mode = MatchMode.ANYWHERE;
 			}
 			
-			givenName = Expression.like(givenNameProperty, name, mode);
-			middleName = Expression.like(middleNameProperty, name, mode);
-			familyName = Expression.like(familyNameProperty, name, mode);
-			familyName2 = Expression.like(familyName2Property, name, mode);
+			givenName = Restrictions.like(givenNameProperty, name, mode);
+			middleName = Restrictions.like(middleNameProperty, name, mode);
+			familyName = Restrictions.like(familyNameProperty, name, mode);
+			familyName2 = Restrictions.like(familyName2Property, name, mode);
 		}
 		
-		return Expression.and(Expression.eq("name.voided", false), Expression.or(familyName2, Expression.or(familyName,
-		    Expression.or(middleName, givenName))));
+		return Restrictions.and(Restrictions.eq("name.voided", false), Restrictions.or(familyName2, Restrictions.or(
+		    familyName, Restrictions.or(middleName, givenName))));
 	}
 	
 	/**

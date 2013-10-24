@@ -24,7 +24,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -104,8 +103,8 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<FormField> getFormFields(Form form) throws DAOException {
-		return sessionFactory.getCurrentSession().createCriteria(FormField.class, "ff").add(Expression.eq("ff.form", form))
-		        .list();
+		return sessionFactory.getCurrentSession().createCriteria(FormField.class, "ff")
+		        .add(Restrictions.eq("ff.form", form)).list();
 	}
 	
 	/**
@@ -125,7 +124,7 @@ public class HibernateFormDAO implements FormDAO {
 	@SuppressWarnings("unchecked")
 	public List<Field> getFieldsByConcept(Concept concept) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Field.class);
-		criteria.add(Expression.eq("concept", concept));
+		criteria.add(Restrictions.eq("concept", concept));
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();
 	}
@@ -146,8 +145,8 @@ public class HibernateFormDAO implements FormDAO {
 	public List<Field> getAllFields(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Field.class);
 		
-		if (includeRetired == false)
-			crit.add(Expression.eq("retired", false));
+		if (!includeRetired)
+			crit.add(Restrictions.eq("retired", false));
 		
 		return crit.list();
 	}
@@ -168,8 +167,8 @@ public class HibernateFormDAO implements FormDAO {
 	public List<FieldType> getAllFieldTypes(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FieldType.class);
 		
-		if (includeRetired == false)
-			crit.add(Expression.eq("retired", false));
+		if (!includeRetired)
+			crit.add(Restrictions.eq("retired", false));
 		
 		return crit.list();
 	}
@@ -196,7 +195,7 @@ public class HibernateFormDAO implements FormDAO {
 			return null;
 		}
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormField.class, "ff").createAlias("field",
-		    "field").add(Expression.eq("field.concept", concept)).add(Expression.eq("form", form));
+		    "field").add(Restrictions.eq("field.concept", concept)).add(Restrictions.eq("form", form));
 		
 		// get the list of all formfields with this concept for this form
 		List<FormField> formFields = crit.list();
@@ -236,8 +235,8 @@ public class HibernateFormDAO implements FormDAO {
 	public List<Form> getAllForms(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
 		
-		if (includeRetired == false)
-			crit.add(Expression.eq("retired", false));
+		if (!includeRetired)
+			crit.add(Restrictions.eq("retired", false));
 		
 		crit.addOrder(Order.asc("name"));
 		crit.addOrder(Order.asc("formId"));
@@ -313,22 +312,22 @@ public class HibernateFormDAO implements FormDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Field.class);
 		
 		if (!forms.isEmpty())
-			crit.add(Expression.in("form", forms));
+			crit.add(Restrictions.in("form", forms));
 		
 		if (!fieldTypes.isEmpty())
-			crit.add(Expression.in("fieldType", fieldTypes));
+			crit.add(Restrictions.in("fieldType", fieldTypes));
 		
 		if (!concepts.isEmpty())
-			crit.add(Expression.in("concept", concepts));
+			crit.add(Restrictions.in("concept", concepts));
 		
 		if (!tableNames.isEmpty())
-			crit.add(Expression.in("tableName", tableNames));
+			crit.add(Restrictions.in("tableName", tableNames));
 		
 		if (!attributeNames.isEmpty())
-			crit.add(Expression.in("attributeName", attributeNames));
+			crit.add(Restrictions.in("attributeName", attributeNames));
 		
 		if (selectMultiple != null)
-			crit.add(Expression.eq("selectMultiple", selectMultiple));
+			crit.add(Restrictions.eq("selectMultiple", selectMultiple));
 		
 		if (!containsAllAnswers.isEmpty())
 			throw new APIException("containsAllAnswers must be empty because this is not yet implemented");
@@ -337,7 +336,7 @@ public class HibernateFormDAO implements FormDAO {
 			throw new APIException("containsAnyAnswer must be empty because this is not yet implemented");
 		
 		if (retired != null)
-			crit.add(Expression.eq("retired", retired));
+			crit.add(Restrictions.eq("retired", retired));
 		
 		return crit.list();
 	}
@@ -348,8 +347,8 @@ public class HibernateFormDAO implements FormDAO {
 	public Form getForm(String name, String version) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
 		
-		crit.add(Expression.eq("name", name));
-		crit.add(Expression.eq("version", version));
+		crit.add(Restrictions.eq("name", name));
+		crit.add(Restrictions.eq("version", version));
 		
 		return (Form) crit.uniqueResult();
 	}
@@ -493,8 +492,8 @@ public class HibernateFormDAO implements FormDAO {
 	public List<Form> getFormsByName(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
 		
-		crit.add(Expression.eq("name", name));
-		crit.add(Expression.eq("retired", false));
+		crit.add(Restrictions.eq("name", name));
+		crit.add(Restrictions.eq("retired", false));
 		crit.addOrder(Order.desc("version"));
 		
 		return crit.list();

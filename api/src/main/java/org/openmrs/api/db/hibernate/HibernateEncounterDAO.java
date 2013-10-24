@@ -30,7 +30,6 @@ import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -104,7 +103,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createAlias("patient", "p").add(
-		    Expression.eq("p.patientId", patientId)).add(Expression.eq("voided", false)).addOrder(
+		    Restrictions.eq("p.patientId", patientId)).add(Restrictions.eq("voided", false)).addOrder(
 		    Order.desc("encounterDatetime"));
 		
 		return crit.list();
@@ -124,36 +123,36 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		
 		if (patient != null && patient.getPatientId() != null) {
-			crit.add(Expression.eq("patient", patient));
+			crit.add(Restrictions.eq("patient", patient));
 		}
 		if (location != null && location.getLocationId() != null) {
-			crit.add(Expression.eq("location", location));
+			crit.add(Restrictions.eq("location", location));
 		}
 		if (fromDate != null) {
-			crit.add(Expression.ge("encounterDatetime", fromDate));
+			crit.add(Restrictions.ge("encounterDatetime", fromDate));
 		}
 		if (toDate != null) {
-			crit.add(Expression.le("encounterDatetime", toDate));
+			crit.add(Restrictions.le("encounterDatetime", toDate));
 		}
 		if (enteredViaForms != null && enteredViaForms.size() > 0) {
-			crit.add(Expression.in("form", enteredViaForms));
+			crit.add(Restrictions.in("form", enteredViaForms));
 		}
 		if (encounterTypes != null && encounterTypes.size() > 0) {
-			crit.add(Expression.in("encounterType", encounterTypes));
+			crit.add(Restrictions.in("encounterType", encounterTypes));
 		}
 		if (providers != null && providers.size() > 0) {
 			crit.createAlias("encounterProviders", "ep");
-			crit.add(Expression.in("ep.provider", providers));
+			crit.add(Restrictions.in("ep.provider", providers));
 		}
 		if (visitTypes != null && visitTypes.size() > 0) {
 			crit.createAlias("visit", "v");
-			crit.add(Expression.in("v.visitType", visitTypes));
+			crit.add(Restrictions.in("v.visitType", visitTypes));
 		}
 		if (visits != null && visits.size() > 0) {
-			crit.add(Expression.in("visit", visits));
+			crit.add(Restrictions.in("visit", visits));
 		}
 		if (!includeVoided) {
-			crit.add(Expression.eq("voided", false));
+			crit.add(Restrictions.eq("voided", false));
 		}
 		crit.addOrder(Order.asc("encounterDatetime"));
 		return crit.list();
@@ -186,8 +185,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	public EncounterType getEncounterType(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
-		crit.add(Expression.eq("retired", false));
-		crit.add(Expression.eq("name", name));
+		crit.add(Restrictions.eq("retired", false));
+		crit.add(Restrictions.eq("name", name));
 		EncounterType encounterType = (EncounterType) crit.uniqueResult();
 		
 		return encounterType;
@@ -203,8 +202,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		
 		criteria.addOrder(Order.asc("name"));
 		
-		if (includeRetired == false)
-			criteria.add(Expression.eq("retired", false));
+		if (!includeRetired)
+			criteria.add(Restrictions.eq("retired", false));
 		
 		return criteria.list();
 	}
@@ -216,7 +215,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public List<EncounterType> findEncounterTypes(String name) throws DAOException {
 		return sessionFactory.getCurrentSession().createCriteria(EncounterType.class)
 		// 'ilike' case insensitive search
-		        .add(Expression.ilike("name", name, MatchMode.START)).addOrder(Order.asc("name")).addOrder(
+		        .add(Restrictions.ilike("name", name, MatchMode.START)).addOrder(Order.asc("name")).addOrder(
 		            Order.asc("retired")).list();
 	}
 	
@@ -421,10 +420,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class)
-		        .add(Expression.eq("visit", visit));
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).add(
+		    Restrictions.eq("visit", visit));
 		if (!includeVoided) {
-			crit.add(Expression.eq("voided", false));
+			crit.add(Restrictions.eq("voided", false));
 		}
 		crit.addOrder(Order.asc("encounterDatetime"));
 		

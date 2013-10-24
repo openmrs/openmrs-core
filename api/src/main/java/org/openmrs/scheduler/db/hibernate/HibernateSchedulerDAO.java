@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.scheduler.Schedule;
 import org.openmrs.scheduler.TaskDefinition;
@@ -92,7 +92,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 */
 	public TaskDefinition getTaskByName(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(TaskDefinition.class).add(
-		    Expression.eq("name", name));
+		    Restrictions.eq("name", name));
 		
 		TaskDefinition task = (TaskDefinition) crit.uniqueResult();
 		

@@ -22,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -90,8 +89,8 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	@SuppressWarnings("unchecked")
 	public List<Program> getAllPrograms(boolean includeRetired) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Program.class);
-		if (includeRetired == false) {
-			criteria.add(Expression.eq("retired", false));
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired", false));
 		}
 		return criteria.list();
 	}
@@ -118,7 +117,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	@SuppressWarnings("unchecked")
 	public List<Program> findPrograms(String nameFragment) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Program.class, "program");
-		criteria.add(Expression.ilike("name", nameFragment, MatchMode.ANYWHERE));
+		criteria.add(Restrictions.ilike("name", nameFragment, MatchMode.ANYWHERE));
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();
 	}
@@ -163,25 +162,26 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	        throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PatientProgram.class);
 		if (patient != null) {
-			crit.add(Expression.eq("patient", patient));
+			crit.add(Restrictions.eq("patient", patient));
 		}
 		if (program != null) {
-			crit.add(Expression.eq("program", program));
+			crit.add(Restrictions.eq("program", program));
 		}
 		if (minEnrollmentDate != null) {
-			crit.add(Expression.ge("dateEnrolled", minEnrollmentDate));
+			crit.add(Restrictions.ge("dateEnrolled", minEnrollmentDate));
 		}
 		if (maxEnrollmentDate != null) {
-			crit.add(Expression.le("dateEnrolled", maxEnrollmentDate));
+			crit.add(Restrictions.le("dateEnrolled", maxEnrollmentDate));
 		}
 		if (minCompletionDate != null) {
-			crit.add(Expression.or(Expression.isNull("dateCompleted"), Expression.ge("dateCompleted", minCompletionDate)));
+			crit.add(Restrictions.or(Restrictions.isNull("dateCompleted"), Restrictions.ge("dateCompleted",
+			    minCompletionDate)));
 		}
 		if (maxCompletionDate != null) {
-			crit.add(Expression.le("dateCompleted", maxCompletionDate));
+			crit.add(Restrictions.le("dateCompleted", maxCompletionDate));
 		}
 		if (!includeVoided) {
-			crit.add(Expression.eq("voided", false));
+			crit.add(Restrictions.eq("voided", false));
 		}
 		return crit.list();
 	}
@@ -262,8 +262,8 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		
 		if (workflow != null && trigger != null) {
 			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptStateConversion.class, "csc");
-			criteria.add(Expression.eq("csc.programWorkflow", workflow));
-			criteria.add(Expression.eq("csc.concept", trigger));
+			criteria.add(Restrictions.eq("csc.programWorkflow", workflow));
+			criteria.add(Restrictions.eq("csc.concept", trigger));
 			csc = (ConceptStateConversion) criteria.uniqueResult();
 		}
 		

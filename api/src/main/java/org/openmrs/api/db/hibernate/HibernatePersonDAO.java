@@ -27,7 +27,6 @@ import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -410,7 +409,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
 		
 		if (!includeRetired) {
-			criteria.add(Expression.eq("retired", false));
+			criteria.add(Restrictions.eq("retired", false));
 		}
 		
 		criteria.addOrder(Order.asc("sortWeight"));
@@ -429,16 +428,16 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
 		
 		if (exactName != null)
-			criteria.add(Expression.eq("name", exactName));
+			criteria.add(Restrictions.eq("name", exactName));
 		
 		if (format != null)
-			criteria.add(Expression.eq("format", format));
+			criteria.add(Restrictions.eq("format", format));
 		
 		if (foreignKey != null)
-			criteria.add(Expression.eq("foreignKey", foreignKey));
+			criteria.add(Restrictions.eq("foreignKey", foreignKey));
 		
 		if (searchable != null)
-			criteria.add(Expression.eq("searchable", searchable));
+			criteria.add(Restrictions.eq("searchable", searchable));
 		
 		return criteria.list();
 	}
@@ -463,7 +462,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
 		
 		if (!includeVoided) {
-			criteria.add(Expression.eq("voided", false));
+			criteria.add(Restrictions.eq("voided", false));
 		}
 		
 		return criteria.list();
@@ -480,13 +479,13 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
 		
 		if (fromPerson != null)
-			criteria.add(Expression.eq("personA", fromPerson));
+			criteria.add(Restrictions.eq("personA", fromPerson));
 		if (toPerson != null)
-			criteria.add(Expression.eq("personB", toPerson));
+			criteria.add(Restrictions.eq("personB", toPerson));
 		if (relType != null)
-			criteria.add(Expression.eq("relationshipType", relType));
+			criteria.add(Restrictions.eq("relationshipType", relType));
 		
-		criteria.add(Expression.eq("voided", false));
+		criteria.add(Restrictions.eq("voided", false));
 		
 		return criteria.list();
 	}
@@ -503,27 +502,28 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
 		
 		if (fromPerson != null)
-			criteria.add(Expression.eq("personA", fromPerson));
+			criteria.add(Restrictions.eq("personA", fromPerson));
 		if (toPerson != null)
-			criteria.add(Expression.eq("personB", toPerson));
+			criteria.add(Restrictions.eq("personB", toPerson));
 		if (relType != null)
-			criteria.add(Expression.eq("relationshipType", relType));
+			criteria.add(Restrictions.eq("relationshipType", relType));
 		if (startEffectiveDate != null) {
 			criteria.add(Restrictions.disjunction().add(
-			    Restrictions.and(Expression.le("startDate", startEffectiveDate), Expression
-			            .ge("endDate", startEffectiveDate))).add(
-			    Restrictions.and(Expression.le("startDate", startEffectiveDate), Restrictions.isNull("endDate"))).add(
-			    Restrictions.and(Restrictions.isNull("startDate"), Expression.ge("endDate", startEffectiveDate))).add(
+			    Restrictions.and(Restrictions.le("startDate", startEffectiveDate), Restrictions.ge("endDate",
+			        startEffectiveDate))).add(
+			    Restrictions.and(Restrictions.le("startDate", startEffectiveDate), Restrictions.isNull("endDate"))).add(
+			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.ge("endDate", startEffectiveDate))).add(
 			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
 		}
 		if (endEffectiveDate != null) {
 			criteria.add(Restrictions.disjunction().add(
-			    Restrictions.and(Expression.le("startDate", endEffectiveDate), Expression.ge("endDate", endEffectiveDate)))
-			        .add(Restrictions.and(Expression.le("startDate", endEffectiveDate), Restrictions.isNull("endDate")))
-			        .add(Restrictions.and(Restrictions.isNull("startDate"), Expression.ge("endDate", endEffectiveDate)))
-			        .add(Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
+			    Restrictions.and(Restrictions.le("startDate", endEffectiveDate), Restrictions
+			            .ge("endDate", endEffectiveDate))).add(
+			    Restrictions.and(Restrictions.le("startDate", endEffectiveDate), Restrictions.isNull("endDate"))).add(
+			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.ge("endDate", endEffectiveDate))).add(
+			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
 		}
-		criteria.add(Expression.eq("voided", false));
+		criteria.add(Restrictions.eq("voided", false));
 		
 		return criteria.list();
 	}
@@ -552,7 +552,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		    new StringType()));
 		
 		if (preferred != null)
-			criteria.add(Expression.eq("preferred", preferred));
+			criteria.add(Restrictions.eq("preferred", preferred));
 		
 		return criteria.list();
 	}
@@ -779,8 +779,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class);
 		criteria.addOrder(Order.asc("weight"));
 		
-		if (includeRetired == false) {
-			criteria.add(Expression.eq("retired", false));
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired", false));
 		}
 		
 		return criteria.list();

@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -228,8 +227,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	public List<Patient> getAllPatients(boolean includeVoided) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		
-		if (includeVoided == false)
-			criteria.add(Expression.eq("voided", false));
+		if (!includeVoided)
+			criteria.add(Restrictions.eq("voided", false));
 		
 		return criteria.list();
 	}
@@ -257,27 +256,27 @@ public class HibernatePatientDAO implements PatientDAO {
 		// join with the patient table to prevent patient identifiers from patients
 		// that already voided getting returned
 		criteria.createAlias("patient", "patient");
-		criteria.add(Expression.eq("patient.voided", false));
+		criteria.add(Restrictions.eq("patient.voided", false));
 		
 		// make sure the patient object isn't voided
-		criteria.add(Expression.eq("voided", false));
+		criteria.add(Restrictions.eq("voided", false));
 		
 		if (identifier != null)
-			criteria.add(Expression.eq("identifier", identifier));
+			criteria.add(Restrictions.eq("identifier", identifier));
 		
 		// TODO add junit test for getting by identifier type
 		if (patientIdentifierTypes.size() > 0)
-			criteria.add(Expression.in("identifierType", patientIdentifierTypes));
+			criteria.add(Restrictions.in("identifierType", patientIdentifierTypes));
 		
 		if (locations.size() > 0)
-			criteria.add(Expression.in("location", locations));
+			criteria.add(Restrictions.in("location", locations));
 		
 		// TODO add junit test for getting by patients
 		if (patients.size() > 0)
-			criteria.add(Expression.in("patient", patients));
+			criteria.add(Restrictions.in("patient", patients));
 		
 		if (isPreferred != null)
-			criteria.add(Expression.eq("preferred", isPreferred));
+			criteria.add(Restrictions.eq("preferred", isPreferred));
 		
 		return criteria.list();
 	}
@@ -316,8 +315,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
 		
-		if (includeRetired == false) {
-			criteria.add(Expression.eq("retired", false));
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired", false));
 		} else {
 			criteria.addOrder(Order.asc("retired")); //retired last
 		}
