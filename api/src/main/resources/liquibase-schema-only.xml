@@ -307,6 +307,7 @@
             <column defaultValueBoolean="false" name="precise" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+            <column name="display_precision" type="int" />
         </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-15">

@@ -7519,5 +7519,11 @@
 			<column name="code"/>
 		</createIndex>
 	</changeSet>
+	<changeSet id="20131023-TRUNK-3903" author="k-joseph">
+		<comment>Adding "display_precision" column to concept_numeric table</comment>
+		<addColumn tableName="concept_numeric">
+			<column name="display_precision" type="int" />
+		</addColumn>
+	</changeSet>
 
 </databaseChangeLog>

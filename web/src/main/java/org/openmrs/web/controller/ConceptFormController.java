@@ -426,6 +426,8 @@ public class ConceptFormController extends SimpleFormController {
 		
 		public boolean precise = false;
 		
+		public Integer displayPrecision;
+		
 		public String units;
 		
 		public String handlerKey;
@@ -1031,6 +1033,14 @@ public class ConceptFormController extends SimpleFormController {
 		public void setConceptDrugList(List<Drug> conceptDrugList) {
 			this.conceptDrugList = conceptDrugList;
 		}
+		
+        public Integer getDisplayPrecision() {
+        	return displayPrecision;
+        }
+        
+        public void setDisplayPrecision(Integer displayPrecision) {
+        	this.displayPrecision = displayPrecision;
+        }
 	}
 	
 }
