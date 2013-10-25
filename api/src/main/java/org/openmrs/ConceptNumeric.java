@@ -42,6 +42,10 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	
 	private Boolean precise = false;
 	
+	/**
+	 * displayPrecision, represents the number of significant digits
+	 * to be used for display of a numeric value
+	 */
 	private Integer displayPrecision;
 	
 	// Constructors
@@ -212,10 +216,16 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		return (getDatatype().getName().equals("Numeric"));
 	}
 	
+	/**
+	 * @return displayPrecision to be used for the display of a numeric value
+	 */
 	public Integer getDisplayPrecision() {
 		return displayPrecision;
 	}
 	
+	/**
+	 * @param displayPrecision, sets displayPrecision to be used for the display of a numeric value
+	 */
 	public void setDisplayPrecision(Integer displayPrecision) {
 		this.displayPrecision = displayPrecision;
 	}
