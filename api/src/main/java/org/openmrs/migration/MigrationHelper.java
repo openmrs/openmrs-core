@@ -86,6 +86,7 @@ public class MigrationHelper {
 		try {
 			// Disable resolution of external entities. See TRUNK-3942 
 			builder.setEntityResolver(new EntityResolver() {
+				
 				public InputSource resolveEntity(String publicId, String systemId) {
 					return new InputSource(new StringReader(""));
 				}

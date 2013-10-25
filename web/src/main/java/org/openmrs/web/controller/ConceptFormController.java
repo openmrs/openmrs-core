@@ -1034,13 +1034,13 @@ public class ConceptFormController extends SimpleFormController {
 			this.conceptDrugList = conceptDrugList;
 		}
 		
-        public Integer getDisplayPrecision() {
-        	return displayPrecision;
-        }
-        
-        public void setDisplayPrecision(Integer displayPrecision) {
-        	this.displayPrecision = displayPrecision;
-        }
+		public Integer getDisplayPrecision() {
+			return displayPrecision;
+		}
+		
+		public void setDisplayPrecision(Integer displayPrecision) {
+			this.displayPrecision = displayPrecision;
+		}
 	}
 	
 }
