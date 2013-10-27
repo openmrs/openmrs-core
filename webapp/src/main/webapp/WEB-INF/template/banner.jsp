@@ -2,7 +2,7 @@
 	xmlns:jsp="http://java.sun.com/JSP/Page"
 	xmlns:spring="http://www.springframework.org/tags"
 	xmlns:openmrs="urn:jsptld:/WEB-INF/taglibs/openmrs.tld">
-<a href="<spring:theme code="url.organization" />">
+<a href="<%= request.getContextPath() %><spring:theme code="url.homepage" />">
   <div id="logosmall"><img src="<%= request.getContextPath() %><spring:theme code="image.logo.text.small" />" alt="OpenMRS Logo" border="0"/></div>
 </a>  
 <table id="bannerbar">
