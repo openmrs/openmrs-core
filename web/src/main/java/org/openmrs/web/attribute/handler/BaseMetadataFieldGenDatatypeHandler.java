@@ -23,7 +23,7 @@ import org.openmrs.customdatatype.SerializingCustomDatatype;
  * 
  * @since 1.10
  */
-public abstract class BaseMetadataFieldGenDatatypeHandler<T extends OpenmrsMetadata> implements FieldGenDatatypeHandler<SerializingCustomDatatype<T>, T> {
+public abstract class BaseMetadataFieldGenDatatypeHandler<T extends BaseOpenmrsFieldGenDatatypeHandler> implements FieldGenDatatypeHandler<SerializingCustomDatatype<T>, T> {
 	
 	/**
 	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtmlSummary(org.openmrs.customdatatype.CustomDatatype,
@@ -31,8 +31,7 @@ public abstract class BaseMetadataFieldGenDatatypeHandler<T extends OpenmrsMetad
 	 */
 	@Override
 	public CustomDatatype.Summary toHtmlSummary(CustomDatatype<T> datatype, String valueReference) {
-		SerializingCustomDatatype<T> dt = (SerializingCustomDatatype<T>) datatype;
-		return new CustomDatatype.Summary(dt.deserialize(valueReference).getName(), true);
+		return toHtmlSummary(datatype, valueReference);
 	}
 	
 	/**
@@ -42,11 +41,8 @@ public abstract class BaseMetadataFieldGenDatatypeHandler<T extends OpenmrsMetad
 	@Override
 	public String toHtml(CustomDatatype<T> datatype, String valueReference) {
 		SerializingCustomDatatype<T> dt = (SerializingCustomDatatype<T>) datatype;
-		String result = dt.deserialize(valueReference).getName();
+		String result = ((OpenmrsMetadata) dt.deserialize(valueReference)).getName();
 		
-		if (StringUtils.isBlank(result)) {
-			toString();
-		}
 		return result;
 	}
 }
