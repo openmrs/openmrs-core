@@ -882,6 +882,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED = "EncounterType.encounterTypes.locked";
 	
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED = "PatientIdentifierType.patientIdentifierTypes.locked";
+	
 	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
 	        + "    <nameMappings class=\"properties\">\n"
 	        + "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
@@ -1489,6 +1491,10 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED, "false",
 		        "saving, retiring or deleting an Encounter Type is not permitted, if true", BooleanDatatype.class, null));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED, "false",
+		        "saving, retiring or unretiring and deleting a patient_identifier_type is restricted, if true",
+		        BooleanDatatype.class, null));
 		
 		props
 		        .add(new GlobalProperty(
