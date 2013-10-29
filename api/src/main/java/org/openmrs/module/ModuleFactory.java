@@ -307,7 +307,7 @@ public class ModuleFactory {
 		try {
 			// Add the privileges necessary for notifySuperUsers
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
-			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
 			
 			// Send an alert to all administrators
 			Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, mod.getName());
@@ -317,7 +317,7 @@ public class ModuleFactory {
 		}
 		finally {
 			// Remove added privileges
-			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 		}
 	}
@@ -561,10 +561,9 @@ public class ModuleFactory {
 				
 				// check for required modules
 				if (!requiredModulesStarted(module)) {
-					throw new ModuleException("Module " + module.getName()
-					        + " cannot be added because it requires the following module(s): "
-					        + OpenmrsUtil.join(getMissingRequiredModules(module), ", ")
-					        + ". Please add and start these modules first.");
+					String[] params = {module.getName(), OpenmrsUtil.join(getMissingRequiredModules(module), ", ")};
+					String message = Context.getMessageSourceService().getMessage("Module.error.moduleCannotBeAdded", params, Context.getLocale());
+					throw new ModuleException(message);
 				}
 				
 				// fire up the classloader for this module
