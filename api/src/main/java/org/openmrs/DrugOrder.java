@@ -22,6 +22,14 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 72232L;
 	
+	/**
+	 * enum dosingType
+	 * @since 1.10
+	 */
+	public enum DosingType {
+		SIMPLE, FREE_TEXT;
+	}
+	
 	// Fields
 	
 	private Double dose;
@@ -34,13 +42,13 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private Boolean asNeeded = false;
 	
-	private Boolean complex = false;
-	
 	private Integer quantity;
 	
 	private Drug drug;
 	
 	private String asNeededCondition;
+	
+	private DosingType dosingType = DosingType.SIMPLE;
 	
 	// Constructors
 	
@@ -71,9 +79,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.frequency = getFrequency();
 		target.asNeeded = getAsNeeded();
 		target.asNeededCondition = getAsNeededCondition();
-		target.complex = getComplex();
 		target.quantity = getQuantity();
 		target.drug = getDrug();
+		target.dosingType = getDosingType();
 		return target;
 	}
 	
@@ -159,18 +167,26 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * Gets whether this drug is complex
 	 * 
 	 * @return Boolean
+	 * @deprecated use {@link #getDosingType()}
 	 */
+	@Deprecated
 	public Boolean getComplex() {
-		return this.complex;
+		return this.dosingType != DosingType.SIMPLE;
 	}
 	
 	/**
 	 * Sets whether this drug is complex
 	 * 
 	 * @param complex
+	 * @deprecated use {@link #setComplex(Boolean)}
 	 */
+	@Deprecated
 	public void setComplex(Boolean complex) {
-		this.complex = complex;
+		if (complex) {
+			setDosingType(DosingType.FREE_TEXT);
+		} else {
+			setDosingType(DosingType.SIMPLE);
+		}
 	}
 	
 	/**
@@ -239,6 +255,24 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	public Double getDose() {
 		return dose;
+	}
+	
+	/**
+	 * Gets the dosingType
+	 * @since 1.10
+	 */
+	public DosingType getDosingType() {
+		return dosingType;
+	}
+	
+	/**
+	 * Sets the dosingType
+	 *
+	 * @param dosingType the DosingType to set
+	 * @since 1.10
+	 */
+	public void setDosingType(DosingType dosingType) {
+		this.dosingType = dosingType;
 	}
 	
 	public String toString() {

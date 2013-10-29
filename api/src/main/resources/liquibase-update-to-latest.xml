@@ -6455,4 +6455,57 @@
         </update>
     </changeSet>
 
+    <changeSet id="201310281153-TRUNK-4123" author="mujir,sushmitharaos">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="previous_order_id"/></not>
+        </preConditions>
+
+        <comment>Adding previous_order_id to orders</comment>
+
+        <addColumn tableName="orders">
+            <column name="previous_order_id" type="int" />
+        </addColumn>
+
+        <addForeignKeyConstraint constraintName="previous_order_id_order_id" baseTableName="orders" baseColumnNames="previous_order_id" referencedTableName="orders" referencedColumnNames="order_id"/>
+    </changeSet>
+
+    <changeSet id="201310281153-TRUNK-4124" author="mujir,sushmitharaos">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="order_action"/></not>
+        </preConditions>
+
+        <comment>Adding order_action to orders and setting order_actions as NEW for existing orders</comment>
+
+        <addColumn tableName="orders">
+            <column name="order_action" type="varchar(50)"/>
+        </addColumn>
+
+        <update tableName="orders">
+            <column name="order_action" value="NEW"/>
+        </update>
+
+        <addNotNullConstraint tableName="orders" columnName="order_action" columnDataType="varchar(50)"/>
+    </changeSet>
+
+    <changeSet id="201311141400-TRUNK-4125" author="arathy">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="drug_order" columnName="dosing_type"/></not>
+        </preConditions>
+
+        <comment>Renaming complex to dosing_type in drug_order</comment>
+
+        <renameColumn tableName="drug_order" oldColumnName="complex" newColumnName="dosing_type" columnDataType="varchar(50)"/>
+
+        <update tableName="drug_order">
+            <column name="dosing_type" value="SIMPLE"/>
+            <where>dosing_type = false </where>
+        </update>
+
+        <update tableName="drug_order">
+            <column name="dosing_type" value="FREE_TEXT"/>
+            <where>dosing_type = true </where>
+        </update>
+
+    </changeSet>
+
 </databaseChangeLog>

@@ -42,6 +42,13 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		ROUTINE, STAT
 	}
 	
+	/**
+	 * @since 1.10
+	 */
+	public enum Action {
+		NEW, REVISE, RENEW, DISCONTINUE
+	}
+	
 	private static final Log log = LogFactory.getLog(Order.class);
 	
 	// Fields
@@ -79,6 +86,18 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private Urgency urgency = Urgency.ROUTINE;
 	
 	private String orderNumber;
+	
+	/**
+	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
+	 * to the original ampicillin order (the D/C gets its own order number)
+	 */
+	private Order previousOrder;
+	
+	/**
+	 * Represents the action being taken on an order.
+	 * @see org.openmrs.Order.Action
+	 */
+	private Action action = Action.NEW;
 	
 	// Constructors
 	
@@ -128,6 +147,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
 		target.setUrgency(getUrgency());
+		target.previousOrder = getPreviousOrder();
+		target.action = getAction();
 		return target;
 	}
 	
@@ -483,5 +504,41 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setOrderNumber(String orderNumber) {
 		this.orderNumber = orderNumber;
+	}
+	
+	/**
+	 * Gets the previous related order.
+	 * @since 1.10
+	 * @return the previous order.
+	 */
+	public Order getPreviousOrder() {
+		return previousOrder;
+	}
+	
+	/**
+	 * Sets the previous order.
+	 * @since 1.10
+	 * @param previousOrder the previous order to set.
+	 */
+	public void setPreviousOrder(Order previousOrder) {
+		this.previousOrder = previousOrder;
+	}
+	
+	/**
+	 * Gets the action
+	 * @return the action
+	 * @since 1.10
+	 */
+	public Action getAction() {
+		return action;
+	}
+	
+	/**
+	 * Sets the ation
+	 * @param action the action to set
+	 * @since 1.10
+	 */
+	public void setAction(Action action) {
+		this.action = action;
 	}
 }
