@@ -286,9 +286,7 @@ public class ModuleFactory {
 			// if we failed to start all the modules, error out
 			if (leftoverModules.size() > 0)
 				for (Module leftoverModule : leftoverModules) {
-					String message = "Unable to start module '" + leftoverModule.getName()
-					        + "'.  All required modules are not available: "
-					        + OpenmrsUtil.join(getMissingRequiredModules(leftoverModule), ", ");
+					String message = getFailedToStartModuleMessage(leftoverModule);
 					log.error(message);
 					leftoverModule.setStartupErrorMessage(message);
 					notifySuperUsersAboutModuleFailure(leftoverModule);
@@ -561,9 +559,7 @@ public class ModuleFactory {
 				
 				// check for required modules
 				if (!requiredModulesStarted(module)) {
-					String[] params = {module.getName(), OpenmrsUtil.join(getMissingRequiredModules(module), ", ")};
-					String message = Context.getMessageSourceService().getMessage("Module.error.moduleCannotBeInstalled", params, Context.getLocale());
-					throw new ModuleException(message);
+					throw new ModuleException(getFailedToStartModuleMessage(module));
 				}
 				
 				// fire up the classloader for this module
@@ -725,6 +721,17 @@ public class ModuleFactory {
 			ModuleUtil.refreshApplicationContext(applicationContext, isOpenmrsStartup, module);
 		
 		return module;
+	}
+	
+	/**
+	 * Gets the error message of a module which fails to start.
+	 * 
+	 * @param module the module that has failed to start.
+	 * @return the message text.
+	 */
+	private static String getFailedToStartModuleMessage(Module module) {
+		String[] params = {module.getName(), OpenmrsUtil.join(getMissingRequiredModules(module), ", ")};
+		return Context.getMessageSourceService().getMessage("Module.error.moduleCannotBeStarted", params, Context.getLocale());
 	}
 	
 	/**
