@@ -14,6 +14,7 @@
 package org.openmrs.api.context;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -23,14 +24,19 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
 import org.openmrs.Location;
+import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
+import org.openmrs.util.Security;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Represents an OpenMRS <code>User Context</code> which stores the current user information. Only
@@ -95,17 +101,177 @@ public class UserContext implements Serializable {
 	 * @param contextDAO ContextDAO implementation to use for authentication
 	 * @return User that has been authenticated
 	 * @throws ContextAuthenticationException
+	 * @throws ContextAuthenticationLockoutException
+	 * @should authenticate given username and password
+	 * @should authenticate given systemId and password
+	 * @should authenticate given systemId without hyphen and password
+	 * @should not authenticate given username and incorrect password
+	 * @should not authenticate given systemId and incorrect password
+	 * @should not authenticate given incorrect username
+	 * @should not authenticate given incorrect systemId
+	 * @should not authenticate given null login
+	 * @should not authenticate given empty login
+	 * @should not authenticate given null password when password in database is null
+	 * @should not authenticate given non null password when password in database is null
+	 * @should not authenticate when password in database is empty
+	 * @should give identical error messages between username and password mismatch
+	 * @should lockout user after specified number of failed attempts
+	 * @should authenticateWithCorrectHashedPassword
+	 * @should authenticateWithIncorrectHashedPassword
+	 * @should set uuid on user property when authentication fails with valid user
+	 * @should pass regression test for 1580
+	 * @should throw a ContextAuthenticationException if username is an empty string
+	 * @should throw a ContextAuthenticationException if username is white space 
 	 */
-	public User authenticate(String username, String password, ContextDAO contextDAO) throws ContextAuthenticationException {
+	@Transactional(noRollbackFor = ContextAuthenticationException.class)
+	public User authenticate(String username, String password, ContextDAO contextDAO) throws ContextAuthenticationException,
+	        ContextAuthenticationLockoutException {
 		if (log.isDebugEnabled())
 			log.debug("Authenticating with username: " + username);
 		
-		this.user = contextDAO.authenticate(username, password);
-		setUserLocation();
-		if (log.isDebugEnabled())
-			log.debug("Authenticated as: " + this.user);
+		String errorMsg = "Invalid username and/or password: " + username;
 		
-		return this.user;
+		User candidateUser = null;
+		
+		if (username != null) {
+			//if username is blank or white space character(s)
+			if (StringUtils.isEmpty(username) || StringUtils.isWhitespace(username))
+				throw new ContextAuthenticationException(errorMsg);
+			
+			// loginWithoutDash is used to compare to the system id
+			String loginWithDash = username;
+			if (username.matches("\\d{2,}"))
+				loginWithDash = username.substring(0, username.length() - 1) + "-" + username.charAt(username.length() - 1);
+			
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+				candidateUser = Context.getUserService().getUserByUsername(username);
+				if (candidateUser == null) {
+					candidateUser = Context.getUserService().getUserByUsername(loginWithDash);
+				}
+				
+				if (candidateUser.getRetired()) {
+					candidateUser = null;
+				}
+			}
+			catch (HibernateException he) {
+				log.error("Got hibernate exception while logging in: '" + username + "'", he);
+			}
+			catch (Exception e) {
+				log.error("Got regular exception while logging in: '" + username + "'", e);
+			}
+			finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+			}
+		}
+		
+		// only continue if this is a valid username and a nonempty password
+		if (candidateUser != null && password != null) {
+			if (log.isDebugEnabled())
+				log.debug("Candidate user id: " + candidateUser.getUserId());
+			
+			String passwordOnRecord = contextDAO.getHashedPassword(candidateUser);
+			String saltOnRecord = contextDAO.getSalt(candidateUser);
+			
+			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
+			Long lockoutTime = null;
+			if (lockoutTimeString != null && !lockoutTimeString.equals("0")) {
+				try {
+					// putting this in a try/catch in case the admin decided to put junk into the property
+					lockoutTime = Long.valueOf(lockoutTimeString);
+				}
+				catch (NumberFormatException e) {
+					log.debug("bad value stored in " + OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP + " user property: "
+					        + lockoutTimeString);
+				}
+			}
+			
+			// if they've been locked out, don't continue with the authentication
+			if (lockoutTime != null) {
+				Integer loginLockoutDuration = 300000; //default 5 mins
+				
+				try {
+					loginLockoutDuration = Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
+					    OpenmrsConstants.GP_LOGIN_LOCKOUT_DURATION).trim());
+				}
+				catch (Exception ex) {
+					log.error("Unable to convert the global property " + OpenmrsConstants.GP_LOGIN_LOCKOUT_DURATION
+					        + " to a valid integer. Using default value of 300000.");
+				}
+				
+				// unlock them after loginLockoutDuration ms, otherwise reset the timestamp
+				// to now and make them wait another loginLockoutDuration ms
+				if (System.currentTimeMillis() - lockoutTime > loginLockoutDuration) {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
+					saveUser(candidateUser);
+				} else {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
+					        .currentTimeMillis()));
+					throw new ContextAuthenticationLockoutException(
+					        "Invalid number of connection attempts. Please try again later.");
+				}
+			}
+			
+			// if the username and password match, hydrate the user and return it
+			if (passwordOnRecord != null && Security.hashMatches(passwordOnRecord, password + saltOnRecord)) {
+				// hydrate the user object
+				candidateUser.getAllRoles().size();
+				candidateUser.getUserProperties().size();
+				candidateUser.getPrivileges().size();
+				
+				// only clean up if the were some login failures, otherwise all should be clean
+				Integer attempts = getUsersLoginAttempts(candidateUser);
+				if (attempts > 0) {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
+					saveUser(candidateUser);
+				}
+				
+				setUserLocation();
+				
+				this.user = candidateUser;
+				if (log.isDebugEnabled())
+					log.debug("Authenticated as: " + this.user);
+				
+				// skip out of the method early (instead of throwing the exception)
+				// to indicate that this is the valid user					
+				return candidateUser;
+			} else {
+				// the user failed the username/password, increment their
+				// attempts here and set the "lockout" timestamp if necessary
+				Integer attempts = getUsersLoginAttempts(candidateUser);
+				
+				attempts++;
+				
+				Integer allowedFailedLoginCount = 7;
+				
+				try {
+					allowedFailedLoginCount = Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
+					    OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
+				}
+				catch (Exception ex) {
+					log.error("Unable to convert the global property "
+					        + OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT
+					        + " to a valid integer. Using default value of 7.");
+				}
+				
+				if (attempts > allowedFailedLoginCount) {
+					// set the user as locked out at this exact time
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
+					        .currentTimeMillis()));
+				} else {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
+				}
+				
+				saveUser(candidateUser);
+			}
+		}
+		
+		// throw this exception only once in the same place with the same
+		// message regardless of username/pw combo entered
+		log.info("Failed login attempt (login=" + username + ") - " + errorMsg);
+		throw new ContextAuthenticationException(errorMsg);
 	}
 	
 	/**
@@ -426,5 +592,68 @@ public class UserContext implements Serializable {
 					this.locationId = null;
 			}
 		}
+	}
+	
+	/**
+	 * Get the integer stored for the given user that is their number of login attempts
+	 * 
+	 * @param user the user to check
+	 * @return the # of login attempts for this user defaulting to zero if none defined
+	 */
+	private Integer getUsersLoginAttempts(User user) {
+		String attemptsString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+		Integer attempts = 0;
+		try {
+			attempts = Integer.valueOf(attemptsString);
+		}
+		catch (NumberFormatException e) {
+			// skip over errors and leave the attempts at zero
+		}
+		return attempts;
+	}
+	
+	/**
+	 * Calls UserService saveUser with all required proxy privileges.
+	 * @param user User object to be saved.
+	 * @return Saved user object.
+	 */
+	private User saveUser(User user) {
+		if (user == null) {
+			return user;
+		}
+		
+		Collection<Role> roles = user.getAllRoles();
+		List<String> requiredPrivs = new Vector<String>();
+		
+		for (Role r : roles) {
+			if (r.getPrivileges() != null) {
+				for (Privilege p : r.getPrivileges())
+					requiredPrivs.add(p.getPrivilege());
+			}
+		}
+		
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE);
+			for (String s : requiredPrivs) {
+				Context.addProxyPrivilege(s);
+			}
+			user = Context.getUserService().saveUser(user, null);
+		}
+		catch (HibernateException he) {
+			log.error("Got hibernate exception while logging in: '" + user.getUsername() + "'", he);
+		}
+		catch (Exception e) {
+			log.error("Got regular exception while logging in: '" + user.getUsername() + "'", e);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE);
+			for (String s : requiredPrivs) {
+				Context.removeProxyPrivilege(s);
+			}
+		}
+		
+		return user;
 	}
 }

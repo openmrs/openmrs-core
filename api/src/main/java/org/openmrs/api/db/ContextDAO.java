@@ -26,37 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ContextDAO {
 	
 	/**
-	 * Authenticate user with the given username and password.
-	 * 
-	 * @param username user's username or systemId
-	 * @param password user's password
-	 * @return a valid user if authentication succeeds
-	 * @throws ContextAuthenticationException
-	 * @should authenticate given username and password
-	 * @should authenticate given systemId and password
-	 * @should authenticate given systemId without hyphen and password
-	 * @should not authenticate given username and incorrect password
-	 * @should not authenticate given systemId and incorrect password
-	 * @should not authenticate given incorrect username
-	 * @should not authenticate given incorrect systemId
-	 * @should not authenticate given null login
-	 * @should not authenticate given empty login
-	 * @should not authenticate given null password when password in database is null
-	 * @should not authenticate given non null password when password in database is null
-	 * @should not authenticate when password in database is empty
-	 * @should give identical error messages between username and password mismatch
-	 * @should lockout user after eight failed attempts
-	 * @should authenticateWithCorrectHashedPassword
-	 * @should authenticateWithIncorrectHashedPassword
-	 * @should set uuid on user property when authentication fails with valid user
-	 * @should pass regression test for 1580
-	 * @should throw a ContextAuthenticationException if username is an empty string
-	 * @should throw a ContextAuthenticationException if username is white space
-	 */
-	@Transactional(noRollbackFor = ContextAuthenticationException.class)
-	public User authenticate(String username, String password) throws ContextAuthenticationException;
-	
-	/**
 	 * Gets a user given the uuid. Privilege checks are not done here because this is used by the
 	 * {@link Context#getAuthenticatedUser()} method.
 	 * 
@@ -66,6 +35,18 @@ public interface ContextDAO {
 	 */
 	@Transactional(readOnly = true)
 	public User getUserByUuid(String uuid) throws ContextAuthenticationException;
+	
+	/**
+	 * @param user
+	 * @return Hashed password for user.
+	 */
+	public String getHashedPassword(User user);
+	
+	/**
+	 * @param user
+	 * @return Salt for user.
+	 */
+	public String getSalt(User user);
 	
 	/**
 	 * Open session.
