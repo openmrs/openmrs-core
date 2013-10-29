@@ -15,12 +15,15 @@ package org.openmrs;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
  * Tests the {@link ConceptNumeric} object
  */
-public class ConceptNumericTest {
+public class ConceptNumericTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Regression test for TRUNK-82 (old TRAC-1511)
@@ -35,5 +38,47 @@ public class ConceptNumericTest {
 		
 		Assert.assertNotSame(c, cn);
 		Assert.assertNotSame(cn, c);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept concept)}
+	 */
+	@Test
+	@Verifies(value = "should save a new concept numeric with a display precision field", method = "saveConcept(Concept concept)")
+	public void saveConcept_shouldSaveANewConceptNumericWithADisplayPrecisionField() throws Exception {
+		ConceptNumeric conceptNumeric = new ConceptNumeric(6324);
+		Concept c = new Concept();
+		
+		c.addName(new ConceptName("testConceptName", Context.getLocale()));
+		
+		conceptNumeric.setDatatype(Context.getConceptService().getConceptDatatype(1));
+		conceptNumeric.setDisplayPrecision(32);
+		conceptNumeric.setNames(c.getNames());
+		
+		ConceptService conceptService = Context.getConceptService();
+		
+		conceptService.saveConcept(conceptNumeric);
+		
+		Assert.assertNotNull(conceptService.getConceptNumeric(6324).getDisplayPrecision());
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept concept)}
+	 */
+	@Test
+	@Verifies(value = "should update an existing concept numeric with a display precision field", method = "saveConcept(Concept concept)")
+	public void saveConcept_shouldUpDateAnExisitingConceptNumericWithADisplayPrecisionField() throws Exception {
+		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(5089);
+		ConceptService conceptService = Context.getConceptService();
+		int oldDisplayPrecision = conceptService.getConceptNumeric(5089).getDisplayPrecision();
+		
+		conceptNumeric.setDisplayPrecision(33);
+		
+		conceptService.saveConcept(conceptNumeric);
+		
+		int newDisplayPrecision = conceptService.getConceptNumeric(5089).getDisplayPrecision();
+		
+		Assert.assertNotNull(newDisplayPrecision);
+		Assert.assertNotEquals(newDisplayPrecision, oldDisplayPrecision);
 	}
 }
