@@ -58,7 +58,7 @@ $j(function() {
 				</tr>
 				<c:forEach var="resource" items="${ resources }" varStatus="status">
 					<tr valign="top" class="${status.index % 2 == 0 ? "evenRow" : "oddRow"}">
-						<td>${ resource.name }</td>
+						<td><c:out value="${resource.name}"/></td>
 						<td><openmrs:message code="${ resource.datatypeClassname }.name"/></td>
 						<td><openmrs:format singleCustomValue="${ resource }"/></td>
 						<td>

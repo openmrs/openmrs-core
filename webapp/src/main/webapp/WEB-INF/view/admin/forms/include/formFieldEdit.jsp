@@ -26,7 +26,7 @@
 		<td>
 			<select id="fieldType" onChange="chooseFieldType(this.value)" onKeyUp="chooseFieldType(this.value)">
 				<c:forEach items="${fieldTypes}" var="ft">
-					<option value="${ft.fieldTypeId}">${ft.name}</option>
+					<option value="${ft.fieldTypeId}"><c:out value="${ft.name}"/></option>
 				</c:forEach>
 			</select>
 		</td>

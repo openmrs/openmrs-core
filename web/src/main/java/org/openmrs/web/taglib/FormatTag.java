@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.logging.Log;
@@ -335,7 +336,8 @@ public class FormatTag extends TagSupport {
 	 * @param form
 	 */
 	private void printForm(StringBuilder sb, Form form) {
-		sb.append(form.getName() + " (v" + form.getVersion() + ")");
+		String name = StringEscapeUtils.escapeHtml(form.getName());
+		sb.append(name + " (v" + form.getVersion() + ")");
 	}
 	
 	/**
