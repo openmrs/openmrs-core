@@ -562,7 +562,7 @@ public class ModuleFactory {
 				// check for required modules
 				if (!requiredModulesStarted(module)) {
 					String[] params = {module.getName(), OpenmrsUtil.join(getMissingRequiredModules(module), ", ")};
-					String message = Context.getMessageSourceService().getMessage("Module.error.moduleCannotBeAdded", params, Context.getLocale());
+					String message = Context.getMessageSourceService().getMessage("Module.error.moduleCannotBeInstalled", params, Context.getLocale());
 					throw new ModuleException(message);
 				}
 				
