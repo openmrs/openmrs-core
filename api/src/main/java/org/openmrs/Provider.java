@@ -125,6 +125,13 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	}
 	
 	/**
+	 * @see Person#getPersonName()
+	 */
+	public PersonName getPersonName() {
+		return getPerson() == null ? null : getPerson().getPersonName();
+	}
+	
+	/**
 	 * @see org.openmrs.BaseOpenmrsMetadata#setName(java.lang.String)
 	 */
 	@Override

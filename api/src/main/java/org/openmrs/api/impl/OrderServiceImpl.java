@@ -13,14 +13,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -42,6 +34,14 @@ import org.openmrs.order.DrugOrderSupport;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.RegimenSuggestion;
 import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
