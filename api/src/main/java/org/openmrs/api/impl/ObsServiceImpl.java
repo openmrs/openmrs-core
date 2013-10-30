@@ -695,6 +695,14 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
+	 * @see org.openmrs.api.ObsService#getObsByAccessionNumber(java.lang.String)
+	 */
+	@Transactional(readOnly = true)
+	public List<Obs> getObsByAccessionNumber(String accessionNumber) throws APIException {
+		return dao.getObsByAccessionNumber(accessionNumber);
+	}
+	
+	/**
 	 * @see org.openmrs.api.ObsService#getObservations(List, Date, Date, boolean)
 	 * @deprecated
 	 */

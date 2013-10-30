@@ -800,6 +800,18 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ObsService#getObsByAccessionNumber(String)
+	 */
+	@Test
+	@Verifies(value = "should get list of obs by their accession number", method = "getObs(Integer)")
+	public void getObs_shouldGetListOfObsByTheirAccessionNumber() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obsList = obsService.getObsByAccessionNumber("1234");
+		Assert.assertEquals(obsList.size(), 3);
+	}
+	
+	/**
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 */
 	@Test

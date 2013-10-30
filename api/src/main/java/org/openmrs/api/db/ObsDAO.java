@@ -105,4 +105,10 @@ public interface ObsDAO {
 	 */
 	public Obs getObsByUuid(String uuid);
 	
+	/**
+	 * @param accessionNumber
+	 * @return List<Obs>
+	 */
+	public List<Obs> getObsByAccessionNumber(String accessionNumber);
+	
 }
