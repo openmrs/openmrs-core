@@ -16,6 +16,14 @@
 		idTypeLocationRequired[${idType.patientIdentifierTypeId}] = ${idType.locationBehavior == null || idType.locationBehavior == "REQUIRED"};
 	</c:forEach>
 	
+	
+	function showError(errorName) {
+		document.getElementById(errorName).style.display = "";
+		} 
+		
+	function hideError(errorName) {
+		document.getElementById(errorName).style.display = "none";
+		} 
 	function addIdentifier(initialIdentifierSize) {
 		var index = initialIdentifierSize+numberOfClonedElements;
 		var tbody = document.getElementById('identifiersTbody');
@@ -106,7 +114,7 @@
 	// age function borrowed from http://anotherdan.com/2006/02/simple-javascript-age-function/
 	function getAge(d, now) {
 		var age = -1;
-		if (typeof(now) == 'undefined') now = new Date();
+		if (typeof(now) == 'undefined') now = new Date();		
 		while (now >= d) {
 			age++;
 			d.setFullYear(d.getFullYear() + 1);
@@ -199,6 +207,27 @@
 			$j('#'+location + '_NA').show();
 		}
 	}
+	
+	function checkDate(){
+		hideError('birthdateError');
+		var birthdateBox = document.getElementById('birthdate');
+		var ageBox = document.getElementById('age');
+		try {
+			var birthdate = parseSimpleDate(birthdateBox.value, '<openmrs:datePattern />');
+			var age = getAge(birthdate);
+			if(age==-1||age>150||age<0){
+				showError('birthdateError');
+				return false;	
+			}else {
+				 hideError('birthdateError');
+			}
+			ageBox.style.display = "";
+		} catch (err) {
+			ageBox.innerHTML = "";
+			ageBox.style.display = "none";
+		}
+		removeHiddenRows();
+	}
 </script>
 
 <style>
@@ -229,7 +258,7 @@
 	</div>
 </spring:hasBindErrors>
 
-<form:form method="post" action="shortPatientForm.form" onsubmit="removeHiddenRows()" modelAttribute="patientModel">
+<form:form method="post" action="shortPatientForm.form" onsubmit="return checkDate();" modelAttribute="patientModel">
 	<c:if test="${patientModel.patient.patientId == null}"><h2><openmrs:message code="Patient.create"/></h2></c:if>
 	<c:if test="${patientModel.patient.patientId != null}"><h2><openmrs:message code="Patient.edit"/></h2></c:if>
 
@@ -409,6 +438,7 @@
 									value="${status.value}"
 									onChange="updateAge(); updateEstimated(this);"
 									onfocus="showCalendar(this,60)" />
+									<span id="birthdateError" class="error" style="display: none;">Please select a valid birthdate or age</span>
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 						</spring:bind>
 						

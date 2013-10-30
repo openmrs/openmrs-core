@@ -9,6 +9,13 @@
 <script type="text/javascript">
 
 window.onload = init;
+function showError(errorName) {
+	document.getElementById(errorName).style.display = "";
+	} 
+	
+function hideError(errorName) {
+	document.getElementById(errorName).style.display = "none";
+	} 
 
 function init() {
 	var sections = new Array();
@@ -116,6 +123,20 @@ function containsError(element) {
 	return false;
 }
 
+function checkEmail() { 
+	
+	var email=document.getElementById('emailId').value;
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if(re.test(email)){
+    	 hideError('emailError');
+    	return true;
+    }else {
+    	showError('emailError');
+        return false;
+    }
+    
+} 
+
 </script>
 
 <h2><openmrs:message code="options.title" /></h2>
@@ -130,7 +151,7 @@ function containsError(element) {
 	<br />
 </spring:hasBindErrors>
 
-<form method="post">
+<form method="post" onsubmit="return checkEmail();" >
 
 <div id="optionsForm">
 <fieldset><legend><openmrs:message code="options.default.legend" /></legend>
@@ -344,7 +365,7 @@ function containsError(element) {
 		<td><openmrs:message code="options.notify.notificationAddress" /></td>
 		<td>
 			<spring:bind path="opts.notificationAddress">
-				<input type="text" name="${status.expression}" value="${status.value}" size="35"/>
+				<input type="text" name="${status.expression}" value="${status.value}" id="emailId" size="35"/> <span id="emailError"   style="background-color: lightpink;display: none;">Please valid email.</span>
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
