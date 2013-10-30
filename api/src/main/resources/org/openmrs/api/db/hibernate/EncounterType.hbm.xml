@@ -14,7 +14,7 @@
 		<discriminator column="encounter_type_id" insert="false" />
 		
 		<property name="name" type="java.lang.String"
-			not-null="true" length="50" />
+			not-null="true" length="50" unique="true" />
 		<property name="description" type="java.lang.String" length="1024" />
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />

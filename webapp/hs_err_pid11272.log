@@ -1,0 +1,205 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x0258fbee, pid=11272, tid=11092
+#
+# JRE version: 6.0_29-b11
+# Java VM: Java HotSpot(TM) Client VM (20.4-b02 mixed mode windows-x86 )
+# Problematic frame:
+# j  sun.misc.Signal$1.<init>(Lsun/misc/SignalHandler;Lsun/misc/Signal;)V+0
+#
+# If you would like to submit a bug report, please visit:
+#   http://java.sun.com/webapps/bugreport/crash.jsp
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x02549c00):  JavaThread "Signal Dispatcher" daemon [_thread_in_Java, id=11092, stack(0x28940000,0x28990000)]
+
+siginfo: ExceptionCode=0xc0000005, reading address 0x286ceab4
+
+Registers:
+EAX=0x0f0a3350, EBX=0x000000b5, ECX=0x285ff9a0, EDX=0x00033c40
+ESP=0x2898f9ac, EBP=0x2898f9d4, ESI=0x285ff6c2, EDI=0x2898f9e4
+EIP=0x0258fbee, EFLAGS=0x00010202
+
+Top of Stack: (sp=0x2898f9ac)
+0x2898f9ac:   0f0a3350 04600000 2898f9b4 285ff6c0
+0x2898f9bc:   2898f9e4 285ff9a0 00000000 285ff6d8
+0x2898f9cc:   00000000 2898f9dc 2898fa0c 02582e21
+0x2898f9dc:   0f0beb00 0f0a3350 04600000 04600000
+0x2898f9ec:   2898f9ec 2472cc53 2898fa20 2472d0e8
+0x2898f9fc:   00000000 2472cc88 2898f9dc 2898fa20
+0x2898fa0c:   2898fa40 02580364 00000000 0f0a3350
+0x2898fa1c:   0f0beb00 00000002 2898fa74 2898fa50 
+
+Instructions: (pc=0x0258fbee)
+0x0258fbce:   dd 1c 24 e9 0e 00 00 00 52 50 e9 07 00 00 00 50
+0x0258fbde:   e9 01 00 00 00 50 0f b7 56 01 8b 4d ec c1 e2 02
+0x0258fbee:   8b 5c 91 14 c1 eb 18 81 e3 ff 00 00 00 81 fb b5
+0x0258fbfe:   00 00 00 0f 84 69 00 00 00 bb b5 00 00 00 e8 05 
+
+
+Register to memory mapping:
+
+EAX=0x0f0a3350 is an oop
+java.lang.Terminator$1 
+ - klass: 'java/lang/Terminator$1'
+EBX=0x000000b5 is an unknown value
+ECX=0x285ff9a0 is an oop
+{constant pool cache} 
+ - klass: {other class}
+EDX=0x00033c40 is an unknown value
+ESP=0x2898f9ac is pointing into the stack for thread: 0x02549c00
+EBP=0x2898f9d4 is pointing into the stack for thread: 0x02549c00
+ESI=0x285ff6c2 is an oop
+{constMethod} 
+ - klass: {other class}
+ - method:       0x285ff6d8 {method} '<init>' '(Lsun/misc/SignalHandler;Lsun/misc/Signal;)V' in 'sun/misc/Signal$1'
+ - exceptions:   0x246011e8
+bci_from(285FF6C2) = 2; print_codes():
+EDI=0x2898f9e4 is pointing into the stack for thread: 0x02549c00
+
+
+Stack: [0x28940000,0x28990000],  sp=0x2898f9ac,  free space=318k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+j  sun.misc.Signal$1.<init>(Lsun/misc/SignalHandler;Lsun/misc/Signal;)V+0
+j  sun.misc.Signal.dispatch(I)V+35
+v  ~StubRoutines::call_stub
+V  [jvm.dll+0xfac3b]
+V  [jvm.dll+0x18c391]
+V  [jvm.dll+0xfb11c]
+V  [jvm.dll+0x100dd4]
+V  [jvm.dll+0x118f14]
+V  [jvm.dll+0x140fec]
+C  [msvcr71.dll+0x9565]  endthreadex+0xa0
+C  [kernel32.dll+0x13677]  BaseThreadInitThunk+0x12
+C  [ntdll.dll+0x39d72]  RtlInitializeExceptionChain+0x63
+C  [ntdll.dll+0x39d45]  RtlInitializeExceptionChain+0x36
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x28c47800 JavaThread "btpool0-13" [_thread_blocked, id=14428, stack(0x2b340000,0x2b390000)]
+  0x28c49800 JavaThread "btpool0-12" [_thread_blocked, id=15168, stack(0x2b2b0000,0x2b300000)]
+  0x28c49000 JavaThread "btpool0-11" [_thread_blocked, id=14176, stack(0x2b220000,0x2b270000)]
+  0x28c46000 JavaThread "btpool0-10" [_thread_blocked, id=13500, stack(0x2b190000,0x2b1e0000)]
+  0x28c47400 JavaThread "btpool0-9" [_thread_blocked, id=11524, stack(0x292a0000,0x292f0000)]
+  0x28c4a000 JavaThread "MySQL Statement Cancellation Timer" daemon [_thread_blocked, id=7580, stack(0x2b070000,0x2b0c0000)]
+  0x28c48c00 JavaThread "Thread-56" daemon [_thread_blocked, id=14364, stack(0x2af00000,0x2af50000)]
+  0x29753400 JavaThread "btpool0-4" [_thread_blocked, id=8524, stack(0x2b460000,0x2b4b0000)]
+  0x28bd6c00 JavaThread "Timer-1" daemon [_thread_blocked, id=11776, stack(0x2b100000,0x2b150000)]
+  0x29df4c00 JavaThread "Thread-9" daemon [_thread_blocked, id=12720, stack(0x2af90000,0x2afe0000)]
+  0x28c03800 JavaThread "btpool0-1 - Acceptor0 SelectChannelConnector@0.0.0.0:8080" [_thread_in_native, id=7860, stack(0x29370000,0x293c0000)]
+  0x28c93400 JavaThread "com.google.inject.internal.util.$Finalizer" daemon [_thread_blocked, id=10376, stack(0x29210000,0x29260000)]
+  0x02552000 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=12784, stack(0x28af0000,0x28b40000)]
+  0x0254dc00 JavaThread "C1 CompilerThread0" daemon [_thread_blocked, id=13012, stack(0x28a60000,0x28ab0000)]
+  0x0254cc00 JavaThread "Attach Listener" daemon [_thread_blocked, id=7056, stack(0x289d0000,0x28a20000)]
+=>0x02549c00 JavaThread "Signal Dispatcher" daemon [_thread_in_Java, id=11092, stack(0x28940000,0x28990000)]
+  0x0251a800 JavaThread "Finalizer" daemon [_thread_blocked, id=1656, stack(0x288b0000,0x28900000)]
+  0x02519000 JavaThread "Reference Handler" daemon [_thread_blocked, id=3172, stack(0x28820000,0x28870000)]
+  0x004d9800 JavaThread "main" [_thread_blocked, id=12956, stack(0x00430000,0x00480000)]
+
+Other Threads:
+  0x02514800 VMThread [stack: 0x007b0000,0x00800000] [id=4108]
+  0x0255c800 WatcherThread [stack: 0x28b80000,0x28bd0000] [id=6224]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ def new generation   total 44928K, used 802K [0x04600000, 0x076b0000, 0x0f0a0000)
+  eden space 40000K,   2% used [0x04600000, 0x046c8810, 0x06d10000)
+  from space 4928K,   0% used [0x06d10000, 0x06d10000, 0x071e0000)
+  to   space 4928K,   0% used [0x071e0000, 0x071e0000, 0x076b0000)
+ tenured generation   total 99528K, used 43945K [0x0f0a0000, 0x151d2000, 0x24600000)
+   the space 99528K,  44% used [0x0f0a0000, 0x11b8a588, 0x11b8a600, 0x151d2000)
+ compacting perm gen  total 65536K, used 65534K [0x24600000, 0x28600000, 0x28600000)
+   the space 65536K,  99% used [0x24600000, 0x285ff9f8, 0x285ffa00, 0x28600000)
+No shared spaces configured.
+
+Code Cache  [0x02580000, 0x03110000, 0x04580000)
+ total_blobs=5066 nmethods=4849 adapters=149 free_code_cache=21475328 largest_free_block=384
+
+Dynamic libraries:
+0x00400000 - 0x00424000 	C:\Program Files (x86)\Java\jdk1.6.0_29\bin\java.exe
+0x77830000 - 0x779b0000 	C:\Windows\SysWOW64\ntdll.dll
+0x759c0000 - 0x75ac0000 	C:\Windows\syswow64\kernel32.dll
+0x75480000 - 0x754c6000 	C:\Windows\syswow64\KERNELBASE.dll
+0x76140000 - 0x761e0000 	C:\Windows\syswow64\ADVAPI32.dll
+0x754d0000 - 0x7557c000 	C:\Windows\syswow64\msvcrt.dll
+0x75990000 - 0x759a9000 	C:\Windows\SysWOW64\sechost.dll
+0x75eb0000 - 0x75fa0000 	C:\Windows\syswow64\RPCRT4.dll
+0x753a0000 - 0x75400000 	C:\Windows\syswow64\SspiCli.dll
+0x75390000 - 0x7539c000 	C:\Windows\syswow64\CRYPTBASE.dll
+0x7c340000 - 0x7c396000 	C:\Program Files (x86)\Java\jdk1.6.0_29\jre\bin\msvcr71.dll
+0x6d8a0000 - 0x6db4f000 	C:\Program Files (x86)\Java\jdk1.6.0_29\jre\bin\client\jvm.dll
+0x75fa0000 - 0x760a0000 	C:\Windows\syswow64\USER32.dll
+0x75610000 - 0x756a0000 	C:\Windows\syswow64\GDI32.dll
+0x76130000 - 0x7613a000 	C:\Windows\syswow64\LPK.dll
+0x75e10000 - 0x75ead000 	C:\Windows\syswow64\USP10.dll
+0x736e0000 - 0x73712000 	C:\Windows\system32\WINMM.dll
+0x75400000 - 0x75460000 	C:\Windows\system32\IMM32.DLL
+0x758b0000 - 0x7597c000 	C:\Windows\syswow64\MSCTF.dll
+0x73820000 - 0x7386b000 	C:\Windows\system32\apphelp.dll
+0x6d850000 - 0x6d85c000 	C:\Program Files (x86)\Java\jdk1.6.0_29\jre\bin\verify.dll
+0x6d3d0000 - 0x6d3ef000 	C:\Program Files (x86)\Java\jdk1.6.0_29\jre\bin\java.dll
+0x6d890000 - 0x6d89f000 	C:\Program Files (x86)\Java\jdk1.6.0_29\jre\bin\zip.dll
+0x6d6b0000 - 0x6d6c3000 	C:\Program Files (x86)\Java\jdk1.6.0_29\jre\bin\net.dll
+0x756e0000 - 0x75715000 	C:\Windows\syswow64\WS2_32.dll
+0x756d0000 - 0x756d6000 	C:\Windows\syswow64\NSI.dll
+0x73740000 - 0x7377c000 	C:\Windows\system32\mswsock.dll
+0x73720000 - 0x73726000 	C:\Windows\System32\wship6.dll
+0x6d6d0000 - 0x6d6d9000 	C:\Program Files (x86)\Java\jdk1.6.0_29\jre\bin\nio.dll
+0x73910000 - 0x73926000 	C:\Windows\system32\CRYPTSP.dll
+0x738d0000 - 0x7390b000 	C:\Windows\system32\rsaenh.dll
+0x73940000 - 0x73957000 	C:\Windows\system32\USERENV.dll
+0x73930000 - 0x7393b000 	C:\Windows\system32\profapi.dll
+0x736d0000 - 0x736e0000 	C:\Windows\system32\NLAapi.dll
+0x735d0000 - 0x73614000 	C:\Windows\system32\DNSAPI.dll
+0x735a0000 - 0x735a8000 	C:\Windows\System32\winrnr.dll
+0x73560000 - 0x73570000 	C:\Windows\system32\napinsp.dll
+0x73540000 - 0x73552000 	C:\Windows\system32\pnrpnsp.dll
+0x73530000 - 0x7353d000 	C:\Windows\system32\wshbth.dll
+0x73730000 - 0x73735000 	C:\Windows\System32\wshtcpip.dll
+0x735b0000 - 0x735cc000 	C:\Windows\system32\IPHLPAPI.DLL
+0x73520000 - 0x73527000 	C:\Windows\system32\WINNSI.DLL
+0x74d30000 - 0x74d36000 	C:\Windows\system32\rasadhlp.dll
+0x74d40000 - 0x74d78000 	C:\Windows\System32\fwpuclnt.dll
+0x6d0b0000 - 0x6d1fc000 	C:\Program Files (x86)\Java\jdk1.6.0_29\jre\bin\awt.dll
+0x73870000 - 0x738c1000 	C:\Windows\system32\WINSPOOL.DRV
+0x761e0000 - 0x7633c000 	C:\Windows\syswow64\ole32.dll
+0x72e60000 - 0x72ffe000 	C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.7600.16385_none_421189da2b7fabfc\COMCTL32.dll
+0x773a0000 - 0x773f7000 	C:\Windows\syswow64\SHLWAPI.dll
+0x6d600000 - 0x6d609000 	C:\Program Files (x86)\Java\jdk1.6.0_29\jre\bin\management.dll
+0x77800000 - 0x77805000 	C:\Windows\system32\PSAPI.DLL
+
+VM Arguments:
+jvm_args: -Xmx512m -Dclassworlds.conf=E:\apache-maven-3.0.3-bin\apache-maven-3.0.3\bin\..\bin\m2.conf -Dmaven.home=E:\apache-maven-3.0.3-bin\apache-maven-3.0.3\bin\.. 
+java_command: org.codehaus.plexus.classworlds.launcher.Launcher jetty:run
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=C:\Program Files (x86)\Java\jdk1.6.0_29
+PATH=E:\app\HP\product\11.2.0\dbhome_1\bin;C:\Program Files (x86)\PHP\;C:\Program Files\Broadcom\Broadcom 802.11\Driver;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\ATI Technologies\ATI.ACE\Core-Static;C:\Program Files (x86)\Common Files\Acronis\SnapAPI\;C:\Program Files (x86)\Java\jdk1.6.0_29\bin;C:\Program Files (x86)\MySQL\MySQL Server 5.1\bin;E:\apache-maven-3.0.3-bin\apache-maven-3.0.3\bin;E:\apache-ant-1.8.2\bin;C:\Program Files\TortoiseSVN\bin;C:\Program Files\SlikSvn\bin;E:\spring-roo-1.2.1.RELEASE\bin;C:\Program Files\R\R-2.15.2\bin\i386;C:\Program Files (x86)\Git\cmd;C:\MinGW\bin;C:\HashiCorp\Vagrant\bin
+USERNAME=HP
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 7 , 64 bit Build 7600 
+
+CPU:total 4 (2 cores per cpu, 2 threads per core) family 6 model 42 stepping 7, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, ht
+
+Memory: 4k page, physical 4140912k(909420k free), swap 8279928k(2520128k free)
+
+vm_info: Java HotSpot(TM) Client VM (20.4-b02) for windows-x86 JRE (1.6.0_29-b11), built on Oct  3 2011 01:01:08 by "java_re" with MS VC++ 7.1 (VS2003)
+
+time: Thu Aug 22 00:52:07 2013
+elapsed time: 4768 seconds
+
