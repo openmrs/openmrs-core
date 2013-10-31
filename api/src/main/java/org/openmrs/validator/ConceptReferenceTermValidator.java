@@ -90,7 +90,7 @@ public class ConceptReferenceTermValidator implements Validator {
 		ConceptReferenceTerm termWithDuplicateCode = Context.getConceptService().getConceptReferenceTermByCode(code,
 		    conceptReferenceTerm.getConceptSource());
 		if (termWithDuplicateCode != null) {
-			if (!OpenmrsUtil.nullSafeEquals(termWithDuplicateCode.getId(), conceptReferenceTerm.getId())) {
+			if (!OpenmrsUtil.nullSafeEquals(termWithDuplicateCode.getUuid(), conceptReferenceTerm.getUuid())) {
 				errors.rejectValue("code", "ConceptReferenceTerm.duplicate.code",
 				    "Duplicate concept reference term code in its concept source: " + code);
 			}
