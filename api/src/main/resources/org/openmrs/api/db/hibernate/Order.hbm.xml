@@ -97,7 +97,7 @@
 			<property name="units" type="java.lang.String" column="units" length="255"/>
 			<property name="frequency" type="java.lang.String" column="frequency" length="255"/>
 			<property name="prn" type="boolean" column="prn" length="1" not-null="true"/>
-			<property name="complex" type="boolean" column="complex" length="1" not-null="true"/>
+			<property name="structuredDosing" type="boolean" column="structured_dosing" length="1" not-null="true"/>
 			<property name="quantity" type="int" column="quantity" length="11"/>
 			<!-- bi-directional many-to-one association to Drug -->
 			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false">

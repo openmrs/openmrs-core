@@ -13,9 +13,6 @@
  */
 package org.openmrs.validator;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.DrugOrder;
@@ -24,6 +21,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Tests methods on the {@link DrugOrderValidator} class.
@@ -53,13 +53,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail validation if complex is null", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfComplexIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setComplex(null);
+		order.setStructuredDosing(null);
 		order.setDrug(Context.getConceptService().getDrug(3));
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("complex"));
+		Assert.assertTrue(errors.hasFieldErrors("structuredDosing"));
 	}
 	
 	/**

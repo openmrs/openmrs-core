@@ -15,7 +15,7 @@ package org.openmrs;
 
 /**
  * DrugOrder
- * 
+ *
  * @version 1.0
  */
 public class DrugOrder extends Order implements java.io.Serializable {
@@ -33,19 +33,28 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	private String frequency;
 	
 	private Boolean prn = false;
-	
+
+    /**
+     * @deprecated use {@link #structuredDosing}
+     */
+    @Deprecated
 	private Boolean complex = false;
 	
 	private Integer quantity;
-	
+
 	private Drug drug;
 	
+	/**
+	 * @since 1.10
+	 */
+	private Boolean structuredDosing = true;
+
 	// Constructors
 	
 	/** default constructor */
 	public DrugOrder() {
 	}
-	
+
 	/** constructor with id */
 	public DrugOrder(Integer orderId) {
 		this.setOrderId(orderId);
@@ -68,7 +77,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.units = getUnits();
 		target.frequency = getFrequency();
 		target.prn = getPrn();
-		target.complex = getComplex();
+		target.structuredDosing = getStructuredDosing();
 		target.quantity = getQuantity();
 		target.drug = getDrug();
 		return target;
@@ -82,7 +91,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the units of this drug order
-	 * 
+	 *
 	 * @return units
 	 */
 	public String getUnits() {
@@ -91,7 +100,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the units of this drug order
-	 * 
+	 *
 	 * @param units
 	 */
 	public void setUnits(String units) {
@@ -100,7 +109,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the frequency
-	 * 
+	 *
 	 * @return frequency
 	 */
 	public String getFrequency() {
@@ -109,7 +118,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the frequency
-	 * 
+	 *
 	 * @param frequency
 	 */
 	public void setFrequency(String frequency) {
@@ -118,7 +127,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Returns true/false whether the drug is a "pro re nata" (as needed) drug
-	 * 
+	 *
 	 * @return Boolean
 	 */
 	public Boolean getPrn() {
@@ -127,7 +136,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the prn
-	 * 
+	 *
 	 * @param prn
 	 */
 	public void setPrn(Boolean prn) {
@@ -136,25 +145,27 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets whether this drug is complex
-	 * 
+	 * @deprecated use {@link #getStructuredDosing()}
 	 * @return Boolean
 	 */
+	@Deprecated
 	public Boolean getComplex() {
 		return this.complex;
 	}
 	
 	/**
 	 * Sets whether this drug is complex
-	 * 
+	 * @deprecated use {@link #setStructuredDosing(Boolean}
 	 * @param complex
 	 */
+	@Deprecated
 	public void setComplex(Boolean complex) {
 		this.complex = complex;
 	}
 	
 	/**
 	 * Gets the quantity
-	 * 
+	 *
 	 * @return quantity
 	 */
 	public Integer getQuantity() {
@@ -163,7 +174,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the quantity
-	 * 
+	 *
 	 * @param quantity
 	 */
 	public void setQuantity(Integer quantity) {
@@ -172,7 +183,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the drug
-	 * 
+	 *
 	 * @return drug
 	 */
 	public Drug getDrug() {
@@ -181,11 +192,30 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the drug
-	 * 
+	 *
 	 * @param drug
 	 */
 	public void setDrug(Drug drug) {
 		this.drug = drug;
+	}
+
+	/**
+	 * Gets the structuredDosing
+	 * @since 1.10
+	 * @return drug
+	 */
+	public Boolean getStructuredDosing() {
+		return structuredDosing;
+	}
+
+	/**
+	 * Sets the structuredDosing
+	 *
+	 * @param structuredDosing
+	 * @since 1.10
+	 */
+	public void setStructuredDosing(Boolean structuredDosing) {
+		this.structuredDosing = structuredDosing;
 	}
 	
 	public Double getEquivalentDailyDose() {

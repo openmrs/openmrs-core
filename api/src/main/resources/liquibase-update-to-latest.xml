@@ -6431,4 +6431,13 @@
 
         <addNotNullConstraint tableName="orders" columnName="order_action" columnDataType="varchar(50)"/>
     </changeSet>
+
+    <changeSet id="201310311136-TRUNK-4125" author="sushmitharaos, mujir">
+        <comment>Renaming complex to structured_dosing on drug_order</comment>
+        <renameColumn tableName="drug_order" oldColumnName="complex" newColumnName="structured_dosing" columnDataType="boolean"/>
+
+        <update tableName="drug_order">
+            <column name="structured_dosing" valueNumeric="NOT structured_dosing"/>
+        </update>
+    </changeSet>
 </databaseChangeLog>

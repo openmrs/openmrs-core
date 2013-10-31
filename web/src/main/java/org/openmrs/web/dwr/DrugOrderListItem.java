@@ -120,7 +120,7 @@ public class DrugOrderListItem {
 		units = drugOrder.getUnits();
 		frequency = drugOrder.getFrequency();
 		prn = drugOrder.getPrn();
-		complex = drugOrder.getComplex();
+		complex = drugOrder.getStructuredDosing();
 		quantity = drugOrder.getQuantity();
 		voided = drugOrder.getVoided();
 		if (drugOrder.getVoidedBy() != null)
