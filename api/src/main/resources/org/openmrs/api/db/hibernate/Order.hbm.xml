@@ -33,7 +33,6 @@
             </type>
         </property>
 
-        <property name="orderNumber" type="java.lang.String" column="order_number" length="100" not-null="true"/>
         <property name="action" column="action" length="50" not-null="true">
             <type name="org.openmrs.util.HibernateEnumType">
                 <param name="enumClassName">org.openmrs.Order$Action</param>
@@ -42,7 +41,7 @@
 
 
         <!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="previousOrder" class="org.openmrs.Order" lazy="proxy">
+		<many-to-one name="previousOrder" class="org.openmrs.Order">
 			<column name="previous_order_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->

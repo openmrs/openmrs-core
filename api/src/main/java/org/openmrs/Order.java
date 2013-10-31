@@ -97,13 +97,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	private Action action = Action.NEW;
 	
-	/**
-	 * This is an identifier generated for a given order and shared by all revisions (if any) of
-	 * that order. The order number is passed to ancillary systems in order for results & events
-	 * related to the order to be connected to the original order.
-	 */
-	private String orderNumber;
-	
 	// Constructors
 	
 	/** default constructor */
@@ -154,7 +147,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setPreviousOrder(getPreviousOrder());
 		target.setAction(getAction());
 		target.setAccessionNumber(getAccessionNumber());
-		target.setOrderNumber(getOrderNumber());
 		return target;
 	}
 	
@@ -484,7 +476,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Gets the previous related order.
-	 *
+	 * @since 1.10
 	 * @return the previous order.
 	 */
 	public Order getPreviousOrder() {
@@ -493,7 +485,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Sets the previous order.
-	 *
+	 * @since 1.10
 	 * @param previousOrder the previous order to set.
 	 */
 	public void setPreviousOrder(Order previousOrder) {
@@ -531,21 +523,4 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	public void setAccessionNumber(String accessionNumber) {
 		this.accessionNumber = accessionNumber;
 	}
-	
-	/**
-	 * Gets the order number.
-	 * @return the order number.
-	 */
-	public String getOrderNumber() {
-		return orderNumber;
-	}
-	
-	/**
-	 * Sets the order number.
-	 * @param orderNumber the order number to set.
-	 */
-	public void setOrderNumber(String orderNumber) {
-		this.orderNumber = orderNumber;
-	}
-	
 }
