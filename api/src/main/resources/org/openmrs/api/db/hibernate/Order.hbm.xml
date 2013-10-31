@@ -33,8 +33,18 @@
             </type>
         </property>
 
+        <property name="action" column="action" length="50" not-null="true">
+            <type name="org.openmrs.util.HibernateEnumType">
+                <param name="enumClassName">org.openmrs.Order$Action</param>
+            </type>
+        </property>
+
 
         <!-- bi-directional many-to-one association to Concept -->
+		<many-to-one name="previousOrder" class="org.openmrs.Order">
+			<column name="previous_order_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to Concept -->
 		<many-to-one name="concept" class="org.openmrs.Concept" not-null="true">
 			<column name="concept_id" />
 		</many-to-one>

@@ -13,10 +13,10 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Date;
 
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on
@@ -40,6 +40,13 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public enum Urgency {
 		ROUTINE, STAT
+	}
+	
+	/**
+	 * @since 1.10
+	 */
+	public enum Action {
+		NEW, REVISE, RENEW, DISCONTINUE
 	}
 	
 	private static final Log log = LogFactory.getLog(Order.class);
@@ -77,6 +84,18 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private String discontinuedReasonNonCoded;
 	
 	private Urgency urgency = Urgency.ROUTINE;
+	
+	/**
+	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
+	 * to the original ampicillin order (the D/C gets its own order number)
+	 */
+	private Order previousOrder;
+	
+	/**
+	 * Represents the action being taken on an order.
+	 * @see org.openmrs.Order.Action
+	 */
+	private Action action = Action.NEW;
 	
 	// Constructors
 	
@@ -120,12 +139,14 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setDiscontinuedDate(getDiscontinuedDate());
 		target.setDiscontinuedReason(getDiscontinuedReason());
 		target.setDiscontinuedBy(getDiscontinuedBy());
-		target.setAccessionNumber(getAccessionNumber());
 		target.setVoided(isVoided());
 		target.setVoidedBy(getVoidedBy());
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
 		target.setUrgency(getUrgency());
+		target.setPreviousOrder(getPreviousOrder());
+		target.setAction(getAction());
+		target.setAccessionNumber(getAccessionNumber());
 		return target;
 	}
 	
@@ -249,20 +270,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setInstructions(String instructions) {
 		this.instructions = instructions;
-	}
-	
-	/**
-	 * @return Returns the accessionNumber.
-	 */
-	public String getAccessionNumber() {
-		return accessionNumber;
-	}
-	
-	/**
-	 * @param accessionNumber The accessionNumber to set.
-	 */
-	public void setAccessionNumber(String accessionNumber) {
-		this.accessionNumber = accessionNumber;
 	}
 	
 	/**
@@ -465,5 +472,55 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setUrgency(Urgency urgency) {
 		this.urgency = urgency;
+	}
+	
+	/**
+	 * Gets the previous related order.
+	 * @since 1.10
+	 * @return the previous order.
+	 */
+	public Order getPreviousOrder() {
+		return previousOrder;
+	}
+	
+	/**
+	 * Sets the previous order.
+	 * @since 1.10
+	 * @param previousOrder the previous order to set.
+	 */
+	public void setPreviousOrder(Order previousOrder) {
+		this.previousOrder = previousOrder;
+	}
+	
+	/**
+	 * @return the action
+	 * @since 1.10
+	 */
+	public Action getAction() {
+		return action;
+	}
+	
+	/**
+	 * @param action the action to set
+	 * @since 1.10
+	 */
+	public void setAction(Action action) {
+		this.action = action;
+	}
+	
+	/**
+	 * Gets the accession number.
+	 * @return the accession number.
+	 */
+	public String getAccessionNumber() {
+		return accessionNumber;
+	}
+	
+	/**
+	 * Sets the accession number.
+	 * @param accessionNumber the accession number to set.
+	 */
+	public void setAccessionNumber(String accessionNumber) {
+		this.accessionNumber = accessionNumber;
 	}
 }

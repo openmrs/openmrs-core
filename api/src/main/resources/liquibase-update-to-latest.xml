@@ -6400,4 +6400,35 @@
 		<addForeignKeyConstraint constraintName="encounter_provider_voided_by" baseTableName="encounter_provider" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 
+    <changeSet id="201310281153-TRUNK-4123" author="mujir,sushmitharaos">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="previous_order_id"/></not>
+        </preConditions>
+
+        <comment>Adding previous_order_id to orders</comment>
+
+        <addColumn tableName="orders">
+            <column name="previous_order_id" type="int" />
+        </addColumn>
+
+        <addForeignKeyConstraint constraintName="previous_order_id_order_id" baseTableName="orders" baseColumnNames="previous_order_id" referencedTableName="orders" referencedColumnNames="order_id"/>
+	</changeSet>
+
+    <changeSet id="201310281153-TRUNK-4124" author="mujir,sushmitharaos">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="order_action"/></not>
+        </preConditions>
+
+        <comment>Adding order_action to orders and setting order_actions as NEW for existing orders</comment>
+
+        <addColumn tableName="orders">
+            <column name="order_action" type="varchar(50)"/>
+        </addColumn>
+
+        <update tableName="orders">
+            <column name="order_action" value="NEW"/>
+        </update>
+
+        <addNotNullConstraint tableName="orders" columnName="order_action" columnDataType="varchar(50)"/>
+    </changeSet>
 </databaseChangeLog>

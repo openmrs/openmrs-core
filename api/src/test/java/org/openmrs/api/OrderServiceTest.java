@@ -13,8 +13,6 @@
  */
 package org.openmrs.api;
 
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.DrugOrder;
@@ -26,6 +24,8 @@ import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+
+import java.util.List;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -159,5 +159,16 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//Ensure that the related obs got deleted
 		Assert.assertNull(os.getObsByUuid(obsUuid));
 		
+	}
+	
+	@Test
+	public void getOrder_should_get_the_previousOrder() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-fetchPreviousOrder.xml");
+		
+		Order order = Context.getOrderService().getOrderByUuid("1c96f25c-4949-4f72-9931-d808fbcdb613");
+		Order previousOrder = order.getPreviousOrder();
+		
+		Assert.assertNotNull(previousOrder);
+		Assert.assertEquals("0c96f25c-4949-4f72-9931-d808fbcdb612", previousOrder.getUuid());
 	}
 }

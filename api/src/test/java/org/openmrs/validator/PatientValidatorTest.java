@@ -13,9 +13,6 @@
  */
 package org.openmrs.validator;
 
-import java.util.Date;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Location;
@@ -31,6 +28,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+
+import java.util.Date;
+import java.util.Set;
 
 /**
  * Tests methods on the {@link PatientValidator} class.
