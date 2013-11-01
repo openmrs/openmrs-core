@@ -674,6 +674,14 @@
                 <artifactId>validation-api</artifactId>
                 <version>1.0.0.GA</version>
             </dependency>
+
+			<!-- some of its classes are reused by Spring AOP auto-proxying -->
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
+				<version>1.7.3</version>
+			</dependency>
+            
         </dependencies>
 	</dependencyManagement>
 
