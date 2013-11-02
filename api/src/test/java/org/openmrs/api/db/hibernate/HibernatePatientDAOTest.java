@@ -282,7 +282,13 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertArrayEquals(new Object[] { openMRSIdNumber, oldIdNumber, socialSecNumber }, patientIdentifierTypes
 		        .toArray());
 	}
-	
+
+
+
+    /**
+     * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
+     * @verifies return non when searching on voided patients
+     */
 	@Test
 	public void getPatients_shouldNotMatchVoidedPatients() {
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();

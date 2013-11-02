@@ -190,6 +190,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+     *
+     * @should not search on voided patients
 	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer,
 	 *      Integer, boolean)
 	 */

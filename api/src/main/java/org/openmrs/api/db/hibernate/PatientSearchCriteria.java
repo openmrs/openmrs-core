@@ -109,9 +109,7 @@ public class PatientSearchCriteria {
 				criteria.add(identifierCriterion);
 			}
 		}
-		
-		// TODO add junit test for searching on voided patients
-		
+
 		// make sure the patient object isn't voided
 		criteria.add(Restrictions.eq("voided", false));
 		
