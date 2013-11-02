@@ -42,6 +42,12 @@ import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
+/**
+ * Liquibase custom changeset used to identify and resolve duplicate EncounterType names. If a
+ * duplicate EncounterType name is identified, it will be edited to include a suffix term which
+ * makes it unique, and identifies it as a value to be manually changed during later review
+ */
+
 public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 	
 	private static final Log log = LogFactory.getLog(DuplicateEncounterTypeNameChangeSet.class);
@@ -58,7 +64,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 	
 	@Override
 	public void setUp() throws SetupException {
-		//No setup actions
+		// No setup actions
 		
 	}
 	
@@ -67,6 +73,9 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 		return null;
 	}
 	
+	/**
+	 * Method to perform validation and resolution of duplicate EncounterType names
+	 */
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
@@ -76,7 +85,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 		ResultSet rs = null;
 		
 		try {
-			//set auto commit mode to false for UPDATE action
+			// set auto commit mode to false for UPDATE action
 			connection.setAutoCommit(false);
 			
 			stmt = connection.createStatement();
@@ -149,7 +158,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 				log.warn("Error generated while rolling back batch insert", e);
 			}
 			
-			//marks the changeset as a failed one
+			// marks the changeset as a failed one
 			throw new CustomChangeException("Failed to update one or more suplicate EncounterType names", e);
 		}
 		catch (DatabaseException e) {
@@ -165,7 +174,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 			throw new CustomChangeException("Error accessing database connection", e);
 		}
 		finally {
-			//reset to auto commit mode
+			// reset to auto commit mode
 			try {
 				connection.setAutoCommit(true);
 			}

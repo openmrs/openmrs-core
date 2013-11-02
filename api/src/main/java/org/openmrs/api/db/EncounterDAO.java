@@ -239,11 +239,6 @@ public interface EncounterDAO {
 	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired) throws DAOException;
 	
 	/**
-	 * Get encounter role by name
-	 * 
-	 * @param name encounter role name 
-	 * @return encounter roles
-	 * @throws org.openmrs.api.db.DAOException
 	 * @see org.openmrs.api.EncounterRoleService#getEncounterRoleByName(String name)
 	 */
 	public EncounterRole getEncounterRoleByName(String name) throws DAOException;

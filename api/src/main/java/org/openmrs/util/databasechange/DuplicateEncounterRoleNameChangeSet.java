@@ -40,10 +40,15 @@ import liquibase.resource.ResourceAccessor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUtil;
+
+/**
+ * Liquibase custom changeset used to identify and resolve duplicate EncounterRole names. If a
+ * duplicate EncounterRole name is identified, it will be edited to include a suffix term which
+ * makes it unique, and identifies it as a value to be manually changed during later review
+ */
 
 public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 	
@@ -61,7 +66,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 	
 	@Override
 	public void setUp() throws SetupException {
-		//No setup actions
+		// No setup actions
 	}
 	
 	@Override
@@ -69,6 +74,9 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 		return null;
 	}
 	
+	/**
+	 * Method to perform validation and resolution of duplicate EncounterRole names
+	 */
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
@@ -78,7 +86,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 		ResultSet rs = null;
 		
 		try {
-			//set auto commit mode to false for UPDATE action
+			// set auto commit mode to false for UPDATE action
 			connection.setAutoCommit(false);
 			
 			stmt = connection.createStatement();
@@ -162,7 +170,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 				log.warn("Error generated while rolling back batch insert", e);
 			}
 			
-			//marks the changeset as a failed one
+			// marks the changeset as a failed one
 			throw new CustomChangeException("Failed to update one or more duplicate EncounterRole names", e);
 		}
 		catch (DatabaseException e) {
@@ -178,11 +186,11 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 			throw new CustomChangeException("Error accessing database connection", e);
 		}
 		finally {
-			//reset to auto commit mode
+			// reset to auto commit mode
 			try {
 				connection.commit();
 				connection.setAutoCommit(true);
-				//connection.close();
+				// connection.close();
 				
 			}
 			catch (DatabaseException e) {
