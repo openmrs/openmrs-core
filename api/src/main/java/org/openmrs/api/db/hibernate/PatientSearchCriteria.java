@@ -236,7 +236,7 @@ public class PatientSearchCriteria {
 		name = name.replaceAll("  ", " ");
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
-		
+
 		if (names.length > 0) {
 			String nameSoFar = names[0];
 			for (int i = 0; i < names.length; i++) {

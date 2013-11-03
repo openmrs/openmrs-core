@@ -18,10 +18,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonName;
 import org.openmrs.test.BaseContextSensitiveTest;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -302,4 +302,37 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		patients = dao.getPatients("Hornblower3", null, identifierTypes, false, 0, 11, false);
 		Assert.assertEquals(0, patients.size());
 	}
+
+
+    /**
+     * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
+     * @verifies return non when searching on voided patient name
+     */
+    @Test
+    public void getPatients_shouldNotMatchVoidedPatientNames() {
+        List<PatientIdentifierType> identifierTypes = Collections.emptyList();
+        List<Patient> patients = dao.getPatients("Oloo", null, identifierTypes, false, 0, 11, false);
+        Assert.assertEquals(1, patients.size());
+
+        Patient patient = patients.get(0);
+        patient.getNames().clear();
+        patient.getNames().addAll(new HashSet<PersonName>() {
+
+            {
+                add(new PersonName() {
+
+                    {
+                        setGivenName(null);
+                        setFamilyName(null);
+                        setMiddleName(null);
+
+                    }
+                });
+            }
+        });
+
+        dao.savePatient(patient);
+        patients = dao.getPatients("Oloo", null, identifierTypes, false, 0, 11, false);
+        Assert.assertEquals(0, patients.size());
+    }
 }
