@@ -20,8 +20,9 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
 import org.openmrs.test.BaseContextSensitiveTest;
-
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -306,7 +307,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
     /**
      * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
-     * @verifies return non when searching on voided patient name
+     * @verifies return none when searching on voided patient name
      */
     @Test
     public void getPatients_shouldNotMatchVoidedPatientNames() {
