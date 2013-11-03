@@ -22,6 +22,7 @@ import org.openmrs.PersonName;
 import org.openmrs.test.BaseContextSensitiveTest;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
