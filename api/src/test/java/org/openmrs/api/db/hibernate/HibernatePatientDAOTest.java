@@ -21,9 +21,8 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
 import org.openmrs.test.BaseContextSensitiveTest;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.SortedSet;
+
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -317,14 +316,12 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
         Assert.assertEquals(1, patients.size());
 
         Patient patient = patients.get(0);
-        patient.getNames().clear();
 
-        HashSet<PersonName> names = new HashSet<PersonName>();
+        Set<PersonName> names = patient.getNames();
 
-        PersonName name = new PersonName();
-        name.setVoided(true);
-
-        names.add(name);
+        for (PersonName name: names) {
+            name.setVoided(true);
+        }
 
         dao.savePatient(patient);
         patients = dao.getPatients("Oloo", null, identifierTypes, false, 0, 11, false);
