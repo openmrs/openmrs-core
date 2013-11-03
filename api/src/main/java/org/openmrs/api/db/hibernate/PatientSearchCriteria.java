@@ -109,9 +109,7 @@ public class PatientSearchCriteria {
 				criteria.add(identifierCriterion);
 			}
 		}
-		
-		// TODO add junit test for searching on voided patients
-		
+
 		// make sure the patient object isn't voided
 		criteria.add(Restrictions.eq("voided", false));
 		
@@ -238,7 +236,7 @@ public class PatientSearchCriteria {
 		name = name.replaceAll("  ", " ");
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
-		
+
 		if (names.length > 0) {
 			String nameSoFar = names[0];
 			for (int i = 0; i < names.length; i++) {

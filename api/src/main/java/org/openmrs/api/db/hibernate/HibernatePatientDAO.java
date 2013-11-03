@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -190,6 +189,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+     *
+     * @should not search on voided patients
 	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer,
 	 *      Integer, boolean)
 	 */
@@ -242,10 +243,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PatientDAO#getPatientIdentifiers(java.lang.String, java.util.List,
-	 *      java.util.List, java.util.List, java.lang.Boolean)
-	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,
-	 *      java.util.List, java.util.List, java.lang.Boolean)
+	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.Boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
