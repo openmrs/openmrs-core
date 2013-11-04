@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	
 	private HibernatePatientDAO dao = null;
@@ -284,13 +283,11 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertArrayEquals(new Object[] { openMRSIdNumber, oldIdNumber, socialSecNumber }, patientIdentifierTypes
 		        .toArray());
 	}
-
-
-
-    /**
-     * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
-     * @verifies return non when searching on voided patients
-     */
+	
+	/**
+	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
+	 * @verifies return non when searching on voided patients
+	 */
 	@Test
 	public void getPatients_shouldNotMatchVoidedPatients() {
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
@@ -304,28 +301,27 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		patients = dao.getPatients("Hornblower3", null, identifierTypes, false, 0, 11, false);
 		Assert.assertEquals(0, patients.size());
 	}
-
-
-    /**
-     * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
-     * @verifies return none when searching on voided patient name
-     */
-    @Test
-    public void getPatients_shouldNotMatchVoidedPatientNames() {
-        List<PatientIdentifierType> identifierTypes = Collections.emptyList();
-        List<Patient> patients = dao.getPatients("Oloo", null, identifierTypes, false, 0, 11, false);
-        Assert.assertEquals(1, patients.size());
-
-        Patient patient = patients.get(0);
-
-        Set<PersonName> names = patient.getNames();
-
-        for (PersonName name: names) {
-            name.setVoided(true);
-        }
-
-        dao.savePatient(patient);
-        patients = dao.getPatients("Oloo", null, identifierTypes, false, 0, 11, false);
-        Assert.assertEquals(0, patients.size());
-    }
+	
+	/**
+	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
+	 * @verifies return none when searching on voided patient name
+	 */
+	@Test
+	public void getPatients_shouldNotMatchVoidedPatientNames() {
+		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
+		List<Patient> patients = dao.getPatients("Oloo", null, identifierTypes, false, 0, 11, false);
+		Assert.assertEquals(1, patients.size());
+		
+		Patient patient = patients.get(0);
+		
+		Set<PersonName> names = patient.getNames();
+		
+		for (PersonName name : names) {
+			name.setVoided(true);
+		}
+		
+		dao.savePatient(patient);
+		patients = dao.getPatients("Oloo", null, identifierTypes, false, 0, 11, false);
+		Assert.assertEquals(0, patients.size());
+	}
 }
