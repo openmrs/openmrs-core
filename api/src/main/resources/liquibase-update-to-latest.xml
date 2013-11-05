@@ -6400,4 +6400,23 @@
 		<addForeignKeyConstraint constraintName="encounter_provider_voided_by" baseTableName="encounter_provider" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 
+    <changeSet id="201311041510" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="drug_order" columnName="as_needed" /></not>
+            <columnExists tableName="drug_order" columnName="prn" />
+        </preConditions>
+        <comment>Renaming drug_order.prn column to drug_order.as_needed</comment>
+        <renameColumn tableName="drug_order" oldColumnName="prn" newColumnName="as_needed" columnDataType="boolean" />
+    </changeSet>
+
+    <changeSet id="201311041511" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="drug_order" columnName="as_needed_condition"/></not>
+        </preConditions>
+        <comment>Adding as_needed_condition column to drug_order table</comment>
+        <addColumn tableName="drug_order">
+            <column name="as_needed_condition" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -32,13 +32,15 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private String frequency;
 	
-	private Boolean prn = false;
+	private Boolean asNeeded = false;
 	
 	private Boolean complex = false;
 	
 	private Integer quantity;
 	
 	private Drug drug;
+	
+	private String asNeededCondition;
 	
 	// Constructors
 	
@@ -67,7 +69,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.equivalentDailyDose = getEquivalentDailyDose();
 		target.units = getUnits();
 		target.frequency = getFrequency();
-		target.prn = getPrn();
+		target.asNeeded = getAsNeeded();
+		target.asNeededCondition = getAsNeededCondition();
 		target.complex = getComplex();
 		target.quantity = getQuantity();
 		target.drug = getDrug();
@@ -117,21 +120,39 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	/**
-	 * Returns true/false whether the drug is a "pro re nata" (as needed) drug
-	 * 
+	 * @deprecated see {@link #getAsNeeded()}
 	 * @return Boolean
 	 */
+	@Deprecated
 	public Boolean getPrn() {
-		return this.prn;
+		return getAsNeeded();
 	}
 	
 	/**
-	 * Sets the prn
-	 * 
+	 * @deprecated see {@link #setAsNeeded(Boolean)}
 	 * @param prn
 	 */
+	@Deprecated
 	public void setPrn(Boolean prn) {
-		this.prn = prn;
+		setAsNeeded(prn);
+	}
+	
+	/**
+	 * Returns true/false whether the drug is a "pro re nata" drug
+	 * 
+	 * @return Boolean
+	 * @since 1.10
+	 */
+	public Boolean getAsNeeded() {
+		return asNeeded;
+	}
+	
+	/**
+	 * @param asNeeded the value to set
+	 * @since 1.10
+	 */
+	public void setAsNeeded(Boolean asNeeded) {
+		this.asNeeded = asNeeded;
 	}
 	
 	/**
@@ -186,6 +207,22 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setDrug(Drug drug) {
 		this.drug = drug;
+	}
+	
+	/**
+	 * @return the asNeededCondition
+	 * @since 1.10
+	 */
+	public String getAsNeededCondition() {
+		return asNeededCondition;
+	}
+	
+	/**
+	 * @param asNeededCondition the asNeededCondition to set
+	 * @since 1.10
+	 */
+	public void setAsNeededCondition(String asNeededCondition) {
+		this.asNeededCondition = asNeededCondition;
 	}
 	
 	public Double getEquivalentDailyDose() {

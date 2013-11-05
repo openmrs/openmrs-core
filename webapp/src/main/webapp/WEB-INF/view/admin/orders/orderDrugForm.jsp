@@ -160,9 +160,9 @@
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><openmrs:message code="DrugOrder.prn"/></td>
+			<td valign="top"><openmrs:message code="DrugOrder.asNeeded"/></td>
 			<td valign="top">
-				<spring:bind path="order.prn">
+				<spring:bind path="order.asNeeded">
 					<openmrs:fieldGen type="java.lang.Boolean" formFieldName="${status.expression}" val="${status.editor.value}" parameters="isNullable=false" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>

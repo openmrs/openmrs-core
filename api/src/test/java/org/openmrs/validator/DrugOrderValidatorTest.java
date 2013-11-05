@@ -34,10 +34,10 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if prn is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfPrnIsNull() throws Exception {
+	@Verifies(value = "should fail validation if asNeeded is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfAsNeededIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setPrn(null);
+		order.setAsNeeded(null);
 		order.setDrug(Context.getConceptService().getDrug(3));
 		
 		Errors errors = new BindException(order, "order");

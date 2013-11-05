@@ -60,7 +60,7 @@ public class DrugOrderListItem {
 	
 	private String frequency;
 	
-	private Boolean prn;
+	private Boolean asNeeded;
 	
 	private Boolean complex;
 	
@@ -119,7 +119,7 @@ public class DrugOrderListItem {
 		dose = drugOrder.getDose();
 		units = drugOrder.getUnits();
 		frequency = drugOrder.getFrequency();
-		prn = drugOrder.getPrn();
+		asNeeded = drugOrder.getAsNeeded();
 		complex = drugOrder.getComplex();
 		quantity = drugOrder.getQuantity();
 		voided = drugOrder.getVoided();
@@ -348,17 +348,17 @@ public class DrugOrderListItem {
 	}
 	
 	/**
-	 * @return Returns the prn.
+	 * @return the asNeeded
 	 */
-	public Boolean getPrn() {
-		return prn;
+	public Boolean getAsNeeded() {
+		return asNeeded;
 	}
 	
 	/**
-	 * @param prn The prn to set.
+	 * @param asNeeded the value to set
 	 */
-	public void setPrn(Boolean prn) {
-		this.prn = prn;
+	public void setAsNeeded(Boolean asNeeded) {
+		this.asNeeded = asNeeded;
 	}
 	
 	/**

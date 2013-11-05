@@ -47,7 +47,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if prn is null
+	 * @should fail validation if asNeeded is null
 	 * @should fail validation if complex is null
 	 * @should fail validation if order concept is null
 	 * @should fail validation if drug concept is different from order concept
