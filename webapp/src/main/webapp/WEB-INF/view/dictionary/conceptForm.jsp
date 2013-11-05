@@ -96,11 +96,12 @@
 		var conceptExists = false;
 		if(typeof(concepts[0]) !== 'string') { // check returned array not a message - indicates no results
 			var conceptsSize = concepts.length;
+			var theInput = $j.trim($j('#similarConceptsStart input').val().toLowerCase());
 			aString = "| ";
 			$j.each(concepts, function(index, value) {
-				var theName = value.name.toString();
+				var theName = value.name.toString().toLowerCase();
 				var theId = value.conceptId.toString();
-				if(theName.toLowerCase() === $j.trim($j('#similarConceptsStart input').val().toLowerCase())) {
+				if(theName === theInput) {
 					conceptExists = true;
 				}
 				aString += "<a href='concept.htm?conceptId=";
