@@ -122,7 +122,6 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 			if (datatypeClassHandled(candidate).equals(datatype))
 				ret.add(candidate);
 		}
-		// TODO sort the preferred one to the top
 		return ret;
 	}
 	
