@@ -7525,5 +7525,57 @@
 			<column name="display_precision" type="int" />
 		</addColumn>
 	</changeSet>
+	
+ 	<changeSet id="20130809-TRUNK-4044-duplicateEncounterRoleChangeSet" author="surangak">
+		<preConditions onFail="MARK_RAN">
+		<not>
+			<sqlCheck expectedResult = "0">
+				<![CDATA[
+					SELECT count(*) from encounter_role;
+				]]>
+			</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Custom changesets to identify and resolve duplicate EncounterRole names</comment>
+		<customChange class="org.openmrs.util.databasechange.DuplicateEncounterRoleNameChangeSet"></customChange>
+	</changeSet>
+	
+	<changeSet id="20130809-TRUNK-4044-duplicateEncounterTypeChangeSet" author="surangak">
+		<preConditions onFail="MARK_RAN">
+		<not>
+			<sqlCheck expectedResult = "0">
+				<![CDATA[
+					SELECT count(*) from encounter_type;
+				]]>
+			</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Custom changesets to identify and resolve duplicate EncounterType names</comment>
+		<customChange class="org.openmrs.util.databasechange.DuplicateEncounterTypeNameChangeSet"></customChange>
+	</changeSet>
 
+	<changeSet id="20130809-TRUNK-4044-encounter_type_unique_name_constraint" author="surangak">
+			<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists indexName="encounter_type_unique_name" />
+			</not>
+		</preConditions>
+		<comment>
+			Adding the unique constraint to the encounter_type.name column 
+		</comment>
+		<addUniqueConstraint tableName="encounter_type" columnNames="name" constraintName="encounter_type_unique_name"/>
+	</changeSet>
+	
+		<changeSet id="20130809-TRUNK-4044-encounter_role_unique_name_constraint" author="surangak">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists indexName="encounter_role_unique_name" />
+			</not>
+		</preConditions>
+		<comment>
+			Adding the unique constraint to the encounter_role.name column 
+		</comment>
+		<addUniqueConstraint tableName="encounter_role" columnNames="name" constraintName="encounter_role_unique_name"/>
+	</changeSet>
+	
 </databaseChangeLog>
