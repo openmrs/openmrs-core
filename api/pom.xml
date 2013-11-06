@@ -207,6 +207,10 @@
            <artifactId>validation-api</artifactId>
        </dependency>
        <dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+	   </dependency>
+       <dependency>
            <groupId>org.codehaus.jackson</groupId>
            <artifactId>jackson-core-asl</artifactId>
        </dependency>
