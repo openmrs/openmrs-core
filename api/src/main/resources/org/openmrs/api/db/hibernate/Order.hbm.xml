@@ -33,7 +33,7 @@
             </type>
         </property>
 
-        <property name="action" column="action" length="50" not-null="true">
+        <property name="action" column="order_action" length="50" not-null="true">
             <type name="org.openmrs.util.HibernateEnumType">
                 <param name="enumClassName">org.openmrs.Order$Action</param>
             </type>
