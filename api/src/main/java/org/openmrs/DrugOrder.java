@@ -34,21 +34,12 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private Boolean prn = false;
 
-    /**
-     * @deprecated use {@link #structuredDosing}
-     */
-    @Deprecated
-	private Boolean complex = false;
-	
+	private Boolean structuredDosing = true;
+
 	private Integer quantity;
 
 	private Drug drug;
 	
-	/**
-	 * @since 1.10
-	 */
-	private Boolean structuredDosing = true;
-
 	// Constructors
 	
 	/** default constructor */
@@ -150,9 +141,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	@Deprecated
 	public Boolean getComplex() {
-		return this.complex;
+        return !getStructuredDosing();
 	}
-	
+
 	/**
 	 * Sets whether this drug is complex
 	 * @deprecated use {@link #setStructuredDosing(Boolean}
@@ -160,7 +151,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	@Deprecated
 	public void setComplex(Boolean complex) {
-		this.complex = complex;
+		setStructuredDosing(!complex);
 	}
 	
 	/**

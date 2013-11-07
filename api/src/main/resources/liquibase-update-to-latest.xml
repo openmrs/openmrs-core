@@ -6433,7 +6433,12 @@
     </changeSet>
 
     <changeSet id="201310311136-TRUNK-4125" author="sushmitharaos, mujir">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="structured_dosing"/></not>
+        </preConditions>
+
         <comment>Renaming complex to structured_dosing on drug_order</comment>
+
         <renameColumn tableName="drug_order" oldColumnName="complex" newColumnName="structured_dosing" columnDataType="boolean"/>
 
         <update tableName="drug_order">
