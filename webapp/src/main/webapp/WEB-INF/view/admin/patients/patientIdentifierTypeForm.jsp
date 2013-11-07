@@ -18,8 +18,9 @@
 </script>
 
 <h2><openmrs:message code="PatientIdentifierType.title"/></h2>
+<openmrs:globalProperty key="patientIdentifierTypes.locked" var="patientIdentifierTypesLocked"/>
 
-<c:if test="${patientIdentifierType.retired && not empty patientIdentifierType.patientIdentifierTypeId}">
+<c:if test="${patientIdentifierType.retired && not empty patientIdentifierType.patientIdentifierTypeId && patientIdentifierTypesLocked != 'true'}">
 	<form action="" method="post">
 		<div class="retiredMessage">
 			<div>
@@ -34,126 +35,128 @@
 	</form>
 </c:if>
 
-<form method="post">
-<fieldset>
-<table>
-	<tr>
-		<td><openmrs:message code="general.name"/></td>
-		<td>
-			<spring:bind path="patientIdentifierType.name">
-				<input type="text" name="name" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td valign="top"><openmrs:message code="general.description"/></td>
-		<td valign="top">
-			<spring:bind path="patientIdentifierType.description">
-				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><openmrs:message code="PatientIdentifierType.format"/></td>
-		<td>
-			<spring:bind path="patientIdentifierType.format">
-				<input type="text" name="format" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-	<td><openmrs:message code="PatientIdentifierType.formatDescription"/></td>
-		<td>
-			<spring:bind path="patientIdentifierType.formatDescription">
-				<input type="text" name="${status.expression}" value="${fn:replace(status.value, "\"", "&quot;")}" size="50" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><openmrs:message code="PatientIdentifierType.required" /></td>
-		<td><spring:bind path="patientIdentifierType.required">
-			<input type="hidden" name="_${status.expression}">
-			<input type="checkbox" name="${status.expression}" value="true"
-				<c:if test="${status.value == true}">checked</c:if> />
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
-	</tr>
-	<tr>
-		<td><openmrs:message code="PatientIdentifierType.locationBehavior" /></td>
-		<td><spring:bind path="patientIdentifierType.locationBehavior">
-			<select name="${status.expression}">
-				<option value=""></option>
-				<c:forEach var="locationBehavior" items="${locationBehaviors}">
-					<option value="${locationBehavior}" <c:if test="${status.value == locationBehavior}">selected</c:if>>
-						<openmrs:message code="PatientIdentifierType.locationBehavior.${locationBehavior}" />
-					</option>
-				</c:forEach>
-			</select>
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
-	</tr>
-	<tr>
-		<td><openmrs:message code="PatientIdentifierType.uniquenessBehavior" /></td>
-		<td><spring:bind path="patientIdentifierType.uniquenessBehavior">
-			<select name="${status.expression}">
-				<option value=""></option>
-				<c:forEach var="uniquenessBehavior" items="${uniquenessBehaviors}">
-					<option value="${uniquenessBehavior}" <c:if test="${status.value == uniquenessBehavior}">selected</c:if>>
-						<openmrs:message code="PatientIdentifierType.uniquenessBehavior.${uniquenessBehavior}" />
-					</option>
-				</c:forEach>
-			</select>
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
-	</tr>
-	<tr>
-		<td><openmrs:message code="PatientIdentifierType.validator" /></td>
-		<td><spring:bind path="patientIdentifierType.validator">
-			<select name="${status.expression}">
-				<option value="">None</option>
-				<c:forEach var="piv" items="${patientIdentifierValidators}">
-					<option value="${piv['class'].name}" 
-						<c:if test="${status.value == piv['class'].name}">selected</c:if> 
-					/>
-					${piv.name}
-						<c:if test="${defaultValidatorName == piv.name}"> (default)</c:if>
-					</option>
-				</c:forEach>
-			</select>
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
-	</tr>
-	<c:if test="${!(patientIdentifierType.creator == null)}">
+<c:if test="${patientIdentifierTypesLocked != 'true'}">
+	<form method="post">
+	<fieldset>
+	<table>
 		<tr>
-			<td><openmrs:message code="general.createdBy" /></td>
+			<td><openmrs:message code="general.name"/></td>
 			<td>
-				${patientIdentifierType.creator.personName} -
-				<openmrs:formatDate date="${patientIdentifierType.dateCreated}" type="long" />
+				<spring:bind path="patientIdentifierType.name">
+					<input type="text" name="name" value="${status.value}" size="35" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
 			</td>
 		</tr>
-	</c:if>
-</table>
-<input type="hidden" name="patientIdentifierTypeId:int" value="${patientIdentifierType.patientIdentifierTypeId}">
-<br />
-<input type="submit" value="<openmrs:message code="PatientIdentifierType.save"/>" name="save" />
-</fieldset>
-</form>
+		<tr>
+			<td valign="top"><openmrs:message code="general.description"/></td>
+			<td valign="top">
+				<spring:bind path="patientIdentifierType.description">
+					<textarea name="description" rows="3" cols="40">${status.value}</textarea>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<td><openmrs:message code="PatientIdentifierType.format"/></td>
+			<td>
+				<spring:bind path="patientIdentifierType.format">
+					<input type="text" name="format" value="${status.value}" size="35" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+		<td><openmrs:message code="PatientIdentifierType.formatDescription"/></td>
+			<td>
+				<spring:bind path="patientIdentifierType.formatDescription">
+					<input type="text" name="${status.expression}" value="${fn:replace(status.value, "\"", "&quot;")}" size="50" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<td><openmrs:message code="PatientIdentifierType.required" /></td>
+			<td><spring:bind path="patientIdentifierType.required">
+				<input type="hidden" name="_${status.expression}">
+				<input type="checkbox" name="${status.expression}" value="true"
+					<c:if test="${status.value == true}">checked</c:if> />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind></td>
+		</tr>
+		<tr>
+			<td><openmrs:message code="PatientIdentifierType.locationBehavior" /></td>
+			<td><spring:bind path="patientIdentifierType.locationBehavior">
+				<select name="${status.expression}">
+					<option value=""></option>
+					<c:forEach var="locationBehavior" items="${locationBehaviors}">
+						<option value="${locationBehavior}" <c:if test="${status.value == locationBehavior}">selected</c:if>>
+							<openmrs:message code="PatientIdentifierType.locationBehavior.${locationBehavior}" />
+						</option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind></td>
+		</tr>
+		<tr>
+			<td><openmrs:message code="PatientIdentifierType.uniquenessBehavior" /></td>
+			<td><spring:bind path="patientIdentifierType.uniquenessBehavior">
+				<select name="${status.expression}">
+					<option value=""></option>
+					<c:forEach var="uniquenessBehavior" items="${uniquenessBehaviors}">
+						<option value="${uniquenessBehavior}" <c:if test="${status.value == uniquenessBehavior}">selected</c:if>>
+							<openmrs:message code="PatientIdentifierType.uniquenessBehavior.${uniquenessBehavior}" />
+						</option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind></td>
+		</tr>
+		<tr>
+			<td><openmrs:message code="PatientIdentifierType.validator" /></td>
+			<td><spring:bind path="patientIdentifierType.validator">
+				<select name="${status.expression}">
+					<option value="">None</option>
+					<c:forEach var="piv" items="${patientIdentifierValidators}">
+						<option value="${piv['class'].name}" 
+							<c:if test="${status.value == piv['class'].name}">selected</c:if> 
+						/>
+						${piv.name}
+							<c:if test="${defaultValidatorName == piv.name}"> (default)</c:if>
+						</option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind></td>
+		</tr>
+		<c:if test="${!(patientIdentifierType.creator == null)}">
+			<tr>
+				<td><openmrs:message code="general.createdBy" /></td>
+				<td>
+					${patientIdentifierType.creator.personName} -
+					<openmrs:formatDate date="${patientIdentifierType.dateCreated}" type="long" />
+				</td>
+			</tr>
+		</c:if>
+	</table>
+	<input type="hidden" name="patientIdentifierTypeId:int" value="${patientIdentifierType.patientIdentifierTypeId}">
+	<br />
+	<input type="submit" value="<openmrs:message code="PatientIdentifierType.save"/>" name="save" />
+	</fieldset>
+	</form>
+</c:if>
 
 <br/>
 
-<c:if test="${not patientIdentifierType.retired && not empty patientIdentifierType.patientIdentifierTypeId}">
+<c:if test="${not patientIdentifierType.retired && not empty patientIdentifierType.patientIdentifierTypeId && patientIdentifierTypesLocked != 'true'}">
 	<form method="post">
 		<fieldset>
 			<h4><openmrs:message code="PatientIdentifierType.retirePatientIdentifierType"/></h4>
@@ -173,7 +176,7 @@
 	<br/>
 </c:if>
 
-<c:if test="${not empty patientIdentifierType.patientIdentifierTypeId}">
+<c:if test="${not empty patientIdentifierType.patientIdentifierTypeId && patientIdentifierTypesLocked != 'true'}">
 	<openmrs:hasPrivilege privilege="Purge Identifier Types">
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>

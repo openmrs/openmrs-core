@@ -26,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ConceptsLockedException;
+import org.openmrs.api.PatientIdentifierTypeLockedException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.patient.IdentifierValidator;
@@ -68,7 +70,6 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {
-		
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
@@ -78,16 +79,11 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			
 			PatientIdentifierType identifierType = (PatientIdentifierType) obj;
-			PatientService ps = Context.getPatientService();
+			PatientService service = Context.getPatientService();
 			
 			//to save the patient identifier type
 			if (request.getParameter("save") != null) {
-				
-				identifierType.setCheckDigit(identifierType.hasValidator());
-				
-				ps.savePatientIdentifierType(identifierType);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.saved");
-				toReturn = new ModelAndView(new RedirectView(getSuccessView()));
+				toReturn = saveType(httpSession, identifierType, service);
 			}
 
 			// if the user is retiring the identifierType
@@ -97,41 +93,86 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 					errors.reject("retireReason", "general.retiredReason.empty");
 					return showForm(request, response, errors);
 				}
-				
-				ps.retirePatientIdentifierType(identifierType, retireReason);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.retiredSuccessfully");
-				
-				toReturn = new ModelAndView(new RedirectView(getSuccessView()));
+				toReturn = retireType(httpSession, identifierType, service, retireReason);
 			}
 
 			// if the user is purging the identifierType
 			else if (request.getParameter("purge") != null) {
-				
-				try {
-					ps.purgePatientIdentifierType(identifierType);
-					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.purgedSuccessfully");
-					toReturn = new ModelAndView(new RedirectView(getSuccessView()));
-				}
-				catch (DataIntegrityViolationException e) {
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
-					return showForm(request, response, errors);
-				}
-				catch (APIException e) {
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
-					return showForm(request, response, errors);
-				}
-				
+				toReturn = purgeType(request, response, errors, httpSession, identifierType, service);
 			}
 			// if the user unretiring patient identifier type
 			else if (request.getParameter("unretire") != null) {
-				ps.unretirePatientIdentifierType(identifierType);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.unretiredSuccessfully");
-				toReturn = new ModelAndView(new RedirectView(getSuccessView()));
+				toReturn = unretireType(httpSession, identifierType, service);
 			}
 			
 		}
 		
 		return toReturn;
+	}
+
+	private ModelAndView purgeType(HttpServletRequest request,
+			HttpServletResponse response, BindException errors,
+			HttpSession httpSession, PatientIdentifierType identifierType,
+			PatientService service) throws Exception {
+		ModelAndView toReturn;
+		try {
+			service.purgePatientIdentifierType(identifierType);
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.purgedSuccessfully");
+			toReturn = new ModelAndView(new RedirectView(getSuccessView()));
+		}
+		catch (PatientIdentifierTypeLockedException e) {
+			log.error("Tried to purge patient identifier type while patient identifier types were locked", e);
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifierType.locked");
+			toReturn = showForm(request, response, errors);
+		}
+		catch (DataIntegrityViolationException e) {
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
+			toReturn = showForm(request, response, errors);
+		}
+		catch (APIException e) {
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
+			toReturn = showForm(request, response, errors);
+		}
+		return toReturn;
+	}
+
+	private ModelAndView unretireType(HttpSession httpSession,
+			PatientIdentifierType identifierType, PatientService service) {
+		try {
+			service.unretirePatientIdentifierType(identifierType);
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.unretiredSuccessfully");
+		}
+		catch (PatientIdentifierTypeLockedException e) {
+			log.error("Tried to unretire patient identifier type while patient identifier types were locked", e);
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifierType.locked");
+		}
+		return new ModelAndView(new RedirectView(getSuccessView()));
+	}
+
+	private ModelAndView retireType(HttpSession httpSession, PatientIdentifierType identifierType, 
+									PatientService service,	String retireReason) {
+		try {
+			service.retirePatientIdentifierType(identifierType, retireReason);
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.retiredSuccessfully");
+		}
+		catch (PatientIdentifierTypeLockedException e) {
+			log.error("Tried to retire patient identifier type while patient identifier types were locked", e);
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifierType.locked");
+		}
+		return new ModelAndView(new RedirectView(getSuccessView()));
+	}
+
+	private ModelAndView saveType(HttpSession httpSession, PatientIdentifierType identifierType, PatientService service) {
+		identifierType.setCheckDigit(identifierType.hasValidator());
+		try {
+			service.savePatientIdentifierType(identifierType);
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.saved");
+		}
+		catch (PatientIdentifierTypeLockedException e) {
+			log.error("Tried to save patient identifier type while patient identifier types were locked", e);
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifierType.locked");
+		}
+		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 	
 	/**
