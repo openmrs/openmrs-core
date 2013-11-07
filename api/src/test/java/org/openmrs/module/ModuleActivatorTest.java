@@ -25,6 +25,12 @@ public class ModuleActivatorTest extends BaseContextSensitiveTest {
 	@Before
 	public void beforeEachTest() {
 		moduleTestData = ModuleTestData.getInstance();
+		
+		init();
+		
+		ModuleFactory.startModule(ModuleFactory.getModuleById(MODULE1_ID));
+		ModuleFactory.startModule(ModuleFactory.getModuleById(MODULE2_ID));
+		ModuleFactory.startModule(ModuleFactory.getModuleById(MODULE3_ID));
 	}
 	
 	@Test
@@ -71,6 +77,23 @@ public class ModuleActivatorTest extends BaseContextSensitiveTest {
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
+	}
+	
+	@Test
+	public void shouldStopDependantModulesOnStopModule() throws Exception {
+		//since module test2 depends on test1 and test3 depends on test2
+		//stopping test1 should also stop both modules test2 and test3
+		ModuleFactory.stopModule(ModuleFactory.getModuleById(MODULE1_ID));
+		
+		//should have called willStop() for only modules test1, test2 and test3
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE3_ID) == 1);
+		
+		//should have called stopped() for only modules test1, test2 and test3
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
 	}
 	
 	@Test
