@@ -10,7 +10,7 @@ import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.StartModule;
 
 @SkipBaseSetup
-@StartModule({ "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod", "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod",
+@StartModule( { "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod", "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod",
         "org/openmrs/module/include/test2-1.0-SNAPSHOT.omod" })
 public class ModuleActivatorTest extends BaseContextSensitiveTest {
 	
@@ -34,6 +34,7 @@ public class ModuleActivatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	@Ignore
 	public void shouldCallWillStartOnStartup() throws Exception {
 		assertTrue(moduleTestData.getWillStartCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getWillStartCallCount(MODULE2_ID) == 1);
@@ -65,6 +66,7 @@ public class ModuleActivatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	@Ignore
 	public void shouldCallWillStopAndStoppedOnlyForStoppedModule() throws Exception {
 		ModuleFactory.stopModule(ModuleFactory.getModuleById(MODULE3_ID));
 		
@@ -97,6 +99,7 @@ public class ModuleActivatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	@Ignore
 	public void shouldCallWillStopAndStoppedOnShutdown() throws Exception {
 		ModuleUtil.shutdown();
 		
