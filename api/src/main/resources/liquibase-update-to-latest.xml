@@ -7520,6 +7520,9 @@
 		</createIndex>
 	</changeSet>
 	<changeSet id="20131023-TRUNK-3903" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_numeric" columnName="display_precision"/></not>
+		</preConditions>
 		<comment>Adding "display_precision" column to concept_numeric table</comment>
 		<addColumn tableName="concept_numeric">
 			<column name="display_precision" type="int" />
