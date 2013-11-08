@@ -3,12 +3,12 @@ package org.openmrs.module;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.StartModule;
+import org.springframework.context.support.GenericApplicationContext;
 
-@StartModule({ "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod", "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod",
+@StartModule( { "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod", "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod",
         "org/openmrs/module/include/test2-1.0-SNAPSHOT.omod" })
 public class ModuleActivatorTest extends BaseContextSensitiveTest {
 	
@@ -39,19 +39,38 @@ public class ModuleActivatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Ignore("This is work in progress. So not yet finished this")
-	public void shouldCallWillRefreshContextOnStartup() throws Exception {
-		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE1_ID) == 1);
-		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE2_ID) == 1);
-		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE3_ID) == 1);
+	public void shouldNotCallStartedOnStartup() throws Exception {
+		assertTrue(moduleTestData.getStartedCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getStartedCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getStartedCallCount(MODULE3_ID) == 0);
 	}
 	
 	@Test
-	@Ignore("This is work in progress. So not yet looked into why this fails")
-	public void shouldCallStartedOnStartup() throws Exception {
-		assertTrue(moduleTestData.getStartedCallCount(MODULE1_ID) == 1);
-		assertTrue(moduleTestData.getStartedCallCount(MODULE2_ID) == 1);
-		assertTrue(moduleTestData.getStartedCallCount(MODULE3_ID) == 1);
+	public void shouldNotCallWillStopOnStartup() throws Exception {
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE3_ID) == 0);
+	}
+	
+	@Test
+	public void shouldNotCallStoppedOnStartup() throws Exception {
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 0);
+	}
+	
+	@Test
+	public void shouldNotCallWillRefreshContextOnStartup() throws Exception {
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE3_ID) == 0);
+	}
+	
+	@Test
+	public void shouldNotCallContextRefreshedOnStartup() throws Exception {
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE3_ID) == 0);
 	}
 	
 	@Test
@@ -118,5 +137,9 @@ public class ModuleActivatorTest extends BaseContextSensitiveTest {
 		moduleTestData.init(MODULE1_ID);
 		moduleTestData.init(MODULE2_ID);
 		moduleTestData.init(MODULE3_ID);
+	}
+	
+	private GenericApplicationContext getApplicationContext() {
+		return (GenericApplicationContext) applicationContext;
 	}
 }
