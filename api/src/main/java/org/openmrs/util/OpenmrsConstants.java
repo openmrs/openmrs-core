@@ -803,6 +803,8 @@ public final class OpenmrsConstants {
 	        GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES,
 	        GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME };
 	
+	public static String GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES_LOCKED = "PersonAttributeType.locked";
+	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX = "patient.identifierRegex";
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX = "patient.identifierPrefix";
@@ -1281,6 +1283,9 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "",
 		                "A comma delimited list of PersonAttributeType names that will be shown on the user dashboard. (not used in v1.5)"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES_LOCKED, "false",
+		        "if true, do not allow editing person attribute types", BooleanDatatype.class, null));
 		
 		props
 		        .add(new GlobalProperty(
