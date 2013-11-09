@@ -313,12 +313,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     			if(!inSerialMode && ajaxTimer)
     				window.clearInterval(ajaxTimer);
     			
-    			var searchDelay = SEARCH_DELAY;
-    			if(text.length < o.minLength && !self.options.doSearchWhenEmpty) {
-        			// force a longer delay since we are going to search on a shorter string
-    				searchDelay = 3000;
-    			}
-    			
         		//if there is any delay in progress, cancel it
     			if(self._searchDelayTimer != null)
     				window.clearTimeout(self._searchDelayTimer);
@@ -338,7 +332,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     					self.options.initialData = null;
     					
     				self._doSearch(text);
-    			}, searchDelay);
+    			}, SEARCH_DELAY);
 	    			
 	    		return true;
 		    });
