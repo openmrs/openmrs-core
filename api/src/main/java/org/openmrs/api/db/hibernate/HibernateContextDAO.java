@@ -21,12 +21,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.FlushMode;
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
+import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.util.ConfigHelper;
 import org.openmrs.GlobalProperty;
 import org.openmrs.User;
@@ -135,10 +135,11 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 			
 			String passwordOnRecord = (String) session.createSQLQuery("select password from users where user_id = ?")
-			        .addScalar("password", Hibernate.STRING).setInteger(0, candidateUser.getUserId()).uniqueResult();
+			        .addScalar("password", StandardBasicTypes.STRING).setInteger(0, candidateUser.getUserId())
+			        .uniqueResult();
 			
 			String saltOnRecord = (String) session.createSQLQuery("select salt from users where user_id = ?").addScalar(
-			    "salt", Hibernate.STRING).setInteger(0, candidateUser.getUserId()).uniqueResult();
+			    "salt", StandardBasicTypes.STRING).setInteger(0, candidateUser.getUserId()).uniqueResult();
 			
 			// if the username and password match, hydrate the user and return it
 			if (passwordOnRecord != null && Security.hashMatches(passwordOnRecord, password + saltOnRecord)) {
