@@ -80,7 +80,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${encounterType.creator.personName} -
+				<c:out value="${encounterType.creator.personName}" /> -
 				<openmrs:formatDate date="${encounterType.dateCreated}" type="long" />
 			</td>
 		</tr>

@@ -252,7 +252,7 @@
 	<div id="personFormVoided" class="retiredMessage">
 	<div><openmrs:message code="Person.voidedMessage"/></div>
     <div>
-    	<c:if test="${person.personVoidedBy.personName != null}"><openmrs:message code="general.byPerson"/> ${person.personVoidedBy.personName}</c:if> 
+    	<c:if test="${person.personVoidedBy.personName != null}"><openmrs:message code="general.byPerson"/> <c:out value="${person.personVoidedBy.personName}" /></c:if>
     	<c:if test="${person.personDateVoided != null}"> <openmrs:message code="general.onDate"/> <openmrs:formatDate date="${person.personDateVoided}" type="long" /> </c:if> 
    		<c:if test="${person.personVoidReason != ''}"> - ${person.personVoidReason} </c:if>
     </div>
@@ -280,7 +280,7 @@
 		<div id="pNames">
 			<div class="tabBar" id="pNameTabBar">
 				<c:forEach var="name" items="${person.names}" varStatus="varStatus">
-					<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="name${varStatus.index}" <c:if test="${name.voided}">class='voided'</c:if>><span>${name.givenName}</span>&nbsp;<span>${name.familyName}</span></a>
+					<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="name${varStatus.index}" <c:if test="${name.voided}">class='voided'</c:if>><span><c:out value="${name.givenName}" /></span>&nbsp;<span><c:out value="${name.familyName}" /></span></a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="nameTab" style="display: none"><span></span>&nbsp;<span></span></a>
 				<input type="button" onClick="return addNew('name');" class="addNew" id="name" value='<openmrs:message code="Person.addNewName"/>'/>

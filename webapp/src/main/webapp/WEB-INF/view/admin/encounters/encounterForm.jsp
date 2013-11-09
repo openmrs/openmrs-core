@@ -213,7 +213,7 @@
 </style>
 
 <c:if test="${encounter.patient.patientId != null}">
-<a href="../../patientDashboard.form?patientId=${encounter.patient.patientId}"><openmrs:message code="patientDashboard.viewDashboard"/></a>
+<a href="../../patientDashboard.form?patientId=<c:out value="${encounter.patient.patientId}" />"><openmrs:message code="patientDashboard.viewDashboard"/></a>
 </c:if>
 
 <h2><openmrs:message code="Encounter.manage.title"/></h2>
@@ -270,7 +270,7 @@
 					<c:forEach items="${patientVisits}" var="visit">
 						<option value="${visit.visitId}" <c:if test="${visit.visitId == status.value}">selected="selected"</c:if>>
 							 <openmrs:formatDate date="${visit.startDatetime}" />
-							 ${visit.visitType.name} ${visit.patient.personName}
+							 ${visit.visitType.name} <c:out value="${visit.patient.personName}" />
 							<c:if test="${visit.indication != null}"> ${visit.indication.name}</c:if>
 							<c:if test="${visit.location != null}"> ${visit.location}</c:if>
 						</option>
@@ -333,7 +333,7 @@
 			<tr>
 				<th><openmrs:message code="general.createdBy" /></th>
 				<td>
-					<a href="#View User" onclick="return gotoUser(null, '${encounter.creator.userId}')">${encounter.creator.personName}</a> -
+					<a href="#View User" onclick="return gotoUser(null, '${encounter.creator.userId}')"><c:out value="${encounter.creator.personName}" /></a> -
 					<openmrs:formatDate date="${encounter.dateCreated}" type="medium" />
 				</td>
 			</tr>
@@ -360,7 +360,7 @@
 				<tr id="voidedBy">
 					<th><openmrs:message code="general.voidedBy" /></th>
 					<td>
-						<a href="#View User" onclick="return gotoUser(null, '${encounter.voidedBy.userId}')">${encounter.voidedBy.personName}</a> -
+						<a href="#View User" onclick="return gotoUser(null, '${encounter.voidedBy.userId}')"><c:out value="${encounter.voidedBy.personName}" /></a> -
 						<openmrs:formatDate date="${encounter.dateVoided}" type="medium" />
 					</td>
 				</tr>

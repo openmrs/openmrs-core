@@ -24,7 +24,7 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.retiredBy"/>
-				${patientIdentifierType.retiredBy.personName}
+				<c:out value="${patientIdentifierType.retiredBy.personName}" />
 				<openmrs:formatDate date="${patientIdentifierType.dateRetired}" type="medium" />
 				-
 				${patientIdentifierType.retireReason}
@@ -139,7 +139,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${patientIdentifierType.creator.personName} -
+				<c:out value="${patientIdentifierType.creator.personName}" /> -
 				<openmrs:formatDate date="${patientIdentifierType.dateCreated}" type="long" />
 			</td>
 		</tr>

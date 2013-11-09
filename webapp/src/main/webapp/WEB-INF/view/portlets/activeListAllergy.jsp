@@ -100,7 +100,7 @@
 			return;
 		}
 
-		var patientId = ${model.patientId};
+		var patientId = <c:out value="${model.patientId}" />;
 
 		if(currentlyEditingAllergyId == null) {
 			DWRPatientService.createAllergy(patientId, allergen, type, startDate, severity, reaction, refreshPage);

@@ -146,7 +146,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${attributeType.creator.personName} -
+				<c:out value="${attributeType.creator.personName}" /> -
 				<openmrs:formatDate date="${attributeType.dateCreated}" type="long" />
 			</td>
 		</tr>

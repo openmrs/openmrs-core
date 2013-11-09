@@ -265,9 +265,9 @@
 </c:if>
 
 <c:if test="${patient.patientId != null}">
-	<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${patient.patientId}"><openmrs:message code="patientDashboard.viewDashboard"/></a>
+	<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=<c:out value="${patient.patientId}" />"><openmrs:message code="patientDashboard.viewDashboard"/></a>
 	|
-	<a href="${pageContext.request.contextPath}/admin/patients/mergePatients.form?patientId=${patient.patientId}"><openmrs:message code="Patient.mergeThis"/></a><br/><br/>
+	<a href="${pageContext.request.contextPath}/admin/patients/mergePatients.form?patientId=<c:out value="${patient.patientId}" />"><openmrs:message code="Patient.mergeThis"/></a><br/><br/>
 </c:if>
 
 <openmrs:hasPrivilege privilege="Delete Patients">
@@ -275,7 +275,7 @@
 	<div id="patientFormVoided" class="retiredMessage">
 	<div><openmrs:message code="Patient.voidedMessage"/></div>
     <div>
-    	<c:if test="${patient.voidedBy.personName != null}"><openmrs:message code="general.byPerson"/> ${patient.voidedBy.personName}</c:if> 
+    	<c:if test="${patient.voidedBy.personName != null}"><openmrs:message code="general.byPerson"/> <c:out value="${patient.voidedBy.personName}" /></c:if>
     	<c:if test="${patient.dateVoided != null}"> <openmrs:message code="general.onDate"/> <openmrs:formatDate date="${patient.dateVoided}" type="long" /> </c:if> 
    		<c:if test="${patient.voidReason != ''}"> - ${patient.voidReason} </c:if>
     </div>

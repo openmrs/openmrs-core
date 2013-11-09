@@ -553,8 +553,8 @@
 	<div id="enrollError" class="error" style="display:none;"></div>
 	<form id="enrollForm" name="enrollForm" method="post" action="${pageContext.request.contextPath}/admin/programs/patientProgram.form">
 		<input type="hidden" name="method" value="enroll"/>
-		<input type="hidden" name="patientId" value="${model.patientId}"/>
-		<input type="hidden" name="returnPage" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${model.patientId}"/>
+		<input type="hidden" name="patientId" value="<c:out value="${model.patientId}" />"/>
+		<input type="hidden" name="returnPage" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=<c:out value="${model.patientId}" />"/>
 		<table style="margin: 0px 0px 1em 2em;">
 			<tr>
 				<td nowrap><openmrs:message code="Program.program" javaScriptEscape="true"/>:</td>

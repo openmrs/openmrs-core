@@ -31,7 +31,7 @@ highlightMissing=true/false (defaults to true)
 		oldId = identifier;
 		oldLocation = identifierLocationId;
 		if (identifierType != null && identifierType != '' && identifier != null && identifier != '')
-			DWRPatientService.addIdentifier(${model.patientId}, identifierType, identifier, identifierLocationId, finishSave);
+			DWRPatientService.addIdentifier(<c:out value="${model.patientId}" />, identifierType, identifier, identifierLocationId, finishSave);
 	}
 	
 	function finishSave(data) {

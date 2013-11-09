@@ -303,7 +303,7 @@
 </c:choose>
 			</table>
 			<script>
-				setPatientId("${model.patientId}");
+				setPatientId("<c:out value="${model.patientId}" />");
 				setDisplayDrugSetIds("${model.displayDrugSetIds}");
 				setRegimenMode("${model.currentRegimenMode}");
 			</script>

@@ -65,7 +65,7 @@
 	<div class="retiredMessage">
 	<div>
 	<openmrs:message code="ConceptDrug.retiredMessage"/>
-	${drug.retiredBy.personName}
+	<c:out value="${drug.retiredBy.personName}" />
 				<openmrs:formatDate date="${drug.dateRetired}" type="medium" />
 				-
 				${drug.retireReason}
@@ -192,7 +192,7 @@
 		<tr>
 			<th><openmrs:message code="general.createdBy" /></th>
 			<td>
-				<a href="#View User" onclick="return gotoUser(null, '${drug.creator.userId}')">${drug.creator.personName}</a> -
+				<a href="#View User" onclick="return gotoUser(null, '${drug.creator.userId}')"><c:out value="${drug.creator.personName}" /></a> -
 				<openmrs:formatDate date="${drug.dateCreated}" type="medium" />
 			</td>
 		</tr>
@@ -201,7 +201,7 @@
 		<tr>
 			<th><openmrs:message code="general.changedBy" /></th>
 			<td>
-				<a href="#View User" onclick="return gotoUser(null, '${drug.changedBy.userId}')">${drug.changedBy.personName}</a> 
+				<a href="#View User" onclick="return gotoUser(null, '${drug.changedBy.userId}')"><c:out value="${drug.changedBy.personName}" /></a>
 				<openmrs:formatDate date="${drug.dateChanged}" type="medium" />
 			</td>
 		</tr>

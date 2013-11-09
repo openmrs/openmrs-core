@@ -50,7 +50,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${hl7Source.creator.personName} -
+				<c:out value="${hl7Source.creator.personName}" /> -
 				<openmrs:formatDate date="${hl7Source.dateCreated}" type="long" />
 			</td>
 		</tr>
