@@ -33,7 +33,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${conceptClass.creator.personName} -
+				<c:out value="${conceptClass.creator.personName}" /> -
 				<openmrs:formatDate date="${conceptClass.dateCreated}" type="long" />
 			</td>
 		</tr>

@@ -70,7 +70,7 @@
 					</tr>
 					<tr>
 						<th><openmrs:message code="Encounter.provider"/></th>
-						<td>${conceptProposal.encounter.provider.personName}</td>
+						<td><c:out value="${conceptProposal.encounter.provider.personName}" /></td>
 					</tr>
 					<tr>
 						<th><openmrs:message code="Encounter.datetime"/></th>
@@ -100,7 +100,7 @@
 		<tr>
 			<th><openmrs:message code="ConceptProposal.proposedBy" /></th>
 			<td>
-				${conceptProposal.creator.personName} -
+				<c:out value="${conceptProposal.creator.personName}" /> -
 				<openmrs:formatDate date="${conceptProposal.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -109,7 +109,7 @@
 		<tr>
 			<th><openmrs:message code="general.changedBy" /></th>
 			<td>
-				${conceptProposal.changedBy.personName} -
+				<c:out value="${conceptProposal.changedBy.personName}" /> -
 				<openmrs:formatDate date="${conceptProposal.dateChanged}" type="long" />
 			</td>
 		</tr>

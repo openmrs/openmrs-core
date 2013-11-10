@@ -188,7 +188,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${status.value.personName} -
+				<c:out value="${status.value.personName}" /> -
 				<openmrs:formatDate path="dateCreated" type="long" />
 			</td>
 		</tr>
@@ -200,7 +200,7 @@
 		<tr>
 			<td><openmrs:message code="general.changedBy" /></td>
 			<td colspan="2">
-				${status.value.personName} -
+				<c:out value="${status.value.personName}" /> -
 				<openmrs:formatDate path="dateChanged" type="long" />
 			</td>
 		</tr>
@@ -222,7 +222,7 @@
 		<tr>
 			<td><openmrs:message code="general.voidedBy"/></td>
 			<td>
-				${status.value.personName} -
+				<c:out value="${status.value.personName}" /> -
 				<openmrs:formatDate path="dateVoided" type="long" />
 			</td>
 		</tr>

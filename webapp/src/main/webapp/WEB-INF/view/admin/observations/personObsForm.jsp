@@ -12,7 +12,7 @@
 	<c:if test="${command.person.patient}">
 		<c:set var="linkUrl" value="../../patientDashboard.form?patientId=${command.person.personId}"/>
 	</c:if>
-	<a href="${linkUrl}">${command.person.personName}</a>
+	<a href="${linkUrl}"><c:out value="${command.person.personName}" /></a>
 	&nbsp;-&nbsp;
 	<c:if test="${empty command.concept}">
 		<openmrs:message code="Person.allObservations"/>

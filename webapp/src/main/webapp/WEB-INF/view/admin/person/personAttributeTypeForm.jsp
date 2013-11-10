@@ -111,7 +111,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${personAttributeType.creator.personName} -
+				<c:out value="${personAttributeType.creator.personName}" /> -
 				<openmrs:formatDate date="${personAttributeType.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -120,7 +120,7 @@
 		<tr>
 			<td><openmrs:message code="general.changedBy" /></td>
 			<td>
-				${personAttributeType.changedBy.personName} -
+				<c:out value="${personAttributeType.changedBy.personName}" /> -
 				<openmrs:formatDate date="${personAttributeType.dateChanged}" type="long" />
 			</td>
 		</tr>

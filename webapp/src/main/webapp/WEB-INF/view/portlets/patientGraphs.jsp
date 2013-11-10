@@ -95,7 +95,7 @@ table#labTestTable th {
 												limit="-1" />
 											</div>
 											<div align="center" valign="top" style="font-size: .9em"><a
-												href="?patientId=${patient.patientId}&patientGraphConceptRemove=true&patientGraphConcept=${conceptIds}"><openmrs:message
+												href="?patientId=<c:out value="${patient.patientId}" />&patientGraphConceptRemove=true&patientGraphConcept=${conceptIds}"><openmrs:message
 												code="general.remove" /></a> <br />
 											<br />
 										</div>
@@ -120,7 +120,7 @@ table#labTestTable th {
 					<openmrs_tag:conceptField formFieldName="concept" formFieldId="conceptId" excludeDatatypes="N/A" includeDatatypes="Numeric" onSelectFunction="onConceptSelect" />
 						<script type="text/javascript">
 						function onConceptSelect(concept) {
-							document.location="?patientId=${patient.patientId}&patientGraphConcept=" + concept.conceptId;
+							document.location="?patientId=<c:out value="${patient.patientId}" />&patientGraphConcept=" + concept.conceptId;
 						}
 						</script>
 				</td>
@@ -183,7 +183,7 @@ table#labTestTable th {
 				<openmrs:globalProperty var="colorAbsolute" key="graph.color.absolute"/>
 				<openmrs:globalProperty var="colorNormal" key="graph.color.normal"/>
 				<openmrs:globalProperty var="colorCritical" key="graph.color.critical"/>			
-		$j.getJSON("patientGraphJson.form?patientId=${patient.patientId}&conceptId=${conceptIds}", function(json){
+		$j.getJSON("patientGraphJson.form?patientId=<c:out value="${patient.patientId}" />&conceptId=${conceptIds}", function(json){
 			  $j("#conceptBox-${conceptIds} .conceptGraphTitle").html(json.name);
 			
 			  var plot = $j.plot($j('#conceptGraphBox-${conceptIds}'),

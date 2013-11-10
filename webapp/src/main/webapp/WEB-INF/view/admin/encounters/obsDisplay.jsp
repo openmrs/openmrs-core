@@ -33,7 +33,7 @@
 					<span class="obsComment"><c:if test="${obs.comment != null && obs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${obs.comment}" /></c:if></span>
 				</td>
 				<td class="obsCreator" style="white-space: nowrap;">
-					${obs.creator.personName} -
+					<c:out value="${obs.creator.personName}" /> -
 					<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
 				</td>
 			</tr>

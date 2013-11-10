@@ -92,7 +92,7 @@
 			<openmrs:authentication>
 				<c:if test="${authenticatedUser != null}">
 					<span id="userLoggedInAs" class="firstChild">
-						<openmrs:message code="header.logged.in"/> ${authenticatedUser.personName}
+						<openmrs:message code="header.logged.in"/> <c:out value="${authenticatedUser.personName}" />
 					</span>
 					<span id="userLogout">
 						<a href='${pageContext.request.contextPath}/logout'><openmrs:message code="header.logout" /></a>

@@ -57,7 +57,7 @@
 					<c:if test="${order.encounter != null}">
 						<td valign="top">
 							<c:forEach var="name" items="${order.encounter.patient.names}">
-								${name.familyName}, ${name.givenName}<br />
+								<c:out value="${name.familyName}" />, <c:out value="${name.givenName}" /><br />
 							</c:forEach>
 						</td>
 					</c:if>

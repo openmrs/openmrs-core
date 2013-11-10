@@ -17,7 +17,7 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.voidedBy"/>
-				${order.voidedBy.personName}
+				<c:out value="${order.voidedBy.personName}" />
 				<openmrs:formatDate date="${order.dateVoided}" type="medium" />
 				-
 				${order.voidReason}
@@ -103,7 +103,7 @@
 		<c:if test="${order.discontinued}">	
 			<tr id="discontinuedBy">
 				<td valign="top"><openmrs:message code="general.discontinuedBy"/></td>
-				<td valign="top">${order.discontinuedBy.personName}</td>
+				<td valign="top"><c:out value="${order.discontinuedBy.personName}" /></td>
 			</tr>
 			<tr id="dateDiscontinued">
 				<td valign="top"><openmrs:message code="general.dateDiscontinued"/></td>
@@ -120,7 +120,7 @@
 			<tr>
 				<td><openmrs:message code="general.createdBy" /></td>
 				<td>
-					${order.creator.personName} - <openmrs:formatDate date="${order.dateCreated}" type="long" />
+					<c:out value="${order.creator.personName}" /> - <openmrs:formatDate date="${order.dateCreated}" type="long" />
 				</td>
 			</tr>
 		</c:if>

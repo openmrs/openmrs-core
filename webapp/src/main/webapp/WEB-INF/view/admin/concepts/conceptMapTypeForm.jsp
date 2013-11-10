@@ -94,7 +94,7 @@ $j(document).ready( function() {
 		<tr>
 			<th class="alignRight"><openmrs:message code="general.createdBy" /></th>
 			<td>
-				${conceptMapType.creator.personName} -
+				<c:out value="${conceptMapType.creator.personName}" /> -
 				<openmrs:formatDate date="${conceptMapType.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -103,7 +103,7 @@ $j(document).ready( function() {
 		<tr>
 			<th class="alignRight"><openmrs:message code="general.changedBy" /></th>
 			<td>
-				${conceptMapType.changedBy.personName} -
+				<c:out value="${conceptMapType.changedBy.personName}" /> -
 				<openmrs:formatDate date="${conceptMapType.dateChanged}" type="long" />
 			</td>
 		</tr>
@@ -112,7 +112,7 @@ $j(document).ready( function() {
 		<tr>
 			<th class="alignRight"><openmrs:message code="general.retiredBy" /></th>
 			<td>
-				${conceptMapType.retiredBy.personName} -
+				<c:out value="${conceptMapType.retiredBy.personName}" /> -
 				<openmrs:formatDate date="${conceptMapType.dateRetired}" type="long" />
 			</td>
 		</tr>

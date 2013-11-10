@@ -234,7 +234,7 @@
 	<c:if test="${patientModel.patient.patientId != null}"><h2><openmrs:message code="Patient.edit"/></h2></c:if>
 
 	<c:if test="${patientModel.patient.patientId != null}">
-		<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${patientModel.patient.patientId}">
+		<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=<c:out value="${patientModel.patient.patientId}" />">
 			<openmrs:message code="patientDashboard.viewDashboard"/>
 		</a>
 		<br/>
@@ -574,7 +574,7 @@
 	</tr>
 	</table>
 	
-	<input type="hidden" name="patientId" value="${param.patientId}" />
+	<input type="hidden" name="patientId" value="<c:out value="${param.patientId}" />" />
 	
 	<br />
 	<input type="submit" value="<openmrs:message code="general.save" />" name="action" id="addButton"> &nbsp; &nbsp; 
