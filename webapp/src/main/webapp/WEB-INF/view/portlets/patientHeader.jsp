@@ -25,11 +25,11 @@
 		<c:forEach var="identifier" items="${model.patient.activeIdentifiers}"
 			begin="0" end="0">
 			<span class="patientHeaderPatientIdentifier"><span
-				id="patientHeaderPatientIdentifierType">${identifier.identifierType.name}<openmrs:extensionPoint
+				id="patientHeaderPatientIdentifierType"><c:out value="${identifier.identifierType.name}" /><openmrs:extensionPoint
 						pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientIdentifierType"
 						type="html"
 						parameters="identifierLocation=${identifier.location.name}" />:
-			</span> ${identifier.identifier}</span>
+			</span> <c:out value="${identifier.identifier}" /></span>
 		</c:forEach>
 	</c:if>
 </div>
@@ -88,22 +88,22 @@
 				test="${fn:length(model.patient.activeIdentifiers) > 1}">
 				<c:forEach var="identifier"
 					items="${model.patient.activeIdentifiers}" begin="1" end="1">
-					<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}<openmrs:extensionPoint
+					<span class="patientHeaderPatientIdentifier"><c:out value="${identifier.identifierType.name}" /><openmrs:extensionPoint
 							pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientIdentifierType"
 							type="html"
 							parameters="identifierLocation=${identifier.location.name}" />:
-						${identifier.identifier}
+						<c:out value="${identifier.identifier}" />
 					</span>
 				</c:forEach>
 			</c:if> <c:if test="${fn:length(model.patient.activeIdentifiers) > 2}">
 				<div id="patientHeaderMoreIdentifiers">
 					<c:forEach var="identifier"
 						items="${model.patient.activeIdentifiers}" begin="2">
-						<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}<openmrs:extensionPoint
+						<span class="patientHeaderPatientIdentifier"><c:out value="${identifier.identifierType.name}" /><openmrs:extensionPoint
 								pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientIdentifierType"
 								type="html"
 								parameters="identifierLocation=${identifier.location.name}" />:
-							${identifier.identifier}
+							<c:out value="${identifier.identifier}" />
 						</span>
 					</c:forEach>
 				</div>

@@ -91,7 +91,7 @@ function collectInfo(){
 			patientNames.value = patientNames.value+"#";
 			
 			<c:forEach items="${patient.identifiers}" var="identifier">
-					patientIdentifiers.value = patientIdentifiers.value+"${identifier.identifier} ${identifier.identifierType.name}|";
+					patientIdentifiers.value = patientIdentifiers.value+"<c:out value="${identifier.identifier}" /> <c:out value="${identifier.identifierType.name}" />|";
 			</c:forEach>
 			patientIdentifiers.value = patientIdentifiers.value+"#";
 
@@ -548,7 +548,7 @@ function generateMergeList(){
 				<h4><openmrs:message code="Patient.identifiers"/></h4>
 				<ol id="identifier1">
 					<c:forEach items="${patient1.identifiers}" var="identifier">
-						<li>${identifier.identifier} ${identifier.identifierType.name}
+						<li><c:out value="${identifier.identifier}" /> <c:out value="${identifier.identifierType.name}" />
 					</c:forEach>
 				</ol>
 			</td>
@@ -557,7 +557,7 @@ function generateMergeList(){
 					<h4><openmrs:message code="Patient.identifiers"/></h4>
 					<ol id="identifier2">
 						<c:forEach items="${patient2.identifiers}" var="identifier">
-							<li>${identifier.identifier} ${identifier.identifierType.name}
+							<li><c:out value="${identifier.identifier}" /> <c:out value="${identifier.identifierType.name}" />
 						</c:forEach>
 					</ol>
 				</td>

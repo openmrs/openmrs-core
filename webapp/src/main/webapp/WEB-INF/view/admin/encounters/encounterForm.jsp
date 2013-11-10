@@ -390,7 +390,7 @@
 					<td>${provider}
 						<input type="hidden" name="providerIds" value="${provider.providerId}" />
 					</td>
-					<td>${provider.identifier}</td>
+					<td><c:out value="${provider.identifier}" /></td>
 					<td><input type="button" value='<openmrs:message code="general.remove"/>' class="smallButton" onClick="removeProvider(this, ${providerRole.key.encounterRoleId}, ${provider.providerId})" /></td>
 				</tr>
 			</c:forEach>
@@ -401,7 +401,7 @@
 					<option value=""></option>
 					<c:forEach items="${encounterRoles}" var="encounterRole">
 						<option value="${encounterRole.encounterRoleId}">
-							${encounterRole.name}
+							<c:out value="${encounterRole.name}" />
 						</option>
 					</c:forEach>
 				</select>

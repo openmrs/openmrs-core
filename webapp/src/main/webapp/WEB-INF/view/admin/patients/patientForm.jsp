@@ -303,7 +303,7 @@
 		<div id="pIds">
 			<div class="tabBar" id="pIdTabBar">
 				<c:forEach var="identifier" items="${patient.identifiers}" varStatus="varStatus">
-					<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifier${varStatus.index}" <c:if test="${identifier.voided}">class='voided'</c:if>><span>${identifier.identifierType.name}</span>&nbsp;</a>
+					<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifier${varStatus.index}" <c:if test="${identifier.voided}">class='voided'</c:if>><span><c:out value="${identifier.identifierType.name}" /></span>&nbsp;</a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifierTab" style="display: none"><span></span>&nbsp;</a>
 				<input type="button" onClick="return addNew('identifier');" class="addNew" id="identifier" value='<openmrs:message code="Patient.addNewIdentifier"/>'/>

@@ -27,7 +27,7 @@
 				<c:out value="${patientIdentifierType.retiredBy.personName}" />
 				<openmrs:formatDate date="${patientIdentifierType.dateRetired}" type="medium" />
 				-
-				${patientIdentifierType.retireReason}
+				<c:out value="${patientIdentifierType.retireReason}" />
 				<input type="submit" value='<openmrs:message code="PatientIdentifierType.unretirePatientIdentifierType"/>' name="unretire"/>
 			</div>
 		</div>
@@ -125,7 +125,7 @@
 					<option value="${piv['class'].name}" 
 						<c:if test="${status.value == piv['class'].name}">selected</c:if> 
 					/>
-					${piv.name}
+					<c:out value="${piv.name}" />
 						<c:if test="${defaultValidatorName == piv.name}"> (default)</c:if>
 					</option>
 				</c:forEach>
