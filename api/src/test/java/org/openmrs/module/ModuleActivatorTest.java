@@ -5,11 +5,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.StartModule;
 import org.springframework.context.support.GenericApplicationContext;
 
-@StartModule( { "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod", "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod",
-        "org/openmrs/module/include/test2-1.0-SNAPSHOT.omod" })
 public class ModuleActivatorTest extends BaseContextSensitiveTest {
 	
 	private static final String MODULE1_ID = "test1";
@@ -18,17 +15,19 @@ public class ModuleActivatorTest extends BaseContextSensitiveTest {
 	
 	private static final String MODULE3_ID = "test3";
 	
-	ModuleTestData moduleTestData;
+	private ModuleTestData moduleTestData;
 	
 	@Before
-	public void beforeEachTest() {
+	public void beforeEachTest() throws Exception {
 		moduleTestData = ModuleTestData.getInstance();
+		
+		ModuleUtil.shutdown();
 		
 		init();
 		
-		ModuleFactory.startModule(ModuleFactory.getModuleById(MODULE1_ID));
-		ModuleFactory.startModule(ModuleFactory.getModuleById(MODULE2_ID));
-		ModuleFactory.startModule(ModuleFactory.getModuleById(MODULE3_ID));
+		String modulesToLoad = "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod org/openmrs/module/include/test1-1.0-SNAPSHOT.omod org/openmrs/module/include/test2-1.0-SNAPSHOT.omod";
+		runtimeProperties.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD, modulesToLoad);
+		ModuleUtil.startup(runtimeProperties);
 	}
 	
 	@Test
@@ -94,6 +93,8 @@ public class ModuleActivatorTest extends BaseContextSensitiveTest {
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
+		
+		//it should also have called willRefreshContext and contextRefreshed for the remaining modules
 	}
 	
 	@Test
@@ -133,7 +134,34 @@ public class ModuleActivatorTest extends BaseContextSensitiveTest {
 		assertTrue(moduleTestData.getWillStopCallTime(MODULE3_ID) <= moduleTestData.getStoppedCallTime(MODULE3_ID));
 	}
 	
-	private void init() {
+	@Test
+	public void shouldExcludePrevouslyStoppedModules() {
+		//since module test2 depends on test1 and test3 depends on test2
+		//stopping test1 should also stop both modules test2 and test3
+		ModuleFactory.stopModule(ModuleFactory.getModuleById(MODULE3_ID));
+		
+		//should have called willStop() for only modules test1, test2 and test3
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE3_ID) == 1);
+		
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
+		
+		ModuleUtil.shutdown();
+		
+		//should have called stopped() for only modules test1, test2 and test3
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
+		
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
+	}
+	
+	public void init() {
 		moduleTestData.init(MODULE1_ID);
 		moduleTestData.init(MODULE2_ID);
 		moduleTestData.init(MODULE3_ID);
