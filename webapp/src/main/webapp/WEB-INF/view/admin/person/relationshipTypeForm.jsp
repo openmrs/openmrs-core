@@ -53,7 +53,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${relationshipType.creator.personName} -
+				<c:out value="${relationshipType.creator.personName}" /> -
 				<openmrs:formatDate date="${relationshipType.dateCreated}" type="long" />
 			</td>
 		</tr>

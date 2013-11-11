@@ -14,7 +14,7 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.retiredBy"/>
-				${location.retiredBy.personName}
+				<c:out value="${location.retiredBy.personName}" />
 				<openmrs:formatDate date="${location.dateRetired}" type="medium" />
 				-
 				${location.retireReason}
@@ -100,7 +100,7 @@
 			<tr>
 				<th><openmrs:message code="general.createdBy" /></th>
 				<td colspan="5">
-					${location.creator.personName} -
+					<c:out value="${location.creator.personName}" /> -
 					<openmrs:formatDate date="${location.dateCreated}" type="long" />
 				</td>
 			</tr>

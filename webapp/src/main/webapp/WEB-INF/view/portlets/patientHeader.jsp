@@ -25,11 +25,11 @@
 		<c:forEach var="identifier" items="${model.patient.activeIdentifiers}"
 			begin="0" end="0">
 			<span class="patientHeaderPatientIdentifier"><span
-				id="patientHeaderPatientIdentifierType">${identifier.identifierType.name}<openmrs:extensionPoint
+				id="patientHeaderPatientIdentifierType"><c:out value="${identifier.identifierType.name}" /><openmrs:extensionPoint
 						pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientIdentifierType"
 						type="html"
 						parameters="identifierLocation=${identifier.location.name}" />:
-			</span> ${identifier.identifier}</span>
+			</span> <c:out value="${identifier.identifier}" /></span>
 		</c:forEach>
 	</c:if>
 </div>
@@ -88,22 +88,22 @@
 				test="${fn:length(model.patient.activeIdentifiers) > 1}">
 				<c:forEach var="identifier"
 					items="${model.patient.activeIdentifiers}" begin="1" end="1">
-					<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}<openmrs:extensionPoint
+					<span class="patientHeaderPatientIdentifier"><c:out value="${identifier.identifierType.name}" /><openmrs:extensionPoint
 							pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientIdentifierType"
 							type="html"
 							parameters="identifierLocation=${identifier.location.name}" />:
-						${identifier.identifier}
+						<c:out value="${identifier.identifier}" />
 					</span>
 				</c:forEach>
 			</c:if> <c:if test="${fn:length(model.patient.activeIdentifiers) > 2}">
 				<div id="patientHeaderMoreIdentifiers">
 					<c:forEach var="identifier"
 						items="${model.patient.activeIdentifiers}" begin="2">
-						<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}<openmrs:extensionPoint
+						<span class="patientHeaderPatientIdentifier"><c:out value="${identifier.identifierType.name}" /><openmrs:extensionPoint
 								pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientIdentifierType"
 								type="html"
 								parameters="identifierLocation=${identifier.location.name}" />:
-							${identifier.identifier}
+							<c:out value="${identifier.identifier}" />
 						</span>
 					</c:forEach>
 				</div>
@@ -228,7 +228,7 @@
 		<c:if test="${empty model.activeVisits}">
 			<div id="patientVisitsSubheader" class="box" style="margin-top: 2px">
 				<input type="button" value="<openmrs:message code="Visit.start"/>"
-					onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?patientId=${model.patient.patientId}&startNow=true'" />
+					onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?patientId=<c:out value="${model.patient.patientId}" />&startNow=true'" />
 			</div>
 		</c:if>
 	</openmrs:hasPrivilege>
@@ -282,7 +282,7 @@
 		<c:forEach var="visit" items="${model.activeVisits}">
 			<div id="patientVisitsSubheader" class="box" style="margin-top: 2px">
 				&nbsp;<strong><openmrs:message code="Visit.active.label" />: <a
-					href="<openmrs:contextPath />/admin/visits/visit.form?visitId=${ visit.visitId }&patientId=${model.patient.patientId}"><openmrs:format
+					href="<openmrs:contextPath />/admin/visits/visit.form?visitId=${ visit.visitId }&patientId=<c:out value="${model.patient.patientId}" />"><openmrs:format
 							visitType="${ visit.visitType }" /></a></strong>
 				<c:if test="${ not empty visit.location }">
 					<openmrs:message code="general.atLocation" />
@@ -295,7 +295,7 @@
 				</c:if>
 				<openmrs:hasPrivilege privilege="Edit Visits">
 					<input type="button" value="<openmrs:message code="Visit.edit"/>"
-						onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?visitId=${ visit.visitId }&patientId=${model.patient.patientId}'" />
+						onclick="window.location='<openmrs:contextPath />/admin/visits/visit.form?visitId=${ visit.visitId }&patientId=<c:out value="${model.patient.patientId}" />'" />
 					<input type="button" value="<openmrs:message code="Visit.end"/>" onclick="patientHeaderEndVisit('${visit.visitId}', '<openmrs:formatDate date="${visit.stopDatetime}" format="dd/MM/yyyy HH:mm" />');" />
 				</openmrs:hasPrivilege>
 				<br />&nbsp;

@@ -334,7 +334,7 @@
 			<tr>
 				<th><openmrs:message code="general.createdBy" /></th>
 				<td>
-					${command.concept.creator.personName} -
+					<c:out value="${command.concept.creator.personName}" /> -
 					<openmrs:formatDate date="${command.concept.dateCreated}" type="long" />
 				</td>
 			</tr>
@@ -343,7 +343,7 @@
 			<tr>
 				<th><openmrs:message code="general.changedBy" /></th>
 				<td>
-					${command.concept.changedBy.personName} -
+					<c:out value="${command.concept.changedBy.personName}" /> -
 					<openmrs:formatDate date="${command.concept.dateChanged}" type="long" />
 				</td>
 			</tr>

@@ -272,7 +272,7 @@
 		
 		<span id="add_rel_details" style="display: none">
 			<hr/>
-			${model.person.personName}<openmrs:message code="Relationship.possessive"/>
+			<c:out value="${model.person.personName}" /><openmrs:message code="Relationship.possessive"/>
 			<i><span id="add_relationship_name"><openmrs:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
 			<openmrs:message code="Relationship.target"/>

@@ -125,7 +125,7 @@
 		<tr>
 			<td><openmrs:message code="general.retiredBy"/></td>
 			<td>
-				${form.retiredBy.personName} -
+				<c:out value="${form.retiredBy.personName}" /> -
 				<openmrs:formatDate date="${form.dateRetired}" type="long" />
 			</td>
 		</tr>
@@ -134,7 +134,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${form.creator.personName} -
+				<c:out value="${form.creator.personName}" /> -
 				<openmrs:formatDate date="${form.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -143,7 +143,7 @@
 		<tr>
 			<td><openmrs:message code="general.changedBy" /></td>
 			<td>
-				${form.changedBy.personName} -
+				<c:out value="${form.changedBy.personName}" /> -
 				<openmrs:formatDate date="${form.dateChanged}" type="long" />
 			</td>
 		</tr>

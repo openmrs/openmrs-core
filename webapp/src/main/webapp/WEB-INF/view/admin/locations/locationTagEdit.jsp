@@ -13,7 +13,7 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.retiredBy"/>
-				${locationTag.retiredBy.personName}
+				<c:out value="${locationTag.retiredBy.personName}" />
 				<openmrs:formatDate date="${locationTag.dateRetired}" type="medium" />
 				-
 				${locationTag.retireReason}

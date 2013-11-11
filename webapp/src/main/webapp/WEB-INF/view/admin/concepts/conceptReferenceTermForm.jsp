@@ -306,7 +306,7 @@ $j(document).ready( function() {
 		<tr>
 			<th class="alignRight"><openmrs:message code="general.createdBy" /></th>
 			<td>
-				${conceptReferenceTermModel.conceptReferenceTerm.creator.personName} -
+				<c:out value="${conceptReferenceTermModel.conceptReferenceTerm.creator.personName}" /> -
 				<openmrs:formatDate date="${conceptReferenceTermModel.conceptReferenceTerm.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -315,7 +315,7 @@ $j(document).ready( function() {
 		<tr>
 			<th class="alignRight"><openmrs:message code="general.changedBy" /></th>
 			<td>
-				${conceptReferenceTermModel.conceptReferenceTerm.changedBy.personName} -
+				<c:out value="${conceptReferenceTermModel.conceptReferenceTerm.changedBy.personName}" /> -
 				<openmrs:formatDate date="${conceptReferenceTermModel.conceptReferenceTerm.dateChanged}" type="long" />
 			</td>
 		</tr>
@@ -324,7 +324,7 @@ $j(document).ready( function() {
 		<tr>
 			<th class="alignRight"><openmrs:message code="general.retiredBy" /></th>
 			<td>
-				${conceptReferenceTermModel.conceptReferenceTerm.retiredBy.personName} -
+				<c:out value="${conceptReferenceTermModel.conceptReferenceTerm.retiredBy.personName}" /> -
 				<openmrs:formatDate date="${conceptReferenceTermModel.conceptReferenceTerm.dateRetired}" type="long" />
 			</td>
 		</tr>
