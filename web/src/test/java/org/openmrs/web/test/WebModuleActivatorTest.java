@@ -21,6 +21,7 @@ import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.WebModuleUtil;
+import org.openmrs.web.Listener;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
@@ -115,6 +116,31 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		//started() method gets called for ONLY the newly started module's activator
 		assertTrue(moduleTestData.getStartedCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getStartedCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getStartedCallCount(MODULE3_ID) == 1);
+	}
+	
+	@Test
+	@NotTransactional
+	public void shouldRefreshContextForAllStartedModulesOnWebStartup() throws Throwable {
+		
+		//At OpenMRS start up:
+		//  willRefreshContext(), contextRefreshed(), willStart() and started() methods get called for all started modules' activators
+		Listener.performWebStartOfModules(((XmlWebApplicationContext) applicationContext).getServletContext());
+		
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE3_ID) == 1);
+		
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE3_ID) == 1);
+		
+		assertTrue(moduleTestData.getWillStartCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getWillStartCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getWillStartCallCount(MODULE3_ID) == 1);
+		
+		assertTrue(moduleTestData.getStartedCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getStartedCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getStartedCallCount(MODULE3_ID) == 1);
 	}
 }
