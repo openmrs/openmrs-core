@@ -84,4 +84,37 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE2_ID) == 1);
 	}
+	
+	@Test
+	@NotTransactional
+	public void shouldRefreshOtherModulesOnStartingStoppedModule() {
+		Module module = ModuleFactory.getModuleById(MODULE3_ID);
+		ModuleFactory.stopModule(module);
+		
+		init(); //to initialize for the condition below:
+		
+		//When OpenMRS is running and you start a stopped module:
+		//	willRefreshContext() and contextRefreshed() methods get called for all started modules' activators (including the newly started module)
+		//  started() method gets called for ONLY the newly started module's activator
+		
+		//start module3 which was previously stopped
+		ModuleFactory.startModule(module);
+		WebModuleUtil.startModule(module, ((XmlWebApplicationContext) applicationContext).getServletContext(), false);
+		
+		assertTrue(module.isStarted());
+		assertTrue(ModuleFactory.isModuleStarted(module));
+		
+		//module1, module2 and module3 should refresh
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE3_ID) == 1);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE3_ID) == 1);
+		
+		//started() method gets called for ONLY the newly started module's activator
+		assertTrue(moduleTestData.getStartedCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getStartedCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getStartedCallCount(MODULE3_ID) == 1);
+	}
 }
