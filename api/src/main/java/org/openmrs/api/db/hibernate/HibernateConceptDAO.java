@@ -414,11 +414,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 			
 			Iterator<String> word = words.iterator();
-			searchCriteria.add(Restrictions.like("name", word.next(), MatchMode.ANYWHERE));
+			searchCriteria.add(Restrictions.ilike("name", word.next(), MatchMode.ANYWHERE));
 			while (word.hasNext()) {
 				String w = word.next();
 				log.debug(w);
-				searchCriteria.add(Restrictions.like("name", w, MatchMode.ANYWHERE));
+				searchCriteria.add(Restrictions.ilike("name", w, MatchMode.ANYWHERE));
 			}
 			searchCriteria.addOrder(Order.asc("drug.concept"));
 			conceptDrugs = searchCriteria.list();
