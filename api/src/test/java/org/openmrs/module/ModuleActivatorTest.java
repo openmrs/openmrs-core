@@ -67,8 +67,8 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	
 	@Test
 	public void shouldStartModulesInOrder() throws Exception {
-		//module test2 depends on test1
-		//while test3 depends on test2
+		//module2 depends on module1
+		//while module3 depends on module2
 		assertTrue(moduleTestData.getWillStartCallTime(MODULE1_ID) <= moduleTestData.getWillStartCallTime(MODULE2_ID));
 		assertTrue(moduleTestData.getWillStartCallTime(MODULE2_ID) <= moduleTestData.getWillStartCallTime(MODULE3_ID));
 	}
@@ -77,31 +77,29 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	public void shouldCallWillStopAndStoppedOnlyForStoppedModule() throws Exception {
 		ModuleFactory.stopModule(ModuleFactory.getModuleById(MODULE3_ID));
 		
-		//should have called willStop() for only module test3
+		//should have called willStop() for only module3
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE3_ID) == 1);
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 0);
 		
-		//should have called stopped() for only module test3
+		//should have called stopped() for only module3
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
-		
-		//it should also have called willRefreshContext and contextRefreshed for the remaining modules
 	}
 	
 	@Test
 	public void shouldStopDependantModulesOnStopModule() throws Exception {
-		//since module test2 depends on test1 and test3 depends on test2
-		//stopping test1 should also stop both modules test2 and test3
+		//since module2 depends on module1, and module3 depends on module2
+		//stopping module1 should also stop both module2 and module3
 		ModuleFactory.stopModule(ModuleFactory.getModuleById(MODULE1_ID));
 		
-		//should have called willStop() for only modules test1, test2 and test3
+		//should have called willStop() for all module1, module2 and module3
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE3_ID) == 1);
 		
-		//should have called stopped() for only modules test1, test2 and test3
+		//should have called stopped() for all module1, module2 and module3
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
@@ -111,29 +109,31 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	public void shouldCallWillStopAndStoppedOnShutdown() throws Exception {
 		ModuleUtil.shutdown();
 		
-		//should have called willStop()
+		//should have called willStop() for module1, module2, and module3
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE3_ID) == 1);
 		
-		//should have called stopped()
+		//should have called stopped() for module1, module2, and module3
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
 		
-		//willStop() should have been called before stopped()
+		//willStop() should have been called before stopped() for module1, module2, and module3
 		assertTrue(moduleTestData.getWillStopCallTime(MODULE1_ID) <= moduleTestData.getStoppedCallTime(MODULE1_ID));
 		assertTrue(moduleTestData.getWillStopCallTime(MODULE2_ID) <= moduleTestData.getStoppedCallTime(MODULE2_ID));
 		assertTrue(moduleTestData.getWillStopCallTime(MODULE3_ID) <= moduleTestData.getStoppedCallTime(MODULE3_ID));
 	}
 	
 	@Test
-	public void shouldExcludePrevouslyStoppedModules() {
-		//since module test2 depends on test1 and test3 depends on test2
-		//stopping test1 should also stop both modules test2 and test3
+	public void shouldExcludePrevouslyStoppedModulesOnShutdown() {
+		//At OpenMRS shutdown, willStop() and stopped() methods get called for all 
+		//started module's activator EXCLUDING any module(s) that were previously stopped.
+		
+		//now let us make module3 be the previously stopped module
 		ModuleFactory.stopModule(ModuleFactory.getModuleById(MODULE3_ID));
 		
-		//should have called willStop() for only modules test1, test2 and test3
+		//should have called willStop() and stopped() for only module3
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 0);
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE3_ID) == 1);
@@ -142,12 +142,14 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
 		
+		//now shutdown
 		ModuleUtil.shutdown();
 		
-		//should have called stopped() for only modules test1, test2 and test3
-		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 1);
-		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 1);
-		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
+		//should have called willStop() and stopped() for module1 and module2
+		//while willStop() and stopped() should not be called again for module3
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE3_ID) == 1);
 		
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 1);
