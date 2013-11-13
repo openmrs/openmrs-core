@@ -17,17 +17,22 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.openmrs.module.BaseModuleActivatorTest;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
+import org.openmrs.module.web.WebModuleUtil;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
  * ModuleActivator tests that need refreshing the spring application context. The only reason why i
  * did not put these in the api projects's ModuleActivatorTest is because when the spring
  * application context is refreshed, classes that the module references which are not in the api but
  * web, will lead to ClassNotFoundException s, hence preventing the refresh. If you want to try this
- * out, just put these tests in ModuleActivatorTest
+ * out, just put these tests in ModuleActivatorTest NOTE: The way we start, stop, unload, etc,
+ * modules is copied from ModuleListController
  */
 @ContextConfiguration(locations = { "classpath*:webModuleApplicationContext.xml" }, inheritLocations = true, loader = TestContextLoader.class)
 public class WebModuleActivatorTest extends BaseModuleActivatorTest {
@@ -45,5 +50,38 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE3_ID) == 1);
+	}
+	
+	@Test
+	@NotTransactional
+	public void shouldRefreshOtherModulesOnStoppingModule() {
+		
+		//When OpenMRS is running and you stop a module:
+		//    willRefreshContext() and contextRefreshed() methods get called for ONLY the started modules' activators EXCLUDING the stopped module
+		//    willStop() and stopped() methods get called for ONLY the stopped module's activator
+		
+		Module module = ModuleFactory.getModuleById(MODULE3_ID);
+		ModuleFactory.stopModule(module);
+		WebModuleUtil.stopModule(module, ((XmlWebApplicationContext) applicationContext).getServletContext());
+		
+		//module3 should have stopped
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE3_ID) == 1);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
+		
+		//module1 and module2 should not stop
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
+		
+		//module3 should not refresh
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE3_ID) == 0);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE3_ID) == 0);
+		
+		//module1 and module2 should refresh
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE2_ID) == 1);
 	}
 }
