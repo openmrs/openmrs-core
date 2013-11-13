@@ -15,32 +15,13 @@ package org.openmrs.module;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
 
-public class ModuleActivatorTest extends BaseContextSensitiveTest {
-	
-	private static final String MODULE1_ID = "test1";
-	
-	private static final String MODULE2_ID = "test2";
-	
-	private static final String MODULE3_ID = "test3";
-	
-	private ModuleTestData moduleTestData;
-	
-	@Before
-	public void beforeEachTest() throws Exception {
-		moduleTestData = ModuleTestData.getInstance();
-		
-		ModuleUtil.shutdown();
-		
-		init();
-		
-		String modulesToLoad = "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod org/openmrs/module/include/test1-1.0-SNAPSHOT.omod org/openmrs/module/include/test2-1.0-SNAPSHOT.omod";
-		runtimeProperties.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD, modulesToLoad);
-		ModuleUtil.startup(runtimeProperties);
-	}
+/**
+ * Tests methods of the module activator that do not require refreshing of the spring applications
+ * context. For those that require refreshing, see WebModuleActivatorTest
+ */
+public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	
 	@Test
 	public void shouldCallWillStartOnStartup() throws Exception {
@@ -171,11 +152,5 @@ public class ModuleActivatorTest extends BaseContextSensitiveTest {
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
-	}
-	
-	public void init() {
-		moduleTestData.init(MODULE1_ID);
-		moduleTestData.init(MODULE2_ID);
-		moduleTestData.init(MODULE3_ID);
 	}
 }
