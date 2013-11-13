@@ -15,12 +15,16 @@ package org.openmrs.web.test;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.net.URL;
+
 import org.junit.Test;
 import org.openmrs.module.BaseModuleActivatorTest;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.WebModuleUtil;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.Listener;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.test.annotation.NotTransactional;
@@ -96,7 +100,7 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		
 		//When OpenMRS is running and you start a stopped module:
 		//	willRefreshContext() and contextRefreshed() methods get called for all started modules' activators (including the newly started module)
-		//  started() method gets called for ONLY the newly started module's activator
+		//  willStart() and started() methods get called for ONLY the newly started module's activator
 		
 		//start module3 which was previously stopped
 		ModuleFactory.startModule(module);
@@ -113,7 +117,10 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE3_ID) == 1);
 		
-		//started() method gets called for ONLY the newly started module's activator
+		//willStart() and started() methods get called for ONLY the newly started module's activator
+		assertTrue(moduleTestData.getWillStartCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getWillStartCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getWillStartCallCount(MODULE3_ID) == 1);
 		assertTrue(moduleTestData.getStartedCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getStartedCallCount(MODULE2_ID) == 0);
 		assertTrue(moduleTestData.getStartedCallCount(MODULE3_ID) == 1);
@@ -141,6 +148,48 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		
 		assertTrue(moduleTestData.getStartedCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getStartedCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getStartedCallCount(MODULE3_ID) == 1);
+	}
+	
+	@Test
+	@NotTransactional
+	public void shouldRefreshOtherModulesOnInstallingNewModule() throws Exception {
+		//first completely remove module3
+		Module module = ModuleFactory.getModuleById(MODULE3_ID);
+		ModuleFactory.stopModule(module);
+		WebModuleUtil.stopModule(module, ((XmlWebApplicationContext) applicationContext).getServletContext());
+		ModuleFactory.unloadModule(module);
+		
+		init(); //to initialize for the condition below:
+		
+		//When OpenMRS is running and you install a new module:
+		//	willRefreshContext() and contextRefreshed() methods get called for all started modules' activators (including the newly installed module)
+		//  willStart() and started() methods get called for ONLY the newly installed module's activator
+		
+		//install a new module3
+		URL url = OpenmrsClassLoader.getInstance().getResource("org/openmrs/module/include/test3-1.0-SNAPSHOT.omod");
+		File file = new File(url.getFile());
+		module = ModuleFactory.loadModule(file);
+		ModuleFactory.startModule(module);
+		WebModuleUtil.startModule(module, ((XmlWebApplicationContext) applicationContext).getServletContext(), false);
+		
+		assertTrue(module.isStarted());
+		assertTrue(ModuleFactory.isModuleStarted(module));
+		
+		//module1, module2 and module3 should refresh
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE3_ID) == 1);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE1_ID) == 1);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE2_ID) == 1);
+		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE3_ID) == 1);
+		
+		//willStart() and started() methods get called for ONLY the newly installed module's activator
+		assertTrue(moduleTestData.getWillStartCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getWillStartCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getWillStartCallCount(MODULE3_ID) == 1);
+		assertTrue(moduleTestData.getStartedCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getStartedCallCount(MODULE2_ID) == 0);
 		assertTrue(moduleTestData.getStartedCallCount(MODULE3_ID) == 1);
 	}
 }
