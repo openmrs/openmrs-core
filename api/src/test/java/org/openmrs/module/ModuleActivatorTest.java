@@ -155,4 +155,20 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
 	}
+	
+	@Test
+	public void shouldCallWillStopAndStoppedOnUnloadModule() throws Exception {
+		
+		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE3_ID));
+		
+		//should have called willStop() and stopped() for module3
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE3_ID) == 1);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
+		
+		//should not call willStop() and stopped() for module1 and module2
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 0);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 0);
+		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
+	}
 }
