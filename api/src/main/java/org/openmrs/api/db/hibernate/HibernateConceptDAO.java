@@ -1432,10 +1432,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws DAOException {
+
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return Collections.emptyList();
-		
 		if (!includeRetired)
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
@@ -1444,8 +1444,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (searchOnPhrase)
 			matchMode = MatchMode.ANYWHERE;
 		if (!StringUtils.isBlank(drugName)) {
-			searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
-			if (searchDrugConceptNames) {
+
+            List<String> words = ConceptWord.getUniqueWords(drugName);
+            Iterator<String> word = words.iterator();
+            searchCriteria.add(Restrictions.ilike("name", word.next(), matchMode));
+            while (word.hasNext()) {
+                String w = word.next();
+                log.debug(w);
+                searchCriteria.add(Restrictions.ilike("name", w, matchMode));
+            }
+            if (searchDrugConceptNames) {
 				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
 				searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
 			}
