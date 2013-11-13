@@ -874,8 +874,47 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		List<Drug> drugs = Context.getConceptService().getDrugs(String.valueOf(conceptId));
 		Assert.assertTrue(drugs.contains(drug));
 	}
-	
-	/**
+
+    /**
+     * @see {@link ConceptService#getDrugs(String)}
+     */
+    @Test
+    @Verifies(value = "return drugs by drug when search on phrase it's true and drugname is not null", method = "getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,\n" +
+            "\t        boolean includeRetired, Integer start, Integer length)")
+    public void getDrugs_shouldReturnDrugsBySearchOnPhraseIsTruAndDrugNameIsNotNull() throws Exception {
+
+        Drug drug = Context.getConceptService().getDrug(2);
+        List<Drug> drugs = Context.getConceptService().getDrugs("Tri 30",null,true,false,false,null,null);
+        Assert.assertTrue(drugs.contains(drug));
+    }
+
+    /**
+     * @see {@link ConceptService#getDrugs(String)}
+     */
+    @Test
+    @Verifies(value = "return drugs by drug when search on phrase it's true and drugname is not null", method = "getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,\n" +
+            "\t        boolean includeRetired, Integer start, Integer length)")
+    public void getDrugs_shouldReturnDrugsRetiredBySearchOnPhraseIsTruAndDrugNameIsNotNull() throws Exception {
+
+        Drug drug = Context.getConceptService().getDrug(11);
+        List<Drug> drugs = Context.getConceptService().getDrugs("NYQUIL",null,true,false,true,null,null);
+        Assert.assertTrue(drugs.contains(drug));
+    }
+
+
+
+    @Test
+    @Verifies(value = "return drugs by drug by phrase", method = "getDrugs(String phrase)")
+    public void getDrugs_shouldReturnDrugsByPhrase() throws Exception {
+
+        Drug drug = Context.getConceptService().getDrug(2);
+        List<Drug> drugs = Context.getConceptService().getDrugs("Triomune 30");
+        Assert.assertTrue(drugs.contains(drug));
+    }
+
+
+
+    /**
 	 * This tests for being able to find concepts with names in en_GB locale when the user is in the
 	 * en locale.
 	 * 
