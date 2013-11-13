@@ -699,7 +699,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		mergeProgramEnrolments(preferred, notPreferred, mergedData);
 		mergeRelationships(preferred, notPreferred, mergedData);
 		mergeObservationsNotContainedInEncounters(preferred, notPreferred, mergedData);
-		mergeOrdersNotContainedInEncounters(preferred, notPreferred, mergedData);
 		mergeIdentifiers(preferred, notPreferred, mergedData);
 		
 		mergeNames(preferred, notPreferred, mergedData);
@@ -830,19 +829,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				obs.setPerson(preferred);
 				Obs persisted = obsService.saveObs(obs, "Merged from patient #" + notPreferred.getPatientId());
 				mergedData.addMovedIndependentObservation(persisted.getUuid());
-			}
-		}
-	}
-	
-	private void mergeOrdersNotContainedInEncounters(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
-		// copy all orders that weren't contained in encounters
-		OrderService os = Context.getOrderService();
-		for (Order o : os.getOrdersByPatient(notPreferred)) {
-			if (o.getEncounter() == null && !o.getVoided()) {
-				Order tmpOrder = o.copy();
-				tmpOrder.setPatient(preferred);
-				Order persisted = os.saveOrder(tmpOrder);
-				mergedData.addCreatedOrder(persisted.getUuid());
 			}
 		}
 	}

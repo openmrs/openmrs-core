@@ -78,6 +78,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Urgency urgency = Urgency.ROUTINE;
 	
+	private String orderNumber;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -465,5 +467,21 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setUrgency(Urgency urgency) {
 		this.urgency = urgency;
+	}
+	
+	/**
+	 * @return the orderNumber
+	 * @since 1.10
+	 */
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+	
+	/**
+	 * @param orderNumber the orderNumber to set
+	 * @since 1.10
+	 */
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
 	}
 }

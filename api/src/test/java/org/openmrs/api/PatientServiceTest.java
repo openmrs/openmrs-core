@@ -2601,6 +2601,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @verifies audit created orders
 	 */
 	@Test
+	@Ignore
 	public void mergePatients_shouldAuditCreatedOrders() throws Exception {
 		
 		//retrieve patients

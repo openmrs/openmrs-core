@@ -6419,4 +6419,30 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="201311041512" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="order_number"/></not>
+        </preConditions>
+        <comment>Adding order_number column to orders table</comment>
+        <addColumn tableName="orders">
+            <column name="order_number" type="varchar(50)" >
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="201311041513" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">
+                    select count(*) from orders
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <comment>Setting order numbers for existing orders</comment>
+        <update tableName="orders">
+           <column name="order_number" valueComputed="order_id" />
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
