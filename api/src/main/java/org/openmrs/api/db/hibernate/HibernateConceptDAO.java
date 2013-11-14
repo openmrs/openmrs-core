@@ -409,7 +409,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		List<String> words = ConceptWord.getUniqueWords(phrase);
 		List<Drug> conceptDrugs = new Vector<Drug>();
 		
-        conceptDrugs = getDrugs(phrase,null,true, false, false, null, null);
+        conceptDrugs = getDrugs(phrase,null,true, false, true, null, null);
 		
 		return conceptDrugs;
 	}
@@ -1431,16 +1431,21 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 
 		if (searchOnPhrase)  {
-                matchMode = MatchMode.ANYWHERE;
+            matchMode = MatchMode.ANYWHERE;
+
             if (!StringUtils.isBlank(drugName)) {
                 List<String> words = ConceptWord.getUniqueWords(drugName);
                 Iterator<String> word = words.iterator();
                 searchCriteria.add(Restrictions.ilike("drug.name", word.next(), matchMode));
+
+                if(searchDrugConceptNames){
+                    searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
+                }
+
                 while (word.hasNext()) {
                     searchCriteria.add(Restrictions.ilike("drug.name", word.next(), matchMode));
 
                     if(searchDrugConceptNames){
-                        searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
                         searchCriteria.add(Restrictions.ilike("names.name", word.next(), matchMode));
                     }
                 }
