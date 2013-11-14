@@ -6432,17 +6432,24 @@
         <addNotNullConstraint tableName="orders" columnName="order_action" columnDataType="varchar(50)"/>
     </changeSet>
 
-    <changeSet id="201310311136-TRUNK-4125" author="sushmitharaos, mujir">
+    <changeSet id="201311141400-TRUNK-4125" author="arathy">
         <preConditions onFail="MARK_RAN">
-            <not><columnExists tableName="orders" columnName="structured_dosing"/></not>
+            <not><columnExists tableName="drug_order" columnName="dosing_type"/></not>
         </preConditions>
 
-        <comment>Renaming complex to structured_dosing on drug_order</comment>
+        <comment>Renaming complex to dosing_type in drug_order</comment>
 
-        <renameColumn tableName="drug_order" oldColumnName="complex" newColumnName="structured_dosing" columnDataType="boolean"/>
+        <renameColumn tableName="drug_order" oldColumnName="complex" newColumnName="dosing_type" columnDataType="varchar(50)"/>
 
         <update tableName="drug_order">
-            <column name="structured_dosing" valueNumeric="NOT structured_dosing"/>
+            <column name="dosing_type" value="SIMPLE"/>
+            <where>dosing_type = false </where>
         </update>
+
+        <update tableName="drug_order">
+            <column name="dosing_type" value="FREE_TEXT"/>
+            <where>dosing_type = true </where>
+        </update>
+
     </changeSet>
 </databaseChangeLog>

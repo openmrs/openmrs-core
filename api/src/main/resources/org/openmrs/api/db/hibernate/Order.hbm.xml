@@ -97,7 +97,12 @@
 			<property name="units" type="java.lang.String" column="units" length="255"/>
 			<property name="frequency" type="java.lang.String" column="frequency" length="255"/>
 			<property name="prn" type="boolean" column="prn" length="1" not-null="true"/>
-			<property name="structuredDosing" type="boolean" column="structured_dosing" length="1" not-null="true"/>
+            <property name="dosingType" column="dosing_type" length="50">
+                <type name="org.openmrs.util.HibernateEnumType">
+                    <param name="enumClassName">org.openmrs.DosingType</param>
+                </type>
+            </property>
+
 			<property name="quantity" type="int" column="quantity" length="11"/>
 			<!-- bi-directional many-to-one association to Drug -->
 			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false">
