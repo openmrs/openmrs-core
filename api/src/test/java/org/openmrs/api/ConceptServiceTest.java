@@ -831,10 +831,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getDrugs(String)}
 	 */
 	@Test
-	@Verifies(value = "should not return drugs that are retired", method = "getDrugs(String)")
-	public void getDrugs_shouldNotReturnDrugsThatAreRetired() throws Exception {
-		List<Drug> drugs = Context.getConceptService().getDrugs("NYQUIL" /* is retired */);
-		Assert.assertEquals(drugs.size(),0);
+	@Verifies(value = "should  return drugs that are retired", method = "getDrugs(String)")
+	public void getDrugs_shouldReturnDrugsThatAreRetired() throws Exception {
+		Drug drug = Context.getConceptService().getDrug(11);
+        List<Drug> drugs = Context.getConceptService().getDrugs("NYQUIL" /* is retired */);
+		Assert.assertTrue(drugs.contains(drug));
 	}
 
 	/**
