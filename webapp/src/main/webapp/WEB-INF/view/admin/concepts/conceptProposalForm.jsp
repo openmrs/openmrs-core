@@ -92,7 +92,7 @@
 		<tr>
 			<th><openmrs:message code="ConceptProposal.obsConcept" /></th>
 			<td>
-				#${obsConcept.conceptId}: ${obsConcept.name}
+				#${obsConcept.conceptId}: <c:out value="${obsConcept.name}" />
 			</td>
 		</tr>
 	</c:if>
@@ -166,7 +166,7 @@
 		<th><openmrs:message code="ConceptProposal.finalText"/></th>
 		<td>
 			<spring:bind path="conceptProposal.finalText">
-				<input type="text" name="${status.expression}" id="finalText" value="<c:if test="${(status.value == null || status.value == '') && conceptProposal.mappedConcept == null}">${conceptProposal.originalText}</c:if><c:if test="${status.value != ''}">${status.value}</c:if>" size="50" />
+				<input type="text" name="${status.expression}" id="finalText" value="<c:if test="${(status.value == null || status.value == '') && conceptProposal.mappedConcept == null}"><c:out value="${conceptProposal.originalText}" /></c:if><c:if test="${status.value != ''}"><c:out value="${status.value}" /></c:if>" size="50" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -175,7 +175,7 @@
 		<th valign="top"><openmrs:message code="ConceptProposal.comments"/></th>
 		<td valign="top">
 			<spring:bind path="conceptProposal.comments">
-				<textarea name="${status.expression}" rows="3" cols="48">${status.value}</textarea>
+				<textarea name="${status.expression}" rows="3" cols="48"><c:out value="${status.value}" /></textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 			<i><openmrs:message code="ConceptProposal.commentsDescription"/></i>

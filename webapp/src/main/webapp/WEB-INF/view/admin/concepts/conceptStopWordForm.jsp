@@ -19,7 +19,7 @@
             <td><openmrs:message code="general.name"/></td>
             <td>
                 <spring:bind path="command.value">
-                    <input type="text" name="${status.expression}" value="${status.value}" size="35"/>
+                    <input type="text" name="${status.expression}" value="<c:out value="${status.value}" />" size="35"/>
                     <c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
                 </spring:bind>
             </td>

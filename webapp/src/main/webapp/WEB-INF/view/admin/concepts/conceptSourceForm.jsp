@@ -21,7 +21,7 @@
 		<td><openmrs:message code="general.name"/></td>
 		<td>
 			<spring:bind path="conceptSource.name">
-				<input type="text" name="name" value="${status.value}" size="35" />
+				<input type="text" name="name" value="<c:out value="${status.value}" />" size="35" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -31,7 +31,7 @@
 		<td><openmrs:message code="ConceptSource.hl7Code"/></td>
 		<td>
 			<spring:bind path="conceptSource.hl7Code">
-				<input type="text" name="hl7Code" value="${status.value}" size="35" maxlength="20" />
+				<input type="text" name="hl7Code" value="<c:out value="${status.value}" />" size="35" maxlength="20" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -41,7 +41,7 @@
 		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td>
 			<spring:bind path="conceptSource.description">
-				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40"><c:out value="${status.value}" /></textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

@@ -336,7 +336,7 @@
 							<option value=""></option>
 							<openmrs:forEachRecord name="patientIdentifierType">
 							<option value="${record.patientIdentifierTypeId}">
-								${record.name}
+                                <c:out value="${record.name}" />
 							</option>
 							</openmrs:forEachRecord>
 						</select>						
@@ -346,7 +346,7 @@
 							<option value=""></option>
 							<openmrs:forEachRecord name="location">
 								<option value="${record.locationId}"<c:if test="${identifierLocationUsed && record == defaultLocation}"> selected="selected"</c:if>>
-									${record.name}
+                                    <c:out value="${record.name}" />
 								</option>
 							</openmrs:forEachRecord>
 						</select>

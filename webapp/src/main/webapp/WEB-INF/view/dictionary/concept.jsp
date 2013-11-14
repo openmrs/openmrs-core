@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
-<openmrs:message var="pageTitle" code="Concept.view.titlebar" scope="page" arguments="${command.concept.name}"/>
+<openmrs:message var="pageTitle" code="Concept.view.titlebar" scope="page" htmlEscape="true" arguments="${command.concept.name}"/>
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
 <openmrs:require privilege="View Concepts" otherwise="/login.htm"
@@ -70,7 +70,7 @@
 
 <c:choose>
 	<c:when test="${command.concept.conceptId != null}">
-		<h2><openmrs:message code="Concept.view.title" arguments="${command.concept.name}" /></h2>
+		<h2><openmrs:message code="Concept.view.title" htmlEscape="true" arguments="${command.concept.name}" /></h2>
 	</c:when>
 	<c:otherwise>
 		<h2><openmrs:message code="Concept.noConceptSelected" /></h2>
@@ -108,7 +108,7 @@
 	<c:if test="${command.concept.retired}">
 	<div class="retiredMessage">
 	<div><openmrs:message code="Concept.retiredMessage"/> </div>
-	<div>  <c:if test="${command.concept.retiredBy.personName != null}">  <openmrs:message code="general.byPerson"/> ${command.concept.retiredBy.personName} </c:if> <c:if test="${command.concept.dateRetired != null}"> <openmrs:message code="general.onDate"/>  <openmrs:formatDate date="${command.concept.dateRetired}" type="long" /> </c:if> <c:if test="${command.concept.retireReason!=''}"> - ${command.concept.retireReason} </c:if> </div>
+	<div>  <c:if test="${command.concept.retiredBy.personName != null}">  <openmrs:message code="general.byPerson"/> <c:out value="${command.concept.retiredBy.personName}" /> </c:if> <c:if test="${command.concept.dateRetired != null}"> <openmrs:message code="general.onDate"/>  <openmrs:formatDate date="${command.concept.dateRetired}" type="long" /> </c:if> <c:if test="${command.concept.retireReason!=''}"> - <c:out value="${command.concept.retireReason}" /> </c:if> </div>
 	</div>
 	</c:if>
 	
@@ -122,7 +122,7 @@
 		</tr>
 		<tr>
 			<th title="<openmrs:message code="Concept.uiid.help"/>"><openmrs:message code="general.uuid"/></th>
-			<td>${command.concept.uuid}</td>
+			<td><c:out value="${command.concept.uuid}" /></td>
 		</tr>
 		<tr>
 			<th title="<openmrs:message code="Concept.locale.help"/>"><openmrs:message code="general.locale"/></th>
@@ -138,7 +138,7 @@
 				<openmrs:message code="Concept.fullySpecifiedName" />
 			</th>
 			<c:forEach items="${command.locales}" var="loc">
-				<td class="${loc}">${command.namesByLocale[loc].name}</td>
+				<td class="${loc}"><c:out value="${command.namesByLocale[loc].name}" /></td>
 			</c:forEach>
 		</tr>
 		<tr class="localeSpecific">
@@ -149,7 +149,7 @@
 						<spring:bind path="command.synonymsByLocale[${loc}][${varStatus.index}]">
 							<c:if test="${!status.value.voided}">
 								<div>
-									${status.value.name}
+									<c:out value="${status.value.name}" />
 								</div>
 							</c:if>
 						</spring:bind>
@@ -165,7 +165,7 @@
 						<spring:bind path="command.indexTermsByLocale[${loc}][${varStatus.index}]">
 							<c:if test="${!status.value.voided}">
 								<div>
-									${status.value.name}
+									<c:out value="${status.value.name}" />
 								</div>
 							</c:if>
 						</spring:bind>
@@ -178,7 +178,7 @@
 				<openmrs:message code="Concept.shortName" />
 			</th>
 			<c:forEach items="${command.locales}" var="loc">
-				<td class="${loc}">${command.shortNamesByLocale[loc].name}</td>
+				<td class="${loc}"><c:out value="${command.shortNamesByLocale[loc].name}" /></td>
 			</c:forEach>
 		</tr>
 		<tr class="localeSpecific">
@@ -217,7 +217,7 @@
 				<openmrs:message code="Concept.datatype" />
 			</th>
 			<td valign="top">
-				${command.concept.datatype.name}
+				<c:out value="${command.concept.datatype.name}" />
 			</td>
 		</tr>
 		<c:if test="${command.concept.datatype != null && command.concept.datatype.name == 'Coded'}">
@@ -225,7 +225,7 @@
 				<th valign="top"><openmrs:message code="Concept.answers"/></th>
 				<td>
 					<c:forEach items="${command.conceptAnswers}" var="answer">
-						<a href="concept.htm?conceptId=${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))}">${answer.value} (${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))})</a><br/>
+						<a href="concept.htm?conceptId=${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))}"><c:out value="${answer.value}" /> (${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))})</a><br/>
 					</c:forEach>
 				</td>
 			</tr>
@@ -237,27 +237,27 @@
 					<table border="0">
 						<tr>
 							<th valign="middle"><openmrs:message code="ConceptNumeric.absoluteHigh"/></th>
-							<td valign="middle">${command.concept.hiAbsolute}</td>
+							<td valign="middle"><c:out value="${command.concept.hiAbsolute}" /></td>
 						</tr>
 						<tr>
 							<th valign="middle"><openmrs:message code="ConceptNumeric.criticalHigh"/></th>
-							<td valign="middle">${command.concept.hiCritical}</td>
+							<td valign="middle"><c:out value="${command.concept.hiCritical}" /></td>
 						</tr>
 						<tr>
 							<th valign="middle"><openmrs:message code="ConceptNumeric.normalHigh"/></th>
-							<td valign="middle">${command.concept.hiNormal}</td>
+							<td valign="middle"><c:out value="${command.concept.hiNormal}" /></td>
 						</tr>
 						<tr>
 							<th valign="middle"><openmrs:message code="ConceptNumeric.normalLow"/></th>
-							<td valign="middle">${command.concept.lowNormal}</td>
+							<td valign="middle"><c:out value="${command.concept.lowNormal}" /></td>
 						</tr>
 						<tr>
 							<th valign="middle"><openmrs:message code="ConceptNumeric.criticalLow"/></th>
-							<td valign="middle">${command.concept.lowCritical}</td>
+							<td valign="middle"><c:out value="${command.concept.lowCritical}" /></td>
 						</tr>
 						<tr>
 							<th valign="middle"><openmrs:message code="ConceptNumeric.absoluteLow"/></th>
-							<td valign="middle">${command.concept.lowAbsolute}</td>
+							<td valign="middle"><c:out value="${command.concept.lowAbsolute}" /></td>
 						</tr>
 						<tr>
 							<td></td>
@@ -266,7 +266,7 @@
 						</tr>
 						<tr>
 							<th><openmrs:message code="ConceptNumeric.units"/></th>
-							<td colspan="2">${command.concept.units}</td>
+							<td colspan="2"><c:out value="${command.concept.units}" /></td>
 						</tr>
 						<tr>
 							<th><openmrs:message code="ConceptNumeric.precise"/></th>
@@ -281,7 +281,7 @@
 							<th><openmrs:message code="command.concept.displayPrecision"/></th>
 							<td colspan="2">
 								<spring:bind path="command.concept.displayPrecision">
-									<input type="text" name="${status.expression}" value="${status.value}" class="mediumWidth" />
+									<input type="text" name="${status.expression}" value="<c:out value="${status.value}" />" class="mediumWidth" />
 									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 								</spring:bind>
 							</td>
@@ -325,7 +325,7 @@
 			<th title="<openmrs:message code="Concept.version.help"/>"><openmrs:message code="Concept.version" /></th>
 			<td>
 				<spring:bind path="command.concept.version">
-					${status.value}
+					<c:out value="${status.value}" />
 				</spring:bind>
 			</td>
 		</tr>
@@ -360,10 +360,10 @@
 							<c:forEach var="drug" items="${command.conceptDrugList}">
 								<c:choose>
 									<c:when test="${not empty drug.dosageForm}">
-										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.doseStrength} ${drug.units} ${drug.dosageForm.name}</li>
+										<li class="<c:if test="${drug.retired}">retired </c:if>"><c:out value="${drug.name}" /> <c:out value="${drug.doseStrength}" /> <c:out value="${drug.units}" /> <c:out value="${drug.dosageForm.name}" /></li>
 									</c:when>
 									<c:otherwise>
-										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.doseStrength} ${drug.units}</li>
+										<li class="<c:if test="${drug.retired}">retired </c:if>"><c:out value="${drug.name}" /> <c:out value="${drug.doseStrength}" /> <c:out value="${drug.units}" /></li>
 									</c:otherwise>
 								</c:choose>
 							</c:forEach>
