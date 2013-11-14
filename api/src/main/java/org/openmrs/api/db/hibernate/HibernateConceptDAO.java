@@ -1428,23 +1428,34 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (concept != null)
 			searchCriteria.add(Restrictions.eq("drug.concept", concept));
 		MatchMode matchMode = MatchMode.START;
-		if (searchOnPhrase)
-			matchMode = MatchMode.ANYWHERE;
-		if (!StringUtils.isBlank(drugName)) {
 
-            List<String> words = ConceptWord.getUniqueWords(drugName);
-            Iterator<String> word = words.iterator();
-            searchCriteria.add(Restrictions.ilike("name", word.next(), matchMode));
-            while (word.hasNext()) {
-                String w = word.next();
-                log.debug(w);
-                searchCriteria.add(Restrictions.ilike("name", w, matchMode));
+
+		if (searchOnPhrase)  {
+                matchMode = MatchMode.ANYWHERE;
+            if (!StringUtils.isBlank(drugName)) {
+                List<String> words = ConceptWord.getUniqueWords(drugName);
+                Iterator<String> word = words.iterator();
+                searchCriteria.add(Restrictions.ilike("drug.name", word.next(), matchMode));
+                while (word.hasNext()) {
+                    searchCriteria.add(Restrictions.ilike("drug.name", word.next(), matchMode));
+
+                    if(searchDrugConceptNames){
+                        searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
+                        searchCriteria.add(Restrictions.ilike("names.name", word.next(), matchMode));
+                    }
+                }
             }
-            if (searchDrugConceptNames) {
-				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
-				searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
-			}
-		}
+        }
+        else{
+            matchMode = MatchMode.START;
+            searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
+
+            if(searchDrugConceptNames){
+                searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
+                searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
+            }
+        }
+
 		
 		if (start != null)
 			searchCriteria.setFirstResult(start);
