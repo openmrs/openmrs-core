@@ -4,7 +4,7 @@
 	<c:when test="${model.authenticatedUser != null}">
 		<c:choose>
 			<c:when test="${model.showName != 'false'}">
-				<openmrs:message code="welcomeUser" arguments="${model.authenticatedUser.personName.givenName},${applicationName}" />
+				<openmrs:message code="welcomeUser" htmlEscape="false" arguments="${model.authenticatedUser.personName.givenName},${applicationName}" />
 			</c:when>
 			<c:otherwise>
 				<openmrs:message code="welcome" arguments="${applicationName}" />
