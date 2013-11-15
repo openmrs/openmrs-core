@@ -7,7 +7,7 @@
 				<openmrs:message code="welcomeUser" htmlEscape="false" arguments="${model.authenticatedUser.personName.givenName},${applicationName}" />
 			</c:when>
 			<c:otherwise>
-				<openmrs:message htmlEscape="false" code="<openmrs:message code="welcome" arguments="${applicationName}" />
+				<openmrs:message htmlEscape="false" code="welcome" arguments="${applicationName}" />
 			</c:otherwise>
 		</c:choose>
 		<c:if test="${model.customText != ''}">
@@ -15,7 +15,7 @@
 		</c:if>
 	</c:when>
 	<c:otherwise>
-		<openmrs:message htmlEscape="false" code="<openmrs:message code="welcome" arguments="${applicationName}" />
+		<openmrs:message htmlEscape="false" code="welcome" arguments="${applicationName}" />
 		<c:if test="${model.showLogin == 'true'}">
 			<br/>
 			<openmrs:portlet url="login" parameters="redirect=${model.redirect}" />
