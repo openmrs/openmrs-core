@@ -19,7 +19,7 @@
 			<div class="ui-state-highlight ui-corner-all" style="padding: 0.5em;">
 				<span class="ui-icon ui-icon-info"
 					style="float: left; margin-right: 0.3em;"></span> 
-				<span class="content" style="font-size: 0.9em;"><openmrs:message code="Hl7InArchive.migrate.warning.message"/></span>
+				<span class="content" style="font-size: 0.9em;"><openmrs:message htmlEscape="false" code="Hl7InArchive.migrate.warning.message"/></span>
 			</div>
 		</div>
 		<p>
