@@ -419,7 +419,7 @@ function generateMergeList(){
 
 <h2><openmrs:message code="Patient.merge.title"/></h2>
 
-<openmrs:message code="Patient.merge.warning" />
+<openmrs:message htmlEscape="false" code="Patient.merge.warning" />
 
 <br/><br/>
 <div id="selectionList" style="display:none">
