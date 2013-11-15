@@ -339,7 +339,8 @@ public class HibernateUserDAO implements UserDAO {
 		
 		LoginCredential credentials = getLoginCredential(u);
 		credentials.setSecretQuestion(question);
-		credentials.setSecretAnswer(answer);
+		String hashedAnswer = Security.encodeString(answer + credentials.getSalt());
+		credentials.setSecretAnswer(hashedAnswer);
 		credentials.setDateChanged(new Date());
 		credentials.setChangedBy(u);
 		
@@ -355,7 +356,8 @@ public class HibernateUserDAO implements UserDAO {
 			return false;
 		
 		String answerOnRecord = getLoginCredential(u).getSecretAnswer();
-		return (answer.equals(answerOnRecord));
+		String hashedAnswer = Security.encodeString(answer + getLoginCredential(u).getSalt());
+		return (hashedAnswer.equals(answerOnRecord));
 	}
 	
 	/**
