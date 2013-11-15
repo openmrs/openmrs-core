@@ -417,7 +417,7 @@
 		<span style="position: relative">
 			<input type="button" id="deletePatientButton" value="<openmrs:message code="Patient.delete"/>" onClick="showDiv('deletePatientDiv'); hideDiv('deletePatientButton')"/>
 			<div id="deletePatientDiv" style="position: absolute; padding: 1em; bottom: 0px; left: 0px; z-index: 9; width: 350px; border: 1px black solid; background-color: #ffff88; display: none">
-				<openmrs:message code="Patient.delete.warningMessage"/>
+				<openmrs:message htmlEscape="false" code="Patient.delete.warningMessage"/>
 				<br/><br/>
 				<div align="center">
 					<input type="submit" name="action" value="<openmrs:message code="Patient.delete"/>" onclick="return confirm('<openmrs:message code="Patient.delete.finalWarning"/>')"/>
