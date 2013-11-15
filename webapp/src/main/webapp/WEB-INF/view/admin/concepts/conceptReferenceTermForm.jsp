@@ -111,7 +111,7 @@ $j(document).ready( function() {
 </c:if>
 
 <spring:hasBindErrors name="conceptReferenceTermModel">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
 			<openmrs:message code="${error.code}" text="${error.code}"/><br/>

@@ -48,7 +48,7 @@
 </h2>
 
 <spring:hasBindErrors name="field">
-	<openmrs:message code="fix.error" />
+	<openmrs:message htmlEscape="false" code="fix.error" />
 	<br />
 	<!-- ${errors} -->
 </spring:hasBindErrors>

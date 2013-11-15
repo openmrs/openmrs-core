@@ -95,7 +95,7 @@
 <h2><openmrs:message code="Program.addEdit.title"/></h2>
 
 <spring:hasBindErrors name="program">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 

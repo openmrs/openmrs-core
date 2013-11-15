@@ -121,7 +121,7 @@ function containsError(element) {
 <h2><openmrs:message code="options.title" /></h2>
 
 <spring:hasBindErrors name="opts">
-	<openmrs:message code="fix.error" />
+	<openmrs:message htmlEscape="false" code="fix.error" />
 	<div class="error"><c:forEach items="${errors.allErrors}" var="error">
 		<openmrs:message code="${error.code}" text="${error.code}" />
 		<br />

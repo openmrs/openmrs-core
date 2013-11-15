@@ -77,7 +77,7 @@
 </c:if>
 
 <spring:hasBindErrors name="drug">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
