@@ -362,7 +362,7 @@
 		<span style="position: relative">
 			<input type="button" id="deletePersonButton" value="<openmrs:message code="Person.delete"/>" onClick="showDiv('deletePersonDiv'); hideDiv('deletePersonButton')"/>
 			<div id="deletePersonDiv" style="position: absolute; padding: 1em; bottom: 0px; left: 0px; z-index: 9; width: 350px; border: 1px black solid; background-color: #ffff88; display: none">
-				<openmrs:message code="Person.delete.warningMessage"/>
+				<openmrs:message htmlEscape="false" code="Person.delete.warningMessage"/>
 				<br/><br/>
 				<div align="center">
 					<input type="submit" name="action" value="<openmrs:message code="Person.delete"/>" onclick="return confirm('<openmrs:message code="Person.delete.finalWarning"/>')"/>
