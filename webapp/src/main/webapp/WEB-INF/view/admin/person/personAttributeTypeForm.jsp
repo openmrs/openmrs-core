@@ -54,7 +54,7 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				<c:if test="${isJavaUtilDate != ''}">
 					<br/>
-					<span class="error"><openmrs:message code="PersonAttributeType.java.util.Date.warning"/></span>
+					<span class="error"><openmrs:message htmlEscape="false" code="PersonAttributeType.java.util.Date.warning"/></span>
 				</c:if>
 			</spring:bind>
 		</td>
