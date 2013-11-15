@@ -65,7 +65,7 @@
 	</tr>
 	<c:if test="${fn:length(inheritingRoles) > 0}">
 		<tr>
-			<th colspan="2"><openmrs:message code="Role.inheritingRoles.description"/></th>
+			<th colspan="2"><openmrs:message htmlEscape="false" code="Role.inheritingRoles.description"/></th>
 		</tr>
 		<tr>
 			<th></th>
