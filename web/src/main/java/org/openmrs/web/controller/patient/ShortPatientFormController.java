@@ -183,7 +183,7 @@ public class ShortPatientFormController {
 	 * @param request the webRequest object
 	 * @param patientModel the modelObject containing the patient info collected from the form
 	 *            fields
-	 * @param result
+	 * @param patientResult
 	 * @param status
 	 * @return the view to forward to
 	 * @should pass if all the form data is valid
@@ -207,13 +207,13 @@ public class ShortPatientFormController {
 	@RequestMapping(method = RequestMethod.POST, value = SHORT_PATIENT_FORM_URL)
 	public String saveShortPatient(WebRequest request, @ModelAttribute("personNameCache") PersonName personNameCache,
 	        @ModelAttribute("personAddressCache") PersonAddress personAddressCache,
-	        @ModelAttribute("patientModel") ShortPatientModel patientModel, BindingResult result) {
+	        @ModelAttribute("patientModel") ShortPatientModel patientModel, BindingResult patientResult) {
 		
 		if (Context.isAuthenticated()) {
 			// First do form validation so that we can easily bind errors to
 			// fields
-			new ShortPatientFormValidator().validate(patientModel, result);
-			if (result.hasErrors())
+			new ShortPatientFormValidator().validate(patientModel, patientResult);
+			if (patientResult.hasErrors())
 				return SHORT_PATIENT_FORM_URL;
 			
 			Patient patient = null;
@@ -227,7 +227,7 @@ public class ShortPatientFormController {
 				// so that spring doesn't try to look for getters/setters for
 				// Patient in ShortPatientModel
 				for (ObjectError error : patientErrors.getAllErrors())
-					result.reject(error.getCode(), error.getArguments(), "Validation errors found");
+					patientResult.reject(error.getCode(), error.getArguments(), "Validation errors found");
 				
 				return SHORT_PATIENT_FORM_URL;
 			}
@@ -247,7 +247,7 @@ public class ShortPatientFormController {
 				
 				if (!patient.getVoided()) {
 					// save the relationships to the database
-					Map<String, Relationship> relationships = getRelationshipsMap(patientModel, request);
+					Map<String, Relationship> relationships = getRelationshipsMap(patientModel, patientResult, request);
 					for (Relationship relationship : relationships.values()) {
 						// if the user added a person to this relationship, save
 						// it
@@ -354,13 +354,13 @@ public class ShortPatientFormController {
 	 */
 	@ModelAttribute("relationshipsMap")
 	private Map<String, Relationship> getRelationshipsMap(@ModelAttribute("patientModel") ShortPatientModel patientModel,
-	        WebRequest request) {
+	        BindingResult result, WebRequest request) {
 		
 		// Check if relationships must be shown
 		String showRelationships = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_NEWPATIENTFORM_SHOW_RELATIONSHIPS, "false");
 		
-		if ("false".equals(showRelationships)) {
+		if (result.hasErrors() || "false".equals(showRelationships)) {
 			return new LinkedHashMap<String, Relationship>();
 		}
 		
