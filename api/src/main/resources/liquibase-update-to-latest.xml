@@ -2338,14 +2338,16 @@
 	</changeSet>
 	
 	<changeSet id="200902142213" author="ewolodzko" dbms="mysql">
+		<validCheckSum>ace82a1ecb3a0c3246e39f0bebe38423</validCheckSum> <!-- original checksum -->
+		<validCheckSum>288804e42d575fe62c852ed9daa9d59d</validCheckSum> <!-- current checksum with TRUNK-4025 fix-->
 		<comment>
 			Add default sortWeights to all current PersonAttributeTypes
 		</comment>
-		<update tableName="person_attribute_type" >
-			<!-- The weird (select * from person_attribute_type) is needed here instead of just (person_attribute_type) to avoid sql ERROR 1093 -->
-			<column name="sort_weight" valueNumeric="((select count(*) from (select * from person_attribute_type) pat where pat.name &lt; person_attribute_type.name))" />
-			<where>sort_weight is null</where>
-		</update>
+		<sql>
+			<![CDATA[
+			UPDATE  person_attribute_type as A JOIN person_attribute_type as B ON A.name = B.name  SET A.sort_weight = (select count(*) from (select * from person_attribute_type) pat where pat.name < A.name) WHERE A.sort_weight is null;
+			]]>
+		</sql>
 	</changeSet>
 	
 	<changeSet id="200906301606" author="bwolfe" dbms="mysql">
