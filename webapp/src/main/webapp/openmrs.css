@@ -834,6 +834,9 @@ fieldset {
 	#alertBar img {
 		vertical-align: middle;
 	}
+	#alertBar a {
+		float: right;
+	}
 .markAlertRead, .markAlertRead:link, .markAlertRead:visited {
 	float: right;
 	padding: 0 3px 0 3px;

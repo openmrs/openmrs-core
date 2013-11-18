@@ -18,6 +18,10 @@ function markAlertRead(self, alertId) {
 	return false;
 }
 
+function markAllAlertsRead() {
+	DWRAlertService.markAllAlertsRead();	
+}
+
 function addClass(obj, c) {
 	if (obj.className.indexOf(c) == -1)
 		obj.className = c + " " + obj.className;

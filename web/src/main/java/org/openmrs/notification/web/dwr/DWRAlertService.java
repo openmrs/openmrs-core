@@ -123,4 +123,14 @@ public class DWRAlertService {
 		
 		return false;
 	}
+	
+	public void markAllAlertsRead() {
+		AlertService as = Context.getAlertService();
+		// Get the alert objects
+		List<Alert> alerts = as.getAllAlerts();
+		
+		for (Alert alert : alerts) {
+			markAlertRead(alert.getId());
+		}
+	}
 }
