@@ -19,7 +19,9 @@ function markAlertRead(self, alertId) {
 }
 
 function markAllAlertsRead() {
-	DWRAlertService.markAllAlertsRead();	
+	alert('testing if this javascript function is called/n before calling into the service layer');
+	DWRAlertService.markAllAlertsRead();
+	alert('testing if this javascript function is called/n after calling into the service layer');
 }
 
 function addClass(obj, c) {
