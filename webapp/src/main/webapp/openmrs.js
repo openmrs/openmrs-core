@@ -18,6 +18,12 @@ function markAlertRead(self, alertId) {
 	return false;
 }
 
+function markAllAlertsRead() {
+	alert('testing if this javascript function is called before calling into the service layer');
+	DWRAlertService.markAllAlertsRead();
+	alert('testing if this javascript function is called after calling into the service layer');
+}
+
 function addClass(obj, c) {
 	if (obj.className.indexOf(c) == -1)
 		obj.className = c + " " + obj.className;
