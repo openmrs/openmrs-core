@@ -6400,4 +6400,14 @@
 		<addForeignKeyConstraint constraintName="encounter_provider_voided_by" baseTableName="encounter_provider" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 
+    <changeSet id="20130925-TRUNK-4105" author="hannes">
+        <preConditions onFail="MARK_RAN">
+            <not><indexExists indexName="idx_code_concept_reference_term"/></not>
+        </preConditions>
+        <comment>Adding index on concept_reference_term.code column</comment>
+        <createIndex tableName="concept_reference_term" indexName="idx_code_concept_reference_term">
+            <column name="code"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
