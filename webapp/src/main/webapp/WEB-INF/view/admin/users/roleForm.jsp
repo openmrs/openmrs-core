@@ -87,7 +87,7 @@
 	<tr>
 		<th></th>
 		<td>
-			<i><openmrs:message htmlEscape="false" code="Role.inheritedRoles.description.java.util.Date.warning"/></i>
+			<i><openmrs:message htmlEscape="false" code="Role.inheritedRoles.description"/></i>
 			<br/>
 			<c:if test="${role.role == superuser}"><openmrs:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
