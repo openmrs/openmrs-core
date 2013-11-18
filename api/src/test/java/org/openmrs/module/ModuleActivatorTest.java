@@ -52,20 +52,6 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldNotCallWillRefreshContextOnStartup() throws Exception {
-		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE1_ID) == 0);
-		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE2_ID) == 0);
-		assertTrue(moduleTestData.getWillRefreshContextCallCount(MODULE3_ID) == 0);
-	}
-	
-	@Test
-	public void shouldNotCallContextRefreshedOnStartup() throws Exception {
-		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE1_ID) == 0);
-		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE2_ID) == 0);
-		assertTrue(moduleTestData.getContextRefreshedCallCount(MODULE3_ID) == 0);
-	}
-	
-	@Test
 	public void shouldStartModulesInOrder() throws Exception {
 		//module2 depends on module1 while module3 depends on module2
 		//so startup order should be module1, module2, module3
