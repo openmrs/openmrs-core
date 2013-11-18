@@ -67,8 +67,8 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	
 	@Test
 	public void shouldStartModulesInOrder() throws Exception {
-		//module2 depends on module1
-		//while module3 depends on module2
+		//module2 depends on module1 while module3 depends on module2
+		//so startup order should be module1, module2, module3
 		assertTrue(moduleTestData.getWillStartCallTime(MODULE1_ID) <= moduleTestData.getWillStartCallTime(MODULE2_ID));
 		assertTrue(moduleTestData.getWillStartCallTime(MODULE2_ID) <= moduleTestData.getWillStartCallTime(MODULE3_ID));
 	}
@@ -103,6 +103,14 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
+		
+		//willStop() and stopped() should have been called in the right order
+		//which is the reverse of the startup. that is module3, module2, module1
+		assertTrue(moduleTestData.getWillStopCallTime(MODULE3_ID) <= moduleTestData.getWillStopCallTime(MODULE2_ID));
+		assertTrue(moduleTestData.getWillStopCallTime(MODULE2_ID) <= moduleTestData.getWillStopCallTime(MODULE1_ID));
+		
+		assertTrue(moduleTestData.getStoppedCallTime(MODULE3_ID) <= moduleTestData.getStoppedCallTime(MODULE2_ID));
+		assertTrue(moduleTestData.getStoppedCallTime(MODULE2_ID) <= moduleTestData.getStoppedCallTime(MODULE1_ID));
 	}
 	
 	@Test
