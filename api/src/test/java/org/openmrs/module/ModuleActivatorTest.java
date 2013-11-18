@@ -71,6 +71,9 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		//so startup order should be module1, module2, module3
 		assertTrue(moduleTestData.getWillStartCallTime(MODULE1_ID) <= moduleTestData.getWillStartCallTime(MODULE2_ID));
 		assertTrue(moduleTestData.getWillStartCallTime(MODULE2_ID) <= moduleTestData.getWillStartCallTime(MODULE3_ID));
+		
+		assertTrue(moduleTestData.getStartedCallTime(MODULE1_ID) <= moduleTestData.getStartedCallTime(MODULE2_ID));
+		assertTrue(moduleTestData.getStartedCallTime(MODULE2_ID) <= moduleTestData.getStartedCallTime(MODULE3_ID));
 	}
 	
 	@Test
