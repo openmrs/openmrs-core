@@ -182,7 +182,7 @@ refreshStateTable();
 </h3>
 
 <spring:hasBindErrors name="workflow">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 

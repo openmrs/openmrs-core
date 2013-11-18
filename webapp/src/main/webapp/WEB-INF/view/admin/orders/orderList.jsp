@@ -61,9 +61,9 @@
 							</c:forEach>
 						</td>
 					</c:if>
-					<td valign="top">${conceptNames[order.concept.conceptId]}</td>
+					<td valign="top"><c:out value="${conceptNames[order.concept.conceptId]}" /></td>
 					<td valign="top">
-					   ${order.instructions}
+					   <c:out value="${order.instructions}" />
 					</td>
 					<td valign="top">
 						<a href="<c:choose><c:when test="${order.class.name=='org.openmrs.DrugOrder'}">orderDrug</c:when><c:otherwise>order</c:otherwise></c:choose>.form?orderId=${order.orderId}">

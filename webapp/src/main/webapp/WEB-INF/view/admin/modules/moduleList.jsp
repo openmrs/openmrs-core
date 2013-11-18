@@ -294,7 +294,7 @@
 			<li><i><openmrs:message code="Module.help.startStop"/></i></li>
 			<li><i><openmrs:message code="Module.help.update"/></i></li>
 		</c:if>
-		<li><i><openmrs:message code="Module.help.findMore"/></i></li>
+		<li><i><openmrs:message htmlEscape="false" code="Module.help.findMore"/></i></li>
 	</ul>
 </div>
 

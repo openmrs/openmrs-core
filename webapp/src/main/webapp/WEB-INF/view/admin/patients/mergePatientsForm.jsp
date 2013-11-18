@@ -409,7 +409,7 @@ function generateMergeList(){
 </style>
 
 <spring:hasBindErrors name="patient">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
 			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
@@ -419,7 +419,7 @@ function generateMergeList(){
 
 <h2><openmrs:message code="Patient.merge.title"/></h2>
 
-<openmrs:message code="Patient.merge.warning" />
+<openmrs:message htmlEscape="false" code="Patient.merge.warning" />
 
 <br/><br/>
 <div id="selectionList" style="display:none">

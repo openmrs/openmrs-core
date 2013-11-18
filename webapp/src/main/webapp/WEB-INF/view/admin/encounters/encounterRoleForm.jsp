@@ -31,7 +31,7 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterRoleForm.belowTitle" type="html" parameters="encounterRoleId=${encounterRole.encounterRoleId}"/>
 
 <spring:hasBindErrors name="encounterRole">
-    <openmrs:message code="fix.error"/>
+    <openmrs:message htmlEscape="false" code="fix.error"/>
     <br/>
 </spring:hasBindErrors>
 <form method="post">

@@ -17,7 +17,7 @@
 	</c:if>
 	<c:forEach items="${concept.answers}" var="a" varStatus="s">
 		<option value="${a.answerConcept.conceptId}" <c:if test="${a.answerConcept.conceptId == initialValue}">selected</c:if>>
-			${a.answerConcept.name.name}
+			<c:out value="${a.answerConcept.name.name}" />
 		</option>
 	</c:forEach>
 </select>

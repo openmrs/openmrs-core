@@ -48,7 +48,7 @@
 					</td>
 					<td valign="top">
 						<a href="orderDrug.form?orderId=${order.orderId}">
-							${order.drug.name}
+							<c:out value="${order.drug.name}" />
 						</a>
 					</td>
 					<td valign="top">

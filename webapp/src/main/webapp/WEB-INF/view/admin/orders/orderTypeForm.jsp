@@ -8,7 +8,7 @@
 <h2><openmrs:message code="OrderType.title"/></h2>
 
 <spring:hasBindErrors name="orderType">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">

@@ -40,10 +40,10 @@
 	<c:forEach var="drug" items="${conceptDrugList}">
 		<tr class="<c:if test="${drug.retired}">retired </c:if>">
 			<td><a
-				href="conceptDrug.form?drugId=${drug.drugId}">${drug.name} </a></td>
+				href="conceptDrug.form?drugId=${drug.drugId}"><c:out value="${drug.name}" /> </a></td>
 			<%-- <td>${drug.concept}</td> --%>
-			<td>${drug.doseStrength}</td>
-			<td>${drug.units}</td>
+			<td><c:out value="${drug.doseStrength}" /></td>
+			<td><c:out value="${drug.units}" /></td>
 		</tr>
 	</c:forEach>
 </table>
