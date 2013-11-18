@@ -40,6 +40,14 @@ public class DrugOrder extends Order implements java.io.Serializable {
 
 	private Drug drug;
 
+	/**
+	 * enum dosingType
+	 * @since 1.10
+	 */
+	public enum DosingType {
+		SIMPLE, FREE_TEXT;
+	}
+
 	// Constructors
 
 	/** default constructor */
@@ -141,10 +149,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	@Deprecated
 	public Boolean getComplex() {
-		if (getDosingType().equals(DosingType.SIMPLE)) {
-			return false;
-		}
-		return true;
+		return getDosingType() != DosingType.SIMPLE;
 	}
 
 	/**

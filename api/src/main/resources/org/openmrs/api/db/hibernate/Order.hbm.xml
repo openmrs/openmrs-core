@@ -99,7 +99,7 @@
 			<property name="prn" type="boolean" column="prn" length="1" not-null="true"/>
             <property name="dosingType" column="dosing_type" length="50">
                 <type name="org.openmrs.util.HibernateEnumType">
-                    <param name="enumClassName">org.openmrs.DosingType</param>
+                    <param name="enumClassName">org.openmrs.DrugOrder$DosingType</param>
                 </type>
             </property>
 
