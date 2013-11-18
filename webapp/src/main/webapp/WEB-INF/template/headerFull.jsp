@@ -151,8 +151,8 @@
 						<img src="${pageContext.request.contextPath}/images/alert.gif" align="center" alt='<openmrs:message code="Alert.unreadAlert"/>' title='<openmrs:message code="Alert.unreadAlert"/>'/>
 						<c:if test="${varStatus.count == 1}"><openmrs:message code="Alert.unreadAlert"/></c:if>
 						<c:if test="${varStatus.count != 1}"><openmrs:message code="Alert.unreadAlerts" arguments="${varStatus.count}" /></c:if>
-						<a href="#markAllAsRead" onclick="return markAllAlertsRead()" HIDEFOCUS class="" >
-							<img src="${pageContext.request.contextPath}/images/markRead.gif" alt='<openmrs:message code="Alert.markAllAsRead"/>' title='<openmrs:message code="Alert.markAllAlertsAsRead"/>' /> <span class=""><openmrs:message code="Alert.markAllAsRead"/></span>
+						<a href="#markAllAsRead" onclick="return markAllAlertsRead()" HIDEFOCUS class="markAllAlertsRead" >
+							<img src="${pageContext.request.contextPath}/images/markRead.gif" alt='<openmrs:message code="Alert.markAllAsRead"/>' title='<openmrs:message code="Alert.markAllAlertsAsRead"/>' /> <span class="markAllAlertsRead"><openmrs:message code="Alert.markAllAsRead"/></span>
 						</a>
 					</div>
 					</div>

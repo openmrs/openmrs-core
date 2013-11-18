@@ -152,6 +152,7 @@
 			<param name="class" value="org.openmrs.notification.web.dwr.DWRAlertService" />
 			<include method="getAlerts"/>
 			<include method="markAlertRead"/>
+			<include method="markAllAlertsRead"/>
 			<include method="createAlert"/>
 		</create>
 		
