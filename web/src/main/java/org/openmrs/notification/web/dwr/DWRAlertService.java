@@ -134,7 +134,6 @@ public class DWRAlertService {
          
          for (Alert alert : alerts) {
         	 markAlertRead(alert.getId());
-        	 Context.refreshAuthenticatedUser();
          }
 	 }
 }

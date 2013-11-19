@@ -18,8 +18,12 @@ function markAlertRead(self, alertId) {
 	return false;
 }
 
-function markAllAlertsRead() {
+function markAllAlertsRead(self) {
 	DWRAlertService.markAllAlertsRead();
+	// hide the entire alert outer div after marking all alerts as read
+	var parent = self.parentNode;
+	parent = parent.parentNode.parentNode;
+	parent.style.display = "none";
 }
 
 function addClass(obj, c) {
