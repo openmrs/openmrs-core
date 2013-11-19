@@ -2338,8 +2338,8 @@
 	</changeSet>
 	
 	<changeSet id="200902142213" author="ewolodzko" dbms="mysql">
-		<validCheckSum>ace82a1ecb3a0c3246e39f0bebe38423</validCheckSum> <!-- original checksum -->
-		<validCheckSum>288804e42d575fe62c852ed9daa9d59d</validCheckSum> <!-- current checksum with TRUNK-4025 fix-->
+		<validCheckSum>3:ace82a1ecb3a0c3246e39f0bebe38423</validCheckSum> <!-- original checksum -->
+		<validCheckSum>3:288804e42d575fe62c852ed9daa9d59d</validCheckSum> <!-- current checksum with TRUNK-4025 fix-->
 		<comment>
 			Add default sortWeights to all current PersonAttributeTypes
 		</comment>
