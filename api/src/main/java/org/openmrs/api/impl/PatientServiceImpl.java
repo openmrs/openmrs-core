@@ -1648,28 +1648,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
 		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false, true));
 	}
-	
-	/**
-	 * Method returns the minimum number of search characters
-	 * 
-	 * @return the value of min search characters
-	 */
-	private int getMinSearchCharacters() {
-		int minSearchCharacters = OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS;
-		String minSearchCharactersStr = Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS);
-		
-		try {
-			minSearchCharacters = Integer.valueOf(minSearchCharactersStr);
-		}
-		catch (NumberFormatException e) {
-			//do nothing
-		}
-		
-		return minSearchCharacters;
-	}
-	
-	/**
+
+    /**
 	 * @see PatientService#getPatients(String, Integer, Integer)
 	 */
 	@SuppressWarnings("unchecked")
