@@ -130,10 +130,11 @@ public class DWRAlertService {
 	 public void markAllAlertsRead() {
          AlertService as = Context.getAlertService();
          // Get the alert objects
-         List<Alert> alerts = as.getAllAlerts();
+         List<Alert> alerts = as.getAlertsByUser(Context.getAuthenticatedUser());
          
          for (Alert alert : alerts) {
-                 markAlertRead(alert.getId());
+        	 markAlertRead(alert.getId());
+        	 Context.refreshAuthenticatedUser();
          }
 	 }
 }
