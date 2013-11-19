@@ -3446,4 +3446,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, patientService.getCountOfPatients(identifier).intValue());
 	}
 	
+	/**
+	 * @verifies {@link PatientService#savePatientIdentifier(PatientIdentifier)} test = should throw
+	 *           an APIException when a null argument is passed
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should throw an APIException when a null argument is passed", method = "savePatientIdentifier(PatientIdentifier)")
+	public void savePatientIdentifier_shouldThrowAnAPIExceptionWhenANullArgumentIsPassed() throws Exception {
+		patientService.savePatientIdentifier(null);
+	}
 }
