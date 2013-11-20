@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
- * Tests methods of the module activator that do not require refreshing of the spring applications
+ * Tests methods of the module activator that do not require refreshing of the spring application
  * context. For those that require refreshing, see WebModuleActivatorTest
  */
 public class ModuleActivatorTest extends BaseModuleActivatorTest {
