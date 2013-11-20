@@ -304,8 +304,15 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(19));
 		obs.setObsDatetime(new Date());
-		obs
-		        .setValueText("the limit of valueText is 50. So we are trying to test it with more than 50 characters and this is the test text	1");
+		
+		// Generate 1800+ characters length text.
+		String valueText = "";
+		for (int i = 0; i < 20; i++) {
+			valueText = valueText
+			        + "This text should not exceed 1000 characters. Below code will generate a text more than 1000";
+		}
+		
+		obs.setValueText(valueText);
 		
 		Errors errors = new BindException(obs, "obs");
 		new ObsValidator().validate(obs, errors);
