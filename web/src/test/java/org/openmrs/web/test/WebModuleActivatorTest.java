@@ -229,4 +229,57 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		module = ModuleFactory.getModuleById(MODULE3_ID);
 		assertTrue(module.getVersion().equals("2.0-SNAPSHOT"));
 	}
+	
+	@Test
+	@NotTransactional
+	public void shouldUpgradeModuleWithDependents() throws Exception {
+		Module module = ModuleFactory.getModuleById(MODULE1_ID);
+		assertTrue(module.getVersion().equals("1.0-SNAPSHOT"));
+		
+		URL url = OpenmrsClassLoader.getInstance().getResource("org/openmrs/module/include/test1-2.0-SNAPSHOT.omod");
+		module.setDownloadURL("file:" + url.getFile());
+		
+		createWebInfFolderIfNotExist();
+		
+		//all the modules should be started
+		assertTrue(ModuleFactory.getModuleById(MODULE1_ID).isStarted());
+		assertTrue(ModuleFactory.getModuleById(MODULE2_ID).isStarted());
+		assertTrue(ModuleFactory.getModuleById(MODULE3_ID).isStarted());
+		
+		//and they should be only 3
+		assertTrue(ModuleFactory.getLoadedModules().size() == 3);
+		assertTrue(ModuleFactory.getStartedModules().size() == 3);
+		
+		//now stop module1
+		ModuleFactory.stopModule(module, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
+		WebModuleUtil.stopModule(module, ((XmlWebApplicationContext) applicationContext).getServletContext());
+		
+		//module2 and module3 should have stopped since they depend on module1
+		assertTrue(!ModuleFactory.getModuleById(MODULE1_ID).isStarted());
+		assertTrue(!ModuleFactory.getModuleById(MODULE2_ID).isStarted());
+		assertTrue(!ModuleFactory.getModuleById(MODULE3_ID).isStarted());
+		
+		//upgrade module1
+		Module newModule = ModuleFactory.updateModule(module);
+		
+		//web start the upgraded module1
+		WebModuleUtil.startModule(newModule, ((XmlWebApplicationContext) applicationContext).getServletContext(), false);
+		
+		//module1 should have upgraded from version 1.0 to 2.0
+		module = ModuleFactory.getModuleById(MODULE1_ID);
+		assertTrue(module.isStarted());
+		assertTrue(module.getVersion().equals("2.0-SNAPSHOT"));
+		
+		//now try start module2 and module3
+		ModuleFactory.startModule(ModuleFactory.getModuleById(MODULE2_ID));
+		ModuleFactory.startModule(ModuleFactory.getModuleById(MODULE3_ID));
+		
+		//module2 and module3 should have started
+		assertTrue(ModuleFactory.getModuleById(MODULE2_ID).isStarted());
+		assertTrue(ModuleFactory.getModuleById(MODULE3_ID).isStarted());
+		
+		//we should have 3 modules instead of 4
+		assertTrue(ModuleFactory.getLoadedModules().size() == 3);
+		assertTrue(ModuleFactory.getStartedModules().size() == 3);
+	}
 }
