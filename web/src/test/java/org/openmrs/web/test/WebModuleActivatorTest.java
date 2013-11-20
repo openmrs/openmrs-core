@@ -42,6 +42,17 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 @ContextConfiguration(locations = { "classpath*:webModuleApplicationContext.xml" }, inheritLocations = true, loader = TestContextLoader.class)
 public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	
+	public void createWebInfFolderIfNotExist() throws Exception {
+		//when run from the IDE and this folder does not exist, some tests fail with
+		//org.openmrs.module.ModuleException: Unable to load module messages from file: 
+		// /Projects/openmrs/core/web/target/test-classes/WEB-INF/module_messages_fr.properties
+		
+		File folder = new File("target" + File.separatorChar + "test-classes" + File.separatorChar + "WEB-INF");
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+	}
+	
 	@Test
 	@NotTransactional
 	public void shouldCallWillRefreshContextAndContextRefreshedOnRefresh() throws Exception {
@@ -92,11 +103,13 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	
 	@Test
 	@NotTransactional
-	public void shouldRefreshOtherModulesOnStartingStoppedModule() {
+	public void shouldRefreshOtherModulesOnStartingStoppedModule() throws Exception {
 		Module module = ModuleFactory.getModuleById(MODULE3_ID);
 		ModuleFactory.stopModule(module);
 		
 		init(); //to initialize for the condition below:
+		
+		createWebInfFolderIfNotExist();
 		
 		//When OpenMRS is running and you start a stopped module:
 		//	willRefreshContext() and contextRefreshed() methods get called for all started modules' activators (including the newly started module)
@@ -161,6 +174,8 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		ModuleFactory.unloadModule(module);
 		
 		init(); //to initialize for the condition below:
+		
+		createWebInfFolderIfNotExist();
 		
 		//When OpenMRS is running and you install a new module:
 		//	willRefreshContext() and contextRefreshed() methods get called for all started modules' activators (including the newly installed module)
