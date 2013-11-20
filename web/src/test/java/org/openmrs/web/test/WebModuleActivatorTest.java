@@ -207,4 +207,26 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getStartedCallCount(MODULE2_ID) == 0);
 		assertTrue(moduleTestData.getStartedCallCount(MODULE3_ID) == 1);
 	}
+	
+	@Test
+	@NotTransactional
+	public void shouldUpgradeModule() throws Exception {
+		Module module = ModuleFactory.getModuleById(MODULE3_ID);
+		
+		assertTrue(module.getVersion().equals("1.0-SNAPSHOT"));
+		
+		URL url = OpenmrsClassLoader.getInstance().getResource("org/openmrs/module/include/test3-2.0-SNAPSHOT.omod");
+		module.setDownloadURL("file:" + url.getFile());
+		
+		createWebInfFolderIfNotExist();
+		
+		ModuleFactory.stopModule(module, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
+		WebModuleUtil.stopModule(module, ((XmlWebApplicationContext) applicationContext).getServletContext());
+		Module newModule = ModuleFactory.updateModule(module);
+		WebModuleUtil.startModule(newModule, ((XmlWebApplicationContext) applicationContext).getServletContext(), false);
+		
+		//module3 should have upgraded from version 1.0 to 2.0
+		module = ModuleFactory.getModuleById(MODULE3_ID);
+		assertTrue(module.getVersion().equals("2.0-SNAPSHOT"));
+	}
 }
