@@ -38,7 +38,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { Obs.class }, order = 50)
 public class ObsValidator implements Validator {
 	
-	public final static int VALUE_TEXT_MAX_LENGTH = 50;
+	public final static int VALUE_TEXT_MAX_LENGTH = 1000;
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
