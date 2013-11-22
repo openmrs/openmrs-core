@@ -23,6 +23,120 @@
 		</customChange>
 	</changeSet>
 	
+	<changeSet id="disable-foreign-key-checks-1.9.7" author="dkayiwa" dbms="mysql">
+		<comment>Turning off foreign key constraint checks</comment>
+		<sql>SET FOREIGN_KEY_CHECKS=0</sql>
+    </changeSet>
+    
+	<changeSet id="renaming-obs-table-to-obs-old-1.9.7" author="dkayiwa" dbms="mysql">
+		<comment>Renaming obs table to obs_old</comment>
+		<renameTable oldTableName="obs" newTableName="obs_old"/>
+	</changeSet>
+	
+	<changeSet id="renaming-encounter-table-to-encounter-old-1.9.7" author="dkayiwa" dbms="mysql">
+		<comment>Renaming encounter table to encounter_old</comment>
+		<renameTable oldTableName="encounter" newTableName="encounter_old"/>
+	</changeSet>
+	
+	<changeSet id="dropping-foreign-key-encounter_provider-encounter-old-1.9.7" author="dkayiwa" dbms="mysql">
+		<comment>Dropping foreign key on encounter_old.provider_id table</comment>
+		<dropForeignKeyConstraint baseTableName="encounter_old" constraintName="encounter_provider" />
+	</changeSet>
+	
+	<changeSet id="creating-new-encounter-table-1.9.7" author="dkayiwa">
+		<comment>Creating new encounter table</comment>
+        <createTable tableName="encounter">
+            <column autoIncrement="true" name="encounter_id" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="encounter_type" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="patient_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="provider_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="location_id" type="int"/>
+            <column name="form_id" type="int"/>
+            <column name="encounter_datetime" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_by" type="int"/>
+            <column name="date_voided" type="DATETIME"/>
+            <column name="void_reason" type="varchar(255)"/>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="DATETIME"/>
+            <column name="visit_id" type="int"/>
+            <column name="uuid" type="char(38)" />
+        </createTable>
+        <addForeignKeyConstraint baseTableName="encounter" baseColumnNames="provider_id" constraintName="encounter_provider" referencedTableName="person" referencedColumnNames="person_id"/>
+        <modifySql dbms="mssql">
+                <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
+    </changeSet>
+	
+	<changeSet id="creating-new-obs-table-1.9.7" author="dkayiwa">
+		<comment>Creating new obs table</comment>
+        <createTable tableName="obs">
+            <column autoIncrement="true" name="obs_id" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="person_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="concept_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="encounter_id" type="int"/>
+            <column name="order_id" type="int"/>
+            <column name="obs_datetime" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="location_id" type="int"/>
+            <column name="obs_group_id" type="int"/>
+            <column name="accession_number" type="varchar(255)"/>
+            <column name="value_group_id" type="int"/>
+            <column name="value_boolean" type="BOOLEAN"/>
+            <column name="value_coded" type="int"/>
+            <column name="value_coded_name_id" type="int"/>
+            <column name="value_drug" type="int"/>
+            <column name="value_datetime" type="DATETIME"/>
+            <column name="value_numeric" type="double precision"/>
+            <column name="value_modifier" type="varchar(2)"/>
+            <column name="value_text" type="text"/>
+            <column name="value_complex" type="varchar(255)"/>
+            <column name="comments" type="varchar(255)"/>
+            <column defaultValueNumeric="0" name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_by" type="int"/>
+            <column name="date_voided" type="DATETIME"/>
+            <column name="void_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)" />
+        </createTable>
+        <modifySql dbms="mssql">
+            <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+        </modifySql>
+    </changeSet>
+	
+	
 	<changeSet id="1" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="person_attribute_type" columnName="edit_privilege"/></not>
@@ -7580,5 +7694,58 @@
 		</comment>
 		<addUniqueConstraint tableName="encounter_role" columnNames="name" constraintName="encounter_role_unique_name"/>
 	</changeSet>
+	
+	
+	<changeSet id="copy-encounters-into-new-table-1.9.7" author="dkayiwa" dbms="mysql">
+		<comment>Copying encounter into new table</comment>
+		<sql>
+			<![CDATA[
+				INSERT INTO encounter (encounter_id,encounter_type,patient_id,
+				location_id,form_id,encounter_datetime,creator,date_created,voided,
+				voided_by,date_voided,void_reason,changed_by,date_changed,uuid)
+				
+				SELECT encounter_id,encounter_type,patient_id,
+				location_id,form_id,encounter_datetime,creator,date_created,voided,
+				voided_by,date_voided,void_reason,changed_by,date_changed,uuid 
+				FROM encounter_old
+			]]>
+		</sql>
+    </changeSet>
+    
+    <changeSet id="drop-encounter-old-table-1.9.7" author="dkayiwa" dbms="mysql">
+		<comment>Removing the encounter_old table</comment>
+		<dropTable tableName="encounter_old"/>
+	</changeSet>
+    
+	<changeSet id="copy-obs-into-new-table-1.9.7" author="dkayiwa" dbms="mysql">
+		<comment>Copying obs into new table</comment>
+		<sql>
+			<![CDATA[
+				INSERT INTO obs (obs_id,person_id,concept_id,encounter_id,order_id,
+				obs_datetime,location_id,obs_group_id,accession_number,value_group_id,
+				value_boolean,value_coded,value_coded_name_id,value_drug,value_datetime,
+				value_numeric,value_modifier,value_text,value_complex,comments,creator,
+				date_created,voided,voided_by,date_voided,void_reason,uuid)
+				
+				SELECT obs_id,person_id,concept_id,encounter_id,order_id,
+				obs_datetime,location_id,obs_group_id,accession_number,value_group_id,
+				value_boolean,value_coded,value_coded_name_id,value_drug,value_datetime,
+				value_numeric,value_modifier,value_text,value_complex,comments,creator,
+				date_created,voided,voided_by,date_voided,void_reason,uuid 
+				FROM obs_old
+			]]>
+		</sql>
+    </changeSet>
+    
+    <changeSet id="drop-obs-old-table-1.9.7" author="dkayiwa" dbms="mysql">
+		<comment>Removing the obs_old table</comment>
+		<dropTable tableName="obs_old"/>
+	</changeSet>
+    
+	<changeSet id="enable-foreign-key-checks-1.9.7" author="dkayiwa" dbms="mysql">
+		<comment>Turning on foreign key constraint checks</comment>
+		<sql>SET FOREIGN_KEY_CHECKS=1</sql>
+    </changeSet>
+	
 	
 </databaseChangeLog>
