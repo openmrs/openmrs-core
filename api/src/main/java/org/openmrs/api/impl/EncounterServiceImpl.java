@@ -1029,4 +1029,12 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 	}
 	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounterRolesByName(String)
+	 */
+	
+	@Override
+	public List<EncounterRole> getEncounterRolesByName(String name) {
+		return dao.getEncounterRolesByName(name);
+	}
 }

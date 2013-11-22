@@ -624,4 +624,14 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		criteria.addOrder(Order.desc("encounterDatetime"));
 		criteria.addOrder(Order.desc("encounterId"));
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounterRolesByName(String)
+	 */
+	
+	@Override
+	public List<EncounterRole> getEncounterRolesByName(String name) throws DAOException {
+		return sessionFactory.getCurrentSession().createCriteria(EncounterRole.class).add(Restrictions.eq("name", name))
+		        .list();
+	}
 }

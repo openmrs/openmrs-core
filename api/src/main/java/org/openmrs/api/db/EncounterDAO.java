@@ -259,4 +259,14 @@ public interface EncounterDAO {
 	 */
 	Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query);
 	
+	/**
+	 * Get encounter roles by name
+	 * 
+	 * @param name encounter role name
+	 * @return encounter roles
+	 * @throws org.openmrs.api.db.DAOException
+	 * @see org.openmrs.api.EncounterRoleService#getEncounterRolesByName(String name)
+	 */
+	
+	public List<EncounterRole> getEncounterRolesByName(String name) throws DAOException;
 }

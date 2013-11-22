@@ -2439,7 +2439,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should fetch encounters by patient id", method = "getEncounters(String,Integer,Integer,Integer,null)")
@@ -2500,7 +2499,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should match on the encounter type name", method = "getEncounters(String,Integer,Integer,Integer,null)")
@@ -2510,7 +2508,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should match on the form name", method = "getEncounters(String,Integer,Integer,Integer,null)")
@@ -2519,8 +2516,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounterType(EncounterType)}}
-	 * @see {@link EncounterService#checkIfEncounterTypesAreLocked()}}
+	 * @see {@link EncounterService#saveEncounterType(EncounterType)}
+	 * @see {@link EncounterService#checkIfEncounterTypesAreLocked()}
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
 	@Verifies(value = "should throw error when trying to save encounter type when encounter types are locked", method = "saveEncounterType(EncounterType)")
@@ -2539,7 +2536,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#retireEncounterType(EncounterType, String)}}
+	 * @see {@link EncounterService#retireEncounterType(EncounterType, String)}
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
 	@Verifies(value = "should throw error when trying to retire encounter type when encounter types are locked", method = "retireEncounterType(EncounterType, String)")
@@ -2557,7 +2554,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#unretireEncounterType(EncounterType)}}
+	 * @see {@link EncounterService#unretireEncounterType(EncounterType)}
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
 	@Verifies(value = "should throw error when trying to unretire encounter type when encounter types are locked", method = "unretireEncounterType(EncounterType)")
@@ -2574,7 +2571,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#purgeEncounterType(EncounterType)}}
+	 * @see {@link EncounterService#purgeEncounterType(EncounterType)}
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
 	@Verifies(value = "should throw error when trying to delete encounter type when encounter types are locked", method = "purgeEncounterType(EncounterType)")
@@ -2590,5 +2587,18 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		
 		encounterService.purgeEncounterType(encounterType);
+	}
+	
+	@Test
+	@Verifies(value = "find encounter roles based on their name", method = "getEncounterRolesByName(String)")
+	public void getEncounterRolesByName_shouldFindEncounterRolesByName() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		String name = "surgeon";
+		
+		List<EncounterRole> encounterRoles = encounterService.getEncounterRolesByName(name);
+		
+		assertNotNull("valid EncounterROle object should be returned", encounterRoles);
+		assertEquals(encounterRoles.size(), 1);
+		assertEquals(encounterRoles.get(0).getName(), name);
 	}
 }

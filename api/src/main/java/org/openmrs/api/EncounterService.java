@@ -355,7 +355,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 * @should retire type and set attributes
 	 * @should throw error if given null reason parameter
-	 * @should should throw error when trying to retire encounter type when encounter types are locked
+	 * @should should throw error when trying to retire encounter type when encounter types are
+	 *         locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
 	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws APIException;
@@ -367,7 +368,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType the encounter type to unretire
 	 * @throws APIException
 	 * @should unretire type and unmark attributes
-	 * @should should throw error when trying to unretire encounter type when encounter types are locked
+	 * @should should throw error when trying to unretire encounter type when encounter types are
+	 *         locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException;
@@ -378,7 +380,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType
 	 * @throws APIException
 	 * @should purge type
-	 * @should should throw error when trying to delete encounter type when encounter types are locked
+	 * @should should throw error when trying to delete encounter type when encounter types are
+	 *         locked
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTER_TYPES })
 	public void purgeEncounterType(EncounterType encounterType) throws APIException;
@@ -917,9 +920,22 @@ public interface EncounterService extends OpenmrsService {
 	public boolean canViewEncounter(Encounter encounter, User subject);
 	
 	/**
-	 * Check if the encounter types are locked, and if so, throw exception during manipulation of encounter type
+	 * Check if the encounter types are locked, and if so, throw exception during manipulation of
+	 * encounter type
 	 * 
 	 * @throws EncounterTypeLockedException
 	 */
 	public void checkIfEncounterTypesAreLocked() throws EncounterTypeLockedException;
+	
+	/**
+	 * Get EncounterRoles by name
+	 * 
+	 * @param name
+	 * @return List of EncounterRole objects
+	 * @since 1.11
+	 * @should find encounter roles based on their name
+	 */
+	
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
+	public List<EncounterRole> getEncounterRolesByName(String name);
 }
