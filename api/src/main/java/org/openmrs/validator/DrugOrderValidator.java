@@ -48,7 +48,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if asNeeded is null
-	 * @should fail validation if complex is null
+	 * @should fail validation if dosingType is null
 	 * @should fail validation if order concept is null
 	 * @should fail validation if drug concept is different from order concept
 	 * @should pass validation if all fields are correct
@@ -61,8 +61,8 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			errors.rejectValue("order", "error.general");
 		} else {
 			// for the following elements Order.hbm.xml says: not-null="true"
-			ValidationUtils.rejectIfEmpty(errors, "prn", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "complex", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "asNeeded", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "dosingType", "error.null");
 			//ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
 			
 			if (order.getDrug() != null)

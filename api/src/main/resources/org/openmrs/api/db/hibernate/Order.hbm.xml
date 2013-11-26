@@ -34,8 +34,17 @@
             </type>
         </property>
 
+        <property name="action" column="order_action" length="50" not-null="true">
+            <type name="org.openmrs.util.HibernateEnumType">
+                <param name="enumClassName">org.openmrs.Order$Action</param>
+            </type>
+        </property>
 
-        <!-- bi-directional many-to-one association to Concept -->
+        <!-- bi-directional many-to-one association to Order -->
+		<many-to-one name="previousOrder" class="org.openmrs.Order">
+			<column name="previous_order_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to Concept -->
 		<many-to-one name="concept" class="org.openmrs.Concept" not-null="true">
 			<column name="concept_id" />
 		</many-to-one>
@@ -89,12 +98,16 @@
 			<property name="frequency" type="java.lang.String" column="frequency" length="255"/>
 			<property name="asNeeded" type="boolean" column="as_needed" length="1" not-null="true"/>
             <property name="asNeededCondition" type="string" column="as_needed_condition" length="255" />
-			<property name="complex" type="boolean" column="complex" length="1" not-null="true"/>
 			<property name="quantity" type="int" column="quantity" length="11"/>
 			<!-- bi-directional many-to-one association to Drug -->
 			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false">
 				<column name="drug_inventory_id" />
 			</many-to-one>
+            <property name="dosingType" column="dosing_type" length="50">
+                <type name="org.openmrs.util.HibernateEnumType">
+                    <param name="enumClassName">org.openmrs.DrugOrder$DosingType</param>
+                </type>
+            </property>
 	
 		</joined-subclass>
 
