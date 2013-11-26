@@ -128,6 +128,8 @@ public class WebModuleListControllerTest extends BaseModuleActivatorTest {
 		
 		assertTrue(request.getSession().getAttribute(WebConstants.OPENMRS_MSG_ATTR) == null);
 		assertTrue(request.getSession().getAttribute(WebConstants.OPENMRS_ERROR_ATTR) == null);
+		
+		assertTrue(ModuleFactory.getModuleById(MODULE3_ID).getVersion().equals("2.0-SNAPSHOT"));
 	}
 	
 	@Test
