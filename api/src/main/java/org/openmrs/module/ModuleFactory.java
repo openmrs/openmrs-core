@@ -284,9 +284,7 @@ public class ModuleFactory {
 			// if we failed to start all the modules, error out
 			if (leftoverModules.size() > 0)
 				for (Module leftoverModule : leftoverModules) {
-					String message = "Unable to start module '" + leftoverModule.getName()
-					        + "'.  All required modules are not available: "
-					        + OpenmrsUtil.join(getMissingRequiredModules(leftoverModule), ", ");
+					String message = getFailedToStartModuleMessage(leftoverModule);
 					log.error(message);
 					leftoverModule.setStartupErrorMessage(message);
 					notifySuperUsersAboutModuleFailure(leftoverModule);
@@ -522,8 +520,7 @@ public class ModuleFactory {
 				
 				// check for required modules
 				if (!requiredModulesStarted(module)) {
-					throw new ModuleException("Not all required modules are started: "
-					        + OpenmrsUtil.join(getMissingRequiredModules(module), ", ") + ". ", module.getName());
+					throw new ModuleException(getFailedToStartModuleMessage(module));
 				}
 				
 				// fire up the classloader for this module
@@ -659,6 +656,17 @@ public class ModuleFactory {
 		// refresh spring service context?
 		
 		return module;
+	}
+	
+	/**
+	 * Gets the error message of a module which fails to start.
+	 * 
+	 * @param module the module that has failed to start.
+	 * @return the message text.
+	 */
+	private static String getFailedToStartModuleMessage(Module module) {
+		String[] params = {module.getName(), OpenmrsUtil.join(getMissingRequiredModules(module), ", ")};
+		return Context.getMessageSourceService().getMessage("Module.error.moduleCannotBeStarted", params, Context.getLocale());
 	}
 	
 	/**
