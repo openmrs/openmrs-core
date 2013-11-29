@@ -16,7 +16,7 @@ package org.openmrs.api;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * This exception is thrown the user tries to edit a concept when person attribute types are locked
+ * This exception is thrown the user tries to edit a person attribute type when person attribute types are locked
  * this is done by a global property being true/false.
  * 
  * @see OpenmrsConstants#GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES_LOCKED

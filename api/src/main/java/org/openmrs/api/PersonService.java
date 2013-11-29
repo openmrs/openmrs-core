@@ -171,7 +171,8 @@ public interface PersonService extends OpenmrsService {
 	 * @should set the date created and creator on new
 	 * @should set the date changed and changed by on update
 	 * @should update any global property which reference this type
-	 * @should throw an error when trying to save person attribute type while person attribute types are locked
+	 * @should throw an error when trying to save an edited existing person attribute type while person attribute types are locked
+	 * @should throw an error when trying to save a new person attribute type while person attribute types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException;
@@ -1074,7 +1075,8 @@ public interface PersonService extends OpenmrsService {
 	public PersonAddress savePersonAddress(PersonAddress personAddress);
 	
 	/**
-	 * Check if the person attribute types are locked, and if so, throw exception during manipulation of a person attribute type
+	 * Check if the person attribute types are locked, and if so, throw exception during
+	 * manipulation of a person attribute type
 	 * 
 	 * @throws PersonAttributeTypeLockedException
 	 */

@@ -17,8 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.web.controller.ConceptFormController;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -26,12 +28,12 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Test for {@link PersonAttributeTypeFormController}}
+ * Test for {@link PersonAttributeTypeFormController}
  */
 public class PersonAttributeTypeFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	@Test
-	public void shouldNotSavePersonAttributeTypeWhenPersonAttributeTypesAreLocked() throws Exception {
+	public void shouldNotDeletePersonAttributeTypeWhenPersonAttributeTypesAreLocked() throws Exception {
 		// dataset to lock person attribute types
 		executeDataSet("org/openmrs/web/controller/include/PersonAttributeTypeFormControllerTest.xml");
 		
@@ -40,34 +42,8 @@ public class PersonAttributeTypeFormControllerTest extends BaseWebContextSensiti
 		PersonAttributeTypeFormController controller = (PersonAttributeTypeFormController) applicationContext
 		        .getBean("personAttributeTypeForm");
 		controller.setApplicationContext(applicationContext);
-		controller.setFormView("PersonAttributeType.form");
 		controller.setSuccessView("index.htm");
-		
-		MockHttpServletRequest request = new MockHttpServletRequest("GET",
-		        "/admin/persons/personAttributeType.form?personAttributeTypeId=1");
-		request.setSession(new MockHttpSession(null));
-		HttpServletResponse response = new MockHttpServletResponse();
-		controller.handleRequest(request, response);
-		
-		request.setMethod("POST");
-		
-		request.addParameter("action", "Save personAttributeType");
-		
-		ModelAndView mav = controller.handleRequest(request, response);
-		
-		Assert.assertEquals("The save attempt should have failed!", "PersonAttributeType.form", mav.getViewName());
-		Assert.assertSame(controller.getFormView(), mav.getViewName());
-	}
-	
-	@Test
-	public void shouldNotDeletePersonAttributeTypeWhenPersonAttributeTypesAreNotLocked() throws Exception {
-		PersonService personService = Context.getPersonService();
-		
-		PersonAttributeTypeFormController controller = (PersonAttributeTypeFormController) applicationContext
-		        .getBean("personAttributeTypeForm");
-		controller.setApplicationContext(applicationContext);
-		controller.setSuccessView("index.htm");
-		controller.setFormView("PersonAttributeType.form");
+		controller.setFormView("personAttributeType.form");
 		
 		MockHttpServletRequest request = new MockHttpServletRequest("GET",
 		        "/admin/persons/personAttributeType.form?personAttributeTypeId=1");

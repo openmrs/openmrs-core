@@ -2136,8 +2136,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link PersonService#savePersonAttributeType(PersonAttributeType)}
 	 */
 	@Test(expected = PersonAttributeTypeLockedException.class)
-	@Verifies(value = "should throw an error when trying to save person attribute type while person attribute types are locked", method = "savePersonAttributeType(PersonAttributeType)")
-	public void savePersonAttributeType_shouldThrowAnErrorWhenTryingToSavePersonAttributeTypeWhilePersonAttributeTypesAreLocked()
+	@Verifies(value = "should throw an error when trying to save an edited existing person attribute type while person attribute types are locked", method = "savePersonAttributeType(PersonAttributeType)")
+	public void savePersonAttributeType_shouldThrowAnErrorWhenTryingToSaveAnEditedExistingPersonAttributeTypeWhilePersonAttributeTypesAreLocked()
 	        throws Exception {
 		
 		Assert.assertNotNull(personService);
@@ -2148,11 +2148,28 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		PersonAttributeType existingPersonAttributeType = Context.getPersonService().getPersonAttributeType(1);
 		existingPersonAttributeType.setDescription("new description");
 		
+		//trying to save after editing existing throws PersonAttributeTypeLockedException
+		personService.savePersonAttributeType(existingPersonAttributeType);
+	}
+	
+	/**
+	 * @see {@link PersonService#savePersonAttributeType(PersonAttributeType)}
+	 */
+	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Verifies(value = "should throw an error when trying to save a new person attribute type while person attribute types are locked", method = "savePersonAttributeType(PersonAttributeType)")
+	public void savePersonAttributeType_shouldThrowAnErrorWhenTryingToSaveANewPersonANewAttributeTypeWhilePersonAttributeTypesAreLocked()
+	        throws Exception {
+		
+		createGPAndLockPersonAttributeTypesWithIt();
+		
 		//creating a new person attribute type and trying to save it
 		PersonAttributeType newPersonAttributeType = new PersonAttributeType(21);
 		
-		//trying to save after editing existing or new person attribute type throws PersonAttributeTypeLockedException
-		personService.savePersonAttributeType(existingPersonAttributeType);
+		newPersonAttributeType.setCreator(Context.getAuthenticatedUser());
+		newPersonAttributeType.setDateCreated(new Date());
+		newPersonAttributeType.setName("test name");
+		
+		//trying to save a new person attribute type throws PersonAttributeTypeLockedException
 		personService.savePersonAttributeType(newPersonAttributeType);
 	}
 	
@@ -2165,7 +2182,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	        throws Exception {
 		PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(2);
 		
-		Assert.assertNotNull(personService);
 		assert (!personAttributeType.isRetired());
 		
 		createGPAndLockPersonAttributeTypesWithIt();
@@ -2184,7 +2200,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(1);
 		
-		Assert.assertNotNull(personService);
 		assert (personAttributeType.isRetired());
 		
 		createGPAndLockPersonAttributeTypesWithIt();
@@ -2200,8 +2215,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should throw an error when trying to delete person attribute type while person attribute types are locked", method = "retirePersonAttributeType(PersonAttributeType, String)")
 	public void purgePersonAttributeType_shouldThrowAnErrorWhileTryingToDeletePersonAttributeTypeWhenPersonAttributeTypesAreLocked()
 	        throws Exception {
-		//confirm that personService is not null
-		Assert.assertNotNull(personService);
 		
 		PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(1);
 		
