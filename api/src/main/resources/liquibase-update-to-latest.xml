@@ -6498,12 +6498,12 @@
 
         <update tableName="drug_order">
             <column name="dosing_type" value="SIMPLE"/>
-            <where>dosing_type = false </where>
+            <where>dosing_type = '0'</where>
         </update>
 
         <update tableName="drug_order">
             <column name="dosing_type" value="FREE_TEXT"/>
-            <where>dosing_type = true </where>
+            <where>dosing_type = '1'</where>
         </update>
 
     </changeSet>
