@@ -24,7 +24,6 @@ import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleInteroperabilityTest;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.Verifies;
 
 /**
@@ -68,7 +67,6 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	 * @see {@link Context#loadClass(String)}
 	 */
 	@Test
-	@SkipBaseSetup
 	@Verifies(value = "should load class with the OpenmrsClassLoader", method = "loadClass(String)")
 	public void loadClass_shouldLoadClassWithOpenmrsClassLoader() throws Exception {
 		Class<?> c = Context.loadClass("org.openmrs.module.dssmodule.DssService");
