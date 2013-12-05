@@ -6487,25 +6487,29 @@
         <addNotNullConstraint tableName="orders" columnName="order_action" columnDataType="varchar(50)"/>
     </changeSet>
 
-    <changeSet id="201311141400-TRUNK-4125" author="arathy">
+    <changeSet id="201312141400-TRUNK-4126" author="arathy">
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="drug_order" columnName="dosing_type"/></not>
         </preConditions>
-
-        <comment>Renaming complex to dosing_type in drug_order</comment>
-
+        <comment>Renaming drug_order.complex to dosing_type</comment>
         <renameColumn tableName="drug_order" oldColumnName="complex" newColumnName="dosing_type" columnDataType="varchar(50)"/>
+    </changeSet>
 
+    <changeSet id="201312141400-TRUNK-4127" author="arathy">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">SELECT count(*) FROM drug_order</sqlCheck>
+            </not>
+        </preConditions>
+        <comment>Converting values in drug_order.dosing_type column</comment>
         <update tableName="drug_order">
             <column name="dosing_type" value="SIMPLE"/>
             <where>dosing_type = '0'</where>
         </update>
-
         <update tableName="drug_order">
             <column name="dosing_type" value="FREE_TEXT"/>
             <where>dosing_type = '1'</where>
         </update>
-
     </changeSet>
 
 </databaseChangeLog>
