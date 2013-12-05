@@ -111,7 +111,7 @@ public class ProviderFormController {
 	
 	@ModelAttribute("providerAttributeTypes")
 	public List<ProviderAttributeType> getProviderAttributeTypes() throws Exception {
-		return Context.getProviderService().getAllProviderAttributeTypes();
+		return Context.getProviderService().getAllProviderAttributeTypes(false);
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)
