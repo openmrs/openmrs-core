@@ -1435,7 +1435,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#savePatientIdentifier(org.openmrs.PatientIdentifier)
 	 */
 	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException {
-		//if the argument or the following required fields are not specified
+		//fail if the argument or the following required fields are not specified
 		PatientIdentifierType.LocationBehavior locationBehavior = null;
 		if (patientIdentifier != null) {
 			locationBehavior = patientIdentifier.getIdentifierType().getLocationBehavior();
