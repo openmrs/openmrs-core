@@ -1531,7 +1531,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		//if the argument or the following required fields are not specified
 		PatientIdentifierType.LocationBehavior locationBehavior = null;
 		if (patientIdentifier != null) {
-			patientIdentifier.getIdentifierType().getLocationBehavior();
+			locationBehavior = patientIdentifier.getIdentifierType().getLocationBehavior();
 		}
 		
 		if (patientIdentifier == null
