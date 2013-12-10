@@ -50,6 +50,10 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private DosingType dosingType = DosingType.SIMPLE;
 	
+	private Integer numRefills;
+	
+	private String administrationInstructions;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -273,6 +277,42 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setDosingType(DosingType dosingType) {
 		this.dosingType = dosingType;
+	}
+	
+	/**
+	 * Gets numRefills
+	 * @since 1.10
+	 */
+	public Integer getNumRefills() {
+		return numRefills;
+	}
+	
+	/**
+	 * Sets numRefills
+	 *
+	 * @param numRefills the numRefills to set
+	 * @since 1.10
+	 */
+	public void setNumRefills(Integer numRefills) {
+		this.numRefills = numRefills;
+	}
+	
+	/**
+	 * Gets the administrationInstructions
+	 * @since 1.10
+	 */
+	public String getAdministrationInstructions() {
+		return administrationInstructions;
+	}
+	
+	/**
+	 * Sets the administrationInstructions
+	 *
+	 * @param administrationInstructions to set
+	 * @since 1.10
+	 */
+	public void setAdministrationInstructions(String administrationInstructions) {
+		this.administrationInstructions = administrationInstructions;
 	}
 	
 	public String toString() {
