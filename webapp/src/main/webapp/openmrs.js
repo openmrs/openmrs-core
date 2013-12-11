@@ -24,10 +24,6 @@ function markAllAlertsRead(self) {
 	var parent = self.parentNode;
 	parent = parent.parentNode;
 	parent.style.display = "none";
-	var unreadAlertSize = parseInt(unreadAlertSizeBox.innerHTML);
-	unreadAlertSize = 0;
-	var unreadAlertSizeBox = document.getElementById('unreadAlertSize');
-	unreadAlertSizeBox = unreadAlertSize;
 }
 
 function addClass(obj, c) {
