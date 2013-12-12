@@ -29,6 +29,16 @@
 		
 		return confirm('<openmrs:message code="Role.leaveForm" />');
 	}
+	
+	$j(document).ready(function() {
+		$j("#privileges").prepend('<span class="listItem listItemSelectAll"><input type="checkbox" id="toggleSelectionCheckbox"><spring:message code="general.selectOrUnselectAll"/></span>');
+		$j("#toggleSelectionCheckbox").click(function(e) {
+			var state = $j(e.target).attr('checked') === undefined ? false : true;
+			$j("input[type='checkbox'][name='privileges']").each(function() {
+				$j(this).attr("checked", state);
+			}) ;
+		});
+	});
 </script>
 
 <h2><openmrs:message code="Role.manage.title"/></h2>	
