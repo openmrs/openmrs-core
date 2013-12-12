@@ -1054,7 +1054,9 @@ table#obs td.obsValue {
 		background-color: #8FABC7;
 		color: white;
 	}
-	
+	.listItemSelectAll { 
+		background-color: #EFEFEF;
+	}
 .instructions {
 	font-size: 0.8em;
 }
