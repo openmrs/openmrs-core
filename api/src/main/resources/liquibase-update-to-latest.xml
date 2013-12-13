@@ -7581,4 +7581,30 @@
 		<addUniqueConstraint tableName="encounter_role" columnNames="name" constraintName="encounter_role_unique_name"/>
 	</changeSet>
 	
+	<changeSet id="20131213-TRUNK-4170-duplicateLocationAttributeTypeNameChangeSet" author="surangak">
+		<preConditions onFail="MARK_RAN">
+		<not>
+			<sqlCheck expectedResult = "0">
+				<![CDATA[
+					SELECT count(*) from location_attribute_type;
+				]]>
+			</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Custom changeset to identify and resolve duplicate Location Attribute Type names</comment>
+		<customChange class="org.openmrs.util.databasechange.DuplicateLocationAttributeTypeNameChangeSet"></customChange>
+	</changeSet>
+	
+			<changeSet id="20131213-TRUNK-4170-location_attribute_type_unique_name" author="surangak">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists indexName="location_attribute_type_unique_name" />
+			</not>
+		</preConditions>
+		<comment>
+			Adding the unique constraint to the location_attribute_type.name column 
+		</comment>
+		<addUniqueConstraint tableName="location_attribute_type" columnNames="name" constraintName="location_attribute_type_unique_name"/>
+	</changeSet>
+	
 </databaseChangeLog>

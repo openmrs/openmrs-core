@@ -278,6 +278,15 @@ public class HibernateLocationDAO implements LocationDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationAttributeTypeByName(java.lang.String)
+	 */
+	@Override
+	public LocationAttributeType getLocationAttributeTypeByName(String name) {
+		return (LocationAttributeType) sessionFactory.getCurrentSession().createCriteria(LocationAttributeType.class).add(
+		    Restrictions.eq("name", name)).uniqueResult();
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.LocationDAO#saveLocationAttributeType(org.openmrs.LocationAttributeType)
 	 */
 	@Override

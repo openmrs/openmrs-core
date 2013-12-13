@@ -176,6 +176,11 @@ public interface LocationDAO {
 	public LocationAttributeType getLocationAttributeTypeByUuid(String uuid);
 	
 	/**
+	 * @see LocationService#getLocationAttributeTypeByName(String)
+	 */
+	public LocationAttributeType getLocationAttributeTypeByName(String name);
+	
+	/**
 	 * @see LocationService#saveLocationAttributeType(LocationAttributeType)
 	 */
 	public LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType);
