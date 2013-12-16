@@ -34,6 +34,7 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
+import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
@@ -51,11 +52,13 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.api.OrderService
  */
-public class OrderServiceImpl extends BaseOpenmrsService implements OrderService {
+public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected OrderDAO dao;
+	
+	private static Integer orderNumberCounter = -1;
 	
 	public OrderServiceImpl() {
 	}
@@ -71,6 +74,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
 	public Order saveOrder(Order order) throws APIException {
+		if (order.getOrderId() == null && !StringUtils.hasText(order.getOrderNumber())) {
+			//TODO call module registered order number generators 
+			//and if there is none, use the default below
+			order.setOrderNumber(getNewOrderNumber());
+		}
+		
 		return dao.saveOrder(order);
 	}
 	
@@ -612,5 +621,21 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		encounters.add(encounter);
 		
 		return getOrders(Order.class, null, null, null, null, encounters, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderNumberGenerator#getNewOrderNumber()
+	 */
+	@Override
+	public synchronized String getNewOrderNumber() {
+		//synchronized (orderNumberCounter) {
+		if (orderNumberCounter < 0) {
+			// we've just started up, so we need to fetch this from the DAO
+			Integer temp = dao.getHighestOrderId();
+			orderNumberCounter = temp == null ? 0 : temp;
+		}
+		orderNumberCounter += 1;
+		return "ORD-" + orderNumberCounter;
+		//}
 	}
 }
