@@ -103,10 +103,4 @@ public interface OrderDAO {
 	 * Delete Obs that references an order
 	 */
 	public void deleteObsThatReference(Order order);
-	
-	/**
-	 * @return the highest orderId that has been persisted to the database
-	 * @should return the highest order id
-	 */
-	public Integer getHighestOrderId();
 }
