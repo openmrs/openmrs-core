@@ -27,6 +27,7 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -42,6 +43,8 @@ import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.order.DrugOrderSupport;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.RegimenSuggestion;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.util.StringUtils;
 
 /**
@@ -57,8 +60,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected OrderDAO dao;
-	
-	private static Integer orderNumberCounter = -1;
 	
 	public OrderServiceImpl() {
 	}
@@ -628,12 +629,20 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public synchronized String getNewOrderNumber() {
-		if (orderNumberCounter < 0) {
-			// we've just started up, so we need to fetch this from the DAO
-			Integer temp = dao.getHighestOrderId();
-			orderNumberCounter = temp == null ? 0 : temp;
+		GlobalProperty globalProperty = Context.getAdministrationService().getGlobalPropertyObject(
+		    OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER);
+		if (globalProperty == null) {
+			globalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER, "1",
+			        "The next order number available for assignment");
 		}
-		orderNumberCounter += 1;
-		return "ORD-" + orderNumberCounter;
+		
+		String orderNumber = "ORD-" + globalProperty.getValue();
+		
+		globalProperty.setPropertyValue(String.valueOf(Long.parseLong(globalProperty.getPropertyValue()) + 1));
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		Context.getAdministrationService().saveGlobalProperty(globalProperty);
+		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		
+		return orderNumber;
 	}
 }
