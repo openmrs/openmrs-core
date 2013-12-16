@@ -628,7 +628,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public synchronized String getNewOrderNumber() {
-		//synchronized (orderNumberCounter) {
 		if (orderNumberCounter < 0) {
 			// we've just started up, so we need to fetch this from the DAO
 			Integer temp = dao.getHighestOrderId();
@@ -636,6 +635,5 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		orderNumberCounter += 1;
 		return "ORD-" + orderNumberCounter;
-		//}
 	}
 }
