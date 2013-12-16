@@ -18,6 +18,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
@@ -203,4 +204,12 @@ public class HibernateOrderDAO implements OrderDAO {
 		}
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getHighestOrderId()
+	 */
+	@Override
+	public Integer getHighestOrderId() {
+		Query query = sessionFactory.getCurrentSession().createSQLQuery("SELECT max(order_id) FROM orders");
+		return (Integer) query.uniqueResult();
+	}
 }
