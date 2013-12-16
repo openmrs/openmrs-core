@@ -519,6 +519,8 @@
                 <constraints nullable="false"/>
             </column>
             <column name="quantity" type="int"/>
+            <column name="duration" type="double"/>
+            <column name="duration_units" type="int"/>
         </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-25">

@@ -50,6 +50,10 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private DosingType dosingType = DosingType.SIMPLE;
 	
+	private Double duration;
+	
+	private Concept durationUnits;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -273,6 +277,44 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setDosingType(DosingType dosingType) {
 		this.dosingType = dosingType;
+	}
+	
+	/**
+	 * Gets the duration
+	 * 
+	 * @since 1.10
+	 */
+	public Double getDuration() {
+		return duration;
+	}
+	
+	/**
+	 * Sets the duration
+	 * 
+	 * @param duration to set
+	 * @since 1.10
+	 */
+	public void setDuration(Double duration) {
+		this.duration = duration;
+	}
+	
+	/**
+	 * Gets durationUnits
+	 * 
+	 * @since 1.10
+	 */
+	public Concept getDurationUnits() {
+		return durationUnits;
+	}
+	
+	/**
+	 * Sets the durationUnits
+	 * 
+	 * @param durationUnits
+	 * @since 1.10
+	 */
+	public void setDurationUnits(Concept durationUnits) {
+		this.durationUnits = durationUnits;
 	}
 	
 	public String toString() {
