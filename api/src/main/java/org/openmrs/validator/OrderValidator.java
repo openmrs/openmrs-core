@@ -75,7 +75,10 @@ public class OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "voided", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
 			ValidationUtils.rejectIfEmpty(errors, "patient", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "orderType", "error.null");
+			
+			//TODO commented out because of this commit:
+			//https://github.com/openmrs/openmrs-core/commit/6360b0e78ee98f75eef10bf37d7cbda2e67d5ce9
+			//ValidationUtils.rejectIfEmpty(errors, "orderType", "error.null");
 			
 			Date startDate = order.getStartDate();
 			if (startDate != null) {
