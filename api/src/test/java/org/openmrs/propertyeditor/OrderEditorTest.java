@@ -14,10 +14,7 @@ public class OrderEditorTest extends BaseContextSensitiveTest {
 	public void setAsText_shouldSetUsingId() throws Exception {
 		OrderEditor editor = new OrderEditor();
 		editor.setAsText("2");
-		
-		//TODO commented out because of this commit:
-		//https://github.com/openmrs/openmrs-core/commit/6360b0e78ee98f75eef10bf37d7cbda2e67d5ce9
-		//Assert.assertNotNull(editor.getValue());
+		Assert.assertNotNull(editor.getValue());
 	}
 	
 	/**
@@ -28,9 +25,6 @@ public class OrderEditorTest extends BaseContextSensitiveTest {
 	public void setAsText_shouldSetUsingUuid() throws Exception {
 		OrderEditor editor = new OrderEditor();
 		editor.setAsText("dfca4077-493c-496b-8312-856ee5d1cc26");
-		
-		//TODO commented out because of this commit:
-		//https://github.com/openmrs/openmrs-core/commit/6360b0e78ee98f75eef10bf37d7cbda2e67d5ce9
-		//Assert.assertNotNull(editor.getValue());
+		Assert.assertNotNull(editor.getValue());
 	}
 }

@@ -146,10 +146,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasFieldErrors("discontinued"));
 		Assert.assertFalse(errors.hasFieldErrors("concept"));
 		Assert.assertFalse(errors.hasFieldErrors("patient"));
-		
-		//TODO commented out because of this commit:
-		//https://github.com/openmrs/openmrs-core/commit/6360b0e78ee98f75eef10bf37d7cbda2e67d5ce9
-		//Assert.assertTrue(errors.hasFieldErrors("orderType"));
+		Assert.assertTrue(errors.hasFieldErrors("orderType"));
 	}
 	
 	/**
