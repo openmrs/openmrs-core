@@ -6536,4 +6536,14 @@
         </addColumn>
 	</changeSet>
 
+    <changeSet id="20131217-TRUNK-4157" author="banka">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="drug_order" columnName="dosing_instructions"/></not>
+        </preConditions>
+        <comment>Adding dosing_instructions column to drug_order table</comment>
+        <addColumn tableName="drug_order">
+            <column name="dosing_instructions" type="text"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

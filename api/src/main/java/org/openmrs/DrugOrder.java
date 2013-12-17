@@ -53,6 +53,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	private Integer numRefills;
 	
 	private String administrationInstructions;
+
+    private String dosingInstructions;
 	
 	// Constructors
 	
@@ -314,7 +316,22 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	public void setAdministrationInstructions(String administrationInstructions) {
 		this.administrationInstructions = administrationInstructions;
 	}
-	
+
+    /**
+     * @since 1.10
+     */
+    public void setDosingInstructions(String dosingInstructions) {
+        this.dosingInstructions = dosingInstructions;
+    }
+
+    /**
+     * @since 1.10
+     */
+    public String getDosingInstructions() {
+        return this.dosingInstructions;
+    }
+
+
 	public String toString() {
 		return "DrugOrder(" + getDose() + getUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]")
 		        + " from " + getStartDate() + " to " + (getDiscontinued() ? getDiscontinuedDate() : getAutoExpireDate())
