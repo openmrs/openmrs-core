@@ -13,9 +13,12 @@
  */
 package org.openmrs;
 
-import java.util.Locale;
-
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
+
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * Drug
@@ -43,6 +46,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	private String units;
 	
 	private Concept concept;
+
+	private Set<DrugReferenceMap> drugReferenceMaps;
 	
 	// Constructors
 	
@@ -234,5 +239,41 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 		if (getConcept() != null)
 			return getConcept().getName().getName();
 		return "";
+	}
+
+	/**
+	 * @return Returns the drugReferenceMaps.
+	 * @since 1.10
+	 */
+	public Set<DrugReferenceMap> getDrugReferenceMaps() {
+		if (drugReferenceMaps == null) {
+			drugReferenceMaps = new HashSet<DrugReferenceMap>();
+		}
+		return drugReferenceMaps;
+	}
+
+	/**
+	 * @param drugReferenceMaps The drugReferenceMaps to set.
+	 * @since 1.10
+	 */
+	public void setDrugReferenceMaps(Set<DrugReferenceMap> drugReferenceMaps) {
+		this.drugReferenceMaps = drugReferenceMaps;
+	}
+
+	/**
+	 * Add the given DrugReferenceMap object to this drug's list of drug reference mappings. If there is
+	 * already a corresponding DrugReferenceMap object for this concept, this one will not be added.
+	 *
+	 * @param drugReferenceMap
+	 * @since 1.10
+	 */
+	public void addDrugReferenceMap(DrugReferenceMap drugReferenceMap) {
+		if (drugReferenceMap != null && !getDrugReferenceMaps().contains(drugReferenceMap)) {
+			drugReferenceMap.setDrug(this);
+			if (drugReferenceMap.getConceptMapType() == null) {
+				drugReferenceMap.setConceptMapType(Context.getConceptService().getDefaultConceptMapType());
+			}
+			getDrugReferenceMaps() 	.add(drugReferenceMap);
+		}
 	}
 }
