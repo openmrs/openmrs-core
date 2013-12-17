@@ -6531,7 +6531,7 @@
     		<column name="duration_units" type="int"/>
     	</addColumn>
     	<addForeignKeyConstraint constraintName="drug_order_duration_units_fk"
-			baseTableName="drug" baseColumnNames="concept_id"
+			baseTableName="drug_order" baseColumnNames="concept_id"
 			referencedTableName="concept" referencedColumnNames="concept_id" />
     </changeSet>
 

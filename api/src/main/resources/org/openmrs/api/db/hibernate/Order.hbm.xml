@@ -109,7 +109,9 @@
                 </type>
             </property>
             <property name="duration" type="double" column="duration" length="22"/>
-			<property name="durationUnits" type="int" column="duration_units"/>
+			<many-to-one name="durationUnits" class="org.openmrs.Concept">
+				<column name="duration_units" />
+			</many-to-one>
 	
 		</joined-subclass>
 
