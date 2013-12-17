@@ -13,9 +13,11 @@
  */
 package org.openmrs;
 
-import java.util.Locale;
-
 import org.apache.commons.lang.StringUtils;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Locale;
 
 /**
  * Drug
@@ -43,6 +45,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	private String units;
 	
 	private Concept concept;
+
+	private Collection<DrugReferenceMap> drugReferenceMaps;
 	
 	// Constructors
 	
@@ -234,5 +238,22 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 		if (getConcept() != null)
 			return getConcept().getName().getName();
 		return "";
+	}
+
+	/**
+	 * @return Returns the drugReferenceMaps.
+	 */
+	public Collection<DrugReferenceMap> getDrugReferenceMaps() {
+		if (drugReferenceMaps == null) {
+			drugReferenceMaps = Collections.EMPTY_LIST;
+		}
+		return drugReferenceMaps;
+	}
+
+	/**
+	 * @param drugReferenceMaps The drugReferenceMaps to set.
+	 */
+	public void setDrugReferenceMaps(Collection<DrugReferenceMap> drugReferenceMaps) {
+		this.drugReferenceMaps = drugReferenceMaps;
 	}
 }
