@@ -318,6 +318,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 
     /**
+     * Sets the dosingInstructions
+     *
+     * @param dosingInstructions to set
      * @since 1.10
      */
     public void setDosingInstructions(String dosingInstructions) {
@@ -325,6 +328,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
     }
 
     /**
+     * Gets the dosingInstructions
      * @since 1.10
      */
     public String getDosingInstructions() {
