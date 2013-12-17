@@ -44,15 +44,15 @@ public class OrderEditor extends PropertyEditorSupport {
 		OrderService ps = Context.getOrderService();
 		if (StringUtils.hasText(text)) {
 			try {
-				setValue(ps.getOrder(Integer.valueOf(text)));
+				//setValue(ps.getOrder(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
-				Order order = ps.getOrderByUuid(text);
+				/*Order order = ps.getOrderByUuid(text);
 				setValue(order);
 				if (order == null) {
 					log.error("Error setting text: " + text, ex);
 					throw new IllegalArgumentException("Order not found: " + ex.getMessage());
-				}
+				}*/
 			}
 		} else {
 			setValue(null);
