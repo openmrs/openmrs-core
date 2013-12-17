@@ -307,7 +307,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		OrderService orderService = Context.getOrderService();
 		for (Order o : encounter.getOrders()) {
 			if (!o.isVoided()) {
-				orderService.voidOrder(o, reason);
+				//orderService.voidOrder(o, reason);
 			}
 		}
 		
@@ -339,8 +339,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		OrderService orderService = Context.getOrderService();
 		for (Order o : encounter.getOrders()) {
-			if (voidReason.equals(o.getVoidReason()))
-				orderService.unvoidOrder(o);
+			//if (voidReason.equals(o.getVoidReason()))
+			//orderService.unvoidOrder(o);
 		}
 		
 		encounter.setVoided(false);

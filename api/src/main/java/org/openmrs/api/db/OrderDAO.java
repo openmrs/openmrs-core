@@ -21,7 +21,6 @@ import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.api.OrderService.ORDER_STATUS;
 
 /**
  * Order-related database functions
@@ -76,12 +75,10 @@ public interface OrderDAO {
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List)
+	 *      java.util.List, java.util.List, java.util.List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
-	        List<OrderType> orderTypes);
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, List<OrderType> orderTypes);
 	
 	/**
 	 * Auto generated method comment

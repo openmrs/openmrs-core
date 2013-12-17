@@ -297,27 +297,6 @@ public class PortletController implements Controller {
 						}
 						model.put("patientReasonForExit", reasonForExitObs);
 						
-						if (Context.hasPrivilege(PrivilegeConstants.VIEW_ORDERS)) {
-							List<DrugOrder> drugOrderList = Context.getOrderService().getDrugOrdersByPatient(p);
-							model.put("patientDrugOrders", drugOrderList);
-							List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>();
-							List<DrugOrder> discontinuedDrugOrders = new ArrayList<DrugOrder>();
-							Date rightNow = new Date();
-							for (Iterator<DrugOrder> iter = drugOrderList.iterator(); iter.hasNext();) {
-								DrugOrder next = iter.next();
-								if (next.isCurrent() || next.isFuture())
-									currentDrugOrders.add(next);
-								if (next.isDiscontinued(rightNow))
-									discontinuedDrugOrders.add(next);
-							}
-							model.put("currentDrugOrders", currentDrugOrders);
-							model.put("completedDrugOrders", discontinuedDrugOrders);
-							
-							List<RegimenSuggestion> standardRegimens = Context.getOrderService().getStandardRegimens();
-							if (standardRegimens != null)
-								model.put("standardRegimens", standardRegimens);
-						}
-						
 						if (Context.hasPrivilege(PrivilegeConstants.VIEW_PROGRAMS)
 						        && Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENT_PROGRAMS)) {
 							model.put("patientPrograms", Context.getProgramWorkflowService().getPatientPrograms(p, null,
