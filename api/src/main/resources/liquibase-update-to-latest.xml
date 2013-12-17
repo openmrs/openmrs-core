@@ -6535,5 +6535,30 @@
             <column name="administration_instructions" type="text"/>
         </addColumn>
 	</changeSet>
+	
+	<changeSet id="201312171559-TRUNK-4159" author="k-joseph" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="order_frequency"/></not>
+		</preConditions>
+		
+		<comment>Create the order_frequency table</comment>
+		
+		<createTable tableName="order_frequency">
+			<column name="order_frequency_id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="concept_id" type="int"><constraints nullable="false"/></column>
+			<column name="frequency_per_day" type="double"/>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+             <column name="date_created" type="datetime"><constraints nullable="false"/></column>	
+             <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+                 <constraints nullable="false"/>
+             </column>
+             <column name="retired_by" type="int" />
+             <column name="date_retired" type="datetime"/>
+             <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+             <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+		</createTable>
+	</changeSet>
 
 </databaseChangeLog>
