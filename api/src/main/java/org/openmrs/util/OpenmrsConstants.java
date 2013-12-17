@@ -1052,10 +1052,12 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_NEXT_ORDER_NUMBER = "orderEntry.nextOrderNumber";
 	
+	public static final String GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS = "orderEntry.unitsToConceptsMappings";
+	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
-	 * 
+	 *
 	 * @return List<GlobalProperty> of the core global properties
 	 */
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {

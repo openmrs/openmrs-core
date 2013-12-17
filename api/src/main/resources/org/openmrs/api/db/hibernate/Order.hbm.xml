@@ -101,7 +101,8 @@
 			<property name="frequency" type="java.lang.String" column="frequency" length="255"/>
 			<property name="asNeeded" type="boolean" column="as_needed" length="1" not-null="true"/>
             <property name="asNeededCondition" type="string" column="as_needed_condition" length="255" />
-			<property name="quantity" type="int" column="quantity" length="11"/>
+			<property name="quantity" type="double" column="quantity" length="22"/>
+			<many-to-one name="quantityUnits" class="org.openmrs.Concept" column="quantity_units" />
 			<!-- bi-directional many-to-one association to Drug -->
 			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false">
 				<column name="drug_inventory_id" />
