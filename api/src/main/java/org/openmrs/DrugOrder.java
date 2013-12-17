@@ -42,7 +42,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private Boolean asNeeded = false;
 	
-	private Integer quantity;
+	private Double quantity;
+	
+	private Concept quantityUnits;
 	
 	private Drug drug;
 	
@@ -90,6 +92,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.asNeeded = getAsNeeded();
 		target.asNeededCondition = getAsNeededCondition();
 		target.quantity = getQuantity();
+		target.quantityUnits = getQuantityUnits();
 		target.drug = getDrug();
 		target.dosingType = getDosingType();
 		target.dosingInstructions = getDosingInstructions();
@@ -207,7 +210,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * 
 	 * @return quantity
 	 */
-	public Integer getQuantity() {
+	public Double getQuantity() {
 		return this.quantity;
 	}
 	
@@ -216,8 +219,24 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * 
 	 * @param quantity
 	 */
-	public void setQuantity(Integer quantity) {
+	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
+	}
+	
+	/**
+	 * @since 1.10
+	 * @return concept
+	 */
+	public Concept getQuantityUnits() {
+		return quantityUnits;
+	}
+	
+	/**
+	 * @since 1.10
+	 * @param quantityUnits
+	 */
+	public void setQuantityUnits(Concept quantityUnits) {
+		this.quantityUnits = quantityUnits;
 	}
 	
 	/**
