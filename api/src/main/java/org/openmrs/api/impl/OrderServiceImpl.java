@@ -59,6 +59,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	protected OrderDAO dao;
 	
+	private static final String ORDER_NUMBER_PREFIX = "ORD-";
+	
+	private static final String ORDER_NUMBER_START_VALUE = "1";
+	
 	public OrderServiceImpl() {
 	}
 	
@@ -471,16 +475,35 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		GlobalProperty globalProperty = Context.getAdministrationService().getGlobalPropertyObject(
 		    OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER);
 		if (globalProperty == null) {
-			globalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER, "1",
-			        "The next order number available for assignment");
+			globalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER,
+			        ORDER_NUMBER_START_VALUE, "The next order number available for assignment");
 		}
 		
-		String orderNumber = "ORD-" + globalProperty.getValue();
+		String gpTextValue = globalProperty.getPropertyValue();
+		if (!StringUtils.hasText(gpTextValue)) {
+			gpTextValue = ORDER_NUMBER_START_VALUE;
+		}
 		
-		globalProperty.setPropertyValue(String.valueOf(Long.parseLong(globalProperty.getPropertyValue()) + 1));
+		Long gpNumericValue = null;
+		try {
+			gpNumericValue = Long.parseLong(gpTextValue);
+		}
+		catch (NumberFormatException ex) {
+			gpNumericValue = 1l;
+			gpTextValue = ORDER_NUMBER_START_VALUE;
+		}
+		
+		String orderNumber = ORDER_NUMBER_PREFIX + gpTextValue;
+		
+		globalProperty.setPropertyValue(String.valueOf(gpNumericValue + 1));
+		
 		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-		Context.getAdministrationService().saveGlobalProperty(globalProperty);
-		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		try {
+			Context.getAdministrationService().saveGlobalProperty(globalProperty);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		}
 		
 		return orderNumber;
 	}
