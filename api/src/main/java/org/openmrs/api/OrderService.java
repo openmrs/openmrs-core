@@ -16,13 +16,11 @@ package org.openmrs.api;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
@@ -180,12 +178,11 @@ public interface OrderService extends OpenmrsService {
 	 * @param concepts The concepts in order.getConcept to get orders for
 	 * @param orderers The users/orderers of the
 	 * @param encounters The encounters that the orders are assigned to
-	 * @param orderTypes The OrderTypes to match on
 	 * @return list of Orders matching the parameters
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, List<OrderType> orderTypes);
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters);
 	
 	/**
 	 * Get all orders by the User that is marked as their orderer
@@ -238,94 +235,6 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order unvoidOrder(Order order) throws APIException;
-	
-	/**
-	 * Save or update the given <code>orderType</code> in the database
-	 * 
-	 * @param orderType The OrderType to save in the database
-	 * @return the freshly saved OrderType
-	 * @throws APIException
-	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	public OrderType saveOrderType(OrderType orderType) throws APIException;
-	
-	/**
-	 * Completely delete the order type from the system. If data has been stored using this
-	 * orderType, an exception will be thrown. In that case, consider using the
-	 * #retiredOrderType(OrderType, String) method
-	 * 
-	 * @param orderType
-	 * @throws APIException
-	 */
-	@Authorized(PrivilegeConstants.PURGE_ORDER_TYPES)
-	public void purgeOrderType(OrderType orderType) throws APIException;
-	
-	/**
-	 * This method essentially takes the given <code>orderType</code> out of active use in OpenMRS.
-	 * All references to this order type will remain in place. Future use of this order type are
-	 * discouraged.
-	 * 
-	 * @param orderType the order type to retired
-	 * @param reason The reason this order type is being taken our of commission.
-	 * @return the retired order type
-	 * @throws APIException
-	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	public OrderType retireOrderType(OrderType orderType, String reason) throws APIException;
-	
-	/**
-	 * This will bring back a previously decommissioned OrderType
-	 * 
-	 * @param orderType the order type to unretire
-	 * @return the retired order type
-	 * @throws APIException
-	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	public OrderType unretireOrderType(OrderType orderType) throws APIException;
-	
-	/**
-	 * Get all order types, including retired ones
-	 * 
-	 * @return order types list
-	 * @see #getAllOrderTypes(boolean)
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
-	public List<OrderType> getAllOrderTypes() throws APIException;
-	
-	/**
-	 * Get all order types, only showing ones not marked as retired if includeRetired is true
-	 * 
-	 * @param includeRetired true/false whether to include retired orderTypes in this list
-	 * @return order types list
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
-	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws APIException;
-	
-	/**
-	 * Get orderType by internal identifier
-	 * 
-	 * @param orderTypeId
-	 * @return orderType with given internal identifier
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
-	public OrderType getOrderType(Integer orderTypeId) throws APIException;
-	
-	/**
-	 * Get OrderType by its UUID
-	 * 
-	 * @param uuid
-	 * @return
-	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid
-	 */
-	@Transactional(readOnly = true)
-	public OrderType getOrderTypeByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get all orders for the given <code>patient</code>

@@ -13,9 +13,7 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -29,7 +27,6 @@ import org.openmrs.EncounterType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.aop.RequiredDataAdvice;
@@ -158,38 +155,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
-	 */
-	public OrderType saveOrderType(OrderType orderType) throws APIException {
-		return dao.saveOrderType(orderType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#retireOrderType(OrderType, String)
-	 */
-	public OrderType retireOrderType(OrderType orderType, String reason) throws APIException {
-		
-		orderType.setRetired(true);
-		orderType.setRetireReason(reason);
-		return saveOrderType(orderType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#unretireOrderType(org.openmrs.OrderType)
-	 */
-	public OrderType unretireOrderType(OrderType orderType) throws APIException {
-		orderType.setRetired(false);
-		return saveOrderType(orderType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#purgeOrderType(org.openmrs.OrderType)
-	 */
-	public void purgeOrderType(OrderType orderType) throws APIException {
-		dao.deleteOrderType(orderType);
-	}
-	
-	/**
 	 * TODO: Refactor, generalize, or remove this method
 	 * 
 	 * @see org.openmrs.api.OrderService#createOrdersAndEncounter(org.openmrs.Patient,
@@ -247,10 +212,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List)
+	 *      java.util.List, java.util.List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, List<OrderType> orderTypes) {
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
 		if (orderClassType == null)
 			throw new APIException(
 			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
@@ -267,10 +232,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (encounters == null)
 			encounters = new Vector<Encounter>();
 		
-		if (orderTypes == null)
-			orderTypes = new Vector<OrderType>();
-		
-		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, orderTypes);
+		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters);
 	}
 	
 	/**
@@ -283,7 +245,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<User> users = new Vector<User>();
 		users.add(user);
 		
-		return getOrders(Order.class, null, null, users, null, null);
+		return getOrders(Order.class, null, null, users, null);
 	}
 	
 	/**
@@ -296,7 +258,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(Order.class, patients, null, null, null, null);
+		return getOrders(Order.class, patients, null, null, null);
 	}
 	
 	/**
@@ -310,28 +272,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(DrugOrder.class, patients, null, null, null, null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getAllOrderTypes()
-	 */
-	public List<OrderType> getAllOrderTypes() throws APIException {
-		return getAllOrderTypes(true);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getAllOrderTypes(boolean)
-	 */
-	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws APIException {
-		return dao.getAllOrderTypes(includeRetired);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderType(java.lang.Integer)
-	 */
-	public OrderType getOrderType(Integer orderTypeId) throws APIException {
-		return dao.getOrderType(orderTypeId);
+		return getOrders(DrugOrder.class, patients, null, null, null);
 	}
 	
 	/**
@@ -341,7 +282,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(DrugOrder.class, patients, null, null, null, null);
+		return getOrders(DrugOrder.class, patients, null, null, null);
 	}
 	
 	/**
@@ -375,20 +316,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypeByUuid(java.lang.String)
-	 */
-	public OrderType getOrderTypeByUuid(String uuid) throws APIException {
-		return dao.getOrderTypeByUuid(uuid);
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#getOrdersByEncounter(org.openmrs.Encounter)
 	 */
 	public List<Order> getOrdersByEncounter(Encounter encounter) {
 		List<Encounter> encounters = new Vector<Encounter>();
 		encounters.add(encounter);
 		
-		return getOrders(Order.class, null, null, null, encounters, null);
+		return getOrders(Order.class, null, null, null, encounters);
 	}
 	
 	/**

@@ -85,11 +85,6 @@
 			<column name="creator" />
 		</many-to-one>
 
-		<!-- bi-directional many-to-one association to OrderType -->
-		<many-to-one name="orderType" class="org.openmrs.OrderType" not-null="true">
-			<column name="order_type_id" />
-		</many-to-one>
-
 		<joined-subclass name="org.openmrs.DrugOrder" table="drug_order">
 
 			<key column="order_id" />

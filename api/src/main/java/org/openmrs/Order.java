@@ -34,7 +34,7 @@ import java.util.Date;
 public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 4334343L;
-
+	
 	/**
 	 * @since 1.9.2, 1.10
 	 */
@@ -56,8 +56,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private Integer orderId;
 	
 	private Patient patient;
-	
-	private OrderType orderType;
 	
 	private Concept concept;
 	
@@ -86,8 +84,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private Urgency urgency = Urgency.ROUTINE;
 	
 	private String orderNumber;
-
-    private String commentToFulfiller;
+	
+	private String commentToFulfiller;
 	
 	/**
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
@@ -97,6 +95,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Represents the action being taken on an order.
+	 * 
 	 * @see org.openmrs.Order.Action
 	 */
 	private Action action = Action.NEW;
@@ -130,7 +129,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	protected Order copyHelper(Order target) {
 		target.setPatient(getPatient());
-		target.setOrderType(getOrderType());
 		target.setConcept(getConcept());
 		target.setInstructions(getInstructions());
 		target.setStartDate(getStartDate());
@@ -149,7 +147,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
 		target.setUrgency(getUrgency());
-        target.setCommentToFulfiller(getCommentToFulfiller());
+		target.setCommentToFulfiller(getCommentToFulfiller());
 		target.previousOrder = getPreviousOrder();
 		target.action = getAction();
 		return target;
@@ -320,20 +318,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the orderType.
-	 */
-	public OrderType getOrderType() {
-		return orderType;
-	}
-	
-	/**
-	 * @param orderType The orderType to set.
-	 */
-	public void setOrderType(OrderType orderType) {
-		this.orderType = orderType;
-	}
-	
-	/**
 	 * @return Returns the startDate.
 	 */
 	public Date getStartDate() {
@@ -360,23 +344,22 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	public void setDiscontinuedReasonNonCoded(String discontinuedReasonNonCoded) {
 		this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
 	}
-
-
-    /*
-     * @return the commentToFulfiller
-     */
-    public String getCommentToFulfiller() {
-        return commentToFulfiller;
-    }
-
-    /*
-     * @param commentToFulfiller The commentToFulfiller to set
-     */
-    public void setCommentToFulfiller(String commentToFulfiller) {
-        this.commentToFulfiller = commentToFulfiller;
-    }
-
-    /**
+	
+	/*
+	 * @return the commentToFulfiller
+	 */
+	public String getCommentToFulfiller() {
+		return commentToFulfiller;
+	}
+	
+	/*
+	 * @param commentToFulfiller The commentToFulfiller to set
+	 */
+	public void setCommentToFulfiller(String commentToFulfiller) {
+		this.commentToFulfiller = commentToFulfiller;
+	}
+	
+	/**
 	 * Convenience method to determine if order is current
 	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
@@ -480,7 +463,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "Order. orderId: " + orderId + " patient: " + patient + " orderType: " + orderType + " concept: " + concept;
+		return "Order. orderId: " + orderId + " patient: " + patient + " concept: " + concept;
 	}
 	
 	/**
@@ -526,6 +509,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Gets the previous related order.
+	 * 
 	 * @since 1.10
 	 * @return the previous order.
 	 */
@@ -535,6 +519,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Sets the previous order.
+	 * 
 	 * @since 1.10
 	 * @param previousOrder the previous order to set.
 	 */
@@ -544,6 +529,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Gets the action
+	 * 
 	 * @return the action
 	 * @since 1.10
 	 */
@@ -553,6 +539,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Sets the ation
+	 * 
 	 * @param action the action to set
 	 * @since 1.10
 	 */
