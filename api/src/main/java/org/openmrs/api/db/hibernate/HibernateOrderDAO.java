@@ -26,7 +26,6 @@ import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 
@@ -84,7 +83,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypes()
+	 * @see org.openmrs.api.OrderService#getAllOrderTypes()
 	 */
 	@SuppressWarnings("unchecked")
 	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws DAOException {
@@ -139,16 +138,13 @@ public class HibernateOrderDAO implements OrderDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List)
+	 *      java.util.List, java.util.List, java.util.List)
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List)
+	 *      java.util.List, java.util.List, java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
-	        List<OrderType> orderTypes) {
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, List<OrderType> orderTypes) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);
 		
@@ -158,11 +154,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (concepts.size() > 0)
 			crit.add(Expression.in("concept", concepts));
 		
-		// only the "ANY" status cares about voided Orders.  All others 
-		// do not want voided orders included in the list
-		if (status != ORDER_STATUS.ANY)
-			crit.add(Expression.eq("voided", false));
-		// we are not checking the other status's here because they are 
+		// we are not checking the other status's here because they are
 		// algorithm dependent  
 		
 		if (orderers.size() > 0)

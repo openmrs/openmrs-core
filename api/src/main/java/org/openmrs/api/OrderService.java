@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @deprecated Will be removed in version 1.10
  * 
- * <pre>
+ *             <pre>
  *   Order order = new Order();
  *   order.set___(___);
  *   ...etc
@@ -46,64 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Deprecated
 public interface OrderService extends OpenmrsService {
-	
-	/**
-	 * @deprecated use {@link ORDER_STATUS#CURRENT}
-	 */
-	public static final int SHOW_CURRENT = 1;
-	
-	/**
-	 * @deprecated use {@link ORDER_STATUS#ANY}
-	 */
-	public static final int SHOW_ALL = 2;
-	
-	/**
-	 * @deprecated use {@link ORDER_STATUS#COMPLETE}
-	 */
-	public static final int SHOW_COMPLETE = 3;
-	
-	/**
-	 * @deprecated use {@link ORDER_STATUS#NOTVOIDED}
-	 */
-	public static final int SHOW_NOTVOIDED = 4;
-	
-	/**
-	 * @deprecated use {@link ORDER_STATUS#CURRENT_AND_FUTURE}
-	 */
-	public static final int SHOW_CURRENT_AND_FUTURE = 5;
-	
-	/**
-	 * The type of status to match on an order. Used in getOrder* methods
-	 * 
-	 * @deprecated Will be removed in version 1.10
-	 */
-	@Deprecated
-	public static enum ORDER_STATUS {
-		/**
-		 * The patient is considered to be currently on this order
-		 */
-		CURRENT,
-
-		/**
-		 * All orders match on this status
-		 */
-		ANY,
-
-		/**
-		 * Only orders that the patient has completed
-		 */
-		COMPLETE,
-
-		/**
-		 * All orders that have not been voided/deleted
-		 */
-		NOTVOIDED,
-
-		/**
-		 * The patient is considered to be currently and or future on this order
-		 */
-		CURRENT_AND_FUTURE
-	}
 	
 	/**
 	 * Setter for the Order data access object. The dao is used for saving and getting orders
@@ -138,11 +80,10 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Completely delete an order from the database. This should not typically be used unless
 	 * desperately needed. Most orders should just be voided. See {@link #voidOrder(Order, String)}
-	 * This method is different from purgeOrder(Order order) above:
-	 * If param cascade is false will completely delete an order from the database period
-	 * If param cascade is true will completely delete an order from the database and delete any
-	 * Obs that references the Order.
-	 *
+	 * This method is different from purgeOrder(Order order) above: If param cascade is false will
+	 * completely delete an order from the database period If param cascade is true will completely
+	 * delete an order from the database and delete any Obs that references the Order.
+	 * 
 	 * @param order The Order to remove from the system
 	 * @param cascade
 	 * @throws APIException
@@ -150,7 +91,6 @@ public interface OrderService extends OpenmrsService {
 	 * @should delete order
 	 * @should delete order when cascade is false
 	 * @should delete order when cascade is true and also delete any Obs that references it
-	 *
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDERS)
 	public void purgeOrder(Order order, boolean cascade) throws APIException;
@@ -238,7 +178,6 @@ public interface OrderService extends OpenmrsService {
 	 *            DrugOrder)
 	 * @param patients The patients to get orders for
 	 * @param concepts The concepts in order.getConcept to get orders for
-	 * @param status The ORDER_STATUS of the orders for its patient
 	 * @param orderers The users/orderers of the
 	 * @param encounters The encounters that the orders are assigned to
 	 * @param orderTypes The OrderTypes to match on
@@ -246,8 +185,7 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
-	        List<OrderType> orderTypes);
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, List<OrderType> orderTypes);
 	
 	/**
 	 * Get all orders by the User that is marked as their orderer
@@ -270,29 +208,16 @@ public interface OrderService extends OpenmrsService {
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException;
 	
 	/**
-	 * Get drug orders for a given patient, not including voided orders
-	 * 
-	 * @param patient
-	 * @param orderStatus
-	 * @return List of drug orders, for the given patient, not including voided orders
-	 * @see #getDrugOrdersByPatient(Patient, org.openmrs.api.OrderService.ORDER_STATUS, boolean)
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus);
-	
-	/**
 	 * Get drug orders for a given patient
 	 * 
 	 * @param patient the owning Patient of the returned orders
-	 * @param orderStatus the status of the orders returned
 	 * @param includeVoided true/false whether or not to include voided drug orders
 	 * @return List of drug orders for the given patient
 	 * @should return list of drug orders with given status
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus, boolean includeVoided);
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided);
 	
 	/**
 	 * Un-discontinue order record. Reverse a previous call to

@@ -247,12 +247,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List)
+	 *      java.util.List, java.util.List, java.util.List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
-	        List<OrderType> orderTypes) {
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, List<OrderType> orderTypes) {
 		if (orderClassType == null)
 			throw new APIException(
 			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
@@ -263,9 +261,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (concepts == null)
 			concepts = new Vector<Concept>();
 		
-		if (status == null)
-			status = ORDER_STATUS.CURRENT;
-		
 		if (orderers == null)
 			orderers = new Vector<User>();
 		
@@ -275,7 +270,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (orderTypes == null)
 			orderTypes = new Vector<OrderType>();
 		
-		return dao.getOrders(orderClassType, patients, concepts, status, orderers, encounters, orderTypes);
+		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, orderTypes);
 	}
 	
 	/**
@@ -288,7 +283,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<User> users = new Vector<User>();
 		users.add(user);
 		
-		return getOrders(Order.class, null, null, ORDER_STATUS.NOTVOIDED, users, null, null);
+		return getOrders(Order.class, null, null, users, null, null);
 	}
 	
 	/**
@@ -301,66 +296,21 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(Order.class, patients, null, ORDER_STATUS.NOTVOIDED, null, null, null);
+		return getOrders(Order.class, patients, null, null, null, null);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient, int, boolean)
-	 */
-	private List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow, boolean includeVoided) {
-		return getDrugOrdersByPatient(patient, convertToOrderStatus(whatToShow), includeVoided);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, boolean)
+	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus, boolean includeVoided) {
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided) {
 		if (patient == null)
 			throw new APIException("Unable to get drug orders if not given a patient");
 		
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		List<DrugOrder> drugOrders = getOrders(DrugOrder.class, patients, null, ORDER_STATUS.ANY, null, null, null);
-		
-		// loop over the drug orders and add them if they are within the current desired order
-		if (drugOrders != null) {
-			if (orderStatus == ORDER_STATUS.ANY)
-				return drugOrders;
-			else {
-				// the user wants to limit the type of drug order to get, so loop over
-				// them all and do the logic on each 
-				
-				List<DrugOrder> ret = new ArrayList<DrugOrder>();
-				
-				for (DrugOrder drugOrder : drugOrders) {
-					if (orderStatus == ORDER_STATUS.CURRENT && drugOrder.isCurrent())
-						ret.add(drugOrder);
-					else if (orderStatus == ORDER_STATUS.CURRENT_AND_FUTURE
-					        && (drugOrder.isCurrent() || drugOrder.isFuture()))
-						ret.add(drugOrder);
-					else if (orderStatus == ORDER_STATUS.NOTVOIDED && !drugOrder.getVoided())
-						ret.add(drugOrder);
-					else if (orderStatus == ORDER_STATUS.COMPLETE && drugOrder.isDiscontinuedRightNow())
-						ret.add(drugOrder);
-				}
-				
-				return ret;
-			}
-		}
-		
-		// default return if no drug orders were found in the database
-		return Collections.EMPTY_LIST;
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS)
-	 */
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus) {
-		return getDrugOrdersByPatient(patient, orderStatus, false);
+		return getOrders(DrugOrder.class, patients, null, null, null, null);
 	}
 	
 	/**
@@ -391,7 +341,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(DrugOrder.class, patients, null, ORDER_STATUS.NOTVOIDED, null, null, null);
+		return getOrders(DrugOrder.class, patients, null, null, null, null);
 	}
 	
 	/**
@@ -418,32 +368,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * Convenience method to convert between the old integer Order status and the new enumeration
-	 * ORDER_STATUS. This method can be removed when all deprecated methods using the Integer order
-	 * status are removed
-	 * 
-	 * @param oldOrderStatus
-	 * @return
-	 */
-	@SuppressWarnings("deprecation")
-	private ORDER_STATUS convertToOrderStatus(Integer oldOrderStatus) {
-		switch (oldOrderStatus) {
-			case SHOW_CURRENT:
-				return ORDER_STATUS.CURRENT;
-			case SHOW_ALL:
-				return ORDER_STATUS.ANY;
-			case SHOW_COMPLETE:
-				return ORDER_STATUS.COMPLETE;
-			case SHOW_CURRENT_AND_FUTURE:
-				return ORDER_STATUS.CURRENT_AND_FUTURE;
-				//case SHOW_NOTVOIDED:
-				// fall through to default
-			default:
-				return ORDER_STATUS.NOTVOIDED;
-		}
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#getOrderByUuid(java.lang.String)
 	 */
 	public Order getOrderByUuid(String uuid) throws APIException {
@@ -464,7 +388,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Encounter> encounters = new Vector<Encounter>();
 		encounters.add(encounter);
 		
-		return getOrders(Order.class, null, null, null, null, encounters, null);
+		return getOrders(Order.class, null, null, null, encounters, null);
 	}
 	
 	/**

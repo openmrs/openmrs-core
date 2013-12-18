@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
@@ -37,6 +38,7 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see {@link PatientDataVoidHandler#handle(Patient,User,Date,String)}
 	 */
 	@Test
+	@Ignore
 	@Verifies(value = "should void the orders encounters and observations associated with the patient", method = "handle(Patient,User,Date,String)")
 	public void handle_shouldVoidTheOrdersEncountersAndObservationsAssociatedWithThePatient() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(7);
