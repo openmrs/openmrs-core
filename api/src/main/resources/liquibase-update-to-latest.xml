@@ -6546,4 +6546,14 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20131217-TRUNK-4142" author="banka">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="comment_to_fulfiller"/></not>
+        </preConditions>
+        <comment>Adding comment_to_fulfiller column to orders table</comment>
+        <addColumn tableName="orders">
+            <column name="comment_to_fulfiller" type="varchar(1024)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
