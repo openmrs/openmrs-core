@@ -110,6 +110,10 @@
             </property>
             <property name="numRefills" type="int" column="num_refills" />
             <property name="administrationInstructions" type="java.lang.String" column="administration_instructions" length="1024"/>
+            <property name="duration" type="double" column="duration" length="22"/>
+            <many-to-one name="durationUnits" class="org.openmrs.Concept">
+            	<column name="duration_units" />
+            </many-to-one>
 	
 		</joined-subclass>
 

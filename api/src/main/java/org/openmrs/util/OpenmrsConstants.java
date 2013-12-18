@@ -1052,6 +1052,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_NEXT_ORDER_NUMBER = "orderEntry.nextOrderNumber";
 	
+	public static final String GLOBAL_PROPERTY_DRUG_ENTRY_DURATION_UNITS= "orderEntry.unitsToConceptsMappings";
+	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -1479,6 +1481,8 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_NEXT_ORDER_NUMBER, "1",
 		        "The next order number available for assignment"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_DRUG_ENTRY_DURATION_UNITS, "5401", "Set the duration_units for existing drug orders to match the concept mapped to the text drug_order_duration_units"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
