@@ -126,14 +126,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void voidDrugSet_shouldNotVoidThePatient() throws Exception {
-		Patient p = Context.getPatientService().getPatient(2);
-		Assert.assertFalse(p.isVoided());
-		Context.getOrderService().voidDrugSet(p, "1", "Reason", OrderService.SHOW_ALL);
-		Assert.assertFalse(p.isVoided());
-	}
-	
-	@Test
 	public void purgeOrder_shouldDeleteObsThatReference() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-deleteObsThatReference.xml");
 		final String ordUuid = "0c96f25c-4949-4f72-9931-d808fbcdb612";
