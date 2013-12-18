@@ -13,12 +13,16 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
+
 /**
- * DrugFrequency
+ * OrderFrequency
  * 
  * @since 1.10
  */
-public class DrugFrequency extends BaseOpenmrsMetadata {
+public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private Integer orderFrequencyId;
 	
@@ -106,4 +110,8 @@ public class DrugFrequency extends BaseOpenmrsMetadata {
 		this.concept = concept;
 	}
 	
+	@Override
+	public String toString() {
+		return ((getConcept() == null) ? null : getConcept().getName().toString());
+	}
 }

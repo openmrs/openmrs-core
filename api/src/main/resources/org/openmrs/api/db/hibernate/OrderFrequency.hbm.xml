@@ -3,7 +3,7 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-	<class name="org.openmrs.DrugFrequency" table="order_frequency">
+	<class name="org.openmrs.OrderFrequency" table="order_frequency">
 
 		<id name="orderFrequencyId" type="java.lang.Integer" column="order_frequency_id">
 			<generator class="native">
