@@ -103,5 +103,4 @@ public interface OrderDAO {
 	 * Delete Obs that references an order
 	 */
 	public void deleteObsThatReference(Order order);
-	
 }

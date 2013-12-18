@@ -34,7 +34,7 @@ import java.util.Date;
 public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 4334343L;
-	
+
 	/**
 	 * @since 1.9.2, 1.10
 	 */
@@ -86,6 +86,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private Urgency urgency = Urgency.ROUTINE;
 	
 	private String orderNumber;
+
+    private String commentToFulfiller;
 	
 	private CareSetting careSetting;
 
@@ -149,6 +151,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
 		target.setUrgency(getUrgency());
+        target.setCommentToFulfiller(getCommentToFulfiller());
 		target.previousOrder = getPreviousOrder();
 		target.action = getAction();
 		return target;
@@ -359,8 +362,23 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	public void setDiscontinuedReasonNonCoded(String discontinuedReasonNonCoded) {
 		this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
 	}
-	
-	/**
+
+
+    /*
+     * @return the commentToFulfiller
+     */
+    public String getCommentToFulfiller() {
+        return commentToFulfiller;
+    }
+
+    /*
+     * @param commentToFulfiller The commentToFulfiller to set
+     */
+    public void setCommentToFulfiller(String commentToFulfiller) {
+        this.commentToFulfiller = commentToFulfiller;
+    }
+
+    /**
 	 * Convenience method to determine if order is current
 	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date

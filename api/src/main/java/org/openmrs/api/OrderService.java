@@ -114,18 +114,6 @@ public interface OrderService extends OpenmrsService {
 	public void setOrderDAO(OrderDAO dao);
 	
 	/**
-	 * @deprecated use #saveOrder(Order)
-	 */
-	@Authorized(PrivilegeConstants.ADD_ORDERS)
-	public void createOrder(Order order) throws APIException;
-	
-	/**
-	 * @deprecated use #saveOrder(Order)
-	 */
-	@Authorized(PrivilegeConstants.EDIT_ORDERS)
-	public void updateOrder(Order order) throws APIException;
-	
-	/**
 	 * Save or update the given <code>order</code> in the database
 	 * 
 	 * @param order the Order to save
@@ -136,12 +124,6 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order) throws APIException;
-	
-	/**
-	 * @deprecated use #purgeOrder(Order)
-	 */
-	@Authorized(PrivilegeConstants.DELETE_ORDERS)
-	public void deleteOrder(Order order) throws APIException;
 	
 	/**
 	 * Completely delete an order from the database. This should not typically be used unless
@@ -249,14 +231,6 @@ public interface OrderService extends OpenmrsService {
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #getOrder(Integer, Class)} with DrugOrder.class as second parameter
-	 *             instead
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public DrugOrder getDrugOrder(Integer drugOrderId) throws APIException;
-	
-	/**
 	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
 	 * multiple arguments are given, the returned orders will match on all arguments.
 	 * 
@@ -274,26 +248,6 @@ public interface OrderService extends OpenmrsService {
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
 	        List<OrderType> orderTypes);
-	
-	/**
-	 * @deprecated this method would return a very large list for most systems and doesn't make
-	 *             sense to be used. If _all_ Orders are really what is wanted, use
-	 *             {@link #getOrders(Class, List, List, org.openmrs.api.OrderService.ORDER_STATUS, List, List, List)}
-	 *             with empty parameters
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<Order> getOrders() throws APIException;
-	
-	/**
-	 * @deprecated this method would return a very large list for most systems and doesn't make
-	 *             sense to be used. If _all_ Orders are really what is wanted, use
-	 *             {@link #getOrders(Class, List, List, org.openmrs.api.OrderService.ORDER_STATUS, List, List, List)}
-	 *             with empty parameters
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<DrugOrder> getDrugOrders() throws APIException;
 	
 	/**
 	 * Get all orders by the User that is marked as their orderer
@@ -316,14 +270,6 @@ public interface OrderService extends OpenmrsService {
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException;
 	
 	/**
-	 * @deprecated use
-	 *             {@link #getDrugOrdersByPatient(Patient, org.openmrs.api.OrderService.ORDER_STATUS)}
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow);
-	
-	/**
 	 * Get drug orders for a given patient, not including voided orders
 	 * 
 	 * @param patient
@@ -334,14 +280,6 @@ public interface OrderService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus);
-	
-	/**
-	 * @deprecated use
-	 *             {@link #getDrugOrdersByPatient(Patient, org.openmrs.api.OrderService.ORDER_STATUS, boolean)}
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow, boolean includeVoided);
 	
 	/**
 	 * Get drug orders for a given patient
@@ -398,24 +336,6 @@ public interface OrderService extends OpenmrsService {
 	public void purgeOrderType(OrderType orderType) throws APIException;
 	
 	/**
-	 * @deprecated use #saveOrderType(OrderType)
-	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	public void createOrderType(OrderType orderType) throws APIException;
-	
-	/**
-	 * @deprecated use #saveOrderType(OrderType)
-	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	public void updateOrderType(OrderType orderType) throws APIException;
-	
-	/**
-	 * @deprecated use #purgeOrderType(OrderType)
-	 */
-	@Authorized(PrivilegeConstants.PURGE_ORDER_TYPES)
-	public void deleteOrderType(OrderType orderType) throws APIException;
-	
-	/**
 	 * This method essentially takes the given <code>orderType</code> out of active use in OpenMRS.
 	 * All references to this order type will remain in place. Future use of this order type are
 	 * discouraged.
@@ -437,17 +357,6 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public OrderType unretireOrderType(OrderType orderType) throws APIException;
-	
-	/**
-	 * Get all order types
-	 * 
-	 * @return order types list
-	 * @throws APIException
-	 * @deprecated use #getAllOrderTypes()
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
-	public List<OrderType> getOrderTypes() throws APIException;
 	
 	/**
 	 * Get all order types, including retired ones
@@ -504,14 +413,6 @@ public interface OrderService extends OpenmrsService {
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws APIException;
 	
 	/**
-	 * @deprecated use {@link org.openmrs.order.OrderUtil#getDrugSetsByConcepts(List, List)}
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
-	        throws APIException;
-	
-	/**
 	 * The standard regimens are currently stored in the application context file. See xml elements
 	 * after the "STANDARD REGIMENS" comment in the web spring servlet:
 	 * /web/WEB-INF/openmrs-servlet.xml (These really should be in the non-web spring app context:
@@ -522,43 +423,6 @@ public interface OrderService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<RegimenSuggestion> getStandardRegimens();
-	
-	/**
-	 * @deprecated use
-	 *             {@link org.openmrs.order.OrderUtil#getDrugSetsByDrugSetIdList(List, String, String)}
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
-	        String delimiter);
-	
-	/**
-	 * @deprecated use {@link org.openmrs.order.OrderUtil#getDrugSetHeadersByDrugSetIdList(String)}
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds);
-	
-	/**
-	 * @deprecated use
-	 *             {@link org.openmrs.order.OrderUtil#discontinueDrugSet(Patient, String, Concept, Date)}
-	 */
-	@Authorized(PrivilegeConstants.EDIT_ORDERS)
-	public void discontinueDrugSet(Patient patient, String drugSetId, Concept discontinueReason, Date discontinueDate);
-	
-	/**
-	 * @deprecated use
-	 *             {@link org.openmrs.order.OrderUtil#voidDrugSet(Patient, String, String, org.openmrs.api.OrderService.ORDER_STATUS)}
-	 */
-	@Authorized(PrivilegeConstants.DELETE_ORDERS)
-	public void voidDrugSet(Patient patient, String drugSetId, String voidReason, int whatToVoid);
-	
-	/**
-	 * @deprecated use
-	 *             {@link org.openmrs.order.OrderUtil#discontinueAllOrders(Patient, Concept, Date)}
-	 */
-	@Authorized(PrivilegeConstants.EDIT_ORDERS)
-	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) throws APIException;
 	
 	/**
 	 * Gets all orders contained in an encounter

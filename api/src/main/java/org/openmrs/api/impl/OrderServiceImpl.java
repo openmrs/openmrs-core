@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -27,6 +26,7 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -34,13 +34,15 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
+import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.order.DrugOrderSupport;
-import org.openmrs.order.OrderUtil;
 import org.openmrs.order.RegimenSuggestion;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.util.StringUtils;
 
 /**
@@ -51,11 +53,15 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.api.OrderService
  */
-public class OrderServiceImpl extends BaseOpenmrsService implements OrderService {
+public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected OrderDAO dao;
+	
+	private static final String ORDER_NUMBER_PREFIX = "ORD-";
+	
+	private static final String ORDER_NUMBER_START_VALUE = "1";
 	
 	public OrderServiceImpl() {
 	}
@@ -71,34 +77,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
 	public Order saveOrder(Order order) throws APIException {
+		if (order.getOrderId() == null && !StringUtils.hasText(order.getOrderNumber())) {
+			//TODO call module registered order number generators 
+			//and if there is none, use the default below
+			order.setOrderNumber(getNewOrderNumber());
+		}
+		
 		return dao.saveOrder(order);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#createOrder(org.openmrs.Order)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createOrder(Order order) throws APIException {
-		Context.getOrderService().saveOrder(order);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#updateOrder(org.openmrs.Order)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateOrder(Order order) throws APIException {
-		Context.getOrderService().saveOrder(order);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#deleteOrder(org.openmrs.Order)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteOrder(Order order) throws APIException {
-		Context.getOrderService().purgeOrder(order);
 	}
 	
 	/**
@@ -180,33 +165,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#createOrderType(org.openmrs.OrderType)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createOrderType(OrderType orderType) throws APIException {
-		Context.getOrderService().saveOrderType(orderType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#updateOrderType(org.openmrs.OrderType)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateOrderType(OrderType orderType) throws APIException {
-		Context.getOrderService().saveOrderType(orderType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#deleteOrderType(org.openmrs.OrderType)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteOrderType(OrderType orderType) throws APIException {
-		Context.getOrderService().purgeOrderType(orderType);
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#retireOrderType(OrderType, String)
 	 */
 	public OrderType retireOrderType(OrderType orderType, String reason) throws APIException {
@@ -281,35 +239,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getDrugOrder(java.lang.Integer)
-	 * @deprecated
-	 */
-	@Deprecated
-	public DrugOrder getDrugOrder(Integer drugOrderId) throws APIException {
-		return getOrder(drugOrderId, DrugOrder.class);
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer, java.lang.Class)
 	 */
 	public <o extends Order> o getOrder(Integer orderId, Class<o> orderClassType) throws APIException {
 		return dao.getOrder(orderId, orderClassType);
-	}
-	
-	/**
-	 * @deprecated This is a dumb method
-	 */
-	@Deprecated
-	public List<Order> getOrders() throws APIException {
-		return getOrders(Order.class, null, null, null, null, null, null);
-	}
-	
-	/**
-	 * @deprecated This is a dumb method
-	 */
-	@Deprecated
-	public List<DrugOrder> getDrugOrders() throws APIException {
-		return getOrders(DrugOrder.class, null, null, null, null, null, null);
 	}
 	
 	/**
@@ -372,20 +305,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient, int)
-	 * @deprecated
-	 */
-	@Deprecated
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow) {
-		return getDrugOrdersByPatient(patient, whatToShow, false);
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient, int, boolean)
-	 * @deprecated
 	 */
-	@Deprecated
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow, boolean includeVoided) {
+	private List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow, boolean includeVoided) {
 		return getDrugOrdersByPatient(patient, convertToOrderStatus(whatToShow), includeVoided);
 	}
 	
@@ -439,15 +361,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus) {
 		return getDrugOrdersByPatient(patient, orderStatus, false);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypes()
-	 * @deprecated
-	 */
-	@Deprecated
-	public List<OrderType> getOrderTypes() throws APIException {
-		return getAllOrderTypes(true);
 	}
 	
 	/**
@@ -505,66 +418,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getDrugSetsByConcepts(java.util.List, java.util.List)
-	 * @deprecated use {@link OrderUtil#getDrugSetsByConcepts(List, List)}
-	 */
-	@Deprecated
-	public Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
-	        throws APIException {
-		return OrderUtil.getDrugSetsByConcepts(drugOrders, drugSets);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getDrugSetsByDrugSetIdList(java.util.List,
-	 *      java.lang.String, java.lang.String)
-	 * @deprecated use {@link OrderUtil#getDrugSetsByDrugSetIdList(List, String, String)}
-	 */
-	@Deprecated
-	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
-	        String delimiter) {
-		return OrderUtil.getDrugSetsByDrugSetIdList(orderList, drugSetIdList, delimiter);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getDrugSetHeadersByDrugSetIdList(java.lang.String)
-	 * @deprecated use {@link OrderUtil#getDrugSetHeadersByDrugSetIdList(String)}
-	 */
-	@Deprecated
-	public Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds) {
-		return OrderUtil.getDrugSetHeadersByDrugSetIdList(drugSetIds);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#discontinueDrugSet(org.openmrs.Patient, java.lang.String,
-	 *      org.openmrs.Concept, java.util.Date)
-	 * @deprecated use {@link OrderUtil#discontinueDrugSet(Patient, String, Concept, Date)}
-	 */
-	@Deprecated
-	public void discontinueDrugSet(Patient patient, String drugSetId, Concept discontinueReason, Date discontinueDate) {
-		OrderUtil.discontinueDrugSet(patient, drugSetId, discontinueReason, discontinueDate);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#voidDrugSet(Patient, String, String, int)
-	 * @deprecated use
-	 *             {@link OrderUtil#voidDrugSet(Patient, String, String, org.openmrs.api.OrderService.ORDER_STATUS)}
-	 */
-	@Deprecated
-	public void voidDrugSet(Patient patient, String drugSetId, String voidReason, int whatToVoid) {
-		OrderUtil.voidDrugSet(patient, drugSetId, voidReason, convertToOrderStatus(whatToVoid));
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#discontinueAllOrders(org.openmrs.Patient,
-	 *      org.openmrs.Concept, java.util.Date)
-	 * @deprecated use {@link OrderUtil#discontinueAllOrders(Patient, Concept, Date)}
-	 */
-	@Deprecated
-	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
-		OrderUtil.discontinueAllOrders(patient, discontinueReason, discontinueDate);
-	}
-	
-	/**
 	 * Convenience method to convert between the old integer Order status and the new enumeration
 	 * ORDER_STATUS. This method can be removed when all deprecated methods using the Integer order
 	 * status are removed
@@ -612,5 +465,46 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		encounters.add(encounter);
 		
 		return getOrders(Order.class, null, null, null, null, encounters, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderNumberGenerator#getNewOrderNumber()
+	 */
+	@Override
+	public synchronized String getNewOrderNumber() {
+		GlobalProperty globalProperty = Context.getAdministrationService().getGlobalPropertyObject(
+		    OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER);
+		if (globalProperty == null) {
+			globalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER,
+			        ORDER_NUMBER_START_VALUE, "The next order number available for assignment");
+		}
+		
+		String gpTextValue = globalProperty.getPropertyValue();
+		if (!StringUtils.hasText(gpTextValue)) {
+			gpTextValue = ORDER_NUMBER_START_VALUE;
+		}
+		
+		Long gpNumericValue = null;
+		try {
+			gpNumericValue = Long.parseLong(gpTextValue);
+		}
+		catch (NumberFormatException ex) {
+			gpNumericValue = 1l;
+			gpTextValue = ORDER_NUMBER_START_VALUE;
+		}
+		
+		String orderNumber = ORDER_NUMBER_PREFIX + gpTextValue;
+		
+		globalProperty.setPropertyValue(String.valueOf(gpNumericValue + 1));
+		
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		try {
+			Context.getAdministrationService().saveGlobalProperty(globalProperty);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		}
+		
+		return orderNumber;
 	}
 }

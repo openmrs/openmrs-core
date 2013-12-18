@@ -11,12 +11,19 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.web.controller.order;
+package org.openmrs.api;
 
 /**
- * @deprecated use {@link org.openmrs.validator.OrderTypeValidator} instead
+ * Will be implemented by classes that auto generate order numbers. This will let
+ * implementations or modules create their own order number generation schemes
  */
-@Deprecated
-public class OrderTypeValidator extends org.openmrs.validator.OrderTypeValidator {
-
+public interface OrderNumberGenerator {
+	
+	/**
+	 * Generates a new order number
+	 * 
+	 * @return the new order number
+	 * @should always return unique orderNumbers when called multiple times without saving orders
+	 */
+	public String getNewOrderNumber();
 }

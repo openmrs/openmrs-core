@@ -50,6 +50,12 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private DosingType dosingType = DosingType.SIMPLE;
 	
+	private Integer numRefills;
+	
+	private String administrationInstructions;
+	
+	private String dosingInstructions;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -82,6 +88,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.quantity = getQuantity();
 		target.drug = getDrug();
 		target.dosingType = getDosingType();
+		target.dosingInstructions = getDosingInstructions();
 		return target;
 	}
 	
@@ -273,6 +280,60 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setDosingType(DosingType dosingType) {
 		this.dosingType = dosingType;
+	}
+	
+	/**
+	 * Gets numRefills
+	 * @since 1.10
+	 */
+	public Integer getNumRefills() {
+		return numRefills;
+	}
+	
+	/**
+	 * Sets numRefills
+	 *
+	 * @param numRefills the numRefills to set
+	 * @since 1.10
+	 */
+	public void setNumRefills(Integer numRefills) {
+		this.numRefills = numRefills;
+	}
+	
+	/**
+	 * Gets the administrationInstructions
+	 * @since 1.10
+	 */
+	public String getAdministrationInstructions() {
+		return administrationInstructions;
+	}
+	
+	/**
+	 * Sets the administrationInstructions
+	 *
+	 * @param administrationInstructions to set
+	 * @since 1.10
+	 */
+	public void setAdministrationInstructions(String administrationInstructions) {
+		this.administrationInstructions = administrationInstructions;
+	}
+	
+	/**
+	 * Sets the dosingInstructions
+	 *
+	 * @param dosingInstructions to set
+	 * @since 1.10
+	 */
+	public void setDosingInstructions(String dosingInstructions) {
+		this.dosingInstructions = dosingInstructions;
+	}
+	
+	/**
+	 * Gets the dosingInstructions
+	 * @since 1.10
+	 */
+	public String getDosingInstructions() {
+		return this.dosingInstructions;
 	}
 	
 	public String toString() {

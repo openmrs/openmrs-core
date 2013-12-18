@@ -202,5 +202,4 @@ public class HibernateOrderDAO implements OrderDAO {
 			        .executeUpdate();
 		}
 	}
-	
 }

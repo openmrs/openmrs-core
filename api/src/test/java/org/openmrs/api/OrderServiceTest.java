@@ -13,7 +13,10 @@
  */
 package org.openmrs.api;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -123,14 +126,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void voidDrugSet_shouldNotVoidThePatient() throws Exception {
-		Patient p = Context.getPatientService().getPatient(2);
-		Assert.assertFalse(p.isVoided());
-		Context.getOrderService().voidDrugSet(p, "1", "Reason", OrderService.SHOW_ALL);
-		Assert.assertFalse(p.isVoided());
-	}
-	
-	@Test
 	public void purgeOrder_shouldDeleteObsThatReference() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-deleteObsThatReference.xml");
 		final String ordUuid = "0c96f25c-4949-4f72-9931-d808fbcdb612";
@@ -159,5 +154,40 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//Ensure that the related obs got deleted
 		Assert.assertNull(os.getObsByUuid(obsUuid));
 		
+	}
+	
+	/**
+	 * @see {@link OrderNumberGenerator#getNewOrderNumber()}
+	 */
+	@Test
+	@Verifies(value = "should always return unique orderNumbers when called multiple times without saving orders", method = "getNewOrderNumber()")
+	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
+	        throws Exception {
+		int N = 50;
+		final Set<String> uniqueOrderNumbers = new HashSet<String>(50);
+		List<Thread> threads = new ArrayList<Thread>();
+		for (int i = 0; i < N; i++) {
+			threads.add(new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						Context.openSession();
+						uniqueOrderNumbers.add(((OrderNumberGenerator) Context.getOrderService()).getNewOrderNumber());
+					}
+					finally {
+						Context.closeSession();
+					}
+				}
+			}));
+		}
+		for (int i = 0; i < N; ++i) {
+			threads.get(i).start();
+		}
+		for (int i = 0; i < N; ++i) {
+			threads.get(i).join();
+		}
+		//since we used a set we should have the size as N indicating that there were no duplicates
+		Assert.assertEquals(N, uniqueOrderNumbers.size());
 	}
 }
