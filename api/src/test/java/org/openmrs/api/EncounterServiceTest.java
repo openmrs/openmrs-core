@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.CareSetting;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -493,6 +494,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		order.setOrderNumber("ORD-1");
 		order.setDateCreated(date);
 		order.setCreator(creator);
+		order.setCareSetting(CareSetting.OUTPATIENT);
 		encounter.addOrder(order);
 		
 		// make sure the logged in user isn't the user we're testing with

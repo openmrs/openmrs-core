@@ -13,12 +13,12 @@
  */
 package org.openmrs.api.handler;
 
-import java.util.Date;
-
 import org.openmrs.Order;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
+
+import java.util.Date;
 
 /**
  * This class deals with {@link Order} objects when they are saved via a save* method in an Openmrs
