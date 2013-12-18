@@ -345,15 +345,17 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
 	}
 	
-	/*
+	/**
 	 * @return the commentToFulfiller
+     * @since 1.10
 	 */
 	public String getCommentToFulfiller() {
 		return commentToFulfiller;
 	}
 	
-	/*
+	/**
 	 * @param commentToFulfiller The commentToFulfiller to set
+     * @since 1.10
 	 */
 	public void setCommentToFulfiller(String commentToFulfiller) {
 		this.commentToFulfiller = commentToFulfiller;
