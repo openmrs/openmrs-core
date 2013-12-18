@@ -30,19 +30,9 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Contains methods pertaining to creating/deleting/voiding Orders and DrugOrders Use:<br/>
- * 
- * @deprecated Will be removed in version 1.10
- * 
- *             <pre>
- *   Order order = new Order();
- *   order.set___(___);
- *   ...etc
- *   Context.getOrderService().saveOrder(order);
- * </pre>
+ * Contains methods pertaining to creating/deleting/voiding Orders
  */
 @Transactional
-@Deprecated
 public interface OrderService extends OpenmrsService {
 	
 	/**
@@ -106,39 +96,11 @@ public interface OrderService extends OpenmrsService {
 	public Order voidOrder(Order order, String voidReason) throws APIException;
 	
 	/**
-	 * Mark the given order as discontinued. This should be used when patients are no longer on this
-	 * Order. If this is was invalid Order, the {@link #voidOrder(Order, String)} method should
-	 * probably be used.
-	 * 
-	 * @param discontinueReason String reason for discontinuing this order
-	 * @param order Order to discontinue
-	 * @return The Order that was discontinued
-	 * @throws APIException
-	 */
-	@Authorized(PrivilegeConstants.EDIT_ORDERS)
-	public Order discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException;
-	
-	/**
-	 * Creates a collection of orders and an encounter to hold them. orders[i].encounter will be set
-	 * to the new encounter. If there's an EncounterType with name "Regimen Change", then the
-	 * newly-created encounter will have that type
-	 * 
-	 * @param p the patient to add Orders to
-	 * @param orders The Orders to add to the Patient (and to the makeshift Encounter)
-	 * @throws APIException if there is no User with username Unknown or no Location with name
-	 *             Unknown or Unknown Location, or if there's no encounter type with name 'Regimen
-	 *             Change'
-	 */
-	@Authorized(value = { PrivilegeConstants.ADD_ORDERS, PrivilegeConstants.ADD_ENCOUNTERS }, requireAll = true)
-	public void createOrdersAndEncounter(Patient p, Collection<Order> orders) throws APIException;
-	
-	/**
 	 * Get order by internal primary key identifier
 	 * 
 	 * @param orderId internal order identifier
 	 * @return order with given internal identifier
 	 * @throws APIException
-	 * @see #getOrder(Integer, Class)
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
@@ -157,7 +119,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Gets the order with the associated order id
-	 * 
+	 *
 	 * @param <Ord> An Order type. Currently only org.openmrs.Order or org.openmrs.DrugOrder
 	 * @param orderId the primary key of the Order
 	 * @param orderClassType The class of Order to fetch (Currently only org.openmrs.Order or
@@ -185,49 +147,6 @@ public interface OrderService extends OpenmrsService {
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters);
 	
 	/**
-	 * Get all orders by the User that is marked as their orderer
-	 * 
-	 * @return orders list
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<Order> getOrdersByUser(User user) throws APIException;
-	
-	/**
-	 * Get all orders by Patient
-	 * 
-	 * @return orders list
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<Order> getOrdersByPatient(Patient patient) throws APIException;
-	
-	/**
-	 * Get drug orders for a given patient
-	 * 
-	 * @param patient the owning Patient of the returned orders
-	 * @param includeVoided true/false whether or not to include voided drug orders
-	 * @return List of drug orders for the given patient
-	 * @should return list of drug orders with given status
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided);
-	
-	/**
-	 * Un-discontinue order record. Reverse a previous call to
-	 * {@link #discontinueOrder(Order, Concept, Date)}
-	 * 
-	 * @param order order to be un-discontinued
-	 * @see #discontinueOrder(Order, Concept, Date)
-	 * @return The Order that was undiscontinued
-	 */
-	@Authorized(PrivilegeConstants.EDIT_ORDERS)
-	public Order undiscontinueOrder(Order order) throws APIException;
-	
-	/**
 	 * Unvoid order record. Reverse a previous call to {@link #voidOrder(Order, String)}
 	 * 
 	 * @param order order to be unvoided
@@ -236,34 +155,4 @@ public interface OrderService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order unvoidOrder(Order order) throws APIException;
 	
-	/**
-	 * Get all orders for the given <code>patient</code>
-	 * 
-	 * @return orders list
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws APIException;
-	
-	/**
-	 * The standard regimens are currently stored in the application context file. See xml elements
-	 * after the "STANDARD REGIMENS" comment in the web spring servlet:
-	 * /web/WEB-INF/openmrs-servlet.xml (These really should be in the non-web spring app context:
-	 * /metadata/api/spring/applicationContext.xml)
-	 * 
-	 * @return list of RegimenSuggestion objects that have been predefined
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<RegimenSuggestion> getStandardRegimens();
-	
-	/**
-	 * Gets all orders contained in an encounter
-	 * 
-	 * @param encounter the encounter in which to search for orders
-	 * @return orders contained in the given encounter
-	 */
-	@Transactional(readOnly = true)
-	public List<Order> getOrdersByEncounter(Encounter encounter);
 }

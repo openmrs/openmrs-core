@@ -14,6 +14,7 @@
 package org.openmrs.api.handler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -111,7 +112,9 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(testEncounter.isVoided());
 		
 		//void one of the unvoided orders for testing purposes
-		Order testOrder = os.getOrdersByPatient(patient).get(0);
+		List<Patient> patients = new ArrayList<Patient>();
+		patients.add(patient);
+		Order testOrder = os.getOrders(Order.class, patients, null, null, null).get(0);
 		Assert.assertNotNull(testOrder);
 		Assert.assertNull(testOrder.getDateVoided());
 		Assert.assertNull(testOrder.getVoidedBy());

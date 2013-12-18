@@ -46,7 +46,6 @@ public interface OrderDAO {
 	public void deleteOrder(Order order) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrder(Integer, Class)
 	 * @see org.openmrs.api.OrderService#getOrder(Integer)
 	 */
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> classType) throws DAOException;

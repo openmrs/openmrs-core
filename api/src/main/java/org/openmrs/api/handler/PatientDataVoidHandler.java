@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -66,7 +67,9 @@ public class PatientDataVoidHandler implements VoidHandler<Patient> {
 		}
 		//void all the orders associated with this patient
 		OrderService os = Context.getOrderService();
-		List<Order> orders = os.getOrdersByPatient(patient);
+		List<Patient> patients = new ArrayList<Patient>();
+		patients.add(patient);
+		List<Order> orders = os.getOrders(Order.class, patients, null, null, null);
 		if (CollectionUtils.isNotEmpty(orders)) {
 			for (Order order : orders) {
 				if (!order.isVoided()) {

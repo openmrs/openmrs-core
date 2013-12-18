@@ -13,7 +13,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -21,23 +20,16 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
 import org.openmrs.GlobalProperty;
-import org.openmrs.Location;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
-import org.openmrs.api.handler.SaveHandler;
-import org.openmrs.order.DrugOrderSupport;
-import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.util.StringUtils;
@@ -130,73 +122,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept,
-	 *      java.util.Date)
-	 */
-	public Order discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException {
-		order.setDiscontinued(Boolean.TRUE);
-		order.setDiscontinuedReason(discontinueReason);
-		order.setDiscontinuedDate(discontinueDate);
-		order.setDiscontinuedBy(Context.getAuthenticatedUser());
-		
-		return saveOrder(order);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#undiscontinueOrder(org.openmrs.Order)
-	 */
-	public Order undiscontinueOrder(Order order) throws APIException {
-		order.setDiscontinued(Boolean.FALSE);
-		order.setDiscontinuedBy(null);
-		order.setDiscontinuedDate(null);
-		order.setDiscontinuedReason(null);
-		
-		return saveOrder(order);
-	}
-	
-	/**
-	 * TODO: Refactor, generalize, or remove this method
-	 * 
-	 * @see org.openmrs.api.OrderService#createOrdersAndEncounter(org.openmrs.Patient,
-	 *      java.util.Collection)
-	 */
-	public void createOrdersAndEncounter(Patient p, Collection<Order> orders) throws APIException {
-		
-		// Get unknown user (or the authenticated user)
-		User unknownUser = Context.getUserService().getUserByUsername("Unknown");
-		// TODO: fix this hack
-		if (unknownUser == null) {
-			unknownUser = Context.getAuthenticatedUser();
-		}
-		
-		// Get unknown location
-		Location unknownLocation = Context.getLocationService().getDefaultLocation();
-		
-		if (unknownUser == null || unknownLocation == null) {
-			throw new APIException("Couldn't find a Location and a User named 'Unknown'.");
-		}
-		
-		EncounterType encounterType = Context.getEncounterService().getEncounterType("Regimen Change");
-		if (encounterType == null) {
-			throw new APIException("Couldn't find an encounter type 'Regimen Change'");
-		}
-		
-		Encounter e = new Encounter();
-		e.setPatient(p);
-		e.setProvider(unknownUser.getPerson());
-		e.setLocation(unknownLocation);
-		e.setEncounterDatetime(new Date());
-		// TODO: Remove hardcoded encounter type
-		e.setEncounterType(encounterType);
-		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, e, null);
-		for (Order order : orders) {
-			e.addOrder(order);
-			order.setEncounter(e);
-		}
-		Context.getEncounterService().saveEncounter(e);
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
 	public Order getOrder(Integer orderId) throws APIException {
@@ -236,93 +161,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrdersByUser(org.openmrs.User)
-	 */
-	public List<Order> getOrdersByUser(User user) throws APIException {
-		if (user == null)
-			throw new APIException("Unable to get orders if I am not given a user");
-		
-		List<User> users = new Vector<User>();
-		users.add(user);
-		
-		return getOrders(Order.class, null, null, users, null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrdersByPatient(org.openmrs.Patient)
-	 */
-	public List<Order> getOrdersByPatient(Patient patient) throws APIException {
-		if (patient == null)
-			throw new APIException("Unable to get orders if I am not given a patient");
-		
-		List<Patient> patients = new Vector<Patient>();
-		patients.add(patient);
-		
-		return getOrders(Order.class, patients, null, null, null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient, boolean)
-	 */
-	@SuppressWarnings("unchecked")
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided) {
-		if (patient == null)
-			throw new APIException("Unable to get drug orders if not given a patient");
-		
-		List<Patient> patients = new Vector<Patient>();
-		patients.add(patient);
-		
-		return getOrders(DrugOrder.class, patients, null, null, null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient)
-	 */
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws APIException {
-		List<Patient> patients = new Vector<Patient>();
-		patients.add(patient);
-		
-		return getOrders(DrugOrder.class, patients, null, null, null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getStandardRegimens()
-	 */
-	public List<RegimenSuggestion> getStandardRegimens() {
-		DrugOrderSupport dos = null;
-		List<RegimenSuggestion> standardRegimens = null;
-		
-		try {
-			dos = DrugOrderSupport.getInstance();
-		}
-		catch (Exception e) {
-			log.error("Error getting instance of DrugOrderSupport object", e);
-		}
-		
-		if (dos != null) {
-			standardRegimens = dos.getStandardRegimens();
-		} else {
-			log.error("DrugOrderSupport object is null after new instance");
-		}
-		
-		return standardRegimens;
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#getOrderByUuid(java.lang.String)
 	 */
 	public Order getOrderByUuid(String uuid) throws APIException {
 		return dao.getOrderByUuid(uuid);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrdersByEncounter(org.openmrs.Encounter)
-	 */
-	public List<Order> getOrdersByEncounter(Encounter encounter) {
-		List<Encounter> encounters = new Vector<Encounter>();
-		encounters.add(encounter);
-		
-		return getOrders(Order.class, null, null, null, encounters);
 	}
 	
 	/**
