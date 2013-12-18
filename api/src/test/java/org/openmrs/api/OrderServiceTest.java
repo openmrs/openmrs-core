@@ -20,8 +20,10 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Order;
+import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -148,5 +150,59 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		}
 		//since we used a set we should have the size as N indicating that there were no duplicates
 		Assert.assertEquals(N, uniqueOrderNumbers.size());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderByOrderNumber(String)}
+	 */
+	@Test
+	@Verifies(value = "should find object given valid order number", method = "getOrderByOrderNumber(String)")
+	public void getOrderByOrderNumber_shouldFindObjectGivenValidOrderNumber() throws Exception {
+		Order order = Context.getOrderService().getOrderByOrderNumber("1");
+		Assert.assertNotNull(order);
+		Assert.assertEquals(1, (int) order.getOrderId());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderByOrderNumber(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given order number", method = "getOrderByOrderNumber(String)")
+	public void getOrderByOrderNumber_shouldReturnNullIfNoObjectFoundWithGivenOrderNumber() throws Exception {
+		Assert.assertNull(Context.getOrderService().getOrderByOrderNumber("some invalid order number"));
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderHistoryByConcept(Patient,Concept)}
+	 */
+	@Test
+	@Verifies(value = "should return orders with the given concept", method = "getOrderHistoryByConcept(Patient,Concept)")
+	public void getOrderHistoryByConcept_shouldReturnOrdersWithTheGivenConcept() throws Exception {
+		//We should have two orders with this concept.
+		Concept concept = Context.getConceptService().getConcept(88);
+		Patient patient = Context.getPatientService().getPatient(2);
+		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
+		Assert.assertEquals(2, orders.size());
+		for (Order order : orders)
+			Assert.assertTrue(order.getOrderId() == 4 || order.getOrderId() == 5);
+		
+		//We should have two different orders with this concept
+		concept = Context.getConceptService().getConcept(792);
+		orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
+		Assert.assertEquals(2, orders.size());
+		for (Order order : orders)
+			Assert.assertTrue(order.getOrderId() == 2 || order.getOrderId() == 3);
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderHistoryByConcept(PatientConcept)}
+	 */
+	@Test
+	@Verifies(value = "should return empty list for concept without orders", method = "getOrderHistoryByConcept(Patient,Concept)")
+	public void getOrderHistoryByConcept_shouldReturnEmptyListForConceptWithoutOrders() throws Exception {
+		Concept concept = Context.getConceptService().getConcept(21);
+		Patient patient = Context.getPatientService().getPatient(2);
+		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
+		Assert.assertEquals(0, orders.size());
 	}
 }

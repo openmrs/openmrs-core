@@ -95,7 +95,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	                                               List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);
 		
@@ -133,5 +133,14 @@ public class HibernateOrderDAO implements OrderDAO {
 			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :order").setParameter("order", order)
 			        .executeUpdate();
 		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderByOrderNumber(java.lang.String)
+	 */
+	public Order getOrderByOrderNumber(String orderNumber) {
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Order.class, "order");
+		searchCriteria.add(Restrictions.eq("order.orderNumber", orderNumber));
+		return (Order) searchCriteria.uniqueResult();
 	}
 }

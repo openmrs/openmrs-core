@@ -155,4 +155,26 @@ public interface OrderService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order unvoidOrder(Order order) throws APIException;
 	
+	/**
+	 * Gets the order identified by a given order number
+	 * 
+	 * @param orderNumber the order number
+	 * @return the order object
+	 * @should find object given valid order number
+	 * @should return null if no object found with given order number
+	 */
+	@Transactional(readOnly = true)
+	public Order getOrderByOrderNumber(String orderNumber);
+	
+	/**
+	 * Gets all Order objects that use this Concept for a given patient.
+	 * 
+	 * @param patient the patient.
+	 * @param concept the concept.
+	 * @return the list of orders.
+	 * @should return orders with the given concept
+	 * @should return empty list for concept without orders
+	 */
+	@Transactional(readOnly = true)
+	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
 }

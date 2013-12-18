@@ -69,4 +69,9 @@ public interface OrderDAO {
 	 * Delete Obs that references an order
 	 */
 	public void deleteObsThatReference(Order order);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
+	 */
+	public Order getOrderByOrderNumber(String orderNumber);
 }

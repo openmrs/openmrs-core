@@ -207,4 +207,29 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		return orderNumber;
 	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
+	 */
+	@Override
+	public Order getOrderByOrderNumber(String orderNumber) {
+		return dao.getOrderByOrderNumber(orderNumber);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderHistoryByConcept(org.openmrs.Patient, org.openmrs.Concept)
+	 */
+	@Override
+	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
+		if (patient == null)
+			throw new IllegalArgumentException("patient is required");
+		
+		List<Concept> concepts = new Vector<Concept>();
+		concepts.add(concept);
+		
+		List<Patient> patients = new Vector<Patient>();
+		patients.add(patient);
+		
+		return getOrders(Order.class, patients, concepts, null, null);
+	}
 }
