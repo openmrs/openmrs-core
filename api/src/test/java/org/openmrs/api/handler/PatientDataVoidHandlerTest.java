@@ -44,8 +44,7 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		List<Obs> observations = Context.getObsService().getObservationsByPerson(patient);
-		//TODO To be fixed in order entry sprint
-		/*List<Order> orders = Context.getOrderService().getOrdersByPatient(patient);
+		List<Order> orders = Context.getOrderService().getOrdersByPatient(patient);
 		
 		//we should have some unvoided encounters, obs and orders for the test to be concrete
 		Assert.assertTrue(CollectionUtils.isNotEmpty(encounters));
@@ -100,6 +99,6 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(CollectionUtils.isEmpty(encounters));
 		Assert.assertTrue(CollectionUtils.isEmpty(observations));
-		Assert.assertTrue(CollectionUtils.isEmpty(orders));*/
+		Assert.assertTrue(CollectionUtils.isEmpty(orders));
 	}
 }

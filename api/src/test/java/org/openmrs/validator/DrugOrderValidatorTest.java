@@ -85,8 +85,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		DrugOrder order = new DrugOrder();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
-		//TODO To be fixed in order entry sprint
-		//order.setOrderType(Context.getOrderService().getOrderType(1));
+		order.setOrderType(Context.getOrderService().getOrderType(1));
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(cal.getTime());
