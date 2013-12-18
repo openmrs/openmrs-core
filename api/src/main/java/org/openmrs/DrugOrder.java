@@ -88,6 +88,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.quantity = getQuantity();
 		target.drug = getDrug();
 		target.dosingType = getDosingType();
+        target.dosingInstructions = getDosingInstructions();
 		return target;
 	}
 	
