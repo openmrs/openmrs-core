@@ -3563,4 +3563,12 @@
             <column name="exectype" value="MARK_RAN"/>
         </insert>
     </changeSet>
+    <changeSet id="20110915-1536" author="sunbiz">
+        <addForeignKeyConstraint constraintName="mapped_concept_reference_term" referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" baseTableName="concept_reference_map" baseColumnNames="concept_reference_term_id"/>
+    </changeSet>
+    <changeSet author="vinayv" id="20131216-1817">
+        <addColumn tableName="orders">
+            <column name="care_setting" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

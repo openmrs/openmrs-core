@@ -7,7 +7,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<!-- 
-		See http://www.liquibase.org/manual/home#available_database_refactorings 
+		See http://www.liquibase.org/manual/home#available_database_refactorings
 		for a list of supported elements and attributes 
 	-->
 	
@@ -6510,6 +6510,18 @@
             <column name="dosing_type" value="FREE_TEXT"/>
             <where>dosing_type = '1'</where>
         </update>
+    </changeSet>
+
+    <changeSet id="201312181400-TRUNK-4156" author="vinay">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="care_setting"/></not>
+        </preConditions>
+        <comment>Add care_setting column</comment>
+        <addColumn tableName="orders">
+            <column name="care_setting" type="varchar(50)" defaultValue="OUTPATIENT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>
