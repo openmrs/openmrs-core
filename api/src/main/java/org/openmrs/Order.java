@@ -89,6 +89,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 
     private String commentToFulfiller;
 	
+	private CareSetting careSetting;
+
 	/**
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
 	 * to the original ampicillin order (the D/C gets its own order number)
@@ -480,7 +482,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "Order. orderId: " + orderId + " patient: " + patient + " orderType: " + orderType + " concept: " + concept;
+		return "Order. orderId: " + orderId + " patient: " + patient + " orderType: " + orderType + " concept: " + concept
+		        + " care setting: " + careSetting;
 	}
 	
 	/**
@@ -558,5 +561,23 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setAction(Action action) {
 		this.action = action;
+	}
+
+	/**
+	 * Gets the careSetting
+	 * @return the action
+	 * @since 1.10
+	 */
+	public CareSetting getCareSetting() {
+		return careSetting;
+	}
+
+	/**
+	 * Sets the careSetting
+	 * @param careSetting the action to set
+	 * @since 1.10
+	 */
+	public void setCareSetting(CareSetting careSetting) {
+		this.careSetting = careSetting;
 	}
 }

@@ -42,6 +42,12 @@
             </type>
         </property>
 
+        <!-- If more attributes are required for care settings, this can potentially
+        be moved out to a separate table later -->
+        <component name="careSetting" class="org.openmrs.CareSetting">
+            <property name="careSetting" column="care_setting" length="50" not-null="true"/>
+        </component>
+
         <!-- bi-directional many-to-one association to Order -->
 		<many-to-one name="previousOrder" class="org.openmrs.Order">
 			<column name="previous_order_id" />
