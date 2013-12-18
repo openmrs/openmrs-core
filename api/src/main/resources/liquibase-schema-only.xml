@@ -521,6 +521,8 @@
             <column name="quantity" type="int"/>
             <column name="num_refills" type="int"/>
             <column name="administration_instructions" type="text"/>
+            <column name="duration" type="double"/>
+            <column name="duration_units" type="int"/>
         </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-25">
