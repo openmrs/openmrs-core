@@ -29,6 +29,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsUtil;
@@ -46,6 +47,7 @@ public class OrderUtil {
 	 * @param patient
 	 * @param discontinueReason
 	 * @param discontinueDate
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, Concept, Date)
 	 * @should discontinue all orders for the given patient if none are yet discontinued
 	 * @should not affect orders that were already discontinued on the specified date
 	 * @should not affect orders that end before the specified date
@@ -58,7 +60,7 @@ public class OrderUtil {
 		
 		OrderService orderService = Context.getOrderService();
 		
-		/*List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatient(patient, ORDER_STATUS.CURRENT);
+		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatient(patient, ORDER_STATUS.CURRENT);
 		
 		// loop over all of this patient's drug orders to discontinue each
 		if (drugOrders != null) {
@@ -68,7 +70,7 @@ public class OrderUtil {
 				// do the stuff to the database
 				orderService.discontinueOrder(drugOrder, discontinueReason, discontinueDate);
 			}
-		}*/
+		}
 	}
 	
 	/**
@@ -78,14 +80,16 @@ public class OrderUtil {
 	 * @param patient
 	 * @param drugSetId
 	 * @param voidReason
+	 * @param status
 	 * @should void all drug orders of the given type when status is null
 	 * @should void drug orders of the given type for status of CURRENT
 	 * @should void drug orders of the given type for status of COMPLETE
 	 * @should not affect drug orders that are already voided
 	 */
-	public static void voidDrugSet(Patient patient, String drugSetId, String voidReason) {
+	public static void voidDrugSet(Patient patient, String drugSetId, String voidReason, ORDER_STATUS status) {
 		if (log.isDebugEnabled())
-			log.debug("Voiding drug sets for patient: " + patient + " drugSetId: " + drugSetId + " reason: " + voidReason);
+			log.debug("Voiding drug sets for patient: " + patient + " drugSetId: " + drugSetId + " reason: " + voidReason
+			        + " status: " + status);
 		
 		// do some null pointer checks
 		
@@ -100,7 +104,7 @@ public class OrderUtil {
 		
 		OrderService orderService = Context.getOrderService();
 		
-		/*List<DrugOrder> currentOrders = orderService.getDrugOrdersByPatient(patient, status);
+		List<DrugOrder> currentOrders = orderService.getDrugOrdersByPatient(patient, status);
 		
 		Map<String, List<DrugOrder>> ordersBySetId = getDrugSetsByDrugSetIdList(currentOrders, drugSetId, ",");
 		
@@ -112,7 +116,7 @@ public class OrderUtil {
 					orderService.voidOrder(order, voidReason);
 				}
 			}
-		}*/
+		}
 	}
 	
 	/**
@@ -147,7 +151,7 @@ public class OrderUtil {
 		
 		OrderService orderService = Context.getOrderService();
 		
-		/*List<DrugOrder> currentOrders = orderService.getDrugOrdersByPatient(patient, ORDER_STATUS.CURRENT);
+		List<DrugOrder> currentOrders = orderService.getDrugOrdersByPatient(patient, ORDER_STATUS.CURRENT);
 		Map<String, List<DrugOrder>> ordersBySetId = getDrugSetsByDrugSetIdList(currentOrders, drugSetId, ",");
 		
 		// loop over all of the orders and discontinue each of them
@@ -162,8 +166,8 @@ public class OrderUtil {
 			}
 		} else {
 			log.debug("no ordersBySetId returned for " + drugSetId);
-		}*/
-
+		}
+		
 	}
 	
 	/**

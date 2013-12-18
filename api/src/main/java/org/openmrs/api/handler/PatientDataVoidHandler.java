@@ -66,7 +66,7 @@ public class PatientDataVoidHandler implements VoidHandler<Patient> {
 		}
 		//void all the orders associated with this patient
 		OrderService os = Context.getOrderService();
-		/*List<Order> orders = os.getOrdersByPatient(patient);
+		List<Order> orders = os.getOrdersByPatient(patient);
 		if (CollectionUtils.isNotEmpty(orders)) {
 			for (Order order : orders) {
 				if (!order.isVoided()) {
@@ -74,6 +74,6 @@ public class PatientDataVoidHandler implements VoidHandler<Patient> {
 					os.voidOrder(order, voidReason);
 				}
 			}
-		}*/
+		}
 	}
 }
