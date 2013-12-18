@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
@@ -95,24 +95,24 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
+	                                               List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);
 		
 		if (patients.size() > 0)
-			crit.add(Expression.in("patient", patients));
+			crit.add(Restrictions.in("patient", patients));
 		
 		if (concepts.size() > 0)
-			crit.add(Expression.in("concept", concepts));
+			crit.add(Restrictions.in("concept", concepts));
 		
 		// we are not checking the other status's here because they are
 		// algorithm dependent  
 		
 		if (orderers.size() > 0)
-			crit.add(Expression.in("orderer", orderers));
+			crit.add(Restrictions.in("orderer", orderers));
 		
 		if (encounters.size() > 0)
-			crit.add(Expression.in("encounter", encounters));
+			crit.add(Restrictions.in("encounter", encounters));
 		
 		return crit.list();
 	}
