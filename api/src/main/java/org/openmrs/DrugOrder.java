@@ -13,6 +13,11 @@
  */
 package org.openmrs;
 
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
+
 /**
  * DrugOrder
  * 
@@ -56,6 +61,10 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private String dosingInstructions;
 	
+	private Double duration;
+	
+	private Concept durationUnits;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -89,6 +98,10 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.drug = getDrug();
 		target.dosingType = getDosingType();
 		target.dosingInstructions = getDosingInstructions();
+		target.numRefills = getNumRefills();
+		target.administrationInstructions = getAdministrationInstructions();
+		target.duration = getDuration();
+		target.durationUnits = returnConceptForEntryOfDurationUnits(getDurationUnits());
 		return target;
 	}
 	
@@ -334,6 +347,59 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public String getDosingInstructions() {
 		return this.dosingInstructions;
+	}
+	
+	/**
+	 * Gets the duration
+	 *
+	 * @since 1.10
+	 */
+	public Double getDuration() {
+		return duration;
+	}
+	
+	/**
+	 * Sets the duration
+	 *
+	 * @param duration to set
+	 * @since 1.10
+	 */
+	public void setDuration(Double duration) {
+		this.duration = duration;
+	}
+	
+	/**
+	 * Gets durationUnits
+	 *
+	 * @since 1.10
+	 */
+	public Concept getDurationUnits() {
+		return durationUnits;
+	}
+	
+	/**
+	 * Sets the durationUnits
+	 *
+	 * @param durationUnits
+	 * @since 1.10
+	 */
+	public void setDurationUnits(Concept durationUnits) {
+		this.durationUnits = durationUnits;
+	}
+	
+	/**
+	 * Returns concept when given a piece of text
+	 */
+	public Concept returnConceptForEntryOfDurationUnits(Concept concept) {
+		concept = Context.getConceptService().getConcept(concept.getConceptId());
+		
+		AdministrationService as = Context.getAdministrationService();
+		GlobalProperty gp = as.getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ENTRY_DURATION_UNITS);
+		
+		if (!StringUtils.isBlank((gp.getPropertyValue()))) {
+			concept.setConceptId(Integer.parseInt(gp.getPropertyValue()));
+		}
+		return concept;
 	}
 	
 	public String toString() {

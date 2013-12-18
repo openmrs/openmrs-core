@@ -113,6 +113,10 @@
             <property name="numRefills" type="int" column="num_refills" />
             <property name="administrationInstructions" type="java.lang.String" column="administration_instructions" length="65535"/>
             <property name="dosingInstructions" type="java.lang.String" column="dosing_instructions" length="65535"/>
+            <property name="duration" type="double" column="duration" length="22"/>
+            <many-to-one name="durationUnits" class="org.openmrs.Concept">
+            	<column name="duration_units" />
+            </many-to-one>
 		</joined-subclass>
 
         <joined-subclass name="org.openmrs.TestOrder" table="test_order" lazy="false">
