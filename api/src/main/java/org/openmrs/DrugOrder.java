@@ -34,8 +34,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private Double dose;
 	
-	private Double equivalentDailyDose;
-	
 	private String units;
 	
 	private String frequency;
@@ -55,6 +53,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	private String administrationInstructions;
 	
 	private String dosingInstructions;
+	
+	private Concept route;
 	
 	// Constructors
 	
@@ -80,7 +80,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	protected DrugOrder copyHelper(DrugOrder target) {
 		super.copyHelper(target);
 		target.dose = getDose();
-		target.equivalentDailyDose = getEquivalentDailyDose();
 		target.units = getUnits();
 		target.frequency = getFrequency();
 		target.asNeeded = getAsNeeded();
@@ -89,6 +88,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.drug = getDrug();
 		target.dosingType = getDosingType();
 		target.dosingInstructions = getDosingInstructions();
+		target.route = getRoute();
 		return target;
 	}
 	
@@ -248,14 +248,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		this.asNeededCondition = asNeededCondition;
 	}
 	
-	public Double getEquivalentDailyDose() {
-		return equivalentDailyDose;
-	}
-	
-	public void setEquivalentDailyDose(Double equivalentDailyDose) {
-		this.equivalentDailyDose = equivalentDailyDose;
-	}
-	
 	public void setDose(Double dose) {
 		this.dose = dose;
 	}
@@ -334,6 +326,25 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public String getDosingInstructions() {
 		return this.dosingInstructions;
+	}
+	
+	/**
+	 * Gets the route
+	 * 
+	 * @since 1.10
+	 */
+	public Concept getRoute() {
+		return route;
+	}
+	
+	/**
+	 * Sets the route
+	 * 
+	 * @param route
+	 * @since 1.10
+	 */
+	public void setRoute(Concept route) {
+		this.route = route;
 	}
 	
 	public String toString() {
