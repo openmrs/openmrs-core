@@ -6678,16 +6678,4 @@
 		<modifyDataType tableName="drug_order" columnName="quantity" newDataType="double"/>
 	</changeSet>
 
-	<changeSet id="201312191209-TRUNK-4129" author="rkorytkowski">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<sqlCheck expectedResult="0">
-					select count(*) from drug_order;
-				</sqlCheck>
-			</not>
-		</preConditions>
-		<comment>Migrating drug order quantity to coded quantity units</comment>
-		<customChange class="org.openmrs.util.databasechange.MigrateDrugOrderQuantityToCodedQuantityUnitsChangeset" />
-	</changeSet>
-
 </databaseChangeLog>
