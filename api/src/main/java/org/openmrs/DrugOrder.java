@@ -56,6 +56,10 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private String dosingInstructions;
 	
+	private Double duration;
+	
+	private Concept durationUnits;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -89,6 +93,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.drug = getDrug();
 		target.dosingType = getDosingType();
 		target.dosingInstructions = getDosingInstructions();
+		target.duration = getDuration();
+		target.durationUnits = getDurationUnits();
 		return target;
 	}
 	
@@ -334,6 +340,44 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public String getDosingInstructions() {
 		return this.dosingInstructions;
+	}
+	
+	/**
+	 * Gets the duration of a Drug Order
+	 * 
+	 * @since 1.10
+	 */
+	public Double getDuration() {
+		return duration;
+	}
+	
+	/**
+	 * Sets the duration of a Drug Order
+	 * 
+	 * @param duration to set
+	 * @since 1.10
+	 */
+	public void setDuration(Double duration) {
+		this.duration = duration;
+	}
+	
+	/**
+	 * Gets durationUnits of a Drug Order
+	 * 
+	 * @since 1.10
+	 */
+	public Concept getDurationUnits() {
+		return durationUnits;
+	}
+	
+	/**
+	 * Sets the durationUnits of a Drug Order
+	 * 
+	 * @param durationUnits
+	 * @since 1.10
+	 */
+	public void setDurationUnits(Concept durationUnits) {
+		this.durationUnits = durationUnits;
 	}
 	
 	public String toString() {
