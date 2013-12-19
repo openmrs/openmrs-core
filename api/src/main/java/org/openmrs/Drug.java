@@ -265,14 +265,15 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * already a corresponding DrugReferenceMap object for this concept, this one will not be added.
 	 *
 	 * @param drugReferenceMap
+	 * @since 1.10
 	 */
 	public void addDrugReferenceMap(DrugReferenceMap drugReferenceMap) {
-		if (drugReferenceMap != null && !drugReferenceMaps.contains(drugReferenceMap)) {
+		if (drugReferenceMap != null && !getDrugReferenceMaps().contains(drugReferenceMap)) {
 			drugReferenceMap.setDrug(this);
 			if (drugReferenceMap.getConceptMapType() == null) {
 				drugReferenceMap.setConceptMapType(Context.getConceptService().getDefaultConceptMapType());
 			}
-			drugReferenceMaps.add(drugReferenceMap);
+			getDrugReferenceMaps() 	.add(drugReferenceMap);
 		}
 	}
 }
