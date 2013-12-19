@@ -394,7 +394,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
 	 * @verifies fetch all patient identifiers belong to given patient
 	 */
 	@Test
@@ -410,7 +410,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
 	 * @verifies fetch all patient identifiers belong to given patients
 	 */
 	@Test
@@ -450,7 +450,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
 	 * @verifies return ordered
 	 */
 	@Test
@@ -473,7 +473,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
 	 * @verifies return non retired patient identifier types with given name
 	 */
 	@Test
@@ -488,7 +488,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
 	 * @verifies return non retired patient identifier types with given format
 	 */
 	@Test
@@ -504,7 +504,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
 	 * @verifies return non retired patient identifie types that are not required
 	 */
 	@Test
@@ -520,7 +520,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
 	 * @verifies return non retired patient identifier types that are required
 	 */
 	@Test
@@ -537,7 +537,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
 	 * @verifies return non retired patient identifier types that has checkDigit
 	 */
 	@Test
@@ -551,7 +551,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
 	 * @verifies return non retired patient identifier types that has not CheckDigit
 	 */
 	@Test
@@ -565,7 +565,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
 	 * @verifies return only non retired patient identifier types
 	 */
 	@Test
@@ -587,7 +587,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
 	 * @verifies return non retired patient identifier types ordered by required first
 	 */
 	@Test
@@ -604,7 +604,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
 	 * @verifies return non retired patient identifier types ordered by required and name
 	 */
 	@Test
@@ -628,7 +628,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
 	 * @verifies return non retired patient identifier types ordered by required name and type id
 	 */
 	@Test
@@ -655,7 +655,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer,
+	 * @see PatientDAO#getPatients(String, String, java.util.List, boolean, Integer,
 	 *      Integer, boolean)
 	 * @verifies return non when searching on voided patients
 	 */
@@ -674,7 +674,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer,
+	 * @see PatientDAO#getPatients(String, String, java.util.List, boolean, Integer,
 	 *      Integer, boolean)
 	 * @verifies return none when searching on voided patient name
 	 */
