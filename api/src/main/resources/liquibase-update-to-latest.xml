@@ -6599,5 +6599,32 @@
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet id="201312162044-TRUNK-4126" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug_order" columnName="duration" />
+			</not>
+		</preConditions>
+		<comment>Adding duration column to drug_order table</comment>
+		<addColumn tableName="drug_order">
+			<column name="duration" type="double" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="201312162059-TRUNK-4126" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug_order" columnName="duration_units" />
+			</not>
+		</preConditions>
+		<comment>Adding duration_units column to drug_order table</comment>
+		<addColumn tableName="drug_order">
+			<column name="duration_units" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="drug_order_duration_units_fk"
+			baseTableName="drug_order" baseColumnNames="duration_units"
+			referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
 
 </databaseChangeLog>
