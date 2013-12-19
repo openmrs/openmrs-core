@@ -140,7 +140,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      java.util.List, java.util.List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	                                               List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
 		if (orderClassType == null)
 			throw new APIException(
 			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
