@@ -31,6 +31,11 @@
 		</many-to-one>
 
 		<!-- end of derived association(s) -->
+		
+		<property name="quantity" type="double" column="quantity" length="22"/>
+		<many-to-one name="units" class="org.openmrs.Concept">
+			<column name="units"/>
+		</many-to-one>
 
 	</class>
 

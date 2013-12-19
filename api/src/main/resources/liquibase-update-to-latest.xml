@@ -6604,5 +6604,32 @@
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet id="201312111626-TRUNK-4169" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug_ingredient" columnName="quantity" />
+			</not>
+		</preConditions>
+		<comment>Adding quantity column to drug_ingredient table</comment>
+		<addColumn tableName="drug_ingredient">
+			<column name="quantity" type="double" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="201312111630-TRUNK-4169" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug_ingredient" columnName="units" />
+			</not>
+		</preConditions>
+		<comment>Adding units column to drug_ingredient table</comment>
+		<addColumn tableName="drug_ingredient">
+			<column name="units" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="drug_ingredient_units_fk"
+			baseTableName="drug_ingredient" baseColumnNames="units"
+			referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
 
 </databaseChangeLog>
