@@ -519,8 +519,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="quantity" type="int"/>
-            <column name="num_refills" type="int"/>
-            <column name="administration_instructions" type="text"/>
         </createTable>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-25">
