@@ -28,6 +28,8 @@
 		<property name="voidReason" type="java.lang.String" column="void_reason" length="255"/>
 		<property name="discontinuedReasonNonCoded" type="java.lang.String" column="discontinued_reason_non_coded" length="255"/>
         <property name="orderNumber" type="string" column="order_number" length="50" not-null="true" />
+        <property name="commentToFulfiller" type="string" column="comment_to_fulfiller" length="1024" />
+
         <property name="urgency" column="urgency" length="50" not-null="true">
             <type name="org.openmrs.util.HibernateEnumType">
                 <param name="enumClassName">org.openmrs.Order$Urgency</param>
@@ -83,11 +85,6 @@
 			<column name="creator" />
 		</many-to-one>
 
-		<!-- bi-directional many-to-one association to OrderType -->
-		<many-to-one name="orderType" class="org.openmrs.OrderType" not-null="true">
-			<column name="order_type_id" />
-		</many-to-one>
-
 		<joined-subclass name="org.openmrs.DrugOrder" table="drug_order">
 
 			<key column="order_id" />
@@ -109,8 +106,8 @@
                 </type>
             </property>
             <property name="numRefills" type="int" column="num_refills" />
-            <property name="administrationInstructions" type="java.lang.String" column="administration_instructions" length="1024"/>
-	
+            <property name="administrationInstructions" type="java.lang.String" column="administration_instructions" length="65535"/>
+            <property name="dosingInstructions" type="java.lang.String" column="dosing_instructions" length="65535"/>
 		</joined-subclass>
 
         <joined-subclass name="org.openmrs.TestOrder" table="test_order" lazy="false">

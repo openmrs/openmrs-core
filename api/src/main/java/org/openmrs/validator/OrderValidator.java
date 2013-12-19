@@ -55,7 +55,6 @@ public class OrderValidator implements Validator {
 	 * @should fail validation if voided is null
 	 * @should fail validation if concept is null
 	 * @should fail validation if patient is null
-	 * @should fail validation if orderType is null
 	 * @should fail validation if startDate after discontinuedDate
 	 * @should fail validation if startDate after autoExpireDate
 	 * @should pass validation if all fields are correct
@@ -75,10 +74,6 @@ public class OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "voided", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
 			ValidationUtils.rejectIfEmpty(errors, "patient", "error.null");
-			
-			//TODO commented out because of this commit:
-			//https://github.com/openmrs/openmrs-core/commit/6360b0e78ee98f75eef10bf37d7cbda2e67d5ce9
-			//ValidationUtils.rejectIfEmpty(errors, "orderType", "error.null");
 			
 			Date startDate = order.getStartDate();
 			if (startDate != null) {

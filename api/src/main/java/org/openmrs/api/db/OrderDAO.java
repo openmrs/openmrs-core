@@ -18,7 +18,6 @@ import java.util.List;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
 
@@ -34,26 +33,6 @@ public interface OrderDAO {
 	
 	// methods for the OrderType java pojo object
 	
-	/**
-	 * @see org.openmrs.api.OrderService#saveOrderType(OrderType)
-	 */
-	public OrderType saveOrderType(OrderType orderType) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#purgeOrderType(OrderType)
-	 */
-	public void deleteOrderType(OrderType orderType) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getAllOrderTypes(boolean)
-	 */
-	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderType(Integer)
-	 */
-	public OrderType getOrderType(Integer orderTypeId) throws DAOException;
-	
 	// methods for the Order java pojo object
 	
 	/**
@@ -67,18 +46,16 @@ public interface OrderDAO {
 	public void deleteOrder(Order order) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrder(Integer, Class)
 	 * @see org.openmrs.api.OrderService#getOrder(Integer)
-	 * @see org.openmrs.api.OrderService#getDrugOrder(Integer)
 	 */
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> classType) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List)
+	 *      java.util.List, java.util.List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, List<OrderType> orderTypes);
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters);
 	
 	/**
 	 * Auto generated method comment
@@ -89,15 +66,12 @@ public interface OrderDAO {
 	public Order getOrderByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
-	 * @param uuid
-	 * @return
-	 */
-	public OrderType getOrderTypeByUuid(String uuid);
-	
-	/**
 	 * Delete Obs that references an order
 	 */
 	public void deleteObsThatReference(Order order);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
+	 */
+	public Order getOrderByOrderNumber(String orderNumber);
 }

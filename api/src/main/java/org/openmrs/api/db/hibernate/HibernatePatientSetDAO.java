@@ -370,7 +370,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					for (Order order : orders) {
 						Element orderNode = doc.createElement("order");
 						orderNode.setAttribute("order_id", order.getOrderId().toString());
-						orderNode.setAttribute("order_type", order.getOrderType().getName());
 						
 						Concept concept = order.getConcept();
 						orderNode.setAttribute("concept_id", concept.getConceptId().toString());

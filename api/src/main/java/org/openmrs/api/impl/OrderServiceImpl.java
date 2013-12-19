@@ -13,15 +13,26 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
+import org.openmrs.Order;
+import org.openmrs.Patient;
+import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.util.StringUtils;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
@@ -37,6 +48,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	protected OrderDAO dao;
 	
+	private static final String ORDER_NUMBER_PREFIX = "ORD-";
+	
+	private static final String ORDER_NUMBER_START_VALUE = "1";
+	
 	public OrderServiceImpl() {
 	}
 	
@@ -48,6 +63,111 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
+	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
+	 */
+	public Order saveOrder(Order order) throws APIException {
+		if (order.getOrderId() == null && !StringUtils.hasText(order.getOrderNumber())) {
+			//TODO call module registered order number generators 
+			//and if there is none, use the default below
+			order.setOrderNumber(getNewOrderNumber());
+		}
+		
+		return dao.saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#purgeOrder(org.openmrs.Order)
+	 */
+	public void purgeOrder(Order order) throws APIException {
+		purgeOrder(order, false);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#purgeOrder(Order)
+	 */
+	public void purgeOrder(Order order, boolean cascade) throws APIException {
+		if (cascade) {
+			dao.deleteObsThatReference(order);
+		}
+		
+		dao.deleteOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#voidOrder(org.openmrs.Order, java.lang.String)
+	 */
+	public Order voidOrder(Order order, String voidReason) throws APIException {
+		// fail early if this order is already voided
+		if (order.getVoided())
+			return order;
+		
+		if (!StringUtils.hasLength(voidReason))
+			throw new IllegalArgumentException("voidReason cannot be empty or null");
+		
+		order.setVoided(Boolean.TRUE);
+		order.setVoidReason(voidReason);
+		order.setVoidedBy(Context.getAuthenticatedUser());
+		if (order.getDateVoided() == null)
+			order.setDateVoided(new Date());
+		
+		return saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#unvoidOrder(org.openmrs.Order)
+	 */
+	public Order unvoidOrder(Order order) throws APIException {
+		order.setVoided(false);
+		return saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
+	 */
+	public Order getOrder(Integer orderId) throws APIException {
+		return getOrder(orderId, Order.class);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer, java.lang.Class)
+	 */
+	public <o extends Order> o getOrder(Integer orderId, Class<o> orderClassType) throws APIException {
+		return dao.getOrder(orderId, orderClassType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
+	 *      java.util.List, java.util.List)
+	 */
+	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
+	                                               List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
+		if (orderClassType == null)
+			throw new APIException(
+			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
+		
+		if (patients == null)
+			patients = new Vector<Patient>();
+		
+		if (concepts == null)
+			concepts = new Vector<Concept>();
+		
+		if (orderers == null)
+			orderers = new Vector<User>();
+		
+		if (encounters == null)
+			encounters = new Vector<Encounter>();
+		
+		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderByUuid(java.lang.String)
+	 */
+	public Order getOrderByUuid(String uuid) throws APIException {
+		return dao.getOrderByUuid(uuid);
+	}
+	
+	/**
 	 * @see org.openmrs.api.OrderNumberGenerator#getNewOrderNumber()
 	 */
 	@Override
@@ -55,17 +175,63 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		GlobalProperty globalProperty = Context.getAdministrationService().getGlobalPropertyObject(
 		    OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER);
 		if (globalProperty == null) {
-			globalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER, "1",
-			        "The next order number available for assignment");
+			globalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER,
+			        ORDER_NUMBER_START_VALUE, "The next order number available for assignment");
 		}
 		
-		String orderNumber = "ORD-" + globalProperty.getValue();
+		String gpTextValue = globalProperty.getPropertyValue();
+		if (!StringUtils.hasText(gpTextValue)) {
+			throw new APIException("Invalid value for global property named: "
+			        + OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER);
+		}
 		
-		globalProperty.setPropertyValue(String.valueOf(Long.parseLong(globalProperty.getPropertyValue()) + 1));
+		Long gpNumericValue = null;
+		try {
+			gpNumericValue = Long.parseLong(gpTextValue);
+		}
+		catch (NumberFormatException ex) {
+			throw new APIException("Invalid value for global property named: "
+			        + OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER);
+		}
+		
+		String orderNumber = ORDER_NUMBER_PREFIX + gpTextValue;
+		
+		globalProperty.setPropertyValue(String.valueOf(gpNumericValue + 1));
+		
 		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-		Context.getAdministrationService().saveGlobalProperty(globalProperty);
-		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		try {
+			Context.getAdministrationService().saveGlobalProperty(globalProperty);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		}
 		
 		return orderNumber;
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
+	 */
+	@Override
+	public Order getOrderByOrderNumber(String orderNumber) {
+		return dao.getOrderByOrderNumber(orderNumber);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderHistoryByConcept(org.openmrs.Patient,
+	 *      org.openmrs.Concept)
+	 */
+	@Override
+	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
+		if (patient == null)
+			throw new IllegalArgumentException("patient is required");
+		
+		List<Concept> concepts = new Vector<Concept>();
+		concepts.add(concept);
+		
+		List<Patient> patients = new Vector<Patient>();
+		patients.add(patient);
+		
+		return getOrders(Order.class, patients, concepts, null, null);
 	}
 }

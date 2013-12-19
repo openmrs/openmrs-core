@@ -13,11 +13,26 @@
  */
 package org.openmrs.api;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
+import org.openmrs.Order;
+import org.openmrs.Patient;
+import org.openmrs.User;
+import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.order.RegimenSuggestion;
+import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders
  */
+@Transactional
 public interface OrderService extends OpenmrsService {
 	
 	/**
@@ -28,4 +43,138 @@ public interface OrderService extends OpenmrsService {
 	 */
 	public void setOrderDAO(OrderDAO dao);
 	
+	/**
+	 * Save or update the given <code>order</code> in the database
+	 * 
+	 * @param order the Order to save
+	 * @return the Order that was saved
+	 * @throws APIException
+	 * @should not save order if order doesnt validate
+	 * @should save discontinued reason non coded
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	public Order saveOrder(Order order) throws APIException;
+	
+	/**
+	 * Completely delete an order from the database. This should not typically be used unless
+	 * desperately needed. Most orders should just be voided. See {@link #voidOrder(Order, String)}
+	 * 
+	 * @param order The Order to remove from the system
+	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.PURGE_ORDERS)
+	public void purgeOrder(Order order) throws APIException;
+	
+	/**
+	 * Completely delete an order from the database. This should not typically be used unless
+	 * desperately needed. Most orders should just be voided. See {@link #voidOrder(Order, String)}
+	 * This method is different from purgeOrder(Order order) above: If param cascade is false will
+	 * completely delete an order from the database period If param cascade is true will completely
+	 * delete an order from the database and delete any Obs that references the Order.
+	 * 
+	 * @param order The Order to remove from the system
+	 * @param cascade
+	 * @throws APIException
+	 * @since 1.9.4
+	 * @should delete order
+	 * @should delete order when cascade is false
+	 * @should delete order when cascade is true and also delete any Obs that references it
+	 */
+	@Authorized(PrivilegeConstants.PURGE_ORDERS)
+	public void purgeOrder(Order order, boolean cascade) throws APIException;
+	
+	/**
+	 * Mark an order as voided. This functionally removes the Order from the system while keeping a
+	 * semblance
+	 * 
+	 * @param voidReason String reason
+	 * @param order Order to void
+	 * @return the Order that was voided
+	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.DELETE_ORDERS)
+	public Order voidOrder(Order order, String voidReason) throws APIException;
+	
+	/**
+	 * Get order by internal primary key identifier
+	 * 
+	 * @param orderId internal order identifier
+	 * @return order with given internal identifier
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	public Order getOrder(Integer orderId) throws APIException;
+	
+	/**
+	 * Get Order by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
+	@Transactional(readOnly = true)
+	public Order getOrderByUuid(String uuid) throws APIException;
+	
+	/**
+	 * Gets the order with the associated order id
+	 *
+	 * @param <Ord> An Order type. Currently only org.openmrs.Order or org.openmrs.DrugOrder
+	 * @param orderId the primary key of the Order
+	 * @param orderClassType The class of Order to fetch (Currently only org.openmrs.Order or
+	 *            org.openmrs.DrugOrder)
+	 * @return The Order in the system corresponding to given primary key id
+	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws APIException;
+	
+	/**
+	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
+	 * multiple arguments are given, the returned orders will match on all arguments.
+	 * 
+	 * @param orderClassType The type of Order to get (currently only options are Order and
+	 *            DrugOrder)
+	 * @param patients The patients to get orders for
+	 * @param concepts The concepts in order.getConcept to get orders for
+	 * @param orderers The users/orderers of the
+	 * @param encounters The encounters that the orders are assigned to
+	 * @return list of Orders matching the parameters
+	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters);
+	
+	/**
+	 * Unvoid order record. Reverse a previous call to {@link #voidOrder(Order, String)}
+	 * 
+	 * @param order order to be unvoided
+	 * @return the Order that was unvoided
+	 */
+	@Authorized(PrivilegeConstants.DELETE_ORDERS)
+	public Order unvoidOrder(Order order) throws APIException;
+	
+	/**
+	 * Gets the order identified by a given order number
+	 * 
+	 * @param orderNumber the order number
+	 * @return the order object
+	 * @should find object given valid order number
+	 * @should return null if no object found with given order number
+	 */
+	@Transactional(readOnly = true)
+	public Order getOrderByOrderNumber(String orderNumber);
+	
+	/**
+	 * Gets all Order objects that use this Concept for a given patient.
+	 * 
+	 * @param patient the patient.
+	 * @param concept the concept.
+	 * @return the list of orders.
+	 * @should return orders with the given concept
+	 * @should return empty list for concept without orders
+	 */
+	@Transactional(readOnly = true)
+	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
 }

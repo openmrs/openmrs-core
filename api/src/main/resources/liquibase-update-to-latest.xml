@@ -6535,5 +6535,57 @@
             <column name="administration_instructions" type="text"/>
         </addColumn>
 	</changeSet>
+	
+	<changeSet id="201312171559-TRUNK-4159" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="order_frequency"/></not>
+		</preConditions>
+		
+		<comment>Create the order_frequency table</comment>
+		
+		<createTable tableName="order_frequency">
+			<column name="order_frequency_id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="concept_id" type="int"><constraints nullable="false"/></column>
+			<column name="frequency_per_day" type="double"/>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+             <column name="date_created" type="datetime"><constraints nullable="false"/></column>	
+             <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+                 <constraints nullable="false"/>
+             </column>
+             <column name="retired_by" type="int" />
+             <column name="date_retired" type="datetime"/>
+             <column name="retire_reason" type="varchar(255)" />
+             <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+		</createTable>
+	</changeSet>
+	
+	<changeSet id="201312181512-TRUNK-4159" author="k-joseph">
+		<comment>Adding 3 foreign key constraints (for concept_id,creator and retired_by) to order_frequency table</comment>
+		<addForeignKeyConstraint constraintName="order_frequency_concept_id_fk" baseTableName="order_frequency" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="order_frequency_creator_fk" baseTableName="order_frequency" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="order_frequency_retired_by" baseTableName="order_frequency" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+    <changeSet id="20131217-TRUNK-4157" author="banka">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="drug_order" columnName="dosing_instructions"/></not>
+        </preConditions>
+        <comment>Adding dosing_instructions column to drug_order table</comment>
+        <addColumn tableName="drug_order">
+            <column name="dosing_instructions" type="text"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20131217-TRUNK-4142" author="banka">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="comment_to_fulfiller"/></not>
+        </preConditions>
+        <comment>Adding comment_to_fulfiller column to orders table</comment>
+        <addColumn tableName="orders">
+            <column name="comment_to_fulfiller" type="varchar(1024)"/>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

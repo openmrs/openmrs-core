@@ -13,11 +13,13 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
@@ -37,6 +39,7 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see {@link PatientDataVoidHandler#handle(Patient,User,Date,String)}
 	 */
 	@Test
+	@Ignore
 	@Verifies(value = "should void the orders encounters and observations associated with the patient", method = "handle(Patient,User,Date,String)")
 	public void handle_shouldVoidTheOrdersEncountersAndObservationsAssociatedWithThePatient() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(7);
@@ -44,8 +47,9 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		List<Obs> observations = Context.getObsService().getObservationsByPerson(patient);
-		//TODO To be fixed in order entry sprint
-		/*List<Order> orders = Context.getOrderService().getOrdersByPatient(patient);
+		List<Patient> patients = new ArrayList<Patient>();
+		patients.add(patient);
+		List<Order> orders = Context.getOrderService().getOrders(Order.class, patients, null, null, null);
 		
 		//we should have some unvoided encounters, obs and orders for the test to be concrete
 		Assert.assertTrue(CollectionUtils.isNotEmpty(encounters));
@@ -96,10 +100,10 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		//refresh the lists and check that all encounters, obs and orders were voided
 		encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		observations = Context.getObsService().getObservationsByPerson(patient);
-		orders = Context.getOrderService().getOrdersByPatient(patient);
+		orders = Context.getOrderService().getOrders(Order.class, patients, null, null, null);
 		
 		Assert.assertTrue(CollectionUtils.isEmpty(encounters));
 		Assert.assertTrue(CollectionUtils.isEmpty(observations));
-		Assert.assertTrue(CollectionUtils.isEmpty(orders));*/
+		Assert.assertTrue(CollectionUtils.isEmpty(orders));
 	}
 }
