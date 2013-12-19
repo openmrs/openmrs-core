@@ -140,7 +140,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      java.util.List, java.util.List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
+	                                               List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
 		if (orderClassType == null)
 			throw new APIException(
 			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
@@ -181,7 +181,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		String gpTextValue = globalProperty.getPropertyValue();
 		if (!StringUtils.hasText(gpTextValue)) {
-			gpTextValue = ORDER_NUMBER_START_VALUE;
+			throw new APIException("Invalid value for global property named: "
+			        + OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER);
 		}
 		
 		Long gpNumericValue = null;
@@ -189,8 +190,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			gpNumericValue = Long.parseLong(gpTextValue);
 		}
 		catch (NumberFormatException ex) {
-			gpNumericValue = 1l;
-			gpTextValue = ORDER_NUMBER_START_VALUE;
+			throw new APIException("Invalid value for global property named: "
+			        + OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER);
 		}
 		
 		String orderNumber = ORDER_NUMBER_PREFIX + gpTextValue;
@@ -217,7 +218,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderHistoryByConcept(org.openmrs.Patient, org.openmrs.Concept)
+	 * @see org.openmrs.api.OrderService#getOrderHistoryByConcept(org.openmrs.Patient,
+	 *      org.openmrs.Concept)
 	 */
 	@Override
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
