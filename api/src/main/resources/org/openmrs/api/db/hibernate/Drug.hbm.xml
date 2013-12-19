@@ -71,8 +71,7 @@
 		<many-to-one name="retiredBy" class="org.openmrs.User"
 			not-null="false" column="retired_by" />
 
-		<set name="drugReferenceMaps" lazy="true" inverse="true" cascade="all"
-			 order-by="drug_reference_map_id">
+		<set name="drugReferenceMaps" inverse="true" cascade="all,delete-orphan,evict">
 			<key column="drug_id" />
 			<one-to-many class="org.openmrs.DrugReferenceMap" />
 		</set>

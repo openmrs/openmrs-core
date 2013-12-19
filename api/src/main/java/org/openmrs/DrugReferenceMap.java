@@ -25,7 +25,7 @@ import java.util.Date;
  */
 public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Retireable, Serializable {
 	
-	public static final long serialVersionUID = 2806L;
+	public static final long serialVersionUID = 1L;
 	
 	private Integer drugReferenceMapId;
 	
