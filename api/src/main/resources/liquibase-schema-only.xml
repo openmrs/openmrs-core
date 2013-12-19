@@ -2320,6 +2320,11 @@
         </modifySql>
     </changeSet>
 	<changeSet id="20131216-1636" author="gitahi">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="drug_reference_map" />
+			</not>
+		</preConditions>
 		<createTable tableName="drug_reference_map">
 			<column name="drug_reference_map_id" type="int" autoIncrement="true">
 				<constraints nullable="false" primaryKey="true"/>
@@ -2336,7 +2341,7 @@
 			<column name="creator" type="int" defaultValueNumeric="0">
 				<constraints nullable="false"/>
 			</column>
-			<column name="date_created" type="int">
+			<column name="date_created" type="DATETIME">
 				<constraints nullable="false"/>
 			</column>
 			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
@@ -2351,32 +2356,30 @@
 				<constraints nullable="false" unique="true"/>
 			</column>
 		</createTable>
-		<addForeignKeyConstraint baseTableName="drug_reference_map" baseColumnNames="drug_id" constraintName="drug"
+		<addForeignKeyConstraint baseTableName="drug_reference_map" baseColumnNames="drug_id"
+								 constraintName="drug_for_drug_reference_map"
 								 referencedTableName="drug"
 								 referencedColumnNames="drug_id"/>
 		<addForeignKeyConstraint baseTableName="drug_reference_map" baseColumnNames="term_id"
-								 constraintName="concept_reference_term"
+								 constraintName="concept_reference_term_for_drug_reference_map"
 								 referencedTableName="concept_reference_term"
 								 referencedColumnNames="concept_reference_term_id"/>
 		<addForeignKeyConstraint baseTableName="drug_reference_map" baseColumnNames="map_type"
-								 constraintName="concept_map_type"
+								 constraintName="concept_map_type_for_drug_reference_map"
 								 referencedTableName="concept_map_type"
 								 referencedColumnNames="concept_map_type_id"/>
 		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="drug_reference_map"
-								 constraintName="user_who_changed_drug_reference_map" deferrable="false"
-								 initiallyDeferred="false"
-								 referencedColumnNames="user_id" referencedTableName="users"/>
+								 constraintName="user_who_changed_drug_reference_map"
+								 referencedColumnNames="user_id"
+								 referencedTableName="users"/>
 		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="drug_reference_map"
 								 constraintName="drug_reference_map_creator"
-								 deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id"
+								 referencedColumnNames="user_id"
 								 referencedTableName="users"/>
 		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="drug_reference_map"
-								 constraintName="user_who_retired_drug_reference_map" deferrable="false"
-								 initiallyDeferred="false"
-								 referencedColumnNames="user_id" referencedTableName="users"/>
-		<modifySql dbms="mssql">
-			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
-		</modifySql>
+								 constraintName="user_who_retired_drug_reference_map"
+								 referencedColumnNames="user_id"
+								 referencedTableName="users"/>
 	</changeSet>
     <changeSet id="20110426-11701-create-provider-table" author="dkayiwa">
  		<preConditions onFail="MARK_RAN">
@@ -2420,7 +2423,7 @@
  		<addForeignKeyConstraint constraintName="provider_person_id_fk"
  			baseTableName="provider" baseColumnNames="person_id"
  			referencedTableName="person" referencedColumnNames="person_id" />
- 
+
  		<addForeignKeyConstraint constraintName="provider_retired_by_fk"
  			baseTableName="provider" baseColumnNames="retired_by"
  			referencedTableName="users" referencedColumnNames="user_id" />
@@ -2657,7 +2660,7 @@
         <createIndex tableName="form" indexName="form_published_and_retired_index">
             <column name="published"/>
             <column name="retired"/>
-        </createIndex>	
+        </createIndex>
     </changeSet>
     <changeSet id="20110915-1103" author="sunbiz">
         <createIndex tableName="hl7_in_archive" indexName="hl7_in_archive_message_state_idx">
@@ -3352,7 +3355,7 @@
         <addForeignKeyConstraint constraintName="visit_type_fk"	baseTableName="visit" baseColumnNames="visit_type_id" referencedTableName="visit_type" referencedColumnNames="visit_type_id"/>
     </changeSet>
     <changeSet id="20110915-1241" author="sunbiz">
-        <addForeignKeyConstraint constraintName="visit_location_fk" baseTableName="visit" baseColumnNames="location_id" referencedTableName="location" referencedColumnNames="location_id"/>		
+        <addForeignKeyConstraint constraintName="visit_location_fk" baseTableName="visit" baseColumnNames="location_id" referencedTableName="location" referencedColumnNames="location_id"/>
     </changeSet>
     <changeSet id="20110915-1242" author="sunbiz">
         <addForeignKeyConstraint constraintName="visit_patient_fk" baseTableName="visit" baseColumnNames="patient_id" referencedTableName="patient" referencedColumnNames="patient_id"/>
@@ -3474,7 +3477,7 @@
     <changeSet id="20110915-1536" author="sunbiz">
         <addForeignKeyConstraint constraintName="mapped_concept_reference_term" referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" baseTableName="concept_reference_map" baseColumnNames="concept_reference_term_id"/>
     </changeSet>
-    
+
     <!-- Skip changesets from liquibase-update-to-latest when new installation -->
     <!-- TODO: CustomChange to avoid replicated columns-->
     <!-- TODO: Add all changesets that are not required. Only blockers now-->
