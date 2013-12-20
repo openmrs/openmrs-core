@@ -34,10 +34,24 @@ public class TestOrder extends Order {
 	
 	private String clinicalHistory;
 	
+	private OrderFrequency frequency;
+	
+	private Integer numberOfRepeats;
+	
 	/**
 	 * Default Constructor
 	 */
 	public TestOrder() {
+	}
+	
+	protected Order copyHelper(TestOrder target) {
+		super.copyHelper(target);
+		this.specimenSource = getSpecimenSource();
+		this.laterality = getLaterality();
+		this.clinicalHistory = getClinicalHistory();
+		this.frequency = getFrequency();
+		this.numberOfRepeats = getNumberOfRepeats();
+		return target;
 	}
 	
 	/**
@@ -90,4 +104,41 @@ public class TestOrder extends Order {
 		this.clinicalHistory = clinicalHistory;
 	}
 	
+	/**
+	 * Gets frequency of test order
+	 * 
+	 * @since 1.10
+	 */
+	public OrderFrequency getFrequency() {
+		return frequency;
+	}
+	
+	/**
+	 * Sets frequency of test order
+	 * 
+	 * @param frequency
+	 * @since 1.10
+	 */
+	public void setFrequency(OrderFrequency frequency) {
+		this.frequency = frequency;
+	}
+	
+	/**
+	 * Gets numberOfRepeats of test order
+	 * 
+	 * @since 1.10
+	 */
+	public Integer getNumberOfRepeats() {
+		return numberOfRepeats;
+	}
+	
+	/**
+	 * Sets numberOfRepeats of test order
+	 * 
+	 * @param numberOfRepeats to set
+	 * @since 1.10
+	 */
+	public void setNumberOfRepeats(Integer numberOfRepeats) {
+		this.numberOfRepeats = numberOfRepeats;
+	}
 }
