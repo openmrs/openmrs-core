@@ -6677,5 +6677,32 @@
 		<comment>Changing quantity column of drug_order to double</comment>
 		<modifyDataType tableName="drug_order" columnName="quantity" newDataType="double"/>
 	</changeSet>
+	
+	<changeSet id="201312181649-TRUNK-4137" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="test_order" columnName="frequency" />
+			</not>
+		</preConditions>
+		<comment>Adding frequency column to test_order table</comment>
+		<addColumn tableName="test_order">
+			<column name="frequency" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="test_order_frequency_fk"
+			baseTableName="test_order" baseColumnNames="frequency"
+			referencedTableName="order_frequency" referencedColumnNames="order_frequency_id" />
+	</changeSet>
+
+	<changeSet id="201312181649-TRUNK-4137" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="test_order" columnName="number_of_repeats" />
+			</not>
+		</preConditions>
+		<comment>Adding number_of_repeats column to test_order table</comment>
+		<addColumn tableName="test_order">
+			<column name="number_of_repeats" type="int" />
+		</addColumn>
+	</changeSet>
 
 </databaseChangeLog>
