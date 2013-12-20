@@ -27,7 +27,7 @@
 		<property name="dateVoided" type="java.util.Date" column="date_voided" length="19"/>
 		<property name="voidReason" type="java.lang.String" column="void_reason" length="255"/>
 		<property name="discontinuedReasonNonCoded" type="java.lang.String" column="discontinued_reason_non_coded" length="255"/>
-        <property name="orderNumber" type="string" column="order_number" length="50" not-null="true" />
+        <property name="orderNumber" type="string" column="order_number" length="50" not-null="true" access="field"/>
         <property name="commentToFulfiller" type="string" column="comment_to_fulfiller" length="1024" />
 
         <property name="urgency" column="urgency" length="50" not-null="true">

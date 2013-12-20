@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.impl;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -66,10 +67,17 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
 	public Order saveOrder(Order order) throws APIException {
-		if (order.getOrderId() == null && !StringUtils.hasText(order.getOrderNumber())) {
+		if (order.getOrderId() == null) {
 			//TODO call module registered order number generators 
 			//and if there is none, use the default below
-			order.setOrderNumber(getNewOrderNumber());
+			try {
+				Field field = Order.class.getDeclaredField("orderNumber");
+				field.setAccessible(true);
+				field.set(order, getNewOrderNumber());
+			}
+			catch (Exception e) {
+				throw new APIException("Failed to assign order number", e);
+			}
 		}
 		
 		return dao.saveOrder(order);
