@@ -20,6 +20,9 @@
   <concept concept_id="21" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:34:26.0" version="" changed_by="1" date_changed="2008-08-18 12:34:58.0" uuid="95312123-e0c2-466d-b6b1-cb6e990d0d65"/>
   <concept concept_id="22" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2008-08-18 12:34:42.0" version="" uuid="e10ffe54-5184-4efe-8960-cd565ec1cdf8"/>
   <concept concept_id="23" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="0f97e14e-cdc2-49ac-9255-b5126f8a5147"/>
+  <concept concept_id="50" retired="false" datatype_id="3" class_id="11" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="557b9699-68a3-11e3-bd76-0800271c1b75"/>
+  <concept concept_id="51" retired="false" datatype_id="3" class_id="11" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="5a2aa3db-68a3-11e3-bd76-0800271c1b75"/>
+  <concept concept_id="52" retired="false" datatype_id="3" class_id="11" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="19ee4170-68ab-11e3-bd76-0800271c1b75"/>
   <concept concept_id="88" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2004-01-01 00:00:00.0" version="" changed_by="1" date_changed="2008-08-15 14:04:20.0" uuid="15f83cd6-64e9-4e06-a5f9-364d3b14a43d"/>
   <concept concept_id="792" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2004-04-08 00:00:00.0" version="" changed_by="1" date_changed="2008-08-15 14:05:56.0" uuid="d144d24f-6913-4b63-9660-a9108c2bebef"/>
   <concept concept_id="5089" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="c607c80f-1ea9-4da3-bb88-6276ce8868dd"/>
@@ -139,6 +142,9 @@
   <concept_name concept_id="792" name="TRIOMUNE-30" locale="en" creator="1" date_created="2008-08-15 14:05:56.0" concept_name_id="2480" concept_name_type="" locale_preferred="0" voided="false" uuid="726f9e6d-bc7e-4a78-8741-c7d644d704cc"/>
   <concept_name concept_id="7" name="Y" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2481" concept_name_type="" locale_preferred="0" voided="false" uuid="0631be3b-e338-4505-a876-ef3310f65896"/>
   <concept_name concept_id="7" name="VOIDED" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2482" locale_preferred="0" voided="true" uuid="d84fb534-9f57-11e1-815b-00248140a5eb"/>
+  <concept_name concept_id="50" name="mg" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="6043" voided="0" uuid="860064b4-68a3-11e3-bd76-0800271c1b75" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"/>
+  <concept_name concept_id="51" name="tab (s)" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="6044" voided="0" uuid="8c51680c-68a3-11e3-bd76-0800271c1b75" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"/>
+  <concept_name concept_id="52" name="cm" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="6045" voided="0" uuid="ca9d5ea3-68b1-11e3-bd76-0800271c1b75" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"/>
   <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="9e9df183-2328-4117-acd8-fb9bf400911d"/>
   <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="57396ec9-fb90-44b2-b59a-21bc5631bf3d"/>
   <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="cb6bc7cf-d5d3-4d51-a05b-5ea656c7413a"/>
@@ -168,11 +174,11 @@
   <drug drug_id="2" concept_id="792" name="Triomune-30" combination="true" dose_strength="1.0" units="tab(s)" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="3cfcf118-931c-46f7-8ff6-7b876f0d4202"/>
   <drug drug_id="3" concept_id="88" name="Aspirin" combination="false" dose_strength="325.0" units="mg" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="05ec820a-d297-44e3-be6e-698531d9dd3f"/>
   <drug drug_id="11" concept_id="3" name="NYQUIL" combination="true" units="" creator="1" date_created="2008-08-15 15:34:03.0" retired="true" uuid="7e2323fa-0fa0-461f-9b59-6765997d849e"/>
-  <drug_order order_id="1" drug_inventory_id="3" dose="325.0" units="mg" frequency="1/day x 7 days/week" as_needed="false" dosing_type="SIMPLE"/>
-  <drug_order order_id="2" drug_inventory_id="2" dose="1.0" units="tab(s)" frequency="1/day x 7 days/week" as_needed="false" dosing_type="SIMPLE"/>
-  <drug_order order_id="3" drug_inventory_id="2" dose="2.0" units="tab(s)" frequency="1/day x 7 days/week" as_needed="false" dosing_type="SIMPLE"/>
-  <drug_order order_id="4" drug_inventory_id="3" dose="325.0" units="mg" frequency="1/day x 7 days/week" as_needed="false" dosing_type="SIMPLE"/>
-  <drug_order order_id="5" drug_inventory_id="3" dose="325.0" units="mg" frequency="1/day x 7 days/week" as_needed="false" dosing_type="SIMPLE"/>
+  <drug_order order_id="1" drug_inventory_id="3" dose="325.0" dose_units="50" frequency="1/day x 7 days/week" as_needed="false" dosing_type="SIMPLE"/>
+  <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" frequency="1/day x 7 days/week" as_needed="false" dosing_type="SIMPLE"/>
+  <drug_order order_id="3" drug_inventory_id="2" dose="2.0" dose_units="51" frequency="1/day x 7 days/week" as_needed="false" dosing_type="SIMPLE"/>
+  <drug_order order_id="4" drug_inventory_id="3" dose="325.0" dose_units="50" frequency="1/day x 7 days/week" as_needed="false" dosing_type="SIMPLE"/>
+  <drug_order order_id="5" drug_inventory_id="3" dose="325.0" dose_units="50" frequency="1/day x 7 days/week" as_needed="false" dosing_type="SIMPLE"/>
   <encounter_role encounter_role_id="1" name="Unknown" description="Unknown encounter role for legacy providers with no encounter role set" creator="1" retired="false" date_created="2011-08-18 14:00:00.0" uuid="a0b03050-c99b-11e0-9572-0800200c9a66" />
   <provider provider_id="1" person_id="1" identifier="Test" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c2299800-cca9-11e0-9572-0800200c9a66" />
   <encounter encounter_id="3" encounter_type="2" patient_id="7" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="6519d653-393b-4118-9c83-a3715b82d4ac"/>
