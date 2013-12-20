@@ -6702,21 +6702,28 @@
 		<dropColumn tableName="drug_order" columnName="equivalent_daily_dose" />
 	</changeSet>
 
-    <changeSet id="20131219-TRUNK-4167" author="banka">
+    <changeSet id="201312191200-TRUNK-4167" author="banka">
         <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="drug_order_dose_units"/></not>
+            <not><columnExists tableName="drug_order" columnName="dose_units"/></not>
         </preConditions>
         <comment>Adding dose_units column to drug_order table</comment>
         <addColumn tableName="drug_order">
             <column name="dose_units" type="int"/>
         </addColumn>
+    </changeSet>
+
+    <changeSet id="201312191300-TRUNK-4167" author="banka">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="drug_order_dose_units"/></not>
+        </preConditions>
+        <comment>Adding foreignKey constraint on dose_units</comment>
         <addForeignKeyConstraint baseTableName="drug_order" baseColumnNames="dose_units"
                                  constraintName="drug_order_dose_units"
                                  referencedTableName="concept"
                                  referencedColumnNames="conceptId"/>
     </changeSet>
 
-    <changeSet id="20131220-TRUNK-4167-1" author="banka">
+    <changeSet id="201312201200-TRUNK-4167" author="banka">
         <preConditions onFail="MARK_RAN">
             <not><sqlCheck expectedResult="0">select count(*) from drug_order;</sqlCheck></not>
         </preConditions>
@@ -6724,7 +6731,7 @@
         <customChange class="org.openmrs.util.databasechange.MigrateDrugOrderUnitsToCodedDoseUnitsChangeset" />
     </changeSet>
 
-    <changeSet id="20131220-TRUNK-4167-2" author="banka">
+    <changeSet id="201312201800-TRUNK-4167" author="banka">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="drug_order" columnName="units"/>
         </preConditions>

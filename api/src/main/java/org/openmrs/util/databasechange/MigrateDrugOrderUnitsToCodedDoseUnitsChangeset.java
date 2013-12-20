@@ -24,31 +24,46 @@ public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTas
 
         try {
             List<String> uniqueUnits = getUniqueUnits(connection);
-            for (String unit : uniqueUnits) {
-                    migrateUnitsToCodedValue(connection, unit);
-            }
+            migrateUnitsToCodedValue(connection, uniqueUnits);
         } catch (SQLException e) {
+            throw new CustomChangeException(e);
+        } catch (DatabaseException e) {
             throw new CustomChangeException(e);
         }
     }
 
-    private void migrateUnitsToCodedValue(JdbcConnection connection, String unit) throws CustomChangeException, SQLException {
-        Integer conceptIdForUnit = DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(), unit);
+    private void migrateUnitsToCodedValue(JdbcConnection connection, List<String> uniqueUnits) throws CustomChangeException, SQLException, DatabaseException {
         PreparedStatement updateDrugOrderStatement = null;
+        Boolean autoCommit = null;
         try {
+            autoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
             updateDrugOrderStatement = connection.prepareStatement("update drug_order set dose_units = ? where units = ?");
-            updateDrugOrderStatement.setInt(1, conceptIdForUnit);
-            updateDrugOrderStatement.setString(2, unit);
-            updateDrugOrderStatement.executeUpdate();
+            for (String unit : uniqueUnits) {
+                Integer conceptIdForUnit = DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(), unit);
+                updateDrugOrderStatement.setInt(1, conceptIdForUnit);
+                updateDrugOrderStatement.setString(2, unit);
+                updateDrugOrderStatement.executeUpdate();
+                updateDrugOrderStatement.clearParameters();
+            }
+            connection.commit();
         } catch (DatabaseException e) {
-            throw new CustomChangeException(e);
+            handleError(connection, e);
         } catch (SQLException e) {
-            throw new CustomChangeException(e);
+            handleError(connection, e);
         } finally {
+            if (autoCommit != null) {
+                connection.setAutoCommit(autoCommit);
+            }
             if(updateDrugOrderStatement != null) {
                 updateDrugOrderStatement.close();
             }
         }
+    }
+
+    private void handleError(JdbcConnection connection, Exception e) throws DatabaseException, CustomChangeException {
+        connection.rollback();
+        throw new CustomChangeException(e);
     }
 
     private List<String> getUniqueUnits(JdbcConnection connection) throws CustomChangeException, SQLException {
