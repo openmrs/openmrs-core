@@ -42,7 +42,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private Boolean asNeeded = false;
 	
-	private Integer quantity;
+	private Double quantity;
+	
+	private Concept quantityUnits;
 	
 	private Drug drug;
 	
@@ -55,6 +57,10 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	private String administrationInstructions;
 	
 	private String dosingInstructions;
+	
+	private Double duration;
+	
+	private Concept durationUnits;
 	
 	// Constructors
 	
@@ -86,9 +92,12 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.asNeeded = getAsNeeded();
 		target.asNeededCondition = getAsNeededCondition();
 		target.quantity = getQuantity();
+		target.quantityUnits = getQuantityUnits();
 		target.drug = getDrug();
 		target.dosingType = getDosingType();
 		target.dosingInstructions = getDosingInstructions();
+		target.duration = getDuration();
+		target.durationUnits = getDurationUnits();
 		return target;
 	}
 	
@@ -201,7 +210,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * 
 	 * @return quantity
 	 */
-	public Integer getQuantity() {
+	public Double getQuantity() {
 		return this.quantity;
 	}
 	
@@ -210,8 +219,24 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * 
 	 * @param quantity
 	 */
-	public void setQuantity(Integer quantity) {
+	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
+	}
+	
+	/**
+	 * @since 1.10
+	 * @return concept
+	 */
+	public Concept getQuantityUnits() {
+		return quantityUnits;
+	}
+	
+	/**
+	 * @since 1.10
+	 * @param quantityUnits
+	 */
+	public void setQuantityUnits(Concept quantityUnits) {
+		this.quantityUnits = quantityUnits;
 	}
 	
 	/**
@@ -334,6 +359,44 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public String getDosingInstructions() {
 		return this.dosingInstructions;
+	}
+	
+	/**
+	 * Gets the duration of a Drug Order
+	 * 
+	 * @since 1.10
+	 */
+	public Double getDuration() {
+		return duration;
+	}
+	
+	/**
+	 * Sets the duration of a Drug Order
+	 * 
+	 * @param duration to set
+	 * @since 1.10
+	 */
+	public void setDuration(Double duration) {
+		this.duration = duration;
+	}
+	
+	/**
+	 * Gets durationUnits of a Drug Order
+	 * 
+	 * @since 1.10
+	 */
+	public Concept getDurationUnits() {
+		return durationUnits;
+	}
+	
+	/**
+	 * Sets the durationUnits of a Drug Order
+	 * 
+	 * @param durationUnits
+	 * @since 1.10
+	 */
+	public void setDurationUnits(Concept durationUnits) {
+		this.durationUnits = durationUnits;
 	}
 	
 	public String toString() {

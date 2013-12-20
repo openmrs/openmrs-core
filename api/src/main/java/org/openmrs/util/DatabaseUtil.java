@@ -151,4 +151,59 @@ public class DatabaseUtil {
 		
 		return results;
 	}
+	
+	/**
+	 * Returns conceptId for the given units from OpenmrsConstants#GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
+	 * global property.
+	 *
+	 * @param connection
+	 * @param units
+	 * @return conceptId
+	 * @throws DAOException
+	 * @should return concept_id for drug_order_quantity_units
+	 * @should fail if units is not specified
+	 */
+	public static Integer getConceptIdForUnits(Connection connection, String units) throws DAOException {
+		PreparedStatement unitsToConceptsQuery;
+		try {
+			unitsToConceptsQuery = connection
+			        .prepareStatement("select property_value from global_property where property = ?");
+			unitsToConceptsQuery.setString(1, OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS);
+			ResultSet unitsToConceptsResult = unitsToConceptsQuery.executeQuery();
+			if (!unitsToConceptsResult.next()) {
+				throw new DAOException(
+				        OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
+				                + " global property must be specified before upgrading. Please refer to upgrade instructions for more details.");
+			}
+			
+			String unitsToConceptsGP = unitsToConceptsResult.getString(1);
+			String[] unitsToConcepts = unitsToConceptsGP.split(",");
+			for (String unitsToConcept : unitsToConcepts) {
+				if (unitsToConcept.startsWith(units)) {
+					String concept = unitsToConcept.substring(units.length() + 1);// '+ 1' stands for ':'
+					
+					if (concept.toLowerCase().equals("null")) {
+						return null;
+					}
+					
+					try {
+						return Integer.valueOf(concept);
+					}
+					catch (NumberFormatException e) {
+						throw new DAOException(OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
+						        + " global property contains invalid mapping from " + units + " to concept ID " + concept
+						        + ". ID must be an integer or null. Please refer to upgrade instructions for more details.",
+						        e);
+					}
+				}
+			}
+		}
+		catch (SQLException e) {
+			throw new DAOException(e);
+		}
+		
+		throw new DAOException(OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
+		        + " global property does not have mapping for " + units
+		        + ". Please refer to upgrade instructions for more details.");
+	}
 }

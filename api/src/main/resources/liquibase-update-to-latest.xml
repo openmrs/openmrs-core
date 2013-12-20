@@ -6539,10 +6539,12 @@
 	<changeSet id="201312171559-TRUNK-4159" author="k-joseph">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="order_frequency"/></not>
+			<not><foreignKeyConstraintExists foreignKeyName="order_frequency_concept_id_fk"/></not>
+			<not><foreignKeyConstraintExists foreignKeyName="order_frequency_creator_fk"/></not>
+			<not><foreignKeyConstraintExists foreignKeyName="order_frequency_retired_by_fk"/></not>
 		</preConditions>
 		
 		<comment>Create the order_frequency table</comment>
-		
 		<createTable tableName="order_frequency">
 			<column name="order_frequency_id" type="int">
 				<constraints primaryKey="true" nullable="false"/>
@@ -6558,16 +6560,19 @@
              <column name="date_retired" type="datetime"/>
              <column name="retire_reason" type="varchar(255)" />
              <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
-		</createTable>
+  		</createTable>
+  		
+		<comment>Adding foreign key for concept_id to order_frequency table</comment>
+  		<addForeignKeyConstraint constraintName="order_frequency_concept_id_fk" baseTableName="order_frequency" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
+		
+		<comment>Adding foreign key for creator to order_frequency table</comment>
+		<addForeignKeyConstraint constraintName="order_frequency_creator_fk" baseTableName="order_frequency" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+		
+		<comment>Adding foreign key for retired_by to order_frequency table</comment>
+		<addForeignKeyConstraint constraintName="order_frequency_retired_by_fk" baseTableName="order_frequency" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+  		
 	</changeSet>
 	
-	<changeSet id="201312181512-TRUNK-4159" author="k-joseph">
-		<comment>Adding 3 foreign key constraints (for concept_id,creator and retired_by) to order_frequency table</comment>
-		<addForeignKeyConstraint constraintName="order_frequency_concept_id_fk" baseTableName="order_frequency" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
-		<addForeignKeyConstraint constraintName="order_frequency_creator_fk" baseTableName="order_frequency" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="order_frequency_retired_by" baseTableName="order_frequency" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
-	</changeSet>
-
     <changeSet id="20131217-TRUNK-4157" author="banka">
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="drug_order" columnName="dosing_instructions"/></not>
@@ -6599,6 +6604,79 @@
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet id="201312111626-TRUNK-4169" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug_ingredient" columnName="quantity" />
+			</not>
+		</preConditions>
+		<comment>Adding quantity column to drug_ingredient table</comment>
+		<addColumn tableName="drug_ingredient">
+			<column name="quantity" type="double" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="201312111630-TRUNK-4169" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug_ingredient" columnName="units" />
+			</not>
+		</preConditions>
+		<comment>Adding units column to drug_ingredient table</comment>
+		<addColumn tableName="drug_ingredient">
+			<column name="units" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="drug_ingredient_units_fk"
+			baseTableName="drug_ingredient" baseColumnNames="units"
+			referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+
+    <changeSet id="201312162044-TRUNK-4126" author="k-joseph">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="drug_order" columnName="duration" />
+            </not>
+        </preConditions>
+        <comment>Adding duration column to drug_order table</comment>
+        <addColumn tableName="drug_order">
+            <column name="duration" type="double" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="201312162059-TRUNK-4126" author="k-joseph">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="drug_order" columnName="duration_units" />
+            </not>
+        </preConditions>
+        <comment>Adding duration_units column to drug_order table</comment>
+        <addColumn tableName="drug_order">
+            <column name="duration_units" type="int" />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="drug_order_duration_units_fk"
+                                 baseTableName="drug_order" baseColumnNames="duration_units"
+                                 referencedTableName="concept" referencedColumnNames="concept_id" />
+    </changeSet>
+
+	<changeSet id="201312161618-TRUNK-4129" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not><foreignKeyConstraintExists foreignKeyName="drug_order_quantity_units"/></not>
+		</preConditions>
+		<comment>Adding quantity_units column to drug_order table</comment>
+		<addColumn tableName="drug_order">
+			<column name="quantity_units" type="int" value="NULL"/>
+		</addColumn>
+		<addForeignKeyConstraint baseTableName="drug_order" baseColumnNames="quantity_units"
+								 constraintName="drug_order_quantity_units"
+								 referencedTableName="concept"
+								 referencedColumnNames="concept_id"/>
+	</changeSet>
+
+	<changeSet id="201312161713-TRUNK-4129" author="rkorytkowski">
+		<comment>Changing quantity column of drug_order to double</comment>
+		<modifyDataType tableName="drug_order" columnName="quantity" newDataType="double"/>
+	</changeSet>
 
 	<changeSet id="20131216-1636" author="gitahi">
 		<preConditions onFail="MARK_RAN">
