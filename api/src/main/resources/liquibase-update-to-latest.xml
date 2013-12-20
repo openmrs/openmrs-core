@@ -6678,4 +6678,18 @@
 		<modifyDataType tableName="drug_order" columnName="quantity" newDataType="double"/>
 	</changeSet>
 
+    <changeSet id="20131219-TRUNK-4167" author="banka">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="drug_order_dose_units"/></not>
+        </preConditions>
+        <comment>Adding dose_units column to drug_order table</comment>
+        <addColumn tableName="drug_order">
+            <column name="dose_units" type="int"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="drug_order" baseColumnNames="dose_units"
+                                 constraintName="drug_order_dose_units"
+                                 referencedTableName="concept"
+                                 referencedColumnNames="conceptId"/>
+    </changeSet>
+
 </databaseChangeLog>

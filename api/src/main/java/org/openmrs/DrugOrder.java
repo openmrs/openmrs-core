@@ -36,7 +36,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private Double equivalentDailyDose;
 	
-	private String units;
+	private Concept doseUnits;
 	
 	private String frequency;
 	
@@ -87,7 +87,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		super.copyHelper(target);
 		target.dose = getDose();
 		target.equivalentDailyDose = getEquivalentDailyDose();
-		target.units = getUnits();
+		target.doseUnits = getDoseUnits();
 		target.frequency = getFrequency();
 		target.asNeeded = getAsNeeded();
 		target.asNeededCondition = getAsNeededCondition();
@@ -108,21 +108,21 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	// Property accessors
 	
 	/**
-	 * Gets the units of this drug order
+	 * Gets the doseUnits of this drug order
 	 * 
-	 * @return units
+	 * @return doseUnits
 	 */
-	public String getUnits() {
-		return this.units;
+	public Concept getDoseUnits() {
+		return this.doseUnits;
 	}
 	
 	/**
-	 * Sets the units of this drug order
-	 * 
-	 * @param units
+	 * Sets the doseUnits of this drug order
+	 *
+	 * @param doseUnits
 	 */
-	public void setUnits(String units) {
-		this.units = units;
+	public void setDoseUnits(Concept doseUnits) {
+		this.doseUnits = doseUnits;
 	}
 	
 	/**
@@ -400,7 +400,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	public String toString() {
-		return "DrugOrder(" + getDose() + getUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]")
+		return "DrugOrder(" + getDose() + getDoseUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]")
 		        + " from " + getStartDate() + " to " + (getDiscontinued() ? getDiscontinuedDate() : getAutoExpireDate())
 		        + ")";
 	}
