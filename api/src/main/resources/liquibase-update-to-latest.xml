@@ -6677,5 +6677,29 @@
 		<comment>Changing quantity column of drug_order to double</comment>
 		<modifyDataType tableName="drug_order" columnName="quantity" newDataType="double"/>
 	</changeSet>
+	
+	<changeSet id="201312182214-TRUNK-4136" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug_order" columnName="route" />
+			</not>
+		</preConditions>
+		<comment>Adding route column to drug_order table</comment>
+		<addColumn tableName="drug_order">
+			<column name="route" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="drug_order_route_fk"
+			baseTableName="drug_order" baseColumnNames="route" referencedTableName="concept"
+			referencedColumnNames="concept_id" />
+	</changeSet>
+
+	<changeSet id="201312182223-TRUNK-4136" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="drug_order" columnName="equivalent_daily_dose" />
+		</preConditions>
+		<comment>Dropping equivalent_daily_dose column from drug_order table
+		</comment>
+		<dropColumn tableName="drug_order" columnName="equivalent_daily_dose" />
+	</changeSet>
 
 </databaseChangeLog>
