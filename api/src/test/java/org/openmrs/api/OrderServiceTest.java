@@ -27,6 +27,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -134,9 +135,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				public void run() {
 					try {
 						Context.openSession();
+						Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
 						uniqueOrderNumbers.add(((OrderNumberGenerator) Context.getOrderService()).getNewOrderNumber());
 					}
 					finally {
+						Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
 						Context.closeSession();
 					}
 				}
