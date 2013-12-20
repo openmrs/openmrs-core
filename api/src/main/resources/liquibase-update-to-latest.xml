@@ -6692,4 +6692,20 @@
                                  referencedColumnNames="conceptId"/>
     </changeSet>
 
+    <changeSet id="20131220-TRUNK-4167-1" author="banka">
+        <preConditions onFail="MARK_RAN">
+            <not><sqlCheck expectedResult="0">select count(*) from drug_order;</sqlCheck></not>
+        </preConditions>
+        <comment>Migrating old text units to coded dose_units in drug_order</comment>
+        <customChange class="org.openmrs.util.databasechange.MigrateDrugOrderUnitsToCodedDoseUnitsChangeset" />
+    </changeSet>
+
+    <changeSet id="20131220-TRUNK-4167-2" author="banka">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="drug_order" columnName="units"/>
+        </preConditions>
+        <comment>Deleting units column</comment>
+        <dropColumn tableName="drug_order" columnName="units"/>
+    </changeSet>
+
 </databaseChangeLog>
