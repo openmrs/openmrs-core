@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -491,7 +492,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(new Concept(1));
 		order.setPatient(new Patient(2));
-		order.setOrderNumber("ORD-1");
+		
+		Field field = Order.class.getDeclaredField("orderNumber");
+		field.setAccessible(true);
+		field.set(order, "ORD-1");
+		
 		order.setDateCreated(date);
 		order.setCreator(creator);
 		order.setCareSetting(CareSetting.OUTPATIENT);

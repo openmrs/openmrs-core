@@ -13,19 +13,15 @@
  */
 package org.openmrs.api;
 
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Concept;
-import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
-import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -177,4 +173,12 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
+	
+	/**
+	 * Gets the next available order number seed
+	 * 
+	 * @return the order number seed
+	 */
+	@Authorized(PrivilegeConstants.ADD_ORDERS)
+	public Long getNextOrderNumberSeed();
 }

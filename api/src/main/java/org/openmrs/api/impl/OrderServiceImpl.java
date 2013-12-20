@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.impl;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -21,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
-import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -30,8 +30,6 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.PrivilegeConstants;
 import org.springframework.util.StringUtils;
 
 /**
@@ -46,11 +44,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	protected OrderDAO dao;
-	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
 	
-	private static final String ORDER_NUMBER_START_VALUE = "1";
+	protected OrderDAO dao;
 	
 	public OrderServiceImpl() {
 	}
@@ -66,10 +62,17 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
 	public Order saveOrder(Order order) throws APIException {
-		if (order.getOrderId() == null && !StringUtils.hasText(order.getOrderNumber())) {
+		if (order.getOrderId() == null) {
 			//TODO call module registered order number generators 
 			//and if there is none, use the default below
-			order.setOrderNumber(getNewOrderNumber());
+			try {
+				Field field = Order.class.getDeclaredField("orderNumber");
+				field.setAccessible(true);
+				field.set(order, getNewOrderNumber());
+			}
+			catch (Exception e) {
+				throw new APIException("Failed to assign order number", e);
+			}
 		}
 		
 		return dao.saveOrder(order);
@@ -172,41 +175,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public synchronized String getNewOrderNumber() {
-		GlobalProperty globalProperty = Context.getAdministrationService().getGlobalPropertyObject(
-		    OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER);
-		if (globalProperty == null) {
-			globalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER,
-			        ORDER_NUMBER_START_VALUE, "The next order number available for assignment");
-		}
-		
-		String gpTextValue = globalProperty.getPropertyValue();
-		if (!StringUtils.hasText(gpTextValue)) {
-			throw new APIException("Invalid value for global property named: "
-			        + OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER);
-		}
-		
-		Long gpNumericValue = null;
-		try {
-			gpNumericValue = Long.parseLong(gpTextValue);
-		}
-		catch (NumberFormatException ex) {
-			throw new APIException("Invalid value for global property named: "
-			        + OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER);
-		}
-		
-		String orderNumber = ORDER_NUMBER_PREFIX + gpTextValue;
-		
-		globalProperty.setPropertyValue(String.valueOf(gpNumericValue + 1));
-		
-		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-		try {
-			Context.getAdministrationService().saveGlobalProperty(globalProperty);
-		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-		}
-		
-		return orderNumber;
+		return ORDER_NUMBER_PREFIX + Context.getOrderService().getNextOrderNumberSeed();
 	}
 	
 	/**
@@ -233,5 +202,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		patients.add(patient);
 		
 		return getOrders(Order.class, patients, concepts, null, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getNextOrderNumberSeed()
+	 */
+	@Override
+	public Long getNextOrderNumberSeed() {
+		return dao.getNextOrderNumberSeed();
 	}
 }

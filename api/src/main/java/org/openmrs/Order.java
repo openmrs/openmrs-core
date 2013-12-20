@@ -152,6 +152,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setCommentToFulfiller(getCommentToFulfiller());
 		target.previousOrder = getPreviousOrder();
 		target.action = getAction();
+		target.orderNumber = getOrderNumber();
 		return target;
 	}
 	
@@ -502,14 +503,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public String getOrderNumber() {
 		return orderNumber;
-	}
-	
-	/**
-	 * @param orderNumber the orderNumber to set
-	 * @since 1.10
-	 */
-	public void setOrderNumber(String orderNumber) {
-		this.orderNumber = orderNumber;
 	}
 	
 	/**

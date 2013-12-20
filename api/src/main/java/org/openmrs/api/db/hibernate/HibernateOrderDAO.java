@@ -15,18 +15,23 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.LockMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
@@ -42,6 +47,8 @@ import org.openmrs.api.db.OrderDAO;
 public class HibernateOrderDAO implements OrderDAO {
 	
 	protected static final Log log = LogFactory.getLog(HibernateOrderDAO.class);
+	
+	private static final String ORDER_NUMBER_START_VALUE = "1";
 	
 	/**
 	 * Hibernate session factory
@@ -142,5 +149,42 @@ public class HibernateOrderDAO implements OrderDAO {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Order.class, "order");
 		searchCriteria.add(Restrictions.eq("order.orderNumber", orderNumber));
 		return (Order) searchCriteria.uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getNextOrderNumberSeed()
+	 */
+	@Override
+	public Long getNextOrderNumberSeed() {
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
+		searchCriteria.add(Restrictions.eq("property", OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED));
+		searchCriteria.setLockMode(LockMode.PESSIMISTIC_WRITE);
+		
+		GlobalProperty globalProperty = (GlobalProperty) searchCriteria.uniqueResult();
+		if (globalProperty == null) {
+			globalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED,
+			        ORDER_NUMBER_START_VALUE, "The next order number available for assignment");
+		}
+		
+		String gpTextValue = globalProperty.getPropertyValue();
+		if (StringUtils.isBlank(gpTextValue)) {
+			throw new APIException("Invalid value for global property named: "
+			        + OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED);
+		}
+		
+		Long gpNumericValue = null;
+		try {
+			gpNumericValue = Long.parseLong(gpTextValue);
+		}
+		catch (NumberFormatException ex) {
+			throw new APIException("Invalid value for global property named: "
+			        + OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED);
+		}
+		
+		globalProperty.setPropertyValue(String.valueOf(gpNumericValue + 1));
+		
+		sessionFactory.getCurrentSession().save(globalProperty);
+		
+		return gpNumericValue;
 	}
 }

@@ -74,4 +74,11 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
 	 */
 	public Order getOrderByOrderNumber(String orderNumber);
+	
+	/**
+	 * Gets the next available order number seed
+	 * 
+	 * @return the order number seed
+	 */
+	public Long getNextOrderNumberSeed();
 }
