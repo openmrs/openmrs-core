@@ -1057,6 +1057,8 @@ table#obs td.obsValue {
 	
 	.listItemSelectAll { 
 		background-color: #EFEFEF;
+		float: none;
+		margin: 5px 0 0;
 	}
 	
 .instructions {

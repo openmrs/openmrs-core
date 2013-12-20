@@ -31,7 +31,6 @@
 	}
 		
 		$j(document).ready(function() {
-			$j("#privileges").prepend('<span class="listItem listItemSelectAll"><input type="checkbox" id="toggleSelectionCheckbox"><spring:message code="general.selectOrUnselectAll"/></span>');
 			$j("#toggleSelectionCheckbox").click(function(e) {
 				var state = $j(e.target).attr('checked') === undefined ? false : true;
 				$j("input[type='checkbox'][name='privileges']").each(function() {
@@ -116,6 +115,7 @@
 			<br/>
 			<c:if test="${role.role == superuser}"><openmrs:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
+				<div class="listItem listItemSelectAll"><input type="checkbox" id="toggleSelectionCheckbox"><spring:message code="general.selectOrUnselectAll"/></div>
 				<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" inheritedItems="${inheritedPrivileges}" />
 			</c:if>
 		</td>
