@@ -1443,11 +1443,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 		MatchMode matchMode = MatchMode.START;
 		if (searchOnPhrase)
 			matchMode = MatchMode.ANYWHERE;
-		if (!StringUtils.isBlank(drugName)) {
-			searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
+		if (!StringUtils.isBlank(drugName)) {			
 			if (searchDrugConceptNames) {
-				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
-				searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
+				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");				
+				searchCriteria.add(Restrictions.or(Restrictions.ilike("drug.name", drugName, matchMode),Restrictions.ilike("names.name", drugName, matchMode)));
+				searchCriteria.setProjection(Projections.distinct(Projections.property("drugId")));
+			}
+			else
+			{
+				searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
+				
 			}
 		}
 		
