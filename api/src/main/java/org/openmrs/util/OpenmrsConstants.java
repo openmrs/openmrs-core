@@ -14,6 +14,7 @@
 package org.openmrs.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -69,73 +71,61 @@ public final class OpenmrsConstants {
 	 * <i>major</i>.<i>minor</i>.<i>maintenance</i> <i>suffix</i> Build <i>buildNumber</i>
 	 */
 	public static final String OPENMRS_VERSION = THIS_PACKAGE.getSpecificationVendor() != null ? THIS_PACKAGE
-	        .getSpecificationVendor() : getBuildVersion();
+	        .getSpecificationVendor() : (getBuildVersion() != null ? getBuildVersion() : getVersion());
 	
 	/**
 	 * This holds the current openmrs code version in a short space-less string.<br/>
 	 * The format is:<br/>
-	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i>
+	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i
+	 * >
 	 */
 	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion() != null ? THIS_PACKAGE
-	        .getSpecificationVersion() : getBuildVersionShort();
+	        .getSpecificationVersion() : (getBuildVersionShort() != null ? getBuildVersionShort() : getVersion());
 	
 	/**
-	 * @return build  version with alpha characters  (eg:1.10.0 SNAPSHOT  Build 24858)  
-	 * defined in MANIFEST.MF(specification-Vendor)
+	 * @return build version in the long format (eg:1.10.0 SNAPSHOT Build 24858) 
 	 * 
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
 	private static String getBuildVersion() {
-		
-		Properties props = new Properties();
-		
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
-		
-		if (url == null) {
-			log.error("Unable to find MANIFEST.MF file built by maven");
-			return null;
-		}
-		
-		// Load the file
-		try {
-			props.load(url.openStream());
-			
-			return props.getProperty("Specification-Vendor");
-		}
-		catch (IOException e) {
-			log.error("Unable to get MANIFEST.MF file into manifest  object");
-		}
-		
-		return null;
+		return getOpenmrsProperty("openmrs.version.long");
 	}
 	
 	/**
-	 * @return build version without alpha characters (eg: 1.10.0.24858) 
-	 * defined in MANIFEST.MF (specification-Version)
+	 * @return build version in the short format (eg: 1.10.0-24858)
 	 * 
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
 	private static String getBuildVersionShort() {
-		
-		Properties props = new Properties();
-		
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
-		
-		if (url == null) {
-			log.error("Unable to find MANIFEST.MF file built by maven");
+		return getOpenmrsProperty("openmrs.version.short");
+	}
+	
+	private static String getVersion() {
+		return getOpenmrsProperty("openmrs.version");
+	}
+	
+	public static String getOpenmrsProperty(String property) {
+		InputStream file = OpenmrsConstants.class.getClassLoader().getResourceAsStream("org/openmrs/api/openmrs.properties");
+		if (file == null) {
+			log.error("Unable to find the openmrs.properties file");
 			return null;
 		}
 		
-		// Load the file
 		try {
-			props.load(url.openStream());
+			Properties props = new Properties();
+			props.load(file);
 			
-			return props.getProperty("Specification-Version");
+			file.close();
+			
+			return props.getProperty(property);
 		}
 		catch (IOException e) {
-			log.error("Unable to get MANIFEST.MF file into manifest object");
+			log.error("Unable to parse the openmrs.properties file", e);
+		}
+		finally {
+			IOUtils.closeQuietly(file);
 		}
 		
 		return null;
