@@ -230,7 +230,7 @@ public class ModuleUtil {
 	 * </ul>
 	 *
 	 * @param version openmrs version number to be compared
-	 * @param value value in the config file for required openmrs version
+	 * @param versionRange value in the config file for required openmrs version
 	 * @return true if the <code>version</code> is within the <code>value</code>
 	 * @should allow ranged required version
 	 * @should allow ranged required version with wild card
@@ -248,18 +248,64 @@ public class ModuleUtil {
 	 * @should return false when single entry required version beyond openmrs version
 	 * @should allow release type in the version
 	 */
-	public static boolean matchRequiredVersions(String version, String value) {
-		try {
-			/*
-			 * If "value" is not within range specified by "version", then a ModuleException will be thrown.
-			 * Otherwise, just return true at last.
-			 */
-			checkRequiredVersion(version, value);
-			return true;
+	public static boolean matchRequiredVersions(String version, String versionRange) {
+		if (versionRange != null && !versionRange.equals("")) {
+			String[] ranges = versionRange.split(",");
+			for (String range : ranges) {
+				// need to externalize this string
+				String separator = "-";
+				if (range.indexOf("*") > 0 || range.indexOf(separator) > 0 && (!isVersionWithQualifier(range))) {
+					// if it contains "*" or "-" then we must separate those two
+					// assume it's always going to be two part
+					// assign the upper and lower bound
+					// if there's no "-" to split lower and upper bound
+					// then assign the same value for the lower and upper
+					String lowerBound = range;
+					String upperBound = range;
+					
+					int indexOfSeparator = range.indexOf(separator);
+					while (indexOfSeparator > 0) {
+						lowerBound = range.substring(0, indexOfSeparator);
+						upperBound = range.substring(indexOfSeparator + 1);
+						if (upperBound.matches("^\\s?\\d+.*"))
+							break;
+						indexOfSeparator = range.indexOf(separator, indexOfSeparator + 1);
+					}
+					
+					// only preserve part of the string that match the following format:
+					// - xx.yy.*
+					// - xx.yy.zz*
+					lowerBound = StringUtils.remove(lowerBound, lowerBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
+					upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
+					
+					// if the lower contains "*" then change it to zero
+					if (lowerBound.indexOf("*") > 0)
+						lowerBound = lowerBound.replaceAll("\\*", "0");
+					
+					// if the upper contains "*" then change it to 999
+					// assuming 999 will be the max revision number for openmrs
+					if (upperBound.indexOf("*") > 0)
+						upperBound = upperBound.replaceAll("\\*", "999");
+					
+					int lowerReturn = compareVersion(version, lowerBound);
+					
+					int upperReturn = compareVersion(version, upperBound);
+					
+					if (lowerReturn < 0 || upperReturn > 0) {
+						log.debug("Version " + version + " is not between " + lowerBound + " and " + upperBound);
+					} else {
+						return true;
+					}
+				} else {
+					if (compareVersion(version, range) < 0) {
+						log.debug("Version " + version + " is below " + range);
+					} else {
+						return true;
+					}
+				}
+			}
 		}
-		catch (ModuleException e) {
-			return false;
-		}
+		return false;
 	}
 	
 	/**
@@ -277,7 +323,7 @@ public class ModuleUtil {
 	 * <br/>
 	 *
 	 * @param version openmrs version number to be compared
-	 * @param value value in the config file for required openmrs version
+	 * @param versionRange value in the config file for required openmrs version
 	 * @throws ModuleException if the <code>version</code> is not within the <code>value</code>
 	 * @should throw ModuleException if openmrs version beyond wild card range
 	 * @should throw ModuleException if required version beyond openmrs version
@@ -289,63 +335,11 @@ public class ModuleUtil {
 	 * @should handle SNAPSHOT versions
 	 * @should handle ALPHA versions
 	 */
-	public static void checkRequiredVersion(String version, String value) throws ModuleException {
-		// need to externalize this string
-		String separator = "-";
-		
-		if (value != null && !value.equals("")) {
-			if ((value.indexOf("*") > 0 || value.indexOf(separator) > 0) && (!isVersionWithQualifier(value))) {
-				// if it contains "*" or "-" then we must separate those two
-				// assume it's always going to be two part
-				// assign the upper and lower bound
-				// if there's no "-" to split lower and upper bound
-				// then assign the same value for the lower and upper
-				String lowerBound = value;
-				String upperBound = value;
-				
-				int indexOfSeparator = value.indexOf(separator);
-				while (indexOfSeparator > 0) {
-					lowerBound = value.substring(0, indexOfSeparator);
-					upperBound = value.substring(indexOfSeparator + 1);
-					if (upperBound.matches("^\\s?\\d+.*")) {
-						break;
-					}
-					indexOfSeparator = value.indexOf(separator, indexOfSeparator + 1);
-				}
-				
-				// only preserve part of the string that match the following format:
-				// - xx.yy.*
-				// - xx.yy.zz*
-				lowerBound = StringUtils.remove(lowerBound, lowerBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
-				upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
-				
-				// if the lower contains "*" then change it to zero
-				if (lowerBound.indexOf("*") > 0) {
-					lowerBound = lowerBound.replaceAll("\\*", "0");
-				}
-				
-				// if the upper contains "*" then change it to 999
-				// assuming 999 will be the max revision number for openmrs
-				if (upperBound.indexOf("*") > 0) {
-					upperBound = upperBound.replaceAll("\\*", "999");
-				}
-				
-				int lowerReturn = compareVersion(version, lowerBound);
-				
-				int upperReturn = compareVersion(version, upperBound);
-				
-				if (lowerReturn < 0 || upperReturn > 0) {
-					String ms = Context.getMessageSourceService().getMessage("Module.requireVersion.outOfBounds",
-					    new String[] { lowerBound, upperBound, version }, Context.getLocale());
-					throw new ModuleException(ms);
-				}
-			} else {
-				if (compareVersion(version, value) < 0) {
-					String ms = Context.getMessageSourceService().getMessage("Module.requireVersion.belowLowerBound",
-					    new String[] { value, version }, Context.getLocale());
-					throw new ModuleException(ms);
-				}
-			}
+	public static void checkRequiredVersion(String version, String versionRange) throws ModuleException {
+		if (!matchRequiredVersions(version, versionRange)) {
+			String ms = Context.getMessageSourceService().getMessage("Module.requireVersion.outOfBounds",
+			    new String[] { versionRange, version }, Context.getLocale());
+			throw new ModuleException(ms);
 		}
 	}
 	
