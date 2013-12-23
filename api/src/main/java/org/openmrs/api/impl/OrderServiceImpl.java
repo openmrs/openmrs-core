@@ -175,7 +175,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public synchronized String getNewOrderNumber() {
-		return ORDER_NUMBER_PREFIX + Context.getOrderService().getNextOrderNumberSeed();
+		return ORDER_NUMBER_PREFIX + Context.getOrderService().getNextOrderNumberSeedSequenceValue();
 	}
 	
 	/**
@@ -205,10 +205,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getNextOrderNumberSeed()
+	 * @see org.openmrs.api.OrderService#getNextOrderNumberSeedSequenceValue()
 	 */
 	@Override
-	public Long getNextOrderNumberSeed() {
-		return dao.getNextOrderNumberSeed();
+	public Long getNextOrderNumberSeedSequenceValue() {
+		return dao.getNextOrderNumberSeedSequenceValue();
 	}
 }

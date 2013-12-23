@@ -125,6 +125,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should always return unique orderNumbers when called multiple times without saving orders", method = "getNewOrderNumber()")
 	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
 	        throws Exception {
+		
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
+		
 		int N = 50;
 		final Set<String> uniqueOrderNumbers = new HashSet<String>(50);
 		List<Thread> threads = new ArrayList<Thread>();

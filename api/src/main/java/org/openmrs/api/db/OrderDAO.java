@@ -80,5 +80,5 @@ public interface OrderDAO {
 	 * 
 	 * @return the order number seed
 	 */
-	public Long getNextOrderNumberSeed();
+	public Long getNextOrderNumberSeedSequenceValue();
 }

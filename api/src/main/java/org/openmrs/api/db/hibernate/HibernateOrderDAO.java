@@ -48,8 +48,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	
 	protected static final Log log = LogFactory.getLog(HibernateOrderDAO.class);
 	
-	private static final String ORDER_NUMBER_START_VALUE = "1";
-	
 	/**
 	 * Hibernate session factory
 	 */
@@ -152,18 +150,18 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getNextOrderNumberSeed()
+	 * @see org.openmrs.api.db.OrderDAO#getNextOrderNumberSeedSequenceValue()
 	 */
 	@Override
-	public Long getNextOrderNumberSeed() {
+	public Long getNextOrderNumberSeedSequenceValue() {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
 		searchCriteria.add(Restrictions.eq("property", OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED));
 		searchCriteria.setLockMode(LockMode.PESSIMISTIC_WRITE);
 		
 		GlobalProperty globalProperty = (GlobalProperty) searchCriteria.uniqueResult();
 		if (globalProperty == null) {
-			globalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED,
-			        ORDER_NUMBER_START_VALUE, "The next order number available for assignment");
+			throw new APIException("Missing global property named: "
+			        + OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED);
 		}
 		
 		String gpTextValue = globalProperty.getPropertyValue();

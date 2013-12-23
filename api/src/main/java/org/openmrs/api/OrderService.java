@@ -180,5 +180,5 @@ public interface OrderService extends OpenmrsService {
 	 * @return the order number seed
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
-	public Long getNextOrderNumberSeed();
+	public Long getNextOrderNumberSeedSequenceValue();
 }
