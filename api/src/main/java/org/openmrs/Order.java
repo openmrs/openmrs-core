@@ -21,12 +21,12 @@ import java.util.Date;
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on
  * "since the beginning of time" Otherwise the order starts on startDate If discontinued is non-null
- * and true, then the following fields should be ignored: autoExpireDate if discontinuedDate is null
+ * and true, then the following fields should be ignored: autoExpireDate if dateStopped is null
  * then the order was discontinued "the instant after it began" otherwise it was given from its
- * starting date until discontinuedDate Otherwise (discontinued is null or false) if autoExpireDate
+ * starting date until dateStopped Otherwise (discontinued is null or false) if autoExpireDate
  * is null, the order is set to go forever otherwise the order goes until autoExpireDate the
- * following fields should be ignored: discontinuedBy discontinuedDate discontinuedReason It is an
- * error to have discontinued be true and have discontinuedDate be after autoExpireDate. However
+ * following fields should be ignored: discontinuedBy dateStopped discontinuedReason It is an
+ * error to have discontinued be true and have dateStopped be after autoExpireDate. However
  * this is not checked for in the database or the application.
  * 
  * @version 1.0
@@ -69,11 +69,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private User orderer;
 	
-	private Boolean discontinued = false;
-	
-	private User discontinuedBy;
-	
-	private Date discontinuedDate;
+	private Date dateStopped;
 	
 	private Concept discontinuedReason;
 	
@@ -139,10 +135,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setOrderer(getOrderer());
 		target.setCreator(getCreator());
 		target.setDateCreated(getDateCreated());
-		target.setDiscontinued(getDiscontinued());
-		target.setDiscontinuedDate(getDiscontinuedDate());
+		target.setDateStopped(getDateStopped());
 		target.setDiscontinuedReason(getDiscontinuedReason());
-		target.setDiscontinuedBy(getDiscontinuedBy());
 		target.setAccessionNumber(getAccessionNumber());
 		target.setVoided(isVoided());
 		target.setVoidedBy(getVoidedBy());
@@ -194,46 +188,19 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the discontinued status.
-	 * @should get discontinued property
+	 * @return Returns the dateStopped.
+     * @since 1.10
 	 */
-	public Boolean getDiscontinued() {
-		return discontinued;
+	public Date getDateStopped() {
+		return dateStopped;
 	}
 	
 	/**
-	 * @param discontinued The discontinued status to set.
+	 * @param dateStopped The dateStopped to set.
+     * @since 1.10
 	 */
-	public void setDiscontinued(Boolean discontinued) {
-		this.discontinued = discontinued;
-	}
-	
-	/**
-	 * @return Returns the discontinuedBy.
-	 */
-	public User getDiscontinuedBy() {
-		return discontinuedBy;
-	}
-	
-	/**
-	 * @param discontinuedBy The discontinuedBy to set.
-	 */
-	public void setDiscontinuedBy(User discontinuedBy) {
-		this.discontinuedBy = discontinuedBy;
-	}
-	
-	/**
-	 * @return Returns the discontinuedDate.
-	 */
-	public Date getDiscontinuedDate() {
-		return discontinuedDate;
-	}
-	
-	/**
-	 * @param discontinuedDate The discontinuedDate to set.
-	 */
-	public void setDiscontinuedDate(Date discontinuedDate) {
-		this.discontinuedDate = discontinuedDate;
+	public void setDateStopped(Date dateStopped) {
+		this.dateStopped = dateStopped;
 	}
 	
 	/**
@@ -382,11 +349,11 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 			return false;
 		}
 		
-		if (discontinued != null && discontinued) {
-			if (discontinuedDate == null)
+		if (isDiscontinuedRightNow()) {
+			if (dateStopped == null)
 				return checkDate.equals(startDate);
 			else
-				return checkDate.before(discontinuedDate);
+				return checkDate.before(dateStopped);
 			
 		} else {
 			if (autoExpireDate == null)
@@ -425,19 +392,19 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		if (checkDate == null)
 			checkDate = new Date();
 		
-		if (discontinued == null || !discontinued)
-			return false;
-		
 		if (startDate == null || checkDate.before(startDate)) {
 			return false;
 		}
-		if (discontinuedDate != null && discontinuedDate.after(checkDate)) {
+		if (dateStopped != null && dateStopped.after(checkDate)) {
+			return false;
+		}
+		if (dateStopped == null) {
 			return false;
 		}
 		
 		// guess we can't assume this has been filled correctly?
 		/*
-		 * if (discontinuedDate == null) { return false; }
+		 * if (dateStopped == null) { return false; }
 		 */
 		return true;
 	}
