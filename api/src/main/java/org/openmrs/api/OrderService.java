@@ -48,7 +48,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should not save order if order doesnt validate
 	 * @should save discontinued reason non coded
 	 */
-	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order) throws APIException;
 	
 	/**
@@ -115,7 +115,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Gets the order with the associated order id
-	 *
+	 * 
 	 * @param <Ord> An Order type. Currently only org.openmrs.Order or org.openmrs.DrugOrder
 	 * @param orderId the primary key of the Order
 	 * @param orderClassType The class of Order to fetch (Currently only org.openmrs.Order or
@@ -140,7 +140,7 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters);
+	                                               List<Concept> concepts, List<User> orderers, List<Encounter> encounters);
 	
 	/**
 	 * Unvoid order record. Reverse a previous call to {@link #voidOrder(Order, String)}
@@ -163,7 +163,8 @@ public interface OrderService extends OpenmrsService {
 	public Order getOrderByOrderNumber(String orderNumber);
 	
 	/**
-	 * Gets all Order objects that use this Concept for a given patient.
+	 * Gets all Order objects that use this Concept for a given patient. Orders will be returned in
+	 * the order in which they occurred, i.e. sorted by dateCreated starting with the latest
 	 * 
 	 * @param patient the patient.
 	 * @param concept the concept.
