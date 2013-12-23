@@ -188,7 +188,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Concept concept = Context.getConceptService().getConcept(88);
 		Patient patient = Context.getPatientService().getPatient(2);
 		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
-
+		
 		//They must be two orders and sorted by dateCreated starting with the latest
 		Assert.assertEquals(2, orders.size());
 		Assert.assertTrue(orders.get(0).getOrderId() == 5);

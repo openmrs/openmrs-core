@@ -48,7 +48,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should not save order if order doesnt validate
 	 * @should save discontinued reason non coded
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order) throws APIException;
 	
 	/**
@@ -140,7 +140,7 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	                                               List<Concept> concepts, List<User> orderers, List<Encounter> encounters);
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters);
 	
 	/**
 	 * Unvoid order record. Reverse a previous call to {@link #voidOrder(Order, String)}
