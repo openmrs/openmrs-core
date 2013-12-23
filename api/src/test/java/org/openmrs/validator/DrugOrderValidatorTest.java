@@ -88,7 +88,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(cal.getTime());
-		order.setDiscontinuedDate(new Date());
+		order.setDateStopped(new Date());
 		order.setAutoExpireDate(new Date());
 		order.setDrug(Context.getConceptService().getDrug(3));
 		

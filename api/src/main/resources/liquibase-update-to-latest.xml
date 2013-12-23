@@ -6764,6 +6764,38 @@
 		<addColumn tableName="test_order">
 			<column name="number_of_repeats" type="int" />
 		</addColumn>
+    </changeSet>
+
+    <changeSet id="201312201640-TRUNK-4138" author="banka">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="date_stopped"/></not>
+        </preConditions>
+        <comment>Rename orders.discontinued_date to date_stopped</comment>
+        <renameColumn tableName="orders" oldColumnName="discontinued_date" newColumnName="date_stopped" columnDataType="datetime"/>
+    </changeSet>
+
+	<changeSet id="201312201523-TRUNK-4138" author="banka">
+        <preConditions onFail="HALT">
+            <sqlCheck expectedResult="0">select count(*) from orders where discontinued = true and date_stopped is null</sqlCheck>
+        </preConditions>
+        <comment>Creating Discontinue Order for discontinued orders</comment>
+        <customChange class="org.openmrs.util.databasechange.CreateDiscontinueOrders"/>
+	</changeSet>
+
+	<changeSet id="201312201650-TRUNK-4138" author="banka">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="discontinued"/>
+        </preConditions>
+        <comment>Removing discontinued from orders</comment>
+        <dropColumn tableName="orders" columnName="discontinued" />
+	</changeSet>
+
+	<changeSet id="201312201700-TRUNK-4138" author="banka">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="discontinued_by"/>
+        </preConditions>
+        <comment>Removing discontinued_by from orders</comment>
+        <dropColumn tableName="orders" columnName="discontinued_by" />
 	</changeSet>
 
 </databaseChangeLog>

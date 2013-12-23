@@ -13,33 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.CacheMode;
@@ -88,6 +61,32 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Hibernate specific implementation of the PatientSetDAO. <br/>
@@ -387,11 +386,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 						if (order.getOrderer() != null) {
 							orderNode.setAttribute("orderer", formatUser(order.getOrderer()));
 						}
-						if (order.getDiscontinued() != null) {
-							orderNode.setAttribute("discontinued", order.getDiscontinued().toString());
-						}
-						if (order.getDiscontinuedDate() != null) {
-							orderNode.setAttribute("discontinued_date", df.format(order.getDiscontinuedDate()));
+						if (order.getDateStopped() != null) {
+							orderNode.setAttribute("date_stopped", df.format(order.getDateStopped()));
 						}
 						if (order.getDiscontinuedReason() != null) {
 							orderNode.setAttribute("discontinued_reason", order.getDiscontinuedReason().getName(locale,
@@ -1720,7 +1716,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			whereClauses.add("o.start_date <= :toDate");
 		if (fromDate != null) {
 			whereClauses.add("(o.auto_expire_date is null or o.auto_expire_date > :fromDate)");
-			whereClauses.add("(o.discontinued_date is null or o.discontinued_date > :fromDate)");
+			whereClauses.add("(o.date_stopped is null or o.date_stopped > :fromDate)");
 		}
 		
 		String sql = "select o.patient_id, d.drug_inventory_id " + "from orders o "
@@ -1846,9 +1842,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			criteria.add(Restrictions.in("concept", drugConcepts));
 		criteria.add(Restrictions.eq("voided", false));
 		criteria.add(Restrictions.le("startDate", now));
-		criteria.add(Restrictions.or(Restrictions.and(Restrictions.eq("discontinued", false), Restrictions.or(Restrictions
-		        .isNull("autoExpireDate"), Restrictions.gt("autoExpireDate", now))), Restrictions.and(Restrictions.eq(
-		    "discontinued", true), Restrictions.gt("discontinuedDate", now))));
+		criteria.add(Restrictions.and(Restrictions.or(Restrictions.isNull("autoExpireDate"), Restrictions.gt(
+		    "autoExpireDate", now)), Restrictions
+		        .or(Restrictions.isNull("dateStopped"), Restrictions.gt("dateStopped", now))));
 		criteria.addOrder(org.hibernate.criterion.Order.asc("startDate"));
 		log.debug("criteria: " + criteria);
 		List<DrugOrder> temp = criteria.list();
@@ -2011,15 +2007,14 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (discontinuedReason != null && discontinuedReason.size() > 0)
 			sb.append(" and discontinuedReason.id in (:discontinuedReasonIdList) ");
 		if (discontinued != null) {
-			sb.append(" and discontinued = :discontinued ");
 			if (discontinued == true) {
 				if (stopDateFrom != null && stopDateTo != null) {
-					sb.append(" and discontinuedDate between :stopDateFrom and :stopDateTo ");
+					sb.append(" and dateStopped between :stopDateFrom and :stopDateTo ");
 				} else {
 					if (stopDateFrom != null)
-						sb.append(" and discontinuedDate >= :stopDateFrom ");
+						sb.append(" and dateStopped >= :stopDateFrom ");
 					if (stopDateTo != null)
-						sb.append(" and discontinuedDate <= :stopDateTo ");
+						sb.append(" and dateStopped <= :stopDateTo ");
 				}
 			} else { // discontinued == false
 				if (stopDateFrom != null && stopDateTo != null) {
@@ -2033,12 +2028,12 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 		} else { // discontinued == null, so we need either
 			if (stopDateFrom != null && stopDateTo != null) {
-				sb.append(" and coalesce(discontinuedDate, autoExpireDate) between :stopDateFrom and :stopDateTo ");
+				sb.append(" and coalesce(dateStopped, autoExpireDate) between :stopDateFrom and :stopDateTo ");
 			} else {
 				if (stopDateFrom != null)
-					sb.append(" and coalesce(discontinuedDate, autoExpireDate) >= :stopDateFrom ");
+					sb.append(" and coalesce(dateStopped, autoExpireDate) >= :stopDateFrom ");
 				if (stopDateTo != null)
-					sb.append(" and coalesce(discontinuedDate, autoExpireDate) <= :stopDateTo ");
+					sb.append(" and coalesce(dateStopped, autoExpireDate) <= :stopDateTo ");
 			}
 		}
 		log.debug("sql = " + sb);
