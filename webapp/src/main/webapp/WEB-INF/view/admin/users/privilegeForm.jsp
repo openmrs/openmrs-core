@@ -8,7 +8,7 @@
 <h2><openmrs:message code="Privilege.manage.title"/></h2>	
 
 <spring:hasBindErrors name="privilege">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 

@@ -56,7 +56,7 @@
 				<spring:bind path="conceptProposal.obsConcept">
 					<c:choose>
 						<c:when test="${conceptProposal.obsConcept != null}">
-							<div id="conceptName">${conceptName}</div>
+							<div id="conceptName"><c:out value="${conceptName}" /></div>
 						</c:when>
 						<c:otherwise>
 							<div dojoType="ConceptSearch" widgetId="cSearch" showVerboseListing="true"></div>
@@ -64,7 +64,7 @@
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</c:otherwise>
 					</c:choose>
-					<div class="description" style="clear: left;" id="conceptDescription">${conceptName.description}</div>
+					<div class="description" style="clear: left;" id="conceptDescription"><c:out value="${conceptName.description}" /></div>
 				</spring:bind>
 			</td>
 		</tr>

@@ -22,7 +22,7 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.visits.visitForm.belowTitle" type="html" parameters="visitTypeId=${visitType.visitTypeId}" />
 
 <spring:hasBindErrors name="visitType">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">

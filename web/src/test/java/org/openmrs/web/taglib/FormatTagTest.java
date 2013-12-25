@@ -20,6 +20,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.hamcrest.Matchers;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
@@ -74,6 +75,34 @@ public class FormatTagTest extends BaseContextSensitiveTest {
 		StringBuilder sb = new StringBuilder();
 		format.printConcept(sb, concept);
 		Assert.assertEquals(expected, sb.toString());
+	}
+	
+	/**
+	 * @see FormatTag#printConcept(StringBuilder,Concept)
+	 * @verifies escape html tags
+	 */
+	@Test
+	public void printConcept_shouldEscapeHtmlTags() throws Exception {
+		ConceptService service = Context.getConceptService();
+		Locale locale = Context.getLocale();
+		ConceptNameTag tag = service.getConceptNameTag(5);
+		ConceptNameTag anotherTag = service.getConceptNameTag(6);
+		Context.flushSession();
+		
+		Concept c = new Concept();
+		c.addName(buildName("English fully\"><script>alert('xss possible!')</script> specified", locale, true,
+		    ConceptNameType.FULLY_SPECIFIED, null));
+		c.setDatatype(service.getConceptDatatype(1));
+		c.setConceptClass(service.getConceptClass(1));
+		
+		Context.getConceptService().saveConcept(c);
+		FormatTag format = new FormatTag();
+		format.setWithConceptNameType(ConceptNameType.FULLY_SPECIFIED.toString());
+		format.setWithConceptNameTag(null);
+		StringBuilder sb = new StringBuilder();
+		format.printConcept(sb, c);
+		
+		Assert.assertThat(sb.toString(), Matchers.not(Matchers.containsString("<script>")));
 	}
 	
 	/**

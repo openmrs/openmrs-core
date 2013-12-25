@@ -212,7 +212,7 @@
 
 	<div id="buttonsAtBottom">
 	 <br/>
-	 <openmrs:message code="general.changes.toSave"/>
+	 <openmrs:message htmlEscape="false" code="general.changes.toSave"/>
 	 <br/>
 	 <br/>
 		&nbsp;&nbsp;

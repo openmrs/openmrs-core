@@ -221,7 +221,7 @@
 <openmrs:globalProperty key="use_patient_attribute.mothersName" defaultValue="false" var="showMothersName"/>
 
 <spring:hasBindErrors name="patientModel">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
 			<openmrs:message code="${error.code}" text="${error.code}" arguments="${error.arguments}"/><br/><!-- ${fn:replace(error, '--', '\\-\\-')} -->
@@ -336,7 +336,7 @@
 							<option value=""></option>
 							<openmrs:forEachRecord name="patientIdentifierType">
 							<option value="${record.patientIdentifierTypeId}">
-								${record.name}
+                                <c:out value="${record.name}" />
 							</option>
 							</openmrs:forEachRecord>
 						</select>						
@@ -346,7 +346,7 @@
 							<option value=""></option>
 							<openmrs:forEachRecord name="location">
 								<option value="${record.locationId}"<c:if test="${identifierLocationUsed && record == defaultLocation}"> selected="selected"</c:if>>
-									${record.name}
+                                    <c:out value="${record.name}" />
 								</option>
 							</openmrs:forEachRecord>
 						</select>

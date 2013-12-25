@@ -50,7 +50,7 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationAttributeType.belowTitle" type="html" parameters="id=${ attributeType.id }" />
 
 <spring:hasBindErrors name="attributeType">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">

@@ -70,7 +70,7 @@
 		</style>
 		
 		<h2><openmrs:message code="Person.search.similarPerson"/></h2>
-		<b id="similarPeopleInstructions"><openmrs:message code="Person.search.similarPersonInstructions"/></b>
+		<b id="similarPeopleInstructions"><openmrs:message htmlEscape="false" code="Person.search.similarPersonInstructions"/></b>
 		
 		<br/><br/>
 		

@@ -217,7 +217,7 @@
 <h2><openmrs:message code="Obs.title"/></h2>
 
 <spring:hasBindErrors name="obs">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.globalErrors}" var="error">
 			<openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/><br/><!-- ${error} -->

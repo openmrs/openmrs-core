@@ -58,6 +58,7 @@ import org.openmrs.customdatatype.DownloadableDatatypeHandler;
 import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler;
+import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.JavaScriptUtils;
 
 /**
@@ -393,6 +394,7 @@ public class FormatTag extends TagSupport {
 	 * @param sb
 	 * @param concept
 	 * @should print the name with the correct name and type
+	 * @should escape html tags
 	 */
 	protected void printConcept(StringBuilder sb, Concept concept) {
 		Locale loc = Context.getLocale();
@@ -410,17 +412,17 @@ public class FormatTag extends TagSupport {
 			
 			ConceptName name = concept.getName(loc, lookForNameType, lookForNameTag);
 			if (name != null) {
-				sb.append(applyConversion(name.getName()));
+				sb.append(applyConversion(HtmlUtils.htmlEscape(name.getName())));
 				return;
 			}
 		}
 		
 		ConceptName name = concept.getPreferredName(loc);
 		if (name != null) {
-			sb.append(applyConversion(name.getName()));
+			sb.append(applyConversion(HtmlUtils.htmlEscape(name.getName())));
 			return;
 		}
-		sb.append(applyConversion(concept.getDisplayString()));
+		sb.append(applyConversion(HtmlUtils.htmlEscape(concept.getDisplayString())));
 	}
 	
 	/**

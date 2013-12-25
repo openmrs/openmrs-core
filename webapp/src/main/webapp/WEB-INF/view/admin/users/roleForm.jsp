@@ -34,7 +34,7 @@
 <h2><openmrs:message code="Role.manage.title"/></h2>	
 
 <spring:hasBindErrors name="role">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
 			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
@@ -65,7 +65,7 @@
 	</tr>
 	<c:if test="${fn:length(inheritingRoles) > 0}">
 		<tr>
-			<th colspan="2"><openmrs:message code="Role.inheritingRoles.description"/></th>
+			<th colspan="2"><openmrs:message htmlEscape="false" code="Role.inheritingRoles.description"/></th>
 		</tr>
 		<tr>
 			<th></th>
@@ -87,7 +87,7 @@
 	<tr>
 		<th></th>
 		<td>
-			<i><openmrs:message code="Role.inheritedRoles.description"/></i>
+			<i><openmrs:message htmlEscape="false" code="Role.inheritedRoles.description"/></i>
 			<br/>
 			<c:if test="${role.role == superuser}"><openmrs:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">

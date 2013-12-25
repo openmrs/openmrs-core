@@ -46,6 +46,11 @@
         <param-value>60000</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>defaultHtmlEscape</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
     <servlet>
 		<servlet-name>showGraphServlet</servlet-name>
 		<servlet-class>org.openmrs.web.servlet.ShowGraphServlet</servlet-class>

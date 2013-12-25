@@ -34,7 +34,7 @@ function toggleProviderDetails(){
 <h2><openmrs:message code="Provider.manage.title"/></h2>
 
 <spring:hasBindErrors name="provider">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 

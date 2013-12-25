@@ -22,7 +22,7 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.hl7.Hl7SourceForm.belowTitle" type="html" parameters="id=${hl7Source.id}" />
 
 <spring:hasBindErrors name="hl7Source">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">

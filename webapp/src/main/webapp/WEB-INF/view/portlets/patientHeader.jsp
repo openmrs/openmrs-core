@@ -152,8 +152,8 @@
 							value=",${patientState.state.programWorkflow.programWorkflowId}," />
 						<c:if test="${ fn:contains(workflowsToShow, temp) }">
 							<td class="programEnrollmentBarData">|</td>
-							<td class="patientStateProgramWorkflowNameData">${patientState.state.programWorkflow.concept.name}:</td>
-							<th class="patientStateConceptNameHeader">${patientState.state.concept.name}</th>
+							<td class="patientStateProgramWorkflowNameData"><c:out value="${patientState.state.programWorkflow.concept.name}" />:</td>
+							<th class="patientStateConceptNameHeader"><c:out value="${patientState.state.concept.name}" /></th>
 						</c:if>
 					</c:forEach>
 				</tr>
@@ -194,8 +194,8 @@
 				code="Patient.regimen" />: <span id="patientHeaderRegimen">
 				<c:forEach items="${model.currentDrugOrders}" var="drugOrder"
 					varStatus="drugOrderStatus">
-					<c:if test="${!empty drugOrder.drug}">${drugOrder.drug.name}</c:if>
-					<c:if test="${empty drugOrder.drug}">${drugOrder.concept.name.name}</c:if>
+					<c:if test="${!empty drugOrder.drug}"><c:out value="${drugOrder.drug.name}" /></c:if>
+					<c:if test="${empty drugOrder.drug}"><c:out value="${drugOrder.concept.name.name}" /></c:if>
 					<c:if test="${!drugOrderStatus.last}">, </c:if>
 				</c:forEach>
 		</span></td>
@@ -212,7 +212,7 @@
 					<th><c:forEach
 							items='${openmrs:sort(model.patientEncounters, "encounterDatetime", true)}'
 							var="lastEncounter" varStatus="lastEncounterStatus" end="0">
-								${lastEncounter.encounterType.name} @ ${lastEncounter.location.name}, <openmrs:formatDate
+								<c:out value="${lastEncounter.encounterType.name}" /> @ <c:out value="${lastEncounter.location.name}" />, <openmrs:formatDate
 								date="${lastEncounter.encounterDatetime}" type="medium" />
 						</c:forEach> <c:if test="${fn:length(model.patientEncounters) == 0}">
 							<openmrs:message code="Encounter.no.previous" />
