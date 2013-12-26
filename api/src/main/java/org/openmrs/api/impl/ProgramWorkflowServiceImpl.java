@@ -187,10 +187,17 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
+	 * @deprecated
 	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
 	public Program retireProgram(Program program) throws APIException {
-		program.setRetired(true);
+		return retireProgram(program, null);
+	}
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
+	 */
+	public Program retireProgram(Program program,String reason) throws APIException {
+		//program.setRetired(true); - Note the BaseRetireHandler aspect is already setting the retired flag and reason
 		for (ProgramWorkflow workflow : program.getWorkflows()) {
 			workflow.setRetired(true);
 			for (ProgramWorkflowState state : workflow.getStates()) {
@@ -203,7 +210,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
-	public Program unRetireProgram(Program program) throws APIException {
+	public Program unretireProgram(Program program) throws APIException {
 		Date lastModifiedDate = program.getDateChanged();
 		program.setRetired(false);
 		for (ProgramWorkflow workflow : program.getAllWorkflows()) {
