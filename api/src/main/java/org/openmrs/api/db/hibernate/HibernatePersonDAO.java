@@ -25,9 +25,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
@@ -53,7 +51,7 @@ import org.openmrs.util.OpenmrsConstants;
  *   PersonService ps = Context.getPersonService();
  *   ps.getPeople("name", false);
  * </code>
- * 
+ *
  * @see org.openmrs.api.db.PersonDAO
  * @see org.openmrs.api.PersonService
  * @see org.openmrs.api.context.Context
@@ -69,7 +67,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -171,8 +169,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		} else {
 			
 			// This is simply an alternative method of name matching which scales better
-			// for large names, although it is hard to imagine getting names with more than 
-			// six or so tokens.  This can be easily updated to attain more desirable 
+			// for large names, although it is hard to imagine getting names with more than
+			// six or so tokens.  This can be easily updated to attain more desirable
 			// results; it is just a working alternative to throwing an exception.
 			
 			q += "(";
@@ -304,14 +302,15 @@ public class HibernatePersonDAO implements PersonDAO {
 		if (searchString == null)
 			return new ArrayList<Person>();
 		
+		PersonSearchCriteria personSearchCriteria = new PersonSearchCriteria();
+		
 		searchString = searchString.replace(", ", " ");
 		String[] values = searchString.split(" ");
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
 		
-		criteria.createAlias("names", "name", CriteriaSpecification.LEFT_JOIN);
-		criteria.createAlias("attributes", "attribute", CriteriaSpecification.LEFT_JOIN);
-		criteria.createAlias("attribute.attributeType", "attributeType", CriteriaSpecification.LEFT_JOIN);
+		personSearchCriteria.addAliasForName(criteria);
+		personSearchCriteria.addAliasForAttribute(criteria);
 		
 		criteria.add(Restrictions.eq("personVoided", false));
 		if (dead != null)
@@ -320,15 +319,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		Disjunction disjunction = Restrictions.disjunction();
 		for (String value : values) {
 			if (value != null && value.length() > 0) {
-				disjunction.add(
-				    Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(
-				        Restrictions.disjunction().add(Restrictions.ilike("name.givenName", value, MatchMode.START)).add(
-				            Restrictions.ilike("name.middleName", value, MatchMode.START)).add(
-				            Restrictions.ilike("name.familyName", value, MatchMode.START)).add(
-				            Restrictions.ilike("name.familyName2", value, MatchMode.START)))).add(
-				    Restrictions.conjunction().add(Restrictions.eq("attributeType.searchable", true)).add(
-				        Restrictions.eq("attribute.voided", false)).add(
-				        Restrictions.ilike("attribute.value", value, MatchMode.ANYWHERE)));
+				disjunction.add(personSearchCriteria.prepareCriterionForName(value)).add(
+				    personSearchCriteria.prepareCriterionForAttribute(value));
 			}
 		}
 		criteria.add(disjunction);
@@ -336,15 +328,19 @@ public class HibernatePersonDAO implements PersonDAO {
 		criteria.addOrder(Order.asc("personId"));
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		criteria.setMaxResults(getMaximumSearchResults());
+		
+		// TODO - remove
+		log.debug(criteria.toString());
+		
 		return criteria.list();
 	}
 	
 	/**
 	 * Fetch the max results value from the global properties table
-	 * 
+	 *
 	 * @return Integer value for the person search max results global property
 	 */
-	protected static Integer getMaximumSearchResults() {
+	public static Integer getMaximumSearchResults() {
 		try {
 			return Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS,
@@ -611,7 +607,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * Used by deletePerson, deletePatient, and deleteUser to remove all properties of a person
 	 * before deleting them.
-	 * 
+	 *
 	 * @param sessionFactory the session factory from which to pull the current session
 	 * @param person the person to delete
 	 */
