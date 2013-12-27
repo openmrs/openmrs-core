@@ -268,6 +268,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#getPatients(java.lang.String, java.lang.String,
 	 *      java.util.List, boolean)
 	 */
+	// TODO - search for usage with non-empty list of patient identifier types
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) throws APIException {
@@ -1654,7 +1655,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query))
 			return count;
 		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
-		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false, true));
+		
+		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query));
 	}
 	
 	/**
@@ -1668,12 +1670,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query))
 			return patients;
 		
-		return dao.getPatients(query, null, Collections.EMPTY_LIST, false, start, length, true);
+		return dao.getPatients(query, start, length);
 	}
 	
 	/**
 	 * @see PatientService#getPatients(String, String, List, boolean, Integer, Integer)
 	 */
+	// TODO - search for usage with non-empty list of patient identifier types - not used
 	@Override
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
