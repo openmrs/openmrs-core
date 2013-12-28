@@ -1106,9 +1106,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationAttributeTypeByName_shouldReturnTheLocationAttributeTypeWithTheSpecifiedName() throws Exception {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
-		Assert.assertNotNull(Context.getLocationService().getLocationAttributeTypeByName("Audit Date"));
-		Assert.assertEquals("Audit Date", Context.getLocationService().getLocationAttributeTypeByName("Audit Date")
-		        .getName());
+		LocationAttributeType locationAttributeType = Context.getLocationService().getLocationAttributeTypeByName(
+		    "Audit Date");
+		Assert.assertNotNull(locationAttributeType);
+		Assert.assertEquals("Audit Date", locationAttributeType.getName());
 	}
 	
 	/**

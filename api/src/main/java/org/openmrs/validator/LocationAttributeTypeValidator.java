@@ -41,13 +41,15 @@ public class LocationAttributeTypeValidator extends BaseAttributeTypeValidator<L
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null
 	 * @should fail validation if name already in use
-	 * @should pass validation if description is null or empty or whitespace
+	 * @should pass validation if the location attribute type description is null or empty or whitespace
 	 * @should pass validation if all fields are correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+		super.validate(obj, errors);
+		
 		LocationAttributeType locationObj = (LocationAttributeType) obj;
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "LocationAttributeType.error.nameEmpty");
+		
 		LocationService ls = Context.getLocationService();
 		LocationAttributeType loc = ls.getLocationAttributeTypeByName(locationObj.getName());
 		if (loc != null && !loc.getUuid().equals(locationObj.getUuid())) {

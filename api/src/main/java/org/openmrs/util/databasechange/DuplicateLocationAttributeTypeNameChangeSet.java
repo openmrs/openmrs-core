@@ -116,10 +116,10 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 				Map.Entry pairs = (Map.Entry) it2.next();
 				
 				HashSet values = (HashSet) pairs.getValue();
-				List<Integer> editableNames = new ArrayList<Integer>(values);
+				List<Integer> duplicateNames = new ArrayList<Integer>(values);
 				
 				int duplicateNameId = 1;
-				for (int i = 1; i < editableNames.size(); i++) {
+				for (int i = 1; i < duplicateNames.size(); i++) {
 					String newName = pairs.getKey() + "_" + duplicateNameId;
 					List<List<Object>> duplicateResult = null;
 					boolean duplicateName = false;
@@ -151,7 +151,7 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 					Date date = new Date(cal.getTimeInMillis());
 					
 					pStmt.setDate(3, date);
-					pStmt.setInt(4, editableNames.get(i));
+					pStmt.setInt(4, duplicateNames.get(i));
 					duplicateNameId += 1;
 					
 					pStmt.executeUpdate();
