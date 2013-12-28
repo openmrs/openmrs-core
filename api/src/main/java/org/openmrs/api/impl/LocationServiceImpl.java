@@ -412,6 +412,15 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
+	 * @see org.openmrs.api.LocationService#getLocationAttributeTypeByName(java.lang.String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public LocationAttributeType getLocationAttributeTypeByName(String name) {
+		return dao.getLocationAttributeTypeByName(name);
+	}
+	
+	/**
 	 * @see org.openmrs.api.LocationService#saveLocationAttributeType(org.openmrs.LocationAttributeType)
 	 */
 	@Override
