@@ -6775,7 +6775,7 @@
     </changeSet>
 
 	<changeSet id="201312201523-TRUNK-4138" author="banka">
-        <preConditions onFail="HALT" onFailMessage="Please make sure all discontinued orders have the date_stopped set">
+        <preConditions onFail="HALT" onFailMessage="Please make sure all discontinued orders have the date_stopped field set">
             <sqlCheck expectedResult="0">select count(*) from orders where discontinued = true and date_stopped is null</sqlCheck>
         </preConditions>
         <comment>Creating Discontinue Order for discontinued orders</comment>
