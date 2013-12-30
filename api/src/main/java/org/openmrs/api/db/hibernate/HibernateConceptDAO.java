@@ -409,20 +409,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		List<String> words = ConceptWord.getUniqueWords(phrase);
 		List<Drug> conceptDrugs = new Vector<Drug>();
 		
-		if (words.size() > 0) {
-			
-			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
-			
-			Iterator<String> word = words.iterator();
-			searchCriteria.add(Restrictions.like("name", word.next(), MatchMode.ANYWHERE));
-			while (word.hasNext()) {
-				String w = word.next();
-				log.debug(w);
-				searchCriteria.add(Restrictions.like("name", w, MatchMode.ANYWHERE));
-			}
-			searchCriteria.addOrder(Order.asc("drug.concept"));
-			conceptDrugs = searchCriteria.list();
-		}
+        conceptDrugs = getDrugs(phrase,null,true, false, true, null, null);
 		
 		return conceptDrugs;
 	}
@@ -1432,24 +1419,48 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws DAOException {
+		
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return Collections.emptyList();
-		
 		if (!includeRetired)
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
 			searchCriteria.add(Restrictions.eq("drug.concept", concept));
 		MatchMode matchMode = MatchMode.START;
-		if (searchOnPhrase)
-			matchMode = MatchMode.ANYWHERE;
-		if (!StringUtils.isBlank(drugName)) {
-			searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
-			if (searchDrugConceptNames) {
-				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
-				searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
-			}
-		}
+
+
+		if (searchOnPhrase)  {
+            matchMode = MatchMode.ANYWHERE;
+
+            if (!StringUtils.isBlank(drugName)) {
+                List<String> words = ConceptWord.getUniqueWords(drugName);
+                Iterator<String> word = words.iterator();
+                searchCriteria.add(Restrictions.ilike("drug.name", word.next(), matchMode));
+
+                if(searchDrugConceptNames){
+                    searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
+                }
+
+                while (word.hasNext()) {
+                    searchCriteria.add(Restrictions.ilike("drug.name", word.next(), matchMode));
+
+                    if(searchDrugConceptNames){
+                        searchCriteria.add(Restrictions.ilike("names.name", word.next(), matchMode));
+                    }
+                }
+            }
+        }
+        else{
+            matchMode = MatchMode.START;
+            searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
+
+            if(searchDrugConceptNames){
+                searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
+                searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
+            }
+        }
+
 		
 		if (start != null)
 			searchCriteria.setFirstResult(start);
