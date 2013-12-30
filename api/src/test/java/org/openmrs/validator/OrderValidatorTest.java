@@ -13,9 +13,6 @@
  */
 package org.openmrs.validator;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Order;
@@ -24,6 +21,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Tests methods on the {@link OrderValidator} class.
@@ -45,25 +45,6 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("encounter"));
-	}
-	
-	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should fail validation if discontinued is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDiscontinuedIsNull() throws Exception {
-		Order order = new Order();
-		order.setDiscontinued(null);
-		order.setConcept(Context.getConceptService().getConcept(88));
-		order.setPatient(Context.getPatientService().getPatient(2));
-		
-		Errors errors = new BindException(order, "order");
-		new OrderValidator().validate(order, errors);
-		
-		Assert.assertTrue(errors.hasFieldErrors("discontinued"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("patient"));
 	}
 	
 	/**
@@ -124,22 +105,21 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if startDate after discontinuedDate", method = "validate(Object,Errors)")
+	@Verifies(value = "should fail validation if startDate after dateStopped", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfStartDateAfterDiscontinuedDate() throws Exception {
 		Order order = new Order();
-		;
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(new Date());
-		order.setDiscontinuedDate(cal.getTime());
+		order.setDateStopped(cal.getTime());
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("startDate"));
-		Assert.assertTrue(errors.hasFieldErrors("discontinuedDate"));
+		Assert.assertTrue(errors.hasFieldErrors("dateStopped"));
 	}
 	
 	/**
@@ -175,7 +155,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(cal.getTime());
-		order.setDiscontinuedDate(new Date());
+		order.setDateStopped(new Date());
 		order.setAutoExpireDate(new Date());
 		
 		Errors errors = new BindException(order, "order");

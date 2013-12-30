@@ -61,7 +61,7 @@
 										<input id="closebutton_${drugOrder.orderId}" type="button" value="<openmrs:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 										<div id="close_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted">
 											<form class="discontinuedDrugForm">
-												<openmrs:message code="DrugOrder.discontinuedDate" />:
+												<openmrs:message code="DrugOrder.dateStopped" />:
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
 												&nbsp;&nbsp;&nbsp;&nbsp;
 												<openmrs:message code="general.reason" />:
@@ -126,7 +126,7 @@
 											<input id="closegpbutton_${fn:replace(drugSetId, " ", "_")}" type="button" value="<openmrs:message code="DrugOrder.discontinueGroup" />" onClick="showHideDiv('closegp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('closegpbutton_${fn:replace(drugSetId, " ", "_")}')" />
 											<div id="closegp_${fn:replace(drugSetId, " ", "_")}" style="display:none;" class="dashedAndHighlighted">
 												<form class="regimenCurrentDrugDiscontinuedGroupForm">
-													<openmrs:message code="DrugOrder.discontinuedDate" />:
+													<openmrs:message code="DrugOrder.dateStopped" />:
 													<input type="text" id="closegp_${fn:replace(drugSetId, " ", "_")}_date" size="10" value="" onFocus="showCalendar(this)" />
 													&nbsp;&nbsp;&nbsp;&nbsp;
 													<openmrs:message code="general.reason" />:
@@ -183,7 +183,7 @@
 										<input id="closebutton_${drugOrder.orderId}" type="button" value="<openmrs:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 										<div id="close_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted" >
 											<form class="discontinuedDrugForm">
-												<openmrs:message code="DrugOrder.discontinuedDate" />:
+												<openmrs:message code="DrugOrder.dateStopped" />:
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
 												&nbsp;&nbsp;&nbsp;&nbsp;
 												<openmrs:message code="general.reason" />:
@@ -254,7 +254,7 @@
 										<input id="closebutton_${drugOrder.orderId}" type="button" value="<openmrs:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 										<div id="close_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted" >
 											<form class="discontinuedDrugForm">
-												<openmrs:message code="DrugOrder.discontinuedDate" />:
+												<openmrs:message code="DrugOrder.dateStopped" />:
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
 												&nbsp;&nbsp;&nbsp;&nbsp;
 												<openmrs:message code="general.reason" />:
