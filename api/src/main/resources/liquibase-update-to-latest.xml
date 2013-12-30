@@ -6754,7 +6754,7 @@
 			referencedTableName="order_frequency" referencedColumnNames="order_frequency_id" />
 	</changeSet>
 
-	<changeSet id="201312181649-TRUNK-4137" author="k-joseph">
+	<changeSet id="201312181650-TRUNK-4137" author="k-joseph">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="test_order" columnName="number_of_repeats" />
@@ -6775,7 +6775,7 @@
     </changeSet>
 
 	<changeSet id="201312201523-TRUNK-4138" author="banka">
-        <preConditions onFail="HALT">
+        <preConditions onFail="HALT" onFailMessage="Please make sure all discontinued orders have the date_stopped set">
             <sqlCheck expectedResult="0">select count(*) from orders where discontinued = true and date_stopped is null</sqlCheck>
         </preConditions>
         <comment>Creating Discontinue Order for discontinued orders</comment>
