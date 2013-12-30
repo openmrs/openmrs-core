@@ -2359,7 +2359,7 @@
  		<addForeignKeyConstraint constraintName="provider_person_id_fk"
  			baseTableName="provider" baseColumnNames="person_id"
  			referencedTableName="person" referencedColumnNames="person_id" />
- 
+
  		<addForeignKeyConstraint constraintName="provider_retired_by_fk"
  			baseTableName="provider" baseColumnNames="retired_by"
  			referencedTableName="users" referencedColumnNames="user_id" />
@@ -2596,7 +2596,7 @@
         <createIndex tableName="form" indexName="form_published_and_retired_index">
             <column name="published"/>
             <column name="retired"/>
-        </createIndex>	
+        </createIndex>
     </changeSet>
     <changeSet id="20110915-1103" author="sunbiz">
         <createIndex tableName="hl7_in_archive" indexName="hl7_in_archive_message_state_idx">
@@ -3291,7 +3291,7 @@
         <addForeignKeyConstraint constraintName="visit_type_fk"	baseTableName="visit" baseColumnNames="visit_type_id" referencedTableName="visit_type" referencedColumnNames="visit_type_id"/>
     </changeSet>
     <changeSet id="20110915-1241" author="sunbiz">
-        <addForeignKeyConstraint constraintName="visit_location_fk" baseTableName="visit" baseColumnNames="location_id" referencedTableName="location" referencedColumnNames="location_id"/>		
+        <addForeignKeyConstraint constraintName="visit_location_fk" baseTableName="visit" baseColumnNames="location_id" referencedTableName="location" referencedColumnNames="location_id"/>
     </changeSet>
     <changeSet id="20110915-1242" author="sunbiz">
         <addForeignKeyConstraint constraintName="visit_patient_fk" baseTableName="visit" baseColumnNames="patient_id" referencedTableName="patient" referencedColumnNames="patient_id"/>
@@ -3413,7 +3413,7 @@
     <changeSet id="20110915-1536" author="sunbiz">
         <addForeignKeyConstraint constraintName="mapped_concept_reference_term" referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" baseTableName="concept_reference_map" baseColumnNames="concept_reference_term_id"/>
     </changeSet>
-    
+
     <!-- Skip changesets from liquibase-update-to-latest when new installation -->
     <!-- TODO: CustomChange to avoid replicated columns-->
     <!-- TODO: Add all changesets that are not required. Only blockers now-->

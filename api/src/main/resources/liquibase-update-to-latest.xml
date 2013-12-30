@@ -6798,4 +6798,67 @@
         <dropColumn tableName="orders" columnName="discontinued_by" />
 	</changeSet>
 
+	<changeSet id="20131216-1636" author="gitahi">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="drug_reference_map" />
+			</not>
+		</preConditions>
+		<createTable tableName="drug_reference_map">
+			<column name="drug_reference_map_id" type="int" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="drug_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="term_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="map_type" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="creator" type="int" defaultValueNumeric="0">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="VARCHAR(255)"/>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint baseTableName="drug_reference_map" baseColumnNames="drug_id"
+								 constraintName="drug_for_drug_reference_map"
+								 referencedTableName="drug"
+								 referencedColumnNames="drug_id"/>
+		<addForeignKeyConstraint baseTableName="drug_reference_map" baseColumnNames="term_id"
+								 constraintName="concept_reference_term_for_drug_reference_map"
+								 referencedTableName="concept_reference_term"
+								 referencedColumnNames="concept_reference_term_id"/>
+		<addForeignKeyConstraint baseTableName="drug_reference_map" baseColumnNames="map_type"
+								 constraintName="concept_map_type_for_drug_reference_map"
+								 referencedTableName="concept_map_type"
+								 referencedColumnNames="concept_map_type_id"/>
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="drug_reference_map"
+								 constraintName="user_who_changed_drug_reference_map"
+								 referencedColumnNames="user_id"
+								 referencedTableName="users"/>
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="drug_reference_map"
+								 constraintName="drug_reference_map_creator"
+								 referencedColumnNames="user_id"
+								 referencedTableName="users"/>
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="drug_reference_map"
+								 constraintName="user_who_retired_drug_reference_map"
+								 referencedColumnNames="user_id"
+								 referencedTableName="users"/>
+	</changeSet>
+
 </databaseChangeLog>
