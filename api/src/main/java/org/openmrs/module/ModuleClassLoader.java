@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
@@ -61,7 +63,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	private Module[] awareOfModules;
 	
-	private Map<URL, File> libraryCache;
+	private Map<URI, File> libraryCache;
 	
 	private boolean probeParentLoaderLast = true;
 	
@@ -86,7 +88,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		collectRequiredModuleImports();
 		collectAwareOfModuleImports();
 		collectFilters();
-		libraryCache = new WeakHashMap<URL, File>();
+		libraryCache = new WeakHashMap<URI, File>();
 	}
 	
 	/**
@@ -364,7 +366,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		// repopulate resource URLs
 		//resourceLoader = ModuleResourceLoader.get(getModule());
 		collectFilters();
-		for (Iterator<Map.Entry<URL, File>> it = libraryCache.entrySet().iterator(); it.hasNext();) {
+		for (Iterator<Map.Entry<URI, File>> it = libraryCache.entrySet().iterator(); it.hasNext();) {
 			if (it.next().getValue() == null) {
 				it.remove();
 			}
@@ -688,8 +690,17 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	protected File cacheLibrary(final URL libUrl, final String libname) {
 		File cacheFolder = OpenmrsClassLoader.getLibCacheFolder();
-		if (libraryCache.containsKey(libUrl)) {
-			return libraryCache.get(libUrl);
+		
+		URI libUri;
+		try {
+			libUri = libUrl.toURI();
+		}
+		catch (URISyntaxException e) {
+			throw new IllegalArgumentException(libUrl.getPath() + " is not a valid URI", e);
+		}
+		
+		if (libraryCache.containsKey(libUri)) {
+			return libraryCache.get(libUri);
 		}
 		
 		File result = null;
@@ -736,7 +747,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 			
 			// save a link to the cached file
-			libraryCache.put(libUrl, result);
+			libraryCache.put(libUri, result);
 			
 			if (log.isDebugEnabled()) {
 				log.debug("library " + libname + " successfully cached from URL " + libUrl + " and saved to local file "
@@ -746,7 +757,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		catch (IOException ioe) {
 			log.error("can't cache library " + libname + " from URL " + libUrl, ioe);
-			libraryCache.put(libUrl, null);
+			libraryCache.put(libUri, null);
 			result = null;
 		}
 		
