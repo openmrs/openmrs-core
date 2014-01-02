@@ -66,6 +66,7 @@ public interface PatientDAO {
 	 * @should escape underscore character in identifier phrase
 	 * @should escape an asterix character in identifier phrase
 	 * @should get patients with a matching identifier and type
+	 * @should not search on voided patients
 	 */
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesOrIdentifiers)
@@ -94,6 +95,10 @@ public interface PatientDAO {
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException;
 	
 	/**
+	 * @should not return null when includeRetired is false
+	 * @should not return retired when includeRetired is false
+	 * @should not return null when includeRetired is true
+	 * @should return all when includeRetired is true
 	 * @see org.openmrs.api.PatientService#getAllPatientIdentifierTypes(boolean)
 	 */
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired) throws DAOException;

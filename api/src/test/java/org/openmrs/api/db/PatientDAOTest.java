@@ -21,9 +21,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -392,7 +394,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
 	 * @verifies fetch all patient identifiers belong to given patient
 	 */
 	@Test
@@ -408,7 +410,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HibernatePatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
+	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
 	 * @verifies fetch all patient identifiers belong to given patients
 	 */
 	@Test
@@ -445,5 +447,253 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 			}
 			
 		};
+	}
+	
+	/**
+	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
+	 * @verifies return ordered
+	 */
+	@Test
+	public void getAllPatientIdentifierTypes_shouldReturnOrdered() throws Exception {
+		//given
+		PatientIdentifierType patientIdentifierType1 = dao.getPatientIdentifierType(1); //non retired, non required
+		
+		PatientIdentifierType patientIdentifierType2 = dao.getPatientIdentifierType(2); //non retired, required
+		patientIdentifierType2.setRequired(true);
+		dao.savePatientIdentifierType(patientIdentifierType2);
+		
+		PatientIdentifierType patientIdentifierType4 = dao.getPatientIdentifierType(4); //retired
+		
+		//when
+		List<PatientIdentifierType> all = dao.getAllPatientIdentifierTypes(true);
+		
+		//then
+		Assert.assertArrayEquals(new Object[] { patientIdentifierType2, patientIdentifierType1, patientIdentifierType4 },
+		    all.toArray());
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @verifies return non retired patient identifier types with given name
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesWithGivenName() {
+		PatientIdentifierType oldIdNumberNonRetired = dao.getPatientIdentifierType(2);
+		
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes("Old Identification Number",
+		    null, null, null);
+		
+		Assert.assertEquals(patientIdentifierTypes.size(), 1);
+		Assert.assertEquals(oldIdNumberNonRetired, patientIdentifierTypes.get(0));
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @verifies return non retired patient identifier types with given format
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesWithGivenFormat() {
+		PatientIdentifierType formatOneNonRetired = dao.getPatientIdentifierType(1);
+		formatOneNonRetired.setFormat("1");
+		dao.savePatientIdentifierType(formatOneNonRetired);
+		
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, "1", null, null);
+		
+		Assert.assertEquals(patientIdentifierTypes.size(), 1);
+		Assert.assertEquals(formatOneNonRetired, patientIdentifierTypes.get(0));
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @verifies return non retired patient identifie types that are not required
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesThatAreNotRequired() {
+		PatientIdentifierType nonRetiredNonRequired1 = dao.getPatientIdentifierType(1);
+		PatientIdentifierType nonRetiredNonRequired2 = dao.getPatientIdentifierType(2);
+		
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, false, null);
+		
+		Assert.assertEquals(patientIdentifierTypes.size(), 2);
+		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredNonRequired1));
+		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredNonRequired2));
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @verifies return non retired patient identifier types that are required
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesThatAreRequired() {
+		PatientIdentifierType nonRetiredRequired = dao.getPatientIdentifierType(4);
+		nonRetiredRequired.setRetired(false);
+		nonRetiredRequired.setRequired(true);
+		dao.savePatientIdentifierType(nonRetiredRequired);
+		
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, true, null);
+		
+		Assert.assertEquals(patientIdentifierTypes.size(), 1);
+		Assert.assertEquals(nonRetiredRequired, patientIdentifierTypes.get(0));
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @verifies return non retired patient identifier types that has checkDigit
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesThatHasCheckDigit() {
+		PatientIdentifierType nonRetiredHasDigit = dao.getPatientIdentifierType(1);
+		
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, true);
+		
+		Assert.assertEquals(patientIdentifierTypes.size(), 1);
+		Assert.assertEquals(nonRetiredHasDigit, patientIdentifierTypes.get(0));
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @verifies return non retired patient identifier types that has not CheckDigit
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesThatHasNotCheckDigit() {
+		PatientIdentifierType nonRetiredHasNoDigit = dao.getPatientIdentifierType(2);
+		
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, false);
+		
+		Assert.assertEquals(patientIdentifierTypes.size(), 1);
+		Assert.assertEquals(nonRetiredHasNoDigit, patientIdentifierTypes.get(0));
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @verifies return only non retired patient identifier types
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldReturnOnlyNonRetiredPatientIdentifierTypes() {
+		PatientIdentifierType nonRetiredType1 = dao.getPatientIdentifierType(1);
+		Assert.assertEquals(nonRetiredType1.getRetired(), false);
+		
+		PatientIdentifierType nonRetiredType2 = dao.getPatientIdentifierType(2);
+		Assert.assertEquals(nonRetiredType2.getRetired(), false);
+		
+		PatientIdentifierType retiredType = dao.getPatientIdentifierType(4);
+		Assert.assertEquals(retiredType.getRetired(), true);
+		
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, null);
+		
+		Assert.assertEquals(patientIdentifierTypes.size(), 2);
+		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredType1));
+		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredType2));
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @verifies return non retired patient identifier types ordered by required first
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypes_OrderedByRequiredFirst() {
+		PatientIdentifierType nonRetiredNonRequiredType = dao.getPatientIdentifierType(1);
+		PatientIdentifierType nonRetiredRequiredType = dao.getPatientIdentifierType(2);
+		nonRetiredRequiredType.setRequired(true);
+		dao.savePatientIdentifierType(nonRetiredRequiredType);
+		
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, null);
+		
+		Assert.assertArrayEquals(new Object[] { nonRetiredRequiredType, nonRetiredNonRequiredType }, patientIdentifierTypes
+		        .toArray());
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @verifies return non retired patient identifier types ordered by required and name
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypes_OrderedByRequiredAndName() {
+		PatientIdentifierType openMRSIdNumber = dao.getPatientIdentifierType(1);
+		
+		PatientIdentifierType oldIdNumber = dao.getPatientIdentifierType(2);
+		oldIdNumber.setRequired(true);
+		dao.savePatientIdentifierType(oldIdNumber);
+		
+		PatientIdentifierType socialSecNumber = dao.getPatientIdentifierType(4);
+		socialSecNumber.setName("ASecurityNumber");
+		socialSecNumber.setRequired(true);
+		socialSecNumber.setRetired(false);
+		dao.savePatientIdentifierType(socialSecNumber);
+		
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, null);
+		
+		Assert.assertArrayEquals(new Object[] { socialSecNumber, oldIdNumber, openMRSIdNumber }, patientIdentifierTypes
+		        .toArray());
+	}
+	
+	/**
+	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
+	 * @verifies return non retired patient identifier types ordered by required name and type id
+	 */
+	@Test
+	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypes_OrderedByRequiredNameAndTypeId() {
+		PatientIdentifierType openMRSIdNumber = dao.getPatientIdentifierType(1);
+		openMRSIdNumber.setName("IdNumber");
+		openMRSIdNumber.setRequired(true);
+		dao.savePatientIdentifierType(openMRSIdNumber);
+		
+		PatientIdentifierType oldIdNumber = dao.getPatientIdentifierType(2);
+		oldIdNumber.setName("IdNumber");
+		oldIdNumber.setRequired(true);
+		dao.savePatientIdentifierType(oldIdNumber);
+		
+		PatientIdentifierType socialSecNumber = dao.getPatientIdentifierType(4);
+		socialSecNumber.setRequired(true);
+		socialSecNumber.setRetired(false);
+		dao.savePatientIdentifierType(socialSecNumber);
+		
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, null);
+		
+		Assert.assertArrayEquals(new Object[] { openMRSIdNumber, oldIdNumber, socialSecNumber }, patientIdentifierTypes
+		        .toArray());
+	}
+	
+	/**
+	 * @see PatientDAO#getPatients(String, String, java.util.List, boolean, Integer,
+	 *      Integer, boolean)
+	 * @verifies return non when searching on voided patients
+	 */
+	@Test
+	public void getPatients_shouldNotMatchVoidedPatients() {
+		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
+		List<Patient> patients = dao.getPatients("Hornblower3", null, identifierTypes, false, 0, 11, false);
+		Assert.assertEquals(1, patients.size());
+		
+		Patient patient = patients.get(0);
+		patient.setVoided(true);
+		dao.savePatient(patient);
+		
+		patients = dao.getPatients("Hornblower3", null, identifierTypes, false, 0, 11, false);
+		Assert.assertEquals(0, patients.size());
+	}
+	
+	/**
+	 * @see PatientDAO#getPatients(String, String, java.util.List, boolean, Integer,
+	 *      Integer, boolean)
+	 * @verifies return none when searching on voided patient name
+	 */
+	@Test
+	public void getPatients_shouldNotMatchVoidedPatientNames() {
+		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
+		List<Patient> patients = dao.getPatients("Oloo", null, identifierTypes, false, 0, 11, false);
+		Assert.assertEquals(1, patients.size());
+		
+		Patient patient = patients.get(0);
+		
+		Set<PersonName> names = patient.getNames();
+		
+		for (PersonName name : names) {
+			name.setVoided(true);
+		}
+		
+		dao.savePatient(patient);
+		patients = dao.getPatients("Oloo", null, identifierTypes, false, 0, 11, false);
+		Assert.assertEquals(0, patients.size());
 	}
 }
