@@ -6806,4 +6806,116 @@
         <dropColumn tableName="orders" columnName="discontinued_by" />
 	</changeSet>
 
+    <changeSet id="201312271822-TRUNK-4156" author="vinay">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="care_setting"/></not>
+        </preConditions>
+        <comment>Based on change in design of care setting attribute</comment>
+        <createTable tableName="care_setting">
+            <column name="care_setting_id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="varchar(255)"></column>
+            <column name="type" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+            <column name="creator" type="int(11)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="date_created" type="datetime" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired" type="tinyint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired_by" type="int(11)" />
+            <column name="date_retired" type="datetime" />
+            <column name="retired_reason" type="varchar(255)" defaultValue="null"/>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="care_setting_creator"
+                                 baseTableName="care_setting" baseColumnNames="creator"
+                                 referencedTableName="users" referencedColumnNames="user_id"/>
+        <addForeignKeyConstraint constraintName="care_setting_retired_by"
+                                 baseTableName="care_setting" baseColumnNames="retired_by"
+                                 referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+
+    <changeSet id="201312271823-TRUNK-4156" author="vinay">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM care_setting where type = 'OUTPATIENT'
+            </sqlCheck>
+        </preConditions>
+        <comment>Adding OUTPATIENT care setting</comment>
+        <insert tableName="care_setting">
+            <column name="name" value="OUTPATIENT"/>
+            <column name="description" value="Out-patient care setting"/>
+            <column name="type" value="OUTPATIENT"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2013-12-27T00:00:00"/>
+            <column name="uuid" value="6f0c9a92-6f24-11e3-af88-005056821db0"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="201312271824-TRUNK-4156" author="vinay">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM care_setting where type = 'INPATIENT'
+            </sqlCheck>
+        </preConditions>
+        <comment>Adding INPATIENT care setting</comment>
+        <insert tableName="care_setting">
+            <column name="name" value="INPATIENT"/>
+            <column name="description" value="In-patient care setting"/>
+            <column name="type" value="INPATIENT"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2013-12-27T00:00:00"/>
+            <column name="uuid" value="6f0c9a92-6f24-11e3-af88-005056821db0"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="201312271825-TRUNK-4156" author="vinay">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="care_setting"/>
+        </preConditions>
+        <comment>Drop previously added column</comment>
+        <dropColumn tableName="orders" columnName="care_setting"/>
+    </changeSet>
+
+    <changeSet id="201312271826-TRUNK-4156" author="vinay">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="care_setting_id"/></not>
+        </preConditions>
+        <addColumn tableName="orders">
+            <column name="care_setting_id" type="int(11)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="201312271827-TRUNK-4156" author="vinay">
+        <comment>Set default value first, and then make the column non-nullable.</comment>
+        <sql splitStatements="false">
+            <![CDATA[
+				update orders set care_setting_id = (select care_setting_id from care_setting where type = 'OUTPATIENT')
+				    where care_setting_id is null;
+			]]>
+        </sql>
+        <addNotNullConstraint tableName="orders" columnName="care_setting_id" columnDataType="int(11)"/>
+    </changeSet>
+
+    <changeSet id="201312271828-TRUNK-4156" author="vinay">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="orders_care_setting"/></not>
+        </preConditions>
+        <comment>Add foreign key constraint</comment>
+        <addForeignKeyConstraint constraintName="orders_care_setting"
+                                 baseTableName="orders" baseColumnNames="care_setting_id"
+                                 referencedTableName="care_setting" referencedColumnNames="care_setting_id"/>
+    </changeSet>
 </databaseChangeLog>

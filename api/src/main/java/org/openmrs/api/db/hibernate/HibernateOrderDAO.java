@@ -13,8 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,6 +20,7 @@ import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
@@ -32,6 +31,8 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.OpenmrsConstants;
+
+import java.util.List;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
@@ -186,5 +187,14 @@ public class HibernateOrderDAO implements OrderDAO {
 		sessionFactory.getCurrentSession().save(globalProperty);
 		
 		return gpNumericValue;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getCareSettingByType(org.openmrs.CareSetting.CareSettingType)
+	 */
+	@Override
+	public CareSetting getCareSettingByType(CareSetting.CareSettingType careSettingType) {
+		return (CareSetting) sessionFactory.getCurrentSession().createQuery(
+		    "from CareSetting c where c.careSettingType = :type").setParameter("type", careSettingType).uniqueResult();
 	}
 }

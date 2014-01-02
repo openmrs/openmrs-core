@@ -71,6 +71,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Relationship.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/RelationshipType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Order.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/CareSetting.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Location.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LocationTag.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LocationAttributeType.hbm.xml" />

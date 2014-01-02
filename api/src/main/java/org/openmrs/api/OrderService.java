@@ -13,8 +13,7 @@
  */
 package org.openmrs.api;
 
-import java.util.List;
-
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
@@ -24,6 +23,8 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders
@@ -182,4 +183,13 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
 	public Long getNextOrderNumberSeedSequenceValue();
+	
+	/**
+	 * Retrieve care setting by type
+	 *
+	 * @param careSettingType
+	 * @return the care setting
+	 * @since 1.10
+	 */
+	public CareSetting getCareSettingByType(CareSetting.CareSettingType careSettingType);
 }

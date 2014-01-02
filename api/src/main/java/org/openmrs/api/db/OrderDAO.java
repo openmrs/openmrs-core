@@ -13,13 +13,14 @@
  */
 package org.openmrs.api.db;
 
-import java.util.List;
-
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
+
+import java.util.List;
 
 /**
  * Order-related database functions
@@ -81,4 +82,13 @@ public interface OrderDAO {
 	 * @return the order number seed
 	 */
 	public Long getNextOrderNumberSeedSequenceValue();
+	
+	/**
+	 * Get care setting by type
+	 *
+	 * @param careSettingType
+	 * @return the care setting type
+	 * @since 1.10
+	 */
+	public CareSetting getCareSettingByType(CareSetting.CareSettingType careSettingType);
 }
