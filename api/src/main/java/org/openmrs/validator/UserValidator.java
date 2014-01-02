@@ -85,27 +85,28 @@ public class UserValidator implements Validator {
 				if (person.getPersonName() == null || StringUtils.isEmpty(person.getPersonName().getFullName()))
 					errors.rejectValue("person", "Person.names.length");
 			}
-		}
-		AdministrationService as = Context.getAdministrationService();
-		boolean emailAsUsername = false;
-		try {
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
-			    OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false"));
-		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		}
-		
-		if (emailAsUsername) {
-			boolean isValidUserName = isUserNameAsEmailValid(user.getUsername());
-			if (!isValidUserName) {
-				errors.rejectValue("username", "error.username.email");
+			
+			AdministrationService as = Context.getAdministrationService();
+			boolean emailAsUsername = false;
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
+				    OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false"));
 			}
-		} else {
-			boolean isValidUserName = isUserNameValid(user.getUsername());
-			if (!isValidUserName) {
-				errors.rejectValue("username", "error.username.pattern");
+			finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			}
+			
+			if (emailAsUsername) {
+				boolean isValidUserName = isUserNameAsEmailValid(user.getUsername());
+				if (!isValidUserName) {
+					errors.rejectValue("username", "error.username.email");
+				}
+			} else {
+				boolean isValidUserName = isUserNameValid(user.getUsername());
+				if (!isValidUserName) {
+					errors.rejectValue("username", "error.username.pattern");
+				}
 			}
 		}
 	}
