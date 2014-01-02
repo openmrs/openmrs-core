@@ -6790,6 +6790,14 @@
         <dropColumn tableName="orders" columnName="discontinued" />
 	</changeSet>
 
+    <changeSet id="201312201601-TRUNK-4138" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="user_who_discontinued_order" />
+        </preConditions>
+        <comment>Dropping fk constraint on orders.discontinued_by column to users.user_id column</comment>
+        <dropForeignKeyConstraint baseTableName="user_who_discontinued_order" />
+    </changeSet>
+
 	<changeSet id="201312201700-TRUNK-4138" author="banka">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="orders" columnName="discontinued_by"/>
