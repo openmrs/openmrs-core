@@ -241,7 +241,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getActiveOrders_shouldReturnAllOrderHistoryForGivenPatientParameters() throws Exception {
 		executeDataSet(DRUG_ORDERS_DATASET_XML);
 		Patient patient = Context.getPatientService().getPatient(2);
-		List<DrugOrder> orders = Context.getOrderService().getActiveOrders(patient, DrugOrder.class, new CareSetting(),
+		OrderService os = Context.getOrderService();
+		List<DrugOrder> orders = Context.getOrderService().getActiveOrders(patient, DrugOrder.class, os.getCareSetting(1),
 		    false);
 		Assert.assertEquals(4, orders.size());
 		
@@ -251,7 +252,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(isOrderActive(orders.get(3)));
 		
 		//we should not have any in patients;
-		orders = Context.getOrderService().getActiveOrders(patient, DrugOrder.class, CareSetting.INPATIENT, false);
+		orders = Context.getOrderService().getActiveOrders(patient, DrugOrder.class, os.getCareSetting(2), false);
 		Assert.assertEquals(0, orders.size());
 	}
 	

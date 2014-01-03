@@ -13,36 +13,51 @@
  */
 package org.openmrs;
 
-public class CareSetting implements java.io.Serializable {
+/**
+ *  @since 1.10
+ */
+public class CareSetting extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
-	private static final String OUT_PATIENT = "OUTPATIENT";
+	public enum CareSettingType {
+		OUTPATIENT, INPATIENT
+	}
 	
-	private static final String IN_PATIENT = "INPATIENT";
+	private Integer careSettingId;
 	
-	public static CareSetting OUTPATIENT = new CareSetting(OUT_PATIENT);
-	
-	public static CareSetting INPATIENT = new CareSetting(IN_PATIENT);
-	
-	private String careSetting;
+	private CareSettingType careSettingType;
 	
 	public CareSetting() {
-		this.careSetting = OUT_PATIENT;
 	}
 	
-	public CareSetting(String careSetting) {
-		this.careSetting = careSetting;
+	public CareSetting(String name, String description, CareSettingType careSettingType) {
+		setName(name);
+		setDescription(description);
+		setCareSettingType(careSettingType);
 	}
 	
-	public String getCareSetting() {
-		return careSetting;
+	public Integer getCareSettingId() {
+		return careSettingId;
 	}
 	
-	public void setCareSetting(String careSetting) {
-		this.careSetting = careSetting;
+	public void setCareSettingId(Integer careSettingId) {
+		this.careSettingId = careSettingId;
+	}
+	
+	public CareSettingType getCareSettingType() {
+		return careSettingType;
+	}
+	
+	public void setCareSettingType(CareSettingType careSettingType) {
+		this.careSettingType = careSettingType;
 	}
 	
 	@Override
-	public String toString() {
-		return careSetting;
+	public Integer getId() {
+		return getCareSettingId();
+	}
+	
+	@Override
+	public void setId(Integer id) {
+		setCareSettingId(id);
 	}
 }

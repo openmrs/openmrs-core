@@ -179,7 +179,7 @@ public interface OrderService extends OpenmrsService {
 	public Long getNextOrderNumberSeedSequenceValue();
 	
 	/**
-	 * Gets the order matching the specified order number and its previous orders in the 
+	 * Gets the order matching the specified order number and its previous orders in the
 	 * ordering they occurred, i.e if this order has a previous order, 
 	 * fetch it and if it also has a previous order then fetch it until 
 	 * the original one with no previous order is reached 
@@ -203,4 +203,12 @@ public interface OrderService extends OpenmrsService {
 	 */
 	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
 	        Boolean includeVoided);
+	
+	/** Retrieve care setting by type
+	 *
+	 * @param careSettingId
+	 * @return the care setting
+	 * @since 1.10
+	 */
+	public CareSetting getCareSetting(Integer careSettingId);
 }

@@ -210,4 +210,12 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		return crit.list();
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getCareSetting(Integer)
+	 */
+	@Override
+	public CareSetting getCareSetting(Integer careSettingId) {
+		return (CareSetting) sessionFactory.getCurrentSession().get(CareSetting.class, careSettingId);
+	}
 }

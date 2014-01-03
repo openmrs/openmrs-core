@@ -88,4 +88,12 @@ public interface OrderDAO {
 	 */
 	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
 	        Boolean includeVoided);
+	
+	/**
+	 * Get care setting by type
+	 *
+	 * @param careSettingId
+	 * @return the care setting type
+	 */
+	public CareSetting getCareSetting(Integer careSettingId);
 }

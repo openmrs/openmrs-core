@@ -499,7 +499,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		order.setDateCreated(date);
 		order.setCreator(creator);
-		order.setCareSetting(CareSetting.OUTPATIENT);
+		
+		order.setCareSetting(Context.getOrderService().getCareSetting(1));
 		encounter.addOrder(order);
 		
 		// make sure the logged in user isn't the user we're testing with

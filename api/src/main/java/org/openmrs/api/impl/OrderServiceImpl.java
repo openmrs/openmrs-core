@@ -248,4 +248,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	        Boolean includeVoided) {
 		return dao.getActiveOrders(patient, orderClass, careSetting, includeVoided);
 	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getCareSetting(Integer)
+	 */
+	@Override
+	public CareSetting getCareSetting(Integer careSettingId) {
+		return dao.getCareSetting(careSettingId);
+	}
 }
