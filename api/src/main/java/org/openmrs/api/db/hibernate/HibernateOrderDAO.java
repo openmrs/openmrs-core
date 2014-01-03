@@ -22,10 +22,12 @@ import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
+import org.openmrs.Order.Action;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -186,5 +188,26 @@ public class HibernateOrderDAO implements OrderDAO {
 		sessionFactory.getCurrentSession().save(globalProperty);
 		
 		return gpNumericValue;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, java.lang.Class, org.openmrs.CareSetting, java.lang.Boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
+	        Boolean includeVoided) {
+		
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClass);
+		
+		crit.add(Restrictions.eq("patient", patient));
+		crit.add(Restrictions.eq("careSetting", careSetting));
+		crit.add(Restrictions.ne("action", Action.DISCONTINUE));
+		crit.add(Restrictions.isNull("dateStopped"));
+		crit.add(Restrictions.isNull("autoExpireDate"));
+		
+		if (!includeVoided)
+			crit.add(Restrictions.eq("voided", includeVoided));
+		
+		return crit.list();
 	}
 }

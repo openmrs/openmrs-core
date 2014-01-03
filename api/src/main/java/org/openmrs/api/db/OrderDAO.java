@@ -15,6 +15,7 @@ package org.openmrs.api.db;
 
 import java.util.List;
 
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
@@ -81,4 +82,10 @@ public interface OrderDAO {
 	 * @return the order number seed
 	 */
 	public Long getNextOrderNumberSeedSequenceValue();
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, java.lang.Class, org.openmrs.CareSetting, java.lang.Boolean)
+	 */
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
+	        Boolean includeVoided);
 }

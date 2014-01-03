@@ -21,6 +21,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
@@ -31,7 +32,6 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 /**
@@ -218,7 +218,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderHistoryByOrderNumber(java.lang.String)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
 		List<Order> orders = new ArrayList<Order>();
 		Order order = dao.getOrderByOrderNumber(orderNumber);
@@ -227,5 +226,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			order = order.getPreviousOrder();
 		}
 		return orders;
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, java.lang.Class, org.openmrs.CareSetting, java.lang.Boolean)
+	 */
+	@Override
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
+	        Boolean includeVoided) {
+		return dao.getActiveOrders(patient, orderClass, careSetting, includeVoided);
 	}
 }

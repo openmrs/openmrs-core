@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
@@ -184,12 +185,30 @@ public interface OrderService extends OpenmrsService {
 	public Long getNextOrderNumberSeedSequenceValue();
 	
 	/**
-	 * Gets the order matching the specified order number and its previous orders in the ordering they occurred, i.e if this order has a previous order, fetch it and if it also has a previous order then fetch it until the original one with no previous order is reached 
+	 * Gets the order matching the specified order number and its previous orders in the 
+	 * ordering they occurred, i.e if this order has a previous order, 
+	 * fetch it and if it also has a previous order then fetch it until 
+	 * the original one with no previous order is reached 
 	 * 
 	 * @param orderNumber the order number whose history to get
-	 * @return a list of orders
-	 * @should return all order history
+	 * @return a list of orders for given order number
+	 * @should return return all order history for given order number
 	 */
 	@Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
+	
+	/**
+	 * Gets orders with a null stoppedDate or and are not auto expired. 
+	 * Note this does not return DC orders i.e orders where Order.action == DISCONTINUE
+	 * 
+	 * @param patient the patient
+	 * @param orderClass the order class
+	 * @param careSetting the care setting
+	 * @param includeVoided a flag for whether to return voided orders or not
+	 * @return all active orders for given patient parameters
+	 * @should return all active orders for given patient parameters
+	 */
+	@Transactional(readOnly = true)
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
+	        Boolean includeVoided);
 }

@@ -20,9 +20,12 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.Obs;
 import org.openmrs.Order;
+import org.openmrs.Order.Action;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -222,11 +225,38 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#getOrderHistoryByOrderNumber(String)}
 	 */
 	@Test
-	@Verifies(value = "should return all order history", method = "getOrderHistoryByOrderNumber(String)")
-	public void getOrderHistoryByOrderNumber_shouldReturnAllOrderHistory() throws Exception {
+	@Verifies(value = "should return all order history for given order number", method = "getOrderHistoryByOrderNumber(String)")
+	public void getOrderHistoryByOrderNumber_shouldReturnAllOrderHistoryForGivenOrderNumber() throws Exception {
 		List<Order> orders = Context.getOrderService().getOrderHistoryByOrderNumber("111");
 		Assert.assertEquals(2, orders.size());
 		Assert.assertEquals(111, orders.get(0).getOrderId().intValue());
 		Assert.assertEquals(1, orders.get(1).getOrderId().intValue());
+	}
+	
+	/**
+	 * @see {@link OrderService#getActiveOrders(Patient, Class, CareSetting, Boolean)}
+	 */
+	@Test
+	@Verifies(value = "should return all active orders for given patient parameters", method = "getActiveOrders(Patient, Class, CareSetting, Boolean)")
+	public void getActiveOrders_shouldReturnAllOrderHistoryForGivenPatientParameters() throws Exception {
+		executeDataSet(DRUG_ORDERS_DATASET_XML);
+		Patient patient = Context.getPatientService().getPatient(2);
+		List<DrugOrder> orders = Context.getOrderService().getActiveOrders(patient, DrugOrder.class, new CareSetting(),
+		    false);
+		Assert.assertEquals(4, orders.size());
+		
+		Assert.assertTrue(isOrderActive(orders.get(0)));
+		Assert.assertTrue(isOrderActive(orders.get(1)));
+		Assert.assertTrue(isOrderActive(orders.get(2)));
+		Assert.assertTrue(isOrderActive(orders.get(3)));
+		
+		//we should not have any in patients;
+		orders = Context.getOrderService().getActiveOrders(patient, DrugOrder.class, CareSetting.INPATIENT, false);
+		Assert.assertEquals(0, orders.size());
+	}
+	
+	private boolean isOrderActive(Order order) {
+		return order.getDateStopped() == null && order.getAutoExpireDate() == null
+		        && order.getAction() != Action.DISCONTINUE;
 	}
 }
