@@ -32,6 +32,7 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 /**
@@ -42,6 +43,7 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.api.OrderService
  */
+@Transactional
 public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator {
 	
 	protected final Log log = LogFactory.getLog(getClass());
@@ -129,6 +131,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
+    @Transactional(readOnly = true)
 	public Order getOrder(Integer orderId) throws APIException {
 		return getOrder(orderId, Order.class);
 	}
@@ -136,6 +139,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer, java.lang.Class)
 	 */
+    @Transactional(readOnly = true)
 	public <o extends Order> o getOrder(Integer orderId, Class<o> orderClassType) throws APIException {
 		return dao.getOrder(orderId, orderClassType);
 	}
@@ -144,6 +148,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
 	 *      java.util.List, java.util.List)
 	 */
+    @Transactional(readOnly = true)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
 		if (orderClassType == null)
@@ -168,6 +173,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderByUuid(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public Order getOrderByUuid(String uuid) throws APIException {
 		return dao.getOrderByUuid(uuid);
 	}
@@ -184,6 +190,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
 	 */
 	@Override
+    @Transactional(readOnly = true)
 	public Order getOrderByOrderNumber(String orderNumber) {
 		return dao.getOrderByOrderNumber(orderNumber);
 	}
@@ -193,6 +200,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      org.openmrs.Concept)
 	 */
 	@Override
+    @Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
 		if (patient == null)
 			throw new IllegalArgumentException("patient is required");
@@ -218,6 +226,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderHistoryByOrderNumber(java.lang.String)
 	 */
 	@Override
+    @Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
 		List<Order> orders = new ArrayList<Order>();
 		Order order = dao.getOrderByOrderNumber(orderNumber);
@@ -232,6 +241,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, java.lang.Class, org.openmrs.CareSetting, java.lang.Boolean)
 	 */
 	@Override
+    @Transactional(readOnly = true)
 	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
 	        Boolean includeVoided) {
 		return dao.getActiveOrders(patient, orderClass, careSetting, includeVoided);

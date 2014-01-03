@@ -24,12 +24,10 @@ import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders
  */
-@Transactional
 public interface OrderService extends OpenmrsService {
 	
 	/**
@@ -99,7 +97,6 @@ public interface OrderService extends OpenmrsService {
 	 * @return order with given internal identifier
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public Order getOrder(Integer orderId) throws APIException;
 	
@@ -111,7 +108,6 @@ public interface OrderService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Transactional(readOnly = true)
 	public Order getOrderByUuid(String uuid) throws APIException;
 	
 	/**
@@ -160,7 +156,6 @@ public interface OrderService extends OpenmrsService {
 	 * @should find object given valid order number
 	 * @should return null if no object found with given order number
 	 */
-	@Transactional(readOnly = true)
 	public Order getOrderByOrderNumber(String orderNumber);
 	
 	/**
@@ -173,7 +168,6 @@ public interface OrderService extends OpenmrsService {
 	 * @should return orders with the given concept
 	 * @should return empty list for concept without orders
 	 */
-	@Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
 	
 	/**
@@ -194,7 +188,6 @@ public interface OrderService extends OpenmrsService {
 	 * @return a list of orders for given order number
 	 * @should return return all order history for given order number
 	 */
-	@Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
 	
 	/**
@@ -208,7 +201,6 @@ public interface OrderService extends OpenmrsService {
 	 * @return all active orders for given patient parameters
 	 * @should return all active orders for given patient parameters
 	 */
-	@Transactional(readOnly = true)
 	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
 	        Boolean includeVoided);
 }
