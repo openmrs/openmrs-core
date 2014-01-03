@@ -13,13 +13,9 @@
  */
 package org.openmrs.api.impl;
 
-import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
@@ -31,6 +27,11 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
@@ -210,5 +211,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public Long getNextOrderNumberSeedSequenceValue() {
 		return dao.getNextOrderNumberSeedSequenceValue();
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getCareSettingByType(org.openmrs.CareSetting.CareSettingType)
+	 */
+	@Override
+	public CareSetting getCareSettingByType(CareSetting.CareSettingType careSettingType) {
+		return dao.getCareSettingByType(careSettingType);
 	}
 }
