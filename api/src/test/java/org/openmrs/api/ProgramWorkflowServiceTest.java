@@ -427,24 +427,23 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	@Verifies(value = "should save the retire program with resaon", method = "retireProgram(Program program,String reason)")
-	public void retireProgram_shouldSaveTheRetiredProgramWithReason() throws APIException{
-		String reason="Feeling well.";
-
+	public void retireProgram_shouldSaveTheRetiredProgramWithReason() throws APIException {
+		String reason = "Feeling well.";
+		
 		String uuid = "eae98b4c-e195-403b-b34a-82d94103b2c0";
 		Program program = Context.getProgramWorkflowService().getProgramByUuid(uuid);
-
+		
 		Program retireProgram = pws.retireProgram(program, reason);
 		
 		assertTrue(retireProgram.getRetired());
-		for (ProgramWorkflow  programWorkflow : program.getAllWorkflows()) {
-			System.out.println("pwf " + programWorkflow.getName());
+		assertEquals(reason, retireProgram.getRetireReason());
+		for (ProgramWorkflow programWorkflow : program.getAllWorkflows()) {
 			assertTrue(programWorkflow.getRetired());
 			for (ProgramWorkflowState programWorkflowState : programWorkflow.getStates()) {
-				System.out.println("pwfs " + programWorkflowState.getName());
 				assertTrue(programWorkflowState.getRetired());
 			}
 		}
-	
+		
 	}
 	
 	//	/**
