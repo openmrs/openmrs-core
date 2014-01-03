@@ -13,6 +13,9 @@
  */
 package org.openmrs;
 
+/**
+ *  @since 1.10
+ */
 public class CareSetting extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public enum CareSettingType {
