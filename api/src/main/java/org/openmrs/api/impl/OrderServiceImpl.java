@@ -14,6 +14,7 @@
 package org.openmrs.api.impl;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -30,6 +31,7 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 /**
@@ -210,5 +212,20 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public Long getNextOrderNumberSeedSequenceValue() {
 		return dao.getNextOrderNumberSeedSequenceValue();
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderHistoryByOrderNumber(java.lang.String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
+		List<Order> orders = new ArrayList<Order>();
+		Order order = dao.getOrderByOrderNumber(orderNumber);
+		while (order != null) {
+			orders.add(order);
+			order = order.getPreviousOrder();
+		}
+		return orders;
 	}
 }

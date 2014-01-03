@@ -182,4 +182,14 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
 	public Long getNextOrderNumberSeedSequenceValue();
+	
+	/**
+	 * Gets the order matching the specified order number and its previous orders in the ordering they occurred, i.e if this order has a previous order, fetch it and if it also has a previous order then fetch it until the original one with no previous order is reached 
+	 * 
+	 * @param orderNumber the order number whose history to get
+	 * @return a list of orders
+	 * @should return all order history
+	 */
+	@Transactional(readOnly = true)
+	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
 }
