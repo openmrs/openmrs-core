@@ -187,21 +187,51 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @deprecated
+	 * @deprecated Replaced by retireProgram(Program program,String reason)
 	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
+	@Deprecated
 	public Program retireProgram(Program program) throws APIException {
-		return retireProgram(program, null);
+		program.setRetired(true);
+		for (ProgramWorkflow workflow : program.getWorkflows()) {
+			workflow.setRetired(true);
+			for (ProgramWorkflowState state : workflow.getStates()) {
+				state.setRetired(true);
+			}
+		}
+		return saveProgram(program);
 	}
+	
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
-	public Program retireProgram(Program program,String reason) throws APIException {
+	public Program retireProgram(Program program, String reason) throws APIException {
 		//program.setRetired(true); - Note the BaseRetireHandler aspect is already setting the retired flag and reason
 		for (ProgramWorkflow workflow : program.getWorkflows()) {
 			workflow.setRetired(true);
 			for (ProgramWorkflowState state : workflow.getStates()) {
 				state.setRetired(true);
+			}
+		}
+		return saveProgram(program);
+	}
+	
+	/**
+	 * @deprecated replaced by unretireProgram(Program program)
+	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
+	 */
+	@Deprecated
+	public Program unRetireProgram(Program program) throws APIException {
+		Date lastModifiedDate = program.getDateChanged();
+		program.setRetired(false);
+		for (ProgramWorkflow workflow : program.getAllWorkflows()) {
+			if (lastModifiedDate != null && lastModifiedDate.equals(workflow.getDateChanged())) {
+				workflow.setRetired(false);
+				for (ProgramWorkflowState state : workflow.getStates()) {
+					if (lastModifiedDate != null && lastModifiedDate.equals(state.getDateChanged())) {
+						state.setRetired(false);
+					}
+				}
 			}
 		}
 		return saveProgram(program);
