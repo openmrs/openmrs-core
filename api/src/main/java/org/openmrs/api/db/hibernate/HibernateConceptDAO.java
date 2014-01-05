@@ -1428,6 +1428,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return (Long) searchCriteria.uniqueResult();
 	}
 	
+	/**
+	 * @should return a drug if either the drug name or concept name matches the phase not both
+	 * @should return distinct drugs
+	 * @should return a drug, if phrase match concept_name No need to match both concept_name and drug_name
+	 * @should return drug when phrase match drug_name even searchDrugConceptNames is false
+	 * @should return a drug if phrase match drug_name No need to match both concept_name and drug_name
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
@@ -1438,16 +1445,18 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		if (!includeRetired)
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
-		if (concept != null)
-			searchCriteria.add(Restrictions.eq("drug.concept", concept));
 		MatchMode matchMode = MatchMode.START;
 		if (searchOnPhrase)
 			matchMode = MatchMode.ANYWHERE;
 		if (!StringUtils.isBlank(drugName)) {
-			searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
-			if (searchDrugConceptNames) {
+			if (searchDrugConceptNames && concept != null) {
 				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
-				searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
+				searchCriteria.add(Restrictions.or(Restrictions.ilike("drug.name", drugName, matchMode), Restrictions.ilike(
+				    "names.name", drugName, matchMode)));
+				searchCriteria.setProjection(Projections.distinct(Projections.property("drugId")));
+			} else {
+				searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
+				
 			}
 		}
 		
