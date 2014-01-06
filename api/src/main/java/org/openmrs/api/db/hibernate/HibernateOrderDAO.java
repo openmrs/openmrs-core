@@ -190,11 +190,10 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getCareSettingByType(org.openmrs.CareSetting.CareSettingType)
+	 * @see org.openmrs.api.db.OrderDAO#getCareSetting(Integer)
 	 */
 	@Override
-	public CareSetting getCareSettingByType(CareSetting.CareSettingType careSettingType) {
-		return (CareSetting) sessionFactory.getCurrentSession().createQuery(
-		    "from CareSetting c where c.careSettingType = :type").setParameter("type", careSettingType).uniqueResult();
+	public CareSetting getCareSetting(Integer careSettingId) {
+		return (CareSetting) sessionFactory.getCurrentSession().get(CareSetting.class, careSettingId);
 	}
 }

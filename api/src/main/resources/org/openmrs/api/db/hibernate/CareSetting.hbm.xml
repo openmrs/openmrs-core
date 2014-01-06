@@ -12,7 +12,7 @@
             </generator>
         </id>
 
-        <property name="careSettingType" column="type" length="50" not-null="true">
+        <property name="careSettingType" column="care_setting_type" length="50" not-null="true">
             <type name="org.openmrs.util.HibernateEnumType">
                 <param name="enumClassName">org.openmrs.CareSetting$CareSettingType</param>
             </type>

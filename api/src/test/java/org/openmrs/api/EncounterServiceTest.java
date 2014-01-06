@@ -58,7 +58,6 @@ import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.api.handler.NoVisitAssignmentHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -501,7 +500,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		order.setDateCreated(date);
 		order.setCreator(creator);
 		
-		order.setCareSetting(Context.getOrderService().getCareSettingByType(CareSetting.CareSettingType.OUTPATIENT));
+		order.setCareSetting(Context.getOrderService().getCareSetting(1));
 		encounter.addOrder(order);
 		
 		// make sure the logged in user isn't the user we're testing with

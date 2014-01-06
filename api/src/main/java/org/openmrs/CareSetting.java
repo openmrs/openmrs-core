@@ -24,7 +24,7 @@ public class CareSetting extends BaseOpenmrsMetadata implements java.io.Serializ
 	
 	private Integer careSettingId;
 	
-	private CareSettingType careSettingType = CareSettingType.OUTPATIENT;
+	private CareSettingType careSettingType;
 	
 	public CareSetting() {
 	}

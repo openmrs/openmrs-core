@@ -41,7 +41,7 @@
             </type>
         </property>
 
-        <many-to-one name="careSetting" cascade="none" class="org.openmrs.CareSetting" not-null="true">
+        <many-to-one name="careSetting" class="org.openmrs.CareSetting" not-null="true">
             <column name="care_setting_id"/>
         </many-to-one>
 

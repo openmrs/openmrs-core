@@ -86,9 +86,9 @@ public interface OrderDAO {
 	/**
 	 * Get care setting by type
 	 *
-	 * @param careSettingType
+	 * @param careSettingId
 	 * @return the care setting type
 	 * @since 1.10
 	 */
-	public CareSetting getCareSettingByType(CareSetting.CareSettingType careSettingType);
+	public CareSetting getCareSetting(Integer careSettingId);
 }

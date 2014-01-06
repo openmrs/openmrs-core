@@ -214,10 +214,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getCareSettingByType(org.openmrs.CareSetting.CareSettingType)
+	 * @see org.openmrs.api.OrderService#getCareSetting(Integer)
 	 */
 	@Override
-	public CareSetting getCareSettingByType(CareSetting.CareSettingType careSettingType) {
-		return dao.getCareSettingByType(careSettingType);
+	public CareSetting getCareSetting(Integer careSettingId) {
+		return dao.getCareSetting(careSettingId);
 	}
 }

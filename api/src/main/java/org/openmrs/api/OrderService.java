@@ -24,6 +24,7 @@ import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.Integer;
 import java.util.List;
 
 /**
@@ -187,9 +188,9 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Retrieve care setting by type
 	 *
-	 * @param careSettingType
+	 * @param careSettingId
 	 * @return the care setting
 	 * @since 1.10
 	 */
-	public CareSetting getCareSettingByType(CareSetting.CareSettingType careSettingType);
+	public CareSetting getCareSetting(Integer careSettingId);
 }
