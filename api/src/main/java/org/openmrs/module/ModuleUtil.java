@@ -284,7 +284,7 @@ public class ModuleUtil {
 		String separator = "-";
 		
 		if (value != null && !value.equals("")) {
-			if ((value.indexOf("*") > 0 || value.indexOf(separator) > 0) && (!checkForAlphaVersion(value))) {
+			if ((value.indexOf("*") > 0 || value.indexOf(separator) > 0) && (!isVersionWithQualifier(value))) {
 				// if it contains "*" or "-" then we must separate those two
 				// assume it's always going to be two part
 				// assign the upper and lower bound
@@ -351,8 +351,8 @@ public class ModuleUtil {
 	 * @should treat SNAPSHOT as earliest version
 	 */
 	public static int compareVersion(String version, String value) {
-		String alphaVersion = "";
-		String alphaValue = "";
+		String qualifierVersion = "";
+		String qualifierValue = "";
 		
 		try {
 			if (version == null || value == null)
@@ -363,14 +363,14 @@ public class ModuleUtil {
 			
 			// treat alpha version (i.e. "-SNAPSHOT") as the lowest possible version
 			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0 
-			if (checkForAlphaVersion(version)) {
-				alphaVersion = version.substring(version.indexOf('-'));
-				version = version.replace(alphaVersion, ".0");
+			if (isVersionWithQualifier(version)) {
+                qualifierVersion = version.substring(version.indexOf('-'));
+				version = version.replace(qualifierVersion, ".0");
 			}
 			
-			if (checkForAlphaVersion(value)) {
-				alphaValue = value.substring(value.indexOf('-'));
-				value = value.replace(alphaValue, ".0");
+			if (isVersionWithQualifier(value)) {
+                qualifierValue = value.substring(value.indexOf('-'));
+				value = value.replace(qualifierValue, ".0");
 			}
 			
 			Collections.addAll(versions, version.split("\\."));
@@ -404,15 +404,9 @@ public class ModuleUtil {
 	}
 	
 	// Check for alpha version (i.e 1.9.2-SNAPSHOT ect)
-	public static boolean checkForAlphaVersion(String version) {
-		boolean isAlphaVersion = false;
-		
+	public static boolean isVersionWithQualifier(String version) {
 		Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.(\\d+))?(\\-([A-Z]+))").matcher(version);
-		if (matcher.matches()) {
-			// Matches
-			isAlphaVersion = true;
-		}
-		return (isAlphaVersion);
+		return matcher.matches();
 	}
 	
 	/**
