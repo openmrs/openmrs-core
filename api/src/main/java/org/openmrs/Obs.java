@@ -917,9 +917,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 				if (getValueDrug() != null)
 					return getValueDrug().getFullName(locale);
 				else {
-					ConceptName valueCodedName = getValueCodedName();
+                    ConceptName valueCodedName = getValueCodedName();
 					if (valueCodedName != null) {
-						return valueCodedName.getName();
+						return getValueCoded().getName(locale, false).getName();
 					} else {
 						ConceptName fallbackName = getValueCoded().getName();
 						if (fallbackName != null) {
