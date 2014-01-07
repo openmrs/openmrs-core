@@ -38,6 +38,8 @@ import org.openmrs.test.Verifies;
  */
 public class ObsTest {
 	
+	private static final String VERO = "Vero";
+	
 	/**
 	 * Tests the addToGroup method in ObsGroup
 	 * 
@@ -404,5 +406,23 @@ public class ObsTest {
 		obs.setValueNumeric(123456789.012345);
 		String str = "123456789.012345";
 		Assert.assertEquals(str, obs.getValueAsString(Locale.ENGLISH));
+	}
+	
+	@Test
+	@Verifies(value = "should return localized name of the value coded concept", method = "getValueAsString(Locale)")
+	public void getValueAsString_shouldReturnLocalizedCodedConcept() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("CWE");
+		
+		Concept cn = new Concept();
+		cn.setDatatype(cdt);
+		cn.addName(new ConceptName(VERO, Locale.ITALIAN));
+		
+		Obs obs = new Obs();
+		obs.setValueCoded(cn);
+		obs.setConcept(cn);
+		obs.setValueCodedName(new ConceptName("True", Locale.US));
+		
+		Assert.assertEquals(VERO, obs.getValueAsString(Locale.ITALIAN));
 	}
 }
