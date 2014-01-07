@@ -22,7 +22,8 @@ public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTas
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		
 		try {
-			Set<Object> uniqueUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", connection);
+			Set<String> uniqueUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,
+			    connection.getUnderlyingConnection());
 			migrateUnitsToCodedValue(connection, uniqueUnits);
 		}
 		catch (SQLException e) {
@@ -33,7 +34,7 @@ public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTas
 		}
 	}
 	
-	private void migrateUnitsToCodedValue(JdbcConnection connection, Set<Object> uniqueUnits) throws CustomChangeException,
+	private void migrateUnitsToCodedValue(JdbcConnection connection, Set<String> uniqueUnits) throws CustomChangeException,
 	        SQLException, DatabaseException {
 		PreparedStatement updateDrugOrderStatement = null;
 		Boolean autoCommit = null;
@@ -41,8 +42,7 @@ public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTas
 			autoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 			updateDrugOrderStatement = connection.prepareStatement("update drug_order set dose_units = ? where units = ?");
-			for (Object unitObj : uniqueUnits) {
-                String unit = unitObj.toString();
+			for (String unit : uniqueUnits) {
 				Integer conceptIdForUnit = DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(), unit);
 				if (conceptIdForUnit == null) {
 					throw new CustomChangeException("No concept mapping found for unit: " + unit);

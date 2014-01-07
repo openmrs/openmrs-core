@@ -36,7 +36,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private Concept doseUnits;
 	
-	private String frequency;
+	private OrderFrequency frequency;
 	
 	private Boolean asNeeded = false;
 	
@@ -129,8 +129,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * Gets the frequency
 	 * 
 	 * @return frequency
+	 * @since 1.10 (signature changed)
 	 */
-	public String getFrequency() {
+	public OrderFrequency getFrequency() {
 		return this.frequency;
 	}
 	
@@ -138,8 +139,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * Sets the frequency
 	 * 
 	 * @param frequency
+	 * @since 1.10 (signature changed)
 	 */
-	public void setFrequency(String frequency) {
+	public void setFrequency(OrderFrequency frequency) {
 		this.frequency = frequency;
 	}
 	
