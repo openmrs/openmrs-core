@@ -3306,7 +3306,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		address.setAddress1("some address");
 		patient.addAddress(address);
 		
-		patientService.savePatient(patient);
+		Context.getPatientService().savePatient(patient);
 		Assert.assertTrue(identifier.isPreferred());
 		Assert.assertTrue(name.isPreferred());
 		Assert.assertTrue(address.isPreferred());

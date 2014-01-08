@@ -22,6 +22,9 @@ import org.junit.Test;
 import org.openmrs.Auditable;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.User;
+import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.scheduler.Task;
@@ -233,4 +236,30 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(u.getDateCreated());
 	}
 	
+	@Test
+	public void onSave_shouldPopulateDateCreatedForPersonIfNull() {
+		Person person = createPersonWithNameAndAddress();
+		Context.getPersonService().savePerson(person);
+		Assert.assertNotNull(person.getDateCreated());
+		Assert.assertNotNull(person.getPersonDateCreated());
+	}
+	
+	@Test
+	public void onSave_shouldPopulateCreatorForPersonIfNull() {
+		Person person = createPersonWithNameAndAddress();
+		Context.getPersonService().savePerson(person);
+		Assert.assertNotNull(person.getCreator());
+		Assert.assertNotNull(person.getPersonCreator());
+	}
+	
+	private Person createPersonWithNameAndAddress() {
+		Person person = new Person();
+		person.setGender("M");
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
+		person.addName(name);
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("some address");
+		person.addAddress(address);
+		return person;
+	}
 }
