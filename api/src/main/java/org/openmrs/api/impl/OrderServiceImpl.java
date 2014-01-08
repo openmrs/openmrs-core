@@ -32,6 +32,7 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -218,6 +219,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getNextOrderNumberSeedSequenceValue()
 	 */
 	@Override
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public Long getNextOrderNumberSeedSequenceValue() {
 		return dao.getNextOrderNumberSeedSequenceValue();
 	}
