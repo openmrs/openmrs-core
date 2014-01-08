@@ -122,8 +122,8 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		}
 		
 		// to be used in error messages if this fails
-		String errorCommand = "\"mysql -u" + username + " -p -e\"source "
-		        + tmpOutputFile.getAbsolutePath() + "\"" + databaseName;
+		String errorCommand = "\"mysql -u" + username + " -p -e\"source " + tmpOutputFile.getAbsolutePath() + "\""
+		        + databaseName;
 		
 		// run the command line string
 		StringBuffer output = new StringBuffer();
