@@ -62,11 +62,12 @@ public class UserValidator implements Validator {
 	 * @should pass validation if all required fields have proper values
 	 * @should fail validation if email as username enabled and email invalid
 	 * @should fail validation if email as username disabled and email provided
+	 * @should not throw NPE when user is null
 	 */
 	public void validate(Object obj, Errors errors) {
 		User user = (User) obj;
 		if (user == null) {
-			errors.rejectValue("user", "error.general");
+			errors.reject("error.general");
 		} else {
 			if (user.isRetired() && StringUtils.isBlank(user.getRetireReason()))
 				errors.rejectValue("retireReason", "error.null");
@@ -84,19 +85,20 @@ public class UserValidator implements Validator {
 				if (person.getPersonName() == null || StringUtils.isEmpty(person.getPersonName().toString()))
 					errors.rejectValue("person", "Person.names.length");
 			}
-		}
-		AdministrationService as = Context.getAdministrationService();
-		boolean emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false"));
-		if (emailAsUsername) {
-			boolean isValidUserName = isUserNameAsEmailValid(user.getUsername());
-			if (!isValidUserName) {
-				errors.rejectValue("username", "error.username.email");
-			}
-		} else {
-			boolean isValidUserName = isUserNameValid(user.getUsername());
-			if (!isValidUserName) {
-				errors.rejectValue("username", "error.username.pattern");
+			
+			AdministrationService as = Context.getAdministrationService();
+			boolean emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false"));
+			if (emailAsUsername) {
+				boolean isValidUserName = isUserNameAsEmailValid(user.getUsername());
+				if (!isValidUserName) {
+					errors.rejectValue("username", "error.username.email");
+				}
+			} else {
+				boolean isValidUserName = isUserNameValid(user.getUsername());
+				if (!isValidUserName) {
+					errors.rejectValue("username", "error.username.pattern");
+				}
 			}
 		}
 	}
