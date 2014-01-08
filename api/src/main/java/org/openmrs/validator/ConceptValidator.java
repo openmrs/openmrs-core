@@ -178,8 +178,8 @@ public class ConceptValidator implements Validator {
 								
 								//skip same
 								String uuid = conceptToValidate.getUuid();
-								if (conceptToValidate.getConceptId() != null
-								        && uuid != null && uuid.equals(concept.getUuid()))
+								if (conceptToValidate.getConceptId() != null && uuid != null
+								        && uuid.equals(concept.getUuid()))
 									continue;
 								
 								//should be a unique name amongst all preferred and fully specified names in its locale system wide

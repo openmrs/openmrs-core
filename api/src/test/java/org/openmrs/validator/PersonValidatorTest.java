@@ -19,6 +19,7 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Patient;
+import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -45,6 +46,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonValidator#validate(Object,Errors)
 	 * @verifies fail validation if birthdate is a future date
 	 */
+	
 	@Test
 	@Verifies(value = "should fail validation if birthdate is a future date", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfBirthdateIsAFutureDate() throws Exception {
