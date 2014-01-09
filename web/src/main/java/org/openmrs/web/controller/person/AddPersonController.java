@@ -51,12 +51,6 @@ public class AddPersonController extends SimpleFormController {
 	
 	private final String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
 	
-	/** Parameters passed in view request object **/
-	
-	//	private String personType = "patient";
-	//
-	//	private String viewType = "view";
-	
 	private boolean invalidAgeFormat = false;
 	
 	/**

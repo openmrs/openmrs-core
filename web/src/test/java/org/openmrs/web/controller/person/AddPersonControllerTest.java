@@ -73,6 +73,4 @@ public class AddPersonControllerTest extends BaseWebContextSensitiveTest {
 		assertNotNull(mav);
 		assertTrue(mav.getModel().isEmpty());
 	}
-
-
 }
