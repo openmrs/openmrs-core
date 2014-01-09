@@ -6539,9 +6539,6 @@
 	<changeSet id="201312171559-TRUNK-4159" author="k-joseph">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="order_frequency"/></not>
-			<not><foreignKeyConstraintExists foreignKeyName="order_frequency_concept_id_fk"/></not>
-			<not><foreignKeyConstraintExists foreignKeyName="order_frequency_creator_fk"/></not>
-			<not><foreignKeyConstraintExists foreignKeyName="order_frequency_retired_by_fk"/></not>
 		</preConditions>
 		
 		<comment>Create the order_frequency table</comment>
@@ -6552,23 +6549,18 @@
 			<column name="concept_id" type="int"><constraints nullable="false"/></column>
 			<column name="frequency_per_day" type="double"/>
 			<column name="creator" type="int"><constraints nullable="false"/></column>
-             <column name="date_created" type="datetime"><constraints nullable="false"/></column>	
-             <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
-                 <constraints nullable="false"/>
+            <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+            <column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
              </column>
-             <column name="retired_by" type="int" />
-             <column name="date_retired" type="datetime"/>
-             <column name="retire_reason" type="varchar(255)" />
-             <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
+            <column name="retired_by" type="int" />
+            <column name="date_retired" type="datetime"/>
+            <column name="retire_reason" type="varchar(255)" />
+            <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
   		</createTable>
   		
-		<comment>Adding foreign key for concept_id to order_frequency table</comment>
-  		<addForeignKeyConstraint constraintName="order_frequency_concept_id_fk" baseTableName="order_frequency" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
-		
-		<comment>Adding foreign key for creator to order_frequency table</comment>
+		<addForeignKeyConstraint constraintName="order_frequency_concept_id_fk" baseTableName="order_frequency" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
 		<addForeignKeyConstraint constraintName="order_frequency_creator_fk" baseTableName="order_frequency" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
-		
-		<comment>Adding foreign key for retired_by to order_frequency table</comment>
 		<addForeignKeyConstraint constraintName="order_frequency_retired_by_fk" baseTableName="order_frequency" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
   		
 	</changeSet>
