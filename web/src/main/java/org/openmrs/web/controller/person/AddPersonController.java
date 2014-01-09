@@ -128,8 +128,7 @@ public class AddPersonController extends SimpleFormController {
 			String birthdate = person.get("birthdate");
 			String age = person.get("age");
 			
-			log.debug("name: " + person.get("name") + " birthdate: " + person.get("birthdate") + " age: "
-			        + person.get("age") + " gender: " + gender);
+			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
 			if (!name.equals("") || !birthdate.equals("") || !age.equals("") || !gender.equals("")) {
 				
