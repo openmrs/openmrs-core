@@ -262,8 +262,15 @@
 		<th><openmrs:message code="Obs.person"/></th>
 		<td>
 			<spring:bind path="person">
-				<openmrs_tag:personField formFieldName="person" searchLabelCode="Person.findBy" initialValue="${status.editor.value.personId}" linkUrl="" callback="" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+                <c:choose>
+                    <c:when test="${obs.encounter != null}">
+                        <input type="text" name="person" id="person" value="${status.editor.value.personName}" size="20" disabled="disabled" />
+                    </c:when>
+                    <c:otherwise>
+                        <openmrs_tag:personField formFieldName="person" searchLabelCode="Person.findBy" initialValue="${status.editor.value.personId}" linkUrl="" callback="" />
+                </c:otherwise>
+                </c:choose>
+                <c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
