@@ -52,10 +52,10 @@ public class AddPersonController extends SimpleFormController {
 	private final String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
 	
 	/** Parameters passed in view request object **/
-
-//	private String personType = "patient";
-//
-//	private String viewType = "view";
+	
+	//	private String personType = "patient";
+	//
+	//	private String viewType = "view";
 	
 	private boolean invalidAgeFormat = false;
 	
@@ -67,14 +67,14 @@ public class AddPersonController extends SimpleFormController {
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	        BindException errors) throws Exception {
-
-        HashMap<String, String> person = getParametersFromRequest(request);
-
-        String personId = person.get("personId");
-        String viewType = person.get("viewType");
-        String personType = person.get("personType");
-
-        if ("".equals(personId)) {
+		
+		HashMap<String, String> person = getParametersFromRequest(request);
+		
+		String personId = person.get("personId");
+		String viewType = person.get("viewType");
+		String personType = person.get("personType");
+		
+		if ("".equals(personId)) {
 			// if they didn't pick a person, continue on to the edit screen no matter what type of view was requsted)
 			if ("view".equals(viewType) || "shortEdit".equals(viewType))
 				viewType = "shortEdit";
@@ -128,13 +128,14 @@ public class AddPersonController extends SimpleFormController {
 			
 			invalidAgeFormat = false;
 			HashMap<String, String> person = getParametersFromRequest(request);
-
-            String gender = person.get("gender");
-            String name = person.get("name");
-            String birthdate = person.get("birthdate");
-            String age = person.get("age");
-
-            log.debug("name: " + person.get("name") + " birthdate: " + person.get("birthdate") + " age: " + person.get("age") + " gender: " + gender);
+			
+			String gender = person.get("gender");
+			String name = person.get("name");
+			String birthdate = person.get("birthdate");
+			String age = person.get("age");
+			
+			log.debug("name: " + person.get("name") + " birthdate: " + person.get("birthdate") + " age: "
+			        + person.get("age") + " gender: " + gender);
 			
 			if (!name.equals("") || !birthdate.equals("") || !age.equals("") || !gender.equals("")) {
 				
@@ -179,7 +180,7 @@ public class AddPersonController extends SimpleFormController {
 				}
 				
 				if (gender.length() < 1)
-                    person.put("gender", null);
+					person.put("gender", null);
 				
 				personList = new Vector<PersonListItem>();
 				for (Person p : ps.getSimilarPeople(name, d, gender)) {
@@ -219,20 +220,19 @@ public class AddPersonController extends SimpleFormController {
 		log.debug("Found list of size: " + personList.size());
 		
 		if (personList.size() < 1 && Context.isAuthenticated()) {
-            HashMap<String, String> person = getParametersFromRequest(request);
-
-            String name = person.get("name");
-            String birthdate = person.get("birthdate");
-            String age = person.get("age");
-            String gender = person.get("gender");
-            String viewType = person.get("viewType");
-            String personType = person.get("personType");
-
-
-            if (viewType == null)
+			HashMap<String, String> person = getParametersFromRequest(request);
+			
+			String name = person.get("name");
+			String birthdate = person.get("birthdate");
+			String age = person.get("age");
+			String gender = person.get("gender");
+			String viewType = person.get("viewType");
+			String personType = person.get("personType");
+			
+			if (viewType == null)
 				viewType = "edit";
-
-            log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
+			
+			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
 			if (!name.equals("") || !birthdate.equals("") || !age.equals("") || !gender.equals("")) {
 				mav.clear();
@@ -256,10 +256,10 @@ public class AddPersonController extends SimpleFormController {
 	 */
 	private String getPersonURL(String personId, String personType, String viewType, HttpServletRequest request)
 	        throws ServletException, UnsupportedEncodingException {
-
-        HashMap<String, String> person = getParametersFromRequest(request);
-
-        if ("patient".equals(personType)) {
+		
+		HashMap<String, String> person = getParametersFromRequest(request);
+		
+		if ("patient".equals(personType)) {
 			if ("edit".equals(viewType))
 				return request.getContextPath() + PATIENT_EDIT_URL + getParametersForURL(person);
 			if ("shortEdit".equals(viewType))
@@ -286,14 +286,14 @@ public class AddPersonController extends SimpleFormController {
 	 * Returns the appropriate ?patientId/?userId/?name&age&birthyear etc
 	 * 
 	 *
-     * @param person@return
+	 * @param person@return
 	 * @throws UnsupportedEncodingException
 	 */
 	private String getParametersForURL(HashMap<String, String> person) throws UnsupportedEncodingException {
-
+		
 		if ("".equals(person.get("personId")))
-			return "?addName=" + URLEncoder.encode(person.get("name"), "UTF-8") + "&addBirthdate=" + person.get("birthdate") + "&addAge=" + person.get("age")
-			        + "&addGender=" + person.get("gender");
+			return "?addName=" + URLEncoder.encode(person.get("name"), "UTF-8") + "&addBirthdate=" + person.get("birthdate")
+			        + "&addAge=" + person.get("age") + "&addGender=" + person.get("gender");
 		else {
 			if ("patient".equals(person.get("personType")))
 				return "?patientId=" + person.get("personId");
@@ -308,15 +308,15 @@ public class AddPersonController extends SimpleFormController {
 	 * @param request
 	 */
 	private HashMap<String, String> getParametersFromRequest(HttpServletRequest request) {
-        HashMap<String, String> person = new HashMap<String, String>();
-        person.put("name", ServletRequestUtils.getStringParameter(request, "addName", ""));
-        person.put("birthdate", ServletRequestUtils.getStringParameter(request, "addBirthdate", ""));
-        person.put("age", ServletRequestUtils.getStringParameter(request, "addAge", ""));
-        person.put("gender", ServletRequestUtils.getStringParameter(request, "addGender", ""));
-        person.put("personType", ServletRequestUtils.getStringParameter(request, "personType", "patient"));
-        person.put("personId", ServletRequestUtils.getStringParameter(request, "personId", ""));
-        person.put("viewType", ServletRequestUtils.getStringParameter(request, "viewType", ""));
-
-        return person;
+		HashMap<String, String> person = new HashMap<String, String>();
+		person.put("name", ServletRequestUtils.getStringParameter(request, "addName", ""));
+		person.put("birthdate", ServletRequestUtils.getStringParameter(request, "addBirthdate", ""));
+		person.put("age", ServletRequestUtils.getStringParameter(request, "addAge", ""));
+		person.put("gender", ServletRequestUtils.getStringParameter(request, "addGender", ""));
+		person.put("personType", ServletRequestUtils.getStringParameter(request, "personType", "patient"));
+		person.put("personId", ServletRequestUtils.getStringParameter(request, "personId", ""));
+		person.put("viewType", ServletRequestUtils.getStringParameter(request, "viewType", ""));
+		
+		return person;
 	}
 }
