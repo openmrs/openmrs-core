@@ -1,5 +1,5 @@
 <div id="banner">
-<a href="<spring:theme code="url.organization" />">
+<a href="<%= request.getContextPath() %><spring:theme code="url.homepage" />">
   <div id="logosmall"><img src="<%= request.getContextPath() %><spring:theme code="image.logo.text.small" />" alt="OpenMRS Logo" border="0"/></div>
 </a>  
 <table id="bannerbar">
