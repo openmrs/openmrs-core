@@ -1219,4 +1219,54 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(service.getLocationAttributeByUuid("not-a-uuid"));
 	}
 	
+	/**
+	 * should set audit info if any item in the location is edited
+	 * 
+	 * @see {@link LocationService#saveLocation(Location)}
+	 */
+	@Test
+	@Verifies(value = "should set audit info if any item in the location is edited", method = "saveLocation(Location)")
+	public void saveLocation_shouldSetAuditInfoIfAnyItemInTheLocationIsEdited() throws Exception {
+		LocationService ls = Context.getLocationService();
+		
+		Location location = ls.getLocation(1);
+		Assert.assertNotNull(location);
+		Assert.assertNull(location.getDateChanged());
+		Assert.assertNull(location.getChangedBy());
+		
+		location.setName("edited name");
+		ls.saveLocation(location);
+		
+		Location editedLocation = Context.getLocationService().saveLocation(location);
+		Context.flushSession();
+		
+		Assert.assertNotNull(editedLocation.getDateChanged());
+		Assert.assertNotNull(editedLocation.getChangedBy());
+		
+	}
+	
+	/**
+	 * should set audit info if any item in the location tag is edited
+	 * 
+	 * @see {@link LocationService#saveLocationTag(LocationTag)}
+	 */
+	@Test
+	@Verifies(value = "should set audit info if any item in the location tag is edited", method = "saveLocationTag(LocationTag)")
+	public void saveLocationTag_shouldSetAuditInfoIfAnyItemInTheLocationTagIsEdited() throws Exception {
+		LocationService ls = Context.getLocationService();
+		LocationTag tag = ls.getLocationTag(1);
+		
+		Assert.assertNull(tag.getDateChanged());
+		Assert.assertNull(tag.getChangedBy());
+		
+		tag.setName("testing");
+		tag.setDescription("desc");
+		
+		LocationTag editedTag = Context.getLocationService().saveLocationTag(tag);
+		Context.flushSession();
+		
+		Assert.assertNotNull(editedTag.getDateChanged());
+		Assert.assertNotNull(editedTag.getChangedBy());
+	}
+	
 }
