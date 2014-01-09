@@ -1647,5 +1647,25 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		// check
 		assertEquals(changeMessage, obs.getVoidReason());
 	}
+
+    /**
+     * @see ObsService#saveObs(Obs,String)
+     */
+    @Test
+    @Verifies(value = "should overwrite ObsPerson Value With EncounterPatient", method = "saveObs(Obs,String)")
+    public void saveObs_shouldOverwriteObsPersonValueWithEncounterPatient() throws Exception {
+        String changeMessage = "Testing TRUNK-3283";
+
+        ObsService obsService = Context.getObsService();
+
+        Obs obs = obsService.getObs(7);
+
+        Encounter encounter = obs.getEncounter();
+
+        Obs obsSaved = obsService.saveObs(obs,changeMessage);
+
+        assertNotNull(encounter);
+        assertEquals(obsSaved.getPerson(),encounter.getPatient());
+    }
 	
 }
