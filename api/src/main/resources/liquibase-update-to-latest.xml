@@ -7401,5 +7401,66 @@
      	<comment>Renaming orders.order_type to order.order_type_id</comment>
      	<renameColumn tableName="orders" oldColumnName="order_type" newColumnName="order_type_id"/>
      </changeSet>
+     
+     <changeSet id="201401040436-TRUNK-3919" author="dkithmal" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location_tag" columnName="changed_by" />
+			</not>
+		</preConditions>
+		<comment>
+			Add changed_by column to location_tag table
+		</comment>
+		<addColumn tableName="location_tag">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="location_tag_changed_by"
+			baseTableName="location_tag" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+		
+	<changeSet id="201401040438-TRUNK-3919" author="dkithmal" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location_tag" columnName="date_changed" />
+			</not>
+		</preConditions>
+		<comment>
+			Add date_changed column to location_tag table
+		</comment>
+		<addColumn tableName="location_tag">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
+		<changeSet id="201401040440-TRUNK-3919" author="dkithmal" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location" columnName="changed_by" />
+			</not>
+		</preConditions>
+		<comment>
+			Add changed_by column to location table
+		</comment>
+		<addColumn tableName="location">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="location_changed_by"
+			baseTableName="location" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+		
+	<changeSet id="201401040442-TRUNK-3919" author="dkithmal" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location" columnName="date_changed" />
+			</not>
+		</preConditions>
+		<comment>
+			Add date_changed column to location table
+		</comment>
+		<addColumn tableName="location">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
 
 </databaseChangeLog>
