@@ -69,6 +69,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public Order saveOrder(Order order) throws APIException {
 		if (order.getOrderId() == null) {
+			discontinueExistingOrdersIfRequired(order);
 			//TODO call module registered order number generators 
 			//and if there is none, use the default below
 			try {
@@ -82,6 +83,46 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		return dao.saveOrder(order);
+	}
+
+    /**
+     * If this is a discontinue order, ensure that the previous order is discontinued.
+     * If a previousOrder is present, then ensure this is discontinued.
+     * If no previousOrder is present, then try to find a previousOrder and discontinue it.
+     * If cannot find a previousOrder, throw exception
+     *
+     * @param order
+     */
+	private void discontinueExistingOrdersIfRequired(Order order) {
+		//Ignore and return if this is not an order to discontinue
+		if (!Order.Action.DISCONTINUE.equals(order.getAction()))
+			return;
+		
+		//Discontinue previousOrder if it is not already
+		Order previousOrder = order.getPreviousOrder();
+		if (previousOrder != null) {
+			if (!previousOrder.getConcept().equals(order.getConcept())) {
+				throw new APIException("Concept of previous order and this order should be the same");
+			}
+			
+			if (previousOrder.getDateStopped() == null) {
+				discontinue(previousOrder, order.getStartDate());
+			}
+			return;
+		}
+		
+		//Discontinue the first found order corresponding to this DC order.
+		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getClass(), order.getCareSetting(), null);
+		for (Order activeOrder : orders) {
+			if (activeOrder.getConcept().equals(order.getConcept())) {
+				order.setPreviousOrder(activeOrder);
+				discontinue(activeOrder, order.getStartDate());
+				return;
+			}
+		}
+
+		throw new APIException("Could not find an active order with the concept " + order.getConcept()
+		        + " to discontinue. ");
 	}
 	
 	/**
@@ -272,4 +313,45 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId) {
 		return dao.getOrderFrequency(orderFrequencyId);
 	}
+
+    /**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)
+	 */
+	@Override
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) {
+		discontinue(orderToDiscontinue, discontinueDate);
+		
+		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
+		newOrder.setDiscontinuedReason(reasonCoded);
+		
+		return saveOrder(newOrder);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)
+	 */
+	@Override
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) {
+		discontinue(orderToDiscontinue, discontinueDate);
+		
+		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
+		newOrder.setDiscontinuedReasonNonCoded(reasonNonCoded);
+		
+		return saveOrder(newOrder);
+	}
+	
+	/**
+	 * Make necessary checks, set necessary fields for discontinuing <code>orderToDiscontinue</code> and save.
+	 *
+	 * @param orderToDiscontinue
+	 * @param discontinueDate
+	 */
+	private void discontinue(Order orderToDiscontinue, Date discontinueDate) {
+		if (orderToDiscontinue.getAction().equals(Order.Action.DISCONTINUE)) {
+			throw new APIException("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued. ");
+		}
+		
+		orderToDiscontinue.setDateStopped(discontinueDate);
+		saveOrder(orderToDiscontinue);
+    }
 }

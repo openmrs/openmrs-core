@@ -14,10 +14,13 @@
 package org.openmrs;
 
 import org.junit.Test;
+import org.openmrs.test.Verifies;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -90,5 +93,48 @@ public class OrderTest {
 		assertTrue("should be current between startDate and dateStopped", o.isCurrent(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be current after dateStopped", o.isCurrent(ymd.parse("2007-11-26")));
 	}
-	
+
+    /**
+     * @see {@link Order#cloneForDiscontinuing()}
+     */
+    @Test
+    @Verifies(value = "set previousOrder on new order", method = "cloneForDiscontinuing(Order)")
+	public void cloneForDiscontinuing_shouldSetPreviousOrderOnNewOrder() {
+		Order anOrder = new Order();
+		anOrder.setUuid(UUID.randomUUID().toString());
+		
+		Order orderThatCanDiscontinueTheOrder = anOrder.cloneForDiscontinuing();
+		
+		assertEquals("should set previous order to anOrder", orderThatCanDiscontinueTheOrder.getPreviousOrder(), anOrder);
+	}
+
+    /**
+     * @see {@link Order#cloneForDiscontinuing()}
+     */
+    @Test
+    @Verifies(value = "set action to discontinue on new order", method = "cloneForDiscontinuing(Order)")
+	public void cloneForDiscontinuing_shouldSetActionToDiscontinueOnNewOrder() {
+		Order anOrder = new Order();
+		anOrder.setUuid(UUID.randomUUID().toString());
+
+		Order orderThatCanDiscontinueTheOrder = anOrder.cloneForDiscontinuing();
+
+		assertEquals("should set new order action to new", orderThatCanDiscontinueTheOrder.getAction(),
+		    Order.Action.DISCONTINUE);
+	}
+
+    /**
+     * @see {@link Order#cloneForDiscontinuing()}
+     */
+    @Test
+    @Verifies(value = "set this care setting to new order", method = "cloneForDiscontinuing(Order)")
+	public void cloneForDiscontinuing_shouldSetThisCareSettingToNewOrder() {
+		Order anOrder = new Order();
+        CareSetting careSetting = new CareSetting();
+        anOrder.setCareSetting(careSetting);
+
+		Order orderThatCanDiscontinueTheOrder = anOrder.cloneForDiscontinuing();
+
+		assertEquals(anOrder.getCareSetting(), orderThatCanDiscontinueTheOrder.getCareSetting());
+	}
 }
