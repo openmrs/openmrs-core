@@ -17,7 +17,9 @@ import org.junit.Test;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -91,4 +93,24 @@ public class OrderTest {
 		assertFalse("shouldn't be current after dateStopped", o.isCurrent(ymd.parse("2007-11-26")));
 	}
 	
+	@Test
+	public void shouldSetPreviousOrderOnNewOrderWhenClonedForDiscontinuing() {
+		Order anOrder = new Order();
+		anOrder.setUuid(UUID.randomUUID().toString());
+		
+		Order orderThatCanDiscontinueTheOrder = anOrder.cloneForDiscontinuing();
+		
+		assertEquals("should set previous order to anOrder", orderThatCanDiscontinueTheOrder.getPreviousOrder(), anOrder);
+	}
+	
+	@Test
+	public void shouldSetActionOnNewOrderWhenClonedForDiscontinuing() {
+		Order anOrder = new Order();
+		anOrder.setUuid(UUID.randomUUID().toString());
+		
+		Order orderThatCanDiscontinueTheOrder = anOrder.cloneForDiscontinuing();
+		
+		assertEquals("should set new order action to new", orderThatCanDiscontinueTheOrder.getAction(),
+		    Order.Action.DISCONTINUE);
+	}
 }

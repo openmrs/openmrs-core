@@ -13,12 +13,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.CareSetting;
@@ -35,6 +29,12 @@ import org.openmrs.api.db.OrderDAO;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
@@ -255,5 +255,46 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public CareSetting getCareSetting(Integer careSettingId) {
 		return dao.getCareSetting(careSettingId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)
+	 */
+	@Override
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) {
+		discontinueOrder(orderToDiscontinue, discontinueDate);
+		
+		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
+		newOrder.setDiscontinuedReason(reasonCoded);
+		
+		return saveOrder(newOrder);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)
+	 */
+	@Override
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) {
+		discontinueOrder(orderToDiscontinue, discontinueDate);
+		
+		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
+		newOrder.setDiscontinuedReasonNonCoded(reasonNonCoded);
+		
+		return saveOrder(newOrder);
+	}
+	
+	/**
+	 * Make necessary checks, set necessary fields for discontinuing <code>orderToDiscontinue</code> and save.
+	 *
+	 * @param orderToDiscontinue
+	 * @param discontinueDate
+	 */
+	private void discontinueOrder(Order orderToDiscontinue, Date discontinueDate) {
+		if (orderToDiscontinue.getAction().equals(Order.Action.DISCONTINUE)) {
+			throw new APIException("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued. ");
+		}
+		
+		orderToDiscontinue.setDateStopped(discontinueDate);
+		saveOrder(orderToDiscontinue);
 	}
 }
