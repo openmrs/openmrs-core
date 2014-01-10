@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -130,6 +131,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 * </pre>
 	 */
 	@Test
+	@Ignore("TRUNK-4212 SchedulerServiceTest fails depending on thread scheduling")
 	public void shouldAllowTwoTasksToRunConcurrently() throws Exception {
 		SchedulerService schedulerService = Context.getSchedulerService();
 		
@@ -202,6 +204,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 * </pre>
 	 */
 	@Test
+	@Ignore("TRUNK-4212 SchedulerServiceTest fails depending on thread scheduling")
 	public void shouldAllowTwoTasksInitMethodsToRunConcurrently() throws Exception {
 		SchedulerService schedulerService = Context.getSchedulerService();
 		
