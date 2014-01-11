@@ -13,13 +13,7 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -29,6 +23,10 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for methods that are specific to the {@link ConceptServiceImpl}. General tests that
@@ -68,7 +66,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		
 		List<ConceptWord> weightedWords = new ConceptServiceImpl().weightWords("found name", Collections
 		        .singletonList(new Locale("en")), words);
-		Assert.assertEquals("found matching name", weightedWords.get(0).getConceptName().getName());
+		assertEquals("found matching name", weightedWords.get(0).getConceptName().getName());
 	}
 	
 	/**
@@ -98,7 +96,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		
 		List<ConceptWord> weightedWords = new ConceptServiceImpl().weightWords("name", Collections.singletonList(new Locale(
 		        "en")), words);
-		Assert.assertEquals("the matching name", weightedWords.get(0).getConceptName().getName());
+		assertEquals("the matching name", weightedWords.get(0).getConceptName().getName());
 	}
 	
 	/**
@@ -130,7 +128,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		
 		List<ConceptWord> weightedWords = new ConceptServiceImpl().weightWords("name", Collections.singletonList(new Locale(
 		        "en", "US")), words);
-		Assert.assertEquals("locale preferred", weightedWords.get(0).getConceptName().getName());
+		assertEquals("locale preferred", weightedWords.get(0).getConceptName().getName());
 	}
 	
 	/**
@@ -157,7 +155,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		
 		List<ConceptWord> weightedWords = new ConceptServiceImpl().weightWords("name", Collections.singletonList(new Locale(
 		        "en", "US")), words);
-		Assert.assertEquals("fully specified", weightedWords.get(0).getConceptName().getName());
+		assertEquals("fully specified", weightedWords.get(0).getConceptName().getName());
 	}
 	
 	/**
@@ -185,7 +183,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		
 		List<ConceptWord> weightedWords = new ConceptServiceImpl().weightWords("name", Collections.singletonList(new Locale(
 		        "en", "US")), words);
-		Assert.assertEquals("fully specified", weightedWords.get(0).getConceptName().getName());
+		assertEquals("fully specified", weightedWords.get(0).getConceptName().getName());
 	}
 	
 	/**
@@ -198,8 +196,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		ConceptName fullySpecifiedName = new ConceptName("requires one name min", new Locale("fr", "CA"));
 		c.addName(fullySpecifiedName);
 		Concept savedC = Context.getConceptService().saveConcept(c);
-		Assert.assertNotNull(savedC);
-		Assert.assertTrue(savedC.getConceptId() > 0);
+		assertNotNull(savedC);
+		assertTrue(savedC.getConceptId() > 0);
 	}
 	
 	/**
@@ -213,10 +211,10 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		ConceptName fullySpecifiedName = new ConceptName("requires one name min", new Locale("fr", "CA"));
 		c.addName(fullySpecifiedName);
 		Concept savedC = Context.getConceptService().saveConcept(c);
-		Assert.assertNotNull(savedC);
+		assertNotNull(savedC);
 		Concept updatedC = Context.getConceptService().saveConcept(c);
-		Assert.assertNotNull(updatedC);
-		Assert.assertEquals(updatedC.getConceptId(), savedC.getConceptId());
+		assertNotNull(updatedC);
+		assertEquals(updatedC.getConceptId(), savedC.getConceptId());
 	}
 	
 	/**
@@ -239,24 +237,21 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		indexTerm.setLocalePreferred(true);
 		
 		Concept c = new Concept();
-		java.util.HashSet<ConceptName> allNames = new java.util.HashSet<ConceptName>(4);
-		allNames.add(fullySpecifiedName);
-		allNames.add(synonym);
-		allNames.add(indexTerm);
-		allNames.add(shortName);
-		c.setNames(allNames);
-		
-		//The API will throw a validation error because preferred name is an index term
+		c.addName(fullySpecifiedName);
+        c.addName(synonym);
+        c.addName(indexTerm);
+        c.addName(shortName);
+
 		//ignore it so we can test the set default preferred name  functionality
 		try {
 			Context.getConceptService().saveConcept(c);
 		}
 		catch (org.openmrs.api.APIException e) {
-			; //ignore it
+            //ignore it
 		}
-		Assert.assertNotNull("there's a preferred name", c.getPreferredName(loc));
-		Assert.assertTrue("name was explicitly marked preferred", c.getPreferredName(loc).isPreferred());
-		Assert.assertEquals("name matches", c.getPreferredName(loc).getName(), indexTerm.getName());
+		assertNotNull("there's a preferred name", c.getPreferredName(loc));
+		assertTrue("name was explicitly marked preferred", c.getPreferredName(loc).isPreferred());
+		assertEquals("name matches", c.getPreferredName(loc).getName(), indexTerm.getName());
 	}
 	
 	/**
@@ -272,22 +267,22 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		indexTerm.setConceptNameType(ConceptNameType.INDEX_TERM); //synonyms are id'd by a null type
 		
 		Concept c = new Concept();
-		java.util.HashSet<ConceptName> allNames = new java.util.HashSet<ConceptName>(4);
+		HashSet<ConceptName> allNames = new HashSet<ConceptName>(4);
 		allNames.add(indexTerm);
 		allNames.add(shortName);
 		c.setNames(allNames);
-		
+
 		//The API will throw a validation error because preferred name is an index term
 		//ignore it so we can test the set default preferred name  functionality
 		try {
 			Context.getConceptService().saveConcept(c);
 		}
 		catch (org.openmrs.api.APIException e) {
-			; //ignore it
+            //ignore it
 		}
-		Assert.assertNull("there's a preferred name", c.getPreferredName(loc));
-		Assert.assertFalse("name was explicitly marked preferred", shortName.isPreferred());
-		Assert.assertFalse("name was explicitly marked preferred", indexTerm.isPreferred());
+		assertNull("there's a preferred name", c.getPreferredName(loc));
+		assertFalse("name was explicitly marked preferred", shortName.isPreferred());
+		assertFalse("name was explicitly marked preferred", indexTerm.isPreferred());
 	}
 	
 	/**
@@ -310,21 +305,19 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		indexTerm.setConceptNameType(ConceptNameType.INDEX_TERM); //synonyms are id'd by a null type
 		
 		Concept c = new Concept();
-		java.util.HashSet<ConceptName> allNames = new java.util.HashSet<ConceptName>(4);
-		allNames.add(fullySpecifiedName);
-		allNames.add(synonym);
-		allNames.add(indexTerm);
-		allNames.add(shortName);
-		c.setNames(allNames);
+        c.addName(fullySpecifiedName);
+        c.addName(synonym);
+        c.addName(indexTerm);
+        c.addName(shortName);
 		Assert.assertFalse("check test assumption - the API didn't automatically set preferred vlag", c
 		        .getFullySpecifiedName(loc).isPreferred());
 		
-		Assert.assertNotNull("Concept is legit, save succeeds", Context.getConceptService().saveConcept(c));
+		assertNotNull("Concept is legit, save succeeds", Context.getConceptService().saveConcept(c));
 		
 		Context.getConceptService().saveConcept(c);
-		Assert.assertNotNull("there's a preferred name", c.getPreferredName(loc));
-		Assert.assertTrue("name was explicitly marked preferred", c.getPreferredName(loc).isPreferred());
-		Assert.assertEquals("name matches", c.getPreferredName(loc).getName(), fullySpecifiedName.getName());
+		assertNotNull("there's a preferred name", c.getPreferredName(loc));
+		assertTrue("name was explicitly marked preferred", c.getPreferredName(loc).isPreferred());
+		assertEquals("name matches", c.getPreferredName(loc).getName(), fullySpecifiedName.getName());
 	}
 	
 	/**
@@ -350,28 +343,35 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		indexTerm.setConceptNameType(ConceptNameType.INDEX_TERM); //synonyms are id'd by a null type
 		
 		Concept c = new Concept();
-		java.util.HashSet<ConceptName> allNames = new java.util.HashSet<ConceptName>(4);
+		HashSet<ConceptName> allNames = new HashSet<ConceptName>(4);
 		allNames.add(indexTerm);
 		allNames.add(fullySpecifiedName);
 		allNames.add(synonym);
 		c.setNames(allNames);
+
+		assertNull("check test assumption - the API hasn't promoted a name to a fully specified name", c
+                .getFullySpecifiedName(loc));
 		
-		Assert.assertNull("check test assumption - the API hasn't promoted a name to a fully specified name", c
-		        .getFullySpecifiedName(loc));
+		Context.getConceptService().saveConcept(c);
+		assertNotNull("there's a preferred name", c.getPreferredName(loc));
+		assertTrue("name was explicitly marked preferred", c.getPreferredName(loc).isPreferred());
+		assertEquals("name matches", c.getPreferredName(loc).getName(), synonym.getName());
+		assertEquals("fully specified name unchanged", c.getPreferredName(otherLocale).getName(), fullySpecifiedName
+                .getName());
 		
-		//The API will throw a validation error because there isn't a fully specified name.
-		try {
-			Context.getConceptService().saveConcept(c);
-		}
-		catch (org.openmrs.api.APIException e) {
-			; //ignore it
-		}
-		Assert.assertNotNull("there's a preferred name", c.getPreferredName(loc));
-		Assert.assertTrue("name was explicitly marked preferred", c.getPreferredName(loc).isPreferred());
-		Assert.assertEquals("name matches", c.getPreferredName(loc).getName(), synonym.getName());
-		Assert.assertEquals("fully specified name unchanged", c.getPreferredName(otherLocale).getName(), fullySpecifiedName
-		        .getName());
-		
+	}
+	
+	@Test
+	public void saveConcept_shouldTrimWhitespacesInConceptName() throws Exception {
+		//Given
+		Concept concept = new Concept();
+		String nameWithSpaces = "  jwm  ";
+		concept.addName(new ConceptName(nameWithSpaces, new Locale("en", "US")));
+		//When
+		Context.getConceptService().saveConcept(concept);
+		//Then
+		Assert.assertNotEquals(concept.getName().getName(), nameWithSpaces);
+		assertEquals(concept.getName().getName(), "jwm");
 	}
 	
 }
