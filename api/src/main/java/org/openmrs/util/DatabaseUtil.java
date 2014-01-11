@@ -18,9 +18,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.CustomChangeException;
+import liquibase.exception.DatabaseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.db.DAOException;
@@ -205,5 +210,47 @@ public class DatabaseUtil {
 		throw new DAOException(OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
 		        + " global property does not have mapping for " + units
 		        + ". Please refer to upgrade instructions for more details.");
+	}
+	
+	/**
+	 * Gets all unique values excluding nulls in the specified column and table
+	 * 
+	 * @param columnName the column
+	 * @param tableName the table
+	 * @param connection
+	 * @return
+	 * @throws liquibase.exception.CustomChangeException
+	 * @throws SQLException
+	 * @throws liquibase.exception.DatabaseException
+	 */
+	public static Set<Object> getUniqueNonNullColumnValues(String columnName, String tableName, JdbcConnection connection)
+	        throws CustomChangeException, SQLException, DatabaseException {
+		Set<Object> uniqueValues = new HashSet<Object>();
+		PreparedStatement pstmt = null;
+		final String alias = "unique_values";
+		
+		try {
+			pstmt = connection.prepareStatement("SELECT DISTINCT " + columnName + " AS " + alias + " FROM " + tableName
+			        + " WHERE " + columnName + " IS NOT NULL");
+			ResultSet resultSet = pstmt.executeQuery();
+			while (resultSet.next()) {
+				Object value = resultSet.getObject(alias);
+				if (value != null) {
+					uniqueValues.add(value);
+				}
+			}
+		}
+		finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				}
+				catch (SQLException e) {
+					log.warn("Failed to close the PreparedStatement object");
+				}
+			}
+		}
+		
+		return uniqueValues;
 	}
 }
