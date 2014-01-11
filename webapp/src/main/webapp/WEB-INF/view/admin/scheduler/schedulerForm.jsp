@@ -308,7 +308,7 @@ window.onload = init;
 			<c:forEach var="property" items="${task.properties}">			
 			<tr>
 				<td><input type="text" name="propertyName" size="20" value="${property.key}" /></td>
-				<td><input type="text" name="propertyValue" size="30" value="${property.value}" /></td>
+				<td><input type="text" name="propertyValue" size="30" value="<spring:message text="${ property.value }" htmlEscape="true"/>" /></td>
 				<td><input type="button" class="closeButton" onclick="removeProperty(this)" value="<openmrs:message code="Scheduler.propertyForm.remove"/>"></td>
 			</tr>
 			</c:forEach>
