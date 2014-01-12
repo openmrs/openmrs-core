@@ -40,6 +40,15 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	private User changedBy;
 	
 	private Date dateChanged;
+
+	/** default constructor */
+	public DrugReferenceMap() {
+	}
+
+	/** constructor with concept reference term map id */
+	public DrugReferenceMap(Integer drugReferenceMapId) {
+		this.drugReferenceMapId = drugReferenceMapId;
+	}
 	
 	/**
 	 * @return Returns the drugReferenceMapId.
@@ -175,5 +184,46 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	@Override
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		DrugReferenceMap that = (DrugReferenceMap) o;
+
+		if (drugReferenceMapId != null ? !drugReferenceMapId.equals(that.drugReferenceMapId) : that.drugReferenceMapId != null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (drugReferenceMapId != null ? drugReferenceMapId.hashCode() : 0);
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		if (drugReferenceMapId == null)
+			return "";
+		return drugReferenceMapId.toString();
 	}
 }
