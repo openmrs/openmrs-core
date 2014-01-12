@@ -13,8 +13,6 @@
  */
 package org.openmrs;
 
-import org.simpleframework.xml.Attribute;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -23,7 +21,7 @@ import java.util.Date;
  *
  * @since 1.10
  */
-public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Retireable, Serializable {
+public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Serializable {
 	
 	public static final long serialVersionUID = 1L;
 	
@@ -39,17 +37,9 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Re
 	
 	private Date dateCreated;
 	
-	private Boolean retired = false;
-	
-	private User retiredBy;
-	
-	private Date dateRetired;
-	
 	private User changedBy;
 	
 	private Date dateChanged;
-	
-	private String retireReason;
 	
 	/**
 	 * @return Returns the drugReferenceMapId.
@@ -185,82 +175,5 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Re
 	@Override
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
-	}
-	
-	/**
-	 * @return Boolean - whether of not this object is retired
-	 */
-	@Override
-	public Boolean isRetired() {
-		return this.retired;
-	}
-	
-	/**
-	 * This method exists to satisfy spring and hibernates slightly bung use of Boolean object
-	 * getters and setters.
-	 *
-	 * @see org.openmrs.Concept#isRetired()
-	 * @deprecated Use the "proper" isRetired method.
-	 */
-	@Deprecated
-	@Attribute
-	public Boolean getRetired() {
-		return isRetired();
-	}
-	
-	/**
-	 * @param retired - whether of not this object is retired
-	 */
-	@Override
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-	
-	/**
-	 * @return User - the user who retired the object
-	 */
-	@Override
-	public User getRetiredBy() {
-		return this.retiredBy;
-	}
-	
-	/**
-	 * @param retiredBy - the user who retired the object
-	 */
-	@Override
-	public void setRetiredBy(User retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-	
-	/**
-	 * @return Date - the date the object was retired
-	 */
-	@Override
-	public Date getDateRetired() {
-		return dateRetired;
-	}
-	
-	/**
-	 * @param dateRetired - the date the object was retired
-	 */
-	@Override
-	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
-	}
-	
-	/**
-	 * @return String - the reason the object was retired
-	 */
-	@Override
-	public String getRetireReason() {
-		return this.retireReason;
-	}
-	
-	/**
-	 * @param retireReason - the reason the object was retired
-	 */
-	@Override
-	public void setRetireReason(String retireReason) {
-		this.retireReason = retireReason;
 	}
 }
