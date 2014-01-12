@@ -119,13 +119,14 @@
 				</tr>
 			</c:if>
 			<tr>
-				<c:if test="${location.getLocationId() != null}">
-					<th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid" /></sub></font></th>
+				<c:if test="${location.locationId != null}">
+					<th><font color="#D0D0D0"><sub><openmrs:message
+									code="general.uuid" /></sub></font></th>
 					<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
-					<spring:bind path="location.uuid">
-		  				<c:out value="${status.value}"></c:out>
-					</spring:bind></sub></font>
-					</td>
+								<spring:bind path="location.uuid">
+									<c:out value="${status.value}"></c:out>
+								</spring:bind>
+						</sub></font></td>
 				</c:if>
 			</tr>
 		</table>
@@ -161,9 +162,7 @@
 		</fieldset>
 	</form>
 </c:if>
-
 <br />
-
 <fieldset>
 	<h4>
 		<openmrs:message code="Location.childLocations" />
@@ -177,7 +176,6 @@
 		</c:forEach>
 	</ul>
 </fieldset>
-
 <openmrs:extensionPoint
 	pointId="org.openmrs.admin.locations.locationForm.footer" type="html"
 	parameters="locationId=${location.locationId}" />

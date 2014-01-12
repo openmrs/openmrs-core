@@ -1,25 +1,29 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="Manage Field Types" otherwise="/login.htm" redirect="/admin/forms/fieldType.form" />
+<openmrs:require privilege="Manage Field Types" otherwise="/login.htm"
+	redirect="/admin/forms/fieldType.form" />
 
-<%@ include file="/WEB-INF/template/header.jsp" %>
-<%@ include file="localHeader.jsp" %>
+<%@ include file="/WEB-INF/template/header.jsp"%>
+<%@ include file="localHeader.jsp"%>
 
-<h2><openmrs:message code="FieldType.edit" /></h2>
+<h2>
+	<openmrs:message code="FieldType.edit" />
+</h2>
 
 <form method="post" onSubmit="return validateForm()">
 	<table>
 		<tr>
 			<td><openmrs:message code="general.name" /></td>
-			<td>
-				<input type="text" name="name" id="fieldTypeName" value="${fieldType.name}" size="35" onKeyUp="hideError('nameError');"/>
-				<span class="error" id="nameError"><openmrs:message code="error.name"/></span>
-			</td>
+			<td><input type="text" name="name" id="fieldTypeName"
+				value="${fieldType.name}" size="35"
+				onKeyUp="hideError('nameError');" /> <span class="error"
+				id="nameError"><openmrs:message code="error.name" /></span></td>
 		</tr>
 		<tr>
 			<td><openmrs:message code="FieldType.isSet" /></td>
 			<input type="hidden" name="_isSet" value="" />
-			<td><input type="checkbox" name="isSet" value="true" <c:if test="${fieldType.isSet == true}">checked</c:if> /></td>
+			<td><input type="checkbox" name="isSet" value="true"
+				<c:if test="${fieldType.isSet == true}">checked</c:if> /></td>
 		</tr>
 		<tr>
 			<td valign="top"><openmrs:message code="general.description" /></td>
@@ -28,34 +32,36 @@
 		<c:if test="${!(orderType.creator == null)}">
 			<tr>
 				<td><openmrs:message code="general.createdBy" /></td>
-				<td>
-					${orderType.creator.personName} -
-					<openmrs:formatDate date="${orderType.dateCreated}" type="long" />
+				<td>${orderType.creator.personName} - <openmrs:formatDate
+						date="${orderType.dateCreated}" type="long" />
 				</td>
 			</tr>
 		</c:if>
 		<tr>
-				<c:if test="${fieldType.fieldTypeId != null}">
-					<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
-					<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${fieldType.uuid}</sub></font></td>
-				</c:if>
-	</tr>
+			<c:if test="${fieldType.fieldTypeId != null}">
+				<td><font color="#D0D0D0"><sub><openmrs:message
+								code="general.uuid" /></sub></font></td>
+				<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${fieldType.uuid}</sub></font></td>
+			</c:if>
+		</tr>
 	</table>
-	<br />
-	<input type="submit" value="<openmrs:message code="FieldType.save"/>">
+	<br /> <input type="submit"
+		value="<openmrs:message code="FieldType.save"/>">
 </form>
 
-		<script type="text/javascript"><!--
-			hideError("nameError");
-			function validateForm() {
-				var name = document.getElementById("fieldTypeName");
-				var result = true;
-				if (name.value.trim() == "") {
-					showError("nameError"); 
-					result = false;
-				}
-				return result;
-			}
-		--></script>
+<script type="text/javascript">
+<!--
+	hideError("nameError");
+	function validateForm() {
+		var name = document.getElementById("fieldTypeName");
+		var result = true;
+		if (name.value.trim() == "") {
+			showError("nameError");
+			result = false;
+		}
+		return result;
+	}
+	-->
+</script>
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/template/footer.jsp"%>

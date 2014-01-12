@@ -1,9 +1,10 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="Manage Programs" otherwise="/login.htm" redirect="/admin/programs/program.form" />
+<openmrs:require privilege="Manage Programs" otherwise="/login.htm"
+	redirect="/admin/programs/program.form" />
 
-<%@ include file="/WEB-INF/template/header.jsp" %>
-<%@ include file="localHeader.jsp" %>
+<%@ include file="/WEB-INF/template/header.jsp"%>
+<%@ include file="localHeader.jsp"%>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 <openmrs:htmlInclude file="/dwr/util.js" />
@@ -92,114 +93,124 @@
 	}
 </script>
 
-<h2><openmrs:message code="Program.addEdit.title"/></h2>
+<h2>
+	<openmrs:message code="Program.addEdit.title" />
+</h2>
 
 <spring:hasBindErrors name="program">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message code="fix.error" />
 	<br />
 </spring:hasBindErrors>
 
 <form method="post" id="theForm">
-<table>
-	<tr>
-		<th><openmrs:message code="general.name"/></th>
-		<td>
-			<spring:bind path="program.name">
-				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<th><openmrs:message code="general.description"/></th>
-		<td>
-			<spring:bind path="program.description">
-				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<th><openmrs:message code="Program.concept"/></th>
-		<td>
-			<spring:bind path="program.concept">
-				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.value}" showVerboseListing="false" conceptClasses="Program"></div>
-				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="${status.expression}" searchWidget="cSearch" searchTitle='<openmrs:message code="Concept.find" />'></div>
-							
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">
-						${status.errorMessage}
-					</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td></td>
-		<td><openmrs:message code="Program.conceptHint"/></td>
-	</tr>
-	<tr>
-		<th valign="top"><openmrs:message code="general.retired"/>?</th>
-		<td valign="top">
-			<spring:bind path="program.retired">
-				<select name="${status.expression}">
-					<option value="false" <c:if test="${status.value == false}">selected</c:if>><openmrs:message code="general.no"/></option>
-					<option value="true" <c:if test="${status.value == true}">selected</c:if>><openmrs:message code="general.yes"/></option>
-				</select>
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr id="workflowSetRow">
-		<th valign="top"><openmrs:message code="Program.workflows" /></th>
-		<td valign="top">
-			<spring:bind path="program.allWorkflows">
-				<input type="hidden" name="${status.expression}" id="workflowsValue" value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">
-						${status.errorMessage}
-					</span>
-				</c:if>
-			</spring:bind>
-			
-			<table id="workflowsDisplay">
-			</table>
+	<table>
+		<tr>
+			<th><openmrs:message code="general.name" /></th>
+			<td><spring:bind path="program.name">
+					<input type="text" name="${status.expression}"
+						value="${status.value}" size="35" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
+		<tr>
+			<th><openmrs:message code="general.description" /></th>
+			<td><spring:bind path="program.description">
+					<input type="text" name="${status.expression}"
+						value="${status.value}" size="35" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
+		<tr>
+			<th><openmrs:message code="Program.concept" /></th>
+			<td><spring:bind path="program.concept">
+					<div dojoType="ConceptSearch" widgetId="cSearch"
+						conceptId="${status.value}" showVerboseListing="false"
+						conceptClasses="Program"></div>
+					<div dojoType="OpenmrsPopup" widgetId="conceptSelection"
+						hiddenInputName="${status.expression}" searchWidget="cSearch"
+						searchTitle='<openmrs:message code="Concept.find" />'></div>
 
-			<div dojoType="ConceptSearch" widgetId="wfSearch" showVerboseListing="false" conceptClasses="Workflow"></div>
-			<div dojoType="OpenmrsPopup" widgetId="conceptSelection2" hiddenInputName="notUsed" searchWidget="wfSearch" searchTitle='<openmrs:message code="Concept.find" />' changeButtonValue='<openmrs:message code="general.add"/>'></div>
-			
-		</td>
-	</tr>
-    <tr>
-		<th><openmrs:message code="Program.outcomes"/></th>
-		<td>
-			<spring:bind path="program.outcomesConcept">
-				<div dojoType="ConceptSearch" widgetId="oSearch" conceptId="${status.value}" showVerboseListing="false" conceptClasses="Program"></div>
-				<div dojoType="OpenmrsPopup" widgetId="outcomeConceptSelection" hiddenInputName="${status.expression}" searchWidget="oSearch" searchTitle='<openmrs:message code="Concept.find" />'></div>
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error"> ${status.errorMessage} </span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><openmrs:message code="Program.conceptHint" /></td>
+		</tr>
+		<tr>
+			<th valign="top"><openmrs:message code="general.retired" />?</th>
+			<td valign="top"><spring:bind path="program.retired">
+					<select name="${status.expression}">
+						<option value="false"
+							<c:if test="${status.value == false}">selected</c:if>>
+							<openmrs:message code="general.no" />
+						</option>
+						<option value="true"
+							<c:if test="${status.value == true}">selected</c:if>>
+							<openmrs:message code="general.yes" />
+						</option>
+					</select>
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
+		<tr id="workflowSetRow">
+			<th valign="top"><openmrs:message code="Program.workflows" /></th>
+			<td valign="top"><spring:bind path="program.allWorkflows">
+					<input type="hidden" name="${status.expression}"
+						id="workflowsValue" value="${status.value}" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error"> ${status.errorMessage} </span>
+					</c:if>
+				</spring:bind>
 
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">
-						${status.errorMessage}
-					</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<c:if test="${program.id != null}">
-		<th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
-		<td colspan="${fn:length(locales)}">
-			<font color="#D0D0D0"><sub>
-			<spring:bind path="program.uuid">
-		  		<c:out value="${status.value}"></c:out>
-			</spring:bind> </sub></font></td>
+				<table id="workflowsDisplay">
+				</table>
+
+				<div dojoType="ConceptSearch" widgetId="wfSearch"
+					showVerboseListing="false" conceptClasses="Workflow"></div>
+				<div dojoType="OpenmrsPopup" widgetId="conceptSelection2"
+					hiddenInputName="notUsed" searchWidget="wfSearch"
+					searchTitle='<openmrs:message code="Concept.find" />'
+					changeButtonValue='<openmrs:message code="general.add"/>'></div></td>
+		</tr>
+		<tr>
+			<th><openmrs:message code="Program.outcomes" /></th>
+			<td><spring:bind path="program.outcomesConcept">
+					<div dojoType="ConceptSearch" widgetId="oSearch"
+						conceptId="${status.value}" showVerboseListing="false"
+						conceptClasses="Program"></div>
+					<div dojoType="OpenmrsPopup" widgetId="outcomeConceptSelection"
+						hiddenInputName="${status.expression}" searchWidget="oSearch"
+						searchTitle='<openmrs:message code="Concept.find" />'></div>
+
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error"> ${status.errorMessage} </span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
+		<tr>
+			<c:if test="${program.id != null}">
+				<th><font color="#D0D0D0"><sub><openmrs:message
+								code="general.uuid" /></sub></font></th>
+				<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
+							<spring:bind path="program.uuid">
+								<c:out value="${status.value}"></c:out>
+							</spring:bind>
+					</sub></font></td>
 			</c:if>
-	</tr>
-</table>
-<br />
-<input type="submit" value='<openmrs:message code="Program.save"/>' onClick="jQuery('#theForm').submit()" />
+		</tr>
+	</table>
+	<br /> <input type="submit"
+		value='<openmrs:message code="Program.save"/>'
+		onClick="jQuery('#theForm').submit()" />
 </form>
 
 <script type="text/javascript">
@@ -217,4 +228,4 @@
 	refreshWorkflowsDisplay();
 </script>
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/template/footer.jsp"%>
