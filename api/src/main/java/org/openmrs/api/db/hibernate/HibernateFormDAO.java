@@ -420,7 +420,7 @@ public class HibernateFormDAO implements FormDAO {
 		
 		// TODO junit test
 		if (!containingAnyFormField.isEmpty())
-			crit.add(Restrictions.in("formField", containingAnyFormField));
+			crit.add(Restrictions.in("formFields", containingAnyFormField));
 		
 		//select * from form where len(containingallformfields) = (select count(*) from form_field ff where ff.form_id = form_id and form_field_id in (containingallformfields);
 		if (!containingAllFormFields.isEmpty()) {
