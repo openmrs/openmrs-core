@@ -74,6 +74,5 @@ public interface ComplexObsHandler {
     /* Return all views supported by this handler */
     public String[] getSupportedViews();
 
-
 	
 }
