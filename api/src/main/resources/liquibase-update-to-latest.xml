@@ -6942,7 +6942,7 @@
 			<column name="term_id" type="int">
 				<constraints nullable="false"/>
 			</column>
-			<column name="map_type" type="int">
+			<column name="concept_map_type" type="int">
 				<constraints nullable="false"/>
 			</column>
 			<column name="creator" type="int" defaultValueNumeric="0">
@@ -6971,7 +6971,7 @@
 								 constraintName="concept_reference_term_for_drug_reference_map"
 								 referencedTableName="concept_reference_term"
 								 referencedColumnNames="concept_reference_term_id"/>
-		<addForeignKeyConstraint baseTableName="drug_reference_map" baseColumnNames="map_type"
+		<addForeignKeyConstraint baseTableName="drug_reference_map" baseColumnNames="concept_map_type"
 								 constraintName="concept_map_type_for_drug_reference_map"
 								 referencedTableName="concept_map_type"
 								 referencedColumnNames="concept_map_type_id"/>
