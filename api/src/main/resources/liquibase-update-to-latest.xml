@@ -6898,7 +6898,7 @@
         <preConditions>
             <not>
                 <sqlCheck expectedResult="0">
-                    SELECT * FROM orders WHERE care_setting IS NULL
+                    SELECT count(*) FROM orders WHERE care_setting IS NULL
                 </sqlCheck>
             </not>
         </preConditions>
