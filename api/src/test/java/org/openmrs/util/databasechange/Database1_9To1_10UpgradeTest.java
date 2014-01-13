@@ -13,7 +13,9 @@
  */
 package org.openmrs.util.databasechange;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,6 +23,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -45,6 +50,12 @@ public class Database1_9To1_10UpgradeTest {
 	@Test
 	public void shouldUpgradeFromClean1_9To1_10() throws IOException, SQLException {
 		upgradeTestUtil.upgrade();
+		
+		List<Map<String, String>> orderFrequencySelect = upgradeTestUtil.select("order_frequency", "order_frequency_id");
+		Assert.assertThat(orderFrequencySelect.size(), Matchers.is(0));
+		
+		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", "order_id");
+		Assert.assertThat(drugOrderSelect.size(), Matchers.is(0));
 	}
 	
 	@Test(expected = Exception.class)
@@ -59,7 +70,7 @@ public class Database1_9To1_10UpgradeTest {
 	        SQLException {
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
 		
-		insertGlobalProperty("orderEntry.unitsToConceptsMappings", "mg:-1,tab(s):-2");
+		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings", "mg:-1,tab(s):-2");
 		
 		upgradeTestUtil.upgrade();
 	}
@@ -70,23 +81,36 @@ public class Database1_9To1_10UpgradeTest {
 		
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
 		
-		insertGlobalProperty("orderEntry.unitsToConceptsMappings", "mg:111,tab(s):112,1/day x 7 days/week:113");
+		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings",
+		    "mg:111,tab(s):112,1/day x 7 days/week:113,2/day x 7 days/week:114");
 		
 		upgradeTestUtil.upgrade();
 		
-		//TODO: add assertions
+		List<Map<String, String>> orderFrequencySelect = upgradeTestUtil.select("order_frequency", "order_frequency_id",
+		    "concept_id");
+		Assert.assertThat(orderFrequencySelect.size(), Matchers.is(2));
+		
+		Map<String, String> conceptsToFrequencies = new HashMap<String, String>();
+		conceptsToFrequencies.put(orderFrequencySelect.get(0).get("concept_id"), orderFrequencySelect.get(0).get(
+		    "order_frequency_id"));
+		conceptsToFrequencies.put(orderFrequencySelect.get(1).get("concept_id"), orderFrequencySelect.get(1).get(
+		    "order_frequency_id"));
+		
+		Assert.assertThat(conceptsToFrequencies.keySet(), Matchers.containsInAnyOrder("113", "114"));
+		
+		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", "order_id", "frequency");
+		
+		Assert.assertThat(drugOrderSelect, Matchers.containsInAnyOrder(row("order_id", "1", "frequency",
+		    conceptsToFrequencies.get("113")), row("order_id", "2", "frequency", conceptsToFrequencies.get("113")), row(
+		    "order_id", "3", "frequency", conceptsToFrequencies.get("114")), row("order_id", "4", "frequency",
+		    conceptsToFrequencies.get("113")), row("order_id", "5", "frequency", conceptsToFrequencies.get("114"))));
 	}
 	
-	public void insertGlobalProperty(String globalProperty, String value) throws SQLException {
-		Connection connection = upgradeTestUtil.getConnection();
-		PreparedStatement insert = connection
-		        .prepareStatement("insert into global_property (property, property_value, uuid) values (?, ?, ?)");
-		insert.setString(1, globalProperty);
-		insert.setString(2, value);
-		insert.setString(3, UUID.randomUUID().toString());
-		
-		insert.executeUpdate();
-		
-		connection.commit();
+	private Map<String, String> row(String... values) {
+		Map<String, String> row = new HashMap<String, String>();
+		for (int i = 0; i < values.length; i += 2) {
+			row.put(values[i], values[i + 1]);
+		}
+		return row;
 	}
 }

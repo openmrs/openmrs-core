@@ -212,6 +212,18 @@ public class DatabaseUtil {
 		        + ". Please refer to upgrade instructions for more details.");
 	}
 	
+	public static Integer getOrderFrequencyIdForConceptId(Connection connection, Integer conceptIdForFrequency)
+	        throws DatabaseException, SQLException, CustomChangeException {
+		PreparedStatement orderFrequencyIdQuery = connection
+		        .prepareStatement("select order_frequency_id from order_frequency where concept_id = ?");
+		orderFrequencyIdQuery.setInt(1, conceptIdForFrequency);
+		ResultSet orderFrequencyIdResultSet = orderFrequencyIdQuery.executeQuery();
+		if (!orderFrequencyIdResultSet.next()) {
+			return null;
+		}
+		return orderFrequencyIdResultSet.getInt("order_frequency_id");
+	}
+	
 	/**
 	 * Gets all unique values excluding nulls in the specified column and table
 	 * 
@@ -223,9 +235,9 @@ public class DatabaseUtil {
 	 * @throws SQLException
 	 * @throws liquibase.exception.DatabaseException
 	 */
-	public static Set<Object> getUniqueNonNullColumnValues(String columnName, String tableName, JdbcConnection connection)
-	        throws CustomChangeException, SQLException, DatabaseException {
-		Set<Object> uniqueValues = new HashSet<Object>();
+	public static <T> Set<T> getUniqueNonNullColumnValues(String columnName, String tableName, Class<T> type,
+	        Connection connection) throws CustomChangeException, SQLException, DatabaseException {
+		Set<T> uniqueValues = new HashSet<T>();
 		PreparedStatement pstmt = null;
 		final String alias = "unique_values";
 		
@@ -236,7 +248,7 @@ public class DatabaseUtil {
 			while (resultSet.next()) {
 				Object value = resultSet.getObject(alias);
 				if (value != null) {
-					uniqueValues.add(value);
+					uniqueValues.add((T) value);
 				}
 			}
 		}

@@ -51,29 +51,17 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 				insertStatement.setInt(1, discontinuedOrder.previousOrderId);
 				insertStatement.setInt(2, discontinuedOrder.conceptId);
 				insertStatement.setInt(3, discontinuedOrder.patientId);
-				if (discontinuedOrder.encounterId != 0) {
-					insertStatement.setInt(4, discontinuedOrder.encounterId);
-				} else {
-					insertStatement.setNull(4, Types.INTEGER);
-				}
+				setIntOrNull(insertStatement, 4, discontinuedOrder.encounterId);
 				insertStatement.setInt(5, discontinuedOrder.creator);
 				insertStatement.setDate(6, discontinuedOrder.dateCreated);
 				insertStatement.setDate(7, discontinuedOrder.dateStopped);
 				insertStatement.setInt(8, discontinuedOrder.discontinuedById);
-				if (discontinuedOrder.discontinuedReasonId != 0) {
-					insertStatement.setInt(9, discontinuedOrder.discontinuedReasonId);
-				} else {
-					insertStatement.setNull(9, Types.INTEGER);
-				}
+				setIntOrNull(insertStatement, 9, discontinuedOrder.discontinuedReasonId);
 				insertStatement.setString(10, discontinuedOrder.discontinuedReasonNonCoded);
 				insertStatement.setString(11, UUID.randomUUID().toString());
 				insertStatement.setString(12, "DISCONTINUE");
 				insertStatement.setInt(13, discontinuedOrder.orderTypeId);
-				if (discontinuedOrder.orderer != 0) {
-					insertStatement.setInt(14, discontinuedOrder.orderer);
-				} else {
-					insertStatement.setNull(14, Types.INTEGER);
-				}
+				setIntOrNull(insertStatement, 14, discontinuedOrder.orderer);
 				insertStatement.addBatch();
 				
 				if (index % batchSize == 0) {
@@ -97,6 +85,14 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			if (insertStatement != null) {
 				insertStatement.close();
 			}
+		}
+	}
+	
+	private void setIntOrNull(PreparedStatement statement, int index, Integer value) throws SQLException {
+		if (value == null || value == 0) {
+			statement.setNull(index, Types.INTEGER);
+		} else {
+			statement.setInt(index, value);
 		}
 	}
 	

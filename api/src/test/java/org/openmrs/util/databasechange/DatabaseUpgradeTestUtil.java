@@ -20,6 +20,7 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -36,7 +37,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Allows to test database upgrade. It accepts initialDatabasePath which should point to the h2 liqubaseConnection that will
@@ -163,6 +171,41 @@ public class DatabaseUpgradeTestUtil {
 		catch (DatabaseUnitException e) {
 			throw new IOException(e);
 		}
+	}
+	
+	public List<Map<String, String>> select(String tableName, String... columnNames) throws SQLException {
+		PreparedStatement query = connection.prepareStatement("select " + StringUtils.join(columnNames, ", ") + " from "
+		        + tableName);
+		ResultSet resultSet = query.executeQuery();
+		
+		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+		while (resultSet.next()) {
+			Map<String, String> columns = new HashMap<String, String>();
+			results.add(columns);
+			
+			for (int i = 0; i < columnNames.length; i++) {
+				Object object = resultSet.getObject(i + 1);
+				columns.put(columnNames[i], object.toString());
+			}
+		}
+		
+		query.close();
+		
+		return results;
+	}
+	
+	public void insertGlobalProperty(String globalProperty, String value) throws SQLException {
+		PreparedStatement insert = connection
+		        .prepareStatement("insert into global_property (property, property_value, uuid) values (?, ?, ?)");
+		insert.setString(1, globalProperty);
+		insert.setString(2, value);
+		insert.setString(3, UUID.randomUUID().toString());
+		
+		insert.executeUpdate();
+		
+		insert.close();
+		
+		connection.commit();
 	}
 	
 	public void upgrade() throws IOException, SQLException {

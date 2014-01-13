@@ -6111,7 +6111,7 @@
 				<constraints nullable="false"/>
 			</column>
 			<column name="name" type="varchar(255)">
-				<constraints nullable="false"/>
+				<constraints nullable="false"/> 
 			</column>
 			<column name="value_reference" type="text">
 				<constraints nullable="false"/>
@@ -6125,10 +6125,10 @@
 			</column>
 		</createTable>
 		<addForeignKeyConstraint constraintName="form_resource_form_fk"
-								 baseTableName="form_resource" baseColumnNames="form_id" referencedTableName="form"
-								 referencedColumnNames="form_id" />
-		<addUniqueConstraint tableName="form_resource"
-							 constraintName="unique_form_and_name" columnNames="form_id,name" />
+            baseTableName="form_resource" baseColumnNames="form_id" referencedTableName="form"
+            referencedColumnNames="form_id" />
+		<addUniqueConstraint tableName="form_resource" 
+			constraintName="unique_form_and_name" columnNames="form_id,name" />
 	</changeSet>
 
 	<changeSet id="20110326-2" author="Knoll_Frank" dbms="mysql">
@@ -6446,9 +6446,7 @@
         </preConditions>
         <comment>Adding order_number column to orders table</comment>
         <addColumn tableName="orders">
-            <column name="order_number" type="varchar(50)" defaultValue="none">
-                <constraints nullable="false"/>
-            </column>
+            <column name="order_number" type="varchar(50)" />
         </addColumn>
     </changeSet>
 
@@ -6603,9 +6601,7 @@
         </preConditions>
         <comment>Add care_setting column</comment>
         <addColumn tableName="orders">
-            <column name="care_setting" type="varchar(50)" defaultValue="none">
-                <constraints nullable="false"/>
-            </column>
+            <column name="care_setting" type="varchar(50)" />
         </addColumn>
     </changeSet>
     
@@ -6814,6 +6810,7 @@
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="drug_order" columnName="frequency" />
 		</preConditions>
+		<comment>Renaming the frequency column of the drug_order table to frequency_text</comment>
 		<renameColumn tableName="drug_order" oldColumnName="frequency" newColumnName="frequency_text" columnDataType="varchar(255)" />
 	</changeSet>
 
@@ -6941,10 +6938,10 @@
     </changeSet>
 
     <changeSet id="201312271827-TRUNK-4156" author="vinay">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not>
                 <sqlCheck expectedResult="0">
-                    SELECT * FROM orders WHERE care_setting IS NULL
+                    SELECT count(*) FROM orders WHERE care_setting IS NULL
                 </sqlCheck>
             </not>
         </preConditions>

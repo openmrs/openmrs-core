@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements CustomTaskChange {
 	
@@ -36,7 +37,8 @@ public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements 
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		
 		try {
-			List<String> uniqueFrequencies = getUniqueFrequencies(connection);
+			Set<String> uniqueFrequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency_text", "drug_order",
+			    String.class, connection.getUnderlyingConnection());
 			migrateFrequenciesToCodedValue(connection, uniqueFrequencies);
 		}
 		catch (SQLException e) {
@@ -47,7 +49,7 @@ public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements 
 		}
 	}
 	
-	private void migrateFrequenciesToCodedValue(JdbcConnection connection, List<String> uniqueFrequencies)
+	private void migrateFrequenciesToCodedValue(JdbcConnection connection, Set<String> uniqueFrequencies)
 	        throws CustomChangeException, SQLException, DatabaseException {
 		PreparedStatement updateDrugOrderStatement = null;
 		Boolean autoCommit = null;
@@ -62,7 +64,11 @@ public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements 
 				if (conceptIdForFrequency == null) {
 					throw new CustomChangeException("No concept mapping found for frequency: " + frequency);
 				}
-				int orderFrequencyId = getOrderFrequencyIdForConceptId(connection, conceptIdForFrequency);
+				Integer orderFrequencyId = DatabaseUtil.getOrderFrequencyIdForConceptId(
+				    connection.getUnderlyingConnection(), conceptIdForFrequency);
+				if (orderFrequencyId == null) {
+					throw new CustomChangeException("No order frequency found for concept " + conceptIdForFrequency);
+				}
 				
 				updateDrugOrderStatement.setInt(1, orderFrequencyId);
 				updateDrugOrderStatement.setString(2, frequency);
@@ -87,49 +93,9 @@ public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements 
 		}
 	}
 	
-	private int getOrderFrequencyIdForConceptId(JdbcConnection connection, Integer conceptIdForFrequency)
-	        throws DatabaseException, SQLException, CustomChangeException {
-		PreparedStatement orderFrequencyIdQuery = connection
-		        .prepareStatement("select order_frequency_id from order_frequency where concept_id = ?");
-		orderFrequencyIdQuery.setInt(1, conceptIdForFrequency);
-		ResultSet orderFrequencyIdResultSet = orderFrequencyIdQuery.executeQuery();
-		if (!orderFrequencyIdResultSet.next()) {
-			throw new CustomChangeException("No order frequency found for concept: " + conceptIdForFrequency);
-		}
-		return orderFrequencyIdResultSet.getInt("order_frequency_id");
-	}
-	
 	private void handleError(JdbcConnection connection, Exception e) throws DatabaseException, CustomChangeException {
 		connection.rollback();
 		throw new CustomChangeException(e);
-	}
-	
-	private List<String> getUniqueFrequencies(JdbcConnection connection) throws CustomChangeException, SQLException {
-		List<String> uniqueFrequencies = new ArrayList<String>();
-		PreparedStatement uniqueFrequenciesQuery = null;
-		try {
-			uniqueFrequenciesQuery = connection
-			        .prepareStatement("select distinct frequency_text as unique_frequency from drug_order");
-			ResultSet resultSet = uniqueFrequenciesQuery.executeQuery();
-			while (resultSet.next()) {
-				String unit = resultSet.getString("unique_frequency");
-				if (unit != null) {
-					uniqueFrequencies.add(unit);
-				}
-			}
-		}
-		catch (SQLException e) {
-			throw new CustomChangeException(e);
-		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException(e);
-		}
-		finally {
-			if (uniqueFrequenciesQuery != null) {
-				uniqueFrequenciesQuery.close();
-			}
-		}
-		return uniqueFrequencies;
 	}
 	
 	@Override
