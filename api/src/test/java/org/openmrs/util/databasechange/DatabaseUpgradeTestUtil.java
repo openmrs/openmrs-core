@@ -111,7 +111,6 @@ public class DatabaseUpgradeTestUtil {
 			    new JdbcConnection(connection));
 			liqubaseConnection.setDatabaseChangeLogTableName("LIQUIBASECHANGELOG");
 			liqubaseConnection.setDatabaseChangeLogLockTableName("LIQUIBASECHANGELOGLOCK");
-			liqubaseConnection.checkDatabaseChangeLogTable(false, null, null);
 		}
 		catch (LiquibaseException e) {
 			tempDir.delete();
