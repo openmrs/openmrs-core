@@ -6808,6 +6808,32 @@
         <comment>Removing discontinued_by from orders</comment>
         <dropColumn tableName="orders" columnName="discontinued_by" />
 	</changeSet>
+	
+	<changeSet id="201401081823-TRUNK-4202" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="orders" columnName="orderer" />
+		</preConditions>
+		<comment>Creating provider accounts for all users who have placed
+			orders for patients and have no associated provider accounts
+		</comment>
+		<sql>
+			INSERT INTO provider(person_id, identifier, creator, date_created, retired, uuid)
+			SELECT orders.orderer, CONCAT('providerAccount', SUBSTRING(person.uuid, 5)), 1,
+			CURRENT_TIMESTAMP, false, CONCAT('providerAccount', SUBSTRING(person.uuid, 5))
+			WHERE orders.patient_id IS NOT NULL AND orders.orderer NOT IN (SELECT person_id FROM provider)
+		</sql>
+	</changeSet>
+	
+	<changeSet id="201401081850-TRUNK-4202" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="provider" columnName="provider_id" />
+		</preConditions>
+		<comment>Migrating data in orders.orderer column to be provider_ids</comment>
+		<sql>
+			UPDATE orders SET orderer = (SELECT provider_id FROM provider WHERE provider_id = orders.orderer)
+			WHERE users.user_id IN (SELECT orders.orderer FROM orders)
+		</sql>
+	</changeSet>
 
     <changeSet id="201312271822-TRUNK-4156" author="vinay">
         <preConditions onFail="MARK_RAN">
