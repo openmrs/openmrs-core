@@ -6446,9 +6446,7 @@
         </preConditions>
         <comment>Adding order_number column to orders table</comment>
         <addColumn tableName="orders">
-            <column name="order_number" type="varchar(50)" >
-                <constraints nullable="false"/>
-            </column>
+            <column name="order_number" type="varchar(50)" />
         </addColumn>
     </changeSet>
 
@@ -6460,10 +6458,20 @@
                 </sqlCheck>
             </not>
         </preConditions>
-        <comment>Setting order numbers for existing orders</comment>
+        <comment>
+            Setting order numbers for existing orders and adding not-null constraint to order_number column
+        </comment>
         <update tableName="orders">
            <column name="order_number" valueComputed="order_id" />
         </update>
+    </changeSet>
+
+    <changeSet id="201311041514-TRUNK-4122" author="wyclif">
+        <preConditions>
+            <columnExists tableName="orders" columnName="order_number" />
+        </preConditions>
+        <comment>Making orders.order_number not nullable</comment>
+        <addNotNullConstraint tableName="orders" columnName="order_number" columnDataType="varchar(50)" />
     </changeSet>
 
     <changeSet id="201310281153-TRUNK-4123" author="mujir,sushmitharaos">
