@@ -77,11 +77,16 @@ public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements 
 					continue;
 				}
 				
+				//Generating UUID for order frequency. Generated UUIDs will be the same if concepts UUIDs are the same.
+				String uuid = DatabaseUtil.getConceptUuid(connection.getUnderlyingConnection(), conceptIdForFrequency);
+				uuid += "-6925ebb0-7c69-11e3-baa7-0800200c9a66"; //Adding random value for order frequency
+				uuid = UUID.nameUUIDFromBytes(uuid.getBytes()).toString();
+				
 				insertOrderFrequencyStatement.setInt(1, conceptIdForFrequency);
 				insertOrderFrequencyStatement.setInt(2, 1);
 				insertOrderFrequencyStatement.setDate(3, date);
 				insertOrderFrequencyStatement.setBoolean(4, false);
-				insertOrderFrequencyStatement.setString(5, UUID.randomUUID().toString());
+				insertOrderFrequencyStatement.setString(5, uuid);
 				
 				insertOrderFrequencyStatement.executeUpdate();
 				insertOrderFrequencyStatement.clearParameters();
