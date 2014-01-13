@@ -6511,6 +6511,7 @@
             <not><columnExists tableName="drug_order" columnName="dosing_type"/></not>
         </preConditions>
         <comment>Renaming drug_order.complex to dosing_type</comment>
+		<modifyDataType tableName="drug_order" columnName="complex" newDataType="varchar(50)"/>
         <renameColumn tableName="drug_order" oldColumnName="complex" newColumnName="dosing_type" columnDataType="varchar(50)"/>
     </changeSet>
 
@@ -6562,7 +6563,7 @@
 		
 		<comment>Create the order_frequency table</comment>
 		<createTable tableName="order_frequency">
-			<column name="order_frequency_id" type="int">
+			<column autoIncrement="true" name="order_frequency_id" type="int">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="concept_id" type="int"><constraints nullable="false"/></column>
@@ -6610,9 +6611,7 @@
         </preConditions>
         <comment>Add care_setting column</comment>
         <addColumn tableName="orders">
-            <column name="care_setting" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="care_setting" type="varchar(50)" />
         </addColumn>
     </changeSet>
     
@@ -6815,6 +6814,52 @@
         </preConditions>
         <comment>Removing discontinued_by from orders</comment>
         <dropColumn tableName="orders" columnName="discontinued_by" />
+	</changeSet>
+	
+	<changeSet id="201401031432-TRUNK-4135" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="drug_order" columnName="frequency" />
+		</preConditions>
+		<comment>Renaming the frequency column of the drug_order table to frequency_text</comment>
+		<renameColumn tableName="drug_order" oldColumnName="frequency" newColumnName="frequency_text" columnDataType="varchar(255)" />
+	</changeSet>
+
+	<changeSet id="201401031434-TRUNK-4135" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not><foreignKeyConstraintExists foreignKeyName="drug_order_frequency_fk" /></not>
+		</preConditions>
+		<addColumn tableName="drug_order">
+			<column name="frequency" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint baseTableName="drug_order" baseColumnNames="frequency"
+								 constraintName="drug_order_frequency_fk"
+								 referencedTableName="order_frequency"
+								 referencedColumnNames="order_frequency_id" />
+	</changeSet>
+
+	<changeSet id="201301031440-TRUNK-4135" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				select count(*) from order_frequency;
+			</sqlCheck>
+		</preConditions>
+		<comment>Creating coded order frequencies for drug order frequencies</comment>
+		<customChange class="org.openmrs.util.databasechange.CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset"/>
+	</changeSet>
+	
+	<changeSet id="201301031447-TRUNK-4135" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="drug_order" columnName="frequency_text" />
+		</preConditions>
+		<comment>Migrating durg order frequencies to coded order frequencies</comment>
+		<customChange class="org.openmrs.util.databasechange.MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset" />
+	</changeSet>
+
+	<changeSet id="201301031454-TRUNK-4135" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="drug_order" columnName="frequency_text" /></not>
+		</preConditions>
+		<dropColumn tableName="drug_order" columnName="frequency_text" />
 	</changeSet>
 
     <changeSet id="201312271822-TRUNK-4156" author="vinay">

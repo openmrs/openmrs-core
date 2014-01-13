@@ -23,9 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.CustomChangeException;
-import liquibase.exception.DatabaseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.db.DAOException;
@@ -212,6 +209,35 @@ public class DatabaseUtil {
 		        + ". Please refer to upgrade instructions for more details.");
 	}
 	
+	public static String getConceptUuid(Connection connection, int conceptId) throws SQLException {
+		PreparedStatement select = connection.prepareStatement("select uuid from concept where concept_id = ?");
+		try {
+			select.setInt(1, conceptId);
+			
+			ResultSet resultSet = select.executeQuery();
+			if (resultSet.next()) {
+				return resultSet.getString(1);
+			} else {
+				throw new IllegalArgumentException("Concept not found " + conceptId);
+			}
+		}
+		finally {
+			select.close();
+		}
+	}
+	
+	public static Integer getOrderFrequencyIdForConceptId(Connection connection, Integer conceptIdForFrequency)
+	        throws SQLException {
+		PreparedStatement orderFrequencyIdQuery = connection
+		        .prepareStatement("select order_frequency_id from order_frequency where concept_id = ?");
+		orderFrequencyIdQuery.setInt(1, conceptIdForFrequency);
+		ResultSet orderFrequencyIdResultSet = orderFrequencyIdQuery.executeQuery();
+		if (!orderFrequencyIdResultSet.next()) {
+			return null;
+		}
+		return orderFrequencyIdResultSet.getInt("order_frequency_id");
+	}
+	
 	/**
 	 * Gets all unique values excluding nulls in the specified column and table
 	 * 
@@ -219,13 +245,11 @@ public class DatabaseUtil {
 	 * @param tableName the table
 	 * @param connection
 	 * @return
-	 * @throws liquibase.exception.CustomChangeException
 	 * @throws SQLException
-	 * @throws liquibase.exception.DatabaseException
 	 */
-	public static Set<Object> getUniqueNonNullColumnValues(String columnName, String tableName, JdbcConnection connection)
-	        throws CustomChangeException, SQLException, DatabaseException {
-		Set<Object> uniqueValues = new HashSet<Object>();
+	public static <T> Set<T> getUniqueNonNullColumnValues(String columnName, String tableName, Class<T> type,
+	        Connection connection) throws SQLException {
+		Set<T> uniqueValues = new HashSet<T>();
 		PreparedStatement pstmt = null;
 		final String alias = "unique_values";
 		
@@ -236,7 +260,7 @@ public class DatabaseUtil {
 			while (resultSet.next()) {
 				Object value = resultSet.getObject(alias);
 				if (value != null) {
-					uniqueValues.add(value);
+					uniqueValues.add((T) value);
 				}
 			}
 		}

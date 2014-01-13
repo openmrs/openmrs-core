@@ -35,7 +35,8 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 	public void check(Database database) throws CustomPreconditionFailedException, CustomPreconditionErrorException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		try {
-			Set<Object> doseUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", connection);
+			Set<String> doseUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,
+			    connection.getUnderlyingConnection());
 			Set<String> unmappedDoseUnits = getUnMappedText(doseUnits, connection);
 			if (unmappedDoseUnits.size() > 0) {
 				throw new CustomPreconditionFailedException(
@@ -46,7 +47,8 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 				                + " or use 1.10 upgrade helper module to map them");
 			}
 			
-			Set<Object> frequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency", "drug_order", connection);
+			Set<String> frequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency", "drug_order", String.class,
+			    connection.getUnderlyingConnection());
 			Set<String> unmappedFrequencies = getUnMappedText(frequencies, connection);
 			if (unmappedFrequencies.size() > 0) {
 				throw new CustomPreconditionFailedException(
@@ -63,11 +65,11 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 		}
 	}
 	
-	private Set<String> getUnMappedText(Set<Object> textList, JdbcConnection connection) {
+	private Set<String> getUnMappedText(Set<String> textList, JdbcConnection connection) {
 		Set<String> unmappedText = new HashSet<String>(textList.size());
-		for (Object text : textList) {
+		for (String text : textList) {
 			try {
-				if (DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(), text.toString()) != null) {
+				if (DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(), text) != null) {
 					continue;
 				}
 			}
@@ -75,7 +77,7 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 				//ignore, mostly like an invalid integer value
 			}
 			
-			unmappedText.add(text.toString());
+			unmappedText.add(text);
 		}
 		return unmappedText;
 	}
