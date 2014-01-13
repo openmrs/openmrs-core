@@ -419,8 +419,20 @@ public class HibernateFormDAO implements FormDAO {
 			crit.add(Restrictions.eq("retired", retired));
 		
 		// TODO junit test
-		if (!containingAnyFormField.isEmpty())
-			crit.add(Restrictions.in("formFields", containingAnyFormField));
+		if (!containingAnyFormField.isEmpty()) {
+			// Convert form field persistents to integers
+			Set<Integer> anyFormFieldIds = new HashSet<Integer>();
+			for (FormField ff : containingAnyFormField) {
+				anyFormFieldIds.add(ff.getFormFieldId());
+			}
+			
+			DetachedCriteria subquery = DetachedCriteria.forClass(FormField.class, "ff");
+			subquery.setProjection(Projections.count("ff.formFieldId"));
+			subquery.add(Restrictions.eqProperty("ff.form", "form"));
+			subquery.add(Restrictions.in("ff.formFieldId", anyFormFieldIds));
+			
+			crit.add(Subqueries.gt(0L, subquery));
+		}
 		
 		//select * from form where len(containingallformfields) = (select count(*) from form_field ff where ff.form_id = form_id and form_field_id in (containingallformfields);
 		if (!containingAllFormFields.isEmpty()) {
