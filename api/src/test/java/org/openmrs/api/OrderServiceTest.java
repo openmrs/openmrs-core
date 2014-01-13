@@ -297,7 +297,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail when orderToDiscontinue is a DC order", method = "discontinueOrder(Order, Concept, Date)")
+	@Verifies(value = "should fail when orderToDiscontinue is a DC order", method = "discontinueOrder(Order, String, Date)")
 	public void discontinueOrderWithNonCodedReason_shouldFailWhenItIsADiscontinueOrder() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
@@ -320,7 +320,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should discontinue existing active order if new order being saved with action to discontinue", method = "discontinueOrder(Order, Concept, Date)")
+	@Verifies(value = "should discontinue existing active order if new order being saved with action to discontinue", method = "saveOrder(Order)")
 	public void saveOrder_shouldSaveADiscontinueOrder() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
@@ -345,7 +345,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should discontinue previousOrder if it is not already discontinued", method = "discontinueOrder(Order, Concept, Date)")
+	@Verifies(value = "should discontinue previousOrder if it is not already discontinued", method = "saveOrder(Order)")
 	public void saveOrder_shouldSaveADiscontinueOrderWhenPreviousOrderIsProvided() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
