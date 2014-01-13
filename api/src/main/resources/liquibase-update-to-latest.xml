@@ -6895,7 +6895,7 @@
     </changeSet>
 
     <changeSet id="201312271827-TRUNK-4156" author="vinay">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not>
                 <sqlCheck expectedResult="0">
                     SELECT count(*) FROM orders WHERE care_setting IS NULL
