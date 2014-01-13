@@ -31,10 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
@@ -68,6 +65,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public Order saveOrder(Order order) throws APIException {
 		if (order.getOrderId() == null) {
+			discontinueExistingOrdersIfRequired(order);
 			//TODO call module registered order number generators 
 			//and if there is none, use the default below
 			try {
@@ -81,6 +79,34 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		return dao.saveOrder(order);
+	}
+	
+	private void discontinueExistingOrdersIfRequired(Order order) {
+		//Ignore and return if this is not an order to discontinue
+		if (!Order.Action.DISCONTINUE.equals(order.getAction()))
+			return;
+		
+		//Discontinue previousOrder if it is not already
+		Order previousOrder = order.getPreviousOrder();
+		if (previousOrder != null) {
+			if (previousOrder.getDateStopped() == null) {
+				discontinueOrder(previousOrder, order.getStartDate());
+			}
+			return;
+		}
+		
+		//Discontinue the first found order corresponding to this DC order.
+		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getClass(), order.getCareSetting(), false);
+		for (Order activeOrder : orders) {
+			if (activeOrder.getConcept().equals(order.getConcept())) {
+				order.setPreviousOrder(activeOrder);
+				discontinueOrder(activeOrder, order.getStartDate());
+				return;
+			}
+		}
+		
+		throw new APIException("We could not find an active order with the concept " + order.getConcept()
+		        + " to discontinue. ");
 	}
 	
 	/**
