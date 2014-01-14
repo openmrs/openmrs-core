@@ -211,7 +211,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public Patient getPatientOrPromotePerson(Integer patientOrPersonId) {
 		Patient patient = null;
 		try {
-			patient = getPatient(patientOrPersonId);
+			patient = Context.getPatientService().getPatient(patientOrPersonId);
 		}
 		catch (ClassCastException ex) {
 			// If the id refers to Person not Patient, it sometimes will cause class cast exception
@@ -241,7 +241,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Transactional(readOnly = true)
 	public List<Patient> getAllPatients() throws APIException {
-		return getAllPatients(false);
+		return Context.getPatientService().getAllPatients(false);
 	}
 	
 	/**
@@ -261,7 +261,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes)
 	        throws APIException {
-		return getPatients(name, identifier, identifierTypes, false);
+		return Context.getPatientService().getPatients(name, identifier, identifierTypes, false);
 	}
 	
 	/**
@@ -275,7 +275,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (identifierTypes == null)
 			identifierTypes = Collections.emptyList();
 		
-		return getPatients(name, identifier, identifierTypes, matchIdentifierExactly, 0, null);
+		return Context.getPatientService().getPatients(name, identifier, identifierTypes, matchIdentifierExactly, 0, null);
 	}
 	
 	/**
@@ -365,7 +365,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// get all patients with this identifier
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(type);
-		List<Patient> patients = getPatients(null, identifier, types, /* exact name+identifier search */true);
+		List<Patient> patients = Context.getPatientService().getPatients(null, identifier, types, /* exact name+identifier search */
+		true);
 		
 		// ignore this patient (loop until no changes made)
 		while (patients.remove(ignorePatient)) {}
@@ -388,7 +389,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (includeVoided == true)
 			throw new APIException("Searching on voided patients is no longer allowed");
 		
-		return getPatients(null, identifier, null);
+		return Context.getPatientService().getPatients(null, identifier, null);
 	}
 	
 	/**
@@ -402,7 +403,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (includeVoided == true)
 			throw new APIException("Searching on voided patients is no longer allowed");
 		
-		return getPatients(null, identifier, null);
+		return Context.getPatientService().getPatients(null, identifier, null);
 	}
 	
 	/**
@@ -412,7 +413,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Patient> getPatientsByName(String name) throws APIException {
-		return getPatients(name, (String) null, null);
+		return Context.getPatientService().getPatients(name, (String) null, null);
 	}
 	
 	/**
@@ -425,7 +426,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (includeVoided == true)
 			throw new APIException("Searching on voided patients is no longer allowed");
 		
-		return getPatients(name, (String) null, null);
+		return Context.getPatientService().getPatients(name, (String) null, null);
 	}
 	
 	/**
@@ -500,7 +501,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType pit) throws APIException {
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(pit);
-		return getPatientIdentifiers(null, types, null, null, null);
+		return Context.getPatientService().getPatientIdentifiers(null, types, null, null, null);
 	}
 	
 	/**
@@ -513,7 +514,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType pit) throws APIException {
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(pit);
-		return getPatientIdentifiers(identifier, types, null, null, null);
+		return Context.getPatientService().getPatientIdentifiers(identifier, types, null, null, null);
 	}
 	
 	/**
@@ -530,7 +531,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(patientIdentifierType);
-		return getPatientIdentifiers(identifier, types, null, null, null);
+		return Context.getPatientService().getPatientIdentifiers(identifier, types, null, null, null);
 	}
 	
 	/**
@@ -575,7 +576,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException {
-		return getAllPatientIdentifierTypes();
+		return Context.getPatientService().getAllPatientIdentifierTypes();
 	}
 	
 	/**
@@ -583,7 +584,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Transactional(readOnly = true)
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes() throws APIException {
-		return getAllPatientIdentifierTypes(false);
+		return Context.getPatientService().getAllPatientIdentifierTypes(false);
 	}
 	
 	/**
@@ -619,7 +620,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public PatientIdentifierType getPatientIdentifierType(String name) throws APIException {
-		return getPatientIdentifierTypeByName(name);
+		return Context.getPatientService().getPatientIdentifierTypeByName(name);
 	}
 	
 	/**
@@ -648,7 +649,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		patientIdentifierType.setRetiredBy(Context.getAuthenticatedUser());
 		patientIdentifierType.setDateRetired(new Date());
 		patientIdentifierType.setRetireReason(reason);
-		return savePatientIdentifierType(patientIdentifierType);
+		return Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
 	}
 	
 	/**
@@ -660,7 +661,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		patientIdentifierType.setRetiredBy(null);
 		patientIdentifierType.setDateRetired(null);
 		patientIdentifierType.setRetireReason(null);
-		return savePatientIdentifierType(patientIdentifierType);
+		return Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
 	}
 	
 	/**
@@ -682,7 +683,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (includeVoided == true)
 			throw new APIException("Searching on voided patients is no longer allowed");
 		
-		return getPatients(query);
+		return Context.getPatientService().getPatients(query);
 	}
 	
 	/**
@@ -690,7 +691,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String query) throws APIException {
-		return getPatients(query, 0, null);
+		return Context.getPatientService().getPatients(query, 0, null);
 	}
 	
 	/**
@@ -701,7 +702,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public Patient findPatient(Patient patientToMatch) throws APIException {
-		return getPatientByExample(patientToMatch);
+		return Context.getPatientService().getPatientByExample(patientToMatch);
 	}
 	
 	/**
@@ -716,7 +717,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (patientToMatch == null || patientToMatch.getPatientId() == null)
 			return null;
 		
-		return getPatient(patientToMatch.getPatientId());
+		return Context.getPatientService().getPatient(patientToMatch.getPatientId());
 	}
 	
 	/**
@@ -728,7 +729,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		List<String> attributesAsList = new Vector<String>();
 		attributesAsList.addAll(attributes);
 		
-		return getDuplicatePatientsByAttributes(attributesAsList);
+		return Context.getPatientService().getDuplicatePatientsByAttributes(attributesAsList);
 	}
 	
 	/**
@@ -1509,7 +1510,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		if (patientIdentifier == null || StringUtils.isBlank(reason))
 			throw new APIException("patientIdentifier can't be null and the reason should not be an empty string");
-		return savePatientIdentifier(patientIdentifier);
+		return Context.getPatientService().savePatientIdentifier(patientIdentifier);
 		
 	}
 	
