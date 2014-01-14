@@ -17,8 +17,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * The DrugReferenceMap map object represents a mapping between a drug and alternative drug terminologies.
- *
+ * The DrugReferenceMap map object represents a mapping between a drug and alternative drug
+ * terminologies.
+ * 
  * @since 1.10
  */
 public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Serializable {
@@ -45,9 +46,13 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	public DrugReferenceMap() {
 	}
 	
-	/** constructor with concept reference term map id */
-	public DrugReferenceMap(Integer drugReferenceMapId) {
-		this.drugReferenceMapId = drugReferenceMapId;
+	/**
+	 * @param term
+	 * @param conceptMapType
+	 */
+	public DrugReferenceMap(ConceptReferenceTerm term, ConceptMapType conceptMapType) {
+		this.conceptReferenceTerm = term;
+		this.conceptMapType = conceptMapType;
 	}
 	
 	/**
