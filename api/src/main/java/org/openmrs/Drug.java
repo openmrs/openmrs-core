@@ -46,7 +46,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	private String units;
 	
 	private Concept concept;
-
+	
 	private Set<DrugReferenceMap> drugReferenceMaps;
 	
 	// Constructors
@@ -240,7 +240,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 			return getConcept().getName().getName();
 		return "";
 	}
-
+	
 	/**
 	 * @return Returns the drugReferenceMaps.
 	 * @since 1.10
@@ -251,7 +251,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 		}
 		return drugReferenceMaps;
 	}
-
+	
 	/**
 	 * @param drugReferenceMaps The drugReferenceMaps to set.
 	 * @since 1.10
@@ -259,13 +259,17 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	public void setDrugReferenceMaps(Set<DrugReferenceMap> drugReferenceMaps) {
 		this.drugReferenceMaps = drugReferenceMaps;
 	}
-
+	
 	/**
 	 * Add the given DrugReferenceMap object to this drug's list of drug reference mappings. If there is
 	 * already a corresponding DrugReferenceMap object for this concept, this one will not be added.
 	 *
 	 * @param drugReferenceMap
 	 * @since 1.10
+	 *
+	 * @should set drug as the drug to which a mapping is being added
+	 *
+	 * @should should not add duplicate drug reference maps
 	 */
 	public void addDrugReferenceMap(DrugReferenceMap drugReferenceMap) {
 		if (drugReferenceMap != null && !getDrugReferenceMaps().contains(drugReferenceMap)) {
@@ -273,7 +277,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 			if (drugReferenceMap.getConceptMapType() == null) {
 				drugReferenceMap.setConceptMapType(Context.getConceptService().getDefaultConceptMapType());
 			}
-			getDrugReferenceMaps() 	.add(drugReferenceMap);
+			getDrugReferenceMaps().add(drugReferenceMap);
 		}
 	}
 }
