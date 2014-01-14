@@ -6816,8 +6816,10 @@
 
 	<changeSet id="201401031434-TRUNK-4135" author="rkorytkowski">
 		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="drug_order" columnName="frequency" /></not>
 			<not><foreignKeyConstraintExists foreignKeyName="drug_order_frequency_fk" /></not>
 		</preConditions>
+		<comment>Adding the frequency column to the drug_order table</comment>
 		<addColumn tableName="drug_order">
 			<column name="frequency" type="int" />
 		</addColumn>
