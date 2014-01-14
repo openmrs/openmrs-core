@@ -92,6 +92,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//Discontinue previousOrder if it is not already
 		Order previousOrder = order.getPreviousOrder();
 		if (previousOrder != null) {
+			if (!previousOrder.getConcept().equals(order.getConcept())) {
+				throw new APIException("Concept of previous order and this order should be the same");
+			}
+			
 			if (previousOrder.getDateStopped() == null) {
 				discontinueOrder(previousOrder, order.getStartDate());
 			}
