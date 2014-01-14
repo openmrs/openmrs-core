@@ -6858,7 +6858,7 @@
         </preConditions>
         <comment>Adding care_setting table</comment>
         <createTable tableName="care_setting">
-            <column name="care_setting_id" type="int(11)" autoIncrement="true">
+            <column name="care_setting_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(255)">
@@ -6868,18 +6868,18 @@
             <column name="care_setting_type" type="varchar(50)">
                 <constraints nullable="false" />
             </column>
-            <column name="creator" type="int(11)" >
+            <column name="creator" type="int" >
                 <constraints nullable="false" />
             </column>
             <column name="date_created" type="datetime" >
                 <constraints nullable="false"/>
             </column>
-            <column name="retired" type="tinyint" defaultValueNumeric="0">
+            <column name="retired" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
-            <column name="retired_by" type="int(11)" />
+            <column name="retired_by" type="int" />
             <column name="date_retired" type="datetime" />
-            <column name="retired_reason" type="varchar(255)" defaultValue="null"/>
+            <column name="retired_reason" type="varchar(255)" />
             <column name="uuid" type="char(38)">
                 <constraints nullable="false"/>
             </column>
@@ -6933,7 +6933,7 @@
         </preConditions>
         <comment>Add care_setting column to orders table</comment>
         <addColumn tableName="orders">
-            <column name="care_setting" type="int(11)"/>
+            <column name="care_setting" type="int"/>
         </addColumn>
     </changeSet>
 
@@ -6956,7 +6956,7 @@
 
     <changeSet id="201312271828-TRUNK-4156" author="vinay">
         <comment>Make care_setting column non-nullable</comment>
-        <addNotNullConstraint tableName="orders" columnName="care_setting" columnDataType="int(11)"/>
+        <addNotNullConstraint tableName="orders" columnName="care_setting" columnDataType="int"/>
     </changeSet>
 
     <changeSet id="201312271829-TRUNK-4156" author="vinay">
@@ -6988,7 +6988,7 @@
 			<column name="map_type" type="int">
 				<constraints nullable="false"/>
 			</column>
-			<column name="creator" type="int" defaultValueNumeric="0">
+			<column name="creator" type="int">
 				<constraints nullable="false"/>
 			</column>
 			<column name="date_created" type="DATETIME">
