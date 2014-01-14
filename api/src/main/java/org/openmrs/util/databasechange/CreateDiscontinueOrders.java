@@ -8,6 +8,7 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.openmrs.Order;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -60,7 +61,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 				setIntOrNull(insertStatement, 9, discontinuedOrder.discontinuedReasonId);
 				insertStatement.setString(10, discontinuedOrder.discontinuedReasonNonCoded);
 				insertStatement.setString(11, UUID.randomUUID().toString());
-				insertStatement.setString(12, "DISCONTINUE");
+				insertStatement.setString(12, Order.Action.DISCONTINUE.name());
 				insertStatement.setInt(13, discontinuedOrder.orderTypeId);
 				setIntOrNull(insertStatement, 14, discontinuedOrder.orderer);
 				insertStatement.setString(15, discontinuedOrder.orderNumber);
