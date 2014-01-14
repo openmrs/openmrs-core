@@ -6603,18 +6603,6 @@
             <column name="comment_to_fulfiller" type="varchar(1024)"/>
         </addColumn>
     </changeSet>
-
-    <changeSet id="201312181400-TRUNK-4156" author="vinay">
-        <preConditions onFail="MARK_RAN">
-            <not><columnExists tableName="orders" columnName="care_setting"/></not>
-        </preConditions>
-        <comment>Add care_setting column</comment>
-        <addColumn tableName="orders">
-            <column name="care_setting" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-    </changeSet>
     
     <changeSet id="201312111626-TRUNK-4169" author="k-joseph">
 		<preConditions onFail="MARK_RAN">
