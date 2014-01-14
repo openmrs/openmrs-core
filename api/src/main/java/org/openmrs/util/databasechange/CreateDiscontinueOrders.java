@@ -46,7 +46,8 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			connection.setAutoCommit(false);
 			insertStatement = connection
 			        .prepareStatement("Insert into orders(previous_order_id, concept_id, patient_id, encounter_id, "
-			                + "creator, date_created, date_stopped, discontinued_by, discontinued_reason, discontinued_reason_non_coded, uuid, order_action, order_type_id, orderer) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			                + "creator, date_created, date_stopped, discontinued_by, discontinued_reason, discontinued_reason_non_coded, " +
+                            "uuid, order_action, order_type_id, orderer, order_number) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			for (DiscontinuedOrder discontinuedOrder : discontinuedOrders) {
 				insertStatement.setInt(1, discontinuedOrder.previousOrderId);
 				insertStatement.setInt(2, discontinuedOrder.conceptId);
@@ -62,6 +63,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 				insertStatement.setString(12, "DISCONTINUE");
 				insertStatement.setInt(13, discontinuedOrder.orderTypeId);
 				setIntOrNull(insertStatement, 14, discontinuedOrder.orderer);
+				insertStatement.setString(15, discontinuedOrder.orderNumber);
 				insertStatement.addBatch();
 				
 				if (index % batchSize == 0) {
@@ -176,7 +178,9 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 		public int orderTypeId;
 		
 		public int orderer;
-		
+
+		public String orderNumber;
+
 		private DiscontinuedOrder(int orderId, int conceptId, int patientId, int encounterId, int discontinuedById,
 		    int discontinuedReasonId, String discontinuedReasonNonCoded, Date dateStopped, int orderTypeId, int orderer) {
 			this.orderId = orderId;
@@ -192,6 +196,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			this.dateCreated = dateStopped;
 			this.orderTypeId = orderTypeId;
 			this.orderer = orderer;
+			this.orderNumber = String.valueOf(orderId).concat("-DC");
 		}
 	}
 }
