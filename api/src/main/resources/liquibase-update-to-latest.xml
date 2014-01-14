@@ -6459,7 +6459,7 @@
             </not>
         </preConditions>
         <comment>
-            Setting order numbers for existing orders and adding not-null constraint to order_number column
+            Setting order numbers for existing orders
         </comment>
         <update tableName="orders">
            <column name="order_number" valueComputed="order_id" />
