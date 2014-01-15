@@ -2032,4 +2032,34 @@ public class HibernateConceptDAO implements ConceptDAO {
 			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
 		}
 	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDrugByMapping(String, ConceptSource, boolean)
+	 */
+	@Override
+	public Drug getDrugByMapping(String code, ConceptSource conceptSource, boolean includeRetired) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Drug.class);
+		if (includeRetired == false)
+			criteria.add(Restrictions.eq("drug.retired", false));
+		return null;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Override
+	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource, Collection<ConceptMapType> withAnyOfTheseTypes,  boolean includeRetired) throws DAOException {
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
+		if (includeRetired == false)
+			searchCriteria.add(Restrictions.eq("drug.retired", false));
+		return (List<Drug>) searchCriteria.list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDrugByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Override
+	public Drug getDrugByMapping(String code, ConceptSource conceptSource, Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) throws DAOException {
+		return null;
+	}
 }

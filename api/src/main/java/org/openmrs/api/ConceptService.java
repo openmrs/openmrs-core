@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -2037,4 +2038,48 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
 	public ConceptMapType getDefaultConceptMapType() throws APIException;
+
+	/**
+	 * Should get the drug with a mapping that exactly matches the specified code in the specified concept source
+	 * @param code
+	 * @param conceptSource
+	 * @param includeRetired
+	 * @since 1.10.x
+	 * @return the {@link Drug}
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	public Drug getDrugByMapping(String code, ConceptSource conceptSource, boolean includeRetired) throws APIException;
+
+	/**
+	 * gets all matching drugs
+	 * @param code
+	 * @param conceptSource
+	 * @param withAnyOfTheseTypes
+	 * @param includeRetired
+	 * @since 1.10.x
+	 * @return the list of {@link Drug}
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource, Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws APIException;
+
+	/**
+	 * gets the "best" matching drug, i.e. matching the earliest ConceptMapType passed in
+	 * e.g. getDrugByMapping("12345", rxNorm, Arrays.asList(sameAs, narrowerThan))
+	 * If there are multiple matches for the highest-priority ConceptMapType, throw an exception
+	 * @param code
+	 * @param conceptSource
+	 * @param withAnyOfTheseTypesOrOrderOfPreference
+	 * @param includeRetired
+	 * @since 1.10.x
+	 * @return the {@link Drug}
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	Drug getDrugByMapping(String code, ConceptSource conceptSource, Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) throws APIException;
+
 }
