@@ -24,6 +24,7 @@ import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsUtil;
@@ -56,7 +57,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	@Transactional(readOnly = true)
 	public List<Provider> getAllProviders() {
-		return getAllProviders(true);
+		return Context.getProviderService().getAllProviders(true);
 	}
 	
 	/**
@@ -131,7 +132,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Transactional(readOnly = true)
 	public Collection<Provider> getProvidersByPerson(Person person) {
 		Validate.notNull(person, "Person must not be null");
-		return getProvidersByPerson(person, true);
+		return Context.getProviderService().getProvidersByPerson(person, true);
 	}
 	
 	/**
@@ -140,7 +141,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	@Transactional(readOnly = true)
 	public Integer getCountOfProviders(String query) {
-		return getCountOfProviders(query, false);
+		return Context.getProviderService().getCountOfProviders(query, false);
 	}
 	
 	/**
@@ -171,7 +172,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Transactional(readOnly = true)
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributeValues) {
-		return getProviders(query, start, length, attributeValues, true);
+		return Context.getProviderService().getProviders(query, start, length, attributeValues, true);
 	}
 	
 	/**
@@ -244,7 +245,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 */
 	@Override
 	public ProviderAttributeType retireProviderAttributeType(ProviderAttributeType providerAttributeType, String reason) {
-		return saveProviderAttributeType(providerAttributeType);
+		return Context.getProviderService().saveProviderAttributeType(providerAttributeType);
 	}
 	
 	/**
@@ -252,7 +253,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 */
 	@Override
 	public ProviderAttributeType unretireProviderAttributeType(ProviderAttributeType providerAttributeType) {
-		return saveProviderAttributeType(providerAttributeType);
+		return Context.getProviderService().saveProviderAttributeType(providerAttributeType);
 	}
 	
 	/**
