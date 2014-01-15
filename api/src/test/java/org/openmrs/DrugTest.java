@@ -15,11 +15,12 @@ package org.openmrs;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
  * Contains test methods for {@link org.openmrs.Drug}.
  */
-public class DrugTest {
+public class DrugTest extends BaseContextSensitiveTest {
 	
 	private final static String UUID_1 = "333cd82c-7d3d-11e3-8633-13f177b345d8";
 	
@@ -36,7 +37,7 @@ public class DrugTest {
 		Drug drug2 = new Drug();
 		drug2.setUuid(UUID_2);
 		
-		DrugReferenceMap map = new DrugReferenceMap(1);
+		DrugReferenceMap map = new DrugReferenceMap();
 		map.setDrug(drug2);
 		drug1.addDrugReferenceMap(map);
 		Assert.assertEquals(drug1, drug1.getDrugReferenceMaps().iterator().next().getDrug());
