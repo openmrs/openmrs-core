@@ -68,10 +68,16 @@ public interface ComplexObsHandler {
 	 */
 	public boolean purgeComplexData(Obs obs);
 
-    /* Return true if given view is supported by this handler */
+    /**
+     *Return true if given view is supported by this handler
+     *@return  true if the view is supported by the handler
+     */
     public boolean supportsView(String view);
 
-    /* Return all views supported by this handler */
+    /**
+     *Return all views supported by this handler
+     *@return String containing the all the views supported by the handler
+     * */
     public String[] getSupportedViews();
 	
 }
